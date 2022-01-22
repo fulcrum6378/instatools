@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="defBG">#111</color>
+    <color name="defCA">#FFF</color>
+    <array name="BG">
+        <item>@color/CPD</item>
+        <item>@color/CSD</item>
+        <item>@color/CTD</item>
+    </array>
+    <array name="CA">
+        <item>@color/defCA</item>
+        <item>@color/defCA</item>
+        <item>@color/defCA</item>
+    </array>
+</resources>

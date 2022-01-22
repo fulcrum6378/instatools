@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="CP">#FFD453</color>
+    <color name="CPW">#44FFD453</color>
+    <color name="CPD">#A17F19</color>
+    <color name="CS">#C938A9</color>
+    <color name="CSW">#44C938A9</color>
+    <color name="CSD">#710B5B</color>
+    <color name="CT">#406AC9</color>
+    <color name="CTW">#44406AC9</color>
+    <color name="CTD">#0C2A70</color>
+    <array name="CW">
+        <item>@color/CPW</item>
+        <item>@color/CSW</item>
+        <item>@color/CTW</item>
+    </array>
+
+    <color name="defBG">#FFF</color>
+    <color name="defCA">#000</color>
+    <array name="BG">
+        <item>@color/defBG</item>
+        <item>@color/defBG</item>
+        <item>@color/defBG</item>
+    </array>
+    <array name="CA">
+        <item>@color/CPD</item>
+        <item>@color/CSD</item>
+        <item>@color/CTD</item>
+    </array>
+</resources>
