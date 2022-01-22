@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name" translatable="false">InstaTools</string>
+
+    <!-- Main -->
+    <string name="unfollowers">Unfollowers</string>
+    <string name="saver">Saver</string>
+    <string name="direct">Direct</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

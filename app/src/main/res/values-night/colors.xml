@@ -13,4 +13,7 @@
         <item>@color/defCA</item>
         <item>@color/defCA</item>
     </array>
+    <color name="unfollowers">@color/defCA</color>
+    <color name="saver">@color/defCA</color>
+    <color name="direct">@color/defCA</color>
 </resources>

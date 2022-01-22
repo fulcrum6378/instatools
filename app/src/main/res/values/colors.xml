@@ -14,9 +14,10 @@
         <item>@color/CSW</item>
         <item>@color/CTW</item>
     </array>
+    <color name="tp">#00000000</color>
 
     <color name="defBG">#FFF</color>
-    <color name="defCA">#000</color>
+    <color name="defCA">#262626</color>
     <array name="BG">
         <item>@color/defBG</item>
         <item>@color/defBG</item>
@@ -27,4 +28,7 @@
         <item>@color/CSD</item>
         <item>@color/CTD</item>
     </array>
+    <color name="unfollowers">@color/CPD</color>
+    <color name="saver">@color/CSD</color>
+    <color name="direct">@color/CTD</color>
 </resources>

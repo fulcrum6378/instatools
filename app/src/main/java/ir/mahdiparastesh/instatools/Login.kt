@@ -14,5 +14,8 @@ class Login : BaseActivity() {
         setContentView(b.root)
 
         startActivity(Intent(this, Main::class.java))
+        return
+        b.web.settings.javaScriptEnabled = true
+        b.web.loadUrl("https://www.instagram.com/accounts/login/")
     }
 }
