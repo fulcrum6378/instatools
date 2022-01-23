@@ -1,9 +1,10 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.data
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class Model : ViewModel() {
+    var unfollowers = mutableListOf<Unfollower>()
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

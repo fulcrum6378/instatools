@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Model
 
 open class BaseActivity : AppCompatActivity() {
     lateinit var c: Context
