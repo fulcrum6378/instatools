@@ -1,5 +1,9 @@
 package ir.mahdiparastesh.instatools.more
 
+import android.content.Intent
+import android.net.Uri
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.forEach
 import androidx.core.view.get
@@ -19,6 +23,16 @@ class UiTools {
                 list.add(title[1] as AppCompatTextView) // Take the second one
             }
             return list.toList()
+        }
+
+        fun vis(v: View, bb: Boolean = true) {
+            v.visibility = if (bb) View.VISIBLE else View.GONE
+        }
+
+        fun openProfile(c: AppCompatActivity, user: String) {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/%s/".format(user)))
+            )
         }
     }
 }

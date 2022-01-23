@@ -8,6 +8,7 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.UnfollowersBinding
@@ -21,7 +22,6 @@ class Unfollowers(private val c: Main) : Fragment() {
     private lateinit var b: UnfollowersBinding
     private var following: List<Rest.User>? = null
     private var fetching = false
-    private val myId = "8337021434"
 
     companion object {
         var handler: Handler? = null
@@ -34,47 +34,60 @@ class Unfollowers(private val c: Main) : Fragment() {
             @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    0 -> {
+                    Action.LOADED.ordinal -> (msg.obj as List<Unfollower>).apply {
+                        c.m.unfollowers = ArrayList(this)
+                        Toast.makeText(c, c.m.unfollowers.size.toString(), Toast.LENGTH_LONG).show()
+                        if (isEmpty()) fetch() else adapt()
+                    }
+                    Action.FETCHED.ordinal -> {
                         following = msg.obj as List<Rest.User>
                         analyze()
                     }
-                    1 -> {
+                    Action.ANALYZED.ordinal -> {
                         fetching = false
                     }
                 }
             }
         }
 
-        fetch()
+        Thread {
+            val list = c.dao.unfollowers()
+            handler?.obtainMessage(Action.LOADED.ordinal, list)?.sendToTarget()
+        }.start()
         return b.root
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun fetch() {
         if (fetching) return
         fetching = true
         c.m.unfollowers.clear()
+        c.dao.deleteUnfollowers()
+        adapt()
+        allFollow()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun adapt() {
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c)
         else b.rv.adapter?.notifyDataSetChanged()
-        allFollow()
     }
 
     private fun allFollow(
         list: MutableList<Rest.User> = mutableListOf(), next_max_id: String = ""
     ) {
         Api<Rest.Follow>(
-            c.c, Api.Type.FOLLOWING.url.format(myId, next_max_id), Rest.Follow::class.java
+            c.c, Api.Type.FOLLOWING.url.format(c.myId, next_max_id), Rest.Follow::class.java
         ) { flw ->
             list.addAll(flw.users.toMutableList())
             if (flw.next_max_id == null)
-                handler?.obtainMessage(0, list)?.sendToTarget()
+                handler?.obtainMessage(Action.FETCHED.ordinal, list)?.sendToTarget()
             else Delay { allFollow(list, flw.next_max_id) }
         }
     }
 
     private fun analyze(i: Int = 0) {
         if (following == null || i >= following!!.size) {
-            handler?.obtainMessage(1)?.sendToTarget()
+            handler?.obtainMessage(Action.ANALYZED.ordinal)?.sendToTarget()
             return
         }
         Api<Profile>(
@@ -89,11 +102,14 @@ class Unfollowers(private val c: Main) : Fragment() {
                 )
                 c.m.unfollowers.add(newbie)
                 c.m.unfollowers.sortWith(Unfollower.Sort())
-                val where = c.m.unfollowers.indexOf(newbie)
-                if (where > -1) b.rv.adapter?.notifyItemInserted(where)
+                c.dao.addUnfollower(newbie)
+                Unfollower.find(newbie, c.m.unfollowers)
+                    ?.let { b.rv.adapter?.notifyItemInserted(it) }
             }
             //Delay { analyze(i + 1, list) }
             analyze(i + 1)
         }
     }
+
+    enum class Action { LOADED, FETCHED, ANALYZED }
 }

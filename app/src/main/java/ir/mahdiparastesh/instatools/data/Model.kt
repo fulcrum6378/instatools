@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class Model : ViewModel() {
-    var unfollowers = mutableListOf<Unfollower>()
+    var unfollowers = arrayListOf<Unfollower>()
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

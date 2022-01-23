@@ -4,14 +4,20 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
 
 // adb connect 192.168.1.20:
+// TODO: WE'RE BLOCKED
 
 class Main : BaseActivity() {
     lateinit var b: MainBinding
+    lateinit var db: Database
+    lateinit var dao: Database.DAO
+    val myUser = "fulcrum1378"
+    val myId = "8337021434"
 
     companion object {
         val pages = arrayOf(R.id.unfollowers, R.id.saver, R.id.direct)
@@ -29,6 +35,7 @@ class Main : BaseActivity() {
         super.onCreate(savedInstanceState)
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
+        db = Database.DbFile.build(c, myUser).also { dao = it.dao() }
 
         // Paging
         b.pager.adapter = object : FragmentStateAdapter(this) {
