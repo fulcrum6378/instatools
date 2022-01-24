@@ -8,5 +8,13 @@
     <WebView
         android:id="@+id/web"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <ViewStub
+        android:id="@+id/welcomeStub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/welcome"
+        android:layout="@layout/welcome" />
 </androidx.constraintlayout.widget.ConstraintLayout>

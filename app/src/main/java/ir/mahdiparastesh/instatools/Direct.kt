@@ -13,7 +13,7 @@ class Direct(val c: Main) : Fragment() {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = DirectBinding.inflate(
-            c.themeInflator(BaseActivity.Theme.TERTIARY, inf),
+            c.themeInflater(BaseActivity.Theme.TERTIARY, inf),
             parent, false
         )
         return b.root

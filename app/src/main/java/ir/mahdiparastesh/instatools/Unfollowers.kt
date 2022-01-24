@@ -30,7 +30,7 @@ class Unfollowers(private val c: Main) : Fragment() {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = UnfollowersBinding.inflate(
-            c.themeInflator(BaseActivity.Theme.PRIMARY, inf),
+            c.themeInflater(BaseActivity.Theme.PRIMARY, inf),
             parent, false
         )
 

@@ -12,8 +12,6 @@ import ir.mahdiparastesh.instatools.more.UiTools
 import kotlin.math.abs
 import kotlin.math.max
 
-// adb connect 192.168.1.20:
-
 class Main : BaseActivity() {
     private lateinit var b: MainBinding
     private lateinit var db: Database
@@ -23,6 +21,7 @@ class Main : BaseActivity() {
     private var vpTransStable = 0
     private var vpStableDirToEnd = true
     private var vpPrevTrans = 0f
+    var guest = false
 
     companion object {
         const val MIN_SCALE = 0.85f
@@ -40,10 +39,10 @@ class Main : BaseActivity() {
             }
         }
         super.onCreate(savedInstanceState)
-        if (m.id == null) onBackPressed()
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        db = Database.DbFile.build(c, m.id!!).also { dao = it.dao() }
+        if (m.id == null) guest = true
+        else db = Database.DbFile.build(c, m.id!!).also { dao = it.dao() }
 
         // Paging
         bg = resources.getIntArray(R.array.BG)

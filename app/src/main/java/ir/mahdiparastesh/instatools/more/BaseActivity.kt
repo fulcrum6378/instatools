@@ -48,7 +48,7 @@ open class BaseActivity : AppCompatActivity() {
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
     }
 
-    fun themeInflator(which: Theme, inf: LayoutInflater = layoutInflater) =
+    fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(ContextThemeWrapper(c, which.res))
 
     fun color(res: Int) = ContextCompat.getColor(c, res)

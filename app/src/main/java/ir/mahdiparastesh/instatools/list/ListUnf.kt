@@ -14,7 +14,7 @@ class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val b = ListUnfBinding
-            .inflate(c.themeInflator(BaseActivity.Theme.PRIMARY), parent, false)
+            .inflate(c.themeInflater(BaseActivity.Theme.PRIMARY), parent, false)
         return ViewHolder(b)
     }
 
