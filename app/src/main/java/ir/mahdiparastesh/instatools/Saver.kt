@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.databinding.SaverBinding
+import ir.mahdiparastesh.instatools.more.BaseActivity
 
 class Saver(val c: Main) : Fragment() {
     private lateinit var b: SaverBinding
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        b = SaverBinding.inflate(layoutInflater, parent, false)
+        b = SaverBinding.inflate(
+            c.themeInflator(BaseActivity.Theme.SECONDARY, inf),
+            parent, false)
         return b.root
     }
 }

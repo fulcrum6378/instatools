@@ -5,13 +5,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
 
 class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
     class ViewHolder(val b: ListUnfBinding) : RecyclerView.ViewHolder(b.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val b = ListUnfBinding.inflate(c.layoutInflater, parent, false)
+        val b = ListUnfBinding
+            .inflate(c.themeInflator(BaseActivity.Theme.PRIMARY), parent, false)
         return ViewHolder(b)
     }
 
@@ -22,6 +25,7 @@ class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
         h.b.root.setOnClickListener {
             UiTools.openProfile(c, c.m.unfollowers[h.layoutPosition].user)
         }
+        vis(h.b.sep, i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.unfollowers.size

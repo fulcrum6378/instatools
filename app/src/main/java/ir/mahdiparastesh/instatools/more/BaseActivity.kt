@@ -6,6 +6,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -46,8 +48,18 @@ open class BaseActivity : AppCompatActivity() {
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
     }
 
+    fun themeInflator(which: Theme, inf: LayoutInflater = layoutInflater) =
+        inf.cloneInContext(ContextThemeWrapper(c, which.res))
+
     fun color(res: Int) = ContextCompat.getColor(c, res)
 
     fun pdcf(res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
+
+    enum class Theme(val res: Int) {
+        DEFAULT(R.style.Theme_InstaTools),
+        PRIMARY(R.style.Theme_InstaTools_Primary),
+        SECONDARY(R.style.Theme_InstaTools_Secondary),
+        TERTIARY(R.style.Theme_InstaTools_Tertiary)
+    }
 }

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="statusBarSize">24dp</dimen>
-
-    <dimen name="toolbar">60dp</dimen>
+    <dimen name="toolbar">80dp</dimen>
     <dimen name="bnv">66dp</dimen>
-    <dimen name="profilePhoto">60dp</dimen>
+    <dimen name="profilePhoto">50dp</dimen>
 </resources>

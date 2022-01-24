@@ -1,8 +1,8 @@
 package ir.mahdiparastesh.instatools.json
 
-import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import android.widget.Toast
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -10,17 +10,21 @@ import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.regex.Pattern
 
 class Api<JSON>(
-    c: Context,
+    val c: BaseActivity,
     url: String,
     private val clazz: Class<*>,
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
     private val listener: (json: JSON) -> Unit,
-) : Request<String>(method, encode(url), Response.ErrorListener {}) {
+) : Request<String>(method, encode(url), Response.ErrorListener {
+    Toast.makeText(c, "ERROR: ${it.networkResponse.statusCode}", Toast.LENGTH_LONG).show()
+}) {
 
     init {
         setShouldCache(cache)
@@ -31,7 +35,7 @@ class Api<JSON>(
         Volley.newRequestQueue(c).add(this)
     }
 
-    override fun getHeaders(): HashMap<String, String> = Headers()
+    override fun getHeaders(): HashMap<String, String> = Headers(c)
 
     override fun getBody(): ByteArray = encode(body)?.encodeToByteArray() ?: super.getBody()
 
@@ -48,12 +52,18 @@ class Api<JSON>(
 
         PROFILE("https://www.instagram.com/%s/?__a=1"),
         POSTS(
-            "https://www.instagram.com/graphql/query/?query_hash=%1\$s&variables=" +
-                    "{\"id\":\"%2\$s\",\"first\":%3\$s,\"after\":\"%4\$s\"}"
+            "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
+                    "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
+        SAVED("https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
+                "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}")
+        // Both give a GraphQlResponse
     }
 
     companion object {
+        const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
+        const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
+
         fun encode(uriString: String?): String? {
             if (uriString == null) return null
             if (TextUtils.isEmpty(uriString)) return uriString
@@ -75,31 +85,25 @@ class Api<JSON>(
         }
     }
 
-    class Headers : HashMap<String, String>() {
+    class Headers(c: BaseActivity) : HashMap<String, String>() {
         init {
             this["accept"] = "*/*"
-            this["accept-language"] = "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6"
-            this["sec-ch-ua"] =
-                "\" Not;A Brand\";v=\"99\", \"Google Chrome\";v=\"97\", \"Chromium\";v=\"97\""
-            this["sec-ch-ua-mobile"] = "?0"
-            this["sec-ch-ua-platform"] = "\"Windows\""
+            this["accept-language"] = "en-GB"
+            this["sec-ch-ua"] = "\" Not;A Brand\";\"InstaTools\""
+            this["sec-ch-ua-mobile"] = "?1"
+            this["sec-ch-ua-platform"] = "\"InstaTools - Android\""
             this["sec-fetch-dest"] = "empty"
             this["sec-fetch-mode"] = "cors"
             this["sec-fetch-site"] = "same-origin"
-            this["x-asbd-id"] = "198387"
-            this["x-csrftoken"] = "muR5txc62fJJgFLDJGegf7wqqHqNK9Nc"
-            this["x-ig-app-id"] = "936619743392459"
-            this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHP-m"
             this["x-requested-with"] = "XMLHttpRequest"
-            this["cookie"] = "mid=Ydl99AALAAEct5iPgnTvK4heOIeK; " +
-                    "ig_did=A2BEADD7-5EF3-4246-B802-AE610784961B; " +
-                    "ig_nrcb=1; csrftoken=muR5txc62fJJgFLDJGegf7wqqHqNK9Nc; " +
-                    "ds_user_id=8337021434; " +
-                    "sessionid=8337021434%3AU05zzgOUBMZoL8%3A12; " +
-                    "shbid=\"14488\\0548337021434\\0541674418611:01f7313f3fca98d5711465a77b9d7230db9424bbe4b667e86a636f637bc4e0c36bd5987b\"; " +
-                    "shbts=\"1642882611\\0548337021434\\0541674418611:01f76cc04470913fab4d38b796adf6d273f2d076a2da911cf3f69d420971dd6a920a2855\"; " +
-                    "rur=\"RVA\\0548337021434\\0541674428566:01f792a638d7df819ac81b122eb461173cc82911101b6e0917d0879c0f30691441cb501b\""
-            //this["Referer"] = "https://www.instagram.com/coseluccicose/"
+
+            // The rest are dynamic
+            //this["x-asbd-id"] = "198387"
+            //this["x-csrftoken"] = csrfToken
+            //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCnL"
+            this["x-ig-app-id"] = "936619743392459"
+            this["cookie"] = c.sp.getString(Login.spCookies.format(c.m.id!!), "") ?: ""
+            //this["Referer"] = "https://www.instagram.com/fulcrum1378/saved/"
             //this["Referrer-Policy"] = "strict-origin-when-cross-origin"
         }
     }

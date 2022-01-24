@@ -4,11 +4,12 @@
         <item name="colorPrimary">@color/defCA</item>
         <item name="colorPrimaryDark">@color/defCA</item>
         <item name="colorAccent">?attr/colorPrimaryDark</item>
-        <item name="android:windowBackground">@color/defBG</item>
-        <item name="android:navigationBarColor">@color/defBG</item>
+        <item name="backgroundColor">@color/defBG</item>
+        <item name="android:windowBackground">?attr/backgroundColor</item>
+        <item name="android:navigationBarColor">?attr/backgroundColor</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">

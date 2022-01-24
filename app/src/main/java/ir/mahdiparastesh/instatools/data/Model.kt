@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 
 class Model : ViewModel() {
     var unfollowers = arrayListOf<Unfollower>()
+    var id: String? = null
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 
 class Unfollowers(private val c: Main) : Fragment() {
@@ -28,7 +29,10 @@ class Unfollowers(private val c: Main) : Fragment() {
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        b = UnfollowersBinding.inflate(layoutInflater, parent, false)
+        b = UnfollowersBinding.inflate(
+            c.themeInflator(BaseActivity.Theme.PRIMARY, inf),
+            parent, false
+        )
 
         handler = object : Handler(Looper.getMainLooper()) {
             @Suppress("UNCHECKED_CAST")
@@ -36,23 +40,25 @@ class Unfollowers(private val c: Main) : Fragment() {
                 when (msg.what) {
                     Action.LOADED.ordinal -> (msg.obj as List<Unfollower>).apply {
                         c.m.unfollowers = ArrayList(this)
-                        Toast.makeText(c, c.m.unfollowers.size.toString(), Toast.LENGTH_LONG).show()
                         if (isEmpty()) fetch() else adapt()
                     }
                     Action.FETCHED.ordinal -> {
                         following = msg.obj as List<Rest.User>
                         analyze()
                     }
-                    Action.ANALYZED.ordinal -> {
-                        fetching = false
-                    }
+                    Action.ANALYZED.ordinal -> fetching = false
                 }
             }
         }
 
+        /*Api<Rest.Follow>(
+            c, Api.Type.FOLLOWERS.url.format(c.m.id!!, "&count=12"), Rest.Follow::class.java
+        ) { flw ->
+            Toast.makeText(c, Gson().toJson(flw), Toast.LENGTH_LONG).show()
+        }*/
+
         Thread {
-            val list = c.dao.unfollowers()
-            handler?.obtainMessage(Action.LOADED.ordinal, list)?.sendToTarget()
+            handler?.obtainMessage(Action.LOADED.ordinal, c.dao.unfollowers())?.sendToTarget()
         }.start()
         return b.root
     }
@@ -76,7 +82,7 @@ class Unfollowers(private val c: Main) : Fragment() {
         list: MutableList<Rest.User> = mutableListOf(), next_max_id: String = ""
     ) {
         Api<Rest.Follow>(
-            c.c, Api.Type.FOLLOWING.url.format(c.myId, next_max_id), Rest.Follow::class.java
+            c, Api.Type.FOLLOWING.url.format(c.m.id!!, next_max_id), Rest.Follow::class.java
         ) { flw ->
             list.addAll(flw.users.toMutableList())
             if (flw.next_max_id == null)
@@ -90,8 +96,9 @@ class Unfollowers(private val c: Main) : Fragment() {
             handler?.obtainMessage(Action.ANALYZED.ordinal)?.sendToTarget()
             return
         }
+        Toast.makeText(c, "Analyzed: #${i + 1}", Toast.LENGTH_SHORT).show()
         Api<Profile>(
-            c.c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class.java
+            c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class.java
         ) { profile ->
             val u = profile.graphql.user
             if (u.follows_viewer == false) {
@@ -106,8 +113,7 @@ class Unfollowers(private val c: Main) : Fragment() {
                 Unfollower.find(newbie, c.m.unfollowers)
                     ?.let { b.rv.adapter?.notifyItemInserted(it) }
             }
-            //Delay { analyze(i + 1, list) }
-            analyze(i + 1)
+            Delay(3000) { analyze(i + 1) }
         }
     }
 
