@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/unfollowers"
+        android:id="@+id/to_unfollowers"
         android:icon="@drawable/unfollowers"
         android:title="@string/unfollowers" />
 
     <item
-        android:id="@+id/saver"
+        android:id="@+id/to_saver"
         android:icon="@drawable/saver"
         android:title="@string/saver" />
 
     <item
-        android:id="@+id/direct"
+        android:id="@+id/to_direct"
         android:icon="@drawable/direct"
         android:title="@string/direct" />
 </menu>

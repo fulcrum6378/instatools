@@ -13,8 +13,8 @@ class Saver(val c: Main) : Fragment() {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = SaverBinding.inflate(
-            c.themeInflater(BaseActivity.Theme.SECONDARY, inf),
-            parent, false)
+            c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
+        )
         return b.root
     }
 }

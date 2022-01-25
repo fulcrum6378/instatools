@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="toolbar">80dp</dimen>
+    <!--<dimen name="toolbar">80dp</dimen>-->
+    <dimen name="tbTitle">7sp</dimen>
     <dimen name="bnv">66dp</dimen>
     <dimen name="profilePhoto">50dp</dimen>
     <dimen name="userPadV">21dp</dimen>

@@ -10,7 +10,9 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -18,7 +20,7 @@ import androidx.security.crypto.MasterKeys
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
 
-open class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity() {
     lateinit var c: Context
     lateinit var m: Model
     lateinit var sp: SharedPreferences
@@ -46,6 +48,24 @@ open class BaseActivity : AppCompatActivity() {
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
+    }
+
+    var tbTitle: TextView? = null
+    fun toolbar(tb: Toolbar, title: Int) {
+        //setSupportActionBar(tb)
+        for (g in 0 until tb.childCount) {
+            val getTitle = tb.getChildAt(g)
+            if (getTitle is TextView &&
+                getTitle.text.toString() == resources.getString(title)
+            ) tbTitle = getTitle
+        }
+        //tbTitle?.typeface = font1Bold
+        tbTitle?.textSize = resources.getDimension(R.dimen.tbTitle)
+        if (!isMain) supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+        }
+        //tb.navigationIcon?.apply { colorFilter = pdcf(R.color.CP) }
     }
 
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =

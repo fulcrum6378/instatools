@@ -19,14 +19,16 @@ class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        Glide.with(c.c).load(c.m.unfollowers[i].photo).into(h.b.photo)
-        h.b.name.text = c.m.unfollowers[i].name
-        h.b.user.text = c.m.unfollowers[i].user
+        if (c.m.unfollowers == null) return
+        Glide.with(c.c).load(c.m.unfollowers!![i].photo).into(h.b.photo)
+        h.b.name.text = c.m.unfollowers!![i].name
+        h.b.user.text = c.m.unfollowers!![i].user
         h.b.root.setOnClickListener {
-            UiTools.openProfile(c, c.m.unfollowers[h.layoutPosition].user)
+            if (c.m.unfollowers == null) return@setOnClickListener
+            UiTools.openProfile(c, c.m.unfollowers!![h.layoutPosition].user)
         }
         vis(h.b.sep, i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.unfollowers.size
+    override fun getItemCount() = c.m.unfollowers?.size ?: 0
 }

@@ -13,4 +13,12 @@
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="layout_constraintBottom_toBottomOf">parent</item>
     </style>
+
+    <style name="toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?actionBarSize</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="popupTheme">@style/Widget.MaterialComponents.PopupMenu</item>
+        <item name="titleTextColor">?attr/colorAccent</item>
+    </style>
 </resources>

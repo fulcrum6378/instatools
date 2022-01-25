@@ -35,6 +35,7 @@ class Settings : BaseActivity() {
         super.onCreate(savedInstanceState)
         b = SettingsBinding.inflate(layoutInflater)
         setContentView(b.root)
+        toolbar(b.toolbar, R.string.stTitle)
 
         if (!sp.contains(spStorage)) saveLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
         else files()

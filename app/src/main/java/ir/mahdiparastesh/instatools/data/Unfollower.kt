@@ -22,5 +22,6 @@ class Unfollower(
 
     class Sort : Comparator<Unfollower> {
         override fun compare(a: Unfollower, b: Unfollower) = (a.followedBy - b.followedBy).toInt()
+        // TODO: FUCK THIS
     }
 }

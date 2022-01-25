@@ -30,8 +30,7 @@ class Unfollowers(private val c: Main) : Fragment() {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = UnfollowersBinding.inflate(
-            c.themeInflater(BaseActivity.Theme.PRIMARY, inf),
-            parent, false
+            c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
         )
 
         handler = object : Handler(Looper.getMainLooper()) {
@@ -51,22 +50,21 @@ class Unfollowers(private val c: Main) : Fragment() {
             }
         }
 
-        /*Api<Rest.Follow>(
-            c, Api.Type.FOLLOWERS.url.format(c.m.id!!, "&count=12"), Rest.Follow::class.java
-        ) { flw ->
-            Toast.makeText(c, Gson().toJson(flw), Toast.LENGTH_LONG).show()
-        }*/
-
-        Thread {
-            handler?.obtainMessage(Action.LOADED.ordinal, c.dao.unfollowers())?.sendToTarget()
-        }.start()
+        when {
+            Main.guest -> {
+            }
+            c.m.unfollowers != null -> adapt()
+            else -> Thread {
+                handler?.obtainMessage(Action.LOADED.ordinal, c.dao.unfollowers())?.sendToTarget()
+            }.start()
+        }
         return b.root
     }
 
     private fun fetch() {
         if (fetching) return
         fetching = true
-        c.m.unfollowers.clear()
+        c.m.unfollowers = null
         c.dao.deleteUnfollowers()
         adapt()
         allFollow()
@@ -92,6 +90,7 @@ class Unfollowers(private val c: Main) : Fragment() {
     }
 
     private fun analyze(i: Int = 0) {
+        if (c.m.unfollowers == null) return
         if (following == null || i >= following!!.size) {
             handler?.obtainMessage(Action.ANALYZED.ordinal)?.sendToTarget()
             return
@@ -107,10 +106,10 @@ class Unfollowers(private val c: Main) : Fragment() {
                     u.profile_pic_url_hd ?: u.profile_pic_url,
                     u.edge_followed_by.count.toLong()
                 )
-                c.m.unfollowers.add(newbie)
-                c.m.unfollowers.sortWith(Unfollower.Sort())
+                c.m.unfollowers!!.add(newbie)
+                c.m.unfollowers!!.sortWith(Unfollower.Sort())
                 c.dao.addUnfollower(newbie)
-                Unfollower.find(newbie, c.m.unfollowers)
+                Unfollower.find(newbie, c.m.unfollowers!!)
                     ?.let { b.rv.adapter?.notifyItemInserted(it) }
             }
             Delay(3000) { analyze(i + 1) }

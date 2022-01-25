@@ -3,6 +3,10 @@
 
     <!-- #GLOBAL -->
     <string name="guest">Guest</string>
+    <string name="navOpen">Open</string>
+    <string name="navClose">Close</string>
+    <string name="settings">Settings</string>
+    <string name="search">Search</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -11,4 +15,9 @@
     <string name="unfollowers">Unfollowers</string>
     <string name="saver">Saver</string>
     <string name="direct">Direct</string>
+
+    <!-- Settings -->
+    <string name="stTitle">InstaTools Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

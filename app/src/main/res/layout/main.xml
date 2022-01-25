@@ -13,12 +13,12 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar"
-            app:layout_constraintTop_toTopOf="parent" />
+            style="@style/toolbar"
+            app:menu="@menu/main_tb"
+            app:title="@string/app_name" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/pager"
+        <FrameLayout
+            android:id="@+id/frame"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/bnv"
@@ -35,8 +35,8 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav"
-        style="@style/Theme.InstaTools.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        app:menu="@menu/main_nav" />
 </androidx.drawerlayout.widget.DrawerLayout>

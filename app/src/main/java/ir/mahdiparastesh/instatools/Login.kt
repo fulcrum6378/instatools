@@ -22,8 +22,6 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
 import java.util.*
 
-// adb connect 192.168.1.20:
-
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding
@@ -99,10 +97,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
 
         // Animate
-        if (!m.loginLoaded) Delay(750) {
+        if (!m.loginLoaded) Delay(1500) {
             val cs = ConstraintSet()
             cs.clone(bw.root)
-            TransitionManager.beginDelayedTransition(bw.root, AutoTransition().setDuration(850))
+            TransitionManager.beginDelayedTransition(bw.root, AutoTransition().setDuration(800))
             cs.setVerticalBias(bw.logo.id, logoDestBias)
             cs.applyTo(bw.root)
             m.loginLoaded = true
@@ -161,7 +159,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private fun goAhead() {
-        startActivity(Intent(this@Login, Main::class.java))
+        sp.edit().putString(spAccount, m.id).apply()
+        startActivity(Intent(c, Main::class.java))
         finish()
     }
 
@@ -199,7 +198,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     .substringBefore(";")
                 sp.edit()
                     .putString(spCookies.format(m.id), cookieManager.getCookie(host))
-                    .putString(spAccount, m.id)
                     .apply()
                 goAhead()
             } else b.web.loadUrl(req.url.toString())
