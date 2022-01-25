@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/welcome"
-    tools:ignore="MissingConstraints">
+    tools:ignore="ContentDescription,MissingConstraints">
 
     <ImageView
         android:id="@+id/logo"
@@ -14,26 +13,55 @@
         android:layout_height="250dp"
         android:contentDescription="@string/app_name"
         android:src="@mipmap/launcher"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintVertical_bias="0.5" />
 
-    <TextView
-        android:id="@+id/wlcSentence1"
-        style="@style/wlcSentence"
-        android:text="@string/wlcSentence1"
-        app:layout_constraintBottom_toTopOf="@id/wlcSentence2"
-        app:layout_constraintTop_toBottomOf="@id/logo" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/accounts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/addAccount"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintVertical_bias="0" />
 
-    <TextView
-        android:id="@+id/wlcSentence2"
-        style="@style/wlcSentence"
-        android:text="@string/wlcSentence2"
-        app:layout_constraintBottom_toTopOf="@id/wlcSentence3"
-        app:layout_constraintTop_toBottomOf="@id/wlcSentence1" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/addAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_1"
+        android:elevation="2dp"
+        android:paddingStart="@dimen/loginPadH"
+        android:paddingTop="25dp"
+        android:paddingEnd="@dimen/loginPadH"
+        android:paddingBottom="25dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-        android:id="@+id/wlcSentence3"
-        style="@style/wlcSentence"
-        android:text="@string/wlcSentence3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/wlcSentence2" />
+        <ImageView
+            android:id="@+id/addAccIv"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/addAccTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="@string/addAccount"
+            android:textAlignment="viewStart"
+            android:textColor="?attr/colorAccent"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/addAccIv"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

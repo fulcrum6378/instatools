@@ -9,9 +9,9 @@ import androidx.room.PrimaryKey
 @Entity
 class Account(
     @PrimaryKey(autoGenerate = false) @ColumnInfo(name = "id") var id: Long,
-    @ColumnInfo(name = "user") var user: String,
-    @ColumnInfo(name = "name") var name: String,
-    @Nullable @ColumnInfo(name = "photo") var photo: String?,
+    @Nullable @ColumnInfo(name = "user") var user: String? = null,
+    @Nullable @ColumnInfo(name = "name") var name: String? = null,
+    @Nullable @ColumnInfo(name = "photo") var photo: String? = null,
     @Nullable @ColumnInfo(name = "folder") var folder: String? = null,
     @Ignore @Transient var cookies: HashMap<String, String>? = null
 ) {
@@ -19,6 +19,7 @@ class Account(
     constructor() : this(0, "", "", null, null)
 
     class Sort : Comparator<Account> {
-        override fun compare(a: Account, b: Account) = a.name.compareTo(b.name)
+        override fun compare(a: Account, b: Account) =
+            (a.name ?: "").compareTo(b.name ?: "")
     }
 }

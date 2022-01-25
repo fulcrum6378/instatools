@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/button_1"
-    android:paddingLeft="26dp"
-    android:paddingRight="26dp"
+    android:paddingLeft="@dimen/loginPadH"
+    android:paddingRight="@dimen/loginPadH"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -41,7 +41,7 @@
         android:textAlignment="viewStart"
         android:textColor="?attr/colorAccent"
         android:textDirection="ltr"
-        android:textSize="12.5sp"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/name"
@@ -51,7 +51,7 @@
         android:id="@+id/sep"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:alpha="0.2"
+        android:alpha="0.16"
         android:background="?attr/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

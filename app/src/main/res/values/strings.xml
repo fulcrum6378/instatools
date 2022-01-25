@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name" translatable="false">InstaTools</string>
 
+    <!-- #GLOBAL -->
+    <string name="guest">Guest</string>
+
     <!-- Login -->
-    <string name="wlcSentence1">Easily detect the unfollowers.</string>
-    <string name="wlcSentence2">Quickly download any post(s).</string>
-    <string name="wlcSentence3">Comfortably export all your DMs.</string>
+    <string name="addAccount">Add Account</string>
 
     <!-- Main -->
     <string name="unfollowers">Unfollowers</string>

@@ -13,20 +13,4 @@
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="layout_constraintBottom_toBottomOf">parent</item>
     </style>
-
-
-    <!-- Login -->
-    <style name="wlcSentence">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/CPO</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginTop">5sp</item>
-        <item name="android:layout_marginBottom">5sp</item>
-        <item name="layout_constraintRight_toRightOf">parent</item>
-        <item name="layout_constraintLeft_toLeftOf">parent</item>
-        <item name="layout_constraintWidth_percent">0.8</item>
-        <item name="layout_constraintVertical_chainStyle">packed</item>
-    </style>
 </resources>
