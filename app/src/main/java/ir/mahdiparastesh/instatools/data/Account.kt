@@ -12,12 +12,13 @@ class Account(
     @ColumnInfo(name = "user") var user: String,
     @ColumnInfo(name = "name") var name: String,
     @Nullable @ColumnInfo(name = "photo") var photo: String?,
+    @Nullable @ColumnInfo(name = "folder") var folder: String? = null,
     @Ignore @Transient var cookies: HashMap<String, String>? = null
 ) {
     @Suppress("unused")
     constructor() : this(0, "", "", null, null)
 
-    class Sort : Comparator<Unfollower> {
-        override fun compare(a: Unfollower, b: Unfollower) = a.name.compareTo(b.name)
+    class Sort : Comparator<Account> {
+        override fun compare(a: Account, b: Account) = a.name.compareTo(b.name)
     }
 }

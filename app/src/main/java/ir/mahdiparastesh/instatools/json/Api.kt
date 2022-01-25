@@ -85,6 +85,7 @@ class Api<JSON>(
         }
     }
 
+    @Suppress("SpellCheckingInspection")
     class Headers(c: BaseActivity) : HashMap<String, String>() {
         init {
             this["accept"] = "*/*"

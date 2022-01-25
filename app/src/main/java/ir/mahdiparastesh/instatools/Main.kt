@@ -5,7 +5,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import ir.mahdiparastesh.instatools.data.Database
+import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
@@ -14,19 +14,19 @@ import kotlin.math.max
 
 class Main : BaseActivity() {
     private lateinit var b: MainBinding
-    private lateinit var db: Database
-    lateinit var dao: Database.DAO
+    private lateinit var db: PersonalDb
+    lateinit var dao: PersonalDb.DAO
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     private var vpTransStable = 0
     private var vpStableDirToEnd = true
     private var vpPrevTrans = 0f
-    var guest = false
 
     companion object {
         const val MIN_SCALE = 0.85f
         const val MIN_ALPHA = 0.5f
         val pages = arrayOf(R.id.unfollowers, R.id.saver, R.id.direct)
+        var guest = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ class Main : BaseActivity() {
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         if (m.id == null) guest = true
-        else db = Database.DbFile.build(c, m.id!!).also { dao = it.dao() }
+        else db = PersonalDb.build(c, m.id!!).also { dao = it.dao() }
 
         // Paging
         bg = resources.getIntArray(R.array.BG)

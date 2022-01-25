@@ -4,7 +4,6 @@
     package="ir.mahdiparastesh.instatools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -30,6 +29,10 @@
 
         <activity
             android:name=".Main"
+            android:exported="false" />
+
+        <activity
+            android:name=".Settings"
             android:exported="false" />
     </application>
 </manifest>
