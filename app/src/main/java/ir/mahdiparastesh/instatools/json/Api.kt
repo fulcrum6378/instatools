@@ -35,7 +35,7 @@ class Api<JSON>(
         Volley.newRequestQueue(c).add(this)
     }
 
-    override fun getHeaders(): HashMap<String, String> = Headers(c)
+    override fun getHeaders(): Map<String, String> = Headers(c)
 
     override fun getBody(): ByteArray = encode(body)?.encodeToByteArray() ?: super.getBody()
 
@@ -57,8 +57,11 @@ class Api<JSON>(
         ),
         SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
         SAVED("https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
-                "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}")
-        // Both give a GraphQlResponse
+                "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"),
+
+        INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?persistentBadging=true" +
+                "&folder=&limit=20&thread_message_limit=10"),
+        DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
     }
 
     companion object {

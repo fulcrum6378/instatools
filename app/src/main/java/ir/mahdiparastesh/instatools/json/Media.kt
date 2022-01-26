@@ -1,0 +1,119 @@
+package ir.mahdiparastesh.instatools.json
+
+@Suppress("unused", "SpellCheckingInspection")
+class Media(
+    val can_see_insights_as_brand: Boolean,
+    val can_view_more_preview_comments: Boolean,
+    val can_viewer_reshare: Boolean,
+    val can_viewer_save: Boolean,
+    val caption: Caption,
+    val caption_is_edited: Boolean,
+    val carousel_media: Array<CarouselMedia>?,
+    val carousel_media_count: Double?,
+    val client_cache_key: String,
+    val code: String,
+    val comment_count: Double,
+    val comment_inform_treatment: Map<String, *>,
+    val comment_likes_enabled: Boolean,
+    val comment_threading_enabled: Boolean,
+    val comments: Array<Any>,
+    val commerciality_status: String,
+    val deleted_reason: Double,
+    val device_timestamp: Double,
+    val facepile_top_likers: Array<Any>,
+    val featured_products_cta: Any?,
+    val filter_type: Float,
+    val has_audio: Boolean?,
+    val has_liked: Boolean,
+    val has_more_comments: Boolean,
+    val hide_view_all_comment_entrypoint: Boolean,
+    val id: String,
+    val igtv_exists_in_viewer_series: Boolean,
+    val image_versions2: ImageVersions2?,
+    val inline_composer_display_condition: Boolean,
+    val integrity_review_decision: String,
+    val is_dash_eligible: Float,
+    val is_in_profile_grid: Boolean,
+    val is_paid_partnership: Boolean,
+    val is_post_live: Boolean,
+    val is_unified_video: Boolean,
+    val is_visual_reply_commenter_notice_enabled: Boolean,
+    val like_and_view_counts_disabled: Boolean,
+    val like_count: Double,
+    val max_num_visible_preview_comments: Float,
+    val media_cropping_info: Map<String, Any?>,
+    val media_type: Float,
+    val music_metadata: MusicMetadata?,
+    val nearly_complete_copyright_match: Boolean,
+    val number_of_qualities: Float,
+    val organic_tracking_token: String,
+    val original_height: Float,
+    val original_media_has_visual_reply_media: Boolean,
+    val original_width: Float,
+    val photo_of_you: Boolean,
+    val pk: Double,
+    val preview_comments: Array<Any>,
+    val product_type: String,
+    val profile_grid_control_enabled: Boolean,
+    val sharing_friction_info: Map<String, *>,
+    val taken_at: Double,
+    val thumbnails: Thumbnails,
+    val title: String,
+    val top_likers: Array<Any>,
+    val user: Rest.User,
+    val video_codec: String,
+    val video_dash_manifest: String,
+    val video_duration: Double,
+    val video_subtitles_confidence: Double,
+    val video_subtitles_uri: String,
+    val video_versions: Array<VideoVersion>,
+    val view_count: Double,
+) {
+    class MediaWrapperApi(
+        val auto_load_more_enabled: Boolean,
+        val items: Array<Media>,
+        val num_results: Float,
+        val more_available: Boolean
+    )
+
+    class Thumbnails : HashMap<String, Any>()
+
+    class CarouselMedia(
+        val can_see_insights_as_brand: Boolean,
+        val carousel_parent_id: String,
+        val comment_inform_treatment: Map<String, *>,
+        val commerciality_status: Boolean,
+        val fb_user_tags: Map<String, Any?>,
+        val id: String,
+        val image_versions2: ImageVersions2,
+        val media_type: Float,
+        val original_height: Float,
+        val original_width: Float,
+        val pk: Double,
+        val sharing_friction_info: Map<String, *>,
+    )
+
+    class ImageVersions2(
+        val candidates: Array<Candidate>,
+        val additional_candidates: Map<String, Candidate>
+    )
+
+    class Candidate(val width: Float, val height: Float, val url: String)
+
+    class VideoVersion(
+        val type: Float,
+        val width: Float,
+        val height: Float,
+        val url: String,
+        val id: String
+    )
+
+    class Caption : HashMap<String, Any?>()
+
+    class MusicMetadata(
+        val audio_type: Any?,
+        val music_canonical_id: String,
+        val music_info: Any?,
+        val original_sound_info: Any?,
+    )
+}

@@ -49,5 +49,4 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1' // Only for ActivityResultLauncher
     implementation 'androidx.core:core-ktx:1.7.0' // Only for View.get()
     implementation group: 'commons-lang', name: 'commons-lang', version: '2.6' // StringEscapeUtils
-
 }

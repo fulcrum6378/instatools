@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.documentfile.provider.DocumentFile
+import ir.mahdiparastesh.instatools.Downloader.Companion.spStorage
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.io.FileOutputStream
@@ -26,10 +27,6 @@ class Settings : BaseActivity() {
             }
             files()
         }
-
-    companion object {
-        const val spStorage = "storage"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

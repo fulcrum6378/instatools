@@ -1,11 +1,15 @@
 package ir.mahdiparastesh.instatools
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.databinding.DirectBinding
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest.InboxPage
+import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
 class Direct(val c: Main) : Fragment() {
@@ -16,6 +20,32 @@ class Direct(val c: Main) : Fragment() {
             c.themeInflater(BaseActivity.Theme.TERTIARY, inf),
             parent, false
         )
+
+        when {
+            Main.guest -> {
+                // TODO: GUEST MODE
+            }
+            c.m.saved != null -> adapt()
+            else -> {
+                c.m.dmThreads = arrayListOf()
+                fetchSome()
+            }
+        }
         return b.root
+    }
+
+    private fun fetchSome() {
+        //if (c.m.nextDmThreads?.has_next_page == false) return
+        Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class.java) { page ->
+            c.m.nextDmThreads = page.inbox.next_cursor
+            c.m.dmThreads?.addAll(page.inbox.threads)
+            adapt()
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun adapt() {
+        if (b.rv.adapter == null) b.rv.adapter = ListBox(c)
+        else b.rv.adapter?.notifyDataSetChanged()
     }
 }

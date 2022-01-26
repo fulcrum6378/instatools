@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Model
 
 abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity() {
@@ -75,6 +77,11 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
 
     fun pdcf(res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
+
+    fun goTo(activity: Class<*>): Boolean {
+        startActivity(Intent(this, activity))
+        return true
+    }
 
     enum class Theme(val res: Int) {
         DEFAULT(R.style.Theme_InstaTools),

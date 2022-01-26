@@ -5,7 +5,7 @@ class Profile(
     val always_show_message_button_to_pro_account: Boolean,
     val graphql: GraphQl,
     val logging_page_id: String,
-    val profile_pic_edit_sync_props: HashMap<String, *>,
+    val profile_pic_edit_sync_props: Map<String, *>,
     val seo_category_infos: Array<Array<String>>,
     val show_follow_dialog: Boolean,
     val show_suggested_profiles: Boolean,
@@ -28,11 +28,11 @@ class Profile(
         val category_name: Any?,
         val connected_fb_page: Any?,
         val country_block: Boolean?,
-        val edge_felix_video_timeline: HashMap<String?, *>?,
-        val edge_follow: HashMap<String?, *>?,
+        val edge_felix_video_timeline: Map<String?, *>?,
+        val edge_follow: Map<String?, *>?,
         val edge_followed_by: FollowedBy,
-        val edge_media_collections: HashMap<String?, *>?,
-        val edge_mutual_followed_by: HashMap<String?, *>?,
+        val edge_media_collections: Map<String?, *>?,
+        val edge_mutual_followed_by: Map<String?, *>?,
         val edge_owner_to_timeline_media: Media?, // User Posts
         val edge_saved_media: Media?, // Saved Posts
         val external_url: Any?,
@@ -48,7 +48,7 @@ class Profile(
         val has_guides: Boolean?,
         val has_requested_viewer: Boolean?,
         val hide_like_and_view_counts: Boolean?,
-        val highlight_reel_count: Float?,
+        val highlight_reel_count: Double?,
         val id: String, // The same as Rest.User.pk
         val is_business_account: Boolean?,
         val is_embeds_disabled: Boolean?,
@@ -67,9 +67,9 @@ class Profile(
         val username: String
     )
 
-    class FollowedBy(val count: Float)
+    class FollowedBy(val count: Double)
 
-    class Media(val page_info: PageInfo, val count: Float, val edges: Array<EdgePost>)
+    class Media(val page_info: PageInfo, val count: Double, val edges: Array<EdgePost>)
 
     class PageInfo(val has_next_page: Boolean, val end_cursor: String)
 
@@ -81,13 +81,13 @@ class Profile(
         val clips_music_attribution_info: Any?,
         val coauthor_producers: Array<Any>,
         val comments_disabled: Boolean,
-        val dash_info: HashMap<String, *>,
+        val dash_info: Map<String, *>,
         val display_url: String,
-        val dimensions: HashMap<String, Float>,
-        val edge_liked_by: HashMap<String, Float>,
-        val edge_media_preview_like: HashMap<String, *>,
+        val dimensions: Map<String, Double>,
+        val edge_liked_by: Map<String, Double>,
+        val edge_media_preview_like: Map<String, *>,
         val edge_media_to_caption: EdgesCaption,
-        val edge_media_to_comment: HashMap<String, *>,
+        val edge_media_to_comment: Map<String, *>,
         val edge_media_to_tagged_user: EdgeTaggedUsers,
         val edge_sidecar_to_children: EdgeSlides?,
         val fact_check_information: Any?,
@@ -103,14 +103,14 @@ class Profile(
         val media_preview: Any?,
         val owner: Owner,
         val product_type: String,
-        val sharing_friction_info: HashMap<String, *>,
+        val sharing_friction_info: Map<String, *>,
         val shortcode: String,
         val taken_at_timestamp: Double,
         val thumbnail_resources: Array<Src>,
         val thumbnail_src: String,
         val tracking_token: String,
         val video_url: String,
-        val video_view_count: Float,
+        val video_view_count: Double,
     )
 
     class Owner(val id: String, val username: String)
@@ -123,7 +123,7 @@ class Profile(
 
     class EdgeTaggedUsers(val node: Array<Any>)
 
-    class Src(val src: String, val config_width: Float, val config_height: Float)
+    class Src(val src: String, val config_width: Double, val config_height: Double)
 
     class Location(
         val id: Long,
@@ -144,8 +144,8 @@ class Profile(
         val fact_check_information: Any?,
         val media_overlay_info: Any?,
         val sensitivity_friction_info: Any?,
-        val sharing_friction_info: HashMap<String, *>?,
-        val dimensions: HashMap<String, Float>?,
+        val sharing_friction_info: Map<String, *>?,
+        val dimensions: Map<String, Double>?,
         val display_url: String, // USE THIS
         val display_resources: Array<Src>
     )

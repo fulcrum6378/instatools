@@ -1,7 +1,8 @@
 package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
-import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
@@ -11,8 +12,6 @@ import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
 
-// adb connect 192.168.1.20:
-
 class Main : BaseActivity(true) {
     private lateinit var b: MainBinding
     private lateinit var db: PersonalDb
@@ -20,9 +19,9 @@ class Main : BaseActivity(true) {
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     private lateinit var toggleNav: ActionBarDrawerToggle
-    private var page1: Fragment? = null
-    private var page2: Fragment? = null
-    private var page3: Fragment? = null
+    private var page1: Unfollowers? = null
+    private var page2: Saver? = null
+    private var page3: Direct? = null
     private var anTheme: ValueAnimator? = null
     private var currentPage = 0
 
@@ -52,11 +51,10 @@ class Main : BaseActivity(true) {
             isDrawerIndicatorEnabled = true
             syncState()
         }
-        //b.toolbar.navigationIcon?.colorFilter = pdcf()
         b.nav.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.mnSettings -> {
-                    startActivity(Intent(this, Settings::class.java)); true; }
+                R.id.mnDownloader -> goTo(Downloader::class.java)
+                R.id.mnSettings -> goTo(Settings::class.java)
                 else -> super.onOptionsItemSelected(it)
             }
         }
@@ -82,17 +80,20 @@ class Main : BaseActivity(true) {
                 .show(pages()[currentPage])
                 .commit()
 
-            if (!night) return@setOnItemSelectedListener true
             anTheme?.cancel()
             anTheme = null
-            anTheme = ValueAnimator.ofArgb(bg[lastPage], bg[currentPage]).apply {
-                duration = 500L
-                addUpdateListener { theme(it.animatedValue as Int) }
+            val col = if (night) bg else ca
+            anTheme = ValueAnimator.ofArgb(col[lastPage], col[currentPage]).apply {
+                duration = 400L
+                addUpdateListener {
+                    if (night) nightTheme(it.animatedValue as Int)
+                    else dayTheme(it.animatedValue as Int)
+                }
                 start()
             }
             true
         }
-        if (night) theme(bg[0])
+        if (night) nightTheme(bg[0]) else dayTheme(ca[0])
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i]) }
     }
 
@@ -107,18 +108,26 @@ class Main : BaseActivity(true) {
         supportFragmentManager.beginTransaction().apply {
             if (it.isAdded) remove(it)
             add(R.id.frame, it)
-            if (i != i) hide(it)
+            if (i != currentPage) hide(it)
             commit()
         }
     }
 
     private fun pages() = arrayOf(page1!!, page2!!, page3!!)
 
-    private fun theme(colour: Int) {
+    private fun dayTheme(colour: Int) {
+        val cf = PorterDuffColorFilter(colour, PorterDuff.Mode.SRC_IN)
+        b.toolbar.navigationIcon?.colorFilter = cf
+        b.toolbar.menu.findItem(R.id.mtSearch).icon.colorFilter = cf
+        tbTitle?.setTextColor(colour)
+    }
+
+    private fun nightTheme(colour: Int) {
         window.decorView.setBackgroundColor(colour)
         window.statusBarColor = colour
         window.navigationBarColor = colour
         b.bnv.setBackgroundColor(colour)
+        b.nav.setBackgroundColor(colour)
     }
 
     private inner class PageFactory : FragmentFactory() {

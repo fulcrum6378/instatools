@@ -12,18 +12,23 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
+    <attr name="colorPrimaryWeak" format="reference|color" />
+
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryDark">@color/CPD</item>
+        <item name="colorPrimaryWeak">@color/CPW</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryDark">@color/CSD</item>
+        <item name="colorPrimaryWeak">@color/CSW</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CT</item>
         <item name="colorPrimaryDark">@color/CTD</item>
+        <item name="colorPrimaryWeak">@color/CTW</item>
     </style>
 </resources>

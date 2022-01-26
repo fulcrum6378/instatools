@@ -5,6 +5,7 @@
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
+    <string name="downloader">Downloader</string>
     <string name="settings">Settings</string>
     <string name="search">Search</string>
 
@@ -15,6 +16,9 @@
     <string name="unfollowers">Unfollowers</string>
     <string name="saver">Saver</string>
     <string name="direct">Direct</string>
+
+    <!-- Downloader -->
+    <string name="dwTitle">Downloader</string>
 
     <!-- Settings -->
     <string name="stTitle">InstaTools Settings</string>

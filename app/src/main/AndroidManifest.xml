@@ -41,5 +41,23 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
         </activity>
+
+        <activity
+            android:name=".Downloader"
+            android:exported="true"
+            android:launchMode="singleTop">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Main" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
