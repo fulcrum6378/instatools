@@ -14,7 +14,7 @@ class Profile(
 ) {
     class GraphQlResponse(val data: GraphQl, status: String) : Rest(status)
 
-    class GraphQl(val user: User)
+    class GraphQl(val user: User?)
 
     class User(
         val biography: String?,

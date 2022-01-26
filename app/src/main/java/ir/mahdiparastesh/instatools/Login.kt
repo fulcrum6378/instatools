@@ -11,15 +11,18 @@ import android.view.ViewStub
 import android.webkit.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
+import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
+import org.apache.commons.lang.StringEscapeUtils
 import java.util.*
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
@@ -34,18 +37,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val spCookiesBeg = "cookie_"
         const val spCookies = "$spCookiesBeg%s"
         const val spAccount = "account"
+        const val spNeverMind = "never_mind"
+        const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
+        const val posConfig = ";</script>"
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = LoginBinding.inflate(layoutInflater)
-        setContentView(b.root)
-        b.welcomeStub.setOnInflateListener(this)
-
-        // WebView
-        b.web.settings.javaScriptEnabled = true
-        b.web.webViewClient = myClient
 
         // Gather Data
         db = GlobalDb.build(c).also { dao = it.dao() }
@@ -55,6 +54,23 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 dao.addAccount(this)
                 m.accounts.add(this)
             }
+
+        // Never Mind
+        if (sp.getBoolean(spNeverMind, false))
+            m.accounts.find { it.id == sp.getString(spAccount, "IMPOSSIBLE")!!.toLong() }?.let {
+                m.acc = it
+                goAhead(true)
+                return@onCreate
+            }
+
+        // Inflate
+        b = LoginBinding.inflate(layoutInflater)
+        setContentView(b.root)
+        b.welcomeStub.setOnInflateListener(this)
+
+        // WebView
+        b.web.settings.javaScriptEnabled = true
+        b.web.webViewClient = myClient
 
         // Repair SharedPreferences
         sp.all.forEach { p ->
@@ -84,7 +100,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         // Decide
         if (!sp.contains(spAccount)) welcome()
-        else selectAccount(sp.getString(spAccount, "IMPOSSIBLE"))
+        else {
+            val selected =
+                m.accounts.find { it.id == sp.getString(spAccount, "IMPOSSIBLE")!!.toLong() }
+            if (selected != null) selectAccount(selected)
+            else welcome()
+        }
     }
 
     private val logoDestBias = 0.15f
@@ -127,14 +148,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         else vis(bw.root)
     }
 
-    fun selectAccount(id: String? = null) {
-        if (id == null) {
-            m.id = null
+    fun selectAccount(acc: Account) {
+        if (acc.id == -1L) {
+            m.acc = acc
             goAhead()
-        } else (sp.getString(spCookies.format(id), null)).apply {
+        } else (sp.getString(spCookies.format(acc.id), null)).apply {
             if (this != null) browse(this)
             else {
-                deleteAcc(id)
+                deleteAcc(acc.id.toString())
                 welcome()
             }
         }
@@ -158,8 +179,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         doClearHistory = true
     }
 
-    private fun goAhead() {
-        sp.edit().putString(spAccount, m.id).apply()
+    private fun goAhead(neverMind: Boolean = false) {
+        sp.edit().apply {
+            putString(spAccount, m.acc.id.toString())
+            putBoolean(spNeverMind, neverMind)
+            apply()
+        }
         startActivity(Intent(c, Main::class.java))
         finish()
     }
@@ -182,6 +207,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private val myClient = object : WebViewClient() {
+        lateinit var id: String
+        var loggedIn = false
+
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             if (doClearHistory) {
@@ -190,18 +218,45 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        override fun shouldOverrideUrlLoading(v: WebView?, req: WebResourceRequest?): Boolean {
-            if (req == null) return false
+        override fun shouldOverrideUrlLoading(v: WebView, req: WebResourceRequest): Boolean {
             if (req.url.toString() == host) {
-                m.id = cookieManager.getCookie(host)
+                loggedIn = true
+                id = cookieManager.getCookie(host)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";")
                 sp.edit()
-                    .putString(spCookies.format(m.id), cookieManager.getCookie(host))
+                    .putString(spCookies.format(id), cookieManager.getCookie(host))
                     .apply()
-                goAhead()
-            } else b.web.loadUrl(req.url.toString())
-            return true
+            }
+            return false
+        }
+
+        override fun onPageFinished(v: WebView, url: String) {
+            super.onPageFinished(v, url)
+            if (!loggedIn) return
+            v.evaluateJavascript(
+                """(function() {
+        return document.getElementsByTagName('body')[0].innerHTML;
+    })()""".trimMargin()
+            ) {
+                val u = Gson().fromJson(
+                    StringEscapeUtils.unescapeJava(it)
+                        .substringAfter(preConfig)
+                        .substringBefore(posConfig),
+                    HostPage::class.java
+                ).config.viewer
+                Account(
+                    id.toLong(), u.username, u.full_name, u.profile_pic_url_hd ?: u.profile_pic_url
+                ).apply {
+                    dao.addAccount(this)
+                    m.acc = this
+                }
+                goAhead(true)
+            }
         }
     }
+
+    data class HostPage(val config: PageConfig)
+
+    data class PageConfig(val viewer: Profile.User)
 }

@@ -25,7 +25,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
         vis(h.b.user, !guest)
         h.b.user.text = c.m.accounts[i].user
         h.b.root.setOnClickListener {
-            c.selectAccount(if (!guest) c.m.accounts[h.layoutPosition].id.toString() else null)
+            c.selectAccount(c.m.accounts[h.layoutPosition])
         }
         vis(h.b.sep, i < itemCount - 1)
     }

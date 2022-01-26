@@ -52,6 +52,7 @@ class Unfollowers(private val c: Main) : Fragment() {
 
         when {
             Main.guest -> {
+                // TODO: GUEST MODE
             }
             c.m.unfollowers != null -> adapt()
             else -> Thread {
@@ -80,7 +81,7 @@ class Unfollowers(private val c: Main) : Fragment() {
         list: MutableList<Rest.User> = mutableListOf(), next_max_id: String = ""
     ) {
         Api<Rest.Follow>(
-            c, Api.Type.FOLLOWING.url.format(c.m.id!!, next_max_id), Rest.Follow::class.java
+            c, Api.Type.FOLLOWING.url.format(c.m.acc.id, next_max_id), Rest.Follow::class.java
         ) { flw ->
             list.addAll(flw.users.toMutableList())
             if (flw.next_max_id == null)
@@ -100,7 +101,7 @@ class Unfollowers(private val c: Main) : Fragment() {
             c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class.java
         ) { profile ->
             val u = profile.graphql.user
-            if (u.follows_viewer == false) {
+            if (u != null && u.follows_viewer == false) {
                 val newbie = Unfollower(
                     u.id.toLong(), u.username, u.full_name,
                     u.profile_pic_url_hd ?: u.profile_pic_url,

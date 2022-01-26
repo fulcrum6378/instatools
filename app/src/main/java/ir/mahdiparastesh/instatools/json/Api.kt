@@ -55,6 +55,7 @@ class Api<JSON>(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
+        SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
         SAVED("https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
                 "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}")
         // Both give a GraphQlResponse
@@ -103,7 +104,7 @@ class Api<JSON>(
             //this["x-csrftoken"] = csrfToken
             //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCnL"
             this["x-ig-app-id"] = "936619743392459"
-            this["cookie"] = c.sp.getString(Login.spCookies.format(c.m.id!!), "") ?: ""
+            this["cookie"] = c.sp.getString(Login.spCookies.format(c.m.acc.id), "") ?: ""
             //this["Referer"] = "https://www.instagram.com/fulcrum1378/saved/"
             //this["Referrer-Policy"] = "strict-origin-when-cross-origin"
         }

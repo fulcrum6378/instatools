@@ -40,8 +40,8 @@ class Main : BaseActivity(true) {
         if (page2 == null) page2 = Saver(this)
         if (page3 == null) page3 = Direct(this)
         loadPages()
-        if (m.id == null) guest = true
-        else db = PersonalDb.build(c, m.id!!).also { dao = it.dao() }
+        if (m.acc.id == -1L) guest = true
+        else db = PersonalDb.build(c, m.acc.id.toString()).also { dao = it.dao() }
 
         // Toolbar & Navigation
         toolbar(b.toolbar, R.string.app_name)

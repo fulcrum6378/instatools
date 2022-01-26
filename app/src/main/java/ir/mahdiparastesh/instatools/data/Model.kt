@@ -2,14 +2,16 @@ package ir.mahdiparastesh.instatools.data
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import ir.mahdiparastesh.instatools.json.Profile
 
 class Model : ViewModel() {
-    var id: String? = null
+    lateinit var acc: Account
     var accounts = arrayListOf<Account>()
     var unfollowers: ArrayList<Unfollower>? = null
-    var saved: ArrayList<Saved>? = null
+    var saved: ArrayList<Profile.Post>? = null
     var dmThread: ArrayList<DmThread>? = null
     var loginLoaded = false
+    var nextSaved: Profile.PageInfo? = null
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

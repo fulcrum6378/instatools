@@ -12,8 +12,7 @@ class Account(
     @Nullable @ColumnInfo(name = "user") var user: String? = null,
     @Nullable @ColumnInfo(name = "name") var name: String? = null,
     @Nullable @ColumnInfo(name = "photo") var photo: String? = null,
-    @Nullable @ColumnInfo(name = "folder") var folder: String? = null,
-    @Ignore @Transient var cookies: HashMap<String, String>? = null
+    @Nullable @ColumnInfo(name = "folder") var folder: String? = null
 ) {
     @Suppress("unused")
     constructor() : this(0, "", "", null, null)
