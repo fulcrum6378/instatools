@@ -11,10 +11,11 @@ class Model : ViewModel() {
     var unfollowers: ArrayList<Unfollower>? = null
     var saved: ArrayList<Profile.Post>? = null
     var dmThreads: ArrayList<Dm.DmThread>? = null
+    var dmItems: ArrayList<Dm>? = null
+    var queueds: ArrayList<Queued>? = null
     var loginLoaded = false
     var nextSaved: Profile.PageInfo? = null
     var nextDmThreads: Dm.ContinuumCursor? = null
-    var dmItems: ArrayList<Dm>? = null
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

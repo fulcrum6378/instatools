@@ -53,13 +53,13 @@ class Media(
     val original_media_has_visual_reply_media: Boolean,
     original_width: Float?,
     val photo_of_you: Boolean,
-    val pk: Double,
+    val pk: String,
     val preview_comments: Array<Any>,
     val product_type: String,
     val profile_grid_control_enabled: Boolean,
     val sharing_friction_info: Map<String, *>,
     val taken_at: Double,
-    val thumbnails: Thumbnails,
+    val thumbnails: Thumbnails?,
     val title: String,
     val top_likers: Array<Any>,
     val user: Rest.User,
@@ -75,12 +75,25 @@ class Media(
 ) {
     class MediaWrapperApi(
         val auto_load_more_enabled: Boolean,
-        val items: Array<Media>,
+        val items: Array<Media>?,
         val num_results: Float,
         val more_available: Boolean
     )
 
-    class Thumbnails : HashMap<String, Any>()
+    class Thumbnails(
+        val video_length: Float,
+        val thumbnail_width: Float,
+        val thumbnail_height: Float,
+        val thumbnail_duration: Float,
+        val sprite_urls: Array<String>,
+        val thumbnails_per_row: Float,
+        val total_thumbnail_num_per_sprite: Float,
+        val max_thumbnails_per_sprite: Float,
+        val sprite_width: Float,
+        val sprite_height: Float,
+        val rendered_width: Float,
+        val file_size_kb: Float,
+    )
 
     class CarouselMedia(
         val can_see_insights_as_brand: Boolean,

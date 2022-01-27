@@ -21,6 +21,7 @@
 
     <!-- Downloads -->
     <string name="dwTitle">Downloads</string>
+    <string name="pasteLink">Paste a link&#8230;</string>
 
     <!-- Settings -->
     <string name="stTitle">InstaTools Settings</string>

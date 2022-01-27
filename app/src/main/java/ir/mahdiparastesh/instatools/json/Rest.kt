@@ -54,4 +54,28 @@ open class Rest(val status: String) {
         val viewer: User,
         status: String
     ) : Rest(status)
+
+    class Reels(
+        val reels: Map<String, Reel>,
+        val reels_media: Array<Reel>,
+        status: String
+    ) : Rest(status)
+
+    class Reel(
+        val ad_expiry_timestamp_in_millis: Any?,
+        val can_gif_quick_reply: Boolean,
+        val can_reply: Boolean,
+        val can_reshare: Boolean,
+        val expiring_at: Double,
+        val id: Double, // User Id not that of the reel
+        val is_cta_sticker_available: Any?,
+        val items: Array<Media>,
+        val latest_reel_media: Double,
+        val media_count: Float,
+        val media_ids: Array<String>,
+        val prefetch_count: Float,
+        val reel_type: String,
+        val seen: Double,
+        val user: User
+    )
 }

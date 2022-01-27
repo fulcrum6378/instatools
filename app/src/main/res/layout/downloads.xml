@@ -4,10 +4,52 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/root"
     tools:context=".Downloads"
-    tools:ignore="MissingConstraints">
+    tools:ignore="ContentDescription,MissingConstraints">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
         app:title="@string/dwTitle" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pasteBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pasteLink"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <EditText
+            android:id="@+id/pasteLink"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/pasteLink"
+            android:background="@null"
+            android:focusedByDefault="true"
+            android:hint="@string/pasteLink"
+            android:importantForAutofill="no"
+            android:inputType="textUri"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@id/linkButton"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="UnusedAttribute" />
+
+        <ImageView
+            android:id="@+id/linkButton"
+            android:layout_width="@dimen/pasteLink"
+            android:layout_height="@dimen/pasteLink"
+            android:background="@drawable/button_round"
+            android:padding="@dimen/pasteLinkPad"
+            android:src="@drawable/download"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pasteBar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

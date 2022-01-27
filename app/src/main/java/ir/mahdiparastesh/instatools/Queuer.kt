@@ -12,6 +12,9 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
+import ir.mahdiparastesh.instatools.Downloads.Companion.UPDATE_FAILED
+import ir.mahdiparastesh.instatools.Downloads.Companion.UPDATE_SUCCESS
+import ir.mahdiparastesh.instatools.Downloads.Companion.handler
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
@@ -45,13 +48,21 @@ class Queuer : Service() {
     }
 
     private fun download() {
-        val queue = pDao.queueds().sortedBy { it.added }
+        val queue = pDao.readyQueueds().sortedBy { it.added }
         if (queue.isNullOrEmpty()) {
             stopSelf(); return; }
+        if (queue[0].url == null) {
+            handler?.obtainMessage(UPDATE_SUCCESS, queue[0])?.sendToTarget()
+            pDao.deleteQueued(queue[0])
+            download(); return; }
 
         Volley.newRequestQueue(c).add(
-            object : Request<ByteArray>(Method.GET, queue[0].url,
-                Response.ErrorListener {/* TODO */ }) {
+            object : Request<ByteArray>(Method.GET, queue[0].url, Response.ErrorListener {
+                queue[0].failed = true
+                handler?.obtainMessage(UPDATE_FAILED, queue[0])?.sendToTarget()
+                pDao.updateQueued(queue[0])
+                download()
+            }) {
                 override fun getHeaders(): Map<String, String> = Api.Headers(acc, sp)
 
                 override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
@@ -59,6 +70,9 @@ class Queuer : Service() {
 
                 override fun deliverResponse(response: ByteArray) {
                     save(queue[0], response)
+                    handler?.obtainMessage(UPDATE_SUCCESS, queue[0])?.sendToTarget()
+                    pDao.deleteQueued(queue[0])
+                    download()
                 }
             }
         )

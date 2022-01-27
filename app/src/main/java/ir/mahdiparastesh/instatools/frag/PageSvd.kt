@@ -37,7 +37,7 @@ class PageSvd(val c: Main) : Fragment() {
         if (c.m.saved == null) Api<Profile>(
             c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class
         ) { profile ->
-            val media = profile.graphql.user?.edge_saved_media ?: return@Api
+            val media = profile.graphql?.user?.edge_saved_media ?: return@Api
             c.m.nextSaved = media.page_info
             c.m.saved = ArrayList(media.edges.map { it.node })
             adapt()

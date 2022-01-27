@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 class Account(
-    @PrimaryKey(autoGenerate = false) var id: Long,
+    @PrimaryKey var id: Long,
     var user: String? = null,
     var name: String? = null,
     var photo: String? = null,

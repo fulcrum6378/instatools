@@ -36,20 +36,27 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     companion object {
         const val host = "https://www.instagram.com/"
+        const val loginUrl = "${host}accounts/login/"
         const val spCookiesBeg = "cookie_"
         const val spCookies = "$spCookiesBeg%s"
         const val spAccount = "account"
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
         const val posConfig = ";</script>"
 
-        fun gatherData(c: BaseActivity, dao: GlobalDb.DAO): Account? {
+        fun gatherData(
+            c: BaseActivity,
+            dao: GlobalDb.DAO,
+            guestIfNotExists: Boolean = true
+        ): Account? {
             c.m.accounts = ArrayList(dao.accounts())
             if (c.m.accounts.find { it.id == -1L } == null)
                 Account(-1L, "", "").apply {
                     dao.addAccount(this)
                     c.m.accounts.add(this)
                 }
-            return c.m.accounts.find { it.id == c.sp.getString(spAccount, "-2")!!.toLong() }
+            return c.m.accounts.find {
+                it.id == c.sp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")!!.toLong()
+            }
         }
     }
 
@@ -60,7 +67,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
         db = GlobalDb.build(c).also { dao = it.dao() }
-        val selected = gatherData(this, dao)
+        val selected = gatherData(this, dao, false)
 
         // WebView
         b.web.settings.javaScriptEnabled = true
@@ -136,9 +143,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     fun selectAccount(acc: Account) {
+        gonnaBeGuest = false
         if (acc.id == -1L) {
             m.acc = acc
-            goAhead()
+            gonnaBeGuest = true
+            browse()
         } else (sp.getString(spCookies.format(acc.id), null)).apply {
             if (this != null) browse(this)
             else {
@@ -150,17 +159,17 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private var doClearHistory = false
     private var gonnaAdd = false
-    private val loginUrl = "${host}accounts/login/"
-    private fun browse(withCookie: String? = "") {
+    private var gonnaBeGuest = false
+    private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
         vis(b.web)
         if (::bw.isInitialized) vis(bw.root, false)
         cookieManager = CookieManager.getInstance().also {
             it.setAcceptCookie(true)
             it.removeAllCookies { _ ->
-                if (withCookie == null) return@removeAllCookies
-                val cook = withCookie.split("; ")
-                for (k in cook) it.setCookie(host, k)
-                b.web.loadUrl(loginUrl)
+                if (withCookie != null && withCookie != "")
+                    for (k in withCookie.split("; "))
+                        it.setCookie(host, k)
+                b.web.loadUrl(beginWith)
             }
         }
         doClearHistory = true
@@ -196,8 +205,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         lateinit var id: String
         var loggedIn = false
 
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
+            if (gonnaBeGuest) {
+                id = "-1"
+                sp.edit()
+                    .putString(spCookies.format(id), cookieManager.getCookie(host))
+                    .apply()
+                goAhead(); return; }
             if (doClearHistory) {
                 b.web.clearHistory()
                 doClearHistory = false

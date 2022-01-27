@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.json
 @Suppress("unused", "SpellCheckingInspection")
 class Profile(
     val always_show_message_button_to_pro_account: Boolean,
-    val graphql: GraphQl,
+    val graphql: GraphQl?,
     val logging_page_id: String,
     val profile_pic_edit_sync_props: Map<String, *>,
     val seo_category_infos: Array<Array<String>>,

@@ -48,7 +48,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
 
     var tbTitle: TextView? = null
     fun toolbar(tb: Toolbar, title: Int) {
-        //setSupportActionBar(tb)
+        if (!isMain) setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
             if (getTitle is TextView &&

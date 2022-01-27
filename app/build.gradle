@@ -12,7 +12,7 @@ android {
         minSdk 23
         targetSdk 31
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
     }
 
     buildTypes {
@@ -49,4 +49,5 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1' // Only for ActivityResultLauncher
     implementation 'androidx.core:core-ktx:1.7.0' // Only for View.get()
     implementation group: 'commons-lang', name: 'commons-lang', version: '2.6' // StringEscapeUtils
+    implementation 'com.airbnb.android:lottie:4.2.2'
 }

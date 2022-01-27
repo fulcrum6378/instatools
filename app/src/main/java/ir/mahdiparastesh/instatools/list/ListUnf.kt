@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,10 +19,11 @@ class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
         return ViewHolder(b)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         if (c.m.unfollowers == null) return
         Glide.with(c.c).load(c.m.unfollowers!![i].photo).into(h.b.photo)
-        h.b.name.text = c.m.unfollowers!![i].name
+        h.b.name.text = "${i + 1}. ${c.m.unfollowers!![i].name}"
         h.b.user.text = c.m.unfollowers!![i].user
         h.b.root.setOnClickListener {
             if (c.m.unfollowers == null) return@setOnClickListener

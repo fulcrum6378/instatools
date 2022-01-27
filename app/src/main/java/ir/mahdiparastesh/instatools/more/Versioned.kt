@@ -2,21 +2,20 @@ package ir.mahdiparastesh.instatools.more
 
 import ir.mahdiparastesh.instatools.json.Media
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 abstract class Versioned(
     val image_versions2: Media.ImageVersions2?,
     val original_height: Float?,
     val original_width: Float?,
     val video_versions: Array<Media.VideoVersion>?
 ) {
-    @Suppress("UNCHECKED_CAST")
-    fun best(): String {
+    fun best(): String? {
         var ret: String? = null
         if (video_versions != null)
             ret = bestOfList(video_versions as Array<Media.Candidate>)
         if (ret == null && image_versions2 != null)
             ret = bestOfList(image_versions2.candidates)
-        return ret!!
+        return ret
     }
 
     private fun bestOfList(list: Array<Media.Candidate>): String? {
@@ -33,5 +32,25 @@ abstract class Versioned(
             ret = list.find { it.width == maxW && it.height == maxH }?.url
         }
         return ret
+    }
+
+    fun worst(): String? {
+        var ret: String? = null
+        if (video_versions != null)
+            ret = worstOfList(video_versions as Array<Media.Candidate>)
+        if (ret == null && image_versions2 != null)
+            ret = worstOfList(image_versions2.candidates)
+        return ret
+    }
+
+    private fun worstOfList(list: Array<Media.Candidate>): String? {
+        var minW = 1000f
+        var minH = 1000f
+        list.forEach {
+            if (it.width < minW) minW = it.width
+            if (it.height < minH) minH = it.height
+        }
+        return list.find { it.width == minW && it.height == minH }?.url
+            ?: list.getOrNull(0)?.url
     }
 }

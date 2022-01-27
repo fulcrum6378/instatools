@@ -39,6 +39,7 @@ class PageUnf(private val c: Main) : Fragment() {
                 when (msg.what) {
                     Action.LOADED.ordinal -> (msg.obj as List<Unfollower>).apply {
                         c.m.unfollowers = ArrayList(this)
+                        c.m.unfollowers!!.sortBy { it.followedBy }
                         if (isNullOrEmpty()) fetch() else adapt()
                     }
                     Action.FETCHED.ordinal -> {
@@ -101,23 +102,22 @@ class PageUnf(private val c: Main) : Fragment() {
         Api<Profile>(
             c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class
         ) { profile ->
-            val u = profile.graphql.user
-            if (u != null && u.follows_viewer == false) {
-                val newbie = Unfollower(
-                    u.id.toLong(), u.username, u.full_name,
-                    u.profile_pic_url_hd ?: u.profile_pic_url,
-                    u.edge_followed_by.count.toLong()
+            val u = profile.graphql?.user
+            if (u == null || u.follows_viewer != false) return@Api
+            val newbie = Unfollower(
+                u.id.toLong(), u.username, u.full_name,
+                u.profile_pic_url_hd ?: u.profile_pic_url,
+                u.edge_followed_by.count.toLong()
+            )
+            c.m.unfollowers!!.add(newbie)
+            c.m.unfollowers!!.sortBy { it.followedBy }
+            c.pDao.addUnfollower(newbie)
+            Unfollower.find(newbie, c.m.unfollowers!!)?.let {
+                b.rv.adapter?.notifyItemInserted(it)
+                if (it > 0) b.rv.adapter?.notifyItemRangeChanged(0, it)
+                if (it < c.m.unfollowers!!.size - 1) b.rv.adapter?.notifyItemRangeChanged(
+                    it + 1, c.m.unfollowers!!.size - 1
                 )
-                c.m.unfollowers!!.add(newbie)
-                c.m.unfollowers!!.sortBy { it.followedBy }
-                c.pDao.addUnfollower(newbie)
-                Unfollower.find(newbie, c.m.unfollowers!!)?.let {
-                    b.rv.adapter?.notifyItemInserted(it)
-                    if (it > 0) b.rv.adapter?.notifyItemRangeChanged(0, it)
-                    if (it < c.m.unfollowers!!.size - 1) b.rv.adapter?.notifyItemRangeChanged(
-                        it + 1, c.m.unfollowers!!.size - 1
-                    )
-                }
             }
         }
         analyze(i + 1)

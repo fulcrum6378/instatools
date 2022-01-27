@@ -11,6 +11,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -26,7 +27,7 @@ class Api<JSON>(
     method: Int = Method.GET,
     private val listener: (json: JSON) -> Unit,
 ) : Request<String>(method, encode(url), Response.ErrorListener {
-    Toast.makeText(c, "ERROR: ${it.networkResponse.statusCode}", Toast.LENGTH_LONG).show()
+    Toast.makeText(c, "ERROR: ${it.networkResponse?.statusCode}", Toast.LENGTH_LONG).show()
 }) {
 
     init {
@@ -43,8 +44,17 @@ class Api<JSON>(
     override fun getBody(): ByteArray = encode(body)?.encodeToByteArray() ?: super.getBody()
 
     @Suppress("UNCHECKED_CAST")
-    override fun deliverResponse(response: String) =
-        listener(Gson().fromJson(response, clazz.java) as JSON)
+    override fun deliverResponse(response: String) {
+        try {
+            listener(Gson().fromJson(response, clazz.java) as JSON)
+        } catch (e: JsonSyntaxException) {
+            if (response.startsWith("<!DOCTYPE html>", true)
+                && response.contains("Log in • Instagram")
+            ) {
+              // TODO
+            } else throw Exception(response)
+        }
+    }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =
         Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
@@ -53,12 +63,13 @@ class Api<JSON>(
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
         FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
-
         PROFILE("https://www.instagram.com/%s/?__a=1"),
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
+        REELS("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
+
         SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
         SAVED(
             "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
@@ -80,7 +91,7 @@ class Api<JSON>(
             if (uriString == null) return null
             if (TextUtils.isEmpty(uriString)) return uriString
             val allowedUrlCharacters = Pattern.compile(
-                "([A-Za-z0-9_.~:/?\\#\\[\\]@!$&'()*+,;" + "=-]|%[0-9a-fA-F]{2})+"
+                "([A-Za-z0-9_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[0-9a-fA-F]{2})+"
             )
             val matcher = allowedUrlCharacters.matcher(uriString)
             var validUri: String? = null
@@ -109,6 +120,7 @@ class Api<JSON>(
             this["sec-fetch-mode"] = "cors"
             this["sec-fetch-site"] = "same-origin"
             this["x-requested-with"] = "XMLHttpRequest"
+            // "cache-control": "max-age=0" // SET THIS IN ORDER TO DISABLE CACHE
 
             // The rest are dynamic
             //this["x-asbd-id"] = "198387"
@@ -122,13 +134,6 @@ class Api<JSON>(
             // Added myself
             this["Access-Control-Allow-Origin"] = "https://www.instagram.com/"
             this["Access-Control-Allow-Credentials"] = "true"
-
-            /*"Access to XMLHttpRequest at 'https://www.instagram.com/accounts/login/?next=/api/v1/
-            business/account/get_web_pro_onboarding_eligibility/' (redirected from
-            'https://i.instagram.com/api/v1/business/account/get_web_pro_onboarding_eligibility/')
-            from origin 'https://www.instagram.com' has been blocked by CORS policy: Response to
-            preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin'
-            header is present on the requested resource.", source: https://www.instagram.com/ (0)*/
         }
     }
 }

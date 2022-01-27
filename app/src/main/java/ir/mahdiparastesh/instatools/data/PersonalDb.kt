@@ -25,8 +25,17 @@ abstract class PersonalDb : RoomDatabase() {
         @Query("SELECT * FROM Queued")
         fun queueds(): List<Queued>
 
+        @Query("SELECT * FROM Queued WHERE failed = 0")
+        fun readyQueueds(): List<Queued>
+
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addQueued(item: Queued)
+        fun addQueued(item: Queued): Long
+
+        @Update
+        fun updateQueued(item: Queued)
+
+        @Delete
+        fun deleteQueued(item: Queued)
 
         @Query("DELETE FROM Queued")
         fun deleteQueueds(): Int

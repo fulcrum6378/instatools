@@ -5,13 +5,22 @@ import androidx.room.PrimaryKey
 
 @Entity
 class Queued(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    val userId: String,
-    val userName: String,
-    val itemId: String,
-    val url: String,
-    val mediaType: Byte,
-    val added: Long,
-    val fromSaved: Boolean = false,
-    val failed: Boolean = false
-)
+    var userId: String,
+    var userName: String,
+    var itemId: String,
+    var url: String?,
+    var thumb: String?,
+    var mediaType: Byte,
+    var added: Long,
+    var fromSaved: Boolean = false,
+    var failed: Boolean = false
+) {
+    @PrimaryKey(autoGenerate = true) var id = 0L
+
+    companion object {
+        fun find(it: Queued, inList: List<Queued>): Int? {
+            for (i in inList.indices) if (inList[i].id == it.id) return i
+            return null
+        }
+    }
+}
