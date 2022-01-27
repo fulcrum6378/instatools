@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/mnDownloader"
+        android:id="@+id/mnDownloads"
         android:icon="@drawable/download"
-        android:title="@string/downloader" />
+        android:title="@string/downloads" />
     <item
         android:id="@+id/mnSettings"
         android:icon="@drawable/settings"

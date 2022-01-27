@@ -5,14 +5,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
-import ir.mahdiparastesh.instatools.databinding.DownloaderBinding
+import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.io.FileOutputStream
 
-class Downloader : BaseActivity() {
-    private lateinit var b: DownloaderBinding
+class Downloads : BaseActivity() {
+    private lateinit var b: DownloadsBinding
 
     companion object {
         const val spStorage = "storage"
@@ -20,7 +20,7 @@ class Downloader : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = DownloaderBinding.inflate(layoutInflater)
+        b = DownloadsBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.dwTitle)
 

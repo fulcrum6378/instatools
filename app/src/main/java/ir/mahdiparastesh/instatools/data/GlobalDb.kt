@@ -14,6 +14,9 @@ abstract class GlobalDb : RoomDatabase() {
         @Query("SELECT * FROM Account")
         fun accounts(): List<Account>
 
+        @Query("SELECT * FROM Account WHERE id = :id LIMIT 1")
+        fun account(id: Long): Account
+
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addAccount(item: Account)
 

@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools
+package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -10,8 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.data.Unfollower
-import ir.mahdiparastesh.instatools.databinding.UnfollowersBinding
+import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
@@ -19,8 +20,8 @@ import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 
-class Unfollowers(private val c: Main) : Fragment() {
-    private lateinit var b: UnfollowersBinding
+class PageUnf(private val c: Main) : Fragment() {
+    private lateinit var b: PageUnfBinding
     private var following: List<Rest.User>? = null
     private var fetching = false
 
@@ -29,7 +30,7 @@ class Unfollowers(private val c: Main) : Fragment() {
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        b = UnfollowersBinding.inflate(
+        b = PageUnfBinding.inflate(
             c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
         )
 
@@ -56,7 +57,7 @@ class Unfollowers(private val c: Main) : Fragment() {
             }
             c.m.unfollowers != null -> adapt()
             else -> Thread {
-                handler?.obtainMessage(Action.LOADED.ordinal, c.dao.unfollowers())?.sendToTarget()
+                handler?.obtainMessage(Action.LOADED.ordinal, c.pDao.unfollowers())?.sendToTarget()
             }.start()
         }
         return b.root
@@ -66,7 +67,7 @@ class Unfollowers(private val c: Main) : Fragment() {
         if (fetching) return
         fetching = true
         c.m.unfollowers = null
-        c.dao.deleteUnfollowers()
+        c.pDao.deleteUnfollowers()
         adapt()
         allFollow()
     }
@@ -81,7 +82,7 @@ class Unfollowers(private val c: Main) : Fragment() {
         list: MutableList<Rest.User> = mutableListOf(), next_max_id: String = ""
     ) {
         Api<Rest.Follow>(
-            c, Api.Type.FOLLOWING.url.format(c.m.acc.id, next_max_id), Rest.Follow::class.java
+            c, Api.Type.FOLLOWING.url.format(c.m.acc!!.id, next_max_id), Rest.Follow::class.java
         ) { flw ->
             list.addAll(flw.users.toMutableList())
             if (flw.next_max_id == null)
@@ -109,7 +110,7 @@ class Unfollowers(private val c: Main) : Fragment() {
                 )
                 c.m.unfollowers!!.add(newbie)
                 c.m.unfollowers!!.sortWith(Unfollower.Sort())
-                c.dao.addUnfollower(newbie)
+                c.pDao.addUnfollower(newbie)
                 Unfollower.find(newbie, c.m.unfollowers!!)
                     ?.let { b.rv.adapter?.notifyItemInserted(it) }
             }

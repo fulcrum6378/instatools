@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.documentfile.provider.DocumentFile
-import ir.mahdiparastesh.instatools.Downloader.Companion.spStorage
+import ir.mahdiparastesh.instatools.Downloads.Companion.spStorage
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.io.FileOutputStream

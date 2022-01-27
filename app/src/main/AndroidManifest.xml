@@ -4,6 +4,7 @@
     package="ir.mahdiparastesh.instatools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -17,9 +18,8 @@
         tools:ignore="UnusedAttribute">
 
         <activity
-            android:name=".Login"
-            android:exported="true"
-            android:windowSoftInputMode="stateHidden|adjustPan">
+            android:name=".Main"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,8 +29,9 @@
         </activity>
 
         <activity
-            android:name=".Main"
-            android:exported="false" />
+            android:name=".Login"
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
 
         <activity
             android:name=".Settings"
@@ -43,7 +44,7 @@
         </activity>
 
         <activity
-            android:name=".Downloader"
+            android:name=".Downloads"
             android:exported="true"
             android:launchMode="singleTop">
 
@@ -59,5 +60,9 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Queuer"
+            android:exported="false" />
     </application>
 </manifest>

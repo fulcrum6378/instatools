@@ -30,6 +30,6 @@
         <item>@color/CTD</item>
     </array>
     <color name="unfollowers">@color/CPD</color>
-    <color name="saver">@color/CSD</color>
+    <color name="saved">@color/CSD</color>
     <color name="direct">@color/CTD</color>
 </resources>

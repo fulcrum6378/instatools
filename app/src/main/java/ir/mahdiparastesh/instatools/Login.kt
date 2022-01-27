@@ -37,7 +37,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val spCookiesBeg = "cookie_"
         const val spCookies = "$spCookiesBeg%s"
         const val spAccount = "account"
-        const val spNeverMind = "never_mind"
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
         const val posConfig = ";</script>"
     }
@@ -45,25 +44,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Gather Data
-        db = GlobalDb.build(c).also { dao = it.dao() }
-        m.accounts = ArrayList(dao.accounts())
-        if (m.accounts.find { it.id == -1L } == null)
-            Account(-1L, "", "").apply {
-                dao.addAccount(this)
-                m.accounts.add(this)
-            }
-
-        // Never Mind
-        if (sp.getBoolean(spNeverMind, false))
-            m.accounts.find { it.id == sp.getString(spAccount, "IMPOSSIBLE")!!.toLong() }?.let {
-                m.acc = it
-                goAhead(true)
-                return@onCreate
-            }
-
-        // Inflate
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
@@ -97,6 +77,15 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             DbFile(d, DbFile.Triple.SHARED_MEMORY).apply { if (exists()) delete() }
             DbFile(d, DbFile.Triple.WRITE_AHEAD_LOG).apply { if (exists()) delete() }
         }
+
+        // Gather Data
+        db = GlobalDb.build(c).also { dao = it.dao() }
+        m.accounts = ArrayList(dao.accounts())
+        if (m.accounts.find { it.id == -1L } == null)
+            Account(-1L, "", "").apply {
+                dao.addAccount(this)
+                m.accounts.add(this)
+            }
 
         // Decide
         if (!sp.contains(spAccount)) welcome()
@@ -179,10 +168,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         doClearHistory = true
     }
 
-    private fun goAhead(neverMind: Boolean = false) {
-        sp.edit().apply {
-            putString(spAccount, m.acc.id.toString())
-            putBoolean(spNeverMind, neverMind)
+    private fun goAhead() {
+        if (m.acc!!.id != -1L) sp.edit().apply {
+            putString(spAccount, m.acc!!.id.toString())
             apply()
         }
         startActivity(Intent(c, Main::class.java))
@@ -251,7 +239,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     dao.addAccount(this)
                     m.acc = this
                 }
-                goAhead(true)
+                goAhead()
             }
         }
     }

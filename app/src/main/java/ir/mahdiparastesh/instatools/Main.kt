@@ -7,40 +7,51 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.databinding.MainBinding
+import ir.mahdiparastesh.instatools.frag.PageBox
+import ir.mahdiparastesh.instatools.frag.PageSvd
+import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
 
 class Main : BaseActivity(true) {
     private lateinit var b: MainBinding
-    private lateinit var db: PersonalDb
-    lateinit var dao: PersonalDb.DAO
+    private lateinit var gDb: GlobalDb
+    lateinit var gDao: GlobalDb.DAO
+    private lateinit var pDb: PersonalDb
+    lateinit var pDao: PersonalDb.DAO
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     private lateinit var toggleNav: ActionBarDrawerToggle
-    private var page1: Unfollowers? = null
-    private var page2: Saver? = null
-    private var page3: Direct? = null
+    private var page1: PageUnf? = null
+    private var page2: PageSvd? = null
+    private var page3: PageBox? = null
     private var anTheme: ValueAnimator? = null
     private var currentPage = 0
 
     companion object {
-        val pages = arrayOf(R.id.to_unfollowers, R.id.to_saver, R.id.to_direct)
+        val pages = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
+        if (m.acc == null) {
+            if (!sp.contains(Login.spAccount)) {
+                goTo(Login::class.java)
+                return
+            } else {
+                gDb = GlobalDb.build(c).also { gDao = it.dao() }
+                m.acc = gDao.account(sp.getString(Login.spAccount, "IMPOSSIBLE")!!.toLong())
+            }
+        }
+        if (m.acc!!.id == -1L) guest = true
+        else pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        if (page1 == null) page1 = Unfollowers(this)
-        if (page2 == null) page2 = Saver(this)
-        if (page3 == null) page3 = Direct(this)
-        loadPages()
-        if (m.acc.id == -1L) guest = true
-        else db = PersonalDb.build(c, m.acc.id.toString()).also { dao = it.dao() }
 
         // Toolbar & Navigation
         toolbar(b.toolbar, R.string.app_name)
@@ -53,7 +64,7 @@ class Main : BaseActivity(true) {
         }
         b.nav.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.mnDownloader -> goTo(Downloader::class.java)
+                R.id.mnDownloads -> goTo(Downloads::class.java)
                 R.id.mnSettings -> goTo(Settings::class.java)
                 else -> super.onOptionsItemSelected(it)
             }
@@ -68,6 +79,10 @@ class Main : BaseActivity(true) {
         }*/
 
         // Paging
+        if (page1 == null) page1 = PageUnf(this)
+        if (page2 == null) page2 = PageSvd(this)
+        if (page3 == null) page3 = PageBox(this)
+        loadPages()
         bg = resources.getIntArray(R.array.BG)
         ca = resources.getIntArray(R.array.CA)
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
@@ -132,20 +147,20 @@ class Main : BaseActivity(true) {
 
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
-            Unfollowers::class.java.name -> {
+            PageUnf::class.java.name -> {
                 if (page1 != null && page1?.isAdded == true)
                     supportFragmentManager.beginTransaction().remove(page1!!).commit()
-                Unfollowers(this@Main).also { page1 = it }
+                PageUnf(this@Main).also { page1 = it }
             }
-            Saver::class.java.name -> {
+            PageSvd::class.java.name -> {
                 if (page2 != null && page2?.isAdded == true)
                     supportFragmentManager.beginTransaction().remove(page2!!).commit()
-                Saver(this@Main).also { page2 = it }
+                PageSvd(this@Main).also { page2 = it }
             }
-            Direct::class.java.name -> {
+            PageBox::class.java.name -> {
                 if (page3 != null && page3?.isAdded == true)
                     supportFragmentManager.beginTransaction().remove(page3!!).commit()
-                Direct(this@Main).also { page3 = it }
+                PageBox(this@Main).also { page3 = it }
             }
             else -> super.instantiate(loader, name)
         }

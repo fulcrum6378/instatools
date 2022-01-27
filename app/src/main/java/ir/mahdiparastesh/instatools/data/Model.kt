@@ -6,7 +6,7 @@ import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Profile
 
 class Model : ViewModel() {
-    lateinit var acc: Account
+    var acc: Account? = null
     var accounts = arrayListOf<Account>()
     var unfollowers: ArrayList<Unfollower>? = null
     var saved: ArrayList<Profile.Post>? = null

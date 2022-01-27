@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools
+package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -6,17 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ir.mahdiparastesh.instatools.databinding.DirectBinding
+import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
-class Direct(val c: Main) : Fragment() {
-    private lateinit var b: DirectBinding
+class PageBox(val c: Main) : Fragment() {
+    private lateinit var b: PageBoxBinding
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        b = DirectBinding.inflate(
+        b = PageBoxBinding.inflate(
             c.themeInflater(BaseActivity.Theme.TERTIARY, inf),
             parent, false
         )

@@ -7,9 +7,9 @@
         android:title="@string/unfollowers" />
 
     <item
-        android:id="@+id/to_saver"
-        android:icon="@drawable/saver"
-        android:title="@string/saver" />
+        android:id="@+id/to_saved"
+        android:icon="@drawable/saved"
+        android:title="@string/saved" />
 
     <item
         android:id="@+id/to_direct"
