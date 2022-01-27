@@ -37,7 +37,7 @@ class PageBox(val c: Main) : Fragment() {
 
     private fun fetchSome() {
         //if (c.m.nextDmThreads?.has_next_page == false) return
-        Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class.java) { page ->
+        Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class) { page ->
             c.m.nextDmThreads = page.inbox.next_cursor
             c.m.dmThreads?.addAll(page.inbox.threads)
             adapt()

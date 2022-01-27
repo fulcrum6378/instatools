@@ -8,4 +8,12 @@
         android:id="@+id/mnSettings"
         android:icon="@drawable/settings"
         android:title="@string/settings" />
+    <item
+        android:id="@+id/mnSwitchAccount"
+        android:icon="@drawable/settings"
+        android:title="@string/switchAccount" />
+    <item
+        android:id="@+id/mnSignOut"
+        android:icon="@drawable/settings"
+        android:title="@string/signOut" />
 </menu>

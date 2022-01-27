@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.json
 
+import android.content.SharedPreferences
 import android.net.Uri
 import android.text.TextUtils
 import android.widget.Toast
@@ -11,13 +12,15 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.regex.Pattern
+import kotlin.reflect.KClass
 
 class Api<JSON>(
     val c: BaseActivity,
     url: String,
-    private val clazz: Class<*>,
+    private val clazz: KClass<*>,
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
@@ -35,12 +38,13 @@ class Api<JSON>(
         Volley.newRequestQueue(c).add(this)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(c)
+    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, c.sp)
 
     override fun getBody(): ByteArray = encode(body)?.encodeToByteArray() ?: super.getBody()
 
     @Suppress("UNCHECKED_CAST")
-    override fun deliverResponse(response: String) = listener(Gson().fromJson(response, clazz) as JSON)
+    override fun deliverResponse(response: String) =
+        listener(Gson().fromJson(response, clazz.java) as JSON)
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =
         Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
@@ -56,11 +60,15 @@ class Api<JSON>(
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
         SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
-        SAVED("https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
-                "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"),
+        SAVED(
+            "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
+                    "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
+        ),
 
-        INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?persistentBadging=true" +
-                "&folder=&limit=20&thread_message_limit=10"),
+        INBOX(
+            "https://i.instagram.com/api/v1/direct_v2/inbox/?persistentBadging=true" +
+                    "&folder=&limit=20&thread_message_limit=10"
+        ),
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
     }
 
@@ -90,7 +98,7 @@ class Api<JSON>(
     }
 
     @Suppress("SpellCheckingInspection")
-    class Headers(c: BaseActivity) : HashMap<String, String>() {
+    class Headers(acc: Account, sp: SharedPreferences) : HashMap<String, String>() {
         init {
             this["accept"] = "*/*"
             this["accept-language"] = "en-GB"
@@ -107,9 +115,20 @@ class Api<JSON>(
             //this["x-csrftoken"] = csrfToken
             //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCnL"
             this["x-ig-app-id"] = "936619743392459"
-            this["cookie"] = c.sp.getString(Login.spCookies.format(c.m.acc!!.id), "") ?: ""
-            //this["Referer"] = "https://www.instagram.com/fulcrum1378/saved/"
+            this["cookie"] = sp.getString(Login.spCookies.format(acc.id), "") ?: ""
+            //this["Referer"] = "https://www.instagram.com/"
             //this["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+            // Added myself
+            this["Access-Control-Allow-Origin"] = "https://www.instagram.com/"
+            this["Access-Control-Allow-Credentials"] = "true"
+
+            /*"Access to XMLHttpRequest at 'https://www.instagram.com/accounts/login/?next=/api/v1/
+            business/account/get_web_pro_onboarding_eligibility/' (redirected from
+            'https://i.instagram.com/api/v1/business/account/get_web_pro_onboarding_eligibility/')
+            from origin 'https://www.instagram.com' has been blocked by CORS policy: Response to
+            preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin'
+            header is present on the requested resource.", source: https://www.instagram.com/ (0)*/
         }
     }
 }

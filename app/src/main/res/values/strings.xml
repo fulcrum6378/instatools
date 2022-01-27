@@ -8,6 +8,8 @@
     <string name="downloads">Downloads</string>
     <string name="settings">Settings</string>
     <string name="search">Search</string>
+    <string name="switchAccount">Switch Account</string>
+    <string name="signOut">Sign Out</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>

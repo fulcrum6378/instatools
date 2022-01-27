@@ -19,8 +19,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Model
+import kotlin.reflect.KClass
 
 abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity() {
     lateinit var c: Context
@@ -34,13 +34,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         super.onCreate(savedInstanceState)
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
-
-        sp = EncryptedSharedPreferences.create(
-            "main", MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC), c,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-
+        sp = esp(c)
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)
@@ -78,8 +72,9 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
     fun pdcf(res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
 
-    fun goTo(activity: Class<*>): Boolean {
-        startActivity(Intent(this, activity))
+    fun goTo(activity: KClass<*>, finish: Boolean = false): Boolean {
+        startActivity(Intent(this, activity.java))
+        if (finish) finish()
         return true
     }
 
@@ -88,5 +83,13 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         PRIMARY(R.style.Theme_InstaTools_Primary),
         SECONDARY(R.style.Theme_InstaTools_Secondary),
         TERTIARY(R.style.Theme_InstaTools_Tertiary)
+    }
+
+    companion object {
+        fun esp(c: Context) = EncryptedSharedPreferences.create(
+            "main", MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC), c,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 }

@@ -8,7 +8,6 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.data.Unfollower
@@ -40,10 +39,11 @@ class PageUnf(private val c: Main) : Fragment() {
                 when (msg.what) {
                     Action.LOADED.ordinal -> (msg.obj as List<Unfollower>).apply {
                         c.m.unfollowers = ArrayList(this)
-                        if (isEmpty()) fetch() else adapt()
+                        if (isNullOrEmpty()) fetch() else adapt()
                     }
                     Action.FETCHED.ordinal -> {
                         following = msg.obj as List<Rest.User>
+                        c.m.unfollowers = arrayListOf()
                         analyze()
                     }
                     Action.ANALYZED.ordinal -> fetching = false
@@ -53,7 +53,7 @@ class PageUnf(private val c: Main) : Fragment() {
 
         when {
             Main.guest -> {
-                // TODO: GUEST MODE
+                // TODO: GUEST MODE (ViewStub)
             }
             c.m.unfollowers != null -> adapt()
             else -> Thread {
@@ -82,7 +82,7 @@ class PageUnf(private val c: Main) : Fragment() {
         list: MutableList<Rest.User> = mutableListOf(), next_max_id: String = ""
     ) {
         Api<Rest.Follow>(
-            c, Api.Type.FOLLOWING.url.format(c.m.acc!!.id, next_max_id), Rest.Follow::class.java
+            c, Api.Type.FOLLOWING.url.format(c.m.acc!!.id, next_max_id), Rest.Follow::class
         ) { flw ->
             list.addAll(flw.users.toMutableList())
             if (flw.next_max_id == null)
@@ -97,9 +97,9 @@ class PageUnf(private val c: Main) : Fragment() {
             handler?.obtainMessage(Action.ANALYZED.ordinal)?.sendToTarget()
             return
         }
-        Toast.makeText(c, "Analyzed: #${i + 1}", Toast.LENGTH_SHORT).show()
+        // TODO: ${i + 1}
         Api<Profile>(
-            c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class.java
+            c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class
         ) { profile ->
             val u = profile.graphql.user
             if (u != null && u.follows_viewer == false) {
@@ -109,13 +109,18 @@ class PageUnf(private val c: Main) : Fragment() {
                     u.edge_followed_by.count.toLong()
                 )
                 c.m.unfollowers!!.add(newbie)
-                c.m.unfollowers!!.sortWith(Unfollower.Sort())
+                c.m.unfollowers!!.sortBy { it.followedBy }
                 c.pDao.addUnfollower(newbie)
-                Unfollower.find(newbie, c.m.unfollowers!!)
-                    ?.let { b.rv.adapter?.notifyItemInserted(it) }
+                Unfollower.find(newbie, c.m.unfollowers!!)?.let {
+                    b.rv.adapter?.notifyItemInserted(it)
+                    if (it > 0) b.rv.adapter?.notifyItemRangeChanged(0, it)
+                    if (it < c.m.unfollowers!!.size - 1) b.rv.adapter?.notifyItemRangeChanged(
+                        it + 1, c.m.unfollowers!!.size - 1
+                    )
+                }
             }
-            Delay(3000) { analyze(i + 1) }
         }
+        analyze(i + 1)
     }
 
     enum class Action { LOADED, FETCHED, ANALYZED }

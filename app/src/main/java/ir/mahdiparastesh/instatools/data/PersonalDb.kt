@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Unfollower::class],
+    entities = [Unfollower::class, Queued::class],
     version = 1, exportSchema = false
 )
 abstract class PersonalDb : RoomDatabase() {
@@ -20,6 +20,16 @@ abstract class PersonalDb : RoomDatabase() {
 
         @Query("DELETE FROM Unfollower")
         fun deleteUnfollowers(): Int
+
+
+        @Query("SELECT * FROM Queued")
+        fun queueds(): List<Queued>
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addQueued(item: Queued)
+
+        @Query("DELETE FROM Queued")
+        fun deleteQueueds(): Int
     }
 
     companion object {

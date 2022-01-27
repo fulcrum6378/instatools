@@ -14,7 +14,7 @@ class Model : ViewModel() {
     var loginLoaded = false
     var nextSaved: Profile.PageInfo? = null
     var nextDmThreads: Dm.ContinuumCursor? = null
-    var dmItems: ArrayList<DmItem>? = null
+    var dmItems: ArrayList<Dm>? = null
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

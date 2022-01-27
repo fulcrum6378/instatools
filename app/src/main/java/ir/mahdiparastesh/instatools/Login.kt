@@ -8,7 +8,10 @@ import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewStub
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.gson.Gson
@@ -23,7 +26,6 @@ import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
 import org.apache.commons.lang.StringEscapeUtils
-import java.util.*
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
@@ -39,6 +41,16 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val spAccount = "account"
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
         const val posConfig = ";</script>"
+
+        fun gatherData(c: BaseActivity, dao: GlobalDb.DAO): Account? {
+            c.m.accounts = ArrayList(dao.accounts())
+            if (c.m.accounts.find { it.id == -1L } == null)
+                Account(-1L, "", "").apply {
+                    dao.addAccount(this)
+                    c.m.accounts.add(this)
+                }
+            return c.m.accounts.find { it.id == c.sp.getString(spAccount, "-2")!!.toLong() }
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -47,6 +59,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
+        db = GlobalDb.build(c).also { dao = it.dao() }
+        val selected = gatherData(this, dao)
 
         // WebView
         b.web.settings.javaScriptEnabled = true
@@ -78,23 +92,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             DbFile(d, DbFile.Triple.WRITE_AHEAD_LOG).apply { if (exists()) delete() }
         }
 
-        // Gather Data
-        db = GlobalDb.build(c).also { dao = it.dao() }
-        m.accounts = ArrayList(dao.accounts())
-        if (m.accounts.find { it.id == -1L } == null)
-            Account(-1L, "", "").apply {
-                dao.addAccount(this)
-                m.accounts.add(this)
-            }
-
-        // Decide
-        if (!sp.contains(spAccount)) welcome()
-        else {
-            val selected =
-                m.accounts.find { it.id == sp.getString(spAccount, "IMPOSSIBLE")!!.toLong() }
-            if (selected != null) selectAccount(selected)
-            else welcome()
-        }
+        if (selected == null) welcome() else selectAccount(selected)
     }
 
     private val logoDestBias = 0.15f

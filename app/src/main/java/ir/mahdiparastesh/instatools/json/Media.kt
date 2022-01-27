@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
+import ir.mahdiparastesh.instatools.more.Versioned
+
 @Suppress("unused", "SpellCheckingInspection")
 class Media(
     val can_see_insights_as_brand: Boolean,
@@ -29,7 +31,7 @@ class Media(
     val hide_view_all_comment_entrypoint: Boolean,
     val id: String,
     val igtv_exists_in_viewer_series: Boolean,
-    val image_versions2: ImageVersions2?,
+    image_versions2: ImageVersions2?,
     val inline_composer_display_condition: Boolean,
     val integrity_review_decision: String,
     val is_dash_eligible: Float,
@@ -47,9 +49,9 @@ class Media(
     val nearly_complete_copyright_match: Boolean,
     val number_of_qualities: Float,
     val organic_tracking_token: String,
-    val original_height: Float,
+    original_height: Float?,
     val original_media_has_visual_reply_media: Boolean,
-    val original_width: Float,
+    original_width: Float?,
     val photo_of_you: Boolean,
     val pk: Double,
     val preview_comments: Array<Any>,
@@ -61,13 +63,15 @@ class Media(
     val title: String,
     val top_likers: Array<Any>,
     val user: Rest.User,
-    val video_codec: String,
-    val video_dash_manifest: String,
-    val video_duration: Double,
-    val video_subtitles_confidence: Double,
-    val video_subtitles_uri: String,
-    val video_versions: Array<VideoVersion>,
+    val video_codec: String?,
+    val video_dash_manifest: String?,
+    val video_duration: Double?,
+    val video_subtitles_confidence: Double?,
+    val video_subtitles_uri: String?,
+    video_versions: Array<VideoVersion>?,
     val view_count: Double,
+) : Versioned(
+    image_versions2, original_height, original_width, video_versions
 ) {
     class MediaWrapperApi(
         val auto_load_more_enabled: Boolean,
@@ -85,12 +89,20 @@ class Media(
         val commerciality_status: Boolean,
         val fb_user_tags: Map<String, Any?>,
         val id: String,
-        val image_versions2: ImageVersions2,
+        image_versions2: ImageVersions2,
         val media_type: Float,
-        val original_height: Float,
-        val original_width: Float,
+        original_height: Float?,
+        original_width: Float?,
         val pk: Double,
         val sharing_friction_info: Map<String, *>,
+        val video_codec: String?,
+        val video_dash_manifest: String?,
+        val video_duration: Double?,
+        val video_subtitles_confidence: Double?,
+        val video_subtitles_uri: String?,
+        video_versions: Array<VideoVersion>?,
+    ) : Versioned(
+        image_versions2, original_height, original_width, video_versions
     )
 
     class ImageVersions2(
@@ -98,15 +110,15 @@ class Media(
         val additional_candidates: Map<String, Candidate>
     )
 
-    class Candidate(val width: Float, val height: Float, val url: String)
+    open class Candidate(val width: Float, val height: Float, val url: String)
 
     class VideoVersion(
         val type: Float,
-        val width: Float,
-        val height: Float,
-        val url: String,
+        width: Float,
+        height: Float,
+        url: String,
         val id: String
-    )
+    ) : Candidate(width, height, url)
 
     class Caption : HashMap<String, Any?>()
 

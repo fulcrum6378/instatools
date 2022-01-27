@@ -22,7 +22,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
             .into(h.b.photo)
         if (!guest) h.b.name.text = c.m.accounts[i].name
         else h.b.name.setText(R.string.guest)
-        vis(h.b.user, !guest)
+        vis(h.b.name, guest || c.m.accounts[i].name != "")
+        vis(h.b.user, !guest && c.m.accounts[i].user != "")
         h.b.user.text = c.m.accounts[i].user
         h.b.root.setOnClickListener {
             c.selectAccount(c.m.accounts[h.layoutPosition])

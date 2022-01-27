@@ -41,11 +41,11 @@ class Main : BaseActivity(true) {
         super.onCreate(savedInstanceState)
         if (m.acc == null) {
             if (!sp.contains(Login.spAccount)) {
-                goTo(Login::class.java)
+                goTo(Login::class)
                 return
             } else {
                 gDb = GlobalDb.build(c).also { gDao = it.dao() }
-                m.acc = gDao.account(sp.getString(Login.spAccount, "IMPOSSIBLE")!!.toLong())
+                m.acc = Login.gatherData(this, gDao)
             }
         }
         if (m.acc!!.id == -1L) guest = true
@@ -64,8 +64,18 @@ class Main : BaseActivity(true) {
         }
         b.nav.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.mnDownloads -> goTo(Downloads::class.java)
-                R.id.mnSettings -> goTo(Settings::class.java)
+                R.id.mnDownloads -> goTo(Downloads::class)
+                R.id.mnSettings -> goTo(Settings::class)
+                R.id.mnSwitchAccount -> {
+                    sp.edit().remove(Login.spAccount).apply()
+                    goTo(Login::class, true)
+                }
+                R.id.mnSignOut -> {
+                    // TODO: ASK FIRST
+                    // TODO: WHAT TO DO!?!?
+                    sp.edit().remove(Login.spAccount).apply()
+                    goTo(Login::class, true)
+                }
                 else -> super.onOptionsItemSelected(it)
             }
         }

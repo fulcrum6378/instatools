@@ -72,7 +72,7 @@ class Dm(
         val named: String,
         val newest_cursor: String,
         val next_cursor: String,
-        val oldest_cursor: String, // TODO: USE THIS
+        val oldest_cursor: String,
         val pending: Boolean,
         val pending_user_ids: Array<Any?>,
         val prev_cursor: String,
@@ -127,4 +127,6 @@ class Dm(
         val emoji: String,
         val super_react_type: String,
     )
+
+    // TODO: IN CASE OF SLOWED PERFORMANCE, COMMENT THE UNUSED PARAMETERS.
 }

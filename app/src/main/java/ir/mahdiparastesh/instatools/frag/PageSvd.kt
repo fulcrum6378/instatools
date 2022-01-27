@@ -35,14 +35,14 @@ class PageSvd(val c: Main) : Fragment() {
     private fun fetchSome() {
         if (c.m.nextSaved?.has_next_page == false) return
         if (c.m.saved == null) Api<Profile>(
-            c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class.java
+            c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class
         ) { profile ->
             val media = profile.graphql.user?.edge_saved_media ?: return@Api
             c.m.nextSaved = media.page_info
             c.m.saved = ArrayList(media.edges.map { it.node })
             adapt()
         } else Api<Profile.GraphQl>(
-            c, Api.Type.SAVED.url.format(c.m.acc!!.user, c.m.nextSaved?.end_cursor ?: ""), Profile.GraphQl::class.java
+            c, Api.Type.SAVED.url.format(c.m.acc!!.user, c.m.nextSaved?.end_cursor ?: ""), Profile.GraphQl::class
         ) { graphQl ->
             val media = graphQl.user?.edge_saved_media ?: return@Api
             c.m.nextSaved = media.page_info
