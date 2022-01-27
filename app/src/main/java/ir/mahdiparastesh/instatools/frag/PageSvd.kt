@@ -41,13 +41,17 @@ class PageSvd(val c: Main) : Fragment() {
             c.m.nextSaved = media.page_info
             c.m.saved = ArrayList(media.edges.map { it.node })
             adapt()
-        } else Api<Profile.GraphQl>(
-            c, Api.Type.SAVED.url.format(c.m.acc!!.user, c.m.nextSaved?.end_cursor ?: ""), Profile.GraphQl::class
-        ) { graphQl ->
-            val media = graphQl.user?.edge_saved_media ?: return@Api
+            fetchSome()
+        } else Api<Profile.GraphQlResponse>(
+            c, Api.Type.SAVED.url.format(
+                c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
+            ), Profile.GraphQlResponse::class
+        ) { res ->
+            val media = res.data.user?.edge_saved_media ?: return@Api
             c.m.nextSaved = media.page_info
             c.m.saved?.addAll(media.edges.map { it.node })
             adapt()
+            fetchSome()
         }
     }
 

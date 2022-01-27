@@ -5,11 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity
 class Unfollower(
-    @PrimaryKey val id: Long,
+    @PrimaryKey var id: Long,
     val user: String,
     val name: String,
     val photo: String?,
     val followedBy: Long,
+    val isPrivate: Boolean
 ) {
     companion object {
         fun find(it: Unfollower, inList: List<Unfollower>): Int? {

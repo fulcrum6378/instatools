@@ -3,14 +3,19 @@ package ir.mahdiparastesh.instatools.list
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
+import ir.mahdiparastesh.instatools.frag.PageUnf
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
 import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
 
-class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
+class ListUnf(val c: Main, val f: PageUnf) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
     class ViewHolder(val b: ListUnfBinding) : RecyclerView.ViewHolder(b.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,8 +34,26 @@ class ListUnf(val c: Main) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
             if (c.m.unfollowers == null) return@setOnClickListener
             UiTools.openProfile(c, c.m.unfollowers!![h.layoutPosition].user)
         }
+        h.b.unfollow.setOnClickListener {
+            if (c.m.unfollowers == null) return@setOnClickListener
+            if (!c.m.unfollowers!![h.layoutPosition].isPrivate)
+                unfollow(c.m.unfollowers!![h.layoutPosition])
+        }
         vis(h.b.sep, i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.unfollowers?.size ?: 0
+
+    private fun unfollow(unf: Unfollower) {
+        Api<Rest>(
+            c, Api.Type.UNFOLLOW.url.format(unf.id.toString()), Rest::class,
+            method = Request.Method.POST
+        ) {
+            c.pDao.deleteUnfollower(unf)
+            val index = c.m.unfollowers!!.indexOf(unf)
+            c.m.unfollowers!!.remove(unf)
+            f.b.rv.adapter?.notifyItemRemoved(index)
+            f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers!!.size - 1)
+        }
+    }
 }

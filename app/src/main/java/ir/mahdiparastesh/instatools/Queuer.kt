@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.IBinder
 import androidx.documentfile.provider.DocumentFile
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.Response
@@ -74,6 +75,12 @@ class Queuer : Service() {
                     pDao.deleteQueued(queue[0])
                     download()
                 }
+            }.apply {
+                setShouldCache(true)
+                tag = queue[0].itemId
+                retryPolicy = DefaultRetryPolicy(
+                    20000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                )
             }
         )
     }

@@ -20,7 +20,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 
 class PageUnf(private val c: Main) : Fragment() {
-    private lateinit var b: PageUnfBinding
+    lateinit var b: PageUnfBinding
     private var following: List<Rest.User>? = null
     private var fetching = false
 
@@ -75,7 +75,7 @@ class PageUnf(private val c: Main) : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun adapt() {
-        if (b.rv.adapter == null) b.rv.adapter = ListUnf(c)
+        if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
     }
 
@@ -107,7 +107,7 @@ class PageUnf(private val c: Main) : Fragment() {
             val newbie = Unfollower(
                 u.id.toLong(), u.username, u.full_name,
                 u.profile_pic_url_hd ?: u.profile_pic_url,
-                u.edge_followed_by.count.toLong()
+                u.edge_followed_by.count.toLong(), u.is_private == true
             )
             c.m.unfollowers!!.add(newbie)
             c.m.unfollowers!!.sortBy { it.followedBy }

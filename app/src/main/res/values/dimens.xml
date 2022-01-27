@@ -9,6 +9,7 @@
     <!-- Main -->
     <dimen name="bnv">66dp</dimen>
     <dimen name="padGallery">2dp</dimen>
+    <dimen name="unfAction">50dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">45dp</dimen>

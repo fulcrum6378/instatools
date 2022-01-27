@@ -29,7 +29,6 @@ class Api<JSON>(
 ) : Request<String>(method, encode(url), Response.ErrorListener {
     Toast.makeText(c, "ERROR: ${it.networkResponse?.statusCode}", Toast.LENGTH_LONG).show()
 }) {
-
     init {
         setShouldCache(cache)
         tag = "fetch"
@@ -41,7 +40,7 @@ class Api<JSON>(
 
     override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, c.sp)
 
-    override fun getBody(): ByteArray = encode(body)?.encodeToByteArray() ?: super.getBody()
+    override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
     @Suppress("UNCHECKED_CAST")
     override fun deliverResponse(response: String) {
@@ -81,6 +80,9 @@ class Api<JSON>(
                     "&folder=&limit=20&thread_message_limit=10"
         ),
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
+
+        FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
+        UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
     }
 
     companion object {

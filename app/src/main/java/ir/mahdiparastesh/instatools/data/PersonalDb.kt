@@ -18,6 +18,9 @@ abstract class PersonalDb : RoomDatabase() {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addUnfollower(item: Unfollower)
 
+        @Delete
+        fun deleteUnfollower(item: Unfollower)
+
         @Query("DELETE FROM Unfollower")
         fun deleteUnfollowers(): Int
 
