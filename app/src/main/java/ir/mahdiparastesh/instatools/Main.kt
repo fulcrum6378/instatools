@@ -7,12 +7,14 @@ import android.os.Bundle
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
+import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UiTools
 
@@ -29,6 +31,8 @@ class Main : BaseActivity(true) {
     private var page2: PageSvd? = null
     private var page3: PageBox? = null
     private var anTheme: ValueAnimator? = null
+    val colorBG = MutableLiveData<Int?>(null)
+    val colorAc = MutableLiveData<Int?>(null)
     private var currentPage = 0
 
     companion object {
@@ -106,20 +110,47 @@ class Main : BaseActivity(true) {
                 .commit()
 
             anTheme?.cancel()
-            anTheme = null
             val col = if (night) bg else ca
             anTheme = ValueAnimator.ofArgb(col[lastPage], col[currentPage]).apply {
                 duration = 400L
                 addUpdateListener {
-                    if (night) nightTheme(it.animatedValue as Int)
-                    else dayTheme(it.animatedValue as Int)
+                    if (night) colorBG.value = it.animatedValue as Int
+                    else colorAc.value = it.animatedValue as Int
                 }
                 start()
             }
             true
         }
-        if (night) nightTheme(bg[0]) else dayTheme(ca[0])
+
+        // Theming
+        if (night) {
+            colorBG.observe(this) {
+                if (it == null) return@observe
+                window.decorView.setBackgroundColor(it)
+                window.statusBarColor = it
+                window.navigationBarColor = it
+                b.bnv.setBackgroundColor(it)
+                b.nav.setBackgroundColor(it)
+                page2?.b?.expanded?.setBackgroundColor(it)
+            }
+            colorBG.value = bg[0]
+        } else {
+            colorAc.observe(this) {
+                if (it == null) return@observe
+                val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
+                b.toolbar.navigationIcon?.colorFilter = cf
+                b.toolbar.menu.findItem(R.id.mtSearch).icon.colorFilter = cf
+                tbTitle?.setTextColor(it)
+            }
+            colorAc.value = ca[0]
+        }
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i]) }
+    }
+
+    override fun onBackPressed() {
+        if (arrayOf<BackStackOwner>(page1!!, page2!!, page3!!)[currentPage].goBack())
+            return
+        super.onBackPressed()
     }
 
     override fun onDestroy() {
@@ -138,22 +169,7 @@ class Main : BaseActivity(true) {
         }
     }
 
-    private fun pages() = arrayOf(page1!!, page2!!, page3!!)
-
-    private fun dayTheme(colour: Int) {
-        val cf = PorterDuffColorFilter(colour, PorterDuff.Mode.SRC_IN)
-        b.toolbar.navigationIcon?.colorFilter = cf
-        b.toolbar.menu.findItem(R.id.mtSearch).icon.colorFilter = cf
-        tbTitle?.setTextColor(colour)
-    }
-
-    private fun nightTheme(colour: Int) {
-        window.decorView.setBackgroundColor(colour)
-        window.statusBarColor = colour
-        window.navigationBarColor = colour
-        b.bnv.setBackgroundColor(colour)
-        b.nav.setBackgroundColor(colour)
-    }
+    private fun pages() = arrayOf<Fragment>(page1!!, page2!!, page3!!)
 
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {

@@ -89,10 +89,14 @@ class Queuer : Service() {
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(acc.folder!!))!!
         var branch = stem.findFile(q.userName)
         if (branch == null) branch = stem.createDirectory(q.userName)
-        val type = MediaType.values().find { it.inDb == q.mediaType }!!
-        val fName = "${q.itemId}.${type.ext}"
-        var leaf = branch!!.findFile(fName)
-        if (leaf == null) leaf = branch.createFile(type.mime, fName)
+        for (f in branch!!.listFiles())
+            if (f.name?.substringAfterLast("_")?.substringBefore(".") == q.itemId)
+                return
+        val type = MediaType.values().find { it.inDb == q.mediaType }!!// ?: return
+        val fName = q.fName(type.ext)
+        var leaf = branch.findFile(fName)
+        if (leaf != null) return
+        leaf = branch.createFile(type.mime, fName)
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }

@@ -16,10 +16,11 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
+import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 
-class PageUnf(private val c: Main) : Fragment() {
+class PageUnf(private val c: Main) : Fragment(), BackStackOwner {
     lateinit var b: PageUnfBinding
     private var following: List<Rest.User>? = null
     private var fetching = false

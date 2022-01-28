@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/padGallery"
+    app:shimmer_duration="700"
+    app:shimmer_repeat_delay="50"
+    app:shimmer_width_ratio="2"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -11,6 +15,7 @@
         style="@style/parentConstraint"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#EEE"
         android:scaleType="centerCrop" />
 
     <View
@@ -18,4 +23,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/button" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

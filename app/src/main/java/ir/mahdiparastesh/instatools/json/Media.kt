@@ -106,7 +106,7 @@ class Media(
         val media_type: Float,
         original_height: Float?,
         original_width: Float?,
-        val pk: Double,
+        val pk: String,
         val sharing_friction_info: Map<String, *>,
         val video_codec: String?,
         val video_dash_manifest: String?,

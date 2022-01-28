@@ -39,7 +39,6 @@ dependencies {
     implementation 'androidx.security:security-crypto:1.0.0' // only this requires sdk 23
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.code.gson:gson:2.8.9'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def room_version = '2.4.1'
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
@@ -50,4 +49,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.7.0' // Only for View.get()
     implementation group: 'commons-lang', name: 'commons-lang', version: '2.6' // StringEscapeUtils
     implementation 'com.airbnb.android:lottie:4.2.2'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
 }

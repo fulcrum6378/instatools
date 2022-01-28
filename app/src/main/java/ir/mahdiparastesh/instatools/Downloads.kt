@@ -32,6 +32,8 @@ class Downloads : BaseActivity() {
         const val ACTION_ADAPT = 2
         const val spStorage = "storage"
         var handler: Handler? = null
+
+        fun now() = Calendar.getInstance().timeInMillis
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +74,14 @@ class Downloads : BaseActivity() {
             handleLink(b.pasteLink.text.toString())
             b.pasteLink.setText("")
         }
+
+        // Navigation and Toolbar
+        b.toolbar.navigationIcon?.colorFilter = pdcf(R.color.CSD)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { handleLink(it) }
     }
 
     override fun onResume() {
@@ -79,6 +89,7 @@ class Downloads : BaseActivity() {
         Thread {
             m.queueds = ArrayList(pDao.queueds())
             m.queueds!!.sortBy { it.added }
+            if (!m.queueds.isNullOrEmpty()) initService()
             handler?.obtainMessage(ACTION_ADAPT)?.sendToTarget()
         }.start()
     }
@@ -98,9 +109,9 @@ class Downloads : BaseActivity() {
                     if (med == null) med = reels.reels[user.id]?.items?.find { it.pk == storyId }
                     if (med == null) return@Api
                     val qud = Queued(
-                        user.id, user.username, med.id, med.best(),
+                        user.id, user.username, med.pk, med.best(),
                         med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst(),
-                        med.media_type.toInt().toByte(), Calendar.getInstance().timeInMillis
+                        med.media_type.toInt().toByte(), now()
                     )
                     qud.id = pDao.addQueued(qud)
                     m.queueds?.add(qud)
@@ -117,21 +128,21 @@ class Downloads : BaseActivity() {
             when {
                 med.carousel_media != null -> for (car in med.carousel_media) items.add(
                     Queued(
-                        med.user.pk, med.user.username, car.id, car.best(),
+                        med.user.pk, med.user.username, car.pk, car.best(),
                         med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst(),
-                        car.media_type.toInt().toByte(), Calendar.getInstance().timeInMillis
+                        car.media_type.toInt().toByte(), now()
                     )
                 )
                 med.image_versions2 != null -> items.add(
                     Queued(
-                        med.user.pk, med.user.username, med.id, med.best(),
+                        med.user.pk, med.user.username, med.pk, med.best(),
                         med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst(),
-                        med.media_type.toInt().toByte(), Calendar.getInstance().timeInMillis
+                        med.media_type.toInt().toByte(), now()
                     )
                 )
                 else -> {
                     queued = false
-                    Toast.makeText(c, "Sorry dunno what to do!?!?", Toast.LENGTH_LONG).show()
+                    Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
                 }
             }
             items.forEach {

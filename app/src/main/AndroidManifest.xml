@@ -45,7 +45,7 @@
         <activity
             android:name=".Downloads"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.InstaTools.Secondary">
 
             <meta-data

@@ -11,9 +11,10 @@ import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
+import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
-class PageBox(val c: Main) : Fragment() {
+class PageBox(val c: Main) : Fragment(), BackStackOwner {
     private lateinit var b: PageBoxBinding
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -22,6 +23,11 @@ class PageBox(val c: Main) : Fragment() {
             parent, false
         )
 
+        b.refresher.setOnRefreshListener {
+            c.m.nextDmThreads = null
+            c.m.dmThreads = arrayListOf()
+            fetchSome()
+        }
         when {
             Main.guest -> {
                 // TODO: GUEST MODE
@@ -36,7 +42,11 @@ class PageBox(val c: Main) : Fragment() {
     }
 
     private fun fetchSome() {
-        //if (c.m.nextDmThreads?.has_next_page == false) return
+        /*if (c.m.nextDmThreads?.has_next_page == false) {
+            b.refresher.isRefreshing = false
+            return
+        }*/
+        b.refresher.isRefreshing = false//
         Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class) { page ->
             c.m.nextDmThreads = page.inbox.next_cursor
             c.m.dmThreads?.addAll(page.inbox.threads)
@@ -48,5 +58,9 @@ class PageBox(val c: Main) : Fragment() {
     private fun adapt() {
         if (b.rv.adapter == null) b.rv.adapter = ListBox(c)
         else b.rv.adapter?.notifyDataSetChanged()
+    }
+
+    override fun goBack(): Boolean {
+        return super.goBack()
     }
 }
