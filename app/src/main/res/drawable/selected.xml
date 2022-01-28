@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorPrimaryWeak" />
+        </shape>
+    </item>
+    <item
+        android:bottom="@dimen/svdSelectedPad"
+        android:drawable="@drawable/done"
+        android:left="@dimen/svdSelectedPad"
+        android:right="@dimen/svdSelectedPad"
+        android:top="@dimen/svdSelectedPad" />
+</layer-list>

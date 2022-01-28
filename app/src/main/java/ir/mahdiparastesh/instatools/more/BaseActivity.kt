@@ -25,7 +25,9 @@ import kotlin.reflect.KClass
 abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity() {
     lateinit var c: Context
     lateinit var m: Model
-    lateinit var sp: SharedPreferences
+    lateinit var esp: SharedPreferences
+    lateinit var gsp: SharedPreferences
+    var sp: SharedPreferences? = null
     lateinit var dm: DisplayMetrics
     var night = false
     var dirRtl = false
@@ -34,7 +36,9 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         super.onCreate(savedInstanceState)
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
-        sp = esp(c)
+        esp = initEsp(c)
+        gsp = getSharedPreferences("-1", Context.MODE_PRIVATE)
+        initSp()
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)
@@ -78,6 +82,14 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         return true
     }
 
+    fun initSp() {
+        if (m.acc != null)
+            sp = getSharedPreferences(m.acc!!.id.toString(), Context.MODE_PRIVATE)
+    }
+
+    fun preference(key: String): String? =
+        sp?.getString(key, null) ?: gsp.getString(key, null)
+
     enum class Theme(val res: Int) {
         DEFAULT(R.style.Theme_InstaTools),
         PRIMARY(R.style.Theme_InstaTools_Primary),
@@ -86,7 +98,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
     }
 
     companion object {
-        fun esp(c: Context) = EncryptedSharedPreferences.create(
+        fun initEsp(c: Context) = EncryptedSharedPreferences.create(
             "main", MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC), c,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM

@@ -55,7 +55,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     c.m.accounts.add(this)
                 }
             return c.m.accounts.find {
-                it.id == c.sp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")!!.toLong()
+                it.id == c.esp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")!!.toLong()
             }
         }
     }
@@ -74,12 +74,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.web.webViewClient = myClient
 
         // Repair SharedPreferences
-        sp.all.forEach { p ->
+        esp.all.forEach { p ->
             if (p.key.startsWith(spCookiesBeg)) try {
                 val checkable = p.key.substringAfter(spCookiesBeg).toLong()
                 if (m.accounts.find { it.id == checkable } == null) repairAcc(checkable)
             } catch (ignored: NumberFormatException) {
-                sp.edit().remove(p.key).apply()
+                esp.edit().remove(p.key).apply()
             }
         }
 
@@ -105,6 +105,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private val logoDestBias = 0.15f
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
+        m.accounts.sortWith(Account.Sort())
+        m.accounts.sortedBy { it.id < 0 }
         bw.accounts.adapter = ListAcc(this)
         bw.addAccount.setOnClickListener {
             gonnaAdd = true
@@ -148,7 +150,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             m.acc = acc
             gonnaBeGuest = true
             browse()
-        } else (sp.getString(spCookies.format(acc.id), null)).apply {
+        } else (esp.getString(spCookies.format(acc.id), null)).apply {
             if (this != null) browse(this)
             else {
                 deleteAcc(acc.id.toString())
@@ -176,7 +178,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private fun goAhead() {
-        if (m.acc!!.id != -1L) sp.edit().apply {
+        if (m.acc!!.id != -1L) esp.edit().apply {
             putString(spAccount, m.acc!!.id.toString())
             apply()
         }
@@ -193,9 +195,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private fun deleteAcc(id: String) {
         if (id == "") return
-        sp.edit().apply {
+        esp.edit().apply {
             remove(spCookies.format(id))
-            if (sp.getString(spAccount, null) == id) remove(spAccount)
+            if (esp.getString(spAccount, null) == id) remove(spAccount)
             apply()
         }
         // TODO: ALERT THE USER
@@ -209,7 +211,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             super.onPageStarted(view, url, favicon)
             if (gonnaBeGuest) {
                 id = "-1"
-                sp.edit()
+                esp.edit()
                     .putString(spCookies.format(id), cookieManager.getCookie(host))
                     .apply()
                 goAhead(); return; }
@@ -225,7 +227,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 id = cookieManager.getCookie(host)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";")
-                sp.edit()
+                esp.edit()
                     .putString(spCookies.format(id), cookieManager.getCookie(host))
                     .apply()
             }

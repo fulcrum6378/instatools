@@ -22,16 +22,23 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 
 class PageSvd(val c: Main) : Fragment(), BackStackOwner {
     lateinit var b: PageSvdBinding
-    lateinit var tracker: SelectionTracker<String>
+    var tracker: SelectionTracker<String>? = null
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageSvdBinding.inflate(
             c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
         )
-        if (!Main.guest) b.refresher.setOnRefreshListener {
-            c.m.nextSaved = null
-            c.m.saved = null
-            fetchSome()
+        b.rv.layoutManager = GridLayoutManager(c, 3)
+        if (!Main.guest) {
+            b.refresher.setOnChildScrollUpCallback { _, _ ->
+                return@setOnChildScrollUpCallback tracker?.hasSelection() == true
+            }
+            b.refresher.setOnRefreshListener {
+                b.rv.adapter = null
+                c.m.nextSaved = null
+                c.m.saved = null
+                fetchSome()
+            }
         }
         when {
             Main.guest -> {
@@ -67,21 +74,20 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner {
             adapt()
             fetchSome()
         }
+
+        // TODO: THIS IS NOT A LAZY LOADING
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun adapt() {
         if (b.rv.adapter == null) {
-            b.rv.layoutManager = GridLayoutManager(c, 3)
             b.rv.adapter = ListSvd(c, this)
             tracker = SelectionTracker.Builder(
                 "saved", b.rv,
                 MyItemKeyProvider(), MyDetailsLookup(),
                 StorageStrategy.createStringStorage()
-            )/*.withSelectionPredicate(
-                SelectionPredicates.createSelectAnything()
-            )*/.build()
-            tracker.addObserver(SelectObserver())
+            ).build()
+            tracker?.addObserver(SelectObserver())
         } else b.rv.adapter?.notifyDataSetChanged()
     }
 
@@ -89,6 +95,10 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner {
         (b.rv.adapter as ListSvd?)?.let {
             if (it.zoomed) {
                 it.collapse(); return@goBack true; }
+        }
+        if (tracker?.hasSelection() == true) {
+            tracker?.clearSelection()
+            return true
         }
         return false
     }
@@ -113,8 +123,10 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner {
 
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
         override fun onSelectionChanged() {
+            if (tracker == null) return
             super.onSelectionChanged()
-            // TODO: USE tracker.hasSelection() AND ETC
+            if (!tracker!!.hasSelection()) tracker?.clearSelection()
+            c.selective(tracker!!.hasSelection())
         }
     }
 }

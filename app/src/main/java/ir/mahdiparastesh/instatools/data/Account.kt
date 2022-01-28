@@ -10,15 +10,13 @@ class Account(
     @PrimaryKey var id: Long,
     var user: String? = null,
     var name: String? = null,
-    var photo: String? = null,
-    var folder: String? = null
+    var photo: String? = null
 ) : Parcelable {
     @Suppress("unused")
-    constructor() : this(0, "", "", null, null)
+    constructor() : this(0, "", "", null)
 
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString()
@@ -34,7 +32,6 @@ class Account(
         parcel.writeString(user)
         parcel.writeString(name)
         parcel.writeString(photo)
-        parcel.writeString(folder)
     }
 
     override fun describeContents() = 0

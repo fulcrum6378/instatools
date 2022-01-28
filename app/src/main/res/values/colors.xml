@@ -32,4 +32,6 @@
     <color name="unfollowers">@color/CPD</color>
     <color name="saved">@color/CSD</color>
     <color name="direct">@color/CTD</color>
+    <color name="shimmerBG">#EEE</color>
+    <color name="selectedTick">#AAFFFFFF</color>
 </resources>

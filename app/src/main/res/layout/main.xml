@@ -14,7 +14,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/toolbar"
-            app:menu="@menu/main_tb"
+            app:menu="@menu/main_tlb"
             app:title="@string/app_name" />
 
         <FrameLayout

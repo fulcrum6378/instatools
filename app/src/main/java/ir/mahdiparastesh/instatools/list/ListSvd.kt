@@ -79,12 +79,15 @@ class ListSvd(val c: Main, val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHo
             })
             .into(h.b.thumbnail)
 
-        h.b.click.setBackgroundResource(
-            if (!f.tracker.isSelected(c.m.saved!![i].id)) R.drawable.button else R.drawable.ig_bg
+        if (f.tracker != null) h.b.click.setBackgroundResource(
+            if (!f.tracker!!.isSelected(c.m.saved!![i].id)) R.drawable.button else R.drawable.selected
         )
         h.b.click.setOnClickListener {
             zoomedThumb = it
-            zoomImageFromThumb(c.m.saved!![h.layoutPosition].display_url)
+            try {
+                zoomImageFromThumb(c.m.saved!![h.layoutPosition].display_url)
+            } catch (ignored: NullPointerException) {
+            }
         }
         h.b.click.setOnLongClickListener {
             h.b.root.isActivated = true
@@ -104,7 +107,7 @@ class ListSvd(val c: Main, val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHo
         val finalBoundsInt = Rect()
         val globalOffset = Point()
 
-        zoomedThumb!!.getGlobalVisibleRect(startBoundsInt)
+        zoomedThumb?.getGlobalVisibleRect(startBoundsInt)
         f.b.root.getGlobalVisibleRect(finalBoundsInt, globalOffset)
         startBoundsInt.offset(-globalOffset.x, -globalOffset.y)
         finalBoundsInt.offset(-globalOffset.x, -globalOffset.y)

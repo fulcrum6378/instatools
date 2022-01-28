@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mtDownload"
+        android:icon="@drawable/download"
+        android:title="@string/downloads"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mtRemove"
+        android:icon="@drawable/saved_off"
+        android:title="@string/remove"
+        app:showAsAction="ifRoom" />
+</menu>

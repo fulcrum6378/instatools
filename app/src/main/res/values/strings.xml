@@ -10,6 +10,7 @@
     <string name="search">Search</string>
     <string name="switchAccount">Switch Account</string>
     <string name="signOut">Sign Out</string>
+    <string name="remove">Remove</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>

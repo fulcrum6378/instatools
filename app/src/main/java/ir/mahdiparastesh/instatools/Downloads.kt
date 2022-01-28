@@ -157,15 +157,14 @@ class Downloads : BaseActivity() {
 
     fun initService() {
         if (Queuer.active) return
-        var u = m.acc
-        if (u != null && u.folder == null) u.folder = m.accounts.find { it.id == -1L }?.folder
-        if (u == null)
-            u = m.accounts.find { it.id == -1L }
-        if (u!!.folder == null) {
-            u.folder = sp.getString(spStorage, null) // TODO
+        val dest = preference(spStorage)
+        if (dest == null) {
+            // TODO: ALERT
+            return
         }
         startService(Intent(this, Queuer::class.java).apply {
-            putExtra(Queuer.EXTRA_USER, u)
+            putExtra(Queuer.EXTRA_USER, m.acc ?: m.accounts.find { it.id == -1L })
+            putExtra(Queuer.EXTRA_DEST, dest)
             action = Queuer.ACTION_START
         })
     }

@@ -29,15 +29,18 @@ class Queuer : Service() {
     private lateinit var pDb: PersonalDb
     private lateinit var pDao: PersonalDb.DAO
     private lateinit var acc: Account
+    private lateinit var des: String
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
             ACTION_START -> {
                 c = applicationContext
-                sp = BaseActivity.esp(c)
-                if (intent.extras != null)
+                sp = BaseActivity.initEsp(c)
+                if (intent.extras != null) {
                     intent.getParcelableExtra<Account>(EXTRA_USER)?.let { acc = it }
+                    intent.getStringExtra(EXTRA_DEST)?.let { des = it }
+                }
                 if (::acc.isInitialized) {
                     pDb = PersonalDb.build(c, acc.id.toString()).also { pDao = it.dao() }
                     download()
@@ -86,7 +89,7 @@ class Queuer : Service() {
     }
 
     private fun save(q: Queued, ba: ByteArray) {
-        val stem = DocumentFile.fromTreeUri(c, Uri.parse(acc.folder!!))!!
+        val stem = DocumentFile.fromTreeUri(c, Uri.parse(des))!!
         var branch = stem.findFile(q.userName)
         if (branch == null) branch = stem.createDirectory(q.userName)
         for (f in branch!!.listFiles())
@@ -119,6 +122,7 @@ class Queuer : Service() {
         val ACTION_START = "$pack.ACTION_START"
         val ACTION_STOP = "$pack.ACTION_STOP"
         val EXTRA_USER = "$pack.EXTRA_USER"
+        val EXTRA_DEST = "$pack.EXTRA_DEST"
         var active = false
     }
 

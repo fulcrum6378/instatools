@@ -5,6 +5,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
@@ -44,14 +45,16 @@ class Main : BaseActivity(true) {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
         if (m.acc == null) {
-            if (!sp.contains(Login.spAccount)) {
-                goTo(Login::class)
-                return
-            } else {
+            if (esp.contains(Login.spAccount)) {
                 gDb = GlobalDb.build(c).also { gDao = it.dao() }
                 m.acc = Login.gatherData(this, gDao)
             }
+            if (!esp.contains(Login.spAccount) || m.acc == null) {
+                goTo(Login::class)
+                return
+            }
         }
+        initSp()
         if (m.acc!!.id == -1L) guest = true
         else pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         b = MainBinding.inflate(layoutInflater)
@@ -71,13 +74,13 @@ class Main : BaseActivity(true) {
                 R.id.mnDownloads -> goTo(Downloads::class)
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
-                    sp.edit().remove(Login.spAccount).apply()
+                    esp.edit().remove(Login.spAccount).apply()
                     goTo(Login::class, true)
                 }
                 R.id.mnSignOut -> {
                     // TODO: ASK FIRST
                     // TODO: WHAT TO DO!?!?
-                    sp.edit().remove(Login.spAccount).apply()
+                    esp.edit().remove(Login.spAccount).apply()
                     goTo(Login::class, true)
                 }
                 else -> super.onOptionsItemSelected(it)
@@ -139,7 +142,7 @@ class Main : BaseActivity(true) {
                 if (it == null) return@observe
                 val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
                 b.toolbar.navigationIcon?.colorFilter = cf
-                b.toolbar.menu.findItem(R.id.mtSearch).icon.colorFilter = cf
+                b.toolbar.menu.forEach { item -> item.icon.colorFilter = cf }
                 tbTitle?.setTextColor(it)
             }
             colorAc.value = ca[0]
@@ -170,6 +173,23 @@ class Main : BaseActivity(true) {
     }
 
     private fun pages() = arrayOf<Fragment>(page1!!, page2!!, page3!!)
+
+    var isSelective = false
+    fun selective(bb: Boolean) {
+        if (isSelective == bb) return
+        isSelective = bb
+        b.toolbar.menu.clear()
+        b.toolbar.inflateMenu(
+            when {
+                //bb && currentPage == 0 -> R.menu.main_tlb_unf_select
+                bb && currentPage == 1 -> R.menu.main_tlb_svd_select
+                //bb && currentPage == 2 -> R.menu.main_tlb_box_select
+                else -> R.menu.main_tlb
+            }
+        )
+        b.bnv.menu.forEach { it.isEnabled = !bb }
+        if (!night) colorAc.value = colorAc.value
+    }
 
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
