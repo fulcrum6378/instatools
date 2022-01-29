@@ -13,6 +13,7 @@
         android:id="@+id/thumb"
         android:layout_width="@dimen/thumbPhoto"
         android:layout_height="@dimen/thumbPhoto"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="@dimen/qudPadV"
         android:layout_marginBottom="@dimen/qudPadV"
         app:layout_constraintBottom_toBottomOf="parent"

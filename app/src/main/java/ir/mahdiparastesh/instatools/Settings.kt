@@ -1,37 +1,49 @@
 package ir.mahdiparastesh.instatools
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import ir.mahdiparastesh.instatools.Downloads.Companion.spStorage
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Persistent
 
 class Settings : BaseActivity() {
     private lateinit var b: SettingsBinding
-    private val saveLauncher: ActivityResultLauncher<Intent> =
+    private lateinit var prf: SharedPreferences
+    private var globalMode = false
+    private val saveLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.data?.data == null) return@registerForActivityResult
             val uri = it.data!!.data!!
             contentResolver.takePersistableUriPermission(
                 uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
-            esp.edit().apply {
+            prf.edit().apply {
                 putString(spStorage, uri.toString())
                 apply()
             }
         }
 
+    companion object {
+        const val EXTRA_IS_GLOBAL = "isGlobal"
+        const val spStorage = "storage"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        intent.extras?.getBoolean(EXTRA_IS_GLOBAL)?.let { globalMode = it }
         b = SettingsBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.stTitle)
+        toolbar(b.toolbar, R.string.settings)
+        tbTitle?.setText(if (globalMode) R.string.gSettings else R.string.aSettings)
+        prf = if (globalMode || sp == null) gsp else sp!!
 
-        sp = Persistent.initSp(c, m.acc)
-        if (sp?.contains(spStorage) == false)
+        if (!prf.contains(spStorage))
             saveLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 }

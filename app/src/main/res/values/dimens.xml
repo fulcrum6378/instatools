@@ -18,7 +18,7 @@
     <!-- Downloads -->
     <dimen name="pasteLink">50dp</dimen>
     <dimen name="pasteLinkPad">10dp</dimen>
-    <dimen name="qudLoadingPad">10dp</dimen>
+    <dimen name="qudLoadingPad">14dp</dimen>
     <dimen name="qudPadH">15dp</dimen>
     <dimen name="qudPadV">10dp</dimen>
 </resources>

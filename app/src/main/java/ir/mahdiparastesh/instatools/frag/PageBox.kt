@@ -25,10 +25,17 @@ class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
             parent, false
         )
 
-        b.refresher.setOnRefreshListener {
-            c.m.nextDmThreads = null
-            c.m.dmThreads = arrayListOf()
-            fetchSome()
+        if (Main.guest) {
+            b.refresher.setOnRefreshListener {
+                c.m.nextDmThreads = null
+                c.m.dmThreads = arrayListOf()
+                fetchSome()
+            }
+            b.rv.viewTreeObserver.addOnScrollChangedListener {
+                if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset()) ==
+                    b.rv.computeVerticalScrollRange()
+                ) fetchSome()
+            }
         }
         when {
             Main.guest -> {
@@ -48,11 +55,11 @@ class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
             b.refresher.isRefreshing = false
             return
         }*/
-        b.refresher.isRefreshing = false//
         Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class) { page ->
             c.m.nextDmThreads = page.inbox.next_cursor
             c.m.dmThreads?.addAll(page.inbox.threads)
             adapt()
+            b.refresher.isRefreshing = false
         }
     }
 

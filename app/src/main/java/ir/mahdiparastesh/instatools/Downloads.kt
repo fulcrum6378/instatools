@@ -105,13 +105,12 @@ class Downloads : BaseActivity() {
         const val HANDLE_DELETED = 1
         const val HANDLE_CHANGED = 2
         const val HANDLE_RESET = 3
-        const val spStorage = "storage"
         var handler: Handler? = null
 
         fun initService(c: BaseActivity, link: String? = null) {
-            val dest = c.preference(spStorage)
+            val dest = c.preference(Settings.spStorage)
             if (dest == null) {
-                // TODO: ALERT
+                c.goTo(Settings::class) // OF THIS ACCOUNT
                 return
             }
             if (Queuer.active) {

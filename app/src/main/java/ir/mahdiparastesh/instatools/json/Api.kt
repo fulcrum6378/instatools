@@ -72,6 +72,7 @@ class Api<JSON>(
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
         REELS("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
+        POST("https://www.instagram.com/p/%s/"),
 
         SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
         SAVED(
@@ -87,6 +88,8 @@ class Api<JSON>(
 
         FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
         UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
+        SAVE("https://www.instagram.com/web/save/%s/save/"),
+        UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
     }
 
     companion object {
@@ -128,6 +131,9 @@ class Api<JSON>(
             this["sec-fetch-site"] = "same-origin"
             this["x-requested-with"] = "XMLHttpRequest"
             // "cache-control": "max-age=0" // SET THIS IN ORDER TO DISABLE CACHE
+
+            //this["content-type"] = "application/x-www-form-urlencoded"
+            //this["x-instagram-ajax"] = "ee0117db2fab"
 
             // The rest are dynamic
             //this["x-asbd-id"] = "198387"

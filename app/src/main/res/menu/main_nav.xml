@@ -5,12 +5,16 @@
         android:icon="@drawable/download"
         android:title="@string/downloads" />
     <item
+        android:id="@+id/mnGSettings"
+        android:icon="@drawable/settings"
+        android:title="@string/gSettings" />
+    <item
         android:id="@+id/mnSettings"
         android:icon="@drawable/settings"
-        android:title="@string/settings" />
+        android:title="@string/aSettings" />
     <item
         android:id="@+id/mnSwitchAccount"
-        android:icon="@drawable/settings"
+        android:icon="@drawable/switch_account"
         android:title="@string/switchAccount" />
     <item
         android:id="@+id/mnSignOut"

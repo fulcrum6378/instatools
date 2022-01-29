@@ -10,8 +10,14 @@
     <string name="search">Search</string>
     <string name="switchAccount">Switch Account</string>
     <string name="signOut">Sign Out</string>
+    <string name="download">Download</string>
     <string name="remove">Remove</string>
     <string name="openLink">Open Link</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="unsave">Unsave</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -20,13 +26,13 @@
     <string name="unfollowers">Unfollowers</string>
     <string name="saved">Saved</string>
     <string name="direct">Direct</string>
+    <string name="gSettings">Global Settings</string>
+    <string name="aSettings">Settings of This Account</string>
+    <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
 
     <!-- Downloads -->
-    <string name="dwTitle">Downloads</string>
+    <string name="dwTitle">@string/downloads</string>
     <string name="pasteLink">Paste a link&#8230;</string>
 
     <!-- Settings -->
-    <string name="stTitle">InstaTools Settings</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

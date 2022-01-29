@@ -50,11 +50,15 @@ class PageUnf(private val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuI
                         c.m.unfollowers = arrayListOf()
                         analyze()
                     }
-                    Action.ANALYZED.ordinal -> fetching = false
+                    Action.ANALYZED.ordinal -> {
+                        fetching = false
+                        b.refresher.isRefreshing = false
+                    }
                 }
             }
         }
 
+        if (!Main.guest) b.refresher.setOnRefreshListener { fetch() }
         when {
             Main.guest -> {
                 // TODO: GUEST MODE (ViewStub)
@@ -101,15 +105,13 @@ class PageUnf(private val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuI
             handler?.obtainMessage(Action.ANALYZED.ordinal)?.sendToTarget()
             return
         }
-        // TODO: ${i + 1}
         Api<Profile>(
             c, Api.Type.PROFILE.url.format(following!![i].username), Profile::class
         ) { profile ->
             val u = profile.graphql?.user
             if (u == null || u.follows_viewer != false) return@Api
             val newbie = Unfollower(
-                u.id.toLong(), u.username, u.full_name,
-                u.profile_pic_url_hd ?: u.profile_pic_url,
+                u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
                 u.edge_followed_by.count.toLong(), u.is_private == true
             )
             c.m.unfollowers!!.add(newbie)

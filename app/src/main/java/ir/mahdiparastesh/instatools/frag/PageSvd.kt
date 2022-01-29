@@ -10,11 +10,14 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.GridLayoutManager
+import com.android.volley.Request
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -36,8 +39,12 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
                 b.rv.adapter = null
                 c.m.nextSaved = null
                 c.m.saved = null
-                fuckingIndex = 0
                 fetchSome()
+            }
+            b.rv.viewTreeObserver.addOnScrollChangedListener {
+                if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset()) ==
+                    b.rv.computeVerticalScrollRange()
+                ) fetchSome()
             }
         }
         when {
@@ -45,21 +52,13 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
                 // TODO: GUEST MODE
             }
             c.m.saved != null -> adapt()
-            else -> {
-                fuckingIndex = 0
-                fetchSome()
-            }
+            else -> fetchSome()
         }
         return b.root
     }
 
-    private var fuckingMax = 5
-    private var fuckingIndex = 0
     private fun fetchSome() {
-        if (c.m.nextSaved?.has_next_page == false || fuckingIndex >= fuckingMax) {
-            b.refresher.isRefreshing = false
-            return
-        }
+        if (c.m.nextSaved?.has_next_page == false) return
         if (c.m.saved == null) Api<Profile>(
             c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class
         ) { profile ->
@@ -67,7 +66,7 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
             c.m.nextSaved = media.page_info
             c.m.saved = ArrayList(media.edges.map { it.node })
             adapt()
-            fetchSome()
+            b.refresher.isRefreshing = false
         } else Api<Profile.GraphQlResponse>(
             c, Api.Type.SAVED.url.format(
                 c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
@@ -77,11 +76,8 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
             c.m.nextSaved = media.page_info
             c.m.saved?.addAll(media.edges.map { it.node })
             adapt()
-            fetchSome()
+            b.refresher.isRefreshing = false
         }
-
-        // TODO: THIS IS NOT A LAZY LOADING
-        fuckingIndex++
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -100,22 +96,24 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mtDownload -> if (tracker != null && c.m.saved != null) {
-            /*var queued = false
             for (svd in tracker!!.selection) c.m.saved!!.find { it.id == svd }?.let { post ->
-                queued = true
-                c.pDao.addQueued(
-                    Queued(
-                        post.owner.id, post.owner.username ?: "", post.id,
-                    )
-                // THESE ARE NOT REAL DATA; YOU MUST FETCH REAL MEDIA ONE BY ONE!!
-                )
+                Downloads.initService(c, Api.Type.POST.url.format(post.shortcode))
             }
-            if (queued) Downloads.initService(c)*/
             true
         } else false
-        R.id.mtRemove -> {
+        R.id.mtRemove -> if (tracker != null && c.m.saved != null) {
+            for (svd in tracker!!.selection) c.m.saved!!.find { it.id == svd }?.let { post ->
+                Api<Rest>(
+                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class,
+                    method = Request.Method.POST
+                ) { rest ->
+                    if (rest.status != "ok" || c.m.saved == null) return@Api
+                    c.m.saved!!.remove(post)
+                }
+            }
+            tracker?.clearSelection()
             true
-        }
+        } else false
         else -> false
     }
 

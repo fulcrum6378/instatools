@@ -37,7 +37,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     companion object {
         const val host = "https://www.instagram.com/"
         const val loginUrl = "${host}accounts/login/"
-        const val spCookiesBeg = "cookie_"
+        private const val spCookiesBeg = "cookie_"
         const val spCookies = "$spCookiesBeg%s"
         const val spAccount = "account"
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
@@ -55,7 +55,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     c.m.accounts.add(this)
                 }
             return c.m.accounts.find {
-                it.id == c.esp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")!!.toLong()
+                it.id == c.gsp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")!!.toLong()
             }
         }
     }
@@ -73,7 +73,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.web.settings.javaScriptEnabled = true
         b.web.webViewClient = myClient
 
-        // Repair SharedPreferences
+        // Repair EncryptedSharedPreferences
         esp.all.forEach { p ->
             if (p.key.startsWith(spCookiesBeg)) try {
                 val checkable = p.key.substringAfter(spCookiesBeg).toLong()
@@ -178,10 +178,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private fun goAhead() {
-        if (m.acc!!.id != -1L) esp.edit().apply {
-            putString(spAccount, m.acc!!.id.toString())
-            apply()
-        }
+        if (m.acc!!.id != -1L) gsp.edit()
+            .putString(spAccount, m.acc!!.id.toString())
+            .apply()
         startActivity(Intent(c, Main::class.java))
         finish()
     }
@@ -195,11 +194,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private fun deleteAcc(id: String) {
         if (id == "") return
-        esp.edit().apply {
-            remove(spCookies.format(id))
-            if (esp.getString(spAccount, null) == id) remove(spAccount)
-            apply()
-        }
+        esp.edit().remove(spCookies.format(id)).apply()
+        if (gsp.getString(spAccount, null) == id)
+            gsp.edit().remove(spAccount).apply()
         // TODO: ALERT THE USER
     }
 

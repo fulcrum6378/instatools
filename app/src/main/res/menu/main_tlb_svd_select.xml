@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
     <item
         android:id="@+id/mtDownload"
         android:icon="@drawable/download"
-        android:title="@string/downloads"
+        android:title="@string/download"
+        android:tooltipText="@string/download"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mtRemove"
         android:icon="@drawable/saved_off"
-        android:title="@string/remove"
+        android:title="@string/unsave"
+        android:tooltipText="@string/unsave"
         app:showAsAction="ifRoom" />
 </menu>

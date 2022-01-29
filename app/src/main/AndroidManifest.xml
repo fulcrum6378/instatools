@@ -35,7 +35,7 @@
         <activity
             android:name=".Settings"
             android:exported="false"
-            android:launchMode="singleTop">
+            android:launchMode="standard">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

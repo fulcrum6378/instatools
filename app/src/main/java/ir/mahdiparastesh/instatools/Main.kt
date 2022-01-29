@@ -1,11 +1,13 @@
 package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -36,7 +38,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private var page3: PageBox? = null
     private var anTheme: ValueAnimator? = null
     val colorBG = MutableLiveData<Int?>(null)
-    val colorAc = MutableLiveData<Int?>(null)
+    private val colorAc = MutableLiveData<Int?>(null)
     private var currentPage = 0
 
     companion object {
@@ -48,11 +50,11 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
         if (m.acc == null) {
-            if (esp.contains(Login.spAccount)) {
+            if (gsp.contains(Login.spAccount)) {
                 gDb = GlobalDb.build(c).also { gDao = it.dao() }
                 m.acc = Login.gatherData(this, gDao)
             }
-            if (!esp.contains(Login.spAccount) || m.acc == null) {
+            if (!gsp.contains(Login.spAccount) || m.acc == null) {
                 goTo(Login::class)
                 return
             }
@@ -76,20 +78,36 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b.nav.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.mnDownloads -> goTo(Downloads::class)
+                R.id.mnGSettings -> {
+                    startActivity(Intent(this, Settings::class.java)
+                        .apply { putExtra(Settings.EXTRA_IS_GLOBAL, true) })
+                    true
+                }
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
-                    esp.edit().remove(Login.spAccount).apply()
+                    gsp.edit().remove(Login.spAccount).apply()
                     goTo(Login::class, true)
                 }
                 R.id.mnSignOut -> {
-                    // TODO: ASK FIRST
-                    // TODO: WHAT TO DO!?!?
-                    esp.edit().remove(Login.spAccount).apply()
-                    goTo(Login::class, true)
+                    AlertDialog.Builder(this).apply {
+                        setTitle(R.string.signOut)
+                        setMessage(R.string.signOutSure)
+                        setNegativeButton(R.string.no, null)
+                        setPositiveButton(R.string.yes) { _, _ ->
+                            gsp.edit().remove(Login.spAccount).apply()
+                            if (m.acc != null) esp.edit()
+                                .remove(Login.spCookies.format(m.acc!!.id))
+                                .apply()
+                            goTo(Login::class, true)
+                        }
+                    }.create().show()
+                    true
                 }
                 else -> super.onOptionsItemSelected(it)
             }
         }
+        if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
+            .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         /*b.nav.menu.forEach {
             val mNewTitle = SpannableString(it.title)
             mNewTitle.setSpan(
