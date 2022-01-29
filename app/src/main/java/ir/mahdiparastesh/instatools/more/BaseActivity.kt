@@ -32,9 +32,6 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
     override var m: Model
         get() = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
         set(_) {}
-    override var esp: SharedPreferences
-        get() = Persistent.initEsp(c)
-        set(_) {}
     override var gsp: SharedPreferences
         get() = Persistent.initGsp(c)
         set(_) {}

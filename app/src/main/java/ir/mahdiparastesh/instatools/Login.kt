@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.transition.AutoTransition
@@ -22,11 +21,11 @@ import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
 import org.apache.commons.lang.StringEscapeUtils
 
+@SuppressLint("ApplySharedPref")
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding
@@ -44,9 +43,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val posConfig = ";</script>"
 
         fun gatherData(
-            c: BaseActivity,
-            dao: GlobalDb.DAO,
-            guestIfNotExists: Boolean = true
+            c: BaseActivity, dao: GlobalDb.DAO, guestIfNotExists: Boolean = true
         ): Account? {
             c.m.accounts = ArrayList(dao.accounts())
             if (c.m.accounts.find { it.id == -1L } == null)
@@ -73,30 +70,18 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.web.settings.javaScriptEnabled = true
         b.web.webViewClient = myClient
 
-        // Repair EncryptedSharedPreferences
-        esp.all.forEach { p ->
+        // Repair the global SharedPreferences
+        gsp.all.forEach { p ->
             if (p.key.startsWith(spCookiesBeg)) try {
                 val checkable = p.key.substringAfter(spCookiesBeg).toLong()
-                if (m.accounts.find { it.id == checkable } == null) repairAcc(checkable)
-            } catch (ignored: NumberFormatException) {
-                esp.edit().remove(p.key).apply()
-            }
-        }
+                if (m.accounts.find { it.id == checkable } == null) Account(checkable).apply {
+                    dao.addAccount(this)
+                    m.accounts.add(this)
+                }
 
-        // Repair Databases
-        for (d in c.databaseList()) if (
-            !d.startsWith(GlobalDb.file) &&
-            !d.endsWith(DbFile.Triple.SHARED_MEMORY.s)
-            && !d.endsWith(DbFile.Triple.WRITE_AHEAD_LOG.s)
-        ) try {
-            var name = d
-            if (name.endsWith(".db")) name = name.substringBefore(".db")
-            val dId = name.toLong()
-            if (m.accounts.find { it.id == dId } == null) repairAcc(dId)
-        } catch (ignored: NumberFormatException) {
-            DbFile(d, DbFile.Triple.MAIN).delete()
-            DbFile(d, DbFile.Triple.SHARED_MEMORY).apply { if (exists()) delete() }
-            DbFile(d, DbFile.Triple.WRITE_AHEAD_LOG).apply { if (exists()) delete() }
+            } catch (ignored: NumberFormatException) {
+                gsp.edit().remove(p.key).commit()
+            }
         }
 
         if (selected == null) welcome() else selectAccount(selected)
@@ -150,7 +135,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             m.acc = acc
             gonnaBeGuest = true
             browse()
-        } else (esp.getString(spCookies.format(acc.id), null)).apply {
+        } else (gsp.getString(spCookies.format(acc.id), null)).apply {
             if (this != null) browse(this)
             else {
                 deleteAcc(acc.id.toString())
@@ -177,27 +162,13 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         doClearHistory = true
     }
 
-    private fun goAhead() {
-        if (m.acc!!.id != -1L) gsp.edit()
-            .putString(spAccount, m.acc!!.id.toString())
-            .apply()
-        startActivity(Intent(c, Main::class.java))
-        finish()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun repairAcc(id: Long) = Account(id).apply {
-        dao.addAccount(this)
-        m.accounts.add(this)
-        if (::bw.isInitialized) bw.accounts.adapter?.notifyDataSetChanged()
-    }
-
     private fun deleteAcc(id: String) {
         if (id == "") return
-        esp.edit().remove(spCookies.format(id)).apply()
-        if (gsp.getString(spAccount, null) == id)
-            gsp.edit().remove(spAccount).apply()
-        // TODO: ALERT THE USER
+        gsp.edit().apply {
+            remove(spCookies.format(id))
+            if (gsp.getString(spAccount, null) == id) remove(spAccount)
+                .commit()
+        } // TODO: ALERT THE USER
     }
 
     private val myClient = object : WebViewClient() {
@@ -208,10 +179,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             super.onPageStarted(view, url, favicon)
             if (gonnaBeGuest) {
                 id = "-1"
-                esp.edit()
+                gsp.edit()
                     .putString(spCookies.format(id), cookieManager.getCookie(host))
-                    .apply()
-                goAhead(); return; }
+                    .commit()
+                goTo(Main::class, true); return; }
             if (doClearHistory) {
                 b.web.clearHistory()
                 doClearHistory = false
@@ -219,21 +190,20 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
 
         override fun shouldOverrideUrlLoading(v: WebView, req: WebResourceRequest): Boolean {
-            if (req.url.toString() == host) {
-                loggedIn = true
-                id = cookieManager.getCookie(host)
-                    .substringAfter("ds_user_id=")
-                    .substringBefore(";")
-                esp.edit()
-                    .putString(spCookies.format(id), cookieManager.getCookie(host))
-                    .apply()
-            }
+            if (req.url.toString() == host) loggedIn = true
             return false
         }
 
         override fun onPageFinished(v: WebView, url: String) {
             super.onPageFinished(v, url)
             if (!loggedIn) return
+            id = cookieManager.getCookie(host)
+                .substringAfter("ds_user_id=")
+                .substringBefore(";")
+            gsp.edit()
+                .putString(spCookies.format(id), cookieManager.getCookie(host))
+                .putString(spAccount, id)
+                .commit()
             v.evaluateJavascript(
                 """(function() {
         return document.getElementsByTagName('body')[0].innerHTML;
@@ -251,7 +221,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     dao.addAccount(this)
                     m.acc = this
                 }
-                goAhead()
+                goTo(Main::class, true)
             }
         }
     }

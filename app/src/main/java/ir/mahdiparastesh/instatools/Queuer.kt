@@ -46,9 +46,6 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
     override var m: Model
         get() = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
         set(_) {}
-    override var esp: SharedPreferences
-        get() = Persistent.initEsp(c)
-        set(_) {}
     override var gsp: SharedPreferences
         get() = Persistent.initGsp(c)
         set(_) {}

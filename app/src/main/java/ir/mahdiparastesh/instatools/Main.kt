@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -24,6 +25,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.UiTools
 
+@SuppressLint("ApplySharedPref")
 class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var b: MainBinding
     private lateinit var gDb: GlobalDb
@@ -49,15 +51,13 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
-        if (m.acc == null) {
-            if (gsp.contains(Login.spAccount)) {
-                gDb = GlobalDb.build(c).also { gDao = it.dao() }
-                m.acc = Login.gatherData(this, gDao)
-            }
-            if (!gsp.contains(Login.spAccount) || m.acc == null) {
-                goTo(Login::class)
-                return
-            }
+        if (gsp.contains(Login.spAccount)) {
+            gDb = GlobalDb.build(c).also { gDao = it.dao() }
+            m.acc = Login.gatherData(this, gDao)
+        }
+        if (!gsp.contains(Login.spAccount) || m.acc == null) {
+            goTo(Login::class, true)
+            return
         }
         sp = Persistent.initSp(c, m.acc)
         if (m.acc!!.id == -1L) guest = true
@@ -85,7 +85,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
-                    gsp.edit().remove(Login.spAccount).apply()
+                    gsp.edit().remove(Login.spAccount).commit()
                     goTo(Login::class, true)
                 }
                 R.id.mnSignOut -> {
@@ -94,10 +94,10 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                         setMessage(R.string.signOutSure)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            gsp.edit().remove(Login.spAccount).apply()
-                            if (m.acc != null) esp.edit()
+                            gsp.edit().remove(Login.spAccount).commit()
+                            if (m.acc != null) gsp.edit()
                                 .remove(Login.spCookies.format(m.acc!!.id))
-                                .apply()
+                                .commit()
                             goTo(Login::class, true)
                         }
                     }.create().show()
@@ -189,6 +189,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         page1 = null
         page2 = null
         page3 = null
+        m.accountSwitched()
         super.onDestroy()
     }
 

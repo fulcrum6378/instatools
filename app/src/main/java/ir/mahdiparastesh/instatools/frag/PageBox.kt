@@ -2,22 +2,34 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
-import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BasePage
 
-class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
+class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding
+    private var thread: FetchSome? = null
+    override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                HANDLE_FETCHED -> {
+                    adapt()
+                    b.refresher.isRefreshing = false
+                }
+            }
+        }
+    }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageBoxBinding.inflate(
@@ -25,16 +37,16 @@ class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
             parent, false
         )
 
-        if (Main.guest) {
+        if (!Main.guest) {
             b.refresher.setOnRefreshListener {
                 c.m.nextDmThreads = null
                 c.m.dmThreads = arrayListOf()
-                fetchSome()
+                if (thread?.active != true) thread = FetchSome().also { it.start() }
             }
             b.rv.viewTreeObserver.addOnScrollChangedListener {
                 if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset()) ==
-                    b.rv.computeVerticalScrollRange()
-                ) fetchSome()
+                    b.rv.computeVerticalScrollRange() && thread?.active != true
+                ) thread = FetchSome().also { it.start() }
             }
         }
         when {
@@ -42,25 +54,10 @@ class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
                 // TODO: GUEST MODE
             }
             c.m.saved != null -> adapt()
-            else -> {
-                c.m.dmThreads = arrayListOf()
-                fetchSome()
-            }
+            else -> thread = FetchSome().also { it.start() }
+
         }
         return b.root
-    }
-
-    private fun fetchSome() {
-        /*if (c.m.nextDmThreads?.has_next_page == false) {
-            b.refresher.isRefreshing = false
-            return
-        }*/
-        Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class) { page ->
-            c.m.nextDmThreads = page.inbox.next_cursor
-            c.m.dmThreads?.addAll(page.inbox.threads)
-            adapt()
-            b.refresher.isRefreshing = false
-        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -75,5 +72,21 @@ class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
 
     override fun goBack(): Boolean {
         return super.goBack()
+    }
+
+    inner class FetchSome : BaseThread() {
+        override fun run() {
+            super.run()
+            c.m.dmThreads = arrayListOf()
+            /*if (c.m.nextDmThreads?.has_next_page == false) {
+                b.refresher.isRefreshing = false
+                return
+            }*/
+            Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class, handleError = handler) { page ->
+                c.m.nextDmThreads = page.inbox.next_cursor
+                c.m.dmThreads?.addAll(page.inbox.threads)
+                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            }
+        }
     }
 }

@@ -20,7 +20,7 @@ class Settings : BaseActivity() {
             )
             prf.edit().apply {
                 putString(spStorage, uri.toString())
-                apply()
+                .commit()
             }
         }
 

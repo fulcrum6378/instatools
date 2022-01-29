@@ -2,9 +2,10 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.*
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
@@ -19,17 +20,33 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
-import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BasePage
 
-class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
+class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
     var tracker: SelectionTracker<String>? = null
+    private var thread: FetchSome? = null
+    override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                HANDLE_FETCHED -> {
+                    thread?.active = false
+                    adapt()
+                    b.refresher.isRefreshing = false
+                    if (!c.m.saved.isNullOrEmpty() && c.m.nextSaved?.has_next_page == true &&
+                        (c.m.saved!!.size / 3) * (c.dm.widthPixels / 3) < c.dm.heightPixels
+                    ) thread = FetchSome().also { it.start() }
+                }
+            }
+        }
+    }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageSvdBinding.inflate(
             c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
         )
+
         b.rv.layoutManager = GridLayoutManager(c, 3)
         if (!Main.guest) {
             b.refresher.setOnChildScrollUpCallback { _, _ ->
@@ -39,12 +56,13 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
                 b.rv.adapter = null
                 c.m.nextSaved = null
                 c.m.saved = null
-                fetchSome()
+                if (thread?.active != true) thread = FetchSome().also { it.start() }
             }
             b.rv.viewTreeObserver.addOnScrollChangedListener {
-                if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset()) ==
-                    b.rv.computeVerticalScrollRange()
-                ) fetchSome()
+                if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset() +
+                            (c.dm.heightPixels * 0.1)) >= b.rv.computeVerticalScrollRange() &&
+                    thread?.active != true
+                ) thread = FetchSome().also { it.start() }
             }
         }
         when {
@@ -52,32 +70,9 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
                 // TODO: GUEST MODE
             }
             c.m.saved != null -> adapt()
-            else -> fetchSome()
+            else -> thread?.start()
         }
         return b.root
-    }
-
-    private fun fetchSome() {
-        if (c.m.nextSaved?.has_next_page == false) return
-        if (c.m.saved == null) Api<Profile>(
-            c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class
-        ) { profile ->
-            val media = profile.graphql?.user?.edge_saved_media ?: return@Api
-            c.m.nextSaved = media.page_info
-            c.m.saved = ArrayList(media.edges.map { it.node })
-            adapt()
-            b.refresher.isRefreshing = false
-        } else Api<Profile.GraphQlResponse>(
-            c, Api.Type.SAVED.url.format(
-                c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
-            ), Profile.GraphQlResponse::class
-        ) { res ->
-            val media = res.data.user?.edge_saved_media ?: return@Api
-            c.m.nextSaved = media.page_info
-            c.m.saved?.addAll(media.edges.map { it.node })
-            adapt()
-            b.refresher.isRefreshing = false
-        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -153,6 +148,31 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClick
             super.onSelectionChanged()
             if (!tracker!!.hasSelection()) tracker?.clearSelection()
             c.selective(tracker!!.hasSelection())
+        }
+    }
+
+    inner class FetchSome : BaseThread() {
+        override fun run() {
+            super.run()
+            if (c.m.nextSaved?.has_next_page == false) return
+            if (c.m.saved == null) Api<Profile>(
+                c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class,
+                handleError = handler
+            ) { profile ->
+                val media = profile.graphql?.user?.edge_saved_media ?: return@Api
+                c.m.nextSaved = media.page_info
+                c.m.saved = ArrayList(media.edges.map { it.node })
+                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            } else Api<Profile.GraphQlResponse>(
+                c, Api.Type.SAVED.url.format(
+                    c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
+                ), Profile.GraphQlResponse::class, handleError = handler
+            ) { res ->
+                val media = res.data.user?.edge_saved_media ?: return@Api
+                c.m.nextSaved = media.page_info
+                c.m.saved?.addAll(media.edges.map { it.node })
+                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            }
         }
     }
 }

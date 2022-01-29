@@ -13,9 +13,20 @@ class Model : ViewModel() {
     var dmThreads: ArrayList<Dm.DmThread>? = null
     var dmItems: ArrayList<Dm>? = null
     var queueds: ArrayList<Queued>? = null
-    var loginLoaded = false
     var nextSaved: Profile.PageInfo? = null
     var nextDmThreads: Dm.ContinuumCursor? = null
+    var loginLoaded = false
+
+    fun accountSwitched() {
+        unfollowers = null
+        saved = null
+        dmThreads = null
+        dmItems = null
+        queueds = null
+        nextSaved = null
+        nextDmThreads = null
+        loginLoaded = false
+    }
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

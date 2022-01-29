@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
-import android.widget.Toast
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -29,7 +28,7 @@ class Api<JSON>(
     private val handleError: Handler? = null,
     private val listener: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
-    Toast.makeText(c.c, "ERROR ${it.networkResponse?.statusCode}", Toast.LENGTH_SHORT).show()
+    //Toast.makeText(c.c, "ERROR ${it.networkResponse?.statusCode}", Toast.LENGTH_SHORT).show()
     handleError?.obtainMessage(HANDLE_ERROR)?.sendToTarget()
 }) {
     init {
@@ -41,7 +40,7 @@ class Api<JSON>(
         Volley.newRequestQueue(c.c).add(this)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, c.esp)
+    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, c.gsp)
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
