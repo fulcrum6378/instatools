@@ -2,22 +2,19 @@ package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.widget.Toast
+import androidx.core.view.forEach
 import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Profile.GraphQl
-import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import java.util.*
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
@@ -25,16 +22,6 @@ class Downloads : BaseActivity() {
     private lateinit var gDao: GlobalDb.DAO
     private lateinit var pDb: PersonalDb
     lateinit var pDao: PersonalDb.DAO
-
-    companion object {
-        const val UPDATE_SUCCESS = 0
-        const val UPDATE_FAILED = 1
-        const val ACTION_ADAPT = 2
-        const val spStorage = "storage"
-        var handler: Handler? = null
-
-        fun now() = Calendar.getInstance().timeInMillis
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,123 +36,95 @@ class Downloads : BaseActivity() {
             @SuppressLint("NotifyDataSetChanged")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    UPDATE_SUCCESS -> if (m.queueds != null) Queued.find(
-                        msg.obj as Queued, m.queueds!!
-                    )?.let {
+                    HANDLE_INSERTED -> {
+                        m.queueds!!.add(msg.obj as Queued)
+                        b.rv.adapter?.notifyItemInserted((m.queueds?.size ?: 1) - 1)
+                    }
+                    HANDLE_DELETED -> find(msg)?.let {
                         m.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
-                        if (it < m.queueds!!.size - 1)
-                            b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size - 1)
+                        b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size - 1)
+                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
-                    UPDATE_FAILED -> m.queueds?.indexOf(msg.obj as Queued)?.let {
+                    HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
                         m.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
-                    ACTION_ADAPT ->
+                    HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                 }
             }
+
+            fun find(msg: Message): Int? =
+                if (m.queueds != null) Queued.find(msg.obj as Queued, m.queueds!!) else null
         }
 
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { handleLink(it) }
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { initService(this, it) }
         b.linkButton.setOnClickListener {
-            handleLink(b.pasteLink.text.toString())
+            if (b.pasteLink.text.toString() == "") return@setOnClickListener
+            initService(this, b.pasteLink.text.toString())
             b.pasteLink.setText("")
         }
 
-        // Navigation and Toolbar
-        b.toolbar.navigationIcon?.colorFilter = pdcf(R.color.CSD)
+        if (night) color(R.color.CSD).apply {
+            window.decorView.setBackgroundColor(this)
+            window.statusBarColor = this
+            window.navigationBarColor = this
+        } else color(R.color.CSD).apply {
+            val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
+            b.toolbar.navigationIcon?.colorFilter = cf
+            b.toolbar.menu.forEach { item -> item.icon.colorFilter = cf }
+            tbTitle?.setTextColor(this)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { handleLink(it) }
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { initService(this, it) }
     }
 
     override fun onResume() {
         super.onResume()
         Thread {
             m.queueds = ArrayList(pDao.queueds())
-            m.queueds!!.sortBy { it.added }
-            if (!m.queueds.isNullOrEmpty()) initService()
-            handler?.obtainMessage(ACTION_ADAPT)?.sendToTarget()
+            m.queueds!!.sortBy { it.addedAt }
+            if (!m.queueds.isNullOrEmpty()) initService(this)
+            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
         }.start()
     }
 
-    @Suppress("LABEL_NAME_CLASH")
-    private fun handleLink(link: String) {
-        if (link.contains("/stories/")) {
-            val storyId = link.substringAfterLast("/").substringBefore("?")
-            Api<GraphQl>(
-                this, link.substringBefore("?") + "?__a=1", GraphQl::class, cache = true
-            ) { graphQl ->
-                val user = graphQl.user ?: return@Api
-                Api<Rest.Reels>(
-                    this, Api.Type.REELS.url.format(user.id), Rest.Reels::class, cache = true
-                ) { reels ->
-                    var med: Media? = reels.reels_media[0].items.find { it.pk == storyId }
-                    if (med == null) med = reels.reels[user.id]?.items?.find { it.pk == storyId }
-                    if (med == null) return@Api
-                    val qud = Queued(
-                        user.id, user.username, med.pk, med.best(),
-                        med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst(),
-                        med.media_type.toInt().toByte(), now()
-                    )
-                    qud.id = pDao.addQueued(qud)
-                    m.queueds?.add(qud)
-                    b.rv.adapter?.notifyItemInserted((m.queueds?.size ?: 1) - 1)
-                    initService()
-                }
-            }
-        } else Api<Media.MediaWrapperApi>(
-            this, link.substringBefore("?") + "?__a=1", Media.MediaWrapperApi::class
-        ) { wrapper ->
-            val med = wrapper.items?.get(0) ?: return@Api
-            var queued = true
-            val items = arrayListOf<Queued>()
-            when {
-                med.carousel_media != null -> for (car in med.carousel_media) items.add(
-                    Queued(
-                        med.user.pk, med.user.username, car.pk, car.best(),
-                        med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst(),
-                        car.media_type.toInt().toByte(), now()
-                    )
-                )
-                med.image_versions2 != null -> items.add(
-                    Queued(
-                        med.user.pk, med.user.username, med.pk, med.best(),
-                        med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst(),
-                        med.media_type.toInt().toByte(), now()
-                    )
-                )
-                else -> {
-                    queued = false
-                    Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
-                }
-            }
-            items.forEach {
-                it.id = pDao.addQueued(it)
-                m.queueds?.add(it)
-                b.rv.adapter?.notifyItemInserted((m.queueds?.size ?: 1) - 1)
-            }
-            if (queued) initService()
-        }
-        // TODO: RECOGNISE BY ID LATER
+    override fun onDestroy() {
+        handler = null
+        super.onDestroy()
     }
 
-    fun initService() {
-        if (Queuer.active) return
-        val dest = preference(spStorage)
-        if (dest == null) {
-            // TODO: ALERT
-            return
+    companion object {
+        const val HANDLE_INSERTED = 0
+        const val HANDLE_DELETED = 1
+        const val HANDLE_CHANGED = 2
+        const val HANDLE_RESET = 3
+        const val spStorage = "storage"
+        var handler: Handler? = null
+
+        fun initService(c: BaseActivity, link: String? = null) {
+            val dest = c.preference(spStorage)
+            if (dest == null) {
+                // TODO: ALERT
+                return
+            }
+            if (Queuer.active) {
+                if (link != null)
+                    Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()
+                return
+            }
+            c.startService(Intent(c, Queuer::class.java).apply {
+                if (link != null) putExtra(Queuer.EXTRA_LINK, link)
+                putExtra(Queuer.EXTRA_USER, c.m.acc ?: c.m.accounts.find { it.id == -1L })
+                putExtra(Queuer.EXTRA_DEST, dest)
+                action = Queuer.ACTION_START
+            })
         }
-        startService(Intent(this, Queuer::class.java).apply {
-            putExtra(Queuer.EXTRA_USER, m.acc ?: m.accounts.find { it.id == -1L })
-            putExtra(Queuer.EXTRA_DEST, dest)
-            action = Queuer.ACTION_START
-        })
     }
 }

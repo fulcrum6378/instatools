@@ -6,8 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.data.Unfollower
@@ -20,7 +22,7 @@ import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 
-class PageUnf(private val c: Main) : Fragment(), BackStackOwner {
+class PageUnf(private val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
     lateinit var b: PageUnfBinding
     private var following: List<Rest.User>? = null
     private var fetching = false
@@ -122,6 +124,10 @@ class PageUnf(private val c: Main) : Fragment(), BackStackOwner {
             }
         }
         analyze(i + 1)
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
+        else -> false
     }
 
     enum class Action { LOADED, FETCHED, ANALYZED }

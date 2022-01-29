@@ -2,10 +2,8 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -13,6 +11,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.GridLayoutManager
 import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
@@ -20,7 +19,7 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
-class PageSvd(val c: Main) : Fragment(), BackStackOwner {
+class PageSvd(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
     lateinit var b: PageSvdBinding
     var tracker: SelectionTracker<String>? = null
 
@@ -37,6 +36,7 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner {
                 b.rv.adapter = null
                 c.m.nextSaved = null
                 c.m.saved = null
+                fuckingIndex = 0
                 fetchSome()
             }
         }
@@ -45,13 +45,18 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner {
                 // TODO: GUEST MODE
             }
             c.m.saved != null -> adapt()
-            else -> fetchSome()
+            else -> {
+                fuckingIndex = 0
+                fetchSome()
+            }
         }
         return b.root
     }
 
+    private var fuckingMax = 5
+    private var fuckingIndex = 0
     private fun fetchSome() {
-        if (c.m.nextSaved?.has_next_page == false) {
+        if (c.m.nextSaved?.has_next_page == false || fuckingIndex >= fuckingMax) {
             b.refresher.isRefreshing = false
             return
         }
@@ -76,19 +81,42 @@ class PageSvd(val c: Main) : Fragment(), BackStackOwner {
         }
 
         // TODO: THIS IS NOT A LAZY LOADING
+        fuckingIndex++
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun adapt() {
-        if (b.rv.adapter == null) {
-            b.rv.adapter = ListSvd(c, this)
-            tracker = SelectionTracker.Builder(
-                "saved", b.rv,
-                MyItemKeyProvider(), MyDetailsLookup(),
-                StorageStrategy.createStringStorage()
-            ).build()
-            tracker?.addObserver(SelectObserver())
-        } else b.rv.adapter?.notifyDataSetChanged()
+        if (b.rv.adapter != null) {
+            b.rv.adapter?.notifyDataSetChanged()
+            return; }
+        b.rv.adapter = ListSvd(c, this)
+        tracker = SelectionTracker.Builder(
+            "saved", b.rv,
+            MyItemKeyProvider(), MyDetailsLookup(),
+            StorageStrategy.createStringStorage()
+        ).build()
+        tracker?.addObserver(SelectObserver())
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.mtDownload -> if (tracker != null && c.m.saved != null) {
+            /*var queued = false
+            for (svd in tracker!!.selection) c.m.saved!!.find { it.id == svd }?.let { post ->
+                queued = true
+                c.pDao.addQueued(
+                    Queued(
+                        post.owner.id, post.owner.username ?: "", post.id,
+                    )
+                // THESE ARE NOT REAL DATA; YOU MUST FETCH REAL MEDIA ONE BY ONE!!
+                )
+            }
+            if (queued) Downloads.initService(c)*/
+            true
+        } else false
+        R.id.mtRemove -> {
+            true
+        }
+        else -> false
     }
 
     override fun goBack(): Boolean {

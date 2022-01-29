@@ -113,7 +113,7 @@ class Profile(
         val video_view_count: Double,
     )
 
-    class Owner(val id: String, val username: String)
+    class Owner(val id: String, val username: String?)
 
     class EdgesCaption(val edges: Array<EdgeCaption>)
 

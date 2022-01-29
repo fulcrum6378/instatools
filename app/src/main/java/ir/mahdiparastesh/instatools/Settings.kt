@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import ir.mahdiparastesh.instatools.Downloads.Companion.spStorage
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Persistent
 
 class Settings : BaseActivity() {
     private lateinit var b: SettingsBinding
@@ -29,7 +30,7 @@ class Settings : BaseActivity() {
         setContentView(b.root)
         toolbar(b.toolbar, R.string.stTitle)
 
-        if (sp == null) initSp()
+        sp = Persistent.initSp(c, m.acc)
         if (sp?.contains(spStorage) == false)
             saveLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
     }

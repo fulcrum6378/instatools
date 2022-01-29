@@ -3,8 +3,10 @@ package ir.mahdiparastesh.instatools.frag
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
@@ -14,7 +16,7 @@ import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
-class PageBox(val c: Main) : Fragment(), BackStackOwner {
+class PageBox(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
     private lateinit var b: PageBoxBinding
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -58,6 +60,10 @@ class PageBox(val c: Main) : Fragment(), BackStackOwner {
     private fun adapt() {
         if (b.rv.adapter == null) b.rv.adapter = ListBox(c)
         else b.rv.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
+        else -> false
     }
 
     override fun goBack(): Boolean {

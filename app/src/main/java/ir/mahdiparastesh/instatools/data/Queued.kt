@@ -7,23 +7,24 @@ import java.util.*
 
 @Entity
 class Queued(
-    var userId: String,
-    var userName: String,
-    var itemId: String,
-    var url: String?,
-    var thumb: String?,
-    var mediaType: Byte,
-    var added: Long,
-    var fromSaved: Boolean = false,
+    var addedAt: Long,
+    var initiator: String,
+    var link: String? = null,
+    var userId: String? = null,
+    var userName: String? = null,
+    var itemId: String? = null,
+    var url: String? = null,
+    var thumb: String? = null,
+    var mediaType: Byte? = null,
     var failed: Boolean = false
 ) {
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
     fun fName(ext: String): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = added }
+        val cal = Calendar.getInstance().apply { timeInMillis = addedAt }
         return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
-                "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR])}" +
+                "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
                 "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}_$itemId.$ext"
     }
 

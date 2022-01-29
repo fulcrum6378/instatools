@@ -5,77 +5,234 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import android.os.Message
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
-import ir.mahdiparastesh.instatools.Downloads.Companion.UPDATE_FAILED
-import ir.mahdiparastesh.instatools.Downloads.Companion.UPDATE_SUCCESS
-import ir.mahdiparastesh.instatools.Downloads.Companion.handler
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.FileOutputStream
+import java.util.*
 
-class Queuer : Service() {
-    private lateinit var c: Context
-    private lateinit var sp: SharedPreferences
+class Queuer : Service(), ViewModelStoreOwner, Persistent {
+    private var mViewModelStore = ViewModelStore()
     private lateinit var pDb: PersonalDb
     private lateinit var pDao: PersonalDb.DAO
     private lateinit var acc: Account
     private lateinit var des: String
+    private var handlingLink: Queued? = null
+
+    override var c: Context
+        get() = applicationContext
+        set(_) {}
+    override var m: Model
+        get() = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
+        set(_) {}
+    override var esp: SharedPreferences
+        get() = Persistent.initEsp(c)
+        set(_) {}
+    override var gsp: SharedPreferences
+        get() = Persistent.initGsp(c)
+        set(_) {}
+    override var sp: SharedPreferences?
+        get() = Persistent.initSp(c, acc)
+        set(_) {}
+
+    companion object {
+        private val pack: String = Queuer::class.java.`package`!!.name
+        val ACTION_START = "$pack.ACTION_START"
+        val ACTION_STOP = "$pack.ACTION_STOP"
+        val EXTRA_LINK = "$pack.EXTRA_LINK"
+        val EXTRA_USER = "$pack.EXTRA_USER"
+        val EXTRA_DEST = "$pack.EXTRA_DEST"
+        const val HANDLE_LINK = 0
+        var active = false
+        var handler: Handler? = null
+
+        fun now() = Calendar.getInstance().timeInMillis
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        active = true
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    HANDLE_LINK -> handleLink(msg.obj as String)
+                    Api.HANDLE_ERROR -> if (handlingLink != null) {
+                        handlingLink!!.failed = true
+                        pDao.updateQueued(handlingLink!!)
+                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, handlingLink!!)
+                            ?.sendToTarget()
+                        handlingLink = null
+                        download()
+                    }
+                }
+            }
+        }
+    }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
-            ACTION_START -> {
-                c = applicationContext
-                sp = BaseActivity.initEsp(c)
-                if (intent.extras != null) {
-                    intent.getParcelableExtra<Account>(EXTRA_USER)?.let { acc = it }
-                    intent.getStringExtra(EXTRA_DEST)?.let { des = it }
-                }
+            ACTION_START -> if (intent.extras != null) {
+                intent.getParcelableExtra<Account>(EXTRA_USER)?.let { acc = it }
                 if (::acc.isInitialized) {
                     pDb = PersonalDb.build(c, acc.id.toString()).also { pDao = it.dao() }
                     download()
                 }
+                intent.getStringExtra(EXTRA_LINK)?.let { handleLink(it) }
+                intent.getStringExtra(EXTRA_DEST)?.let { des = it }
             }
             ACTION_STOP -> if (active) stopSelf()
         }
         return START_NOT_STICKY
     }
 
+    @Suppress("LABEL_NAME_CLASH")
+    private fun handleLink(link: String, theQud: Queued? = null) {
+        val qud = theQud ?: Queued(now(), "").apply { this.link = link }
+        if (theQud == null) {
+            qud.id = pDao.addQueued(qud)
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
+        }
+        handlingLink = qud
+
+        if (link.contains("/stories/")) {
+            val storyId = link.substringAfterLast("/").substringBefore("?")
+            Api<Profile.GraphQl>(
+                this, link.substringBefore("?") + "?__a=1", Profile.GraphQl::class,
+                cache = true, handleError = handler
+            ) { graphQl ->
+                val user = graphQl.user ?: return@Api
+                Api<Rest.Reels>(
+                    this, Api.Type.REELS.url.format(user.id), Rest.Reels::class,
+                    cache = true, handleError = handler
+                ) { reels ->
+                    var med: Media? = reels.reels_media[0].items.find { it.pk == storyId }
+                    if (med == null) med = reels.reels[user.id]?.items?.find { it.pk == storyId }
+                    if (med == null) return@Api
+                    qud.apply {
+                        userId = user.id
+                        userName = user.username
+                        itemId = med.pk
+                        url = med.best()
+                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst()
+                        mediaType = med.media_type.toInt().toByte()
+                    }
+                    handlingLink = null
+                    pDao.updateQueued(qud)
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
+                    download()
+                }
+            }
+        } else Api<Media.MediaWrapperApi>(
+            this, link.substringBefore("?") + "?__a=1", Media.MediaWrapperApi::class,
+            handleError = handler
+        ) { wrapper ->
+            val med = wrapper.items?.get(0) ?: return@Api
+            var found = true
+            val addOns = arrayListOf<Queued>()
+            when {
+                med.carousel_media != null -> for (car in med.carousel_media)
+                    if (qud.url == null) qud.apply {
+                        userId = med.user.pk
+                        userName = med.user.username
+                        itemId = car.pk
+                        url = car.best()
+                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst()
+                        mediaType = car.media_type.toInt().toByte()
+                    } else addOns.add(
+                        Queued(
+                            qud.addedAt, qud.initiator,
+                            qud.link, med.user.pk, med.user.username, car.pk, car.best(),
+                            med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst(),
+                            car.media_type.toInt().toByte()
+                        )
+                    )
+                med.image_versions2 != null -> qud.apply {
+                    userId = med.user.pk
+                    userName = med.user.username
+                    itemId = med.pk
+                    url = med.best()
+                    thumb = med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst()
+                    mediaType = med.media_type.toInt().toByte()
+                }
+                else -> {
+                    found = false
+                    Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
+                }
+            }
+            handlingLink = null
+            if (found) {
+                pDao.updateQueued(qud)
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
+                addOns.forEach { qud ->
+                    pDao.addQueued(qud)
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
+                }
+                download()
+            }
+        }
+    }
+
+    private var downloading = false
     private fun download() {
-        val queue = pDao.readyQueueds().sortedBy { it.added }
+        if (downloading) return
+        val queue = ArrayList(pDao.readyQueueds().sortedBy { it.addedAt })
         if (queue.isNullOrEmpty()) {
             stopSelf(); return; }
-        if (queue[0].url == null) {
-            handler?.obtainMessage(UPDATE_SUCCESS, queue[0])?.sendToTarget()
-            pDao.deleteQueued(queue[0])
-            download(); return; }
+        var q = 0
+        while (queue[q].url == null) {
+            if (queue[q].link == null) {
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[0])?.sendToTarget()
+                pDao.deleteQueued(queue[q])
+                queue.removeAt(q)
+            } else {
+                if (handlingLink?.link != queue[q].link) handleLink(queue[q].link!!, queue[q])
+                q++
+            }
+            if (q >= queue.size) return
+        }
+        downloading = true
 
         Volley.newRequestQueue(c).add(
             object : Request<ByteArray>(Method.GET, queue[0].url, Response.ErrorListener {
                 queue[0].failed = true
-                handler?.obtainMessage(UPDATE_FAILED, queue[0])?.sendToTarget()
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[0])?.sendToTarget()
                 pDao.updateQueued(queue[0])
+                downloading = false
                 download()
             }) {
-                override fun getHeaders(): Map<String, String> = Api.Headers(acc, sp)
+                override fun getHeaders(): Map<String, String> = Api.Headers(acc, sp!!)
 
                 override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
 
                 override fun deliverResponse(response: ByteArray) {
                     save(queue[0], response)
-                    handler?.obtainMessage(UPDATE_SUCCESS, queue[0])?.sendToTarget()
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[0])
+                        ?.sendToTarget()
                     pDao.deleteQueued(queue[0])
+                    downloading = false
                     download()
                 }
             }.apply {
@@ -90,8 +247,8 @@ class Queuer : Service() {
 
     private fun save(q: Queued, ba: ByteArray) {
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(des))!!
-        var branch = stem.findFile(q.userName)
-        if (branch == null) branch = stem.createDirectory(q.userName)
+        var branch = stem.findFile(q.userName!!)
+        if (branch == null) branch = stem.createDirectory(q.userName!!)
         for (f in branch!!.listFiles())
             if (f.name?.substringAfterLast("_")?.substringBefore(".") == q.itemId)
                 return
@@ -102,32 +259,21 @@ class Queuer : Service() {
         leaf = branch.createFile(type.mime, fName)
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
-        }
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        active = true
+        } // TODO: RECOGNISE BY ID LATER
     }
 
     override fun onDestroy() {
+        handler = null
         super.onDestroy()
         active = false
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    companion object {
-        private val pack: String = Queuer::class.java.`package`!!.name
-        val ACTION_START = "$pack.ACTION_START"
-        val ACTION_STOP = "$pack.ACTION_STOP"
-        val EXTRA_USER = "$pack.EXTRA_USER"
-        val EXTRA_DEST = "$pack.EXTRA_DEST"
-        var active = false
-    }
-
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),
         VIDEO("video/mp4", "mp4", 2)
     }
+
+    override fun getViewModelStore(): ViewModelStore = mViewModelStore
 }

@@ -16,29 +16,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
 import kotlin.reflect.KClass
 
-abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity() {
-    lateinit var c: Context
-    lateinit var m: Model
-    lateinit var esp: SharedPreferences
-    lateinit var gsp: SharedPreferences
-    var sp: SharedPreferences? = null
+@Suppress("MemberVisibilityCanBePrivate")
+open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
     lateinit var dm: DisplayMetrics
     var night = false
     var dirRtl = false
 
+    override var c: Context
+        get() = applicationContext
+        set(_) {}
+    override var m: Model
+        get() = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
+        set(_) {}
+    override var esp: SharedPreferences
+        get() = Persistent.initEsp(c)
+        set(_) {}
+    override var gsp: SharedPreferences
+        get() = Persistent.initGsp(c)
+        set(_) {}
+    override var sp: SharedPreferences?
+        get() = Persistent.initSp(c, m.acc)
+        set(_) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        c = applicationContext
-        m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
-        esp = initEsp(c)
-        gsp = getSharedPreferences("-1", Context.MODE_PRIVATE)
-        initSp()
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)
@@ -82,11 +87,6 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         return true
     }
 
-    fun initSp() {
-        if (m.acc != null)
-            sp = getSharedPreferences(m.acc!!.id.toString(), Context.MODE_PRIVATE)
-    }
-
     fun preference(key: String): String? =
         sp?.getString(key, null) ?: gsp.getString(key, null)
 
@@ -95,13 +95,5 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         PRIMARY(R.style.Theme_InstaTools_Primary),
         SECONDARY(R.style.Theme_InstaTools_Secondary),
         TERTIARY(R.style.Theme_InstaTools_Tertiary)
-    }
-
-    companion object {
-        fun initEsp(c: Context) = EncryptedSharedPreferences.create(
-            "main", MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC), c,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
     }
 }

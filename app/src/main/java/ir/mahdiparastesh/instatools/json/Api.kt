@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.json
 
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Handler
 import android.text.TextUtils
 import android.widget.Toast
 import com.android.volley.DefaultRetryPolicy
@@ -14,20 +15,22 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 
 class Api<JSON>(
-    val c: BaseActivity,
+    val c: Persistent,
     url: String,
     private val clazz: KClass<*>,
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
-    private val listener: (json: JSON) -> Unit,
+    private val handleError: Handler? = null,
+    private val listener: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
-    Toast.makeText(c, "ERROR: ${it.networkResponse?.statusCode}", Toast.LENGTH_LONG).show()
+    Toast.makeText(c.c, "ERROR ${it.networkResponse?.statusCode}", Toast.LENGTH_SHORT).show()
+    handleError?.obtainMessage(HANDLE_ERROR)?.sendToTarget()
 }) {
     init {
         setShouldCache(cache)
@@ -35,7 +38,7 @@ class Api<JSON>(
         retryPolicy = DefaultRetryPolicy(
             10000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         )
-        Volley.newRequestQueue(c).add(this)
+        Volley.newRequestQueue(c.c).add(this)
     }
 
     override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, c.esp)
@@ -50,7 +53,7 @@ class Api<JSON>(
             if (response.startsWith("<!DOCTYPE html>", true)
                 && response.contains("Log in • Instagram")
             ) {
-              // TODO
+                // TODO
             } else throw Exception(response)
         }
     }
@@ -58,6 +61,7 @@ class Api<JSON>(
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =
         Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
 
+    @Suppress("unused")
     enum class Type(val url: String) {
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
@@ -86,6 +90,7 @@ class Api<JSON>(
     }
 
     companion object {
+        const val HANDLE_ERROR = 100
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
         const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
 

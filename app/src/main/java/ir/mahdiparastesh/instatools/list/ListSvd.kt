@@ -55,7 +55,7 @@ class ListSvd(val c: Main, val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHo
         if (c.m.saved == null) return
 
         Glide.with(c.c)
-            .load(c.m.saved!![i].display_url)
+            .load(c.m.saved!![i].thumbnail_src)
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .addListener(object : RequestListener<Drawable> {

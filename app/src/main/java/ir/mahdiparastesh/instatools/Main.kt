@@ -4,7 +4,9 @@ import android.animation.ValueAnimator
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
@@ -17,12 +19,13 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.more.BackStackOwner
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.UiTools
 
-class Main : BaseActivity(true) {
+class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var b: MainBinding
     private lateinit var gDb: GlobalDb
-    lateinit var gDao: GlobalDb.DAO
+    private lateinit var gDao: GlobalDb.DAO
     private lateinit var pDb: PersonalDb
     lateinit var pDao: PersonalDb.DAO
     private lateinit var bg: IntArray
@@ -54,7 +57,7 @@ class Main : BaseActivity(true) {
                 return
             }
         }
-        initSp()
+        sp = Persistent.initSp(c, m.acc)
         if (m.acc!!.id == -1L) guest = true
         else pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         b = MainBinding.inflate(layoutInflater)
@@ -69,6 +72,7 @@ class Main : BaseActivity(true) {
             isDrawerIndicatorEnabled = true
             syncState()
         }
+        b.toolbar.setOnMenuItemClickListener(this)
         b.nav.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.mnDownloads -> goTo(Downloads::class)
@@ -150,6 +154,13 @@ class Main : BaseActivity(true) {
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i]) }
     }
 
+    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.mtSearch -> {
+            true
+        }
+        else -> false
+    }
+
     override fun onBackPressed() {
         if (arrayOf<BackStackOwner>(page1!!, page2!!, page3!!)[currentPage].goBack())
             return
@@ -174,7 +185,7 @@ class Main : BaseActivity(true) {
 
     private fun pages() = arrayOf<Fragment>(page1!!, page2!!, page3!!)
 
-    var isSelective = false
+    private var isSelective = false
     fun selective(bb: Boolean) {
         if (isSelective == bb) return
         isSelective = bb
@@ -186,6 +197,10 @@ class Main : BaseActivity(true) {
                 //bb && currentPage == 2 -> R.menu.main_tlb_box_select
                 else -> R.menu.main_tlb
             }
+        )
+        b.toolbar.setOnMenuItemClickListener(
+            if (bb) arrayOf<Toolbar.OnMenuItemClickListener>(page1!!, page2!!, page3!!)[currentPage]
+            else this
         )
         b.bnv.menu.forEach { it.isEnabled = !bb }
         if (!night) colorAc.value = colorAc.value
