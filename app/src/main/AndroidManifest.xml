@@ -66,5 +66,10 @@
         <service
             android:name=".Queuer"
             android:exported="false" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9457309151954418~5798988563"/>
+        <!--ca-app-pub-9457309151954418/5399016395-->
     </application>
 </manifest>

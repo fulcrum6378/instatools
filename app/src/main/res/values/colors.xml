@@ -16,6 +16,7 @@
     </array>
     <color name="CPO">#FFF</color>
     <color name="tp">#00000000</color>
+    <color name="shadow">#55000000</color>
 
     <color name="defBG">#FFF</color>
     <color name="defCA">#262626</color>
@@ -32,6 +33,5 @@
     <color name="unfollowers">@color/CPD</color>
     <color name="saved">@color/CSD</color>
     <color name="direct">@color/CTD</color>
-    <color name="shimmerBG">#EEE</color>
     <color name="selectedTick">#AAFFFFFF</color>
 </resources>

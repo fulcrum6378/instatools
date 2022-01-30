@@ -62,9 +62,6 @@ class Api<JSON>(
 
     @Suppress("unused")
     enum class Type(val url: String) {
-        FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
-        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
-        FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
         PROFILE("https://www.instagram.com/%s/?__a=1"),
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
@@ -72,23 +69,28 @@ class Api<JSON>(
         ),
         REELS("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
         POST("https://www.instagram.com/p/%s/"),
+        SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
+        // TODO: THIS IS TOP SEARCH NOT ACCOUNT SEARCH
+
+        FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
+        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
+        FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
+        FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
+        UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
 
         SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
         SAVED(
             "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
+        SAVE("https://www.instagram.com/web/save/%s/save/"),
+        UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
         INBOX(
             "https://i.instagram.com/api/v1/direct_v2/inbox/?persistentBadging=true" +
                     "&folder=&limit=20&thread_message_limit=10"
         ),
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
-
-        FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
-        UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
-        SAVE("https://www.instagram.com/web/save/%s/save/"),
-        UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
     }
 
     companion object {

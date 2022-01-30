@@ -13,6 +13,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val b = ListAccBinding.inflate(c.layoutInflater, parent, false)
+        b.name.typeface = c.fontRegular
+        b.user.typeface = c.fontRegular
         return ViewHolder(b)
     }
 

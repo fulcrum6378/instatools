@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
@@ -16,6 +17,7 @@ import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.more.UiTools
 
 class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding
@@ -48,6 +50,11 @@ class PageBox(c: Main) : BasePage(c) {
                     b.rv.computeVerticalScrollRange() && thread?.active != true
                 ) thread = FetchSome().also { it.start() }
             }
+            b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    updateShadow()
+                }
+            })
         }
         when {
             Main.guest -> {
@@ -68,6 +75,10 @@ class PageBox(c: Main) : BasePage(c) {
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         else -> false
+    }
+
+    override fun updateShadow() {
+        UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
     }
 
     override fun goBack(): Boolean {

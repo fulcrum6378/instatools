@@ -9,6 +9,8 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
     abstract var handler: Handler?
     var fetching = false
 
+    abstract fun updateShadow()
+
     companion object {
         const val HANDLE_FETCHED = 0
     }

@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.data
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.json.Dm
@@ -16,6 +17,7 @@ class Model : ViewModel() {
     var nextSaved: Profile.PageInfo? = null
     var nextDmThreads: Dm.ContinuumCursor? = null
     var loginLoaded = false
+    val currentPage = MutableLiveData(0)
 
     fun accountSwitched() {
         unfollowers = null
@@ -26,6 +28,7 @@ class Model : ViewModel() {
         nextSaved = null
         nextDmThreads = null
         loginLoaded = false
+        currentPage.value = 0
     }
 
     @Suppress("UNCHECKED_CAST")

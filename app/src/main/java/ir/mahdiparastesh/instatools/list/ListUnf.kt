@@ -21,6 +21,8 @@ class ListUnf(val c: Main, val f: PageUnf) : RecyclerView.Adapter<ListUnf.ViewHo
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val b = ListUnfBinding
             .inflate(c.themeInflater(BaseActivity.Theme.PRIMARY), parent, false)
+        b.name.typeface = c.fontRegular
+        b.user.typeface = c.fontRegular
         return ViewHolder(b)
     }
 

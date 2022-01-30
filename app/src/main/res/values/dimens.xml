@@ -7,7 +7,9 @@
     <dimen name="userPadV">21dp</dimen>
 
     <!-- Main -->
+    <dimen name="navFont">15sp</dimen>
     <dimen name="bnv">66dp</dimen>
+    <dimen name="bnvFont">5sp</dimen>
     <dimen name="padGallery">2dp</dimen>
     <dimen name="unfAction">50dp</dimen>
     <dimen name="svdSelectedPad">50dp</dimen>

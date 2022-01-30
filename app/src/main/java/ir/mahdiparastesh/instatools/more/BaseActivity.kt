@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.ContextThemeWrapper
@@ -23,6 +24,9 @@ import kotlin.reflect.KClass
 @Suppress("MemberVisibilityCanBePrivate")
 open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
     lateinit var dm: DisplayMetrics
+    lateinit var fontBold: Typeface
+    lateinit var fontRegular: Typeface
+    lateinit var fontLight: Typeface
     var night = false
     var dirRtl = false
 
@@ -44,6 +48,9 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)
+        fontBold = font("titillium_web_bold.ttf")
+        fontRegular = font("titillium_web_regular.ttf")
+        fontLight = font("titillium_web_light.ttf")
     }
 
     override fun setContentView(root: View?) {
@@ -53,7 +60,7 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
     }
 
     var tbTitle: TextView? = null
-    fun toolbar(tb: Toolbar, title: Int) {
+    fun toolbar(tb: Toolbar, title: Int, font: Typeface = fontBold) {
         if (!isMain) setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
@@ -61,13 +68,12 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
                 getTitle.text.toString() == resources.getString(title)
             ) tbTitle = getTitle
         }
-        //tbTitle?.typeface = font1Bold
+        tbTitle?.typeface = font
         tbTitle?.textSize = resources.getDimension(R.dimen.tbTitle)
         if (!isMain) supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
         }
-        //tb.navigationIcon?.apply { colorFilter = pdcf(R.color.CP) }
     }
 
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
@@ -77,6 +83,8 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
 
     fun pdcf(res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
+
+    fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, path)
 
     fun goTo(activity: KClass<*>, finish: Boolean = false): Boolean {
         startActivity(Intent(this, activity.java))

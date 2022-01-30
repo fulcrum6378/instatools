@@ -3,45 +3,55 @@ package ir.mahdiparastesh.instatools
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableString
 import android.view.MenuItem
+import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.ads.MobileAds
 import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.more.BackStackOwner
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.more.*
 
 @SuppressLint("ApplySharedPref")
 class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
-    private lateinit var b: MainBinding
+    lateinit var b: MainBinding
+    private lateinit var toggleNav: ActionBarDrawerToggle
+    private lateinit var fontLogo: Typeface
+    private lateinit var searchInput: SearchView.SearchAutoComplete
+    private lateinit var searchClose: ImageView
+
     private lateinit var gDb: GlobalDb
     private lateinit var gDao: GlobalDb.DAO
     private lateinit var pDb: PersonalDb
     lateinit var pDao: PersonalDb.DAO
-    private lateinit var bg: IntArray
-    private lateinit var ca: IntArray
-    private lateinit var toggleNav: ActionBarDrawerToggle
+
     private var page1: PageUnf? = null
     private var page2: PageSvd? = null
     private var page3: PageBox? = null
     private var anTheme: ValueAnimator? = null
+    private lateinit var bg: IntArray
+    private lateinit var ca: IntArray
     val colorBG = MutableLiveData<Int?>(null)
     private val colorAc = MutableLiveData<Int?>(null)
-    private var currentPage = 0
 
     companion object {
         val pages = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
@@ -64,9 +74,11 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         else pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
+        MobileAds.initialize(this) {}
 
         // Toolbar & Navigation
-        toolbar(b.toolbar, R.string.app_name)
+        fontLogo = font("pacifico.ttf")
+        toolbar(b.toolbar, R.string.app_name, fontLogo)
         toggleNav = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
         ).apply {
@@ -108,14 +120,35 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         }
         if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        /*b.nav.menu.forEach {
+        b.nav.menu.forEach {
             val mNewTitle = SpannableString(it.title)
             mNewTitle.setSpan(
-                CustomTypefaceSpan("", font1, dm.density * 16f), 0,
-                mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
+                CustomTypefaceSpan("", fontRegular, resources.getDimension(R.dimen.navFont)),
+                0, mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
             )
             it.title = mNewTitle
-        }*/
+        }
+        (b.toolbar.menu.findItem(R.id.mtSearch).actionView as SearchView).apply {
+            searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
+            // useless: search_button, search_go_btn, search_mag_icon
+            searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
+            setIconifiedByDefault(true)
+            searchInput.typeface = fontRegular
+            searchInput.setHint(R.string.mtSearch)
+
+            setOnSearchClickListener {
+                // WHEN THE USER OPENS THE SEARCH BAR
+            }
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
+        }
 
         // Paging
         if (page1 == null) page1 = PageUnf(this)
@@ -126,17 +159,17 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         ca = resources.getIntArray(R.array.CA)
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { item ->
-            val lastPage = currentPage
-            currentPage = pages.indexOf(item.itemId)
-            if (lastPage == currentPage) return@setOnItemSelectedListener true
+            val lastPage = m.currentPage.value!!
+            m.currentPage.value = pages.indexOf(item.itemId)
+            if (lastPage == m.currentPage.value) return@setOnItemSelectedListener true
             supportFragmentManager.beginTransaction()
                 .hide(pages()[lastPage])
-                .show(pages()[currentPage])
+                .show(pages()[m.currentPage.value!!])
                 .commit()
 
             anTheme?.cancel()
             val col = if (night) bg else ca
-            anTheme = ValueAnimator.ofArgb(col[lastPage], col[currentPage]).apply {
+            anTheme = ValueAnimator.ofArgb(col[lastPage], col[m.currentPage.value!!]).apply {
                 duration = 400L
                 addUpdateListener {
                     if (night) colorBG.value = it.animatedValue as Int
@@ -146,6 +179,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             }
             true
         }
+        m.currentPage.observe(this) { pages()[it].updateShadow() }
 
         // Theming
         if (night) {
@@ -158,7 +192,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 b.nav.setBackgroundColor(it)
                 page2?.b?.expanded?.setBackgroundColor(it)
             }
-            colorBG.value = bg[0]
+            colorBG.value = bg[m.currentPage.value!!]
         } else {
             colorAc.observe(this) {
                 if (it == null) return@observe
@@ -166,10 +200,16 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 b.toolbar.navigationIcon?.colorFilter = cf
                 b.toolbar.menu.forEach { item -> item.icon.colorFilter = cf }
                 tbTitle?.setTextColor(it)
+                searchInput.setTextColor(it)
+                searchInput.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
+                searchClose.colorFilter = cf
             }
-            colorAc.value = ca[0]
+            colorAc.value = ca[m.currentPage.value!!]
         }
-        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i]) }
+        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it ->
+            it.setTextColor(ca[i / 2])
+            it.typeface = fontLight
+        }
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
@@ -180,8 +220,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     }
 
     override fun onBackPressed() {
-        if (arrayOf<BackStackOwner>(page1!!, page2!!, page3!!)[currentPage].goBack())
-            return
+        if (pages()[m.currentPage.value!!].goBack()) return
         super.onBackPressed()
     }
 
@@ -197,12 +236,12 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         supportFragmentManager.beginTransaction().apply {
             if (it.isAdded) remove(it)
             add(R.id.frame, it)
-            if (i != currentPage) hide(it)
+            if (i != m.currentPage.value) hide(it)
             commit()
         }
     }
 
-    private fun pages() = arrayOf<Fragment>(page1!!, page2!!, page3!!)
+    private fun pages() = arrayOf(page1!!, page2!!, page3!!)
 
     private var isSelective = false
     fun selective(bb: Boolean) {
@@ -211,15 +250,16 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b.toolbar.menu.clear()
         b.toolbar.inflateMenu(
             when {
-                //bb && currentPage == 0 -> R.menu.main_tlb_unf_select
-                bb && currentPage == 1 -> R.menu.main_tlb_svd_select
-                //bb && currentPage == 2 -> R.menu.main_tlb_box_select
+                //bb && m.currentPage.value == 0 -> R.menu.main_tlb_unf_select
+                bb && m.currentPage.value == 1 -> R.menu.main_tlb_svd_select
+                //bb && m.currentPage.value == 2 -> R.menu.main_tlb_box_select
                 else -> R.menu.main_tlb
             }
         )
         b.toolbar.setOnMenuItemClickListener(
-            if (bb) arrayOf<Toolbar.OnMenuItemClickListener>(page1!!, page2!!, page3!!)[currentPage]
-            else this
+            if (bb) arrayOf<Toolbar.OnMenuItemClickListener>(
+                page1!!, page2!!, page3!!
+            )[m.currentPage.value!!] else this
         )
         b.bnv.menu.forEach { it.isEnabled = !bb }
         if (!night) colorAc.value = colorAc.value

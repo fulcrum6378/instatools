@@ -2,12 +2,16 @@ package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.core.view.forEach
 import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.data.PersonalDb
@@ -77,7 +81,10 @@ class Downloads : BaseActivity() {
             b.toolbar.navigationIcon?.colorFilter = cf
             b.toolbar.menu.forEach { item -> item.icon.colorFilter = cf }
             tbTitle?.setTextColor(this)
+            b.pasteLink.setTextColor(this)
+            b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
+        b.pasteLink.typeface = fontRegular
     }
 
     override fun onNewIntent(intent: Intent) {

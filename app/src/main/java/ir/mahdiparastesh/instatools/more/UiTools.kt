@@ -26,13 +26,18 @@ class UiTools {
                 val item = it as BottomNavigationItemView
                 // 0 => FrameLayout (icon) and 1 => BaselineLayout (title)
                 val title = item[1] as BaselineLayout // has 2 AppCompatTextView
-                list.add(title[1] as AppCompatTextView) // Take the second one
+                list.add(title[0] as AppCompatTextView) // normal state
+                list.add(title[1] as AppCompatTextView) // selected state
             }
             return list.toList()
         }
 
         fun vis(v: View, bb: Boolean = true) {
             v.visibility = if (bb) View.VISIBLE else View.GONE
+        }
+
+        fun vish(v: View, bb: Boolean = true) {
+            v.visibility = if (bb) View.VISIBLE else View.INVISIBLE
         }
 
         fun openProfile(c: AppCompatActivity, user: String) {

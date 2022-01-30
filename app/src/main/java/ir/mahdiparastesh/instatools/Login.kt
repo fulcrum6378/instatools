@@ -93,10 +93,13 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         m.accounts.sortWith(Account.Sort())
         m.accounts.sortedBy { it.id < 0 }
         bw.accounts.adapter = ListAcc(this)
+
+        // Add Account
         bw.addAccount.setOnClickListener {
             gonnaAdd = true
             browse()
         }
+        bw.addAccTv.typeface = fontRegular
 
         // Animate
         if (!m.loginLoaded) Delay(1500) {
@@ -181,6 +184,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 id = "-1"
                 gsp.edit()
                     .putString(spCookies.format(id), cookieManager.getCookie(host))
+                    .putString(spAccount, id)
                     .commit()
                 goTo(Main::class, true); return; }
             if (doClearHistory) {

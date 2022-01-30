@@ -4,21 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".frag.PageBox">
+    tools:context=".frag.PageBox"
+    tools:ignore="MissingConstraints">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        style="@style/refresher">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="15dp"
+            style="@style/rv"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
@@ -19,6 +20,7 @@ import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
+import ir.mahdiparastesh.instatools.more.UiTools
 
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
@@ -60,7 +62,14 @@ class PageUnf(c: Main) : BasePage(c) {
             c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
         )
 
-        if (!Main.guest) b.refresher.setOnRefreshListener { fetch() }
+        if (!Main.guest) {
+            b.refresher.setOnRefreshListener { fetch() }
+            b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    updateShadow()
+                }
+            })
+        }
         when {
             Main.guest -> {
                 // TODO: GUEST MODE (ViewStub)
@@ -91,6 +100,10 @@ class PageUnf(c: Main) : BasePage(c) {
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         else -> false
+    }
+
+    override fun updateShadow() {
+        UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
     }
 
     enum class Action { LOADED, ANALYSED, COMPLETED }

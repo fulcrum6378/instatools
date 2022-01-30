@@ -14,6 +14,8 @@ class ListBox(val c: Main) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val b = ListBoxBinding
             .inflate(c.themeInflater(BaseActivity.Theme.TERTIARY), parent, false)
+        b.name.typeface = c.fontRegular
+        //b.last.typeface = c.fontRegular
         return ViewHolder(b)
     }
 

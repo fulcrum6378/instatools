@@ -22,6 +22,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val b = ListQudBinding
             .inflate(c.themeInflater(BaseActivity.Theme.SECONDARY), parent, false)
+        b.user.typeface = c.fontRegular
+        b.date.typeface = c.fontRegular
         return ViewHolder(b)
     }
 

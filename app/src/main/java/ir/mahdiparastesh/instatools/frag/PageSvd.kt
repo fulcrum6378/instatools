@@ -11,6 +11,7 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
@@ -22,6 +23,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.more.UiTools
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
@@ -64,6 +66,11 @@ class PageSvd(c: Main) : BasePage(c) {
                     thread?.active != true
                 ) thread = FetchSome().also { it.start() }
             }
+            b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    updateShadow()
+                }
+            })
         }
         when {
             Main.guest -> {
@@ -110,6 +117,10 @@ class PageSvd(c: Main) : BasePage(c) {
             true
         } else false
         else -> false
+    }
+
+    override fun updateShadow() {
+        UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
     }
 
     override fun goBack(): Boolean {
