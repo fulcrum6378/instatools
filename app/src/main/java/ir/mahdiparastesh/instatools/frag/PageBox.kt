@@ -38,32 +38,27 @@ class PageBox(c: Main) : BasePage(c) {
             c.themeInflater(BaseActivity.Theme.TERTIARY, inf),
             parent, false
         )
+        if (Main.guest) {
+            guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }
 
-        if (!Main.guest) {
-            b.refresher.setOnRefreshListener {
-                c.m.nextDmThreads = null
-                c.m.dmThreads = arrayListOf()
-                if (thread?.active != true) thread = FetchSome().also { it.start() }
-            }
-            b.rv.viewTreeObserver.addOnScrollChangedListener {
-                if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset()) ==
-                    b.rv.computeVerticalScrollRange() && thread?.active != true
-                ) thread = FetchSome().also { it.start() }
-            }
-            b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    updateShadow()
-                }
-            })
+        b.refresher.setOnRefreshListener {
+            c.m.nextDmThreads = null
+            c.m.dmThreads = arrayListOf()
+            if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
-        when {
-            Main.guest -> {
-                // TODO: GUEST MODE
+        b.rv.viewTreeObserver.addOnScrollChangedListener {
+            if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset()) ==
+                b.rv.computeVerticalScrollRange() && thread?.active != true
+            ) thread = FetchSome().also { it.start() }
+        }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateShadow()
             }
-            c.m.saved != null -> adapt()
-            else -> thread = FetchSome().also { it.start() }
+        })
+        if (c.m.saved != null) adapt()
+        else thread = FetchSome().also { it.start() }
 
-        }
         return b.root
     }
 

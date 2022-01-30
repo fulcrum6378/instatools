@@ -28,14 +28,14 @@
         android:textColor="?attr/colorAccent"
         android:textDirection="ltr"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/status"
+        app:layout_constraintBottom_toTopOf="@id/last"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/photo"
         app:layout_constraintTop_toTopOf="@id/photo"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/status"
+        android:id="@+id/last"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAlignment="viewStart"

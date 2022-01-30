@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
+import java.util.*
 
 class UiTools {
     companion object {
@@ -60,6 +61,13 @@ class UiTools {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 vib.vibrate(VibrationEffect.createOneShot(dur, VibrationEffect.DEFAULT_AMPLITUDE))
             else vib.vibrate(dur)
+        }
+
+        fun date(time: Long): String {
+            val cal = Calendar.getInstance().apply { timeInMillis = time }
+            return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
+                    "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
+                    "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
         }
     }
 }

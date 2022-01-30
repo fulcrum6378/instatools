@@ -31,6 +31,8 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.more.*
 
+// adb connect 192.168.1.20:
+
 @SuppressLint("ApplySharedPref")
 class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
@@ -69,11 +71,11 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             goTo(Login::class, true)
             return
         }
+        b = MainBinding.inflate(layoutInflater)
+        setContentView(b.root)
         sp = Persistent.initSp(c, m.acc)
         if (m.acc!!.id == -1L) guest = true
         else pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
-        b = MainBinding.inflate(layoutInflater)
-        setContentView(b.root)
         MobileAds.initialize(this) {}
 
         // Toolbar & Navigation
@@ -162,7 +164,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             val lastPage = m.currentPage.value!!
             m.currentPage.value = pages.indexOf(item.itemId)
             if (lastPage == m.currentPage.value) return@setOnItemSelectedListener true
-            supportFragmentManager.beginTransaction()
+            transFrag(lastPage, m.currentPage.value!!)
                 .hide(pages()[lastPage])
                 .show(pages()[m.currentPage.value!!])
                 .commit()
@@ -170,7 +172,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             anTheme?.cancel()
             val col = if (night) bg else ca
             anTheme = ValueAnimator.ofArgb(col[lastPage], col[m.currentPage.value!!]).apply {
-                duration = 400L
+                duration = resources.getInteger(R.integer.transFrag).toLong()
                 addUpdateListener {
                     if (night) colorBG.value = it.animatedValue as Int
                     else colorAc.value = it.animatedValue as Int
@@ -233,7 +235,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     }
 
     private fun loadPages() = pages().forEachIndexed { i, it ->
-        supportFragmentManager.beginTransaction().apply {
+        transFrag().apply {
             if (it.isAdded) remove(it)
             add(R.id.frame, it)
             if (i != m.currentPage.value) hide(it)
@@ -265,21 +267,37 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         if (!night) colorAc.value = colorAc.value
     }
 
+    private fun transFrag(from: Int? = null, to: Int? = null) =
+        supportFragmentManager.beginTransaction().apply {
+            if (from == null || to == null || from == to) return@apply
+            if (if (!dirRtl) from < to else from > to) setCustomAnimations(
+                R.anim.enter_from_right,
+                R.anim.exit_to_left,
+                R.anim.enter_from_left,
+                R.anim.exit_to_right
+            ) else setCustomAnimations(
+                R.anim.enter_from_left,
+                R.anim.exit_to_right,
+                R.anim.enter_from_right,
+                R.anim.exit_to_left
+            )
+        }
+
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
             PageUnf::class.java.name -> {
                 if (page1 != null && page1?.isAdded == true)
-                    supportFragmentManager.beginTransaction().remove(page1!!).commit()
+                    transFrag().remove(page1!!).commit()
                 PageUnf(this@Main).also { page1 = it }
             }
             PageSvd::class.java.name -> {
                 if (page2 != null && page2?.isAdded == true)
-                    supportFragmentManager.beginTransaction().remove(page2!!).commit()
+                    transFrag().remove(page2!!).commit()
                 PageSvd(this@Main).also { page2 = it }
             }
             PageBox::class.java.name -> {
                 if (page3 != null && page3?.isAdded == true)
-                    supportFragmentManager.beginTransaction().remove(page3!!).commit()
+                    transFrag().remove(page3!!).commit()
                 PageBox(this@Main).also { page3 = it }
             }
             else -> super.instantiate(loader, name)

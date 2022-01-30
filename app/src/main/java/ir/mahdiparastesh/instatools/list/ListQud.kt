@@ -14,7 +14,6 @@ import ir.mahdiparastesh.instatools.more.Act
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.MaterialMenu
 import ir.mahdiparastesh.instatools.more.UiTools
-import java.util.*
 
 class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     class ViewHolder(val b: ListQudBinding) : RecyclerView.ViewHolder(b.root)
@@ -34,10 +33,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         // Main
         Glide.with(c.c).load(c.m.queueds!![i].thumb).into(h.b.thumb)
         h.b.user.text = "${i + 1}. ${c.m.queueds!![i].userName ?: "..."}"
-        val cal = Calendar.getInstance().apply { timeInMillis = c.m.queueds!![i].addedAt }
-        h.b.date.text = "${cal[Calendar.YEAR]}.${UiTools.z(cal[Calendar.MONTH] + 1)}." +
-                "${UiTools.z(cal[Calendar.DAY_OF_MONTH])} - ${UiTools.z(cal[Calendar.HOUR_OF_DAY])}:" +
-                "${UiTools.z(cal[Calendar.MINUTE])}:${UiTools.z(cal[Calendar.SECOND])}"
+        h.b.date.text = UiTools.date(c.m.queueds!![i].addedAt)
 
         // Status
         h.b.status.setAnimation(if (!c.m.queueds!![i].failed) R.raw.download else R.raw.failed)

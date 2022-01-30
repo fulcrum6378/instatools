@@ -1,28 +1,28 @@
 package ir.mahdiparastesh.instatools.json
 
-@Suppress("SpellCheckingInspection", "unused")
+@Suppress("SpellCheckingInspection")
 open class Rest(val status: String) {
 
     class User(
-        val account_badges: Array<Map<String, *>>,
-        val fbid_v2: Double,
+        //val account_badges: Array<Map<String, *>>,
+        //val fbid_v2: Double,
         val friendship_status: Friendship,
         val full_name: String,
-        val has_anonymous_profile_picture: Boolean,
-        val has_highlight_reels: Boolean,
-        val interop_messaging_user_fbid: Double?,
+        //val has_anonymous_profile_picture: Boolean,
+        //val has_highlight_reels: Boolean,
+        //val interop_messaging_user_fbid: Double?,
         val is_private: Boolean,
-        val is_using_unified_inbox_for_direct: Boolean?,
-        val is_verified: Boolean,
-        val latest_reel_media: Double,
+        //val is_using_unified_inbox_for_direct: Boolean?,
+        //val is_verified: Boolean,
+        //val latest_reel_media: Double,
         val pk: String,
         val profile_pic_url: String,
         val profile_pic_id: String,
-        val reel_auto_archive: String?,
-        val should_show_category: Boolean,
+        //val reel_auto_archive: String?,
+        //val should_show_category: Boolean,
         val username: String,
-        val wa_addressable: Any?,// Double or Boolean
-        val wa_eligibility: Double?
+        //val wa_addressable: Any?,// Double or Boolean
+        //val wa_eligibility: Double?
     )
 
     class Follow( // Both following and followers
@@ -63,19 +63,19 @@ open class Rest(val status: String) {
 
     class Reel(
         val ad_expiry_timestamp_in_millis: Any?,
-        val can_gif_quick_reply: Boolean,
-        val can_reply: Boolean,
-        val can_reshare: Boolean,
-        val expiring_at: Double,
+        //val can_gif_quick_reply: Boolean,
+        //val can_reply: Boolean,
+        //val can_reshare: Boolean,
+        //val expiring_at: Double,
         val id: Double, // User Id not that of the reel
-        val is_cta_sticker_available: Any?,
+        //val is_cta_sticker_available: Any?,
         val items: Array<Media>,
-        val latest_reel_media: Double,
-        val media_count: Float,
-        val media_ids: Array<String>,
-        val prefetch_count: Float,
-        val reel_type: String,
-        val seen: Double,
+        //val latest_reel_media: Double,
+        //val media_count: Float,
+        //val media_ids: Array<String>,
+        //val prefetch_count: Float,
+        //val reel_type: String,
+        //val seen: Double,
         val user: User
     )
 

@@ -48,37 +48,34 @@ class PageSvd(c: Main) : BasePage(c) {
         b = PageSvdBinding.inflate(
             c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
         )
+        if (Main.guest) {
+            guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
 
         b.rv.layoutManager = GridLayoutManager(c, 3)
-        if (!Main.guest) {
-            b.refresher.setOnChildScrollUpCallback { _, _ ->
-                return@setOnChildScrollUpCallback tracker?.hasSelection() == true
-            }
-            b.refresher.setOnRefreshListener {
-                b.rv.adapter = null
-                c.m.nextSaved = null
-                c.m.saved = null
-                if (thread?.active != true) thread = FetchSome().also { it.start() }
-            }
-            b.rv.viewTreeObserver.addOnScrollChangedListener {
-                if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset() +
-                            (c.dm.heightPixels * 0.1)) >= b.rv.computeVerticalScrollRange() &&
-                    thread?.active != true
-                ) thread = FetchSome().also { it.start() }
-            }
-            b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    updateShadow()
-                }
-            })
+
+        b.refresher.setOnChildScrollUpCallback { _, _ ->
+            return@setOnChildScrollUpCallback tracker?.hasSelection() == true
         }
-        when {
-            Main.guest -> {
-                // TODO: GUEST MODE
-            }
-            c.m.saved != null -> adapt()
-            else -> thread?.start()
+        b.refresher.setOnRefreshListener {
+            b.rv.adapter = null
+            c.m.nextSaved = null
+            c.m.saved = null
+            if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
+        b.rv.viewTreeObserver.addOnScrollChangedListener {
+            if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset() +
+                        (c.dm.heightPixels * 0.1)) >= b.rv.computeVerticalScrollRange() &&
+                thread?.active != true
+            ) thread = FetchSome().also { it.start() }
+        }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateShadow()
+            }
+        })
+        if (c.m.saved != null) adapt()
+        else thread?.start()
+
         return b.root
     }
 

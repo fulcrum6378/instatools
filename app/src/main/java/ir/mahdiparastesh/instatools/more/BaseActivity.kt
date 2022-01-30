@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.more
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -87,7 +88,10 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
     fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, path)
 
     fun goTo(activity: KClass<*>, finish: Boolean = false): Boolean {
-        startActivity(Intent(this, activity.java))
+        startActivity(
+            Intent(this, activity.java),
+            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+        )
         if (finish) finish()
         return true
     }

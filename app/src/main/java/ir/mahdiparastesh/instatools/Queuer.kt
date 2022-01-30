@@ -1,15 +1,17 @@
 package ir.mahdiparastesh.instatools
 
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
@@ -32,6 +34,7 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.FileOutputStream
 import java.util.*
 
+@SuppressLint("UnspecifiedImmutableFlag")
 class Queuer : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
     private lateinit var pDb: PersonalDb
@@ -55,16 +58,23 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
 
     companion object {
         private val pack: String = Queuer::class.java.`package`!!.name
+        val CHANNEL = "$pack.DOWNLOADING"
         val ACTION_START = "$pack.ACTION_START"
         val ACTION_STOP = "$pack.ACTION_STOP"
         val EXTRA_LINK = "$pack.EXTRA_LINK"
         val EXTRA_USER = "$pack.EXTRA_USER"
         val EXTRA_DEST = "$pack.EXTRA_DEST"
+        const val CH_ID = 262
         const val HANDLE_LINK = 0
         var active = false
         var handler: Handler? = null
 
         fun now() = Calendar.getInstance().timeInMillis
+
+        fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
+            c, 0, Intent(c, Queuer::class.java).apply { action = code },
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
     }
 
     override fun onCreate() {
@@ -85,6 +95,25 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
                 }
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                .createNotificationChannel(
+                    NotificationChannel(
+                        CHANNEL, c.resources.getString(R.string.notif_channel),
+                        NotificationManager.IMPORTANCE_LOW
+                    ).apply { description = c.resources.getString(R.string.notif_channel_desc) })
+        startForeground(CH_ID, NotificationCompat.Builder(c, CHANNEL).apply {
+            setSmallIcon(R.mipmap.launcher_round)
+            setContentTitle(c.resources.getString(R.string.notif_title))
+            setOngoing(true)
+            priority = NotificationCompat.PRIORITY_LOW
+            setContentIntent(
+                PendingIntent.getActivity(
+                    c, 0, Intent(c, Downloads::class.java), PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            addAction(0, c.resources.getString(R.string.notif_stop), pi(c, ACTION_STOP))
+        }.build())
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -99,7 +128,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
                 intent.getStringExtra(EXTRA_LINK)?.let { handleLink(it) }
                 intent.getStringExtra(EXTRA_DEST)?.let { des = it }
             }
-            ACTION_STOP -> if (active) stopSelf()
+            ACTION_STOP -> if (active) stopForeground(true)
         }
         return START_NOT_STICKY
     }
@@ -261,6 +290,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
 
     override fun onDestroy() {
         handler = null
+        stopForeground(true)
         super.onDestroy()
         active = false
     }

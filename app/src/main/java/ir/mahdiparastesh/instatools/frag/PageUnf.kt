@@ -61,24 +61,20 @@ class PageUnf(c: Main) : BasePage(c) {
         b = PageUnfBinding.inflate(
             c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
         )
+        if (Main.guest) {
+            guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
-        if (!Main.guest) {
-            b.refresher.setOnRefreshListener { fetch() }
-            b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    updateShadow()
-                }
-            })
-        }
-        when {
-            Main.guest -> {
-                // TODO: GUEST MODE (ViewStub)
+        b.refresher.setOnRefreshListener { fetch() }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateShadow()
             }
-            c.m.unfollowers != null -> adapt()
-            else -> Thread {
-                handler?.obtainMessage(Action.LOADED.ordinal, c.pDao.unfollowers())?.sendToTarget()
-            }.start()
-        }
+        })
+        if (c.m.unfollowers != null) adapt()
+        else Thread {
+            handler?.obtainMessage(Action.LOADED.ordinal, c.pDao.unfollowers())?.sendToTarget()
+        }.start()
+
         return b.root
     }
 
