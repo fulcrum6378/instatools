@@ -55,6 +55,11 @@ open class Rest(val status: String) {
         status: String
     ) : Rest(status)
 
+    class InboxThread(
+        val thread: Dm.DmThread,
+        status: String
+    ) : Rest(status)
+
     class Reels(
         val reels: Map<String, Reel>,
         val reels_media: Array<Reel>,
@@ -86,7 +91,7 @@ open class Rest(val status: String) {
         val has_more: Boolean,
         val users: Array<ItemUser>,
         status: String
-    ): Rest(status)
+    ) : Rest(status)
 
     class ItemUser(val position: Float, val user: User)
 }

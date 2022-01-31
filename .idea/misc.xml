@@ -9,8 +9,11 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct_off.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct_on.xml" value="0.12604166666666666" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/dm_from_me.xml" value="0.1815" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/dm_to_me.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/done.xml" value="0.1795" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download.xml" value="0.175" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/error_outline.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/exit.xml" value="0.1795" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/favourite.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/guest.xml" value="0.1815" />
@@ -38,6 +41,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/guest_mode.xml" value="0.19293478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_acc.xml" value="0.15489130434782608" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_box.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_thd.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_unf.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/login.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/main.xml" value="0.12771739130434784" />

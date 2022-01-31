@@ -256,7 +256,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
                     download()
                 }
             }.apply {
-                setShouldCache(true)
+                setShouldCache(false)
                 tag = queue[0].itemId
                 retryPolicy = DefaultRetryPolicy(
                     20000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT

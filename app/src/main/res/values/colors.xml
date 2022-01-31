@@ -35,4 +35,5 @@
     <color name="direct">@color/CTD</color>
     <color name="selectedTick">#AAFFFFFF</color>
     <color name="shimmerIvBg">#EEE</color>
+    <color name="dmFromMe">#08000000</color>
 </resources>

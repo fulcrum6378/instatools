@@ -57,7 +57,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
 
-            <intent-filter>
+            <intent-filter android:label="@string/dwShare">
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -70,19 +70,20 @@
             android:name=".Viewer"
             android:exported="true"
             android:noHistory="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.InstaTools.Secondary">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
 
-            <intent-filter>
+            <!--<intent-filter android:label="@string/vwShare">
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="text/plain" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <activity

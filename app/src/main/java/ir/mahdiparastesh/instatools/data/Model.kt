@@ -12,10 +12,9 @@ class Model : ViewModel() {
     var unfollowers: ArrayList<Unfollower>? = null
     var saved: ArrayList<Profile.Post>? = null
     var dmThreads: ArrayList<Dm.DmThread>? = null
-    var dmItems: ArrayList<Dm>? = null
+    var dmThread: Dm.DmThread? = null
     var queueds: ArrayList<Queued>? = null
     var nextSaved: Profile.PageInfo? = null
-    var nextDmThreads: Dm.ContinuumCursor? = null
     var loginLoaded = false
     val currentPage = MutableLiveData(0)
 
@@ -23,10 +22,9 @@ class Model : ViewModel() {
         unfollowers = null
         saved = null
         dmThreads = null
-        dmItems = null
+        dmThread = null
         queueds = null
         nextSaved = null
-        nextDmThreads = null
         loginLoaded = false
         currentPage.value = 0
     }

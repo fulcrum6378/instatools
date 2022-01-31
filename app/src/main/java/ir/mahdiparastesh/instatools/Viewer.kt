@@ -29,22 +29,21 @@ class Viewer : BaseActivity() {
         }
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.vwTitle)
+        toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
 
         Api<Profile>(
             this, Api.Type.PROFILE.url.format(user), Profile::class, handleError = handler
         ) { profile ->
-            val user = profile.graphql?.user
-            if (user == null) {
+            val u = profile.graphql?.user
+            if (u == null) {
                 Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()
                 return@Api
             }
-            tbTitle?.text = user.username
             Glide.with(c)
-                .load(user.profile_pic_url_hd ?: user.profile_pic_url)
+                .load(u.profile_pic_url_hd ?: u.profile_pic_url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .addListener(GlideShimmer(b.proPhotoShimmer, b.proPhoto))
-                .into(b.proPhoto)
+                .addListener(GlideShimmer(b.proPic, b.proPicIv))
+                .into(b.proPicIv)
         }
     }
 

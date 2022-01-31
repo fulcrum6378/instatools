@@ -36,7 +36,7 @@
     </style>
 
     <style name="tbShadow" parent="shadow">
-        <item name="android:alpha">0.75</item>
+        <item name="android:alpha">0.65</item>
         <item name="android:visibility">invisible</item>
         <item name="layout_constraintTop_toBottomOf">@id/toolbar</item>
     </style>

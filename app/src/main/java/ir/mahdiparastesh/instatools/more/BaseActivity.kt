@@ -70,7 +70,7 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
     }
 
     var tbTitle: TextView? = null
-    fun toolbar(tb: Toolbar, title: Int, font: Typeface = fontBold) {
+    fun toolbar(tb: Toolbar, title: Int, font: Typeface = fontBold, changeTitleTo: String? = null) {
         if (!isMain) setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
@@ -78,6 +78,7 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
                 getTitle.text.toString() == resources.getString(title)
             ) tbTitle = getTitle
         }
+        if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         tbTitle?.typeface = font
         tbTitle?.textSize = resources.getDimension(R.dimen.tbTitle)
         if (!isMain) supportActionBar?.apply {

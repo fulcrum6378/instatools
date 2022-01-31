@@ -20,7 +20,7 @@ class Settings : BaseActivity() {
             )
             prf.edit().apply {
                 putString(spStorage, uri.toString())
-                .commit()
+                    .commit()
             }
         }
 
@@ -34,8 +34,10 @@ class Settings : BaseActivity() {
         intent.extras?.getBoolean(EXTRA_IS_GLOBAL)?.let { globalMode = it }
         b = SettingsBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.settings)
-        tbTitle?.setText(if (globalMode) R.string.gSettings else R.string.aSettings)
+        toolbar(
+            b.toolbar, R.string.settings,
+            changeTitleTo = getString(if (globalMode) R.string.gSettings else R.string.aSettings)
+        )
         prf = if (globalMode || sp == null) gsp else sp!!
 
         if (!prf.contains(spStorage))

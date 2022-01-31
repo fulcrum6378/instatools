@@ -12,21 +12,27 @@
         app:title="@string/vwTitle" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/proPhotoShimmer"
+        android:id="@+id/proPic"
         style="@style/shimmer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.15"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <ImageView
-            android:id="@+id/proPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/proPicIv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:background="@color/shimmerIvBg" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <!--<androidx.viewpager2.widget.ViewPager2
-        android:layout_width=""
-        android:layout_height=""/>-->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/proPic" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -33,6 +33,8 @@
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Type a profile name&#8230;</string>
     <string name="boxUntil">Until %s</string>
+
+    <!-- Inquisitor -->
     <string name="inquiryChannel">Unfollowers</string>
     <string name="inquiryChannelDesc">Finds unfollowers</string>
     <string name="inquiryTitle">Looking for unfollowers&#8230;</string>
@@ -40,7 +42,10 @@
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
+    <string name="dwShare">Download</string>
     <string name="pasteLink">Paste a link&#8230;</string>
+
+    <!-- Queuer -->
     <string name="queuerChannel">Queuer</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
@@ -48,6 +53,7 @@
 
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
+    <string name="vwShare">View Profile</string>
     <string name="ucViewInApp">View Here</string>
     <string name="ucViewInInsta">View in Instagram</string>
 

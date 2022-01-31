@@ -52,7 +52,6 @@ class PageSvd(c: Main) : BasePage(c) {
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
 
         b.rv.layoutManager = GridLayoutManager(c, 3)
-
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
         }
@@ -171,6 +170,7 @@ class PageSvd(c: Main) : BasePage(c) {
                 c.m.nextSaved = media.page_info
                 c.m.saved = ArrayList(media.edges.map { it.node })
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                interrupt()
             } else Api<Profile.GraphQlResponse>(
                 c, Api.Type.SAVED.url.format(
                     c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
@@ -180,6 +180,7 @@ class PageSvd(c: Main) : BasePage(c) {
                 c.m.nextSaved = media.page_info
                 c.m.saved?.addAll(media.edges.map { it.node })
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                interrupt()
             }
         }
     }

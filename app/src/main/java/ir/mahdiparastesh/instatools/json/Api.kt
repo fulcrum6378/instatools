@@ -84,10 +84,7 @@ class Api<JSON>(
         SAVE("https://www.instagram.com/web/save/%s/save/"),
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
-        INBOX(
-            "https://i.instagram.com/api/v1/direct_v2/inbox/?persistentBadging=true" +
-                    "&folder=&limit=20&thread_message_limit=10"
-        ),
+        INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/"),
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
     }
 
