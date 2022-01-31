@@ -4,15 +4,17 @@
     <dimen name="tbTitle">7sp</dimen>
     <dimen name="profilePhoto">50dp</dimen>
     <dimen name="thumbPhoto">60dp</dimen>
-    <dimen name="userPadV">21dp</dimen>
+    <dimen name="userPadV">20dp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>
     <dimen name="bnv">66dp</dimen>
     <dimen name="bnvFont">5sp</dimen>
+    <dimen name="mainPadH">26dp</dimen>
     <dimen name="padGallery">2dp</dimen>
     <dimen name="unfAction">50dp</dimen>
     <dimen name="svdSelectedPad">50dp</dimen>
+    <dimen name="guestIcon">64dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">45dp</dimen>

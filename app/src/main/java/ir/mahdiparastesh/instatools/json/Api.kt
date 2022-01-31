@@ -28,8 +28,7 @@ class Api<JSON>(
     private val handleError: Handler? = null,
     private val listener: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
-    //Toast.makeText(c.c, "ERROR ${it.networkResponse?.statusCode}", Toast.LENGTH_SHORT).show()
-    handleError?.obtainMessage(HANDLE_ERROR)?.sendToTarget()
+    handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget()
 }) {
     init {
         setShouldCache(cache)
@@ -70,7 +69,6 @@ class Api<JSON>(
         REELS("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
         POST("https://www.instagram.com/p/%s/"),
         SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
-        // TODO: THIS IS TOP SEARCH NOT ACCOUNT SEARCH
 
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
@@ -142,8 +140,8 @@ class Api<JSON>(
             //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCnL"
             this["x-ig-app-id"] = "936619743392459"
             this["cookie"] = sp.getString(Login.spCookies.format(acc.id), "") ?: ""
-            //this["Referer"] = "https://www.instagram.com/"
-            //this["Referrer-Policy"] = "strict-origin-when-cross-origin"
+            this["Referer"] = "https://www.instagram.com/"
+            this["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
             // Added myself
             this["Access-Control-Allow-Origin"] = "https://www.instagram.com/"

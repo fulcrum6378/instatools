@@ -32,12 +32,15 @@
             android:name=".Login"
             android:exported="false"
             android:noHistory="true"
+            android:theme="@style/Theme.InstaTools.Secondary"
             android:windowSoftInputMode="stateHidden|adjustPan" />
 
         <activity
             android:name=".Settings"
             android:exported="false"
-            android:launchMode="standard">
+            android:launchMode="standard"
+            android:noHistory="true"
+            android:theme="@style/Theme.InstaTools.Tertiary">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -63,13 +66,47 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Viewer"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.InstaTools.Secondary">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Main" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".Favourites"
+            android:exported="false"
+            android:theme="@style/Theme.InstaTools.Primary">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Main" />
+        </activity>
+
         <service
             android:name=".Queuer"
             android:exported="false" />
 
+        <service
+            android:name=".Inquisitor"
+            android:enabled="true"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9457309151954418~5798988563"/>
+            android:value="ca-app-pub-9457309151954418~5798988563" />
         <!--ca-app-pub-9457309151954418/5399016395-->
     </application>
 </manifest>

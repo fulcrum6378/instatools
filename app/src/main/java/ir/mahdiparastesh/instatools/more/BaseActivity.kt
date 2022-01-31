@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
@@ -58,6 +60,13 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
+        if (!isMain && night) TypedValue().apply {
+            theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
+        }.data.apply {
+            window.decorView.setBackgroundColor(this)
+            window.statusBarColor = this
+            window.navigationBarColor = this
+        }
     }
 
     var tbTitle: TextView? = null
@@ -74,6 +83,14 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
         if (!isMain) supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
+            if (!night) TypedValue().apply {
+                theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
+            }.data.apply {
+                val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
+                tb.navigationIcon?.colorFilter = cf
+                tb.menu.forEach { item -> item.icon.colorFilter = cf }
+                tbTitle?.setTextColor(this)
+            }
         }
     }
 
@@ -95,9 +112,6 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
         if (finish) finish()
         return true
     }
-
-    fun preference(key: String): String? =
-        sp?.getString(key, null) ?: gsp.getString(key, null)
 
     enum class Theme(val res: Int) {
         DEFAULT(R.style.Theme_InstaTools),

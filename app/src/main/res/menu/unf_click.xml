@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/ucViewInApp"
+        android:title="@string/ucViewInApp" />
+    <item
+        android:id="@+id/ucViewInInsta"
+        android:title="@string/ucViewInInsta" />
+</menu>

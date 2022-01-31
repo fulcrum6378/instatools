@@ -35,9 +35,9 @@
         android:background="@drawable/button"
         android:elevation="2dp"
         android:paddingStart="@dimen/loginPadH"
-        android:paddingTop="25dp"
+        android:paddingTop="20dp"
         android:paddingEnd="@dimen/loginPadH"
-        android:paddingBottom="25dp"
+        android:paddingBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView

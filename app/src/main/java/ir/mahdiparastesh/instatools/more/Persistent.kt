@@ -8,9 +8,13 @@ import ir.mahdiparastesh.instatools.data.Model
 interface Persistent {
     var c: Context
     var m: Model
+
     //var esp: SharedPreferences
     var gsp: SharedPreferences
     var sp: SharedPreferences?
+
+    fun preference(key: String): String? =
+        sp?.getString(key, null) ?: gsp.getString(key, null)
 
     companion object {
         // java.security.KeyStoreException:

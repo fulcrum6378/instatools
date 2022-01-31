@@ -41,9 +41,4 @@ class Settings : BaseActivity() {
         if (!prf.contains(spStorage))
             saveLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
 }

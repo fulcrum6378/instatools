@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/shimmer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/padGallery"
-    app:shimmer_base_color="#66EEEEEE"
-    app:shimmer_colored="true"
-    app:shimmer_duration="700"
-    app:shimmer_highlight_color="#66FFFFFF"
-    app:shimmer_repeat_delay="50"
-    app:shimmer_width_ratio="2"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -18,7 +12,7 @@
         style="@style/parentConstraint"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#EEE"
+        android:background="@color/shimmerIvBg"
         android:scaleType="centerCrop" />
 
     <View

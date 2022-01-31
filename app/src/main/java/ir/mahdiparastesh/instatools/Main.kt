@@ -29,7 +29,13 @@ import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.list.ListSch
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.CustomTypefaceSpan
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.UiTools
 
 // adb connect 192.168.1.20:
 
@@ -40,6 +46,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var fontLogo: Typeface
     private lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
+    var schRes: Array<Rest.ItemUser>? = null
 
     private lateinit var gDb: GlobalDb
     private lateinit var gDao: GlobalDb.DAO
@@ -56,7 +63,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private val colorAc = MutableLiveData<Int?>(null)
 
     companion object {
-        val pages = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
 
@@ -74,8 +80,9 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         sp = Persistent.initSp(c, m.acc)
-        if (m.acc!!.id == -1L) guest = true
-        else pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        guest = m.acc!!.id == -1L
+        if (m.acc!!.id > -1L)
+            pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         MobileAds.initialize(this) {}
 
         // Toolbar & Navigation
@@ -92,6 +99,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b.nav.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.mnDownloads -> goTo(Downloads::class)
+                R.id.mnFavourites -> goTo(Favourites::class)
                 R.id.mnGSettings -> {
                     startActivity(Intent(this, Settings::class.java)
                         .apply { putExtra(Settings.EXTRA_IS_GLOBAL, true) })
@@ -99,6 +107,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
+                    // TODO: IF ONE OF QUEUER OR INQUISITOR WERE WORKING, PROMPT FIRST
                     gsp.edit().remove(Login.spAccount).commit()
                     goTo(Login::class, true)
                 }
@@ -108,6 +117,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                         setMessage(R.string.signOutSure)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
+                            // TODO: FORCE SHUTDOWN QUEUER AND INQUISITOR
                             gsp.edit().remove(Login.spAccount).commit()
                             if (m.acc != null) gsp.edit()
                                 .remove(Login.spCookies.format(m.acc!!.id))
@@ -134,23 +144,46 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
             // useless: search_button, search_go_btn, search_mag_icon
             searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
-            setIconifiedByDefault(true)
             searchInput.typeface = fontRegular
             searchInput.setHint(R.string.mtSearch)
 
-            setOnSearchClickListener {
-                // WHEN THE USER OPENS THE SEARCH BAR
-            }
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
-                }
+                override fun onQueryTextSubmit(query: String) = true
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    return false
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onQueryTextChange(newText: String): Boolean {
+                    if (newText == "") {
+                        schRes = null
+                        if (b.searchRes.adapter == null)
+                            b.searchRes.adapter = ListSch(this@Main)
+                        else b.searchRes.adapter?.notifyDataSetChanged()
+                        return true
+                    }
+                    Api<Rest.Search>(
+                        this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
+                        cache = true
+                    ) { res ->
+                        schRes = res.users.sortedBy { it.position }.toTypedArray()
+                        b.searchRes.adapter?.notifyDataSetChanged()
+                    }
+                    return true
                 }
             })
         }
+        b.toolbar.menu.findItem(R.id.mtSearch).setOnActionExpandListener(object :
+            MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                UiTools.vis(b.searchRes)
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                UiTools.vis(b.searchRes, false)
+                b.searchRes.adapter = null
+                schRes = null
+                return true
+            }
+        })
 
         // Paging
         if (page1 == null) page1 = PageUnf(this)
@@ -162,7 +195,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { item ->
             val lastPage = m.currentPage.value!!
-            m.currentPage.value = pages.indexOf(item.itemId)
+            m.currentPage.value = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+                .indexOf(item.itemId)
             if (lastPage == m.currentPage.value) return@setOnItemSelectedListener true
             transFrag(lastPage, m.currentPage.value!!)
                 .hide(pages()[lastPage])

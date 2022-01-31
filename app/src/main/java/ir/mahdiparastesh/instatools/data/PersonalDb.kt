@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Unfollower::class, Queued::class],
+    entities = [Unfollower::class, Queued::class /*Favourite::class*/],
     version = 1, exportSchema = false
 )
 abstract class PersonalDb : RoomDatabase() {

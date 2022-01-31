@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 
 abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
     abstract var handler: Handler?
@@ -13,7 +14,8 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
     abstract fun updateShadow()
 
     protected fun guestMode(parent: ConstraintLayout, theme: BaseActivity.Theme) {
-        // TODO: APPEND GUEST MODE
+        val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
+        gb.root.typeface = c.fontRegular
     }
 
     companion object {

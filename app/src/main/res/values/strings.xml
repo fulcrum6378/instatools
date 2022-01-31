@@ -18,6 +18,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
+    <string name="favourites">Favourites</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -26,19 +27,30 @@
     <string name="unfollowers">Unfollowers</string>
     <string name="saved">Saved</string>
     <string name="direct">Direct</string>
+    <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
     <string name="gSettings">Global Settings</string>
     <string name="aSettings">Settings of This Account</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Type a profile name&#8230;</string>
     <string name="boxUntil">Until %s</string>
+    <string name="inquiryChannel">Unfollowers</string>
+    <string name="inquiryChannelDesc">Finds unfollowers</string>
+    <string name="inquiryTitle">Looking for unfollowers&#8230;</string>
+    <string name="inquiryStop">Stop</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
     <string name="pasteLink">Paste a link&#8230;</string>
-    <string name="notif_channel">Queuer</string>
-    <string name="notif_channel_desc">Downloads the queued media</string>
-    <string name="notif_title">Downloading&#8230;</string>
-    <string name="notif_stop">Halt</string>
+    <string name="queuerChannel">Queuer</string>
+    <string name="queuerChannelDesc">Downloads the queued media</string>
+    <string name="queuerTitle">Downloading&#8230;</string>
+    <string name="queuerStop">Halt</string>
 
-    <!-- Settings -->
+    <!-- Viewer -->
+    <string name="vwTitle">Profile Viewer</string>
+    <string name="ucViewInApp">View Here</string>
+    <string name="ucViewInInsta">View in Instagram</string>
+
+    <!-- Favourites -->
+    <string name="fvTitle">@string/favourites</string>
 </resources>

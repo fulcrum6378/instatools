@@ -7,23 +7,19 @@ import android.animation.ObjectAnimator
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListSvdBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.GlideShimmer
 import ir.mahdiparastesh.instatools.more.UiTools
 
 class ListSvd(val c: Main, val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHolder>() {
@@ -58,25 +54,7 @@ class ListSvd(val c: Main, val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHo
             .load(c.m.saved!![i].thumbnail_src)
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .addListener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?, model: Any?, target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    h.b.root.stopShimmer()
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?, model: Any?, target: Target<Drawable>?,
-                    dataSource: DataSource?, isFirstResource: Boolean
-                ): Boolean {
-                    h.b.root.hideShimmer()
-                    h.b.root.stopShimmer()
-                    h.b.thumbnail.background = null
-                    return false
-                }
-            })
+            .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
         if (f.tracker != null) h.b.click.setBackgroundResource(

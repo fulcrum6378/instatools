@@ -3,8 +3,6 @@ package ir.mahdiparastesh.instatools
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,7 +10,6 @@ import android.os.Message
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import androidx.core.view.forEach
 import ir.mahdiparastesh.instatools.data.GlobalDb
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
@@ -72,15 +69,7 @@ class Downloads : BaseActivity() {
             b.pasteLink.setText("")
         }
 
-        if (night) color(R.color.CSD).apply {
-            window.decorView.setBackgroundColor(this)
-            window.statusBarColor = this
-            window.navigationBarColor = this
-        } else color(R.color.CSD).apply {
-            val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
-            b.toolbar.navigationIcon?.colorFilter = cf
-            b.toolbar.menu.forEach { item -> item.icon.colorFilter = cf }
-            tbTitle?.setTextColor(this)
+        if (!night) color(R.color.CSD).apply {
             b.pasteLink.setTextColor(this)
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
@@ -115,11 +104,8 @@ class Downloads : BaseActivity() {
         var handler: Handler? = null
 
         fun initService(c: BaseActivity, link: String? = null) {
-            val dest = c.preference(Settings.spStorage)
-            if (dest == null) {
-                c.goTo(Settings::class) // OF THIS ACCOUNT
-                return
-            }
+            if (c.preference(Settings.spStorage) == null) {
+                c.goTo(Settings::class); return; }
             if (Queuer.active) {
                 if (link != null)
                     Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()
@@ -127,8 +113,6 @@ class Downloads : BaseActivity() {
             }
             c.startService(Intent(c, Queuer::class.java).apply {
                 if (link != null) putExtra(Queuer.EXTRA_LINK, link)
-                putExtra(Queuer.EXTRA_USER, c.m.acc ?: c.m.accounts.find { it.id == -1L })
-                putExtra(Queuer.EXTRA_DEST, dest)
                 action = Queuer.ACTION_START
             })
         }

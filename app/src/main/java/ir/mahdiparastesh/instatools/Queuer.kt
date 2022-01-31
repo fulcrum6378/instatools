@@ -22,7 +22,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
-import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
@@ -39,8 +38,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
     private lateinit var pDb: PersonalDb
     private lateinit var pDao: PersonalDb.DAO
-    private lateinit var acc: Account
-    private lateinit var des: String
+    private var dest: String? = null
     private var handlingLink: Queued? = null
 
     override var c: Context
@@ -53,7 +51,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
         get() = Persistent.initGsp(c)
         set(_) {}
     override var sp: SharedPreferences?
-        get() = Persistent.initSp(c, acc)
+        get() = Persistent.initSp(c, m.acc)
         set(_) {}
 
     companion object {
@@ -62,8 +60,6 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
         val ACTION_START = "$pack.ACTION_START"
         val ACTION_STOP = "$pack.ACTION_STOP"
         val EXTRA_LINK = "$pack.EXTRA_LINK"
-        val EXTRA_USER = "$pack.EXTRA_USER"
-        val EXTRA_DEST = "$pack.EXTRA_DEST"
         const val CH_ID = 262
         const val HANDLE_LINK = 0
         var active = false
@@ -77,9 +73,24 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
         )
     }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        if (intent.action != null) when (intent.action) {
+            ACTION_START -> if (intent.extras != null)
+                intent.getStringExtra(EXTRA_LINK)?.let { handleLink(it) }
+            ACTION_STOP -> if (active) stopForeground(true)
+        }
+        return START_NOT_STICKY
+    }
+
     override fun onCreate() {
         super.onCreate()
         active = true
+        dest = preference(Settings.spStorage)
+        if (m.acc == null || dest == null) stopSelf()
+        pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        download()
+
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
@@ -99,12 +110,12 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(
                     NotificationChannel(
-                        CHANNEL, c.resources.getString(R.string.notif_channel),
+                        CHANNEL, c.resources.getString(R.string.queuerChannel),
                         NotificationManager.IMPORTANCE_LOW
-                    ).apply { description = c.resources.getString(R.string.notif_channel_desc) })
+                    ).apply { description = c.resources.getString(R.string.queuerChannelDesc) })
         startForeground(CH_ID, NotificationCompat.Builder(c, CHANNEL).apply {
             setSmallIcon(R.mipmap.launcher_round)
-            setContentTitle(c.resources.getString(R.string.notif_title))
+            setContentTitle(c.resources.getString(R.string.queuerTitle))
             setOngoing(true)
             priority = NotificationCompat.PRIORITY_LOW
             setContentIntent(
@@ -112,25 +123,8 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
                     c, 0, Intent(c, Downloads::class.java), PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
-            addAction(0, c.resources.getString(R.string.notif_stop), pi(c, ACTION_STOP))
+            addAction(0, c.resources.getString(R.string.queuerStop), pi(c, ACTION_STOP))
         }.build())
-    }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        if (intent.action != null) when (intent.action) {
-            ACTION_START -> if (intent.extras != null) {
-                intent.getParcelableExtra<Account>(EXTRA_USER)?.let { acc = it }
-                if (::acc.isInitialized) {
-                    pDb = PersonalDb.build(c, acc.id.toString()).also { pDao = it.dao() }
-                    download()
-                }
-                intent.getStringExtra(EXTRA_LINK)?.let { handleLink(it) }
-                intent.getStringExtra(EXTRA_DEST)?.let { des = it }
-            }
-            ACTION_STOP -> if (active) stopForeground(true)
-        }
-        return START_NOT_STICKY
     }
 
     @Suppress("LABEL_NAME_CLASH")
@@ -248,7 +242,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
                 downloading = false
                 download()
             }) {
-                override fun getHeaders(): Map<String, String> = Api.Headers(acc, sp!!)
+                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, sp!!)
 
                 override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
@@ -272,7 +266,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
     }
 
     private fun save(q: Queued, ba: ByteArray) {
-        val stem = DocumentFile.fromTreeUri(c, Uri.parse(des))!!
+        val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
         var branch = stem.findFile(q.userName!!)
         if (branch == null) branch = stem.createDirectory(q.userName!!)
         for (f in branch!!.listFiles())

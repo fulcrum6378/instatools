@@ -54,4 +54,13 @@
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">16dp</item>
     </style>
+
+    <style name="shimmer">
+        <item name="shimmer_base_color">#66EEEEEE</item>
+        <item name="shimmer_colored">true</item>
+        <item name="shimmer_duration">700</item>
+        <item name="shimmer_highlight_color">#66FFFFFF</item>
+        <item name="shimmer_repeat_delay">50</item>
+        <item name="shimmer_width_ratio">2</item>
+    </style>
 </resources>

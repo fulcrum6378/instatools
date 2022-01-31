@@ -9,7 +9,7 @@
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
