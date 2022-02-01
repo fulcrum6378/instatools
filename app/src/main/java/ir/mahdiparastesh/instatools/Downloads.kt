@@ -10,7 +10,7 @@ import android.os.Message
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import ir.mahdiparastesh.instatools.data.GlobalDb
+import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
@@ -20,8 +20,6 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
-    private lateinit var gDb: GlobalDb
-    private lateinit var gDao: GlobalDb.DAO
     private lateinit var pDb: PersonalDb
     lateinit var pDao: PersonalDb.DAO
 
@@ -30,8 +28,7 @@ class Downloads : BaseActivity() {
         b = DownloadsBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.dwTitle)
-        gDb = GlobalDb.build(c).also { gDao = it.dao() }
-        m.acc = Login.gatherData(this, gDao)
+        if (m.acc == null) m.acc = Account.selected(this)
         pDb = PersonalDb.build(c, (m.acc?.id ?: -1L).toString()).also { pDao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {

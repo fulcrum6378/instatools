@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.json
 
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
@@ -12,7 +11,6 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
@@ -39,7 +37,7 @@ class Api<JSON>(
         Volley.newRequestQueue(c.c).add(this)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, c.gsp)
+    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!)
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
@@ -115,7 +113,7 @@ class Api<JSON>(
     }
 
     @Suppress("SpellCheckingInspection")
-    class Headers(acc: Account, sp: SharedPreferences) : HashMap<String, String>() {
+    class Headers(acc: Account) : HashMap<String, String>() {
         init {
             this["accept"] = "*/*"
             this["accept-language"] = "en-GB"
@@ -136,7 +134,7 @@ class Api<JSON>(
             //this["x-csrftoken"] = csrfToken
             //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCnL"
             this["x-ig-app-id"] = "936619743392459"
-            this["cookie"] = sp.getString(Login.spCookies.format(acc.id), "") ?: ""
+            this["cookie"] = acc.cook ?: ""
             this["Referer"] = "https://www.instagram.com/"
             this["Referrer-Policy"] = "strict-origin-when-cross-origin"
 

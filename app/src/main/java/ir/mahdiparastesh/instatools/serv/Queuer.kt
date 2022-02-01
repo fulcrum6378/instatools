@@ -67,7 +67,8 @@ class Queuer : ForegroundService() {
     override fun onCreate() {
         super.onCreate()
         dest = preference(Settings.spStorage)
-        if (m.acc == null || dest == null) destroy()
+        if (m.acc == null || dest == null) {
+            destroy(); return; }
         pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         download()
 
@@ -203,7 +204,7 @@ class Queuer : ForegroundService() {
                 downloading = false
                 download()
             }) {
-                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, sp!!)
+                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
 
                 override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))

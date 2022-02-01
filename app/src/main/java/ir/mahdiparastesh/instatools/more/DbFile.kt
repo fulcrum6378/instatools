@@ -5,7 +5,6 @@ import ir.mahdiparastesh.instatools.Main
 import java.io.File
 
 @SuppressLint("SdCardPath")
-@Suppress("unused")
 open class DbFile(name: String, which: Triple) : File(
     "/data/data/${Main::class.java.`package`!!.name}/databases/$name.db${which.s}"
 ) {

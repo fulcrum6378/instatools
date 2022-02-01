@@ -88,7 +88,7 @@ class Exporter : ForegroundService() {
         if (exp?.threadData?.items == null) {
             end(exp); return; }
         when (exp?.type) {
-            (0).toByte() -> object : PdfExporter(this@Exporter, Uri.parse(Api.encode(exp!!.uri))) {
+            (0).toByte() -> object : PdfExporter(c, Uri.parse(Api.encode(exp!!.uri))) {
                 override val list: List<Dm> = exp!!.threadData!!.items
 
                 override fun progress(percent: Float, succeeded: Boolean) {

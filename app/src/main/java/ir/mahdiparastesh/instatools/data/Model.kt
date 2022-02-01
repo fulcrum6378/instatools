@@ -8,7 +8,6 @@ import ir.mahdiparastesh.instatools.json.Profile
 
 class Model : ViewModel() {
     var acc: Account? = null
-    var accounts = arrayListOf<Account>()
     var unfollowers: ArrayList<Unfollower>? = null
     var saved: ArrayList<Profile.Post>? = null
     var dmThreads: ArrayList<Dm.DmThread>? = null

@@ -10,10 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.get
-import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.FileOutputStream
 
-abstract class PdfExporter(val c: Persistent, val uri: Uri) : Thread() {
+abstract class PdfExporter(val c: Context, val uri: Uri) : Thread() {
     abstract val list: List<*>
 
     @SuppressLint("InflateParams")
@@ -34,7 +33,7 @@ abstract class PdfExporter(val c: Persistent, val uri: Uri) : Thread() {
         }
 
         try {
-            c.c.contentResolver.openFileDescriptor(uri, "w")?.use {
+            c.contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { fos ->
                     document.writeTo(fos)
                 }
@@ -49,7 +48,7 @@ abstract class PdfExporter(val c: Persistent, val uri: Uri) : Thread() {
     private var cutAt = 0
     private fun insert(canvas: Canvas, mess: Int): Int {
         var iMess = mess
-        LinearLayout(c.c).apply {
+        LinearLayout(c).apply {
             orientation = LinearLayout.VERTICAL
             do {
                 addView(createView(context, this, iMess).apply {

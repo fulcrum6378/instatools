@@ -23,7 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.ads.MobileAds
-import ir.mahdiparastesh.instatools.data.GlobalDb
+import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
@@ -33,7 +33,12 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.DbFile
+import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.serv.Inquisitor
+import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
 import ir.mahdiparastesh.instatools.view.UiTools
 
@@ -48,8 +53,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var searchClose: ImageView
     var schRes: Array<Rest.ItemUser>? = null
 
-    private lateinit var gDb: GlobalDb
-    private lateinit var gDao: GlobalDb.DAO
     private lateinit var pDb: PersonalDb
     lateinit var pDao: PersonalDb.DAO
 
@@ -63,16 +66,16 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     val colorAc = MutableLiveData<Int?>(null)
 
     companion object {
+        val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
+        val srvComps = arrayOf(Queuer, Inquisitor, Exporter)
         var guest = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
-        if (gsp.contains(Login.spAccount)) {
-            gDb = GlobalDb.build(c).also { gDao = it.dao() }
-            m.acc = Login.gatherData(this, gDao)
-        }
+        if (gsp.contains(Login.spAccount))
+            m.acc = Account.selected(this)
         if (!gsp.contains(Login.spAccount) || m.acc == null) {
             goTo(Login::class, true)
             return
@@ -96,8 +99,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             syncState()
         }
         b.toolbar.setOnMenuItemClickListener(this)
-        b.nav.setNavigationItemSelectedListener {
-            when (it.itemId) {
+        b.nav.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
                 R.id.mnDownloads -> goTo(Downloads::class)
                 R.id.mnFavourites -> goTo(Favourites::class)
                 R.id.mnGSettings -> {
@@ -107,7 +110,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
-                    // TODO: IF ONE OF QUEUER OR INQUISITOR WERE WORKING, PROMPT FIRST
+                    if (srvComps.any { it.active })
+                        TODO("PROMPT FIRST")
                     gsp.edit().remove(Login.spAccount).commit()
                     goTo(Login::class, true)
                 }
@@ -117,17 +121,24 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                         setMessage(R.string.signOutSure)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            // TODO: FORCE SHUTDOWN QUEUER, INQUISITOR AND EXPORTER
+                            services.forEach { service ->
+                                c.stopService(Intent(c, service.java)
+                                    .apply { action = ForegroundService.ACTION_STOP })
+                            }
+                            Account.load(c).removeAll { it.id == m.acc!!.id }
                             gsp.edit().remove(Login.spAccount).commit()
-                            if (m.acc != null) gsp.edit()
-                                .remove(Login.spCookies.format(m.acc!!.id))
-                                .commit()
+                            arrayOf(
+                                DbFile(m.acc!!.id.toString(), DbFile.Triple.MAIN),
+                                DbFile(m.acc!!.id.toString(), DbFile.Triple.SHARED_MEMORY),
+                                DbFile(m.acc!!.id.toString(), DbFile.Triple.WRITE_AHEAD_LOG),
+                            ).forEach { f -> if (f.exists()) f.delete() }
+                            m.acc = null
                             goTo(Login::class, true)
                         }
                     }.create().show()
                     true
                 }
-                else -> super.onOptionsItemSelected(it)
+                else -> super.onOptionsItemSelected(item)
             }
         }
         if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)

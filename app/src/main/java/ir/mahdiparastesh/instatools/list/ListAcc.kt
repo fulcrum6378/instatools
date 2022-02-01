@@ -19,19 +19,19 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        val guest = c.m.accounts[i].id < 0L
-        Glide.with(c.c).load(if (!guest) c.m.accounts[i].photo else R.mipmap.launcher)
+        val guest = c.accounts[i].id < 0L
+        Glide.with(c.c).load(if (!guest) c.accounts[i].pict else R.mipmap.launcher)
             .into(h.b.photo)
-        if (!guest) h.b.name.text = c.m.accounts[i].name
+        if (!guest) h.b.name.text = c.accounts[i].name
         else h.b.name.setText(R.string.guest)
-        if (!guest) h.b.user.text = c.m.accounts[i].user
+        if (!guest) h.b.user.text = c.accounts[i].user
         else h.b.user.setText(R.string.guestShortDesc)
-        vis(h.b.name, guest || c.m.accounts[i].name != "")
+        vis(h.b.name, guest || c.accounts[i].name != "")
         h.b.root.setOnClickListener {
-            c.selectAccount(c.m.accounts[h.layoutPosition])
+            c.selectAccount(c.accounts[h.layoutPosition])
         }
         vis(h.b.sep, i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.accounts.size
+    override fun getItemCount() = c.accounts.size
 }

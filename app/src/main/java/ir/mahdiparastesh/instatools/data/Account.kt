@@ -1,44 +1,43 @@
 package ir.mahdiparastesh.instatools.data
 
-import android.os.Parcel
-import android.os.Parcelable
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import ir.mahdiparastesh.instatools.Login.Companion.spAccount
+import ir.mahdiparastesh.instatools.more.Persistent
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
-@Entity
 class Account(
-    @PrimaryKey var id: Long,
+    var id: Long,
     var user: String? = null,
     var name: String? = null,
-    var photo: String? = null
-) : Parcelable {
-    @Suppress("unused")
-    constructor() : this(0, "", "", null)
+    var pict: String? = null,
+    var cook: String? = null
+) {
+    companion object {
+        fun load(c: Context): ArrayList<Account> {
+            FileInputStream(Secured(c)).let {
+                return@load ArrayList(
+                    Gson().fromJson(String(it.readBytes()), Array<Account>::class.java).toList()
+                )
+            }
+        }
 
-    constructor(parcel: Parcel) : this(
-        parcel.readLong(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString()
-    )
+        fun selected(
+            c: Persistent, list: List<Account> = load(c.c), guestIfNotExists: Boolean = true
+        ): Account? = list.find {
+            it.id == c.gsp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")
+                ?.toLongOrNull()
+        }
 
-    class Sort : Comparator<Account> {
-        override fun compare(a: Account, b: Account) =
-            (a.name ?: "").compareTo(b.name ?: "")
+        fun save(c: Context, accounts: List<Account>) {
+            FileOutputStream(Secured(c)).write(
+                GsonBuilder().setPrettyPrinting().create().toJson(accounts).encodeToByteArray()
+            )
+        }
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(user)
-        parcel.writeString(name)
-        parcel.writeString(photo)
-    }
-
-    override fun describeContents() = 0
-
-    companion object CREATOR : Parcelable.Creator<Account> {
-        override fun createFromParcel(parcel: Parcel): Account = Account(parcel)
-
-        override fun newArray(size: Int): Array<Account?> = arrayOfNulls(size)
-    }
+    class Secured(c: Context) : File(c.filesDir, "cache.json")
 }
