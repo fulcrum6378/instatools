@@ -23,7 +23,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
@@ -121,8 +121,8 @@ class PageSvd(c: Main) : BasePage(c) {
 
     override fun goBack(): Boolean {
         (b.rv.adapter as ListSvd?)?.let {
-            if (it.zoomed) {
-                it.collapse(); return@goBack true; }
+            if (it.expandable.zoomed) {
+                it.expandable.collapse(); return@goBack true; }
         }
         if (tracker?.hasSelection() == true) {
             tracker?.clearSelection()

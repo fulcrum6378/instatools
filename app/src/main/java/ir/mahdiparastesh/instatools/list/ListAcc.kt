@@ -6,7 +6,7 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListAccBinding
-import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
     class ViewHolder(val b: ListAccBinding) : RecyclerView.ViewHolder(b.root)
@@ -24,9 +24,9 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
             .into(h.b.photo)
         if (!guest) h.b.name.text = c.m.accounts[i].name
         else h.b.name.setText(R.string.guest)
+        if (!guest) h.b.user.text = c.m.accounts[i].user
+        else h.b.user.setText(R.string.guestShortDesc)
         vis(h.b.name, guest || c.m.accounts[i].name != "")
-        vis(h.b.user, !guest && c.m.accounts[i].user != "")
-        h.b.user.text = c.m.accounts[i].user
         h.b.root.setOnClickListener {
             c.selectAccount(c.m.accounts[h.layoutPosition])
         }

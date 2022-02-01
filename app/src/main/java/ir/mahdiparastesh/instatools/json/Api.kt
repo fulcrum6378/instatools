@@ -67,7 +67,7 @@ class Api<JSON>(
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
         REELS("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
-        POST("https://www.instagram.com/p/%s/"),
+        POST("https://www.instagram.com/p/%s/?__a=1"),
         SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
 
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),

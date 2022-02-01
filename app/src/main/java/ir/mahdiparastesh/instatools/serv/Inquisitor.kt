@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools
+package ir.mahdiparastesh.instatools.serv
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -13,6 +13,8 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Unfollower
@@ -47,7 +49,7 @@ class Inquisitor : Service(), ViewModelStoreOwner, Persistent {
     companion object {
         private val pack: String = Inquisitor::class.java.`package`!!.name
         val CHANNEL = "$pack.INQUIRING"
-        val ACTION_STOP = "${pack}.ACTION_STOP"
+        val ACTION_STOP = "$pack.ACTION_STOP"
         const val CH_ID = 286
         var active = false
         var handler: Handler? = null

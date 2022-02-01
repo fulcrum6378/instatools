@@ -22,7 +22,7 @@ import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import org.apache.commons.lang.StringEscapeUtils
 
 @SuppressLint("ApplySharedPref")
@@ -91,7 +91,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         m.accounts.sortWith(Account.Sort())
-        m.accounts.sortedBy { it.id < 0 }
+        m.accounts.sortBy { it.id < 0 }
         bw.accounts.adapter = ListAcc(this)
 
         // Add Account

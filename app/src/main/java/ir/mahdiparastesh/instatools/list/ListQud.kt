@@ -10,10 +10,10 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
-import ir.mahdiparastesh.instatools.more.Act
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.MaterialMenu
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     class ViewHolder(val b: ListQudBinding) : RecyclerView.ViewHolder(b.root)

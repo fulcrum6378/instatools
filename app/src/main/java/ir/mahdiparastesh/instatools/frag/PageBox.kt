@@ -21,7 +21,7 @@ import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding

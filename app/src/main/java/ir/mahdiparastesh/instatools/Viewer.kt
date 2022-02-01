@@ -9,7 +9,7 @@ import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.GlideShimmer
+import ir.mahdiparastesh.instatools.view.GlideShimmer
 
 class Viewer : BaseActivity() {
     private lateinit var b: ViewerBinding

@@ -8,7 +8,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)

@@ -33,9 +33,9 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.CustomTypefaceSpan
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
+import ir.mahdiparastesh.instatools.view.UiTools
 
 // adb connect 192.168.1.20:
 

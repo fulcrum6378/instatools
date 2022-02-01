@@ -14,11 +14,11 @@ import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.Act
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.MaterialMenu
-import ir.mahdiparastesh.instatools.more.UiTools
-import ir.mahdiparastesh.instatools.more.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
     // IndexOutOfBoundsException: Inconsistency detected. Invalid item position 373(offset:374)

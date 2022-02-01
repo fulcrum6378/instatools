@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools
+package ir.mahdiparastesh.instatools.serv
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -22,6 +22,9 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
+import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued

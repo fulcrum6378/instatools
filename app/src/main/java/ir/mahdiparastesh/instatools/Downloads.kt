@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.serv.Queuer
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding

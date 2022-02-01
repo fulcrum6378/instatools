@@ -11,14 +11,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ir.mahdiparastesh.instatools.Inquisitor
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.serv.Inquisitor
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding

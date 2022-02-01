@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.more;
+package ir.mahdiparastesh.instatools.view;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;

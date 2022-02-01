@@ -2,7 +2,7 @@ package ir.mahdiparastesh.instatools.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ir.mahdiparastesh.instatools.more.UiTools.Companion.z
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.util.*
 
 @Entity

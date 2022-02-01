@@ -8,7 +8,7 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListAccBinding
-import ir.mahdiparastesh.instatools.more.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class ListSch(val c: Main) : RecyclerView.Adapter<ListSch.ViewHolder>() {
     private val hPad = c.resources.getDimension(R.dimen.mainPadH).toInt()

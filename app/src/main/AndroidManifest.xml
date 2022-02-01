@@ -97,11 +97,16 @@
         </activity>
 
         <service
-            android:name=".Queuer"
+            android:name=".serv.Queuer"
             android:exported="false" />
 
         <service
-            android:name=".Inquisitor"
+            android:name=".serv.Inquisitor"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".serv.Exporter"
             android:enabled="true"
             android:exported="false" />
 
