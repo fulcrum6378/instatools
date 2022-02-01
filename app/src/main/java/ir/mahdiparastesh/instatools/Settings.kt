@@ -18,15 +18,15 @@ class Settings : BaseActivity() {
             contentResolver.takePersistableUriPermission(
                 uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
-            prf.edit().apply {
-                putString(spStorage, uri.toString())
-                    .commit()
-            }
+            prf.edit().putString(spStorage, uri.toString()).commit()
         }
 
     companion object {
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val spStorage = "storage"
+
+        // Hidden
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

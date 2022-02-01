@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -19,8 +18,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     class ViewHolder(val b: ListQudBinding) : RecyclerView.ViewHolder(b.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val b = ListQudBinding
-            .inflate(c.themeInflater(BaseActivity.Theme.SECONDARY), parent, false)
+        val b = ListQudBinding.inflate(c.layoutInflater, parent, false)
         b.user.typeface = c.fontRegular
         b.date.typeface = c.fontRegular
         return ViewHolder(b)
@@ -50,8 +48,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
 
         // Clicks
         h.b.root.setOnClickListener {
-            MaterialMenu(c, it, R.menu.qud_click, Act().apply {
-                this[R.id.qcRemove] = {
+            MaterialMenu(c, it, R.menu.qud_more, Act().apply {
+                this[R.id.qmRemove] = {
                     if (c.m.queueds != null) {
                         c.pDao.deleteQueued(c.m.queueds!![h.layoutPosition])
                         c.m.queueds!!.removeAt(h.layoutPosition)
@@ -62,7 +60,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                         )
                     }
                 }
-                this[R.id.qcOpen] = {
+                this[R.id.qmOpen] = {
                     if (c.m.queueds != null) c.startActivity(
                         Intent(
                             Intent.ACTION_VIEW, Uri.parse(c.m.queueds!![h.layoutPosition].link)

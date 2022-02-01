@@ -22,6 +22,7 @@ import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
+    override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.PRIMARY)
     override var handler: Handler? = null
 
     companion object {

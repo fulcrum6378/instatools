@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,8 +10,13 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
@@ -21,12 +27,15 @@ import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding
     private var boxThread: FetchInbox? = null
     var thdThread: FetchSomeDm? = null
+    override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.TERTIARY)
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         @Suppress("UNCHECKED_CAST")
         override fun handleMessage(msg: Message) {
@@ -35,9 +44,11 @@ class PageBox(c: Main) : BasePage(c) {
                     adapt()
                     b.refresher.isRefreshing = false
                 }
-                HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
+                FetchSomeDm.HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
+                    val dmThd = msg.obj as Dm.DmThread
                     val bef = c.m.dmThread!!.items.size
-                    c.m.dmThread!!.items.addAll(msg.obj as ArrayList<Dm>)
+                    c.m.dmThread!!.items.addAll(dmThd.items)
+                    c.m.dmThread!!.has_older = dmThd.has_older
                     c.m.dmThread!!.items.sortBy { it.timestamp }
                     val dif = c.m.dmThread!!.items.size - bef
                     b.rv.adapter?.let {
@@ -49,10 +60,15 @@ class PageBox(c: Main) : BasePage(c) {
             }
         }
     }
-
-    companion object {
-        const val HANDLE_FETCHED_SOME = 1
-    }
+    private var exportable: Exportable? = null
+    private val exportLauncher =
+        c.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.data?.data == null || exportable == null) {
+                exportable = null; return@registerForActivityResult; }
+            exportable!!.uri = it.data!!.data!!.toString()
+            c.pDao.addExportable(exportable!!)
+            c.startService(Intent(c, Exporter::class.java))
+        }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageBoxBinding.inflate(
@@ -70,7 +86,9 @@ class PageBox(c: Main) : BasePage(c) {
         b.rv.viewTreeObserver.addOnScrollChangedListener {
             if (c.m.dmThread != null && thdThread?.active != true &&
                 c.m.dmThread!!.has_older && b.rv.computeVerticalScrollOffset() == 0
-            ) thdThread = FetchSomeDm().also { it.start() }
+            ) thdThread = FetchSomeDm(
+                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
+            ).also { it.start() }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -91,9 +109,36 @@ class PageBox(c: Main) : BasePage(c) {
             else b.rv.adapter?.notifyDataSetChanged()
         } else {
             if (b.rv.adapter == null || b.rv.adapter !is ListThd)
-                b.rv.adapter = ListThd(c)
+                b.rv.adapter = ListThd(c, this)
             else b.rv.adapter?.notifyDataSetChanged()
         }
+    }
+
+    fun expOptions(
+        method: Exporter.Method,
+        userName: String,
+        thread: Dm.DmThread,
+        selection: Array<String>? = null
+    ) {
+        AlertDialog.Builder(c).apply {
+            setTitle(R.string.exportOptions)
+            val bi = ExportOptionsBinding.inflate(inflater, null, false)
+            setView(bi.root)
+            setNegativeButton(R.string.cancel, null)
+            setPositiveButton(R.string.export) { _, _ ->
+                val opt = Exportable.Options()
+                //c.sp?.edit()?.let {}
+                exportable = Exportable(
+                    thread.thread_id, selection?.joinToString(","), method.id, opt.toJson(),
+                    threadData = thread
+                )
+                exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = method.mime
+                    putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
+                })
+            }
+        }.create().show()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
@@ -132,20 +177,24 @@ class PageBox(c: Main) : BasePage(c) {
         }
     }
 
-    inner class FetchSomeDm : BaseThread() {
+    class FetchSomeDm(
+        val c: Persistent, private val threadId: String, private val oldestId: String,
+        val handler: Handler?
+    ) : BaseThread() {
         override fun run() {
-            if (c.m.dmThread == null || !c.m.dmThread!!.has_older) {
-                interrupt(); return; }
             super.run()
             Api<Rest.InboxThread>(
-                c, Api.Type.DIRECT.url.format(
-                    c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id
-                ), Rest.InboxThread::class, handleError = handler
+                c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class,
+                handleError = handler
             ) { inbox ->
                 if (inbox.status == "ok")
-                    handler?.obtainMessage(HANDLE_FETCHED_SOME, inbox.thread.items)?.sendToTarget()
+                    handler?.obtainMessage(HANDLE_FETCHED_SOME, inbox.thread)?.sendToTarget()
                 interrupt()
             }
+        }
+
+        companion object {
+            const val HANDLE_FETCHED_SOME = 44
         }
     }
 }

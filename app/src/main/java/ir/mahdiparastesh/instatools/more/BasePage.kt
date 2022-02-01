@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.os.Handler
+import android.view.LayoutInflater
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -8,6 +9,7 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 
 abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
+    abstract var inflater: LayoutInflater
     abstract var handler: Handler?
     var fetching = false
 

@@ -102,12 +102,10 @@
 
         <service
             android:name=".serv.Inquisitor"
-            android:enabled="true"
             android:exported="false" />
 
         <service
             android:name=".serv.Exporter"
-            android:enabled="true"
             android:exported="false" />
 
         <meta-data

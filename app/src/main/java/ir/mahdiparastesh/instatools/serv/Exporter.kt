@@ -1,99 +1,127 @@
 package ir.mahdiparastesh.instatools.serv
 
-import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
-import android.os.Build
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Handler
-import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
+import android.os.Looper
+import android.os.Message
+import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Model
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.data.PersonalDb
+import ir.mahdiparastesh.instatools.databinding.ListThdBinding
+import ir.mahdiparastesh.instatools.frag.PageBox.FetchSomeDm
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.list.ListThd
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.view.PdfExporter
 
-@SuppressLint("UnspecifiedImmutableFlag")
-class Exporter : Service(), ViewModelStoreOwner, Persistent {
-    private var mViewModelStore = ViewModelStore()
+class Exporter : ForegroundService() {
+    private lateinit var pDb: PersonalDb
+    private lateinit var pDao: PersonalDb.DAO
+    private var exp: Exportable? = null
 
-    override var c: Context
-        get() = applicationContext
-        set(_) {}
-    override var m: Model
-        get() = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
-        set(_) {}
-    override var gsp: SharedPreferences
-        get() = Persistent.initGsp(c)
-        set(_) {}
-    override var sp: SharedPreferences?
-        get() = Persistent.initSp(c, m.acc)
-        set(_) {}
+    override val com: ForegroundServiceCompanion
+        get() = Companion
 
-    companion object {
-        private val pack: String = Exporter::class.java.`package`!!.name
-        val CHANNEL = "$pack.EXPORTING"
-        val ACTION_STOP = "$pack.ACTION_STOP"
-        const val CH_ID = 103
-        var active = false
-        var handler: Handler? = null
-
-        fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
-            c, 0, Intent(c, Exporter::class.java).apply { action = code },
-            PendingIntent.FLAG_CANCEL_CURRENT
+    companion object : ForegroundServiceCompanion(103, Exporter::class) {
+        override val channel: String = "$pack.EXPORTING"
+        override var chName: Int = R.string.exporterChannel
+        override var chDesc: Int = R.string.exporterChannelDesc
+        override var ntfSmallIcon: Int = R.mipmap.launcher_round
+        override var ntfTitle: Int = R.string.exporterTitle
+        override var ntfActions: Array<Pair<String, Int>> = arrayOf(
+            ACTION_STOP to R.string.exporterStop
         )
-    }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        if (intent.action != null) when (intent.action) {
-            ACTION_STOP -> if (active) stopForeground(true)
-        }
-        return START_NOT_STICKY
+        override var active: Boolean = false
+        override var handler: Handler? = null
     }
 
     override fun onCreate() {
         super.onCreate()
-        active = true
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(
-                    NotificationChannel(
-                        CHANNEL, c.resources.getString(R.string.exporterChannel),
-                        NotificationManager.IMPORTANCE_LOW
-                    ).apply { description = c.resources.getString(R.string.exporterChannelDesc) })
-        startForeground(CH_ID, NotificationCompat.Builder(c, CHANNEL).apply {
-            setSmallIcon(R.mipmap.launcher_round)
-            setContentTitle(c.resources.getString(R.string.exporterTitle))
-            setOngoing(true)
-            priority = NotificationCompat.PRIORITY_LOW
-            setContentIntent(
-                PendingIntent.getActivity(
-                    c, 0, Intent(c, Main::class.java), PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
-            addAction(0, c.resources.getString(R.string.exporterStop), pi(c, ACTION_STOP))
-        }.build())
-
-        // TODO: DO IT
+        pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        notification(Companion, Main::class)
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    FetchSomeDm.HANDLE_FETCHED_SOME -> {
+                        val dmThd = msg.obj as Dm.DmThread
+                        if (exp?.threadData == null) exp?.threadData = dmThd
+                        else {
+                            exp?.threadData?.items?.addAll(dmThd.items)
+                            exp?.threadData?.has_older = dmThd.has_older
+                        }
+                        fetchSome()
+                    }
+                    Api.HANDLE_ERROR -> destroy()
+                }
+            }
+        }
+        handle()
     }
 
-    override fun onDestroy() {
-        handler = null
-        stopForeground(true)
-        super.onDestroy()
-        active = false
+    private fun handle() {
+        exp = pDao.exportables().sortedBy { it.addedAt }.getOrNull(0)
+        if (exp == null) {
+            destroy(); return; }
+        fetchSome()
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
+    private fun fetchSome() {
+        if (exp == null) return
+        exp!!.threadData?.items?.sortBy { it.timestamp }
+        if (exp!!.threadData?.has_older == false) {
+            export(); return; }
+        FetchSomeDm(
+            this, exp!!.thread, exp!!.threadData?.items?.getOrNull(0)?.item_id ?: "", handler
+        ).start()
+    }
 
-    override fun getViewModelStore(): ViewModelStore = mViewModelStore
+    private fun export() {
+        if (exp?.threadData?.items == null) {
+            end(exp); return; }
+        when (exp?.type) {
+            (0).toByte() -> object : PdfExporter(this@Exporter, Uri.parse(Api.encode(exp!!.uri))) {
+                override val list: List<Dm> = exp!!.threadData!!.items
+
+                override fun progress(percent: Float, succeeded: Boolean) {
+                    if (percent == 100f) end(exp)
+                }
+
+                override fun createView(c: Context, parent: ViewGroup, i: Int): View {
+                    val b = ListThdBinding.inflate(
+                        LayoutInflater.from(c).cloneInContext(
+                            ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY.res)
+                        ), parent, false
+                    )
+                    ListThd.onCreate(
+                        b, Typeface.createFromAsset(c.assets, "titillium_web_regular.ttf")
+                    )
+                    ListThd.onBind(b, list[i])
+                    return b.root
+                } // THIS WORKS CORRECT: کص کش
+            }.start()
+            (1).toByte() -> TODO()
+            else -> end(exp)
+        }
+    }
+
+    private fun end(oldExp: Exportable?) {
+        if (oldExp == null) return
+        pDao.deleteExportable(oldExp)
+        handle()
+    }
+
+    @Suppress("unused")
+    enum class Method(val id: Byte, val mime: String, val ext: String) {
+        PDF(0, "application/pdf", "pdf"),
+        HTML(1, "text/html", "html")
+    }
 }

@@ -50,7 +50,7 @@ class Dm(
         val group_link_joinable_mode: Double,
         val has_groups_xac_ineligible_user: Boolean,
         val has_newer: Boolean,
-        val has_older: Boolean,
+        var has_older: Boolean,
         //val input_mode: Double,
         //val inviter: Rest.User,
         //val is_close_friend_thread: Boolean,

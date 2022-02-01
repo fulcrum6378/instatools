@@ -19,6 +19,7 @@
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
     <string name="favourites">Favourites</string>
+    <string name="export">Export</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -27,13 +28,18 @@
     <!-- Main -->
     <string name="unfollowers">Unfollowers</string>
     <string name="saved">Saved</string>
-    <string name="direct">Direct</string>
+    <string name="direct">@string/export</string>
     <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
     <string name="gSettings">Global Settings</string>
     <string name="aSettings">Settings of This Account</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Type a profile name&#8230;</string>
     <string name="boxUntil">Until %s</string>
+    <string name="umViewInApp">View Here</string>
+    <string name="umViewInInsta">View in Instagram</string>
+    <string name="exportPdf">Export to PDF</string>
+    <string name="exportHtml">Export to HTML</string>
+    <string name="exportOptions">Export Options</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
@@ -43,8 +49,6 @@
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
     <string name="vwShare">View Profile</string>
-    <string name="ucViewInApp">View Here</string>
-    <string name="ucViewInInsta">View in Instagram</string>
 
     <!-- Favourites -->
     <string name="fvTitle">@string/favourites</string>
@@ -63,8 +67,8 @@
     <string name="queuerStop">Halt</string>
 
     <!-- Exporter -->
-    <string name="exporterChannel">Queuer</string>
-    <string name="exporterChannelDesc">Downloads the queued media</string>
-    <string name="exporterTitle">Downloading&#8230;</string>
+    <string name="exporterChannel">Exporter</string>
+    <string name="exporterChannelDesc">Exports the direct messages</string>
+    <string name="exporterTitle">Exporting&#8230;</string>
     <string name="exporterStop">Abort</string>
 </resources>

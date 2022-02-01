@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/qcOpen"
+        android:id="@+id/qmOpen"
         android:title="@string/openLink" />
     <item
-        android:id="@+id/qcRemove"
+        android:id="@+id/qmRemove"
         android:title="@string/remove" />
 </menu>

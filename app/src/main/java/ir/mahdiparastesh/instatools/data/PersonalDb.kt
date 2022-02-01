@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Unfollower::class, Queued::class /*Favourite::class*/],
-    version = 1, exportSchema = false
+    entities = [Unfollower::class, Favourite::class, Queued::class, Exportable::class],
+    version = 2, exportSchema = false
 )
 abstract class PersonalDb : RoomDatabase() {
     abstract fun dao(): DAO
@@ -42,11 +42,23 @@ abstract class PersonalDb : RoomDatabase() {
 
         @Query("DELETE FROM Queued")
         fun deleteQueueds(): Int
+
+
+        @Query("SELECT * FROM Exportable")
+        fun exportables(): List<Exportable>
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addExportable(item: Exportable): Long
+
+        @Delete
+        fun deleteExportable(item: Exportable)
     }
 
     companion object {
         fun build(c: Context, user: String, mainThread: Boolean = true) =
             Room.databaseBuilder(c, PersonalDb::class.java, "$user.db")
-                .apply { if (mainThread) allowMainThreadQueries() }.build()
+                .fallbackToDestructiveMigration()
+                .apply { if (mainThread) allowMainThreadQueries() }
+                .build()
     }
 }

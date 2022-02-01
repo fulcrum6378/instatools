@@ -33,21 +33,18 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
     var night = false
     var dirRtl = false
 
-    override var c: Context
-        get() = applicationContext
-        set(_) {}
-    override var m: Model
-        get() = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
-        set(_) {}
-    override var gsp: SharedPreferences
-        get() = Persistent.initGsp(c)
-        set(_) {}
-    override var sp: SharedPreferences?
-        get() = Persistent.initSp(c, m.acc)
-        set(_) {}
+    override lateinit var c: Context
+    override lateinit var m: Model
+    override lateinit var gsp: SharedPreferences
+    override var sp: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        c = applicationContext
+        m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
+        gsp = Persistent.initGsp(c)
+        sp = Persistent.initSp(c, m.acc)
+
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)

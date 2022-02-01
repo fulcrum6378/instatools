@@ -5,6 +5,7 @@
     <dimen name="profilePhoto">50dp</dimen>
     <dimen name="thumbPhoto">60dp</dimen>
     <dimen name="userPadV">20dp</dimen>
+    <dimen name="moreAction">50dp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>

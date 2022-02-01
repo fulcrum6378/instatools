@@ -29,6 +29,7 @@ class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
     var tracker: SelectionTracker<String>? = null
     private var thread: FetchSome? = null
+    override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.SECONDARY)
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {

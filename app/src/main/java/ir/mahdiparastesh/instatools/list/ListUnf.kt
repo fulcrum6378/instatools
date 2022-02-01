@@ -14,7 +14,6 @@ import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -26,8 +25,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
     class ViewHolder(val b: ListUnfBinding) : RecyclerView.ViewHolder(b.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val b = ListUnfBinding
-            .inflate(c.themeInflater(BaseActivity.Theme.PRIMARY), parent, false)
+        val b = ListUnfBinding.inflate(f.inflater, parent, false)
         b.name.typeface = c.fontRegular
         b.user.typeface = c.fontRegular
         return ViewHolder(b)
@@ -41,13 +39,13 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         h.b.user.text = c.m.unfollowers!![i].user
         h.b.root.setOnClickListener {
             val user = c.m.unfollowers?.get(h.layoutPosition)?.user ?: return@setOnClickListener
-            MaterialMenu(c, it, R.menu.unf_click, Act().apply {
-                this[R.id.ucViewInApp] = {
+            MaterialMenu(c, it, R.menu.unf_more, Act().apply {
+                this[R.id.umViewInApp] = {
                     c.startActivity(Intent(c, Viewer::class.java).apply {
                         putExtra(Viewer.EXTRA_USER, user)
                     })
                 }
-                this[R.id.ucViewInInsta] = {
+                this[R.id.umViewInInsta] = {
                     UiTools.openProfile(c, user)
                 }
             }).show()

@@ -1,21 +1,12 @@
 package ir.mahdiparastesh.instatools.serv
 
-import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
-import android.os.*
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -25,55 +16,42 @@ import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.ForegroundService
 import java.io.FileOutputStream
 import java.util.*
 
-@SuppressLint("UnspecifiedImmutableFlag")
-class Queuer : Service(), ViewModelStoreOwner, Persistent {
-    private var mViewModelStore = ViewModelStore()
+class Queuer : ForegroundService() {
     private lateinit var pDb: PersonalDb
     private lateinit var pDao: PersonalDb.DAO
     private var dest: String? = null
     private var handlingLink: Queued? = null
 
-    override var c: Context
-        get() = applicationContext
-        set(_) {}
-    override var m: Model
-        get() = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
-        set(_) {}
-    override var gsp: SharedPreferences
-        get() = Persistent.initGsp(c)
-        set(_) {}
-    override var sp: SharedPreferences?
-        get() = Persistent.initSp(c, m.acc)
-        set(_) {}
+    override val com: ForegroundServiceCompanion
+        get() = Companion
 
-    companion object {
-        private val pack: String = Queuer::class.java.`package`!!.name
-        val CHANNEL = "$pack.DOWNLOADING"
-        val ACTION_START = "$pack.ACTION_START"
-        val ACTION_STOP = "$pack.ACTION_STOP"
-        val EXTRA_LINK = "$pack.EXTRA_LINK"
-        const val CH_ID = 262
+    companion object : ForegroundServiceCompanion(262, Queuer::class) {
+        override val channel: String = "$pack.DOWNLOADING"
+        override var chName: Int = R.string.queuerChannel
+        override var chDesc: Int = R.string.queuerChannelDesc
+        override var ntfSmallIcon: Int = R.mipmap.launcher_round
+        override var ntfTitle: Int = R.string.queuerTitle
+        override var ntfActions: Array<Pair<String, Int>> = arrayOf(
+            ACTION_STOP to R.string.queuerStop
+        )
+        override var active: Boolean = false
+        override var handler: Handler? = null
+
         const val HANDLE_LINK = 0
-        var active = false
-        var handler: Handler? = null
+        val ACTION_START = "$pack.ACTION_START"
+        val EXTRA_LINK = "$pack.EXTRA_LINK"
 
         fun now() = Calendar.getInstance().timeInMillis
-
-        fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
-            c, 0, Intent(c, Queuer::class.java).apply { action = code },
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -81,16 +59,15 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
         if (intent.action != null) when (intent.action) {
             ACTION_START -> if (intent.extras != null)
                 intent.getStringExtra(EXTRA_LINK)?.let { handleLink(it) }
-            ACTION_STOP -> if (active) stopForeground(true)
+            ACTION_STOP -> if (active) destroy()
         }
         return START_NOT_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
-        active = true
         dest = preference(Settings.spStorage)
-        if (m.acc == null || dest == null) stopSelf()
+        if (m.acc == null || dest == null) destroy()
         pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         download()
 
@@ -109,25 +86,6 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
                 }
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(
-                    NotificationChannel(
-                        CHANNEL, c.resources.getString(R.string.queuerChannel),
-                        NotificationManager.IMPORTANCE_LOW
-                    ).apply { description = c.resources.getString(R.string.queuerChannelDesc) })
-        startForeground(CH_ID, NotificationCompat.Builder(c, CHANNEL).apply {
-            setSmallIcon(R.mipmap.launcher_round)
-            setContentTitle(c.resources.getString(R.string.queuerTitle))
-            setOngoing(true)
-            priority = NotificationCompat.PRIORITY_LOW
-            setContentIntent(
-                PendingIntent.getActivity(
-                    c, 0, Intent(c, Downloads::class.java), PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
-            addAction(0, c.resources.getString(R.string.queuerStop), pi(c, ACTION_STOP))
-        }.build())
     }
 
     @Suppress("LABEL_NAME_CLASH")
@@ -222,7 +180,7 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
         if (downloading) return
         val queue = ArrayList(pDao.readyQueueds().sortedBy { it.addedAt })
         if (queue.isNullOrEmpty()) {
-            stopSelf(); return; }
+            destroy(); return; }
         var q = 0
         while (queue[q].url == null) {
             if (queue[q].link == null) {
@@ -285,19 +243,9 @@ class Queuer : Service(), ViewModelStoreOwner, Persistent {
         } // TODO: RECOGNISE BY ID LATER
     }
 
-    override fun onDestroy() {
-        handler = null
-        stopForeground(true)
-        super.onDestroy()
-        active = false
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),
         VIDEO("video/mp4", "mp4", 2)
     }
-
-    override fun getViewModelStore(): ViewModelStore = mViewModelStore
 }

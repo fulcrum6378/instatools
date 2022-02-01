@@ -9,7 +9,6 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListSvdBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -28,8 +27,7 @@ class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSv
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val b = ListSvdBinding
-            .inflate(c.themeInflater(BaseActivity.Theme.SECONDARY), parent, false)
+        val b = ListSvdBinding.inflate(f.inflater, parent, false)
         b.root.layoutParams = b.root.layoutParams.apply {
             width = c.dm.widthPixels / 3
             height = c.dm.widthPixels / 3

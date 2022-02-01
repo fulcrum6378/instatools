@@ -60,7 +60,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     val colorBG = MutableLiveData<Int?>(null)
-    private val colorAc = MutableLiveData<Int?>(null)
+    val colorAc = MutableLiveData<Int?>(null)
 
     companion object {
         var guest = false
@@ -117,7 +117,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                         setMessage(R.string.signOutSure)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            // TODO: FORCE SHUTDOWN QUEUER AND INQUISITOR
+                            // TODO: FORCE SHUTDOWN QUEUER, INQUISITOR AND EXPORTER
                             gsp.edit().remove(Login.spAccount).commit()
                             if (m.acc != null) gsp.edit()
                                 .remove(Login.spCookies.format(m.acc!!.id))
@@ -135,8 +135,10 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b.nav.menu.forEach {
             val mNewTitle = SpannableString(it.title)
             mNewTitle.setSpan(
-                CustomTypefaceSpan("", fontRegular, resources.getDimension(R.dimen.navFont)),
-                0, mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
+                CustomTypefaceSpan(
+                    "", fontRegular, resources.getDimension(R.dimen.navFont),
+                    colorAc.value ?: color(R.color.defCA)
+                ), 0, mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
             )
             it.title = mNewTitle
         }
