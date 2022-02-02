@@ -6,6 +6,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/add.xml" value="0.1015625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_1.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_round.xml" value="0.112" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/deselect_all.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct_off.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct_on.xml" value="0.12604166666666666" />
@@ -27,6 +28,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/saver_off.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/saver_on.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/search.xml" value="0.240625" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/select_all.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/selected.xml" value="0.1795" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/settings.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/shadow.xml" value="0.139" />

@@ -15,7 +15,7 @@ import ir.mahdiparastesh.instatools.view.UiTools
 
 class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHolder>() {
     val expandable = Expandable(
-        c, f.b.expanded, f.b.root, c.colorBG.value ?: c.color(R.color.defBG)
+        c, f.b.expanded, f.b.root, f.handler, c.colorBG.value ?: c.color(R.color.defBG)
     )
 
     inner class ViewHolder(val b: ListSvdBinding) : RecyclerView.ViewHolder(b.root) {
@@ -45,8 +45,9 @@ class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSv
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
-        if (f.tracker != null) h.b.click.setBackgroundResource(
-            if (!f.tracker!!.isSelected(c.m.saved!![i].id)) R.drawable.button else R.drawable.selected
+        h.b.click.setBackgroundResource(
+            if (f.tracker == null || !f.tracker!!.isSelected(c.m.saved!![i].id)) R.drawable.button
+            else R.drawable.selected
         )
         h.b.click.setOnClickListener {
             expandable.thumb = it

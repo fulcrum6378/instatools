@@ -20,10 +20,10 @@ class Api<JSON>(
     val c: Persistent,
     url: String,
     private val clazz: KClass<*>,
+    private val handleError: Handler?,
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
-    private val handleError: Handler? = null,
     private val listener: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
     handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget()
@@ -32,12 +32,12 @@ class Api<JSON>(
         setShouldCache(cache)
         tag = "fetch"
         retryPolicy = DefaultRetryPolicy(
-            10000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+            10000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         )
         Volley.newRequestQueue(c.c).add(this)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!)
+    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, method == Method.POST)
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
@@ -113,7 +113,7 @@ class Api<JSON>(
     }
 
     @Suppress("SpellCheckingInspection")
-    class Headers(acc: Account) : HashMap<String, String>() {
+    class Headers(acc: Account, isImperative: Boolean = false) : HashMap<String, String>() {
         init {
             this["accept"] = "*/*"
             this["accept-language"] = "en-GB"
@@ -122,19 +122,26 @@ class Api<JSON>(
             this["sec-ch-ua-platform"] = "\"InstaTools - Android\""
             this["sec-fetch-dest"] = "empty"
             this["sec-fetch-mode"] = "cors"
-            this["sec-fetch-site"] = "same-origin"
-            this["x-requested-with"] = "XMLHttpRequest"
             // "cache-control": "max-age=0" // SET THIS IN ORDER TO DISABLE CACHE
 
-            //this["content-type"] = "application/x-www-form-urlencoded"
-            //this["x-instagram-ajax"] = "ee0117db2fab"
-
-            // The rest are dynamic
+            val cookies = acc.cook ?: ""
+            if (isImperative) {
+                this["content-type"] = "application/x-www-form-urlencoded"
+                this["sec-fetch-site"] = "same-origin"
+                this["x-requested-with"] = "XMLHttpRequest"
+                if (cookies.contains("csrftoken="))
+                    this["x-csrftoken"] = cookies
+                        .substringAfter("csrftoken=")
+                        .substringBefore(";")
+                //this["x-instagram-ajax"] = "7f7346b22318"
+                //"Referer": "https://www.instagram.com/instagram/",
+            } else { // Cookie "rur" is different between POST and GET but the same between themselves
+                this["sec-fetch-site"] = "same-site"
+            }
             //this["x-asbd-id"] = "198387"
-            //this["x-csrftoken"] = csrfToken
-            //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCnL"
+            //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
             this["x-ig-app-id"] = "936619743392459"
-            this["cookie"] = acc.cook ?: ""
+            this["cookie"] = cookies
             this["Referer"] = "https://www.instagram.com/"
             this["Referrer-Policy"] = "strict-origin-when-cross-origin"
 

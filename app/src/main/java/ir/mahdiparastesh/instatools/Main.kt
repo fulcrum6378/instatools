@@ -110,10 +110,16 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
-                    if (srvComps.any { it.active })
-                        TODO("PROMPT FIRST")
-                    gsp.edit().remove(Login.spAccount).commit()
-                    goTo(Login::class, true)
+                    if (srvComps.any { it.active }) AlertDialog.Builder(c).apply {
+                        setTitle(R.string.backgroundTasks)
+                        setMessage(R.string.terminateBgTasks)
+                        setNegativeButton(R.string.no, null)
+                        setPositiveButton(R.string.yes) { _, _ ->
+                            terminateTasks()
+                            switchAcc()
+                        }
+                    }.create().show() else switchAcc()
+                    true
                 }
                 R.id.mnSignOut -> {
                     AlertDialog.Builder(this).apply {
@@ -121,10 +127,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                         setMessage(R.string.signOutSure)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            services.forEach { service ->
-                                c.stopService(Intent(c, service.java)
-                                    .apply { action = ForegroundService.ACTION_STOP })
-                            }
+                            terminateTasks()
                             Account.load(c).removeAll { it.id == m.acc!!.id }
                             gsp.edit().remove(Login.spAccount).commit()
                             arrayOf(
@@ -174,7 +177,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                     }
                     Api<Rest.Search>(
                         this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
-                        cache = true
+                        null, cache = true
                     ) { res ->
                         schRes = res.users.sortedBy { it.position }.toTypedArray()
                         b.searchRes.adapter?.notifyDataSetChanged()
@@ -247,7 +250,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 if (it == null) return@observe
                 val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
                 b.toolbar.navigationIcon?.colorFilter = cf
-                b.toolbar.menu.forEach { item -> item.icon.colorFilter = cf }
+                b.toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
                 tbTitle?.setTextColor(it)
                 searchInput.setTextColor(it)
                 searchInput.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
@@ -329,6 +332,18 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 R.anim.exit_to_left
             )
         }
+
+    private fun terminateTasks() {
+        services.forEach { service ->
+            c.stopService(Intent(c, service.java)
+                .apply { action = ForegroundService.ACTION_STOP })
+        }
+    }
+
+    private fun switchAcc() {
+        gsp.edit().remove(Login.spAccount).commit()
+        goTo(Login::class, true)
+    }
 
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {

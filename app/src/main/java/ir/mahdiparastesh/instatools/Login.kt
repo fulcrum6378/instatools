@@ -47,6 +47,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.welcomeStub.setOnInflateListener(this)
         accounts = Account.load(c)
         val selected = Account.selected(this, accounts, false)
+        for (i in (accounts.size - 1) downTo 0)
+            if (accounts[i].cook == null && accounts[i].id != -1L)
+                accounts.removeAt(i)
 
         // WebView
         b.web.settings.javaScriptEnabled = true
@@ -101,7 +104,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             else -> {
                 accounts.removeAll { it.id == acc.id }
                 Account.save(c, accounts)
-                // TODO: ALERT THE USER
                 welcome()
             }
         }

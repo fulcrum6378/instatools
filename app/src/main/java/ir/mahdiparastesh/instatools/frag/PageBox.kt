@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.NetworkResponse
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
@@ -44,6 +46,10 @@ class PageBox(c: Main) : BasePage(c) {
                     adapt()
                     b.refresher.isRefreshing = false
                 }
+                HANDLE_ABORTED -> {
+                    b.refresher.isRefreshing = false
+                    Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
+                }
                 FetchSomeDm.HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
                     val dmThd = msg.obj as Dm.DmThread
                     val bef = c.m.dmThread!!.items.size
@@ -56,7 +62,15 @@ class PageBox(c: Main) : BasePage(c) {
                         it.notifyItemRangeChanged(dif, c.m.dmThread!!.items.size)
                     }
                 }
-                Api.HANDLE_ERROR -> b.refresher.isRefreshing = false
+                Api.HANDLE_ERROR -> {
+                    b.refresher.isRefreshing = false
+                    Snackbar.make(
+                        b.root, c.getString(
+                            R.string.unknownError,
+                            (msg.obj as NetworkResponse).statusCode.toString()
+                        ), Snackbar.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }
@@ -166,7 +180,7 @@ class PageBox(c: Main) : BasePage(c) {
         }
 
         private fun fetch() {
-            Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class, handleError = handler) { page ->
+            Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class, handler) { page ->
                 c.m.dmThreads?.addAll(page.inbox.threads)
                 if (page.inbox.has_older) Delay(500) { fetch() }
                 else {
@@ -184,8 +198,7 @@ class PageBox(c: Main) : BasePage(c) {
         override fun run() {
             super.run()
             Api<Rest.InboxThread>(
-                c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class,
-                handleError = handler
+                c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class, handler
             ) { inbox ->
                 if (inbox.status == "ok")
                     handler?.obtainMessage(HANDLE_FETCHED_SOME, inbox.thread)?.sendToTarget()

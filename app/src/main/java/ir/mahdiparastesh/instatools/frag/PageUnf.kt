@@ -11,9 +11,13 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.NetworkResponse
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
+import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
@@ -67,7 +71,19 @@ class PageUnf(c: Main) : BasePage(c) {
                     Action.ABORTED.ordinal -> {
                         fetching = false
                         b.refresher.isRefreshing = false
-                        // TODO: ALERT USER
+                        Snackbar.make(b.root, R.string.unfFailed, Snackbar.LENGTH_SHORT).show()
+                    }
+                    Action.COULD_NOT.ordinal ->
+                        Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
+                    Api.HANDLE_ERROR -> {
+                        fetching = false
+                        b.refresher.isRefreshing = false
+                        Snackbar.make(
+                            b.root, c.getString(
+                                R.string.unknownError,
+                                (msg.obj as NetworkResponse).statusCode.toString()
+                            ), Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -111,5 +127,5 @@ class PageUnf(c: Main) : BasePage(c) {
         UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
     }
 
-    enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED }
+    enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED, COULD_NOT }
 }

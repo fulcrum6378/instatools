@@ -6,16 +6,16 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.NetworkResponse
 import com.android.volley.Request
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageSvd(c: Main) : BasePage(c) {
@@ -41,8 +42,35 @@ class PageSvd(c: Main) : BasePage(c) {
                         (c.m.saved!!.size / 3) * (c.dm.widthPixels / 3) < c.dm.heightPixels
                     ) thread = FetchSome().also { it.start() }
                 }
+                HANDLE_ABORTED -> {
+                    b.refresher.isRefreshing = false
+                    Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
+                }
+                Api.HANDLE_ERROR -> {
+                    b.refresher.isRefreshing = false
+                    Snackbar.make(
+                        b.root, c.getString(
+                            R.string.unknownError,
+                            (msg.obj as NetworkResponse).statusCode.toString()
+                        ), Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+                HANDLE_EXPANDABLE_ERROR ->
+                    Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
+                HANDLE_UNSAVE_DONE -> c.m.saved?.find { it.id == msg.obj as String }?.let { post ->
+                    val x = c.m.saved!!.indexOf(post)
+                    c.m.saved!!.removeAt(x)
+                    b.rv.adapter?.notifyItemRemoved(x)
+                    b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.size)
+                    if (x > 0) b.rv.adapter?.notifyItemChanged(x - 1)
+                }
             }
         }
+    }
+
+    companion object {
+        const val HANDLE_EXPANDABLE_ERROR = 10
+        const val HANDLE_UNSAVE_DONE = 11
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -65,7 +93,7 @@ class PageSvd(c: Main) : BasePage(c) {
         b.rv.viewTreeObserver.addOnScrollChangedListener {
             if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset() +
                         (c.dm.heightPixels * 0.1)) >= b.rv.computeVerticalScrollRange() &&
-                thread?.active != true
+                thread?.active != true && c.m.nextSaved?.has_next_page != false
             ) thread = FetchSome().also { it.start() }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -94,25 +122,32 @@ class PageSvd(c: Main) : BasePage(c) {
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mtDownload -> if (tracker != null && c.m.saved != null) {
-            for (svd in tracker!!.selection) c.m.saved!!.find { it.id == svd }?.let { post ->
-                Downloads.initService(c, Api.Type.POST.url.format(post.shortcode))
-            }
-            true
-        } else false
-        R.id.mtRemove -> if (tracker != null && c.m.saved != null) {
-            for (svd in tracker!!.selection) c.m.saved!!.find { it.id == svd }?.let { post ->
-                Api<Rest>(
-                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class,
-                    method = Request.Method.POST
-                ) { rest ->
-                    if (rest.status != "ok" || c.m.saved == null) return@Api
-                    c.m.saved!!.remove(post)
-                }
-            }
+        R.id.mtUnsaveDownload -> {
+            if (tracker != null && c.m.saved != null)
+                Saver(tracker!!.selection, unsave = true, download = true).start()
             tracker?.clearSelection()
             true
-        } else false
+        }
+        R.id.mtSelectAll -> {
+            if (c.m.saved != null) tracker?.setItemsSelected(c.m.saved!!.map { it.id }, true)
+            true
+        }
+        R.id.mtDeselectAll -> {
+            tracker?.clearSelection()
+            true
+        }
+        R.id.mtDownload -> {
+            if (tracker != null && c.m.saved != null)
+                Saver(tracker!!.selection, unsave = false, download = true).start()
+            tracker?.clearSelection()
+            true
+        }
+        R.id.mtUnsave -> {
+            if (tracker != null && c.m.saved != null)
+                Saver(tracker!!.selection, unsave = true, download = false).start()
+            tracker?.clearSelection()
+            true
+        }
         else -> false
     }
 
@@ -164,10 +199,11 @@ class PageSvd(c: Main) : BasePage(c) {
             super.run()
             if (c.m.nextSaved?.has_next_page == false) return
             if (c.m.saved == null) Api<Profile>(
-                c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class,
-                handleError = handler
+                c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
             ) { profile ->
-                val media = profile.graphql?.user?.edge_saved_media ?: return@Api
+                val media = profile.graphql?.user?.edge_saved_media
+                if (media == null) {
+                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
                 c.m.nextSaved = media.page_info
                 c.m.saved = ArrayList(media.edges.map { it.node })
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
@@ -175,14 +211,52 @@ class PageSvd(c: Main) : BasePage(c) {
             } else Api<Profile.GraphQlResponse>(
                 c, Api.Type.SAVED.url.format(
                     c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
-                ), Profile.GraphQlResponse::class, handleError = handler
+                ), Profile.GraphQlResponse::class, handler
             ) { res ->
-                val media = res.data.user?.edge_saved_media ?: return@Api
+                val media = res.data.user?.edge_saved_media
+                if (media == null) {
+                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
                 c.m.nextSaved = media.page_info
                 c.m.saved?.addAll(media.edges.map { it.node })
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 interrupt()
             }
+        }
+    }
+
+    inner class Saver(selection: Selection<String>, val unsave: Boolean, val download: Boolean) :
+        Thread() {
+        private val list = ArrayList(selection.toList())
+
+        override fun run() {
+            handle()
+        }
+
+        private fun handle() {
+            val svd = list.getOrNull(0)
+            if (svd == null) {
+                if (download) Downloads.initService(c)
+                return
+            }
+            c.m.saved?.find { it.id == svd }?.let { post ->
+                if (download) c.pDao.addQueued(
+                    Queued(Queuer.now(), "", link = Api.Type.POST.url.format(post.shortcode))
+                )
+                if (unsave) Api<Rest>(
+                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,
+                    method = Request.Method.POST
+                ) { rest ->
+                    if (rest.status == "ok")
+                        handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
+                    ended()
+                }
+            }
+            if (!unsave) ended()
+        }
+
+        private fun ended() {
+            list.removeAt(0)
+            handle()
         }
     }
 }

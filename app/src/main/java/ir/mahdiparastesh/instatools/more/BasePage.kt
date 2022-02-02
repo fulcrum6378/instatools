@@ -22,6 +22,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
 
     companion object {
         const val HANDLE_FETCHED = 0
+        const val HANDLE_ABORTED = 1
     }
 
     open class BaseThread : Thread() {

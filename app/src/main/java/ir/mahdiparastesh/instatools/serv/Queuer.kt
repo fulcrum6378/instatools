@@ -70,6 +70,7 @@ class Queuer : ForegroundService() {
         if (m.acc == null || dest == null) {
             destroy(); return; }
         pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        notification(Companion, Downloads::class)
         download()
 
         handler = object : Handler(Looper.getMainLooper()) {
@@ -91,7 +92,7 @@ class Queuer : ForegroundService() {
 
     @Suppress("LABEL_NAME_CLASH")
     private fun handleLink(link: String, theQud: Queued? = null) {
-        val qud = theQud ?: Queued(now(), "").apply { this.link = link }
+        val qud = theQud ?: Queued(now(), "", link = link)
         if (theQud == null) {
             qud.id = pDao.addQueued(qud)
             Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
@@ -102,16 +103,19 @@ class Queuer : ForegroundService() {
             val storyId = link.substringAfterLast("/").substringBefore("?")
             Api<Profile.GraphQl>(
                 this, link.substringBefore("?") + "?__a=1", Profile.GraphQl::class,
-                cache = true, handleError = handler
+                handler, cache = true
             ) { graphQl ->
-                val user = graphQl.user ?: return@Api
+                val user = graphQl.user
+                if (user == null) {
+                    handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
                 Api<Rest.Reels>(
-                    this, Api.Type.REELS.url.format(user.id), Rest.Reels::class,
-                    cache = true, handleError = handler
+                    this, Api.Type.REELS.url.format(user.id), Rest.Reels::class, handler,
+                    cache = true
                 ) { reels ->
                     var med: Media? = reels.reels_media[0].items.find { it.pk == storyId }
                     if (med == null) med = reels.reels[user.id]?.items?.find { it.pk == storyId }
-                    if (med == null) return@Api
+                    if (med == null) {
+                        handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
                     qud.apply {
                         userId = user.id
                         userName = user.username
@@ -128,9 +132,11 @@ class Queuer : ForegroundService() {
             }
         } else Api<Media.MediaWrapperApi>(
             this, link.substringBefore("?") + "?__a=1", Media.MediaWrapperApi::class,
-            handleError = handler
+            handler
         ) { wrapper ->
-            val med = wrapper.items?.get(0) ?: return@Api
+            val med = wrapper.items?.get(0)
+            if (med == null) {
+                handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
             var found = true
             val addOns = arrayListOf<Queued>()
             when {
@@ -168,7 +174,7 @@ class Queuer : ForegroundService() {
                 pDao.updateQueued(qud)
                 Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
                 addOns.forEach { qud ->
-                    pDao.addQueued(qud)
+                    qud.id = pDao.addQueued(qud)
                     Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
                 }
                 download()
@@ -185,7 +191,7 @@ class Queuer : ForegroundService() {
         var q = 0
         while (queue[q].url == null) {
             if (queue[q].link == null) {
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[0])?.sendToTarget()
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])?.sendToTarget()
                 pDao.deleteQueued(queue[q])
                 queue.removeAt(q)
             } else {
@@ -197,10 +203,10 @@ class Queuer : ForegroundService() {
         downloading = true
 
         Volley.newRequestQueue(c).add(
-            object : Request<ByteArray>(Method.GET, queue[0].url, Response.ErrorListener {
-                queue[0].failed = true
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[0])?.sendToTarget()
-                pDao.updateQueued(queue[0])
+            object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
+                queue[q].failed = true
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[q])?.sendToTarget()
+                pDao.updateQueued(queue[q])
                 downloading = false
                 download()
             }) {
@@ -210,18 +216,18 @@ class Queuer : ForegroundService() {
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
 
                 override fun deliverResponse(response: ByteArray) {
-                    save(queue[0], response)
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[0])
+                    save(queue[q], response)
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])
                         ?.sendToTarget()
-                    pDao.deleteQueued(queue[0])
+                    pDao.deleteQueued(queue[q])
                     downloading = false
                     download()
                 }
             }.apply {
-                setShouldCache(false)
-                tag = queue[0].itemId
+                setShouldCache(true)
+                tag = queue[q].itemId
                 retryPolicy = DefaultRetryPolicy(
-                    20000, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    20000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
                 )
             }
         )
@@ -242,6 +248,11 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         } // TODO: RECOGNISE BY ID LATER
+    }
+
+    override fun onDestroy() {
+        Downloads.handler?.obtainMessage(Downloads.HANDLE_RESET)?.sendToTarget()
+        super.onDestroy()
     }
 
 

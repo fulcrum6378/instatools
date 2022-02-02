@@ -71,9 +71,8 @@ class Inquisitor : ForegroundService() {
         private fun allFollow(next_max_id: String = "") {
             if (!active) return
             Api<Rest.Follow>(
-                this@Inquisitor,
-                Api.Type.FOLLOWING.url.format(m.acc!!.id, next_max_id),
-                Rest.Follow::class
+                this@Inquisitor, Api.Type.FOLLOWING.url.format(m.acc!!.id, next_max_id),
+                Rest.Follow::class, PageUnf.theHandler
             ) { flw ->
                 following.addAll(flw.users.toMutableList())
                 if (flw.next_max_id == null) analyse()
@@ -89,8 +88,8 @@ class Inquisitor : ForegroundService() {
                 return
             }
             Api<Profile>(
-                this@Inquisitor, Api.Type.PROFILE.url.format(following[i].username), Profile::class,
-                handleError = handler
+                this@Inquisitor, Api.Type.PROFILE.url.format(following[i].username),
+                Profile::class, handler
             ) { profile ->
                 val u = profile.graphql?.user
                 if (u == null || u.follows_viewer != false || !active) return@Api

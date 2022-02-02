@@ -31,9 +31,7 @@ class Viewer : BaseActivity() {
         setContentView(b.root)
         toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
 
-        Api<Profile>(
-            this, Api.Type.PROFILE.url.format(user), Profile::class, handleError = handler
-        ) { profile ->
+        Api<Profile>(this, Api.Type.PROFILE.url.format(user), Profile::class, handler) { profile ->
             val u = profile.graphql?.user
             if (u == null) {
                 Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()

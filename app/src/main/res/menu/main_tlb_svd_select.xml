@@ -3,18 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedAttribute">
-    <!-- TODO: SELECT ALL AND DESELECT ALL -->
     <item
-        android:id="@+id/mtDownload"
+        android:id="@+id/mtUnsaveDownload"
         android:icon="@drawable/download"
         android:title="@string/download"
         android:tooltipText="@string/download"
-        app:showAsAction="ifRoom" />
-    <!-- TODO: MERGE THESE TWO, ALERT THE USER FOR ASSURANCE AND PUT AN OPTIONAL CHECKBOX FOR UNSAVE, THEN PUT THE REST IN A SEP. THREAD -->
+        app:showAsAction="ifRoom" /><!-- TODO: CHANGE THE ICON -->
     <item
-        android:id="@+id/mtRemove"
-        android:icon="@drawable/saved_off"
-        android:title="@string/unsave"
-        android:tooltipText="@string/unsave"
+        android:id="@+id/mtSelectAll"
+        android:icon="@drawable/select_all"
+        android:title="@string/selectAll"
+        android:tooltipText="@string/selectAll"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mtDeselectAll"
+        android:icon="@drawable/deselect_all"
+        android:title="@string/deselectAll"
+        android:tooltipText="@string/deselectAll"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mtDownload"
+        android:title="@string/downloadOnly"
+        android:tooltipText="@string/downloadOnly" />
+    <item
+        android:id="@+id/mtUnsave"
+        android:title="@string/unsaveOnly"
+        android:tooltipText="@string/unsave" />
 </menu>

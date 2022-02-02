@@ -41,7 +41,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         abstract var active: Boolean
         abstract var handler: Handler?
 
-        fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
+        open fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
             c, 0, Intent(c, klass.java).apply { action = code },
             PendingIntent.FLAG_CANCEL_CURRENT
         )
@@ -72,7 +72,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         sp = Persistent.initSp(c, m.acc)
     }
 
-    fun notification(com: ForegroundServiceCompanion, openActivity: KClass<*>) {
+    open fun notification(com: ForegroundServiceCompanion, openActivity: KClass<*>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(
@@ -95,7 +95,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         }.build())
     }
 
-    fun destroy() {
+    open fun destroy() {
         stopForeground(true)
         stopSelf()
     }

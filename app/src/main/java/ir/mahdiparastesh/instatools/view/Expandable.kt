@@ -7,11 +7,13 @@ import android.animation.ObjectAnimator
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.viewpager2.widget.ViewPager2
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.list.ListCar
@@ -23,6 +25,7 @@ class Expandable(
     private val c: BaseActivity,
     private val slider: ViewPager2,
     private val root: ViewGroup,
+    private val handler: Handler?,
     private val colorBg: Int = c.color(R.color.defBG)
 ) {
     var zoomed = false
@@ -36,9 +39,12 @@ class Expandable(
         zoomed = true
         currentAnimator?.cancel()
         Api<Media.MediaWrapperApi>(
-            c, Api.Type.POST.url.format(post), Media.MediaWrapperApi::class, cache = true
+            c, Api.Type.POST.url.format(post), Media.MediaWrapperApi::class, handler, cache = true
         ) { wrapper ->
-            val med = wrapper.items?.get(0) ?: return@Api
+            val med = wrapper.items?.get(0)
+            if (med == null) {
+                handler?.obtainMessage(PageSvd.HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
+                return@Api; }
             @Suppress("UNCHECKED_CAST")
             if (med.carousel_media != null)
                 slider.adapter = ListCar(c, med.carousel_media as Array<Versioned>)

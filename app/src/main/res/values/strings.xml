@@ -20,6 +20,11 @@
     <string name="unsave">Unsave</string>
     <string name="favourites">Favourites</string>
     <string name="export">Export</string>
+    <string name="unknownError">Sorry, an unknown error occurred: %s</string>
+    <string name="unknownMyError">Sorry, an unknown error occurred!</string>
+    <string name="loadFailed">Loading failed!</string>
+    <string name="selectAll">Select All</string>
+    <string name="deselectAll">Deselect All</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -40,6 +45,14 @@
     <string name="exportPdf">Export to PDF</string>
     <string name="exportHtml">Export to HTML</string>
     <string name="exportOptions">Export Options</string>
+    <string name="unfFailed">Finding unfollowers failed!</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="unfollowPV">This account is private. Are you sure you want to unfollow them?</string>
+    <string name="unfCouldNot">Could not unfollow this user!</string>
+    <string name="backgroundTasks">Background Tasks</string>
+    <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
+    <string name="unsaveOnly">Unsave Only</string>
+    <string name="downloadOnly">Download Only</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>

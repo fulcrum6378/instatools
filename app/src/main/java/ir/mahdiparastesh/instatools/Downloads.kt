@@ -42,7 +42,7 @@ class Downloads : BaseActivity() {
                     HANDLE_DELETED -> find(msg)?.let {
                         m.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size - 1)
+                        b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
                     HANDLE_CHANGED -> find(msg)?.let {
