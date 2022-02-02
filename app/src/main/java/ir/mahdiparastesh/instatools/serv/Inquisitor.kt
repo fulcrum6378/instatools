@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.serv
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Unfollower
@@ -39,6 +40,7 @@ class Inquisitor : ForegroundService() {
         super.onCreate()
         if (m.acc == null) destroy()
         pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        notification(Companion, Main::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {

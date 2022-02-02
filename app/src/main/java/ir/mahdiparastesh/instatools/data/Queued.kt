@@ -7,9 +7,9 @@ import java.util.*
 
 @Entity
 class Queued(
-    var addedAt: Long,
-    var initiator: String,
-    var link: String? = null,
+    val addedAt: Long,
+    val link: String,
+    var date: Long? = null,
     var userId: String? = null,
     var userName: String? = null,
     var itemId: String? = null,
@@ -22,7 +22,7 @@ class Queued(
     var id = 0L
 
     fun fName(ext: String): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = addedAt }
+        val cal = Calendar.getInstance().apply { timeInMillis = date!! }
         return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
                 "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
                 "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}_$itemId.$ext"

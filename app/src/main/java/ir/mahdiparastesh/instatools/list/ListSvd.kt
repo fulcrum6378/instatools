@@ -11,7 +11,6 @@ import ir.mahdiparastesh.instatools.databinding.ListSvdBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
-import ir.mahdiparastesh.instatools.view.UiTools
 
 class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHolder>() {
     val expandable = Expandable(
@@ -55,11 +54,6 @@ class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSv
                 expandable.expand(c.m.saved!![h.layoutPosition].shortcode)
             } catch (ignored: NullPointerException) {
             }
-        }
-        h.b.click.setOnLongClickListener {
-            h.b.root.isActivated = true
-            UiTools.shake(c.c)
-            true
         }
     }
 

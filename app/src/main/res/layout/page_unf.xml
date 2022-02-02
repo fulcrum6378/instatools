@@ -7,8 +7,6 @@
     tools:context=".frag.PageUnf"
     tools:ignore="MissingConstraints">
 
-    <!-- TODO: Make a progress indicator -->
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
         style="@style/refresher">

@@ -71,8 +71,6 @@ class Queuer : ForegroundService() {
             destroy(); return; }
         pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
         notification(Companion, Downloads::class)
-        download()
-
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
@@ -88,11 +86,12 @@ class Queuer : ForegroundService() {
                 }
             }
         }
+        download()
     }
 
     @Suppress("LABEL_NAME_CLASH")
     private fun handleLink(link: String, theQud: Queued? = null) {
-        val qud = theQud ?: Queued(now(), "", link = link)
+        val qud = theQud ?: Queued(now(), link)
         if (theQud == null) {
             qud.id = pDao.addQueued(qud)
             Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
@@ -117,6 +116,7 @@ class Queuer : ForegroundService() {
                     if (med == null) {
                         handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
                     qud.apply {
+                        date = med.taken_at.toLong()
                         userId = user.id
                         userName = user.username
                         itemId = med.pk
@@ -150,13 +150,14 @@ class Queuer : ForegroundService() {
                         mediaType = car.media_type.toInt().toByte()
                     } else addOns.add(
                         Queued(
-                            qud.addedAt, qud.initiator,
-                            qud.link, med.user.pk, med.user.username, car.pk, car.best(),
+                            qud.addedAt, qud.link,
+                            qud.date, med.user.pk, med.user.username, car.pk, car.best(),
                             med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst(),
                             car.media_type.toInt().toByte()
                         )
                     )
                 med.image_versions2 != null -> qud.apply {
+                    date = med.taken_at.toLong()
                     userId = med.user.pk
                     userName = med.user.username
                     itemId = med.pk
@@ -185,19 +186,13 @@ class Queuer : ForegroundService() {
     private var downloading = false
     private fun download() {
         if (downloading) return
-        val queue = ArrayList(pDao.readyQueueds().sortedBy { it.addedAt })
+        val queue = ArrayList(pDao.readyQueueds().sortedBy { it.date })
         if (queue.isNullOrEmpty()) {
             destroy(); return; }
         var q = 0
         while (queue[q].url == null) {
-            if (queue[q].link == null) {
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])?.sendToTarget()
-                pDao.deleteQueued(queue[q])
-                queue.removeAt(q)
-            } else {
-                if (handlingLink?.link != queue[q].link) handleLink(queue[q].link!!, queue[q])
-                q++
-            }
+            if (handlingLink?.link != queue[q].link) handleLink(queue[q].link, queue[q])
+            q++
             if (q >= queue.size) return
         }
         downloading = true
@@ -224,7 +219,7 @@ class Queuer : ForegroundService() {
                     download()
                 }
             }.apply {
-                setShouldCache(true)
+                setShouldCache(false)
                 tag = queue[q].itemId
                 retryPolicy = DefaultRetryPolicy(
                     20000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
@@ -237,12 +232,9 @@ class Queuer : ForegroundService() {
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
         var branch = stem.findFile(q.userName!!)
         if (branch == null) branch = stem.createDirectory(q.userName!!)
-        for (f in branch!!.listFiles())
-            if (f.name?.substringAfterLast("_")?.substringBefore(".") == q.itemId)
-                return
-        val type = MediaType.values().find { it.inDb == q.mediaType }!!// ?: return
+        val type = MediaType.values().find { it.inDb == q.mediaType }!!
         val fName = q.fName(type.ext)
-        var leaf = branch.findFile(fName)
+        var leaf = branch!!.findFile(fName)
         if (leaf != null) return
         leaf = branch.createFile(type.mime, fName)
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->

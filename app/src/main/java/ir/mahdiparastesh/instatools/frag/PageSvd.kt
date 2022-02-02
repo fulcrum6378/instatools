@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
+import android.widget.Toast
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,14 +29,12 @@ import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
-    var tracker: SelectionTracker<String>? = null
     private var thread: FetchSome? = null
     override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.SECONDARY)
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 HANDLE_FETCHED -> {
-                    thread?.active = false
                     adapt()
                     b.refresher.isRefreshing = false
                     if (!c.m.saved.isNullOrEmpty() && c.m.nextSaved?.has_next_page == true &&
@@ -67,6 +66,8 @@ class PageSvd(c: Main) : BasePage(c) {
             }
         }
     }
+    var tracker: SelectionTracker<String>? = null
+    private var selectivity = false
 
     companion object {
         const val HANDLE_EXPANDABLE_ERROR = 10
@@ -88,6 +89,7 @@ class PageSvd(c: Main) : BasePage(c) {
             b.rv.adapter = null
             c.m.nextSaved = null
             c.m.saved = null
+            tracker = null
             if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
@@ -113,12 +115,14 @@ class PageSvd(c: Main) : BasePage(c) {
             b.rv.adapter?.notifyDataSetChanged()
             return; }
         b.rv.adapter = ListSvd(c, this)
-        tracker = SelectionTracker.Builder(
-            "saved", b.rv,
-            MyItemKeyProvider(), MyDetailsLookup(),
-            StorageStrategy.createStringStorage()
-        ).build()
-        tracker?.addObserver(SelectObserver())
+        if (tracker == null) {
+            tracker = SelectionTracker.Builder(
+                "saved", b.rv,
+                MyItemKeyProvider(), MyDetailsLookup(),
+                StorageStrategy.createStringStorage()
+            ).build()
+            tracker?.addObserver(SelectObserver())
+        }
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
@@ -187,10 +191,13 @@ class PageSvd(c: Main) : BasePage(c) {
 
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
         override fun onSelectionChanged() {
-            if (tracker == null) return
             super.onSelectionChanged()
-            if (!tracker!!.hasSelection()) tracker?.clearSelection()
-            c.selective(tracker!!.hasSelection())
+            Toast.makeText(c, "${tracker?.hasSelection()}", Toast.LENGTH_SHORT).show()
+            val status = tracker?.hasSelection() == true
+            if (selectivity == status) return
+            selectivity = status
+            UiTools.shake(c.c)
+            c.selective(selectivity)
         }
     }
 
@@ -201,26 +208,31 @@ class PageSvd(c: Main) : BasePage(c) {
             if (c.m.saved == null) Api<Profile>(
                 c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
             ) { profile ->
-                val media = profile.graphql?.user?.edge_saved_media
-                if (media == null) {
+                val med = profile.graphql?.user?.edge_saved_media
+                if (med == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                c.m.nextSaved = media.page_info
-                c.m.saved = ArrayList(media.edges.map { it.node })
-                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                interrupt()
+                c.m.saved = arrayListOf()
+                done(med)
             } else Api<Profile.GraphQlResponse>(
                 c, Api.Type.SAVED.url.format(
                     c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
                 ), Profile.GraphQlResponse::class, handler
             ) { res ->
-                val media = res.data.user?.edge_saved_media
-                if (media == null) {
+                val med = res.data.user?.edge_saved_media
+                if (med == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                c.m.nextSaved = media.page_info
-                c.m.saved?.addAll(media.edges.map { it.node })
-                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                interrupt()
+                done(med)
             }
+        }
+
+        private fun done(media: Profile.Media) {
+            c.m.nextSaved = media.page_info
+            media.edges.map { it.node }.forEach { post ->
+                c.m.saved?.removeAll { it.id == post.id }
+                c.m.saved?.add(post)
+            }
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            interrupt()
         }
     }
 
@@ -240,7 +252,7 @@ class PageSvd(c: Main) : BasePage(c) {
             }
             c.m.saved?.find { it.id == svd }?.let { post ->
                 if (download) c.pDao.addQueued(
-                    Queued(Queuer.now(), "", link = Api.Type.POST.url.format(post.shortcode))
+                    Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode))
                 )
                 if (unsave) Api<Rest>(
                     c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,

@@ -80,11 +80,11 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                         com.channel, c.resources.getString(com.chName),
                         NotificationManager.IMPORTANCE_LOW
                     ).apply { description = c.resources.getString(com.chDesc) })
-        // TODO: WILL IT REALLY WORK IN SDK 25- ?!?!
         startForeground(Exporter.CH_ID, NotificationCompat.Builder(c, com.channel).apply {
             setSmallIcon(com.ntfSmallIcon)
             setContentTitle(c.resources.getString(com.ntfTitle))
             setOngoing(true)
+            setProgress(0, 0, true)
             priority = NotificationCompat.PRIORITY_LOW
             setContentIntent(
                 PendingIntent.getActivity(

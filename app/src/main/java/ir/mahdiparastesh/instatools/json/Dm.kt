@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.json
 
 class Dm(
     val client_context: String,
+    val hide_in_thread: Float,
     val is_sent_by_viewer: Boolean,
     val is_shh_mode: Boolean,
     val item_id: String,
@@ -13,9 +14,10 @@ class Dm(
     val user_id: Double,
 
     // Item Types
+    val action_log: ActionLog?,
     val clip: Media?,
     val felix_share: Media?,
-    val link: Map<String, Any?>?,
+    val link: Link?,
     val media: Map<String, Any?>?,
     val profile: Rest.User?,
     val story_share: StoryShare?,
@@ -104,6 +106,27 @@ class Dm(
     )
 
     class DmList(val items: Array<Dm>)
+
+
+    class ActionLog(
+        val bold: Array<Any>,
+        val description: String,
+        val is_reaction_log: Boolean,
+    )
+
+    class Link(
+        val client_context: String,
+        val link_context: LinkContext,
+        val mutation_token: String,
+        val text: String,
+    )
+
+    class LinkContext(
+        val link_url: String,
+        val link_title: String,
+        val link_summary: String,
+        val link_image_url: String,
+    )
 
     class ClipShare(val clip: Media)
 

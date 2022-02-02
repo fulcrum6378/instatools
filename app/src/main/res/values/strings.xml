@@ -53,6 +53,7 @@
     <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
     <string name="unsaveOnly">Unsave Only</string>
     <string name="downloadOnly">Download Only</string>
+    <string name="unsaveDownload">Unsave &amp; Download</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>

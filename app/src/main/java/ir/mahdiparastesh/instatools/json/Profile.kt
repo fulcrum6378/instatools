@@ -105,7 +105,7 @@ class Profile(
         //val product_type: String,
         //val sharing_friction_info: Map<String, *>,
         val shortcode: String,
-        //val taken_at_timestamp: Double,
+        val taken_at_timestamp: Double,
         //val thumbnail_resources: Array<Src>,
         val thumbnail_src: String,
         //val tracking_token: String,

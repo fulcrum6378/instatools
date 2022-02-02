@@ -58,7 +58,7 @@ class Media(
     //val product_type: String,
     //val profile_grid_control_enabled: Boolean,
     //val sharing_friction_info: Map<String, *>,
-    //val taken_at: Double,
+    val taken_at: Double,
     val thumbnails: Thumbnails?,
     val title: String,
     //val top_likers: Array<Any>,
