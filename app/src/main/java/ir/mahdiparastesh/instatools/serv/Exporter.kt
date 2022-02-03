@@ -102,11 +102,12 @@ class Exporter : ForegroundService() {
                         ), parent, false
                     )
                     ListThd.onCreate(
-                        b, Typeface.createFromAsset(c.assets, "titillium_web_regular.ttf")
+                        b, Typeface.createFromAsset(c.assets, "titillium_web_regular.ttf"),
+                        Typeface.createFromAsset(c.assets, "titillium_web_light.ttf")
                     )
-                    ListThd.onBind(b, list[i])
+                    ListThd.onBind(c, b, list[i], list, i)
                     return b.root
-                } // THIS WORKS CORRECT: کص کش
+                }
             }.start()
             (1).toByte() -> TODO()
             else -> end(exp)

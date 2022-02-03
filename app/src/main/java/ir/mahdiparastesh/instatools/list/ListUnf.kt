@@ -62,7 +62,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
                 }
             }.create().show()
         }
-        vis(h.b.sep, i < itemCount - 1)
+        h.b.sep.vis(i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.unfollowers?.size ?: 0

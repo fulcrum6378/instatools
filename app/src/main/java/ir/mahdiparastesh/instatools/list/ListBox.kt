@@ -11,6 +11,7 @@ import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)
@@ -28,7 +29,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         Glide.with(c.c).load(u.profile_pic_url).into(h.b.photo)
         h.b.name.text = if (u.full_name != "") u.full_name else u.username
         h.b.last.text = c.getString(
-            R.string.boxUntil, UiTools.date(c.m.dmThreads!![i].last_activity_at.toLong() / 1000L)
+            R.string.boxUntil, UiTools.date(c.m.dmThreads!![i].last_activity_at)
         )
         h.b.root.setOnClickListener {
             c.m.dmThread = c.m.dmThreads?.get(h.layoutPosition)
@@ -46,7 +47,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
                 }
             }, c.colorAc.value).show()
         }
-        UiTools.vis(h.b.sep, i < itemCount - 1)
+        h.b.sep.vis(i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.dmThreads?.size ?: 0

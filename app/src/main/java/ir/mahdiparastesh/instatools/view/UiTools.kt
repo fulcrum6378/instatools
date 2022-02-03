@@ -8,7 +8,10 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.forEach
@@ -21,6 +24,8 @@ import java.util.*
 
 class UiTools {
     companion object {
+        const val PROFILE = "https://www.instagram.com/%s/"
+
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
             val list = ArrayList<AppCompatTextView>()
             (bnv[0] as BottomNavigationMenuView).forEach {
@@ -33,17 +38,17 @@ class UiTools {
             return list.toList()
         }
 
-        fun vis(v: View, bb: Boolean = true) {
-            v.visibility = if (bb) View.VISIBLE else View.GONE
+        fun View.vis(bb: Boolean = true) {
+            visibility = if (bb) View.VISIBLE else View.GONE
         }
 
-        fun vish(v: View, bb: Boolean = true) {
-            v.visibility = if (bb) View.VISIBLE else View.INVISIBLE
+        fun View.vish(bb: Boolean = true) {
+            visibility = if (bb) View.VISIBLE else View.INVISIBLE
         }
 
         fun openProfile(c: AppCompatActivity, user: String) {
             c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/%s/".format(user)))
+                Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
             )
         }
 
@@ -63,11 +68,36 @@ class UiTools {
             else vib.vibrate(dur)
         }
 
-        fun date(time: Long): String {
-            val cal = Calendar.getInstance().apply { timeInMillis = time }
+        fun date(time: Any): String {
+            val cal = when (time) {
+                is Long -> calendar(time)
+                is Double -> calendar(time)
+                else -> throw IllegalArgumentException("Unsupported unix time type!")
+            }
             return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
                     "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
                     "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
         }
+
+        @Suppress("DEPRECATION")
+        fun TextView.anchor(text: String?, url: String?) {
+            if (text == null || url == null) {
+                movementMethod = null
+                setText("")
+                return
+            }
+            movementMethod = LinkMovementMethod.getInstance()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
+            else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
+        }
+
+        fun calendar(unix: Long): Calendar =
+            Calendar.getInstance().apply { timeInMillis = unix }
+
+        fun calendar(unix: Double): Calendar =
+            Calendar.getInstance().apply { timeInMillis = instaTime(unix) }
+
+        fun instaTime(time: Double) = time.toLong() / 1000L
     }
 }

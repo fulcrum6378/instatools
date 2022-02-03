@@ -26,11 +26,11 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
         else h.b.name.setText(R.string.guest)
         if (!guest) h.b.user.text = c.accounts[i].user
         else h.b.user.setText(R.string.guestShortDesc)
-        vis(h.b.name, guest || c.accounts[i].name != "")
+        h.b.name.vis(guest || c.accounts[i].name != "")
         h.b.root.setOnClickListener {
             c.selectAccount(c.accounts[h.layoutPosition])
         }
-        vis(h.b.sep, i < itemCount - 1)
+        h.b.sep.vis(i < itemCount - 1)
     }
 
     override fun getItemCount() = c.accounts.size

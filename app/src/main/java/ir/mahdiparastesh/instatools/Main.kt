@@ -41,6 +41,7 @@ import ir.mahdiparastesh.instatools.serv.Inquisitor
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 // adb connect 192.168.1.20:
 
@@ -189,12 +190,12 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         b.toolbar.menu.findItem(R.id.mtSearch).setOnActionExpandListener(object :
             MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                UiTools.vis(b.searchRes)
+                b.searchRes.vis()
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                UiTools.vis(b.searchRes, false)
+                b.searchRes.vis(false)
                 b.searchRes.adapter = null
                 schRes = null
                 return true

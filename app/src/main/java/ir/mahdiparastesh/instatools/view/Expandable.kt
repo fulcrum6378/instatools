@@ -50,7 +50,6 @@ class Expandable(
                 slider.adapter = ListCar(c, med.carousel_media as Array<Versioned>)
             else if (med.image_versions2 != null)
                 slider.adapter = ListCar(c, arrayOf(med))
-
         }
         val startBoundsInt = Rect()
         val finalBoundsInt = Rect()

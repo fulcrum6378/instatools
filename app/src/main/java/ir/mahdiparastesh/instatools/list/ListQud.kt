@@ -13,6 +13,7 @@ import ir.mahdiparastesh.instatools.databinding.ListQudBinding
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     class ViewHolder(val b: ListQudBinding) : RecyclerView.ViewHolder(b.root)
@@ -71,7 +72,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         }
 
         // Separator
-        UiTools.vis(h.b.sep, i < itemCount - 1)
+        h.b.sep.vis(i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.queueds?.size ?: 0

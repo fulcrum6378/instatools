@@ -22,7 +22,7 @@ import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.serv.Inquisitor
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
@@ -124,7 +124,7 @@ class PageUnf(c: Main) : BasePage(c) {
     }
 
     override fun updateShadow() {
-        UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
+        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
     enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED, COULD_NOT }

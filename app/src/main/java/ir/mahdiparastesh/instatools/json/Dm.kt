@@ -15,13 +15,22 @@ class Dm(
 
     // Item Types
     val action_log: ActionLog?,
-    val clip: Media?,
-    val felix_share: Media?,
+    val animated_media: AnimatedMedia?,
+    val clip: ClipShare?,
+    val felix_share: FelixShare?,
+    val like: String?,
     val link: Link?,
-    val media: Map<String, Any?>?,
+    val live_viewer_invite: Any?,
+    val media: Media?,
+    val media_share: Media?,
+    val placeholder: Any?,
     val profile: Rest.User?,
+    val raven_media: Any?,
+    val reel_share: ReelShare?,
     val story_share: StoryShare?,
     val text: String?,
+    val video_call_event: Any?,
+    val voice_media: Any?,
 ) {
     class Inbox(
         //val blended_inbox_enabled: Boolean,
@@ -114,6 +123,10 @@ class Dm(
         val is_reaction_log: Boolean,
     )
 
+    class AnimatedMedia(
+        val images: Any?
+    )
+
     class Link(
         val client_context: String,
         val link_context: LinkContext,
@@ -130,14 +143,29 @@ class Dm(
 
     class ClipShare(val clip: Media)
 
-    class FelixShare(val video: Media, val text: String?)
+    class FelixShare(val video: Media, val text: String)
 
     class StoryShare(
-        val is_linked: Boolean,
-        val message: String,
-        val reason: Double,
+        val is_linked: Boolean?,
+        val is_reel_persisted: Boolean?,
+        val media: Media?,
+        val message: String?,
+        val reason: Double?,
+        val reel_id: String?,
+        val reel_type: String?,
+        val story_share_type: String?,
         val text: String,
-        val title: String,
+        val title: String?,
+    )
+
+    class ReelShare(
+        val is_reel_persisted: Boolean,
+        val media: Media?,
+        val reaction_info: ReactionInfo?,
+        val reel_owner_id: Double,
+        val reel_type: String,
+        val text: String,
+        val type: String,
     )
 
     class Reactions(val likes: Array<Any?>, val emojis: Array<Emoji>, val likes_count: Double)
@@ -148,5 +176,10 @@ class Dm(
         val sender_id: Double,
         val emoji: String,
         val super_react_type: String,
+    )
+
+    class ReactionInfo(
+        val emoji: String,
+        val intensity: Any?
     )
 }

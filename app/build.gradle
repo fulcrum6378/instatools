@@ -46,9 +46,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
-    implementation 'androidx.appcompat:appcompat:1.4.1' // Only for ActivityResultLauncher
-    implementation 'androidx.core:core-ktx:1.7.0' // Only for View.get()
-    implementation group: 'commons-lang', name: 'commons-lang', version: '2.6' // StringEscapeUtils
+    implementation 'androidx.activity:activity-ktx:1.4.0' // Only for ActivityResultLauncher
+    implementation 'androidx.core:core-ktx:1.7.0' // For Iterable ViewGroup/Menu and Int:RGB
+    implementation 'org.apache.commons:commons-text:1.9' // StringEscapeUtils
     implementation 'com.airbnb.android:lottie:4.2.2'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'

@@ -22,7 +22,7 @@ import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.text.StringEscapeUtils
 
 @SuppressLint("ApplySharedPref")
 class Login : BaseActivity(), ViewStub.OnInflateListener {
@@ -87,9 +87,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private fun welcome() {
-        vis(b.web, false)
+        b.web.vis(false)
         if (!::bw.isInitialized) b.welcomeStub.inflate()
-        else vis(bw.root)
+        else bw.root.vis()
     }
 
     fun selectAccount(acc: Account) {
@@ -113,8 +113,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private var gonnaAdd = false
     private var gonnaBeGuest = false
     private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
-        vis(b.web)
-        if (::bw.isInitialized) vis(bw.root, false)
+        b.web.vis()
+        if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also {
             it.setAcceptCookie(true)
             it.removeAllCookies { _ ->

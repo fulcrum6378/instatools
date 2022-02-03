@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
@@ -156,7 +157,7 @@ class PageSvd(c: Main) : BasePage(c) {
     }
 
     override fun updateShadow() {
-        UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
+        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
     override fun goBack(): Boolean {

@@ -31,7 +31,7 @@ import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding
@@ -160,7 +160,7 @@ class PageBox(c: Main) : BasePage(c) {
     }
 
     override fun updateShadow() {
-        UiTools.vish(c.b.tbShadow, b.rv.computeVerticalScrollOffset() > 0)
+        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
     override fun goBack(): Boolean {
