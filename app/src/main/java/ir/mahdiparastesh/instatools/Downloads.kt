@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
+    override val menuRes: Int? = null
     private lateinit var pDb: PersonalDb
     lateinit var pDao: PersonalDb.DAO
 

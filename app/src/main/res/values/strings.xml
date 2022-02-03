@@ -67,6 +67,9 @@
     <!-- Favourites -->
     <string name="fvTitle">@string/favourites</string>
 
+    <!-- Settings -->
+    <string name="stDlPath">Main download folder</string>
+
 
     <!-- Inquisitor -->
     <string name="inquiryChannel">Unfollowers</string>

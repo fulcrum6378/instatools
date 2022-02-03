@@ -6,32 +6,31 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
-import android.widget.Toast
-import androidx.recyclerview.selection.*
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.ItemKeyProvider
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
-import com.android.volley.Request
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
-import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.serv.Queuer.Saver
+import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
-    override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.SECONDARY)
+    override lateinit var inflater: LayoutInflater
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
@@ -55,7 +54,7 @@ class PageSvd(c: Main) : BasePage(c) {
                         ), Snackbar.LENGTH_SHORT
                     ).show()
                 }
-                HANDLE_EXPANDABLE_ERROR ->
+                Expandable.HANDLE_EXPANDABLE_ERROR ->
                     Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
                 HANDLE_UNSAVE_DONE -> c.m.saved?.find { it.id == msg.obj as String }?.let { post ->
                     val x = c.m.saved!!.indexOf(post)
@@ -71,11 +70,11 @@ class PageSvd(c: Main) : BasePage(c) {
     private var selectivity = false
 
     companion object {
-        const val HANDLE_EXPANDABLE_ERROR = 10
-        const val HANDLE_UNSAVE_DONE = 11
+        const val HANDLE_UNSAVE_DONE = 10
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
+        inflater = c.themeInflater(BaseActivity.Theme.SECONDARY)
         b = PageSvdBinding.inflate(
             c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
         )
@@ -128,8 +127,9 @@ class PageSvd(c: Main) : BasePage(c) {
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mtUnsaveDownload -> {
-            if (tracker != null && c.m.saved != null)
-                Saver(tracker!!.selection, unsave = true, download = true).start()
+            if (tracker != null && c.m.saved != null) Saver(
+                c, c.pDao, c.m.saved!!, tracker!!.selection, unsave = true, download = true
+            ).start()
             tracker?.clearSelection()
             true
         }
@@ -142,14 +142,16 @@ class PageSvd(c: Main) : BasePage(c) {
             true
         }
         R.id.mtDownload -> {
-            if (tracker != null && c.m.saved != null)
-                Saver(tracker!!.selection, unsave = false, download = true).start()
+            if (tracker != null && c.m.saved != null) Saver(
+                c, c.pDao, c.m.saved!!, tracker!!.selection, unsave = false, download = true
+            ).start()
             tracker?.clearSelection()
             true
         }
         R.id.mtUnsave -> {
-            if (tracker != null && c.m.saved != null)
-                Saver(tracker!!.selection, unsave = true, download = false).start()
+            if (tracker != null && c.m.saved != null) Saver(
+                c, c.pDao, c.m.saved!!, tracker!!.selection, unsave = true, download = false
+            ).start()
             tracker?.clearSelection()
             true
         }
@@ -193,7 +195,6 @@ class PageSvd(c: Main) : BasePage(c) {
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
         override fun onSelectionChanged() {
             super.onSelectionChanged()
-            Toast.makeText(c, "${tracker?.hasSelection()}", Toast.LENGTH_SHORT).show()
             val status = tracker?.hasSelection() == true
             if (selectivity == status) return
             selectivity = status
@@ -209,24 +210,24 @@ class PageSvd(c: Main) : BasePage(c) {
             if (c.m.saved == null) Api<Profile>(
                 c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
             ) { profile ->
-                val med = profile.graphql?.user?.edge_saved_media
-                if (med == null) {
+                val edgeList = profile.graphql?.user?.edge_saved_media
+                if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
                 c.m.saved = arrayListOf()
-                done(med)
+                done(edgeList)
             } else Api<Profile.GraphQlResponse>(
                 c, Api.Type.SAVED.url.format(
                     c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
                 ), Profile.GraphQlResponse::class, handler
             ) { res ->
-                val med = res.data.user?.edge_saved_media
-                if (med == null) {
+                val edgeList = res.data.user?.edge_saved_media
+                if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                done(med)
+                done(edgeList)
             }
         }
 
-        private fun done(media: Profile.Media) {
+        private fun done(media: Profile.EdgeList) {
             c.m.nextSaved = media.page_info
             media.edges.map { it.node }.forEach { post ->
                 c.m.saved?.removeAll { it.id == post.id }
@@ -234,42 +235,6 @@ class PageSvd(c: Main) : BasePage(c) {
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
-        }
-    }
-
-    inner class Saver(selection: Selection<String>, val unsave: Boolean, val download: Boolean) :
-        Thread() {
-        private val list = ArrayList(selection.toList())
-
-        override fun run() {
-            handle()
-        }
-
-        private fun handle() {
-            val svd = list.getOrNull(0)
-            if (svd == null) {
-                if (download) Downloads.initService(c)
-                return
-            }
-            c.m.saved?.find { it.id == svd }?.let { post ->
-                if (download) c.pDao.addQueued(
-                    Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode))
-                )
-                if (unsave) Api<Rest>(
-                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,
-                    method = Request.Method.POST
-                ) { rest ->
-                    if (rest.status == "ok")
-                        handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
-                    ended()
-                }
-            }
-            if (!unsave) ended()
-        }
-
-        private fun ended() {
-            list.removeAt(0)
-            handle()
         }
     }
 }

@@ -29,4 +29,9 @@
     <dimen name="qudLoadingPad">14dp</dimen>
     <dimen name="qudPadH">15dp</dimen>
     <dimen name="qudPadV">10dp</dimen>
+
+    <!-- Settings -->
+    <dimen name="stPadH">36dp</dimen>
+    <dimen name="stStarter">20dp</dimen>
+    <dimen name="stPathCorner">20dp</dimen>
 </resources>

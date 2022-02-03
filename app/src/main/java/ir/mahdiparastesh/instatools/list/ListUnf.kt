@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
@@ -37,16 +36,10 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         h.b.name.text = "${i + 1}. ${c.m.unfollowers!![i].name}"
         h.b.user.text = c.m.unfollowers!![i].user
         h.b.root.setOnClickListener {
-            val user = c.m.unfollowers?.get(h.layoutPosition)?.user ?: return@setOnClickListener
+            val u = c.m.unfollowers?.get(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.unf_more, Act().apply {
-                this[R.id.umViewInApp] = {
-                    c.startActivity(Intent(c, Viewer::class.java).apply {
-                        putExtra(Viewer.EXTRA_USER, user)
-                    })
-                }
-                this[R.id.umViewInInsta] = {
-                    UiTools.openProfile(c, user)
-                }
+                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id.toString(), u.user) }
+                this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }
         h.b.unfollow.setOnClickListener {

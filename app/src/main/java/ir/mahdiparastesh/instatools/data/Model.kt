@@ -16,6 +16,8 @@ class Model : ViewModel() {
     var nextSaved: Profile.PageInfo? = null
     var loginLoaded = false
     val currentPage = MutableLiveData(0)
+    var vwEdges: ArrayList<Profile.Post>? = null
+    var vwInfo: Profile.PageInfo? = null
 
     fun accountSwitched() {
         unfollowers = null
@@ -26,6 +28,8 @@ class Model : ViewModel() {
         nextSaved = null
         loginLoaded = false
         currentPage.value = 0
+        vwEdges = null
+        vwInfo = null
     }
 
     @Suppress("UNCHECKED_CAST")

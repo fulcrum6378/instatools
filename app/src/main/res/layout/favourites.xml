@@ -10,4 +10,8 @@
         android:id="@+id/toolbar"
         style="@style/toolbar"
         app:title="@string/fvTitle" />
+
+    <View
+        android:id="@+id/tbShadow"
+        style="@style/tbShadow" />
 </androidx.constraintlayout.widget.ConstraintLayout>

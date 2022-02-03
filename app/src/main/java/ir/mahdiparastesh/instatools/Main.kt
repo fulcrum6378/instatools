@@ -6,9 +6,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableString
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -48,10 +48,10 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 @SuppressLint("ApplySharedPref")
 class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
+    override val menuRes = R.menu.main_tlb
     private lateinit var toggleNav: ActionBarDrawerToggle
-    private lateinit var fontLogo: Typeface
-    private lateinit var searchInput: SearchView.SearchAutoComplete
-    private lateinit var searchClose: ImageView
+    private var searchInput: SearchView.SearchAutoComplete? = null
+    private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
 
     private lateinit var pDb: PersonalDb
@@ -64,7 +64,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     val colorBG = MutableLiveData<Int?>(null)
-    val colorAc = MutableLiveData<Int?>(null)
 
     companion object {
         val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
@@ -90,8 +89,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         MobileAds.initialize(this) {}
 
         // Toolbar & Navigation
-        fontLogo = font("pacifico.ttf")
-        toolbar(b.toolbar, R.string.app_name, fontLogo)
+        toolbar(b.toolbar, R.string.app_name, font = font("pacifico.ttf"))
         toggleNav = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
         ).apply {
@@ -99,7 +97,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             isDrawerIndicatorEnabled = true
             syncState()
         }
-        b.toolbar.setOnMenuItemClickListener(this)
         b.nav.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.mnDownloads -> goTo(Downloads::class)
@@ -157,50 +154,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             )
             it.title = mNewTitle
         }
-        (b.toolbar.menu.findItem(R.id.mtSearch).actionView as SearchView).apply {
-            searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
-            // useless: search_button, search_go_btn, search_mag_icon
-            searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
-            searchInput.typeface = fontRegular
-            searchInput.setHint(R.string.mtSearch)
-
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String) = true
-
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onQueryTextChange(newText: String): Boolean {
-                    if (newText == "") {
-                        schRes = null
-                        if (b.searchRes.adapter == null)
-                            b.searchRes.adapter = ListSch(this@Main)
-                        else b.searchRes.adapter?.notifyDataSetChanged()
-                        return true
-                    }
-                    Api<Rest.Search>(
-                        this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
-                        null, cache = true
-                    ) { res ->
-                        schRes = res.users.sortedBy { it.position }.toTypedArray()
-                        b.searchRes.adapter?.notifyDataSetChanged()
-                    }
-                    return true
-                }
-            })
-        }
-        b.toolbar.menu.findItem(R.id.mtSearch).setOnActionExpandListener(object :
-            MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                b.searchRes.vis()
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                b.searchRes.vis(false)
-                b.searchRes.adapter = null
-                schRes = null
-                return true
-            }
-        })
 
         // Paging
         if (page1 == null) page1 = PageUnf(this)
@@ -243,6 +196,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 window.navigationBarColor = it
                 b.bnv.setBackgroundColor(it)
                 b.nav.setBackgroundColor(it)
+                b.searchRes.setBackgroundColor(it)
                 page2?.b?.expanded?.setBackgroundColor(it)
             }
             colorBG.value = bg[m.currentPage.value!!]
@@ -253,9 +207,9 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 b.toolbar.navigationIcon?.colorFilter = cf
                 b.toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
                 tbTitle?.setTextColor(it)
-                searchInput.setTextColor(it)
-                searchInput.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
-                searchClose.colorFilter = cf
+                searchInput?.setTextColor(it)
+                searchInput?.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
+                searchClose?.colorFilter = cf
             }
             colorAc.value = ca[m.currentPage.value!!]
         }
@@ -263,6 +217,63 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             it.setTextColor(ca[i / 2])
             it.typeface = fontLight
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        b.toolbar.setOnMenuItemClickListener(this)
+        colorAc.value?.let {
+            val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
+            searchInput?.setTextColor(it)
+            searchInput?.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
+            searchClose?.colorFilter = cf
+        }
+
+        (b.toolbar.menu.findItem(R.id.mtSearch).actionView as SearchView).apply {
+            searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
+            // useless: search_button, search_go_btn, search_mag_icon
+            searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
+            searchInput?.typeface = fontRegular
+            searchInput?.setHint(R.string.mtSearch)
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String) = true
+
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onQueryTextChange(newText: String): Boolean {
+                    if (newText == "") {
+                        schRes = null
+                        if (b.searchRes.adapter == null)
+                            b.searchRes.adapter = ListSch(this@Main)
+                        else b.searchRes.adapter?.notifyDataSetChanged()
+                        return true
+                    }
+                    Api<Rest.Search>(
+                        this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
+                        null, cache = true
+                    ) { res ->
+                        schRes = res.users.sortedBy { it.position }.toTypedArray()
+                        b.searchRes.adapter?.notifyDataSetChanged()
+                    }
+                    return true
+                }
+            })
+        }
+        b.toolbar.menu.findItem(R.id.mtSearch).setOnActionExpandListener(object :
+            MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                b.searchRes.vis()
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                b.searchRes.vis(false)
+                b.searchRes.adapter = null
+                schRes = null
+                return true
+            }
+        })
+        return true
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {

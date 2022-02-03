@@ -6,6 +6,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 
 class Favourites : BaseActivity() {
     private lateinit var b: FavouritesBinding
+    override val menuRes: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

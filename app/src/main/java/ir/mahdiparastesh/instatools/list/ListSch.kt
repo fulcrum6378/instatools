@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.content.Intent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -31,9 +30,9 @@ class ListSch(val c: Main) : RecyclerView.Adapter<ListSch.ViewHolder>() {
         h.b.user.vis(c.schRes!![i].user.username != "")
         h.b.user.text = c.schRes!![i].user.username
         h.b.root.setOnClickListener {
-            c.startActivity(Intent(c, Viewer::class.java).apply {
-                putExtra(Viewer.EXTRA_USER, c.schRes!![h.layoutPosition].user.username)
-            })
+            Viewer.comeHere(
+                c, c.schRes!![h.layoutPosition].user.pk, c.schRes!![h.layoutPosition].user.username
+            )
         }
         h.b.sep.vis(i < itemCount - 1)
     }

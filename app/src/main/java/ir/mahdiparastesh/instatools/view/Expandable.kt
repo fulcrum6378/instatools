@@ -13,11 +13,9 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.viewpager2.widget.ViewPager2
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.list.ListCar
-import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Versioned
 
@@ -34,6 +32,11 @@ class Expandable(
     private var startBounds: RectF? = null
     var thumb: View? = null
 
+    companion object {
+        const val HANDLE_EXPANDABLE_ERROR = 55
+        const val zoomDur = 200L
+    }
+
     fun expand(post: String) {
         if (thumb == null || zoomed) return
         zoomed = true
@@ -43,7 +46,7 @@ class Expandable(
         ) { wrapper ->
             val med = wrapper.items?.get(0)
             if (med == null) {
-                handler?.obtainMessage(PageSvd.HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
+                handler?.obtainMessage(HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
                 return@Api; }
             @Suppress("UNCHECKED_CAST")
             if (med.carousel_media != null)
@@ -97,7 +100,7 @@ class Expandable(
                     )
                 )
             }
-            duration = ListSvd.zoomDur
+            duration = zoomDur
             interpolator = DecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
@@ -122,7 +125,7 @@ class Expandable(
                 with(ObjectAnimator.ofFloat(slider, View.SCALE_X, startScale!!))
                 with(ObjectAnimator.ofFloat(slider, View.SCALE_Y, startScale!!))
             }
-            duration = ListSvd.zoomDur
+            duration = zoomDur
             interpolator = DecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {

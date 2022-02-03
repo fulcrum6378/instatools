@@ -71,4 +71,50 @@
         <item name="android:padding">13dp</item>
         <item name="android:src">@drawable/more_vert</item>
     </style>
+
+    <style name="expanded">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+
+    <!-- Settings -->
+    <style name="stItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingLeft">@dimen/stPadH</item>
+        <item name="android:paddingRight">@dimen/stPadH</item>
+    </style>
+
+    <style name="stItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingStart">@dimen/stStarter</item>
+    </style>
+
+    <style name="stPath">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/path_selector</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingLeft">@dimen/stStarter</item>
+        <item name="android:paddingRight">@dimen/stStarter</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/defCA</item>
+        <item name="android:alpha">0.75</item>
+    </style>
+
+    <style name="stSep" parent="sep">
+        <item name="android:paddingLeft">@dimen/stPadH</item>
+        <item name="android:paddingRight">@dimen/stPadH</item>
+    </style>
 </resources>

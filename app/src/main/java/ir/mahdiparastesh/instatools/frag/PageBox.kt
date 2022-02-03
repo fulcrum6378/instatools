@@ -37,7 +37,7 @@ class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding
     private var boxThread: FetchInbox? = null
     var thdThread: FetchSomeDm? = null
-    override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.TERTIARY)
+    override lateinit var inflater: LayoutInflater
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         @Suppress("UNCHECKED_CAST")
         override fun handleMessage(msg: Message) {
@@ -85,6 +85,7 @@ class PageBox(c: Main) : BasePage(c) {
         }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
+        inflater = c.themeInflater(BaseActivity.Theme.TERTIARY)
         b = PageBoxBinding.inflate(
             c.themeInflater(BaseActivity.Theme.TERTIARY, inf), parent, false
         )

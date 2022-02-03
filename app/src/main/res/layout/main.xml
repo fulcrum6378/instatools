@@ -14,7 +14,6 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/toolbar"
-            app:menu="@menu/main_tlb"
             app:title="@string/app_name" />
 
         <FrameLayout
@@ -40,7 +39,7 @@
             android:id="@+id/searchRes"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="?android:attr/windowBackground"
+            android:background="@color/defBG"
             android:orientation="vertical"
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

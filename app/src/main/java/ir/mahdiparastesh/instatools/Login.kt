@@ -28,6 +28,7 @@ import org.apache.commons.text.StringEscapeUtils
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding
+    override val menuRes: Int? = null
     private lateinit var cookieManager: CookieManager
     lateinit var accounts: ArrayList<Account>
 

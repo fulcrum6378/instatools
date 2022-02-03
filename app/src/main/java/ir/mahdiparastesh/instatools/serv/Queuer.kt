@@ -7,6 +7,7 @@ import android.os.Looper
 import android.os.Message
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
+import androidx.recyclerview.selection.Selection
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -18,10 +19,12 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import java.io.FileOutputStream
 import java.util.*
@@ -247,6 +250,47 @@ class Queuer : ForegroundService() {
         super.onDestroy()
     }
 
+    class Saver(
+        private val c: BaseActivity,
+        private val pDao: PersonalDb.DAO,
+        private val allPosts: List<Profile.Post>,
+        selection: Selection<String>,
+        private val unsave: Boolean,
+        private val download: Boolean
+    ) : Thread() {
+        private val list = ArrayList(selection.toList())
+
+        override fun run() {
+            handle()
+        }
+
+        private fun handle() {
+            val svd = list.getOrNull(0)
+            if (svd == null) {
+                if (download) Downloads.initService(c)
+                return
+            }
+            allPosts.find { it.id == svd }?.let { post ->
+                if (download) pDao.addQueued(
+                    Queued(now(), Api.Type.POST.url.format(post.shortcode))
+                )
+                if (unsave) Api<Rest>(
+                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,
+                    method = Request.Method.POST
+                ) { rest ->
+                    if (rest.status == "ok")
+                        handler?.obtainMessage(PageSvd.HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
+                    ended()
+                }
+            }
+            if (!unsave) ended()
+        }
+
+        private fun ended() {
+            list.removeAt(0)
+            handle()
+        }
+    }
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),

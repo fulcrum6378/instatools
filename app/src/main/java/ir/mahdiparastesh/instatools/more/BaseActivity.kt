@@ -10,28 +10,28 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
+abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
     lateinit var dm: DisplayMetrics
     lateinit var fontBold: Typeface
     lateinit var fontRegular: Typeface
     lateinit var fontLight: Typeface
     var night = false
     var dirRtl = false
+    abstract val menuRes: Int?
+    val colorAc = MutableLiveData<Int?>(null)
 
     override lateinit var c: Context
     override lateinit var m: Model
@@ -67,8 +67,10 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
     }
 
     var tbTitle: TextView? = null
+    lateinit var toolbar: Toolbar
     fun toolbar(tb: Toolbar, title: Int, font: Typeface = fontBold, changeTitleTo: String? = null) {
-        if (!isMain) setSupportActionBar(tb)
+        toolbar = tb
+        setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
             if (getTitle is TextView &&
@@ -81,15 +83,22 @@ open class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity
         if (!isMain) supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            if (!night) TypedValue().apply {
-                theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
-            }.data.apply {
-                val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
-                tb.navigationIcon?.colorFilter = cf
-                tb.menu.forEach { item -> item.icon.colorFilter = cf }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (menuRes != null) toolbar.inflateMenu(menuRes!!)
+        if (!night) colorAc.value ?: TypedValue().apply {
+            theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
+        }.data.apply {
+            val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
+            toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
+            if (!isMain) {
+                toolbar.navigationIcon?.colorFilter = cf
                 tbTitle?.setTextColor(this)
             }
         }
+        return true
     }
 
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =

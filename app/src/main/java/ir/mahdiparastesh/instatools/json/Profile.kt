@@ -33,8 +33,8 @@ class Profile(
         val edge_followed_by: FollowedBy,
         //val edge_media_collections: Map<String?, *>?,
         //val edge_mutual_followed_by: Map<String?, *>?,
-        val edge_owner_to_timeline_media: Media?, // User Posts
-        val edge_saved_media: Media?, // Saved Posts
+        val edge_owner_to_timeline_media: EdgeList?, // User Posts
+        val edge_saved_media: EdgeList?, // Saved Posts
         //val external_url: Any?,
         //val external_url_linkshimmed: Any?,
         //val fbid: String?,
@@ -69,7 +69,7 @@ class Profile(
 
     class FollowedBy(val count: Double)
 
-    class Media(val page_info: PageInfo, val count: Double, val edges: Array<EdgePost>)
+    class EdgeList(val page_info: PageInfo, val count: Double, val edges: Array<EdgePost>)
 
     class PageInfo(val has_next_page: Boolean, val end_cursor: String)
 

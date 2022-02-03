@@ -26,7 +26,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
-    override var inflater: LayoutInflater = c.themeInflater(BaseActivity.Theme.PRIMARY)
+    override lateinit var inflater: LayoutInflater
     override var handler: Handler? = null
 
     companion object {
@@ -34,6 +34,7 @@ class PageUnf(c: Main) : BasePage(c) {
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
+        inflater = c.themeInflater(BaseActivity.Theme.PRIMARY)
         b = PageUnfBinding.inflate(
             c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
         )

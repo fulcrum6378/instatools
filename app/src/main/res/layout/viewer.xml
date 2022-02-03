@@ -11,7 +11,7 @@
         style="@style/toolbar"
         app:title="@string/vwTitle" />
 
-    <com.facebook.shimmer.ShimmerFrameLayout
+    <!--<com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/proPic"
         style="@style/shimmer"
         android:layout_width="wrap_content"
@@ -27,12 +27,26 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:background="@color/shimmerIvBg" />
-    </com.facebook.shimmer.ShimmerFrameLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>-->
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pager"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresher"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/proPic" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/expanded"
+        style="@style/expanded" />
+
+    <View
+        android:id="@+id/tbShadow"
+        style="@style/tbShadow" />
 </androidx.constraintlayout.widget.ConstraintLayout>

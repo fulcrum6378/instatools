@@ -10,4 +10,38 @@
         android:id="@+id/toolbar"
         style="@style/toolbar"
         app:title="@string/settings" />
+
+    <ScrollView
+        android:id="@+id/sv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <LinearLayout style="@style/stItem">
+
+                <TextView
+                    style="@style/stItemName"
+                    android:text="@string/stDlPath" />
+
+                <TextView
+                    android:id="@+id/stMainPath"
+                    style="@style/stPath" />
+            </LinearLayout>
+
+            <View style="@style/stSep" />
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:id="@+id/tbShadow"
+        style="@style/tbShadow" />
 </androidx.constraintlayout.widget.ConstraintLayout>
