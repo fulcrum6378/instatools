@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.serv.Exporter
@@ -44,6 +45,9 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             MaterialMenu(c, it, R.menu.box_more, Act().apply {
                 this[R.id.bmPdf] = {
                     f.expOptions(Exporter.Method.PDF, u.username, thd)
+                }
+                this[R.id.bmView] = {
+                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.pk, uu.username) }
                 }
             }, c.colorAc.value).show()
         }

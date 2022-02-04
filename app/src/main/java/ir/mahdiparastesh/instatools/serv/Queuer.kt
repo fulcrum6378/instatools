@@ -7,7 +7,6 @@ import android.os.Looper
 import android.os.Message
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
-import androidx.recyclerview.selection.Selection
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -19,12 +18,10 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import java.io.FileOutputStream
 import java.util.*
@@ -69,7 +66,7 @@ class Queuer : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
-        dest = preference(Settings.spStorage)
+        dest = sPreference(Settings.spStorage)
         if (m.acc == null || dest == null) {
             destroy(); return; }
         db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
@@ -234,8 +231,11 @@ class Queuer : ForegroundService() {
 
     private fun save(q: Queued, ba: ByteArray) {
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
-        var branch = stem.findFile(q.userName!!)
-        if (branch == null) branch = stem.createDirectory(q.userName!!)
+        var branch: DocumentFile?
+        if (bPreference(Settings.spBranching, true) != false) {
+            branch = stem.findFile(q.userName!!)
+            if (branch == null) branch = stem.createDirectory(q.userName!!)
+        } else branch = stem
         val type = MediaType.values().find { it.inDb == q.mediaType }!!
         val fName = q.fName(type.ext)
         var leaf = branch!!.findFile(fName)
@@ -249,48 +249,6 @@ class Queuer : ForegroundService() {
     override fun onDestroy() {
         Downloads.handler?.obtainMessage(Downloads.HANDLE_RESET)?.sendToTarget()
         super.onDestroy()
-    }
-
-    class Saver(
-        private val c: BaseActivity,
-        private val pDao: Database.DAO,
-        private val allPosts: List<Profile.Post>,
-        selection: Selection<String>,
-        private val unsave: Boolean,
-        private val download: Boolean
-    ) : Thread() {
-        private val list = ArrayList(selection.toList())
-
-        override fun run() {
-            handle()
-        }
-
-        private fun handle() {
-            val svd = list.getOrNull(0)
-            if (svd == null) {
-                if (download) Downloads.initService(c)
-                return
-            }
-            allPosts.find { it.id == svd }?.let { post ->
-                if (download) pDao.addQueued(
-                    Queued(now(), Api.Type.POST.url.format(post.shortcode))
-                )
-                if (unsave) Api<Rest>(
-                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,
-                    method = Request.Method.POST
-                ) { rest ->
-                    if (rest.status == "ok")
-                        handler?.obtainMessage(PageSvd.HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
-                    ended()
-                }
-            }
-            if (!unsave) ended()
-        }
-
-        private fun ended() {
-            list.removeAt(0)
-            handle()
-        }
     }
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {

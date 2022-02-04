@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -12,6 +13,7 @@ import androidx.core.view.iterator
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
+@SuppressLint("ApplySharedPref")
 class Settings : BaseActivity() {
     private lateinit var b: SettingsBinding
     override val menuRes: Int? = null
@@ -33,6 +35,8 @@ class Settings : BaseActivity() {
         const val spStorage = "storage"
 
         // Hidden
+        const val spMainPage = "main_page"
+        const val spBranching = "branching"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,11 +54,16 @@ class Settings : BaseActivity() {
         for (l in b.ll.iterator())
             if (l is LinearLayout) (l[0] as TextView).typeface = fontRegular
         b.stMainPath.typeface = fontLight
+        b.stBranching.typeface = fontRegular
 
         // Main Path
         if (!prf.contains(spStorage)) mainPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { mainPath() }
+        b.stBranching.isChecked = prf.getBoolean(spBranching, true)
+        b.stBranching.setOnCheckedChangeListener { _, bb ->
+            prf.edit().putBoolean(spBranching, bb).commit()
+        }
     }
 
     private fun mainPath() {

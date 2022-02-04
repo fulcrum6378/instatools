@@ -22,7 +22,7 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.ads.MobileAds
+import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.MainBinding
@@ -53,6 +53,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
+    //private var mInterstitialAd: InterstitialAd? = null
 
     private lateinit var db: Database
     lateinit var dao: Database.DAO
@@ -68,6 +69,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     companion object {
         val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
         val srvComps = arrayOf(Queuer, Inquisitor, Exporter)
+        val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
 
@@ -86,7 +88,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         guest = m.acc!!.id == -1L
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
-        MobileAds.initialize(this) {}
 
         // Toolbar & Navigation
         toolbar(b.toolbar, R.string.app_name, font = font("pacifico.ttf"))
@@ -156,6 +157,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         }
 
         // Paging
+        m.currentPage.value = sp?.getInt(spMainPage, 0) ?: 0
         if (page1 == null) page1 = PageUnf(this)
         if (page2 == null) page2 = PageSvd(this)
         if (page3 == null) page3 = PageBox(this)
@@ -163,15 +165,16 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         bg = resources.getIntArray(R.array.BG)
         ca = resources.getIntArray(R.array.CA)
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
+        b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
         b.bnv.setOnItemSelectedListener { item ->
             val lastPage = m.currentPage.value!!
-            m.currentPage.value = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
-                .indexOf(item.itemId)
+            m.currentPage.value = bnvButtons.indexOf(item.itemId)
             if (lastPage == m.currentPage.value) return@setOnItemSelectedListener true
             transFrag(lastPage, m.currentPage.value!!)
                 .hide(pages()[lastPage])
                 .show(pages()[m.currentPage.value!!])
                 .commit()
+            sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.commit()
 
             anTheme?.cancel()
             val col = if (night) bg else ca
@@ -217,6 +220,36 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             it.setTextColor(ca[i / 2])
             it.typeface = fontLight
         }
+
+        /*MobileAds.initialize(this) {
+            InterstitialAd.load(
+                this, "ca-app-pub-9457309151954418/5798988563",
+                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        Toast.makeText(c, "onAdFailedToLoad", Toast.LENGTH_SHORT).show()
+                        mInterstitialAd = null
+                    }
+
+                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                        mInterstitialAd = interstitialAd
+                        mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+                            override fun onAdDismissedFullScreenContent() {
+                                Toast.makeText(c, "onAdDismissedFullScreenContent", Toast.LENGTH_SHORT).show()
+                            }
+
+                            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                                Toast.makeText(c, "onAdFailedToShowFullScreenContent", Toast.LENGTH_SHORT).show()
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                Toast.makeText(c, "onAdShowedFullScreenContent", Toast.LENGTH_SHORT).show()
+                                mInterstitialAd = null
+                            }
+                        }
+                        mInterstitialAd?.show(this@Main)
+                    }
+                })
+        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -227,6 +260,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             searchInput?.setTextColor(it)
             searchInput?.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
             searchClose?.colorFilter = cf
+            toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
         }
 
         (b.toolbar.menu.findItem(R.id.mtSearch).actionView as SearchView).apply {
@@ -347,8 +381,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
 
     private fun terminateTasks() {
         services.forEach { service ->
-            c.stopService(Intent(c, service.java)
-                .apply { action = ForegroundService.ACTION_STOP })
+            c.stopService(Intent(c, service.java).apply { action = ForegroundService.ACTION_STOP })
         }
     }
 

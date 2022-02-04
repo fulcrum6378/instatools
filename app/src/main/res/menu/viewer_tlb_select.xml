@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
+    <item
+        android:id="@+id/vtDownload"
+        android:icon="@drawable/download"
+        android:title="@string/download"
+        android:tooltipText="@string/download"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtSelectAll"
+        android:icon="@drawable/select_all"
+        android:title="@string/selectAll"
+        android:tooltipText="@string/selectAll"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtDeselectAll"
+        android:icon="@drawable/deselect_all"
+        android:title="@string/deselectAll"
+        android:tooltipText="@string/deselectAll"
+        app:showAsAction="ifRoom" />
+</menu>

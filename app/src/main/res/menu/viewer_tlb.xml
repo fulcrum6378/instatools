@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu></menu>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/vtInsta"
+        android:icon="@drawable/instagram"
+        android:title="@string/viewInInsta"
+        app:showAsAction="ifRoom" />
+</menu>

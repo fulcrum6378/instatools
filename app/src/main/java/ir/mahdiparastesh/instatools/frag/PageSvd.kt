@@ -6,23 +6,25 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.android.volley.Request
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.serv.Queuer.Saver
+import ir.mahdiparastesh.instatools.more.BaseSaver
+import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -128,7 +130,7 @@ class PageSvd(c: Main) : BasePage(c) {
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mtUnsaveDownload -> {
             if (tracker != null && c.m.saved != null) Saver(
-                c, c.dao, c.m.saved!!, tracker!!.selection, unsave = true, download = true
+                tracker!!.selection, unsave = true, download = true
             ).start()
             tracker?.clearSelection()
             true
@@ -143,14 +145,14 @@ class PageSvd(c: Main) : BasePage(c) {
         }
         R.id.mtDownload -> {
             if (tracker != null && c.m.saved != null) Saver(
-                c, c.dao, c.m.saved!!, tracker!!.selection, unsave = false, download = true
+                tracker!!.selection, unsave = false, download = true
             ).start()
             tracker?.clearSelection()
             true
         }
         R.id.mtUnsave -> {
             if (tracker != null && c.m.saved != null) Saver(
-                c, c.dao, c.m.saved!!, tracker!!.selection, unsave = true, download = false
+                tracker!!.selection, unsave = true, download = false
             ).start()
             tracker?.clearSelection()
             true
@@ -235,6 +237,33 @@ class PageSvd(c: Main) : BasePage(c) {
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
+        }
+    }
+
+    inner class Saver(
+        selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
+    ) : BaseSaver(selection) {
+
+        override fun handle() {
+            val svd = list.getOrNull(0)
+            if (svd == null) {
+                if (download) Downloads.initService(c)
+                return
+            }
+            c.m.saved?.find { it.id == svd }?.let { post ->
+                if (download) c.dao.addQueued(
+                    Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode))
+                )
+                if (unsave) Api<Rest>(
+                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,
+                    method = Request.Method.POST
+                ) { rest ->
+                    if (rest.status == "ok")
+                        handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
+                    ended()
+                }
+            }
+            if (!unsave) ended()
         }
     }
 }

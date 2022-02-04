@@ -103,7 +103,7 @@ class Downloads : BaseActivity() {
         var handler: Handler? = null
 
         fun initService(c: BaseActivity, link: String? = null) {
-            if (c.preference(Settings.spStorage) == null) {
+            if (c.sPreference(Settings.spStorage) == null) {
                 c.goTo(Settings::class); return; }
             if (Queuer.active) {
                 if (link != null)

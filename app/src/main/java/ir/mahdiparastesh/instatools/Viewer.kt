@@ -10,15 +10,13 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Database
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
@@ -27,7 +25,8 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
-import ir.mahdiparastesh.instatools.serv.Queuer.Saver
+import ir.mahdiparastesh.instatools.more.BaseSaver
+import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -140,36 +139,24 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     fun selective(bb: Boolean) {
         b.toolbar.menu.clear()
-        b.toolbar.inflateMenu(if (bb) R.menu.main_tlb_svd_select else R.menu.viewer_tlb)
+        b.toolbar.inflateMenu(if (bb) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mtUnsaveDownload -> {
-            if (tracker != null && m.vwEdges != null) Saver(
-                this, dao, m.vwEdges!!, tracker!!.selection, unsave = true, download = true
-            ).start()
+        R.id.vtInsta -> {
+            UiTools.openProfile(this, user!!); true; }
+
+        R.id.vtDownload -> {
+            if (tracker != null && m.vwEdges != null)
+                Saver(tracker!!.selection).start()
             tracker?.clearSelection()
             true
         }
-        R.id.mtSelectAll -> {
+        R.id.vtSelectAll -> {
             if (m.vwEdges != null) tracker?.setItemsSelected(m.vwEdges!!.map { it.id }, true)
             true
         }
-        R.id.mtDeselectAll -> {
-            tracker?.clearSelection()
-            true
-        }
-        R.id.mtDownload -> {
-            if (tracker != null && m.vwEdges != null) Saver(
-                this, dao, m.vwEdges!!, tracker!!.selection, unsave = false, download = true
-            ).start()
-            tracker?.clearSelection()
-            true
-        }
-        R.id.mtUnsave -> {
-            if (tracker != null && m.vwEdges != null) Saver(
-                this, dao, m.vwEdges!!, tracker!!.selection, unsave = true, download = false
-            ).start()
+        R.id.vtDeselectAll -> {
             tracker?.clearSelection()
             true
         }
@@ -263,6 +250,20 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
+        }
+    }
+
+    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
+        override fun handle() {
+            val svd = list.getOrNull(0)
+            if (svd == null) {
+                Downloads.initService(this@Viewer)
+                return
+            }
+            m.vwEdges?.find { it.id == svd }?.let { post ->
+                dao.addQueued(Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode)))
+            }
+            ended()
         }
     }
 }

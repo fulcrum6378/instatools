@@ -13,8 +13,12 @@ interface Persistent {
     var gsp: SharedPreferences
     var sp: SharedPreferences?
 
-    fun preference(key: String): String? =
+    fun sPreference(key: String): String? =
         sp?.getString(key, null) ?: gsp.getString(key, null)
+
+    fun bPreference(key: String, def: Boolean): Boolean? =
+        if (sp?.contains(key) == true) sp?.getBoolean(key, def)
+        else gsp.getBoolean(key, def)
 
     companion object {
         // java.security.KeyStoreException:

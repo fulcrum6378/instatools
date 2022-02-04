@@ -35,9 +35,17 @@
                 <TextView
                     android:id="@+id/stMainPath"
                     style="@style/stPath" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/stBranching"
+                    style="@style/stSubItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Divide downloaded files into branches" />
             </LinearLayout>
 
-            <View style="@style/stSep" />
+            <!--<View style="@style/stSep" />-->
         </LinearLayout>
     </ScrollView>
 
