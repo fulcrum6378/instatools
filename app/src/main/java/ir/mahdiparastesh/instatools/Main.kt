@@ -24,7 +24,7 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.ads.MobileAds
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.PersonalDb
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
@@ -54,8 +54,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
 
-    private lateinit var pDb: PersonalDb
-    lateinit var pDao: PersonalDb.DAO
+    private lateinit var db: Database
+    lateinit var dao: Database.DAO
 
     private var page1: PageUnf? = null
     private var page2: PageSvd? = null
@@ -85,7 +85,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         sp = Persistent.initSp(c, m.acc)
         guest = m.acc!!.id == -1L
         if (m.acc!!.id > -1L)
-            pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+            db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         MobileAds.initialize(this) {}
 
         // Toolbar & Navigation

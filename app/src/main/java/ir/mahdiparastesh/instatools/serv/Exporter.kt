@@ -12,8 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.data.PersonalDb
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchSomeDm
 import ir.mahdiparastesh.instatools.json.Api
@@ -24,8 +24,8 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.view.PdfExporter
 
 class Exporter : ForegroundService() {
-    private lateinit var pDb: PersonalDb
-    private lateinit var pDao: PersonalDb.DAO
+    private lateinit var db: Database
+    private lateinit var dao: Database.DAO
     private var exp: Exportable? = null
 
     override val com: ForegroundServiceCompanion
@@ -46,7 +46,7 @@ class Exporter : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
-        pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         notification(Companion, Main::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -68,7 +68,7 @@ class Exporter : ForegroundService() {
     }
 
     private fun handle() {
-        exp = pDao.exportables().sortedBy { it.addedAt }.getOrNull(0)
+        exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
         if (exp == null) {
             destroy(); return; }
         fetchSome()
@@ -116,7 +116,7 @@ class Exporter : ForegroundService() {
 
     private fun end(oldExp: Exportable?) {
         if (oldExp == null) return
-        pDao.deleteExportable(oldExp)
+        dao.deleteExportable(oldExp)
         handle()
     }
 

@@ -128,7 +128,7 @@ class PageSvd(c: Main) : BasePage(c) {
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mtUnsaveDownload -> {
             if (tracker != null && c.m.saved != null) Saver(
-                c, c.pDao, c.m.saved!!, tracker!!.selection, unsave = true, download = true
+                c, c.dao, c.m.saved!!, tracker!!.selection, unsave = true, download = true
             ).start()
             tracker?.clearSelection()
             true
@@ -143,14 +143,14 @@ class PageSvd(c: Main) : BasePage(c) {
         }
         R.id.mtDownload -> {
             if (tracker != null && c.m.saved != null) Saver(
-                c, c.pDao, c.m.saved!!, tracker!!.selection, unsave = false, download = true
+                c, c.dao, c.m.saved!!, tracker!!.selection, unsave = false, download = true
             ).start()
             tracker?.clearSelection()
             true
         }
         R.id.mtUnsave -> {
             if (tracker != null && c.m.saved != null) Saver(
-                c, c.pDao, c.m.saved!!, tracker!!.selection, unsave = true, download = false
+                c, c.dao, c.m.saved!!, tracker!!.selection, unsave = true, download = false
             ).start()
             tracker?.clearSelection()
             true

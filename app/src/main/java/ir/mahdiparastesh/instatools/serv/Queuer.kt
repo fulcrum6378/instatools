@@ -17,7 +17,7 @@ import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.data.PersonalDb
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
@@ -30,8 +30,8 @@ import java.io.FileOutputStream
 import java.util.*
 
 class Queuer : ForegroundService() {
-    private lateinit var pDb: PersonalDb
-    private lateinit var pDao: PersonalDb.DAO
+    private lateinit var db: Database
+    private lateinit var dao: Database.DAO
     private var dest: String? = null
     private var handlingLink: Queued? = null
 
@@ -72,7 +72,7 @@ class Queuer : ForegroundService() {
         dest = preference(Settings.spStorage)
         if (m.acc == null || dest == null) {
             destroy(); return; }
-        pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         notification(Companion, Downloads::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -80,7 +80,7 @@ class Queuer : ForegroundService() {
                     HANDLE_LINK -> handleLink(msg.obj as String)
                     Api.HANDLE_ERROR -> if (handlingLink != null) {
                         handlingLink!!.failed = true
-                        pDao.updateQueued(handlingLink!!)
+                        dao.updateQueued(handlingLink!!)
                         Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, handlingLink!!)
                             ?.sendToTarget()
                         handlingLink = null
@@ -96,7 +96,7 @@ class Queuer : ForegroundService() {
     private fun handleLink(link: String, theQud: Queued? = null) {
         val qud = theQud ?: Queued(now(), link)
         if (theQud == null) {
-            qud.id = pDao.addQueued(qud)
+            qud.id = dao.addQueued(qud)
             Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
         }
         handlingLink = qud
@@ -128,7 +128,7 @@ class Queuer : ForegroundService() {
                         mediaType = med.media_type.toInt().toByte()
                     }
                     handlingLink = null
-                    pDao.updateQueued(qud)
+                    dao.updateQueued(qud)
                     Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
                     download()
                 }
@@ -145,6 +145,7 @@ class Queuer : ForegroundService() {
             when {
                 med.carousel_media != null -> for (car in med.carousel_media)
                     if (qud.url == null) qud.apply {
+                        date = med.taken_at.toLong()
                         userId = med.user.pk
                         userName = med.user.username
                         itemId = car.pk
@@ -175,10 +176,10 @@ class Queuer : ForegroundService() {
             }
             handlingLink = null
             if (found) {
-                pDao.updateQueued(qud)
+                dao.updateQueued(qud)
                 Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
                 addOns.forEach { qud ->
-                    qud.id = pDao.addQueued(qud)
+                    qud.id = dao.addQueued(qud)
                     Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
                 }
                 download()
@@ -189,7 +190,7 @@ class Queuer : ForegroundService() {
     private var downloading = false
     private fun download() {
         if (downloading) return
-        val queue = ArrayList(pDao.readyQueueds().sortedBy { it.date })
+        val queue = ArrayList(dao.readyQueueds().sortedBy { it.date })
         if (queue.isNullOrEmpty()) {
             destroy(); return; }
         var q = 0
@@ -204,7 +205,7 @@ class Queuer : ForegroundService() {
             object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
                 queue[q].failed = true
                 Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[q])?.sendToTarget()
-                pDao.updateQueued(queue[q])
+                dao.updateQueued(queue[q])
                 downloading = false
                 download()
             }) {
@@ -217,7 +218,7 @@ class Queuer : ForegroundService() {
                     save(queue[q], response)
                     Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])
                         ?.sendToTarget()
-                    pDao.deleteQueued(queue[q])
+                    dao.deleteQueued(queue[q])
                     downloading = false
                     download()
                 }
@@ -252,7 +253,7 @@ class Queuer : ForegroundService() {
 
     class Saver(
         private val c: BaseActivity,
-        private val pDao: PersonalDb.DAO,
+        private val pDao: Database.DAO,
         private val allPosts: List<Profile.Post>,
         selection: Selection<String>,
         private val unsave: Boolean,

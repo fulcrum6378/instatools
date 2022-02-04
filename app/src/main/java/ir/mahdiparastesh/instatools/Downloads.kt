@@ -11,7 +11,7 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.PersonalDb
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
@@ -21,8 +21,8 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
     override val menuRes: Int? = null
-    private lateinit var pDb: PersonalDb
-    lateinit var pDao: PersonalDb.DAO
+    private lateinit var db: Database
+    lateinit var dao: Database.DAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class Downloads : BaseActivity() {
         setContentView(b.root)
         toolbar(b.toolbar, R.string.dwTitle)
         if (m.acc == null) m.acc = Account.selected(this)
-        pDb = PersonalDb.build(c, (m.acc?.id ?: -1L).toString()).also { pDao = it.dao() }
+        db = Database.build(c, (m.acc?.id ?: -1L).toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
             @SuppressLint("NotifyDataSetChanged")
@@ -83,7 +83,7 @@ class Downloads : BaseActivity() {
     override fun onResume() {
         super.onResume()
         Thread {
-            m.queueds = ArrayList(pDao.queueds())
+            m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
             if (!m.queueds.isNullOrEmpty()) initService(this)
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()

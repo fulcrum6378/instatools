@@ -7,7 +7,7 @@ import androidx.room.*
     entities = [Unfollower::class, Favourite::class, Queued::class, Exportable::class],
     version = 3, exportSchema = false
 )
-abstract class PersonalDb : RoomDatabase() {
+abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
 
     @Dao
@@ -56,7 +56,7 @@ abstract class PersonalDb : RoomDatabase() {
 
     companion object {
         fun build(c: Context, user: String, mainThread: Boolean = true) =
-            Room.databaseBuilder(c, PersonalDb::class.java, "$user.db")
+            Room.databaseBuilder(c, Database::class.java, "$user.db")
                 .fallbackToDestructiveMigration()
                 .apply { if (mainThread) allowMainThreadQueries() }
                 .build()

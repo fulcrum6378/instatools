@@ -80,7 +80,7 @@ class PageBox(c: Main) : BasePage(c) {
             if (it.data?.data == null || exportable == null) {
                 exportable = null; return@registerForActivityResult; }
             exportable!!.uri = it.data!!.data!!.toString()
-            c.pDao.addExportable(exportable!!)
+            c.dao.addExportable(exportable!!)
             c.startService(Intent(c, Exporter::class.java))
         }
 

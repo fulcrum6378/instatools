@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.data.PersonalDb
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
@@ -35,8 +35,8 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     override val menuRes = R.menu.viewer_tlb
-    private lateinit var pDb: PersonalDb
-    lateinit var pDao: PersonalDb.DAO
+    private lateinit var db: Database
+    lateinit var dao: Database.DAO
     private var user: String? = null
     private var id: String? = null
     private var thread: FetchSome? = null
@@ -66,7 +66,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
-        pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -146,7 +146,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mtUnsaveDownload -> {
             if (tracker != null && m.vwEdges != null) Saver(
-                this, pDao, m.vwEdges!!, tracker!!.selection, unsave = true, download = true
+                this, dao, m.vwEdges!!, tracker!!.selection, unsave = true, download = true
             ).start()
             tracker?.clearSelection()
             true
@@ -161,14 +161,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         R.id.mtDownload -> {
             if (tracker != null && m.vwEdges != null) Saver(
-                this, pDao, m.vwEdges!!, tracker!!.selection, unsave = false, download = true
+                this, dao, m.vwEdges!!, tracker!!.selection, unsave = false, download = true
             ).start()
             tracker?.clearSelection()
             true
         }
         R.id.mtUnsave -> {
             if (tracker != null && m.vwEdges != null) Saver(
-                this, pDao, m.vwEdges!!, tracker!!.selection, unsave = true, download = false
+                this, dao, m.vwEdges!!, tracker!!.selection, unsave = true, download = false
             ).start()
             tracker?.clearSelection()
             true

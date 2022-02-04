@@ -42,7 +42,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         h.b.status.isClickable = c.m.queueds!![i].failed
         h.b.status.setOnClickListener(if (c.m.queueds!![i].failed) View.OnClickListener {
             c.m.queueds!![h.layoutPosition].failed = false
-            c.pDao.updateQueued(c.m.queueds!![h.layoutPosition])
+            c.dao.updateQueued(c.m.queueds!![h.layoutPosition])
             c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
             Downloads.initService(c)
         } else null)
@@ -52,7 +52,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
             MaterialMenu(c, it, R.menu.qud_more, Act().apply {
                 this[R.id.qmRemove] = {
                     if (c.m.queueds != null) {
-                        c.pDao.deleteQueued(c.m.queueds!![h.layoutPosition])
+                        c.dao.deleteQueued(c.m.queueds!![h.layoutPosition])
                         c.m.queueds!!.removeAt(h.layoutPosition)
                         c.b.rv.adapter?.notifyItemRemoved(h.layoutPosition)
                         c.b.rv.adapter?.notifyItemRangeChanged(

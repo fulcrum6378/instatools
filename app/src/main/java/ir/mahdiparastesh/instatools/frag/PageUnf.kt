@@ -99,7 +99,7 @@ class PageUnf(c: Main) : BasePage(c) {
         })
         if (c.m.unfollowers != null) adapt()
         else Thread {
-            handler?.obtainMessage(Action.LOADED.ordinal, c.pDao.unfollowers())?.sendToTarget()
+            handler?.obtainMessage(Action.LOADED.ordinal, c.dao.unfollowers())?.sendToTarget()
         }.start()
 
         return b.root
@@ -109,7 +109,7 @@ class PageUnf(c: Main) : BasePage(c) {
         if (fetching) return
         fetching = true
         c.m.unfollowers = arrayListOf()
-        c.pDao.deleteUnfollowers()
+        c.dao.deleteUnfollowers()
         adapt()
         c.startService(Intent(c, Inquisitor::class.java))
     }

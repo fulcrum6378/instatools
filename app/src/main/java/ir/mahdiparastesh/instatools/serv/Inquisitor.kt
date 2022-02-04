@@ -5,7 +5,7 @@ import android.os.Looper
 import android.os.Message
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.PersonalDb
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
@@ -16,8 +16,8 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 
 class Inquisitor : ForegroundService() {
-    private lateinit var pDb: PersonalDb
-    private lateinit var pDao: PersonalDb.DAO
+    private lateinit var db: Database
+    private lateinit var dao: Database.DAO
     private var inquiry: Inquiry? = null
 
     override val com: ForegroundServiceCompanion
@@ -39,7 +39,7 @@ class Inquisitor : ForegroundService() {
     override fun onCreate() {
         super.onCreate()
         if (m.acc == null) destroy()
-        pDb = PersonalDb.build(c, m.acc!!.id.toString()).also { pDao = it.dao() }
+        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         notification(Companion, Main::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -99,7 +99,7 @@ class Inquisitor : ForegroundService() {
                     u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
                     u.edge_followed_by.count.toLong(), u.is_private == true
                 )
-                pDao.addUnfollower(newbie)
+                dao.addUnfollower(newbie)
                 PageUnf.theHandler?.obtainMessage(PageUnf.Action.ANALYSED.ordinal, newbie)
                     ?.sendToTarget()
             }
