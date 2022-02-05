@@ -14,7 +14,7 @@ import ir.mahdiparastesh.instatools.view.GlideShimmer
 
 class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSvd.ViewHolder>() {
     val expandable = Expandable(
-        c, f.b.expanded, f.b.root, f.handler, c.colorBG.value ?: c.color(R.color.defBG)
+        c, f.b.expanded, f.b.root, f.handler, c.color(if (!c.night) R.color.defBG else R.color.CSD)
     )
 
     inner class ViewHolder(val b: ListSvdBinding) : RecyclerView.ViewHolder(b.root) {

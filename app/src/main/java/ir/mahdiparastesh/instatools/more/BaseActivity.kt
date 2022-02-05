@@ -116,7 +116,8 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
             Intent(this, activity.java),
             ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
         )
-        if (finish) finish()
+        if (finish) Delay(500) { finish() }
+        // The phone's home screen may appear if there are no active activities at the moment.
         return true
     }
 

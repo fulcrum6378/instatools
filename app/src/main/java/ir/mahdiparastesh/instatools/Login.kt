@@ -62,6 +62,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private val logoDestBias = 0.15f
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
+        if (night) bw.logo.colorFilter = pdcf(R.color.defCA)
         accounts.sortBy { it.name }
         accounts.sortBy { it.id < 0 }
         bw.accounts.adapter = ListAcc(this)
@@ -74,10 +75,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         bw.addAccTv.typeface = fontRegular
 
         // Animate
-        if (!m.loginLoaded) Delay(1500) {
+        if (!m.loginLoaded) Delay(300) {
             val cs = ConstraintSet()
             cs.clone(bw.root)
-            TransitionManager.beginDelayedTransition(bw.root, AutoTransition().setDuration(800))
+            TransitionManager.beginDelayedTransition(bw.root, AutoTransition().setDuration(900))
             cs.setVerticalBias(bw.logo.id, logoDestBias)
             cs.applyTo(bw.root)
             m.loginLoaded = true
