@@ -14,6 +14,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
     var fetching = false
 
     abstract fun updateShadow()
+    abstract fun updateJumper()
 
     protected fun guestMode(parent: ConstraintLayout, theme: BaseActivity.Theme) {
         val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)

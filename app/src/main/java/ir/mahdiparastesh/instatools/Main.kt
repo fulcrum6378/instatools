@@ -64,7 +64,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private var anTheme: ValueAnimator? = null
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
-    val colorBG = MutableLiveData<Int?>(null)
+    private val colorBG = MutableLiveData<Int?>(null)
 
     companion object {
         val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
@@ -188,7 +188,10 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             }
             true
         }
-        m.currentPage.observe(this) { pages()[it].updateShadow() }
+        m.currentPage.observe(this) {
+            pages()[it].updateShadow()
+            pages()[it].updateJumper()
+        }
 
         // Theming
         if (night) {

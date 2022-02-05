@@ -67,7 +67,7 @@ class PageBox(c: Main) : BasePage(c) {
                     Snackbar.make(
                         b.root, c.getString(
                             R.string.unknownError,
-                            (msg.obj as NetworkResponse).statusCode.toString()
+                            (msg.obj as NetworkResponse?)?.statusCode.toString()
                         ), Snackbar.LENGTH_LONG
                     ).show()
                 }
@@ -100,7 +100,7 @@ class PageBox(c: Main) : BasePage(c) {
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
             if (c.m.dmThread != null && thdThread?.active != true &&
-                c.m.dmThread!!.has_older && b.rv.computeVerticalScrollOffset() == 0
+                c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
             ) thdThread = FetchSomeDm(
                 c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
             ).also { it.start() }
@@ -108,6 +108,7 @@ class PageBox(c: Main) : BasePage(c) {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateShadow()
+                updateJumper()
             }
         })
         if (c.m.dmThreads != null) adapt()
@@ -162,6 +163,9 @@ class PageBox(c: Main) : BasePage(c) {
 
     override fun updateShadow() {
         c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+    }
+
+    override fun updateJumper() {
     }
 
     override fun goBack(): Boolean {

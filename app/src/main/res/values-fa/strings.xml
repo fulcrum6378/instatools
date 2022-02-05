@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">InstaTools</string>
+
+    <!-- #GLOBAL -->
+    <string name="guest">مهمان</string>
+    <string name="navOpen">باز کردن</string>
+    <string name="navClose">بستن</string>
+    <string name="downloads">دانلودها</string>
+    <string name="settings">تنظیمات</string>
+    <string name="search">جستجو</string>
+    <string name="switchAccount">تعویض اکانت</string>
+    <string name="signOut">خروج از اکانت</string>
+    <string name="download">دانلود</string>
+    <string name="remove">حذف</string>
+    <string name="openLink">باز کردن</string>
+    <string name="ok">باشه</string>
+    <string name="cancel">لغو</string>
+    <string name="no">نه</string>
+    <string name="yes">آره</string>
+    <string name="unsave">Unsave</string>
+    <string name="favourites">مورد علاقه</string>
+    <string name="export">استخراج</string>
+    <string name="exportPdf">استخراج در پی دی اف</string>
+    <string name="exportHtml">استخراج در اچ تی ام ال</string>
+    <string name="exportOptions">گزینه های استخراج</string>
+    <string name="backgroundTasks">کار های پشت صحنه</string>
+    <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
+    <string name="unknownMyError">متاسفانه خطایی ناشناخته رخ داد!</string>
+    <string name="loadFailed">بارگذاری نشد!</string>
+    <string name="selectAll">انتخاب همه</string>
+    <string name="deselectAll">انتخاب هیچ کدام</string>
+    <string name="viewProfile">باز کردن پروفایل</string>
+    <string name="viewHere">باز کردن در اینجا</string>
+    <string name="viewInInsta">باز کردن در اینستاگرام</string>
+
+    <!-- Login -->
+    <string name="addAccount">افزودن اکانت جدید</string>
+    <string name="guestShortDesc">استفاده بدون اکانت</string>
+
+    <!-- Main -->
+    <string name="unfollowers">آنفالورها</string>
+    <string name="saved">ذخیره شده</string>
+    <string name="direct">@string/export</string>
+    <string name="guestDesc">اپ در حالت مهمان است.\nاز این قابلیت نمی توانید استفاده کنید.</string>
+    <string name="gSettings">تنظیمات همه اکانت ها</string>
+    <string name="aSettings">تنظیمات این اکانت</string>
+    <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
+    <string name="mtSearch">نام یک پروفایل را وارد کنید&#8230;</string>
+    <string name="boxUntil">تا %s</string>
+    <string name="unfFailed">یافتن آنفالورها ناتمام ماند!</string>
+    <string name="unfollow">آنفالو</string>
+    <string name="unfollowPV">این پروفایل شخصی (پرایوت) است. آیا از آنفالو کردن مطمئن هستید؟</string>
+    <string name="unfCouldNot">پروفایل آنفالو نشد!</string>
+    <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
+    <string name="unsaveOnly">Unsave Only</string>
+    <string name="downloadOnly">فقط دانلود</string>
+    <string name="unsaveDownload">Unsave &amp; Download</string>
+
+    <!-- Downloads -->
+    <string name="dwTitle">@string/downloads</string>
+    <string name="dwShare">دانلود</string>
+    <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
+
+    <!-- Viewer -->
+    <string name="vwTitle">Profile Viewer</string>
+    <string name="vwShare">View Profile</string>
+
+    <!-- Favourites -->
+    <string name="fvTitle">@string/favourites</string>
+
+    <!-- Settings -->
+    <string name="stDlPath">پوشه اصلی دانلود</string>
+
+
+    <!-- Inquisitor -->
+    <string name="inquiryChannel">آنفالویاب</string>
+    <string name="inquiryChannelDesc">اعلان های آنفالویاب</string>
+    <string name="inquiryTitle">در حال پیدا کردن آنفالور&#8230;</string>
+    <string name="inquiryStop">ایست</string>
+
+    <!-- Queuer -->
+    <string name="queuerChannel">صف دانلود</string>
+    <string name="queuerChannelDesc">اعلان های دانلود</string>
+    <string name="queuerTitle">در حال دانلود&#8230;</string>
+    <string name="queuerStop">ایست</string>
+
+    <!-- Exporter -->
+    <string name="exporterChannel">استخراجگر</string>
+    <string name="exporterChannelDesc">دایرکت ها را برایتان استخراج می کند</string>
+    <string name="exporterTitle">در حال استخراج&#8230;</string>
+    <string name="exporterStop">ایست</string>
+</resources>

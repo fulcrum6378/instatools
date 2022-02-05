@@ -26,7 +26,7 @@ class Api<JSON>(
     method: Int = Method.GET,
     private val listener: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
-    handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget()
+    handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget() // NetworkResponse?
 }) {
     init {
         setShouldCache(cache)

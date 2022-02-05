@@ -82,7 +82,7 @@ class PageUnf(c: Main) : BasePage(c) {
                         Snackbar.make(
                             b.root, c.getString(
                                 R.string.unknownError,
-                                (msg.obj as NetworkResponse).statusCode.toString()
+                                (msg.obj as NetworkResponse?)?.statusCode.toString()
                             ), Snackbar.LENGTH_LONG
                         ).show()
                     }
@@ -95,6 +95,7 @@ class PageUnf(c: Main) : BasePage(c) {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateShadow()
+                updateJumper()
             }
         })
         if (c.m.unfollowers != null) adapt()
@@ -126,6 +127,9 @@ class PageUnf(c: Main) : BasePage(c) {
 
     override fun updateShadow() {
         c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+    }
+
+    override fun updateJumper() {
     }
 
     enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED, COULD_NOT }

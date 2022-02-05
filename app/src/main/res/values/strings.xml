@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">InstaTools</string>
+    <string name="app_name">InstaTools</string>
 
     <!-- #GLOBAL -->
     <string name="guest">Guest</string>
@@ -79,7 +79,7 @@
     <string name="inquiryStop">Stop</string>
 
     <!-- Queuer -->
-    <string name="queuerChannel">Queuer</string>
+    <string name="queuerChannel">Download Queue</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
     <string name="queuerStop">Halt</string>

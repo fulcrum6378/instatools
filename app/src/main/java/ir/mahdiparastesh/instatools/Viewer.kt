@@ -12,8 +12,9 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
@@ -27,8 +28,7 @@ import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
 import ir.mahdiparastesh.instatools.more.BaseSaver
 import ir.mahdiparastesh.instatools.serv.Queuer
-import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
@@ -78,15 +78,17 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                         ) thread = FetchSome().also { it.start() }
                     }
                     HANDLE_ABORTED -> {
+                        thread?.interrupt()
                         b.refresher.isRefreshing = false
                         Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
                     }
                     Api.HANDLE_ERROR -> {
+                        thread?.interrupt()
                         b.refresher.isRefreshing = false
                         Snackbar.make(
                             b.root, c.getString(
                                 R.string.unknownError,
-                                (msg.obj as NetworkResponse).statusCode.toString()
+                                (msg.obj as NetworkResponse?)?.statusCode.toString()
                             ), Snackbar.LENGTH_SHORT
                         ).show()
                     }
@@ -99,6 +101,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         b.toolbar.setOnMenuItemClickListener(this)
 
         b.rv.layoutManager = GridLayoutManager(c, 3)
+        b.rv.isNestedScrollingEnabled = false
         b.refresher.setOnRefreshListener {
             b.rv.adapter = null
             m.vwInfo = null
@@ -106,17 +109,27 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             tracker = null
             if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
-        b.rv.viewTreeObserver.addOnScrollChangedListener {
-            if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset() +
-                        (dm.heightPixels * 0.1)) >= b.rv.computeVerticalScrollRange() &&
-                thread?.active != true && m.vwInfo?.has_next_page != false
+        b.nsv.viewTreeObserver.addOnScrollChangedListener {
+            b.tbShadow.vish(b.nsv.scrollY > 0)
+            if (!b.nsv.canScrollVertically(1) && thread?.active != true &&
+                m.vwInfo?.has_next_page != false
             ) thread = FetchSome().also { it.start() }
         }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
-            }
-        })
+        b.proClick.setOnClickListener { v ->
+            if (m.vwPic == null) return@setOnClickListener
+            MaterialMenu(this@Viewer, v, R.menu.viewer_pic_more, Act().apply {
+                this[R.id.vpDownload] = {
+                    dao.addQueued(
+                        Queued(
+                            Queuer.now(), "", Queuer.now(), id, user, "profile_photo",
+                            m.vwPic, m.vwPic, 1
+                        )
+                    )
+                    Downloads.initService(this@Viewer)
+                }
+            }).show()
+        }
+
         if (m.vwEdges != null) adapt()
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
@@ -177,8 +190,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             tracker?.clearSelection()
             return
         }
-        m.vwInfo = null
         m.vwEdges = null
+        m.vwInfo = null
+        m.vwPic = null
         super.onBackPressed()
     }
 
@@ -221,11 +235,12 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()
                     return@Api
                 }
-                /*Glide.with(c)
-                    .load(u.profile_pic_url_hd ?: u.profile_pic_url)
+                m.vwPic = u.profile_pic_url_hd ?: u.profile_pic_url
+                Glide.with(c)
+                    .load(m.vwPic)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .addListener(GlideShimmer(b.proPic, b.proPicIv))
-                    .into(b.proPicIv)*/
+                    .into(b.proPicIv)
                 val edgeList = u.edge_owner_to_timeline_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }

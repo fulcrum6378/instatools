@@ -40,7 +40,7 @@ class PageSvd(c: Main) : BasePage(c) {
                     adapt()
                     b.refresher.isRefreshing = false
                     if (!c.m.saved.isNullOrEmpty() && c.m.nextSaved?.has_next_page == true &&
-                        (c.m.saved!!.size / 3) * (c.dm.widthPixels / 3) < c.dm.heightPixels
+                        !b.rv.canScrollVertically(1)
                     ) thread = FetchSome().also { it.start() }
                 }
                 HANDLE_ABORTED -> {
@@ -52,7 +52,7 @@ class PageSvd(c: Main) : BasePage(c) {
                     Snackbar.make(
                         b.root, c.getString(
                             R.string.unknownError,
-                            (msg.obj as NetworkResponse).statusCode.toString()
+                            (msg.obj as NetworkResponse?)?.statusCode.toString()
                         ), Snackbar.LENGTH_SHORT
                     ).show()
                 }
@@ -95,14 +95,14 @@ class PageSvd(c: Main) : BasePage(c) {
             if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
-            if ((b.rv.computeVerticalScrollExtent() + b.rv.computeVerticalScrollOffset() +
-                        (c.dm.heightPixels * 0.1)) >= b.rv.computeVerticalScrollRange() &&
+            if (!b.rv.canScrollVertically(1) &&
                 thread?.active != true && c.m.nextSaved?.has_next_page != false
             ) thread = FetchSome().also { it.start() }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateShadow()
+                updateJumper()
             }
         })
         if (c.m.saved != null) adapt()
@@ -162,6 +162,9 @@ class PageSvd(c: Main) : BasePage(c) {
 
     override fun updateShadow() {
         c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+    }
+
+    override fun updateJumper() {
     }
 
     override fun goBack(): Boolean {
