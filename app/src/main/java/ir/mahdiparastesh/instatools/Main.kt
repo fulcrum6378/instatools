@@ -22,6 +22,9 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
@@ -32,10 +35,7 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.DbFile
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.serv.Inquisitor
 import ir.mahdiparastesh.instatools.serv.Queuer
@@ -48,16 +48,14 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 @SuppressLint("ApplySharedPref")
 class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
+    private lateinit var db: Database
+    lateinit var dao: Database.DAO
+
     override val menuRes = R.menu.main_tlb
     private lateinit var toggleNav: ActionBarDrawerToggle
     private var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
-    //private var mInterstitialAd: InterstitialAd? = null
-
-    private lateinit var db: Database
-    lateinit var dao: Database.DAO
-
     private var page1: PageUnf? = null
     private var page2: PageSvd? = null
     private var page3: PageBox? = null
@@ -65,6 +63,19 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     private val colorBG = MutableLiveData<Int?>(null)
+
+    private var interstitialAd: InterstitialAd? = null
+    private var interstitialListener = object : FullScreenContentCallback() {
+        override fun onAdDismissedFullScreenContent() {
+        }
+
+        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+        }
+
+        override fun onAdShowedFullScreenContent() {
+            interstitialAd = null
+        }
+    }
 
     companion object {
         val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
@@ -88,6 +99,26 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         guest = m.acc!!.id == -1L
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
+
+        // Ads
+        MobileAds.initialize(this) {
+            Delay(10000) {
+                InterstitialAd.load(
+                    this, "ca-app-pub-3940256099942544/1033173712",
+                    //ca-app-pub-9457309151954418/5399016395
+                    AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                        override fun onAdFailedToLoad(adError: LoadAdError) {
+                            interstitialAd = null
+                        }
+
+                        override fun onAdLoaded(ad: InterstitialAd) {
+                            interstitialAd = ad.apply {
+                                fullScreenContentCallback = interstitialListener
+                            }
+                        }
+                    })
+            }
+        }
 
         // Toolbar & Navigation
         toolbar(b.toolbar, R.string.app_name, font = font("pacifico.ttf"))
@@ -223,36 +254,11 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             it.setTextColor(ca[i / 2])
             it.typeface = fontLight
         }
+    }
 
-        /*MobileAds.initialize(this) {
-            InterstitialAd.load(
-                this, "ca-app-pub-9457309151954418/5798988563",
-                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        Toast.makeText(c, "onAdFailedToLoad", Toast.LENGTH_SHORT).show()
-                        mInterstitialAd = null
-                    }
-
-                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                        mInterstitialAd = interstitialAd
-                        mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
-                            override fun onAdDismissedFullScreenContent() {
-                                Toast.makeText(c, "onAdDismissedFullScreenContent", Toast.LENGTH_SHORT).show()
-                            }
-
-                            override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                                Toast.makeText(c, "onAdFailedToShowFullScreenContent", Toast.LENGTH_SHORT).show()
-                            }
-
-                            override fun onAdShowedFullScreenContent() {
-                                Toast.makeText(c, "onAdShowedFullScreenContent", Toast.LENGTH_SHORT).show()
-                                mInterstitialAd = null
-                            }
-                        }
-                        mInterstitialAd?.show(this@Main)
-                    }
-                })
-        }*/
+    override fun onResume() {
+        super.onResume()
+        interstitialAd?.show(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
