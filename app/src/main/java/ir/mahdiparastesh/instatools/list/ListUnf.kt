@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -26,6 +27,8 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         val b = ListUnfBinding.inflate(f.inflater, parent, false)
         b.name.typeface = c.fontRegular
         b.user.typeface = c.fontRegular
+        b.name.textDirection =
+            if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR else TextView.TEXT_DIRECTION_RTL
         return ViewHolder(b)
     }
 

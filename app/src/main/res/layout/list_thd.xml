@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="viewStart"
                 android:textColor="?attr/colorAccent"
-                android:textSize="16sp"
+                android:textSize="@dimen/dmFont"
                 app:layout_constraintTop_toBottomOf="@id/msgIv" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

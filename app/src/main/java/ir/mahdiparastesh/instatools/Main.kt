@@ -117,7 +117,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         }
 
         // Toolbar & Navigation
-        toolbar(b.toolbar, R.string.app_name, font = font("pacifico.ttf"))
+        toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
         toggleNav = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
         ).apply {
@@ -274,6 +274,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
             searchInput?.typeface = fontRegular
             searchInput?.setHint(R.string.mtSearch)
+            searchInput?.textSize = resources.getDimension(R.dimen.searchFont)
 
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String) = true

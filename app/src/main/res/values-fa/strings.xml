@@ -1,5 +1,11 @@
 <resources>
-    <string name="app_name">InstaTools</string>
+    <string name="app_name">اینستاتولز</string>
+
+    <!-- #FONTS -->
+    <string name="font_logo" translatable="false">rezvan.ttf</string>
+    <string name="font_bold" translatable="false">dirooz.ttf</string>
+    <string name="font_regular" translatable="false">dirooz.ttf</string>
+    <string name="font_light" translatable="false">dirooz.ttf</string>
 
     <!-- #GLOBAL -->
     <string name="guest">مهمان</string>
@@ -51,10 +57,10 @@
     <string name="unfollow">آنفالو</string>
     <string name="unfollowPV">این پروفایل شخصی (پرایوت) است. آیا از آنفالو کردن مطمئن هستید؟</string>
     <string name="unfCouldNot">پروفایل آنفالو نشد!</string>
-    <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
-    <string name="unsaveOnly">Unsave Only</string>
+    <string name="terminateBgTasks">تعدادی کار ناتمام در پشت صحنه هنوز در حال انجام هستند. آیا میخواهید تمام آنها را متوقف کنید؟</string>
+    <string name="unsaveOnly">فقط آنسیو</string>
     <string name="downloadOnly">فقط دانلود</string>
-    <string name="unsaveDownload">Unsave &amp; Download</string>
+    <string name="unsaveDownload">آنسیو &amp; دانلود</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
@@ -62,14 +68,15 @@
     <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
 
     <!-- Viewer -->
-    <string name="vwTitle">Profile Viewer</string>
-    <string name="vwShare">View Profile</string>
+    <string name="vwTitle">پروفایل</string>
+    <string name="vwShare">نمایش پروفایل</string>
 
     <!-- Favourites -->
     <string name="fvTitle">@string/favourites</string>
 
     <!-- Settings -->
     <string name="stDlPath">پوشه اصلی دانلود</string>
+    <string name="stBranching">شاخه شاخه کردن دانلودها</string>
 
 
     <!-- Inquisitor -->

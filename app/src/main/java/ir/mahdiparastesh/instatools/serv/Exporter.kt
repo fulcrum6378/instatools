@@ -102,8 +102,8 @@ class Exporter : ForegroundService() {
                         ), parent, false
                     )
                     ListThd.onCreate(
-                        b, Typeface.createFromAsset(c.assets, "titillium_web_regular.ttf"),
-                        Typeface.createFromAsset(c.assets, "titillium_web_light.ttf")
+                        b, Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
+                        Typeface.createFromAsset(c.assets, c.getString(R.string.font_light))
                     )
                     ListThd.onBind(c, b, list[i], list, i)
                     return b.root

@@ -42,7 +42,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="Divide downloaded files into branches" />
+                    android:text="@string/stBranching"
+                    android:textColor="?attr/colorAccent" />
             </LinearLayout>
 
             <!--<View style="@style/stSep" />-->

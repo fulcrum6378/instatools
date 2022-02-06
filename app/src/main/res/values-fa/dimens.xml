@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tbTitleMain">9sp</dimen>
+    <dimen name="tbTitle">6.5sp</dimen>
+
+    <!-- Main -->
+    <dimen name="navFont">14sp</dimen>
+    <dimen name="dmFont">14sp</dimen>
+    <dimen name="searchFont">5.5sp</dimen>
+</resources>

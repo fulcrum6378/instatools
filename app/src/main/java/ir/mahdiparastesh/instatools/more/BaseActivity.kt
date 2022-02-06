@@ -22,9 +22,10 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
 import kotlin.reflect.KClass
 
-@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
     lateinit var dm: DisplayMetrics
+
+    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var fontBold: Typeface
     lateinit var fontRegular: Typeface
     lateinit var fontLight: Typeface
@@ -48,9 +49,9 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)
-        fontBold = font("titillium_web_bold.ttf")
-        fontRegular = font("titillium_web_regular.ttf")
-        fontLight = font("titillium_web_light.ttf")
+        fontBold = font(getString(R.string.font_bold))
+        fontRegular = font(getString(R.string.font_regular))
+        fontLight = font(getString(R.string.font_light))
     }
 
     override fun setContentView(root: View?) {
@@ -79,7 +80,8 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         tbTitle?.typeface = font
-        tbTitle?.textSize = resources.getDimension(R.dimen.tbTitle)
+        tbTitle?.textSize =
+            resources.getDimension(if (isMain) R.dimen.tbTitleMain else R.dimen.tbTitle)
         if (!isMain) supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
@@ -121,6 +123,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         return true
     }
 
+    @Suppress("unused")
     enum class Theme(val res: Int) {
         DEFAULT(R.style.Theme_InstaTools),
         PRIMARY(R.style.Theme_InstaTools_Primary),

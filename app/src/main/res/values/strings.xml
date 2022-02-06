@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">InstaTools</string>
 
+    <!-- #FONTS -->
+    <string name="font_logo" translatable="false">pacifico.ttf</string>
+    <string name="font_bold" translatable="false">titillium_web_bold.ttf</string>
+    <string name="font_regular" translatable="false">titillium_web_regular.ttf</string>
+    <string name="font_light" translatable="false">titillium_web_light.ttf</string>
+
     <!-- #GLOBAL -->
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
@@ -70,6 +76,7 @@
 
     <!-- Settings -->
     <string name="stDlPath">Main download folder</string>
+    <string name="stBranching">Divide downloaded files into branches</string>
 
 
     <!-- Inquisitor -->
