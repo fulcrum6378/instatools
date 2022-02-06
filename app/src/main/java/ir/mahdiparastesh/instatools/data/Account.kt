@@ -18,6 +18,7 @@ class Account(
 ) {
     companion object {
         fun load(c: Context): ArrayList<Account> {
+            if (!Secured(c).exists()) return arrayListOf()
             FileInputStream(Secured(c)).let {
                 return@load ArrayList(
                     Gson().fromJson(String(it.readBytes()), Array<Account>::class.java).toList()

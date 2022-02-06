@@ -66,12 +66,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
 
     private var interstitialAd: InterstitialAd? = null
     private var interstitialListener = object : FullScreenContentCallback() {
-        override fun onAdDismissedFullScreenContent() {
-        }
-
-        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-        }
-
+        override fun onAdDismissedFullScreenContent() {}
+        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {}
         override fun onAdShowedFullScreenContent() {
             interstitialAd = null
         }
