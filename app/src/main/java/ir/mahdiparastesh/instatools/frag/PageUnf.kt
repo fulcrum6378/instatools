@@ -74,6 +74,10 @@ class PageUnf(c: Main) : BasePage(c) {
                         b.refresher.isRefreshing = false
                         Snackbar.make(b.root, R.string.unfFailed, Snackbar.LENGTH_SHORT).show()
                     }
+                    Action.CANCELLED.ordinal -> {
+                        fetching = false
+                        b.refresher.isRefreshing = false
+                    }
                     Action.COULD_NOT.ordinal ->
                         Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
                     Api.HANDLE_ERROR -> {
@@ -132,5 +136,5 @@ class PageUnf(c: Main) : BasePage(c) {
     override fun updateJumper() {
     }
 
-    enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED, COULD_NOT }
+    enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED, COULD_NOT, CANCELLED }
 }

@@ -102,6 +102,7 @@ class Downloads : BaseActivity() {
         const val HANDLE_RESET = 3
         var handler: Handler? = null
 
+        // SHOULD ONLY BE INVOKED BY THE MAIN THREAD
         fun initService(c: BaseActivity, link: String? = null) {
             if (c.sPreference(Settings.spStorage) == null) {
                 c.goTo(Settings::class); return; }

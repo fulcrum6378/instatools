@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
+import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListPrf
@@ -82,6 +83,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                         b.refresher.isRefreshing = false
                         Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
                     }
+                    PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Api.HANDLE_ERROR -> {
                         thread?.interrupt()
                         b.refresher.isRefreshing = false
@@ -272,7 +274,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         override fun handle() {
             val svd = list.getOrNull(0)
             if (svd == null) {
-                Downloads.initService(this@Viewer)
+                handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 return
             }
             m.vwEdges?.find { it.id == svd }?.let { post ->

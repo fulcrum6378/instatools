@@ -47,6 +47,7 @@ class PageSvd(c: Main) : BasePage(c) {
                     b.refresher.isRefreshing = false
                     Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
                 }
+                HANDLE_INIT_QUEUER -> Downloads.initService(c)
                 Api.HANDLE_ERROR -> {
                     b.refresher.isRefreshing = false
                     Snackbar.make(
@@ -73,6 +74,7 @@ class PageSvd(c: Main) : BasePage(c) {
 
     companion object {
         const val HANDLE_UNSAVE_DONE = 10
+        const val HANDLE_INIT_QUEUER = 11
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -250,7 +252,7 @@ class PageSvd(c: Main) : BasePage(c) {
         override fun handle() {
             val svd = list.getOrNull(0)
             if (svd == null) {
-                if (download) Downloads.initService(c)
+                if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 return
             }
             c.m.saved?.find { it.id == svd }?.let { post ->

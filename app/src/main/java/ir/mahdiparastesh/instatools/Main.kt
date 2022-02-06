@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
@@ -15,9 +14,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
@@ -154,7 +150,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
                             terminateTasks()
-                            Account.load(c).removeAll { it.id == m.acc!!.id }
+                            Account.save(
+                                c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
                             gsp.edit().remove(Login.spAccount).commit()
                             arrayOf(
                                 DbFile(m.acc!!.id.toString(), DbFile.Triple.MAIN),
@@ -174,10 +171,11 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         b.nav.menu.forEach {
             val mNewTitle = SpannableString(it.title)
+            val col = colorAc.value ?: color(R.color.defCA)
             mNewTitle.setSpan(
                 CustomTypefaceSpan(
                     "", fontRegular, resources.getDimension(R.dimen.navFont),
-                    colorAc.value ?: color(R.color.defCA)
+                    if (it.isEnabled) col else weaken(col)
                 ), 0, mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
             )
             it.title = mNewTitle
@@ -241,7 +239,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 b.toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
                 tbTitle?.setTextColor(it)
                 searchInput?.setTextColor(it)
-                searchInput?.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
+                searchInput?.setHintTextColor(weaken(it))
                 searchClose?.colorFilter = cf
             }
             colorAc.value = ca[m.currentPage.value!!]
@@ -263,7 +261,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         colorAc.value?.let {
             val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
             searchInput?.setTextColor(it)
-            searchInput?.setHintTextColor(Color.argb(100, it.red, it.green, it.blue))
+            searchInput?.setHintTextColor(weaken(it))
             searchClose?.colorFilter = cf
             toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
         }

@@ -15,6 +15,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
+import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchSomeDm
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
@@ -51,7 +52,7 @@ class Exporter : ForegroundService() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    FetchSomeDm.HANDLE_FETCHED_SOME -> {
+                    PageBox.HANDLE_FETCHED_SOME -> {
                         val dmThd = msg.obj as Dm.DmThread
                         if (exp?.threadData == null) exp?.threadData = dmThd
                         else {

@@ -50,7 +50,7 @@ class PageBox(c: Main) : BasePage(c) {
                     b.refresher.isRefreshing = false
                     Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
                 }
-                FetchSomeDm.HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
+                HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
                     val dmThd = msg.obj as Dm.DmThread
                     val bef = c.m.dmThread!!.items.size
                     c.m.dmThread!!.items.addAll(dmThd.items)
@@ -84,6 +84,11 @@ class PageBox(c: Main) : BasePage(c) {
             c.startService(Intent(c, Exporter::class.java))
         }
 
+    companion object {
+        const val HANDLE_FETCHED_SOME = 44
+        const val DELAY = 1500L
+    }
+
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         inflater = c.themeInflater(BaseActivity.Theme.TERTIARY)
         b = PageBoxBinding.inflate(
@@ -112,7 +117,7 @@ class PageBox(c: Main) : BasePage(c) {
             }
         })
         if (c.m.dmThreads != null) adapt()
-        else boxThread = FetchInbox().also { it.start() }
+        else if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
 
         return b.root
     }
@@ -187,7 +192,7 @@ class PageBox(c: Main) : BasePage(c) {
         private fun fetch() {
             Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class, handler) { page ->
                 c.m.dmThreads?.addAll(page.inbox.threads)
-                if (page.inbox.has_older) Delay(500) { fetch() }
+                if (page.inbox.has_older) Delay(DELAY) { fetch() }
                 else {
                     handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                     interrupt()
@@ -209,10 +214,6 @@ class PageBox(c: Main) : BasePage(c) {
                     handler?.obtainMessage(HANDLE_FETCHED_SOME, inbox.thread)?.sendToTarget()
                 interrupt()
             }
-        }
-
-        companion object {
-            const val HANDLE_FETCHED_SOME = 44
         }
     }
 }

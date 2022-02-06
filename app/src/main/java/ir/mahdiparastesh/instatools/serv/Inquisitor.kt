@@ -34,6 +34,8 @@ class Inquisitor : ForegroundService() {
         )
         override var active: Boolean = false
         override var handler: Handler? = null
+
+        const val DELAY = 1250L
     }
 
     override fun onCreate() {
@@ -58,6 +60,7 @@ class Inquisitor : ForegroundService() {
     }
 
     override fun onDestroy() {
+        PageUnf.theHandler?.obtainMessage(PageUnf.Action.CANCELLED.ordinal)?.sendToTarget()
         inquiry?.interrupt()
         super.onDestroy()
     }
@@ -103,7 +106,7 @@ class Inquisitor : ForegroundService() {
                 PageUnf.theHandler?.obtainMessage(PageUnf.Action.ANALYSED.ordinal, newbie)
                     ?.sendToTarget()
             }
-            Delay(500) { analyse(i + 1) }
+            Delay(DELAY) { analyse(i + 1) }
         }
     }
 }

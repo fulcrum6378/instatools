@@ -47,7 +47,7 @@
     <string name="unfollowers">آنفالورها</string>
     <string name="saved">ذخیره شده</string>
     <string name="direct">@string/export</string>
-    <string name="guestDesc">اپ در حالت مهمان است.\nاز این قابلیت نمی توانید استفاده کنید.</string>
+    <string name="guestDesc">در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.</string>
     <string name="gSettings">تنظیمات همه اکانت ها</string>
     <string name="aSettings">تنظیمات این اکانت</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>

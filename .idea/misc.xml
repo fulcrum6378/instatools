@@ -3,10 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable-night/button_accent.xml" value="0.184" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable-night/path_selector.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/add.xml" value="0.1015625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button.xml" value="0.105" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_1.xml" value="0.240625" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_accent.xml" value="0.184" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_round.xml" value="0.112" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/deselect_all.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct.xml" value="0.12604166666666666" />

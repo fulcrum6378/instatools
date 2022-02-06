@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
@@ -12,9 +13,13 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -122,6 +127,8 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         // The phone's home screen may appear if there are no active activities at the moment.
         return true
     }
+
+    fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
 
     @Suppress("unused")
     enum class Theme(val res: Int) {

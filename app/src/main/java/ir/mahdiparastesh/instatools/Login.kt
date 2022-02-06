@@ -47,6 +47,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
         accounts = Account.load(c)
+        if (accounts.find { it.id == -1L } == null)
+            Account(-1L, "", "").apply { accounts.add(this) }
         val selected = Account.selected(this, accounts, false)
         for (i in (accounts.size - 1) downTo 0)
             if (accounts[i].cook == null && accounts[i].id != -1L)

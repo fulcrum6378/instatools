@@ -51,7 +51,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         h.b.root.setOnClickListener {
             MaterialMenu(c, it, R.menu.qud_more, Act().apply {
                 this[R.id.qmRemove] = {
-                    if (c.m.queueds != null) {
+                    if (c.m.queueds != null && c.m.queueds!!.size > h.layoutPosition) {
                         c.dao.deleteQueued(c.m.queueds!![h.layoutPosition])
                         c.m.queueds!!.removeAt(h.layoutPosition)
                         c.b.rv.adapter?.notifyItemRemoved(h.layoutPosition)
