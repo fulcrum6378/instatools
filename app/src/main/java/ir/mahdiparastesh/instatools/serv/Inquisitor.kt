@@ -19,6 +19,7 @@ class Inquisitor : ForegroundService() {
     private lateinit var db: Database
     private lateinit var dao: Database.DAO
     private var inquiry: Inquiry? = null
+    var sumOfErrors = 0
 
     override val com: ForegroundServiceCompanion
         get() = Companion
@@ -35,7 +36,8 @@ class Inquisitor : ForegroundService() {
         override var active: Boolean = false
         override var handler: Handler? = null
 
-        const val DELAY = 3000L
+        const val MAX_ERRORS = 10
+        const val DELAY = 5000L
         const val DELAY_HURRY = 1000L
         var hurry = false
     }
@@ -48,11 +50,9 @@ class Inquisitor : ForegroundService() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    Api.HANDLE_ERROR -> {
-                        PageUnf.theHandler?.obtainMessage(PageUnf.Action.ABORTED.ordinal)
-                            ?.sendToTarget()
-                        inquiry?.interrupt()
-                        destroy()
+                    Api.HANDLE_ERROR -> { // Item Error
+                        sumOfErrors++
+                        if (sumOfErrors >= MAX_ERRORS) onAbort(false)
                     }
                 }
             }
@@ -61,10 +61,11 @@ class Inquisitor : ForegroundService() {
         inquiry = Inquiry().also { it.start() }
     }
 
-    override fun onDestroy() {
-        PageUnf.theHandler?.obtainMessage(PageUnf.Action.CANCELLED.ordinal)?.sendToTarget()
+    override fun onAbort(cancelled: Boolean) {
+        PageUnf.theHandler?.obtainMessage(BasePage.HANDLE_ABORTED)?.sendToTarget()
         inquiry?.interrupt()
-        super.onDestroy()
+        Thread { dao.deleteUnfollowers() }.start()
+        super.onAbort(cancelled)
     }
 
     inner class Inquiry : BasePage.BaseThread() {
@@ -72,6 +73,7 @@ class Inquisitor : ForegroundService() {
 
         override fun run() {
             super.run()
+            dao.deleteUnfollowers()
             allFollow()
         }
 
@@ -82,6 +84,8 @@ class Inquisitor : ForegroundService() {
                 Rest.Follow::class, PageUnf.theHandler
             ) { flw ->
                 following.addAll(flw.users.toMutableList())
+                PageUnf.theHandler?.obtainMessage(BasePage.HANDLE_FETCHED, following.size)
+                    ?.sendToTarget()
                 if (flw.next_max_id == null) analyse()
                 else Delay { allFollow(flw.next_max_id) }
             }
@@ -90,30 +94,25 @@ class Inquisitor : ForegroundService() {
         private fun analyse(i: Int = 0) {
             if (!active) return
             if (i >= following.size) {
-                PageUnf.theHandler?.obtainMessage(PageUnf.Action.COMPLETED.ordinal)?.sendToTarget()
+                PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_COMPLETED, dao.unfollowers())
+                    ?.sendToTarget()
                 this@Inquisitor.destroy()
                 return
             }
+            PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_ANALYSED, i)?.sendToTarget()
+
             Api<Profile>(
                 this@Inquisitor, Api.Type.PROFILE.url.format(following[i].username),
                 Profile::class, handler
             ) { profile ->
                 val u = profile.graphql?.user
-                if (u == null || !active) return@Api
-
-                PageUnf.theHandler?.obtainMessage(
-                    PageUnf.Action.ANALYSED.ordinal, i, following.size, null
-                )?.sendToTarget()
-                if (u.follows_viewer != false) return@Api
-
-                val newbie = Unfollower(
-                    u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
-                    u.edge_followed_by.count.toLong(), u.is_private == true
+                if (u == null || u.follows_viewer != false || !active) return@Api
+                dao.addUnfollower(
+                    Unfollower(
+                        u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
+                        u.edge_followed_by.count.toLong(), u.is_private == true
+                    )
                 )
-                dao.addUnfollower(newbie)
-                PageUnf.theHandler?.obtainMessage(
-                    PageUnf.Action.ANALYSED.ordinal, i, following.size, newbie
-                )?.sendToTarget()
             }
             Delay(if (!hurry) DELAY else DELAY_HURRY) { analyse(i + 1) }
         }

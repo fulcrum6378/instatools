@@ -21,8 +21,9 @@ import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.serv.Inquisitor
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
-import kotlin.math.roundToInt
+import java.text.DecimalFormat
 
 class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
     lateinit var b: PageUnfBinding
@@ -31,6 +32,10 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
     override var handler: Handler? = null
 
     companion object {
+        const val HANDLE_LOADED = 2
+        const val HANDLE_ANALYSED = 3
+        const val HANDLE_COMPLETED = 4
+        const val HANDLE_COULD_NOT = 5
         var theHandler: Handler? = null
     }
 
@@ -43,50 +48,16 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
         theHandler = object : Handler(Looper.getMainLooper()) {
-            @SuppressLint("NotifyDataSetChanged")
             @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    Action.LOADED.ordinal -> (msg.obj as List<Unfollower>).apply {
+                    HANDLE_LOADED -> (msg.obj as List<Unfollower>).apply {
                         onLoad()
                         c.m.unfollowers = ArrayList(this)
                         c.m.unfollowers!!.sortBy { it.followedBy }
-                        if (isNullOrEmpty()) b.preloadStub.inflate() else adapt()
+                        if (isNullOrEmpty()) preload() else adapt()
                     }
-                    Action.ANALYSED.ordinal -> {
-                        ((100f / msg.arg2.toFloat()) * (msg.arg1 + 1f)).roundToInt()
-
-                        /*Unfollower.find(msg.obj as Unfollower, c.m.unfollowers)?.let {
-                            c.m.unfollowers!!.add(msg.obj as Unfollower)
-                            b.rv.adapter?.notifyItemInserted(c.m.unfollowers!!.size - 1)
-                        }*/
-                    }
-                    /*Unfollower.find(msg.obj as Unfollower, c.m.unfollowers!!)?.let {
-                            b.rv.adapter?.notifyItemInserted(it)
-                            if (it > 0) b.rv.adapter?.notifyItemRangeChanged(0, it)
-                            if (it < c.m.unfollowers!!.size - 1)
-                                b.rv.adapter?.notifyItemRangeChanged(
-                                    it + 1, c.m.unfollowers!!.size - 1
-                                )
-                        }*/
-                    Action.COMPLETED.ordinal -> {
-                        c.m.unfollowers!!.sortBy { it.followedBy }
-                        b.rv.adapter?.notifyDataSetChanged()
-                        fetching = false
-                        b.refresher.isRefreshing = false
-                    }
-                    Action.ABORTED.ordinal -> {
-                        fetching = false
-                        b.refresher.isRefreshing = false
-                        Snackbar.make(b.root, R.string.unfFailed, Snackbar.LENGTH_SHORT).show()
-                    }
-                    Action.CANCELLED.ordinal -> {
-                        fetching = false
-                        b.refresher.isRefreshing = false
-                    }
-                    Action.COULD_NOT.ordinal ->
-                        Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
-                    Api.HANDLE_ERROR -> {
+                    Api.HANDLE_ERROR -> { // fetching following error
                         fetching = false
                         b.refresher.isRefreshing = false
                         Snackbar.make(
@@ -96,6 +67,30 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
                             ), Snackbar.LENGTH_LONG
                         ).show()
                     }
+                    HANDLE_FETCHED -> {
+                        calcSum = msg.obj as Int
+                        b.refresher.isRefreshing = false
+                        bu.calc.vis()
+                    }
+                    HANDLE_ABORTED -> {
+                        fetching = false
+                        b.refresher.isRefreshing = false
+                        Snackbar.make(b.root, R.string.unfFailed, Snackbar.LENGTH_SHORT).show()
+                        preload()
+                    }
+                    HANDLE_ANALYSED -> {
+                        calcItem = (msg.obj as Int) + 1
+                        calculate()
+                    }
+                    HANDLE_COMPLETED -> {
+                        fetching = false
+                        c.m.unfollowers = ArrayList(msg.obj as List<Unfollower>)
+                        c.m.unfollowers!!.sortBy { it.followedBy }
+                        adapt()
+                        onLoad()
+                    }
+                    HANDLE_COULD_NOT ->
+                        Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -109,11 +104,11 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
                 updateJumper()
             }
         })
+
         if (c.m.unfollowers != null) adapt()
         else Thread {
-            handler?.obtainMessage(Action.LOADED.ordinal, c.dao.unfollowers())?.sendToTarget()
+            handler?.obtainMessage(HANDLE_LOADED, c.dao.unfollowers())?.sendToTarget()
         }.start()
-
         return b.root
     }
 
@@ -122,23 +117,47 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)
         }
-    }
-
-    override fun onInflate(stub: ViewStub, v: View) {
-        bu = UnfPreloadBinding.bind(v)
-        bu.desc.typeface = c.fontRegular
-        bu.hurry.typeface = c.fontBold
-        bu.start.setOnClickListener { fetch() }
-        bu.hurry.setOnCheckedChangeListener { _, bb -> Inquisitor.hurry = bb }
+        if (::bu.isInitialized) bu.root.vis(false)
     }
 
     private fun fetch() {
         if (fetching) return
         fetching = true
-        c.m.unfollowers = arrayListOf()
-        c.dao.deleteUnfollowers()
-        adapt()
+        preload()
         c.startService(Intent(c, Inquisitor::class.java))
+    }
+
+    private fun preload() {
+        b.rv.adapter = null
+        if (!::bu.isInitialized) b.preloadStub.inflate()
+        else bu.root.vis()
+        bu.calc.vis(false)
+    }
+
+    override fun onInflate(stub: ViewStub, v: View) {
+        bu = UnfPreloadBinding.bind(v)
+        bu.calc.typeface = c.fontBold
+        bu.desc.typeface = c.fontRegular
+        bu.hurry.typeface = c.fontBold
+
+        bu.start.setOnClickListener {
+            if (!fetching) fetch()
+        }
+        bu.hurry.setOnCheckedChangeListener { _, bb ->
+            Inquisitor.hurry = bb
+            calculate()
+        }
+    }
+
+    private var calcItem = 0
+    private var calcSum = 0
+    private fun calculate() {
+        if (calcSum == 0) return
+        bu.calc.text = c.getString(
+            R.string.unfCalc, calcItem, calcSum,
+            DecimalFormat("#.##").format((100f / calcSum.toFloat()) * calcItem.toFloat()),
+            ((if (!Inquisitor.hurry) Inquisitor.DELAY else Inquisitor.DELAY_HURRY) / 1000) * (calcSum - calcItem)
+        )
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -157,6 +176,4 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
 
     override fun updateJumper() {
     }
-
-    enum class Action { LOADED, ANALYSED, COMPLETED, ABORTED, COULD_NOT, CANCELLED }
 }

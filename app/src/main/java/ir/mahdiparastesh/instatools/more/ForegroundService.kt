@@ -69,7 +69,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
-            ACTION_STOP -> if (com.active) destroy()
+            ACTION_STOP -> if (com.active) onCancel()
         }
         return START_NOT_STICKY
     }
@@ -108,6 +108,14 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             )
             addAction(0, c.resources.getString(R.string.exporterStop), com.pi(c, ACTION_STOP))
         }.build())
+    }
+
+    open fun onCancel() {
+        onAbort(true)
+    }
+
+    open fun onAbort(cancelled: Boolean) {
+        destroy()
     }
 
     open fun destroy() {
