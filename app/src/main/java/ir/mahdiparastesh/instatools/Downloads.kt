@@ -10,6 +10,7 @@ import android.os.Message
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
@@ -23,6 +24,8 @@ class Downloads : BaseActivity() {
     override val menuRes: Int? = null
     private lateinit var db: Database
     lateinit var dao: Database.DAO
+    var tracker: SelectionTracker<String>? = null
+    private var selectivity = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

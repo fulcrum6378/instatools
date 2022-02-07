@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/start"
+        android:layout_width="@dimen/simpleLoading"
+        android:layout_height="@dimen/simpleLoading"
+        android:layout_gravity="center"
+        android:background="@drawable/button_round"
+        android:contentDescription="@string/unfollowers"
+        android:padding="15dp"
+        android:src="@drawable/search" />
+
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/unfPreload"
+        android:textAlignment="center"
+        android:textColor="?attr/colorAccent"
+        android:textSize="16sp" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/hurry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:checked="false"
+        android:text="@string/unfHurry"
+        android:textColor="?attr/colorAccent"
+        android:textSize="20sp" />
+</LinearLayout>

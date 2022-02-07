@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
+import androidx.core.view.contains
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ import ir.mahdiparastesh.instatools.more.BaseSaver
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageSvd(c: Main) : BasePage(c) {
@@ -107,10 +109,18 @@ class PageSvd(c: Main) : BasePage(c) {
                 updateJumper()
             }
         })
-        if (c.m.saved != null) adapt()
-        else thread?.start()
 
+        if (c.m.saved != null) adapt()
+        else if (thread == null) thread = FetchSome().also { it.start() }
         return b.root
+    }
+
+    override fun onLoad() {
+        if (b.root.contains(b.loading)) {
+            b.loading.animation?.cancel()
+            b.root.removeView(b.loading)
+        }
+        b.error.vis(false)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -118,6 +128,7 @@ class PageSvd(c: Main) : BasePage(c) {
         if (b.rv.adapter != null) {
             b.rv.adapter?.notifyDataSetChanged()
             return; }
+        onLoad()
         b.rv.adapter = ListSvd(c, this)
         if (tracker == null) {
             tracker = SelectionTracker.Builder(

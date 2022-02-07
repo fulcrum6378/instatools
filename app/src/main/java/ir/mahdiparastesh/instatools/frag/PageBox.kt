@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.contains
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +32,7 @@ import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageBox(c: Main) : BasePage(c) {
@@ -86,7 +88,7 @@ class PageBox(c: Main) : BasePage(c) {
 
     companion object {
         const val HANDLE_FETCHED_SOME = 44
-        const val DELAY = 1500L
+        const val DELAY = 3000L
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -122,17 +124,37 @@ class PageBox(c: Main) : BasePage(c) {
         return b.root
     }
 
+    override fun onLoad() {
+        if (b.root.contains(b.loading)) {
+            b.loading.animation?.cancel()
+            b.root.removeView(b.loading)
+        }
+        b.error.vis(false)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun adapt() {
         if (c.m.dmThread == null) {
-            if (b.rv.adapter == null || b.rv.adapter !is ListBox)
+            if (b.rv.adapter == null || b.rv.adapter !is ListBox) {
+                onLoad()
                 b.rv.adapter = ListBox(c, this)
-            else b.rv.adapter?.notifyDataSetChanged()
+            } else b.rv.adapter?.notifyDataSetChanged()
         } else {
             if (b.rv.adapter == null || b.rv.adapter !is ListThd)
                 b.rv.adapter = ListThd(c, this)
             else b.rv.adapter?.notifyDataSetChanged()
         }
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
+        else -> false
+    }
+
+    override fun updateShadow() {
+        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+    }
+
+    override fun updateJumper() {
     }
 
     fun expOptions(
@@ -160,17 +182,6 @@ class PageBox(c: Main) : BasePage(c) {
                 })
             }
         }.create().show()
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        else -> false
-    }
-
-    override fun updateShadow() {
-        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
-    }
-
-    override fun updateJumper() {
     }
 
     override fun goBack(): Boolean {

@@ -21,7 +21,8 @@
 
         <activity
             android:name=".Main"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -70,6 +71,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="text/plain" />
+                THE PROBLEM IS THAT INSTAGRAM DOESN'T SHARE PROFILES PROPERLY
+                YOU MAY NEED TO PLACE AN EDITTEXT INSIDE VIEWER AND PUT VIEWER IN NAV
             </intent-filter>-->
         </activity>
 

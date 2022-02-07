@@ -48,7 +48,7 @@ class Exporter : ForegroundService() {
     override fun onCreate() {
         super.onCreate()
         db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
-        notification(Companion, Main::class)
+        notification(Companion, Main::class, 2)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {

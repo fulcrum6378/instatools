@@ -78,6 +78,24 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="simpleLoading" parent="parentConstraint">
+        <item name="android:layout_width">@dimen/simpleLoading</item>
+        <item name="android:layout_height">@dimen/simpleLoading</item>
+        <item name="android:alpha">0.2</item>
+        <item name="lottie_colorFilter">?attr/colorAccent</item>
+        <item name="lottie_rawRes">@raw/download</item>
+        <item name="lottie_autoPlay">true</item>
+        <item name="lottie_loop">true</item>
+    </style>
+
+    <style name="simpleError" parent="parentConstraint">
+        <item name="android:layout_width">@dimen/simpleLoading</item>
+        <item name="android:layout_height">@dimen/simpleLoading</item>
+        <item name="android:src">@drawable/error</item>
+        <item name="android:alpha">0.3</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
 
     <!-- Settings -->
     <style name="stItem">
@@ -116,8 +134,20 @@
         <item name="android:alpha">0.75</item>
     </style>
 
+    <style name="stButton" parent="stSubItem">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:background">@drawable/st_button</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="stSep" parent="sep">
-        <item name="android:paddingLeft">@dimen/stPadH</item>
-        <item name="android:paddingRight">@dimen/stPadH</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/stPadH</item>
+        <item name="android:layout_marginRight">@dimen/stPadH</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
     </style>
 </resources>

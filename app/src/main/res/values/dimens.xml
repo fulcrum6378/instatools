@@ -21,6 +21,7 @@
     <dimen name="dmPadH">17dp</dimen>
     <dimen name="dmFont">16sp</dimen>
     <dimen name="searchFont">6sp</dimen>
+    <dimen name="simpleLoading">120dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">45dp</dimen>

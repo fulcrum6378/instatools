@@ -15,9 +15,12 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.serv.Inquisitor
+import ir.mahdiparastesh.instatools.serv.Queuer
 import kotlin.reflect.KClass
 
 @SuppressLint("UnspecifiedImmutableFlag")
@@ -27,6 +30,14 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     companion object {
         const val ACTION_STOP = "ACTION_STOP"
+        private val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
+        val srvComps = arrayOf(Queuer, Inquisitor, Exporter)
+
+        fun terminateTasks(c: Context) {
+            services.forEach { service ->
+                c.stopService(Intent(c, service.java).apply { action = ACTION_STOP })
+            }
+        }
     }
 
     abstract class ForegroundServiceCompanion(val CH_ID: Int, private val klass: KClass<*>) {
@@ -72,7 +83,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         sp = Persistent.initSp(c, m.acc)
     }
 
-    open fun notification(com: ForegroundServiceCompanion, openActivity: KClass<*>) {
+    open fun notification(
+        com: ForegroundServiceCompanion, openActivity: KClass<*>, turnToPage: Int? = null
+    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(
@@ -88,7 +101,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             priority = NotificationCompat.PRIORITY_LOW
             setContentIntent(
                 PendingIntent.getActivity(
-                    c, 0, Intent(c, openActivity.java), PendingIntent.FLAG_UPDATE_CURRENT
+                    c, 0, Intent(c, openActivity.java).apply {
+                        if (turnToPage != null) putExtra(Main.EXTRA_TURN_TO_PAGE, turnToPage)
+                    }, PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
             addAction(0, c.resources.getString(R.string.exporterStop), com.pi(c, ACTION_STOP))

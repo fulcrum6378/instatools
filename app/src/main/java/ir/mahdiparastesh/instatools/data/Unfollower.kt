@@ -13,7 +13,8 @@ class Unfollower(
     val isPrivate: Boolean
 ) {
     companion object {
-        fun find(it: Unfollower, inList: List<Unfollower>): Int? {
+        fun find(it: Unfollower, inList: List<Unfollower>?): Int? {
+            if (inList == null) return null
             for (i in inList.indices) if (inList[i].id == it.id) return i
             return null
         }

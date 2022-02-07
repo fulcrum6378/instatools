@@ -100,8 +100,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
         }
 
+        // Toolbar
         b.toolbar.setOnMenuItemClickListener(this)
 
+        // List
         b.rv.layoutManager = GridLayoutManager(c, 3)
         b.rv.isNestedScrollingEnabled = false
         b.refresher.setOnRefreshListener {
@@ -117,6 +119,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 m.vwInfo?.has_next_page != false
             ) thread = FetchSome().also { it.start() }
         }
+
+        // Profile
+        b.proPic.layoutParams = b.proPic.layoutParams.apply { height = dm.widthPixels }
         b.proClick.setOnClickListener { v ->
             if (m.vwPic == null) return@setOnClickListener
             MaterialMenu(this@Viewer, v, R.menu.viewer_pic_more, Act().apply {

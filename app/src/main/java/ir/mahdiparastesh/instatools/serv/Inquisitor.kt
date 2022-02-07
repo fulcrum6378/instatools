@@ -35,14 +35,16 @@ class Inquisitor : ForegroundService() {
         override var active: Boolean = false
         override var handler: Handler? = null
 
-        const val DELAY = 1250L
+        const val DELAY = 3000L
+        const val DELAY_HURRY = 1000L
+        var hurry = false
     }
 
     override fun onCreate() {
         super.onCreate()
         if (m.acc == null) destroy()
         db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
-        notification(Companion, Main::class)
+        notification(Companion, Main::class, 0)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
@@ -97,16 +99,23 @@ class Inquisitor : ForegroundService() {
                 Profile::class, handler
             ) { profile ->
                 val u = profile.graphql?.user
-                if (u == null || u.follows_viewer != false || !active) return@Api
+                if (u == null || !active) return@Api
+
+                PageUnf.theHandler?.obtainMessage(
+                    PageUnf.Action.ANALYSED.ordinal, i, following.size, null
+                )?.sendToTarget()
+                if (u.follows_viewer != false) return@Api
+
                 val newbie = Unfollower(
                     u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
                     u.edge_followed_by.count.toLong(), u.is_private == true
                 )
                 dao.addUnfollower(newbie)
-                PageUnf.theHandler?.obtainMessage(PageUnf.Action.ANALYSED.ordinal, newbie)
-                    ?.sendToTarget()
+                PageUnf.theHandler?.obtainMessage(
+                    PageUnf.Action.ANALYSED.ordinal, i, following.size, newbie
+                )?.sendToTarget()
             }
-            Delay(DELAY) { analyse(i + 1) }
+            Delay(if (!hurry) DELAY else DELAY_HURRY) { analyse(i + 1) }
         }
     }
 }

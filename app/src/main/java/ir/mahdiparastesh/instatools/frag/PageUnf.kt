@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.contains
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
@@ -17,15 +15,18 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
+import ir.mahdiparastesh.instatools.databinding.UnfPreloadBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.serv.Inquisitor
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
+import kotlin.math.roundToInt
 
-class PageUnf(c: Main) : BasePage(c) {
+class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
     lateinit var b: PageUnfBinding
+    private lateinit var bu: UnfPreloadBinding
     override lateinit var inflater: LayoutInflater
     override var handler: Handler? = null
 
@@ -47,13 +48,18 @@ class PageUnf(c: Main) : BasePage(c) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     Action.LOADED.ordinal -> (msg.obj as List<Unfollower>).apply {
+                        onLoad()
                         c.m.unfollowers = ArrayList(this)
                         c.m.unfollowers!!.sortBy { it.followedBy }
-                        if (isNullOrEmpty()) fetch() else adapt()
+                        if (isNullOrEmpty()) b.preloadStub.inflate() else adapt()
                     }
-                    Action.ANALYSED.ordinal -> if (c.m.unfollowers != null) {
-                        c.m.unfollowers!!.add(msg.obj as Unfollower)
-                        b.rv.adapter?.notifyItemInserted(c.m.unfollowers!!.size - 1)
+                    Action.ANALYSED.ordinal -> {
+                        ((100f / msg.arg2.toFloat()) * (msg.arg1 + 1f)).roundToInt()
+
+                        /*Unfollower.find(msg.obj as Unfollower, c.m.unfollowers)?.let {
+                            c.m.unfollowers!!.add(msg.obj as Unfollower)
+                            b.rv.adapter?.notifyItemInserted(c.m.unfollowers!!.size - 1)
+                        }*/
                     }
                     /*Unfollower.find(msg.obj as Unfollower, c.m.unfollowers!!)?.let {
                             b.rv.adapter?.notifyItemInserted(it)
@@ -95,6 +101,7 @@ class PageUnf(c: Main) : BasePage(c) {
         }
         handler = theHandler
 
+        b.preloadStub.setOnInflateListener(this)
         b.refresher.setOnRefreshListener { fetch() }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -108,6 +115,21 @@ class PageUnf(c: Main) : BasePage(c) {
         }.start()
 
         return b.root
+    }
+
+    override fun onLoad() {
+        if (b.root.contains(b.loading)) {
+            b.loading.animation?.cancel()
+            b.root.removeView(b.loading)
+        }
+    }
+
+    override fun onInflate(stub: ViewStub, v: View) {
+        bu = UnfPreloadBinding.bind(v)
+        bu.desc.typeface = c.fontRegular
+        bu.hurry.typeface = c.fontBold
+        bu.start.setOnClickListener { fetch() }
+        bu.hurry.setOnCheckedChangeListener { _, bb -> Inquisitor.hurry = bb }
     }
 
     private fun fetch() {

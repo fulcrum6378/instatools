@@ -61,6 +61,9 @@
     <string name="unsaveOnly">Unsave Only</string>
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
+    <string name="unfPreload">Finding unfollowers needs to be done slowly; otherwise Instagram will detect you as a robot and temporarily block some of your features, or sign you out of this session!</string>
+    <string name="unfHurry">Hurry!</string>
+    <string name="alsoDeleteData">Also delete my user data and settings</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
@@ -77,6 +80,11 @@
     <!-- Settings -->
     <string name="stDlPath">Main download folder</string>
     <string name="stBranching">Divide downloaded files into branches</string>
+    <string name="stUserData">User Data</string>
+    <string name="stResetData">Reset all my user data</string>
+    <string name="stResetDataSure">This includes the unfollowers list, the favourite accounts list, the download queue and the export queue. But you won\'t be signed out of your account. Proceed?</string>
+    <string name="stResetSettings">Reset my settings</string>
+    <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
 
 
     <!-- Inquisitor -->

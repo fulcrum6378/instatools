@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -8,10 +9,14 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import androidx.core.view.iterator
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.DbFile
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import java.io.File
 
 @SuppressLint("ApplySharedPref")
 class Settings : BaseActivity() {
@@ -37,6 +42,20 @@ class Settings : BaseActivity() {
         // Hidden
         const val spMainPage = "main_page"
         const val spBranching = "branching"
+
+        var recreateMain = false
+
+        fun deleteDb(id: String) {
+            arrayOf(
+                DbFile(id, DbFile.Triple.MAIN),
+                DbFile(id, DbFile.Triple.SHARED_MEMORY),
+                DbFile(id, DbFile.Triple.WRITE_AHEAD_LOG),
+            ).forEach { f -> if (f.exists()) f.delete() }
+        }
+
+        fun deleteSp(c: BaseActivity) {
+            File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${c.m.acc!!.id}.xml")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +82,32 @@ class Settings : BaseActivity() {
         b.stBranching.isChecked = prf.getBoolean(spBranching, true)
         b.stBranching.setOnCheckedChangeListener { _, bb ->
             prf.edit().putBoolean(spBranching, bb).commit()
+        }
+
+        // User Data
+        b.stResetData.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.stResetData)
+                setMessage(R.string.stResetDataSure)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    ForegroundService.terminateTasks(c)
+                    deleteDb(m.acc!!.id.toString())
+                    recreateMain = true
+                }
+            }.create().show()
+        }
+        b.stResetSettings.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.stResetSettings)
+                setMessage(R.string.stResetSettingsSure)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    ForegroundService.terminateTasks(c)
+                    deleteSp(this@Settings)
+                    recreateMain = true
+                }
+            }.create().show()
         }
     }
 

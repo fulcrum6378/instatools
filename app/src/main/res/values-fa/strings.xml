@@ -61,6 +61,10 @@
     <string name="unsaveOnly">فقط آنسیو</string>
     <string name="downloadOnly">فقط دانلود</string>
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
+    <string name="unfPreload">پیدا کردن آنفالور ها باید به آرامی انجام شود؛ وگرنه ممکن است اینستاگرام شما را بعنوان یک ربات شناسایی کرده و برخی امکانات پروفایلتان را معلق کند یا شما را از این لوگین خارج کند!</string>
+    <string name="unfHurry">عجله کن!</string>
+    <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
+
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
@@ -77,6 +81,11 @@
     <!-- Settings -->
     <string name="stDlPath">پوشه اصلی دانلود</string>
     <string name="stBranching">شاخه شاخه کردن دانلودها</string>
+    <string name="stUserData">اطلاعات من</string>
+    <string name="stResetData">حذف اطلاعات من</string>
+    <string name="stResetDataSure">حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد، ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟</string>
+    <string name="stResetSettings">بازنشانی تنظیمات</string>
+    <string name="stResetSettingsSure">آیا مطمئن هستید؟ (از حسابتان خارج «نخواهید» شد)</string>
 
 
     <!-- Inquisitor -->

@@ -16,6 +16,14 @@
             android:padding="0dp" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ImageView
+        android:id="@+id/error"
+        style="@style/simpleError" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading"
+        style="@style/simpleLoading" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/expanded"
         style="@style/expanded" />

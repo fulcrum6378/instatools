@@ -46,7 +46,24 @@
                     android:textColor="?attr/colorAccent" />
             </LinearLayout>
 
-            <!--<View style="@style/stSep" />-->
+            <View style="@style/stSep" />
+
+            <LinearLayout style="@style/stItem">
+
+                <TextView
+                    style="@style/stItemName"
+                    android:text="@string/stUserData" />
+
+                <TextView
+                    android:id="@+id/stResetData"
+                    style="@style/stButton"
+                    android:text="@string/stResetData" />
+
+                <TextView
+                    android:id="@+id/stResetSettings"
+                    style="@style/stButton"
+                    android:text="@string/stResetSettings" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

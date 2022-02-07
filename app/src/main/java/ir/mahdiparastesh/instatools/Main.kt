@@ -24,6 +24,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
+import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
@@ -31,10 +32,10 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.more.*
-import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.serv.Inquisitor
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Delay
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -70,8 +71,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     }
 
     companion object {
-        val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
-        val srvComps = arrayOf(Queuer, Inquisitor, Exporter)
+        const val EXTRA_TURN_TO_PAGE = "EXTRA_TURN_TO_PAGE"
         val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
@@ -132,32 +132,33 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSettings -> goTo(Settings::class)
                 R.id.mnSwitchAccount -> {
-                    if (srvComps.any { it.active }) AlertDialog.Builder(c).apply {
+                    if (ForegroundService.srvComps.any { it.active }) AlertDialog.Builder(c).apply {
                         setTitle(R.string.backgroundTasks)
                         setMessage(R.string.terminateBgTasks)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            terminateTasks()
+                            ForegroundService.terminateTasks(c)
                             switchAcc()
                         }
                     }.create().show() else switchAcc()
                     true
                 }
                 R.id.mnSignOut -> {
+                    val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
                     AlertDialog.Builder(this).apply {
                         setTitle(R.string.signOut)
                         setMessage(R.string.signOutSure)
+                        setView(bd.root)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            terminateTasks()
+                            ForegroundService.terminateTasks(c)
+                            if (bd.root.isChecked) {
+                                Settings.deleteDb(m.acc!!.id.toString())
+                                Settings.deleteSp(this@Main)
+                            }
                             Account.save(
                                 c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
                             gsp.edit().remove(Login.spAccount).commit()
-                            arrayOf(
-                                DbFile(m.acc!!.id.toString(), DbFile.Triple.MAIN),
-                                DbFile(m.acc!!.id.toString(), DbFile.Triple.SHARED_MEMORY),
-                                DbFile(m.acc!!.id.toString(), DbFile.Triple.WRITE_AHEAD_LOG),
-                            ).forEach { f -> if (f.exists()) f.delete() }
                             m.acc = null
                             goTo(Login::class, true)
                         }
@@ -191,28 +192,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         ca = resources.getIntArray(R.array.CA)
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
-        b.bnv.setOnItemSelectedListener { item ->
-            val lastPage = m.currentPage.value!!
-            m.currentPage.value = bnvButtons.indexOf(item.itemId)
-            if (lastPage == m.currentPage.value) return@setOnItemSelectedListener true
-            transFrag(lastPage, m.currentPage.value!!)
-                .hide(pages()[lastPage])
-                .show(pages()[m.currentPage.value!!])
-                .commit()
-            sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.commit()
-
-            anTheme?.cancel()
-            val col = if (night) bg else ca
-            anTheme = ValueAnimator.ofArgb(col[lastPage], col[m.currentPage.value!!]).apply {
-                duration = resources.getInteger(R.integer.transFrag).toLong()
-                addUpdateListener {
-                    if (night) colorBG.value = it.animatedValue as Int
-                    else colorAc.value = it.animatedValue as Int
-                }
-                start()
-            }
-            true
-        }
+        b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         m.currentPage.observe(this) {
             pages()[it].updateShadow()
             pages()[it].updateJumper()
@@ -250,8 +230,15 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.extras?.getInt(EXTRA_TURN_TO_PAGE)?.let { turnToPage(it) }
+    }
+
     override fun onResume() {
         super.onResume()
+        if (Settings.recreateMain) {
+            recreate(); return; }
         interstitialAd?.show(this)
     }
 
@@ -334,6 +321,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         super.onDestroy()
     }
 
+
     private fun loadPages() = pages().forEachIndexed { i, it ->
         transFrag().apply {
             if (it.isAdded) remove(it)
@@ -341,6 +329,30 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             if (i != m.currentPage.value) hide(it)
             commit()
         }
+    }
+
+    private fun turnToPage(i: Int): Boolean {
+        if (i == m.currentPage.value) return true
+        val lastPage = m.currentPage.value!!
+        m.currentPage.value = i
+        transFrag(lastPage, m.currentPage.value!!)
+            .hide(pages()[lastPage])
+            .show(pages()[m.currentPage.value!!])
+            .commit()
+        sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.commit()
+
+        anTheme?.cancel()
+        val col = if (night) bg else ca
+        anTheme = ValueAnimator.ofArgb(col[lastPage], col[m.currentPage.value!!]).apply {
+            duration = resources.getInteger(R.integer.transFrag).toLong()
+            addUpdateListener {
+                if (night) colorBG.value = it.animatedValue as Int
+                else colorAc.value = it.animatedValue as Int
+            }
+            start()
+        }
+        b.toolbar.menu.findItem(R.id.mtSearch)?.collapseActionView()
+        return true
     }
 
     private fun pages() = arrayOf(page1!!, page2!!, page3!!)
@@ -382,12 +394,6 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 R.anim.exit_to_left
             )
         }
-
-    private fun terminateTasks() {
-        services.forEach { service ->
-            c.stopService(Intent(c, service.java).apply { action = ForegroundService.ACTION_STOP })
-        }
-    }
 
     private fun switchAcc() {
         gsp.edit().remove(Login.spAccount).commit()
