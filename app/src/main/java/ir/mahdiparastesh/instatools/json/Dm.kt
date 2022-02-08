@@ -79,7 +79,7 @@ class Dm(
         //val marked_as_unread: Boolean,
         //val mentions_muted: Boolean,
         //val muted: Boolean,
-        val named: String,
+        val named: Boolean,
         //val newest_cursor: String,
         //val next_cursor: String,
         //val oldest_cursor: String,

@@ -96,8 +96,8 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         MobileAds.initialize(this) {
             Delay(10000) {
                 InterstitialAd.load(
-                    this, "ca-app-pub-3940256099942544/1033173712",
-                    //ca-app-pub-9457309151954418/5399016395
+                    this, "ca-app-pub-9457309151954418/5399016395",
+                    //ca-app-pub-3940256099942544/1033173712
                     AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
                         override fun onAdFailedToLoad(adError: LoadAdError) {
                             interstitialAd = null

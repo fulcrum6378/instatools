@@ -70,9 +70,9 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
                     HANDLE_FETCHED -> {
                         calcSum = msg.obj as Int
                         b.refresher.isRefreshing = false
-                        bu.calc.vis()
                     }
                     HANDLE_ABORTED -> {
+                        analysing(false)
                         fetching = false
                         b.refresher.isRefreshing = false
                         Snackbar.make(b.root, R.string.unfFailed, Snackbar.LENGTH_SHORT).show()
@@ -83,6 +83,7 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
                         calculate()
                     }
                     HANDLE_COMPLETED -> {
+                        analysing(false)
                         fetching = false
                         c.m.unfollowers = ArrayList(msg.obj as List<Unfollower>)
                         c.m.unfollowers!!.sortBy { it.followedBy }
@@ -125,13 +126,21 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
         fetching = true
         preload()
         c.startService(Intent(c, Inquisitor::class.java))
+        analysing(true)
     }
 
     private fun preload() {
         b.rv.adapter = null
         if (!::bu.isInitialized) b.preloadStub.inflate()
         else bu.root.vis()
-        bu.calc.vis(false)
+    }
+
+    private fun analysing(bb: Boolean) {
+        bu.calc.vis(bb)
+        bu.working.vis(bb)
+        if (bb) bu.working.playAnimation()
+        else bu.working.pauseAnimation()
+        bu.start.vish(!bb)
     }
 
     override fun onInflate(stub: ViewStub, v: View) {
@@ -152,11 +161,12 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
     private var calcItem = 0
     private var calcSum = 0
     private fun calculate() {
-        if (calcSum == 0) return
+        if (calcSum <= 0) return
         bu.calc.text = c.getString(
             R.string.unfCalc, calcItem, calcSum,
             DecimalFormat("#.##").format((100f / calcSum.toFloat()) * calcItem.toFloat()),
-            ((if (!Inquisitor.hurry) Inquisitor.DELAY else Inquisitor.DELAY_HURRY) / 1000) * (calcSum - calcItem)
+            (((if (!Inquisitor.hurry) Inquisitor.DELAY else Inquisitor.DELAY_HURRY) / 1000).toFloat()
+                    * (calcSum.toFloat() - calcItem.toFloat())).toInt()
         )
     }
 

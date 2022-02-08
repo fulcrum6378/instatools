@@ -118,9 +118,9 @@ class PageBox(c: Main) : BasePage(c) {
                 updateJumper()
             }
         })
+
         if (c.m.dmThreads != null) adapt()
         else if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
-
         return b.root
     }
 

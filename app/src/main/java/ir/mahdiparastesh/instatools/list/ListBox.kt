@@ -26,12 +26,16 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         if (c.m.dmThreads == null) return
-        val u = c.m.dmThreads!![i].users[0]
-        Glide.with(c.c).load(u.profile_pic_url).into(h.b.photo)
-        h.b.name.text = if (u.full_name != "") u.full_name else u.username
-        h.b.last.text = c.getString(
-            R.string.boxUntil, UiTools.date(c.m.dmThreads!![i].last_activity_at)
-        )
+        var thd = c.m.dmThreads!![i]
+        if (!thd.is_group) {
+            Glide.with(c.c).load(thd.users[0].profile_pic_url).into(h.b.photo)
+            h.b.name.text = thd.users[0].full_name.ifBlank { thd.users[0].username }
+        } else {
+            h.b.photo.setImageResource(R.drawable.switch_account)
+            h.b.name.text = thd.thread_title
+        }
+
+        h.b.last.text = c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at))
         h.b.root.setOnClickListener {
             c.m.dmThread = c.m.dmThreads?.get(h.layoutPosition)
             f.adapt()
@@ -41,15 +45,18 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {
-            val thd = c.m.dmThreads?.get(h.layoutPosition) ?: return@setOnClickListener
+            thd = c.m.dmThreads?.get(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.box_more, Act().apply {
                 this[R.id.bmPdf] = {
-                    f.expOptions(Exporter.Method.PDF, u.username, thd)
+                    thd.users.getOrNull(0)
+                        ?.let { uu -> f.expOptions(Exporter.Method.PDF, uu.username, thd) }
                 }
                 this[R.id.bmView] = {
                     thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.pk, uu.username) }
                 }
-            }, c.colorAc.value).show()
+            }, c.colorAc.value).apply {
+                if (thd.is_group) menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
+            }.show()
         }
         h.b.sep.vis(i < itemCount - 1)
     }

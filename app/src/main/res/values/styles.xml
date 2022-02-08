@@ -81,16 +81,15 @@
     <style name="simpleLoading" parent="parentConstraint">
         <item name="android:layout_width">@dimen/simpleLoading</item>
         <item name="android:layout_height">@dimen/simpleLoading</item>
-        <item name="android:alpha">0.2</item>
         <item name="lottie_colorFilter">?attr/colorAccent</item>
-        <item name="lottie_rawRes">@raw/download</item>
+        <item name="lottie_rawRes">@raw/loading</item>
         <item name="lottie_autoPlay">true</item>
         <item name="lottie_loop">true</item>
     </style>
 
     <style name="simpleError" parent="parentConstraint">
-        <item name="android:layout_width">@dimen/simpleLoading</item>
-        <item name="android:layout_height">@dimen/simpleLoading</item>
+        <item name="android:layout_width">@dimen/simpleError</item>
+        <item name="android:layout_height">@dimen/simpleError</item>
         <item name="android:src">@drawable/error</item>
         <item name="android:alpha">0.3</item>
         <item name="android:visibility">gone</item>

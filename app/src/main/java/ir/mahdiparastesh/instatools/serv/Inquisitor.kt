@@ -37,8 +37,8 @@ class Inquisitor : ForegroundService() {
         override var handler: Handler? = null
 
         const val MAX_ERRORS = 10
-        const val DELAY = 5000L
-        const val DELAY_HURRY = 1000L
+        const val DELAY = 3000L
+        const val DELAY_HURRY = 750L
         var hurry = false
     }
 
@@ -70,6 +70,7 @@ class Inquisitor : ForegroundService() {
 
     inner class Inquiry : BasePage.BaseThread() {
         private val following = arrayListOf<Rest.User>()
+        private val unfollowers = arrayListOf<Unfollower>()
 
         override fun run() {
             super.run()
@@ -94,7 +95,7 @@ class Inquisitor : ForegroundService() {
         private fun analyse(i: Int = 0) {
             if (!active) return
             if (i >= following.size) {
-                PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_COMPLETED, dao.unfollowers())
+                PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_COMPLETED, unfollowers)
                     ?.sendToTarget()
                 this@Inquisitor.destroy()
                 return
@@ -107,12 +108,13 @@ class Inquisitor : ForegroundService() {
             ) { profile ->
                 val u = profile.graphql?.user
                 if (u == null || u.follows_viewer != false || !active) return@Api
-                dao.addUnfollower(
-                    Unfollower(
-                        u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
-                        u.edge_followed_by.count.toLong(), u.is_private == true
-                    )
-                )
+                Unfollower(
+                    u.id.toLong(), u.username, u.full_name, u.profile_pic_url,
+                    u.edge_followed_by.count.toLong(), u.is_private == true
+                ).apply {
+                    dao.addUnfollower(this)
+                    unfollowers.add(this)
+                }
             }
             Delay(if (!hurry) DELAY else DELAY_HURRY) { analyse(i + 1) }
         }
