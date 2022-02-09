@@ -11,6 +11,6 @@
     android:text="@string/guestDesc"
     android:textAlignment="center"
     android:textColor="?attr/colorAccent"
-    android:textSize="16sp"
+    android:textSize="@dimen/guestFont"
     app:drawableTopCompat="@drawable/guest"
     app:layout_constraintWidth_percent="0.75" />

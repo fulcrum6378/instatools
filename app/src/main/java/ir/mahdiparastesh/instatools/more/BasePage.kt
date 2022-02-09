@@ -20,6 +20,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
     protected fun guestMode(parent: ConstraintLayout, theme: BaseActivity.Theme) {
         val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
         gb.root.typeface = c.fontRegular
+        onLoad()
     }
 
     companion object {

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="tbTitleMain">11sp</dimen>
+    <dimen name="tbTitle">11sp</dimen>
+    <dimen name="tbTitleMainMarginTop">3sp</dimen>
+    <dimen name="profilePhoto">80dp</dimen>
+    <dimen name="thumbPhoto">90dp</dimen>
+    <dimen name="userPadV">30dp</dimen>
+    <dimen name="userFont">22sp</dimen>
+    <dimen name="userDescFont">16sp</dimen>
+    <dimen name="moreAction">62dp</dimen>
+
+    <!-- Main -->
+    <dimen name="navFont">17sp</dimen>
+    <dimen name="bnv">90dp</dimen>
+    <dimen name="bnvFont">7.5sp</dimen>
+    <dimen name="mainPadH">32dp</dimen>
+    <dimen name="padGallery">3dp</dimen>
+    <dimen name="unfAction">@dimen/moreAction</dimen>
+    <dimen name="svdSelectedPad">75dp</dimen>
+    <dimen name="guestIcon">100dp</dimen>
+    <dimen name="guestFont">24sp</dimen>
+    <dimen name="dmCorner">30dp</dimen>
+    <dimen name="dmPadV">20dp</dimen>
+    <dimen name="dmPadH">25dp</dimen>
+    <dimen name="dmFont">22sp</dimen>
+    <dimen name="searchFont">9sp</dimen>
+    <dimen name="simpleLoading">300dp</dimen>
+    <dimen name="simpleError">180dp</dimen>
+    <dimen name="unfStart">195dp</dimen>
+    <dimen name="unfStartPad">21dp</dimen>
+
+    <!-- Login -->
+    <dimen name="loginPadH">70dp</dimen>
+
+    <!-- Downloads -->
+    <dimen name="pasteLink">75dp</dimen>
+    <dimen name="pasteLinkPad">15dp</dimen>
+    <dimen name="qudLoadingPad">21dp</dimen>
+    <dimen name="qudPadH">21dp</dimen>
+    <dimen name="qudPadV">15dp</dimen>
+
+    <!-- Settings -->
+    <dimen name="stPadH">48dp</dimen>
+    <dimen name="stItemName">17sp</dimen>
+    <dimen name="stStarter">24dp</dimen>
+    <dimen name="stSubItemFont">20sp</dimen>
+    <dimen name="stPathFont">19sp</dimen>
+    <dimen name="stPathCorner">24dp</dimen>
+</resources>

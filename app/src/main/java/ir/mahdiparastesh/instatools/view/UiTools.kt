@@ -22,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import java.util.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 class UiTools {
     companion object {
         const val PROFILE = "https://www.instagram.com/%s/"
@@ -90,6 +91,15 @@ class UiTools {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
             else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
+            // INSTAGRAM WAS INSTALLED YET....
+            /*android.util.AndroidRuntimeException: Calling startActivity() from outside of an Activity  context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
+        at android.app.ContextImpl.startActivity(ContextImpl.java:1682)
+        at android.app.ContextImpl.startActivity(ContextImpl.java:1669)
+        at android.content.ContextWrapper.startActivity(ContextWrapper.java:338)
+        at android.content.ContextWrapper.startActivity(ContextWrapper.java:338)
+        at android.text.style.URLSpan.onClick(URLSpan.java:72)
+        at android.text.method.LinkMovementMethod.onTouchEvent(LinkMovementMethod.java:217)
+        at android.widget.TextView.onTouchEvent(TextView.java:9646)*/
         }
 
         fun calendar(unix: Long): Calendar =

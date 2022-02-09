@@ -2,9 +2,12 @@
 <resources>
     <dimen name="tbTitleMain">7sp</dimen>
     <dimen name="tbTitle">7sp</dimen>
+    <dimen name="tbTitleMainMarginTop">0sp</dimen>
     <dimen name="profilePhoto">50dp</dimen>
     <dimen name="thumbPhoto">60dp</dimen>
     <dimen name="userPadV">20dp</dimen>
+    <dimen name="userFont">17sp</dimen>
+    <dimen name="userDescFont">13sp</dimen>
     <dimen name="moreAction">50dp</dimen>
 
     <!-- Main -->
@@ -13,9 +16,10 @@
     <dimen name="bnvFont">5sp</dimen>
     <dimen name="mainPadH">26dp</dimen>
     <dimen name="padGallery">2dp</dimen>
-    <dimen name="unfAction">50dp</dimen>
+    <dimen name="unfAction">@dimen/moreAction</dimen>
     <dimen name="svdSelectedPad">50dp</dimen>
     <dimen name="guestIcon">64dp</dimen>
+    <dimen name="guestFont">16sp</dimen>
     <dimen name="dmCorner">20dp</dimen>
     <dimen name="dmPadV">13dp</dimen>
     <dimen name="dmPadH">17dp</dimen>
@@ -38,6 +42,9 @@
 
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>
+    <dimen name="stItemName">13.5sp</dimen>
     <dimen name="stStarter">20dp</dimen>
+    <dimen name="stSubItemFont">17sp</dimen>
+    <dimen name="stPathFont">16sp</dimen>
     <dimen name="stPathCorner">20dp</dimen>
 </resources>

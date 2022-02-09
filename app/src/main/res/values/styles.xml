@@ -110,7 +110,7 @@
     <style name="stItemName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">13.5sp</item>
+        <item name="android:textSize">@dimen/stItemName</item>
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingStart">@dimen/stStarter</item>
@@ -122,13 +122,14 @@
         <item name="android:layout_marginTop">18dp</item>
         <item name="android:paddingLeft">@dimen/stStarter</item>
         <item name="android:paddingRight">@dimen/stStarter</item>
+        <item name="android:textSize">@dimen/stSubItemFont</item>
     </style>
 
     <style name="stPath" parent="stSubItem">
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">12dp</item>
         <item name="android:background">@drawable/path_selector</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/stPathFont</item>
         <item name="android:textColor">@color/defCA</item>
         <item name="android:alpha">0.75</item>
     </style>
@@ -139,7 +140,6 @@
         <item name="android:background">@drawable/st_button</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">?attr/colorAccent</item>
-        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="stSep" parent="sep">

@@ -84,6 +84,8 @@ class Api<JSON>(
 
         INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/"),
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
+
+        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// POST
     }
 
     companion object {

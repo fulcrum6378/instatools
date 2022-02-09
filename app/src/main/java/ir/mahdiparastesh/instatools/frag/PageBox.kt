@@ -97,6 +97,7 @@ class PageBox(c: Main) : BasePage(c) {
             c.themeInflater(BaseActivity.Theme.TERTIARY, inf), parent, false
         )
         if (Main.guest) {
+            b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }
 
         b.refresher.setOnChildScrollUpCallback { _, _ ->

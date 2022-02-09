@@ -85,6 +85,7 @@ class PageSvd(c: Main) : BasePage(c) {
             c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
         )
         if (Main.guest) {
+            b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
 
         b.rv.layoutManager = GridLayoutManager(c, 3)

@@ -8,7 +8,6 @@ import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewStub
 import android.webkit.CookieManager
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -133,7 +132,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private val myClient = object : WebViewClient() {
         lateinit var id: String
-        var loggedIn = false
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
@@ -150,18 +148,22 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        override fun shouldOverrideUrlLoading(v: WebView, req: WebResourceRequest): Boolean {
-            if (req.url.toString() == host) loggedIn = true
-            return false
-        }
-
         override fun onPageFinished(v: WebView, url: String) {
             super.onPageFinished(v, url)
-            if (!loggedIn) return
+            if (url != host && !url.startsWith("$host?")) return
+            try {
+                collect(v)
+            } catch (ignored: NumberFormatException) {
+            }
+        }
+
+        @Throws(NumberFormatException::class)
+        private fun collect(v: WebView) {
             id = cookieManager.getCookie(host)
                 .substringAfter("ds_user_id=")
-                .substringBefore(";")
+                .substringBefore(";").toLong().toString()
             gsp.edit().putString(spAccount, id).commit()
+
             v.evaluateJavascript(
                 """(function() {
         return document.getElementsByTagName('body')[0].innerHTML;

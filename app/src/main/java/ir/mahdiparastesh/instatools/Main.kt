@@ -145,6 +145,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSignOut -> {
                     val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
+                    // TODO: BODY: one_tap_app_login=1&user_id=28826142999
                     AlertDialog.Builder(this).apply {
                         setTitle(R.string.signOut)
                         setMessage(R.string.signOutSure)

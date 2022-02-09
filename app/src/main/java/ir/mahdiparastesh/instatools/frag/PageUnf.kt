@@ -45,6 +45,7 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
         )
         if (Main.guest) {
+            b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
         theHandler = object : Handler(Looper.getMainLooper()) {

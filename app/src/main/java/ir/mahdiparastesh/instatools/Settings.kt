@@ -73,7 +73,8 @@ class Settings : BaseActivity() {
         for (l in b.ll.iterator())
             if (l is LinearLayout) (l[0] as TextView).typeface = fontRegular
         b.stMainPath.typeface = fontLight
-        b.stBranching.typeface = fontRegular
+        arrayOf(b.stBranching, b.stResetData, b.stResetSettings)
+            .forEach { it.typeface = fontRegular }
 
         // Main Path
         if (!prf.contains(spStorage)) mainPath()
