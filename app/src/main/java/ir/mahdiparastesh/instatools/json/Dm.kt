@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.json
 
+@Suppress("SpellCheckingInspection")
 class Dm(
     val client_context: String,
     val hide_in_thread: Float,
@@ -35,8 +36,9 @@ class Dm(
     class Inbox(
         //val blended_inbox_enabled: Boolean,
         val has_older: Boolean,
-        //val next_cursor: ContinuumCursor,
-        //val prev_cursor: ContinuumCursor,
+        //val next_cursor: ContinuumCursor?,
+        val oldest_cursor: String?,
+        //val prev_cursor: ContinuumCursor?,
         val threads: Array<DmThread>,
         //val unseen_count: Double,
         //val unseen_count_ts: Double,
@@ -57,10 +59,10 @@ class Dm(
         //val business_thread_folder: Double,
         //val canonical: Boolean,
         //val encoded_server_data_info: String,
-        val folder: Double,
-        val group_link_joinable_mode: Double,
-        val has_groups_xac_ineligible_user: Boolean,
-        val has_newer: Boolean,
+        //val folder: Double,
+        //val group_link_joinable_mode: Double,
+        //val has_groups_xac_ineligible_user: Boolean,
+        //val has_newer: Boolean,
         var has_older: Boolean,
         //val input_mode: Double,
         //val inviter: Rest.User,
@@ -79,7 +81,7 @@ class Dm(
         //val marked_as_unread: Boolean,
         //val mentions_muted: Boolean,
         //val muted: Boolean,
-        val named: Boolean,
+        //val named: Boolean,
         //val newest_cursor: String,
         //val next_cursor: String,
         //val oldest_cursor: String,
@@ -104,8 +106,8 @@ class Dm(
         //val thread_label: Double,
         //val thread_languages: Map<String, String>,
         val thread_title: String,
-        val thread_type: String,
-        val thread_v2_id: String,
+        //val thread_type: String,
+        //val thread_v2_id: String,
         //val translation_banner_impression_count: Double,
         val users: Array<Rest.User>,
         //val vc_muted: Boolean,

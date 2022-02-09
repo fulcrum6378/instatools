@@ -94,4 +94,6 @@ open class Rest(val status: String) {
     ) : Rest(status)
 
     class ItemUser(val position: Float, val user: User)
+
+    class Signing(val login_nonce: String?, status: String) : Rest(status)
 }

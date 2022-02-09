@@ -44,7 +44,7 @@
     <dimen name="stPadH">36dp</dimen>
     <dimen name="stItemName">13.5sp</dimen>
     <dimen name="stStarter">20dp</dimen>
-    <dimen name="stSubItemFont">17sp</dimen>
+    <dimen name="stSubItemFont">16sp</dimen>
     <dimen name="stPathFont">16sp</dimen>
     <dimen name="stPathCorner">20dp</dimen>
 </resources>

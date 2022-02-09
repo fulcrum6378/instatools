@@ -18,6 +18,7 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
+import com.android.volley.Request
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -145,23 +146,18 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 }
                 R.id.mnSignOut -> {
                     val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
-                    // TODO: BODY: one_tap_app_login=1&user_id=28826142999
                     AlertDialog.Builder(this).apply {
                         setTitle(R.string.signOut)
                         setMessage(R.string.signOutSure)
                         setView(bd.root)
                         setNegativeButton(R.string.no, null)
                         setPositiveButton(R.string.yes) { _, _ ->
-                            ForegroundService.terminateTasks(c)
-                            if (bd.root.isChecked) {
-                                Settings.deleteDb(m.acc!!.id.toString())
-                                Settings.deleteSp(this@Main)
-                            }
-                            Account.save(
-                                c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
-                            gsp.edit().remove(Login.spAccount).commit()
-                            m.acc = null
-                            goTo(Login::class, true)
+                            Api<Rest.Signing>(
+                                this@Main, Api.Type.SIGN_OUT.url, Rest.Signing::class, null,
+                                method = Request.Method.POST,
+                                body = "one_tap_app_login=1&user_id=${m.acc!!.id}",
+                                onError = { signOut(bd.root.isChecked) }
+                            ) { signOut(bd.root.isChecked) }
                         }
                     }.create().show()
                     true
@@ -398,6 +394,19 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
 
     private fun switchAcc() {
         gsp.edit().remove(Login.spAccount).commit()
+        goTo(Login::class, true)
+    }
+
+    private fun signOut(bd: Boolean) {
+        ForegroundService.terminateTasks(c)
+        if (bd) {
+            Settings.deleteDb(m.acc!!.id.toString())
+            Settings.deleteSp(this@Main)
+        }
+        Account.save(
+            c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
+        gsp.edit().remove(Login.spAccount).commit()
+        m.acc = null
         goTo(Login::class, true)
     }
 

@@ -24,9 +24,11 @@ class Api<JSON>(
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
-    private val listener: (json: JSON) -> Unit
+    onError: ((res: NetworkResponse?) -> Unit)? = null,
+    private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
     handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget() // NetworkResponse?
+    onError?.let { func -> func(it.networkResponse) }
 }) {
     init {
         setShouldCache(cache)
@@ -44,7 +46,7 @@ class Api<JSON>(
     @Suppress("UNCHECKED_CAST")
     override fun deliverResponse(response: String) {
         try {
-            listener(Gson().fromJson(response, clazz.java) as JSON)
+            onSuccess(Gson().fromJson(response, clazz.java) as JSON)
         } catch (e: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>", true)
                 && response.contains("Log in • Instagram")
@@ -82,7 +84,9 @@ class Api<JSON>(
         SAVE("https://www.instagram.com/web/save/%s/save/"),
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
-        INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/"),
+        INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
+
+        //persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]&limit=10
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
 
         SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// POST

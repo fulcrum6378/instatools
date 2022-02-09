@@ -88,7 +88,7 @@ class PageBox(c: Main) : BasePage(c) {
 
     companion object {
         const val HANDLE_FETCHED_SOME = 44
-        const val DELAY = 3000L
+        const val DELAY = 800L
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -195,6 +195,8 @@ class PageBox(c: Main) : BasePage(c) {
     }
 
     inner class FetchInbox : BaseThread() {
+        private var nextCursor: String? = null
+
         override fun run() {
             super.run()
             c.m.dmThreads = arrayListOf()
@@ -202,8 +204,12 @@ class PageBox(c: Main) : BasePage(c) {
         }
 
         private fun fetch() {
-            Api<InboxPage>(c, Api.Type.INBOX.url, InboxPage::class, handler) { page ->
+            Api<InboxPage>(
+                c, Api.Type.INBOX.url.format(nextCursor ?: ""), InboxPage::class, handler
+            ) { page ->
                 c.m.dmThreads?.addAll(page.inbox.threads)
+                c.m.dmThreads?.sortByDescending { it.last_activity_at }
+                nextCursor = page.inbox.oldest_cursor
                 if (page.inbox.has_older) Delay(DELAY) { fetch() }
                 else {
                     handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
