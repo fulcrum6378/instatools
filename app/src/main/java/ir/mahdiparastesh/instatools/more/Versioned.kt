@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.more
 
 import ir.mahdiparastesh.instatools.json.Media
+import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
 abstract class Versioned(
@@ -9,13 +10,26 @@ abstract class Versioned(
     val original_width: Float?,
     val video_versions: Array<Media.VideoVersion>?
 ) {
-    fun best(): String? {
+    companion object {
+        const val BEST = 0f
+        const val WORST = -1f
+        // Any positive number except these represents an ideal width,
+        // Any negative number except these represents an ideal height.
+    }
+
+    fun nearest(ideal: Float = BEST): String? {
         var ret: String? = null
         if (video_versions != null)
-            ret = bestOfList(video_versions as Array<Media.Candidate>)
+            ret = funChooser(video_versions as Array<Media.Candidate>, ideal)
         if (ret == null && image_versions2 != null)
-            ret = bestOfList(image_versions2.candidates)
+            ret = funChooser(image_versions2.candidates, ideal)
         return ret
+    }
+
+    private fun funChooser(list: Array<Media.Candidate>, ideal: Float): String? = when (ideal) {
+        BEST -> bestOfList(list)
+        WORST -> worstOfList(list)
+        else -> nearestOfList(list, ideal)
     }
 
     private fun bestOfList(list: Array<Media.Candidate>): String? {
@@ -34,13 +48,26 @@ abstract class Versioned(
         return ret
     }
 
-    fun worst(): String? {
-        var ret: String? = null
-        if (video_versions != null)
-            ret = worstOfList(video_versions as Array<Media.Candidate>)
-        if (ret == null && image_versions2 != null)
-            ret = worstOfList(image_versions2.candidates)
-        return ret
+    fun nearestOfList(list: Array<Media.Candidate>, ideal: Float): String? {
+        if (original_width == null || original_height == null) return null
+        var nW = original_width
+        var nH = original_height
+        var nWDif = abs(ideal - nW)
+        var nHDif = abs(ideal - nH)
+        if (ideal > 0) list.forEach {
+            if (abs(ideal - it.width) >= nWDif) return@forEach
+            nWDif = abs(ideal - it.width)
+            nW = it.width
+            nH = it.height
+        } else list.forEach {
+            val idealH = abs(ideal)
+            if (abs(idealH - it.height) >= nHDif) return@forEach
+            nHDif = abs(idealH - it.height)
+            nW = it.height
+            nH = it.width
+        }
+        return list.find { it.width == nW && it.height == nH }?.url
+            ?: list.getOrNull(0)?.url
     }
 
     private fun worstOfList(list: Array<Media.Candidate>): String? {

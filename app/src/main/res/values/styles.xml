@@ -64,6 +64,13 @@
         <item name="shimmer_width_ratio">2</item>
     </style>
 
+    <style name="shimmerIv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/shimmerIvBg</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
     <style name="more">
         <item name="android:layout_width">@dimen/moreAction</item>
         <item name="android:layout_height">@dimen/moreAction</item>

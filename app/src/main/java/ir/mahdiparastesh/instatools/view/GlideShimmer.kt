@@ -8,13 +8,16 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.shimmer.ShimmerFrameLayout
 
-class GlideShimmer(private val layout: ShimmerFrameLayout, private val image: ImageView) :
-    RequestListener<Drawable> {
+class GlideShimmer(
+    private val layout: ShimmerFrameLayout, private val image: ImageView,
+    private val moreover: ((succeeded: Boolean) -> Unit)? = null
+) : RequestListener<Drawable> {
     override fun onLoadFailed(
         e: GlideException?, model: Any?, target: Target<Drawable>?,
         isFirstResource: Boolean
     ): Boolean {
         layout.stopShimmer()
+        moreover?.let { it(false) }
         return false
     }
 
@@ -25,6 +28,7 @@ class GlideShimmer(private val layout: ShimmerFrameLayout, private val image: Im
         layout.hideShimmer()
         layout.stopShimmer()
         image.background = null
+        moreover?.let { it(true) }
         return false
     }
 }

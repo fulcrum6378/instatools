@@ -9,11 +9,7 @@
 
     <ImageView
         android:id="@+id/thumbnail"
-        style="@style/parentConstraint"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/shimmerIvBg"
-        android:scaleType="centerCrop" />
+        style="@style/shimmerIv" />
 
     <View
         android:id="@+id/click"

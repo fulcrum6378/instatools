@@ -9,7 +9,7 @@ class Dm(
     val item_id: String,
     val item_type: String,
     val preview_medias: Array<Any?>,
-    val reactions: Reactions,
+    val reactions: Reactions?,
     val show_forward_attribution: Boolean,
     val timestamp: Double,
     val user_id: Double,

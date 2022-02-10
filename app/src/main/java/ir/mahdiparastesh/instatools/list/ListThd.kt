@@ -3,17 +3,23 @@ package ir.mahdiparastesh.instatools.list
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.anchor
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
@@ -22,6 +28,8 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.util.*
 
 class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListThd.ViewHolder>() {
+    private val idealW = (c.dm.widthPixels.toFloat() * 0.8f) * c.dm.density
+
     class ViewHolder(val b: ListThdBinding) : RecyclerView.ViewHolder(b.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,7 +40,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         if (c.m.dmThread != null)
-            onBind(c.c, h.b, c.m.dmThread!!.items[i], c.m.dmThread!!.items, i)
+            onBind(c.c, h.b, c.m.dmThread!!.items[i], c.m.dmThread!!.items, i, idealW)
     }
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
@@ -44,8 +52,13 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
             b.time.typeface = fontLight
         }
 
-        @SuppressLint("SetTextI18n")
-        fun onBind(c: Context, b: ListThdBinding, dm: Dm, list: List<Dm>, i: Int) {
+        @SuppressLint("CheckResult", "SetTextI18n")
+        fun onBind(
+            c: Context, b: ListThdBinding,
+            dm: Dm, list: List<Dm>,
+            i: Int, idealW: Float = Versioned.BEST
+        ) {
+            b.root.vis(dm.action_log == null)
 
             // Layout
             b.area.layoutParams = (b.area.layoutParams as ConstraintLayout.LayoutParams).apply {
@@ -53,6 +66,10 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
             }
             b.message.layoutParams =
                 (b.message.layoutParams as ConstraintLayout.LayoutParams).apply {
+                    horizontalBias = if (dm.is_sent_by_viewer) 1f else 0f
+                }
+            b.reactions.layoutParams =
+                (b.reactions.layoutParams as ConstraintLayout.LayoutParams).apply {
                     horizontalBias = if (dm.is_sent_by_viewer) 1f else 0f
                 }
             b.time.layoutParams =
@@ -103,6 +120,12 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.media_share != null -> media = dm.media_share
                 dm.profile != null ->
                     b.msgTv.anchor("@${dm.profile.username}", PROFILE.format(dm.profile.username))
+                dm.reel_share != null -> {
+                    media = dm.reel_share.media
+                    /*if (dm.reel_share.message == null)
+                        b.msgIv.contentDescription = dm.reel_share.message*/
+                    b.msgTv.text = dm.reel_share.text
+                }
                 dm.story_share != null -> {
                     media = dm.story_share.media
                     if (dm.story_share.message == null)
@@ -110,14 +133,37 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                     b.msgTv.text = dm.story_share.text
                 }
                 dm.text != null -> b.msgTv.text = dm.text
+                //else -> b.msgTv.text = dm.item_type
             }
             b.msgIv.vis(media != null)
             media?.apply {
-                if (carousel_media != null)
-                    Glide.with(c).load(carousel_media[0].worst()).into(b.msgIv)
-                else if (image_versions2 != null)
-                    Glide.with(c).load(worst()).into(b.msgIv)
+                if (carousel_media == null && image_versions2 == null) return@apply
+                Glide.with(c).load(
+                    if (carousel_media != null) carousel_media[0].nearest(idealW)
+                    else nearest(idealW)
+                ).diskCacheStrategy(DiskCacheStrategy.ALL).into(
+                    object : CustomTarget<Drawable>() {
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+                        override fun onResourceReady(
+                            resource: Drawable, transition: Transition<in Drawable>?
+                        ) {
+                            b.msgIv.setImageDrawable(resource)
+                        }
+                    })
             }
+
+            // Reactions
+            b.reactions.removeAllViews()
+            b.reactions.vis(dm.reactions != null)
+            if (dm.reactions != null) for (r in dm.reactions.emojis) b.reactions.addView(
+                TextView(c).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    text = r.emoji
+                }
+            )
 
             // Time
             b.time.text =

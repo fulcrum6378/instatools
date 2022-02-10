@@ -18,7 +18,7 @@ class ListCar(
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        Glide.with(c.c).load(slides[i].best()).into(h.b.image)
+        Glide.with(c.c).load(slides[i].nearest(Versioned.BEST)).into(h.b.image)
     }
 
     override fun getItemCount() = slides.size

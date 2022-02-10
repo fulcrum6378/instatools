@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Versioned
 import java.io.FileOutputStream
 import java.util.*
 
@@ -120,8 +121,9 @@ class Queuer : ForegroundService() {
                         userId = user.id
                         userName = user.username
                         itemId = med.pk
-                        url = med.best()
-                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst()
+                        url = med.nearest(Versioned.BEST)
+                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0)
+                            ?: med.nearest(Versioned.WORST)
                         mediaType = med.media_type.toInt().toByte()
                     }
                     handlingLink = null
@@ -146,14 +148,16 @@ class Queuer : ForegroundService() {
                         userId = med.user.pk
                         userName = med.user.username
                         itemId = car.pk
-                        url = car.best()
-                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst()
+                        url = car.nearest(Versioned.BEST)
+                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0)
+                            ?: car.nearest(Versioned.WORST)
                         mediaType = car.media_type.toInt().toByte()
                     } else addOns.add(
                         Queued(
-                            qud.addedAt, qud.link,
-                            qud.date, med.user.pk, med.user.username, car.pk, car.best(),
-                            med.thumbnails?.sprite_urls?.getOrNull(0) ?: car.worst(),
+                            qud.addedAt, qud.link, qud.date, med.user.pk, med.user.username,
+                            car.pk, car.nearest(Versioned.BEST),
+                            med.thumbnails?.sprite_urls?.getOrNull(0)
+                                ?: car.nearest(Versioned.WORST),
                             car.media_type.toInt().toByte()
                         )
                     )
@@ -162,8 +166,9 @@ class Queuer : ForegroundService() {
                     userId = med.user.pk
                     userName = med.user.username
                     itemId = med.pk
-                    url = med.best()
-                    thumb = med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.worst()
+                    url = med.nearest(Versioned.BEST)
+                    thumb =
+                        med.thumbnails?.sprite_urls?.getOrNull(0) ?: med.nearest(Versioned.WORST)
                     mediaType = med.media_type.toInt().toByte()
                 }
                 else -> {
