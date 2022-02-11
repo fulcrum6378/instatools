@@ -117,12 +117,16 @@ class PageBox(c: Main) : BasePage(c) {
 
     override fun onFailed(message: String) {
         b.refresher.isRefreshing = false
-        Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        try {
+            Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        } catch (ignored: IllegalArgumentException) {
+            // No suitable parent found from the given view. Please provide a valid view.
+        }
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)
         }
-        b.error.vis()
+        if (b.rv.adapter == null) b.error.vis()
     }
 
     @SuppressLint("NotifyDataSetChanged")

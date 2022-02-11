@@ -51,8 +51,10 @@ class PageSvd(c: Main) : BasePage(c) {
                         R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
                     )
                 )
-                Expandable.HANDLE_EXPANDABLE_ERROR ->
+                Expandable.HANDLE_EXPANDABLE_ERROR -> try {
                     Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
+                } catch (ignored: IllegalArgumentException) {
+                }
                 HANDLE_UNSAVE_DONE -> c.m.saved?.find { it.id == msg.obj as String }?.let { post ->
                     val x = c.m.saved!!.indexOf(post)
                     c.m.saved!!.removeAt(x)
@@ -110,12 +112,16 @@ class PageSvd(c: Main) : BasePage(c) {
 
     override fun onFailed(message: String) {
         b.refresher.isRefreshing = false
-        Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        try {
+            Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        } catch (ignored: IllegalArgumentException) {
+            // No suitable parent found from the given view. Please provide a valid view.
+        }
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)
         }
-        b.error.vis()
+        if (b.rv.adapter == null) b.error.vis()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -223,7 +229,7 @@ class PageSvd(c: Main) : BasePage(c) {
     inner class FetchSome : BaseThread() {
         override fun run() {
             super.run()
-            if (c.m.nextSaved?.has_next_page == false) return
+            if (c.m.nextSaved?.has_next_page == false || c.m.acc == null) return
             if (c.m.saved == null) Api<Profile>(
                 c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
             ) { profile ->

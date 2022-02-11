@@ -11,13 +11,14 @@ android {
         applicationId "ir.mahdiparastesh.instatools"
         minSdk 21
         targetSdk 31
-        versionCode 5
-        versionName '2.5'
+        versionCode 6
+        versionName '2.6'
     }
 
     buildTypes {
         release {
-            minifyEnabled true // Obfuscates; if not, multidex gets enabled because of so many libs!
+            minifyEnabled false // Obfuscates; if not, multidex gets enabled because of so many libs!
+            // Obfuscation makes a NullPointerException to be thrown after logging in
             shrinkResources false // Didn't have a significant effect
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

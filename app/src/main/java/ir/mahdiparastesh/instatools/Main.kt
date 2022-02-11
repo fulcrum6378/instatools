@@ -102,7 +102,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                             interstitialAd = null
                         }
 
-                        override fun onAdLoaded(ad: InterstitialAd) {
+                        override fun onAdLoaded(ad: InterstitialAd) {// RecentlyNonNull
                             interstitialAd = ad.apply {
                                 fullScreenContentCallback = interstitialListener
                             }
