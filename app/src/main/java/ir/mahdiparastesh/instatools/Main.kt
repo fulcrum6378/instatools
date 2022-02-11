@@ -34,7 +34,6 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
@@ -71,6 +70,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
 
     companion object {
         const val EXTRA_TURN_TO_PAGE = "EXTRA_TURN_TO_PAGE"
+        const val DEFAULT_PAGE = 1
         val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
@@ -92,23 +92,22 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
 
         // Ads
-        MobileAds.initialize(this) {
-            Delay(10000) {
-                InterstitialAd.load(
-                    this, "ca-app-pub-9457309151954418/5399016395",
-                    //ca-app-pub-3940256099942544/1033173712
-                    AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
-                        override fun onAdFailedToLoad(adError: LoadAdError) {
-                            interstitialAd = null
-                        }
+        MobileAds.initialize(c) {
+            InterstitialAd.load(
+                c, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/1033173712"
+                else "ca-app-pub-9457309151954418/5399016395",
+                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        interstitialAd = null
+                    }
 
-                        override fun onAdLoaded(ad: InterstitialAd) {// RecentlyNonNull
-                            interstitialAd = ad.apply {
-                                fullScreenContentCallback = interstitialListener
-                            }
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        interstitialAd = ad.apply {
+                            fullScreenContentCallback = interstitialListener
                         }
-                    })
-            }
+                    }
+                })
+            // Test Version doesn't need VPN, not sure about the release version.
         }
 
         // Toolbar & Navigation
@@ -166,19 +165,19 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         b.nav.menu.forEach {
-            val mNewTitle = SpannableString(it.title)
             val col = colorAc.value ?: color(R.color.defCA)
-            mNewTitle.setSpan(
-                CustomTypefaceSpan(
-                    "", fontRegular, resources.getDimension(R.dimen.navFont),
-                    if (it.isEnabled) col else weaken(col)
-                ), 0, mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            it.title = mNewTitle
+            it.title = SpannableString(it.title).apply {
+                setSpan(
+                    CustomTypefaceSpan(
+                        "", fontRegular, resources.getDimension(R.dimen.navFont),
+                        if (it.isEnabled) col else weaken(col)
+                    ), 0, length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            }
         }
 
         // Paging
-        m.currentPage.value = sp?.getInt(spMainPage, 0) ?: 0
+        m.currentPage.value = sp?.getInt(spMainPage, DEFAULT_PAGE) ?: DEFAULT_PAGE
         if (page1 == null) page1 = PageUnf(this)
         if (page2 == null) page2 = PageSvd(this)
         if (page3 == null) page3 = PageBox(this)
@@ -310,6 +309,7 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
 
     override fun onBackPressed() {
         if (pages()[m.currentPage.value!!].goBack()) return
+        if (isDbInitialised()) db.close()
         super.onBackPressed()
     }
 

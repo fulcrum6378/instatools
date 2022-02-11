@@ -127,10 +127,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
-        if (::db.isInitialized) db.close()
         com.handler = null
-        super.onDestroy()
         com.active = false
+        // if (::db.isInitialized && !Inquisitor.active && !Exporter.active && !Queuer.active) db.close()
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

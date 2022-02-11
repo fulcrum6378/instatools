@@ -115,7 +115,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
     }
 
     override fun onDestroy() {
-        if (::db.isInitialized) db.close()
+        // if (::db.isInitialized && !Inquisitor.active && !Exporter.active && !Queuer.active) db.close()
         super.onDestroy()
     }
 
@@ -140,6 +140,8 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
     }
 
     fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
+
+    fun isDbInitialised() = ::db.isInitialized
 
     @Suppress("unused")
     enum class Theme(val res: Int) {

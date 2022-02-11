@@ -13,7 +13,7 @@ import ir.mahdiparastesh.instatools.view.GlideShimmer
 
 class ListPrf(val c: Viewer) : RecyclerView.Adapter<ListPrf.ViewHolder>() {
     val expandable = Expandable(
-        c, c.b.expanded, c.b.refresher, Viewer.handler,
+        c, c.b.expanded, c.b.expandedIndicator, c.b.refresher, Viewer.handler,
         c.color(if (!c.night) R.color.defBG else R.color.CSD)
     )
 

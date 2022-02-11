@@ -22,7 +22,7 @@
         <activity
             android:name=".Main"
             android:exported="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

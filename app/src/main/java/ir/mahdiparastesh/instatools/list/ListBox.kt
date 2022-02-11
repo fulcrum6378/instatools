@@ -29,7 +29,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         var thd = c.m.dmThreads!![i]
         if (!thd.is_group) {
             Glide.with(c.c).load(thd.users[0].profile_pic_url).into(h.b.photo)
-            h.b.name.text = thd.users[0].full_name.ifBlank { thd.users[0].username }
+            h.b.name.text = thd.users[0].visName()
         } else {
             h.b.photo.setImageResource(R.drawable.switch_account)
             h.b.name.text = thd.thread_title

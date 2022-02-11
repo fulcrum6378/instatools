@@ -107,10 +107,13 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             }
         })
 
-        if (c.m.unfollowers != null) adapt()
-        else Thread {
-            handler?.obtainMessage(HANDLE_LOADED, c.dao.unfollowers())?.sendToTarget()
-        }.start()
+        when {
+            Inquisitor.active -> preload()
+            c.m.unfollowers != null -> adapt()
+            else -> Thread {
+                handler?.obtainMessage(HANDLE_LOADED, c.dao.unfollowers())?.sendToTarget()
+            }.start()
+        }
         return b.root
     }
 
@@ -167,18 +170,25 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
     private var calcSum = 0
     private fun calculate() {
         if (calcSum <= 0) return
+        val seconds = ((((if (!Inquisitor.hurry) Inquisitor.DELAY else Inquisitor.DELAY_HURRY))
+            .toFloat() / 1000f) * (calcSum.toFloat() - calcItem.toFloat())).toInt()
         bu.calc.text = c.getString(
-            R.string.unfCalc, calcItem, calcSum,
+            if (seconds >= 60) R.string.unfCalcMin else R.string.unfCalcSec, calcItem, calcSum,
             DecimalFormat("#.##").format((100f / calcSum.toFloat()) * calcItem.toFloat()),
-            (((if (!Inquisitor.hurry) Inquisitor.DELAY else Inquisitor.DELAY_HURRY) / 1000).toFloat()
-                    * (calcSum.toFloat() - calcItem.toFloat())).toInt()
+            if (seconds >= 60) seconds / 60 else seconds
         )
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun adapt() {
+        /*val flwCount = c.sp?.getInt(Settings.spFollowingCount, -2)
+        b.stat.vis(flwCount != -2)
+        b.stat.text = if (flwCount != -2) c.getString(
+            R.string.unfStat, flwCount, c.m.unfollowers?.size ?: 0
+        ) else ""*/
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
+        // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {

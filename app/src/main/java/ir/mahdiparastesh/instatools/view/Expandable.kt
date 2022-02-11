@@ -9,20 +9,21 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Handler
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.viewpager2.widget.ViewPager2
+import com.tbuonomo.viewpagerdotsindicator.BaseDotsIndicator
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class Expandable(
     private val c: BaseActivity,
     private val slider: ViewPager2,
-    private val root: ViewGroup,
+    private val indicator: BaseDotsIndicator,
+    private val wrapper: View,
     private val handler: Handler?,
     private val colorBg: Int = c.color(R.color.defBG)
 ) {
@@ -44,22 +45,20 @@ class Expandable(
         Api<Media.MediaWrapperApi>(
             c, Api.Type.POST.url.format(post), Media.MediaWrapperApi::class, handler, cache = true
         ) { wrapper ->
-            val med = wrapper.items?.get(0)
+            val med = wrapper.items?.getOrNull(0)
             if (med == null) {
                 handler?.obtainMessage(HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
                 return@Api; }
-            @Suppress("UNCHECKED_CAST")
-            if (med.carousel_media != null)
-                slider.adapter = ListCar(c, med.carousel_media as Array<Versioned>)
-            else if (med.image_versions2 != null)
-                slider.adapter = ListCar(c, arrayOf(med))
+            slider.adapter = ListCar(c, med)
+            indicator.setViewPager2(slider)
+            indicator.vis()
         }
         val startBoundsInt = Rect()
         val finalBoundsInt = Rect()
         val globalOffset = Point()
 
         thumb?.getGlobalVisibleRect(startBoundsInt)
-        root.getGlobalVisibleRect(finalBoundsInt, globalOffset)
+        wrapper.getGlobalVisibleRect(finalBoundsInt, globalOffset)
         startBoundsInt.offset(-globalOffset.x, -globalOffset.y)
         finalBoundsInt.offset(-globalOffset.x, -globalOffset.y)
 
@@ -81,7 +80,7 @@ class Expandable(
         }
 
         thumb!!.alpha = 0f
-        slider.visibility = View.VISIBLE
+        slider.vis()
         slider.pivotX = 0f
         slider.pivotY = 0f
 
@@ -113,11 +112,11 @@ class Expandable(
             })
             start()
         }
-        //slider.setOnClickListener { collapse() }
     }
 
     fun collapse() {
         if (startBounds == null || startScale == null || !zoomed) return
+        indicator.vis(false)
         currentAnimator?.cancel()
         currentAnimator = AnimatorSet().apply {
             play(ObjectAnimator.ofFloat(slider, View.X, startBounds!!.left)).apply {
@@ -131,7 +130,7 @@ class Expandable(
                 override fun onAnimationEnd(animation: Animator) {
                     thumb?.alpha = 1f
                     thumb = null
-                    slider.visibility = View.GONE
+                    slider.vis(false)
                     slider.adapter = null
                     currentAnimator = null
                     zoomed = false
@@ -140,7 +139,7 @@ class Expandable(
                 override fun onAnimationCancel(animation: Animator) {
                     thumb?.alpha = 1f
                     thumb = null
-                    slider.visibility = View.GONE
+                    slider.vis(false)
                     currentAnimator = null
                     zoomed = false
                 }

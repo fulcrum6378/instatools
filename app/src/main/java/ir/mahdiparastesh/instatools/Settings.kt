@@ -39,9 +39,13 @@ class Settings : BaseActivity() {
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val spStorage = "storage"
 
-        // Hidden
+        // Hidden Settings
         const val spMainPage = "main_page"
         const val spBranching = "branching"
+
+        // Non-Setting Saved Values
+        const val spIsUnfComplete = "is_unf_complete"
+        const val spFollowingCount = "following_count"
 
         var recreateMain = false
 

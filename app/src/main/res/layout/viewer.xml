@@ -69,4 +69,8 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/expanded"
         style="@style/expanded" />
+
+    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+        android:id="@+id/expandedIndicator"
+        style="@style/expandedIndicator" />
 </androidx.constraintlayout.widget.ConstraintLayout>

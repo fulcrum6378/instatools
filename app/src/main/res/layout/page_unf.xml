@@ -7,6 +7,18 @@
     tools:context=".frag.PageUnf"
     tools:ignore="MissingConstraints">
 
+    <!--<TextView
+        TODO: android:id="@+id/stat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:maxLines="1"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="?attr/colorAccent"
+        android:textSize="15sp"
+        android:visibility="gone" />-->
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
         style="@style/refresher">

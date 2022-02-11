@@ -23,7 +23,9 @@ open class Rest(val status: String) {
         val username: String,
         //val wa_addressable: Any?,// Double or Boolean
         //val wa_eligibility: Double?
-    )
+    ) {
+        fun visName() = full_name.ifBlank { username }
+    }
 
     class Follow( // Both following and followers
         val next_max_id: String? = null,

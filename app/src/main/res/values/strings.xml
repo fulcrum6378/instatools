@@ -38,6 +38,9 @@
     <string name="viewProfile">View Profile</string>
     <string name="viewHere">View Here</string>
     <string name="viewInInsta">View in Instagram</string>
+    <string name="addToFav">Add to favourites</string>
+    <string name="removeFav">Remove from favourites</string>
+    <string name="unfStat">%1$d of your %2$d following don\'t follow you back!</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -64,9 +67,8 @@
     <string name="unfPreload">Finding unfollowers needs to be done slowly; otherwise Instagram will detect you as a robot and temporarily block some of your features, or sign you out of this session!</string>
     <string name="unfHurry">Hurry!</string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
-    <string name="unfCalc">%1$d / %2$d (%3$s%%)\n%4$d seconds remaining&#8230;</string>
-    <string name="addToFav">Add to favourites</string>
-    <string name="removeFav">Remove from favourites</string>
+    <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\n%4$d seconds remaining&#8230;</string>
+    <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\n%4$d minutes remaining&#8230;</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>

@@ -85,6 +85,23 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="expandedIndicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="dotsColor">?attr/colorAccent</item>
+        <item name="dotsCornerRadius">6dp</item>
+        <item name="dotsSize">12dp</item>
+        <item name="dotsSpacing">3dp</item>
+        <item name="dotsWidthFactor">2.5</item>
+        <item name="progressMode">true</item>
+        <item name="selectedDotColor">?attr/colorAccent</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
     <style name="simpleLoading" parent="parentConstraint">
         <item name="android:layout_width">@dimen/simpleLoading</item>
         <item name="android:layout_height">@dimen/simpleLoading</item>

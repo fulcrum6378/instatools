@@ -1,10 +1,13 @@
 package ir.mahdiparastesh.instatools.serv
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings.Companion.spFollowingCount
+import ir.mahdiparastesh.instatools.Settings.Companion.spIsUnfComplete
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.frag.PageUnf
@@ -15,6 +18,7 @@ import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 
+@SuppressLint("ApplySharedPref")
 class Inquisitor : ForegroundService() {
     private var inquiry: Inquiry? = null
     var sumOfErrors = 0
@@ -35,7 +39,7 @@ class Inquisitor : ForegroundService() {
         override var handler: Handler? = null
 
         const val MAX_ERRORS = 10
-        const val DELAY = 3000L
+        const val DELAY = 2000L
         const val DELAY_HURRY = 750L
         var hurry = false
     }
@@ -62,7 +66,7 @@ class Inquisitor : ForegroundService() {
     override fun onAbort(cancelled: Boolean) {
         PageUnf.theHandler?.obtainMessage(BasePage.HANDLE_ABORTED)?.sendToTarget()
         inquiry?.interrupt()
-        Thread { dao.deleteUnfollowers() }.start()
+        sp?.edit()?.putBoolean(spIsUnfComplete, false)?.commit()
         super.onAbort(cancelled)
     }
 
@@ -85,14 +89,17 @@ class Inquisitor : ForegroundService() {
                 following.addAll(flw.users.toMutableList())
                 PageUnf.theHandler?.obtainMessage(BasePage.HANDLE_FETCHED, following.size)
                     ?.sendToTarget()
-                if (flw.next_max_id == null) analyse()
-                else Delay { allFollow(flw.next_max_id) }
+                if (flw.next_max_id == null) {
+                    sp?.edit()?.putInt(spFollowingCount, following.size)?.commit()
+                    analyse()
+                } else Delay { allFollow(flw.next_max_id) }
             }
         }
 
         private fun analyse(i: Int = 0) {
             if (!active) return
             if (i >= following.size) {
+                sp?.edit()?.putBoolean(spIsUnfComplete, true)?.commit()
                 PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_COMPLETED, unfollowers)
                     ?.sendToTarget()
                 this@Inquisitor.destroy()
