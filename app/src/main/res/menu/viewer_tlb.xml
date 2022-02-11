@@ -6,4 +6,9 @@
         android:icon="@drawable/instagram"
         android:title="@string/viewInInsta"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtFav"
+        android:icon="@drawable/non_favourite"
+        android:title="@string/addToFav"
+        app:showAsAction="ifRoom" />
 </menu>

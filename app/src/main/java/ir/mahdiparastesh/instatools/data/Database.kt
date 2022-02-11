@@ -5,7 +5,7 @@ import androidx.room.*
 
 @androidx.room.Database(
     entities = [Unfollower::class, Favourite::class, Queued::class, Exportable::class],
-    version = 3, exportSchema = false
+    version = 4, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -52,6 +52,19 @@ abstract class Database : RoomDatabase() {
 
         @Delete
         fun deleteExportable(item: Exportable)
+
+
+        @Query("SELECT * FROM Favourite")
+        fun favourites(): List<Favourite>
+
+        @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
+        fun favourite(id: String): List<Favourite>
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addFavourite(item: Favourite)
+
+        @Delete
+        fun deleteFavourite(item: Favourite)
     }
 
     companion object {

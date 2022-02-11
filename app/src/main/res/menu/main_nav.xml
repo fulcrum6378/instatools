@@ -7,8 +7,7 @@
     <item
         android:id="@+id/mnFavourites"
         android:icon="@drawable/favourite"
-        android:title="@string/favourites"
-        android:visible="false" />
+        android:title="@string/favourites" />
     <item
         android:id="@+id/mnGSettings"
         android:icon="@drawable/settings"

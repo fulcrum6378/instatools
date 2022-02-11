@@ -28,8 +28,6 @@ import java.io.FileOutputStream
 import java.util.*
 
 class Queuer : ForegroundService() {
-    private lateinit var db: Database
-    private lateinit var dao: Database.DAO
     private var dest: String? = null
     private var handlingLink: Queued? = null
 
@@ -242,18 +240,19 @@ class Queuer : ForegroundService() {
         // In that case it starts creating "fulcrum1378 (1)", "fulcrum1378 (2)", etc...
         // It may be annoying but at least throws no exceptions :)
         var branch: DocumentFile?
-        if (bPreference(Settings.spBranching, true) != false) {
+        val shouldBranch = bPreference(Settings.spBranching, true) != false
+        if (shouldBranch) {
             branch = stem.findFile(q.userName!!)
             if (branch == null) branch = stem.createDirectory(q.userName!!)
         } else branch = stem
         val type = MediaType.values().find { it.inDb == q.mediaType }!!
-        val fName = q.fName(type.ext)
+        val fName = q.fName(type.ext, !shouldBranch)
         var leaf = branch!!.findFile(fName)
         if (leaf != null) return
         leaf = branch.createFile(type.mime, fName)
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
-        } // TODO: RECOGNISE BY ID LATER
+        }
     }
 
     override fun onDestroy() {

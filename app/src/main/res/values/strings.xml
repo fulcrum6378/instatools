@@ -65,6 +65,8 @@
     <string name="unfHurry">Hurry!</string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="unfCalc">%1$d / %2$d (%3$s%%)\n%4$d seconds remaining&#8230;</string>
+    <string name="addToFav">Add to favourites</string>
+    <string name="removeFav">Remove from favourites</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>

@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.serv.Inquisitor
@@ -27,6 +28,8 @@ import kotlin.reflect.KClass
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
     abstract val com: ForegroundServiceCompanion
+    protected lateinit var db: Database
+    lateinit var dao: Database.DAO
 
     companion object {
         const val ACTION_STOP = "ACTION_STOP"
@@ -124,6 +127,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
+        if (::db.isInitialized) db.close()
         com.handler = null
         super.onDestroy()
         com.active = false

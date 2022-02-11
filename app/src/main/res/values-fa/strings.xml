@@ -38,6 +38,8 @@
     <string name="viewProfile">باز کردن پروفایل</string>
     <string name="viewHere">باز کردن در اینجا</string>
     <string name="viewInInsta">باز کردن در اینستاگرام</string>
+    <string name="addToFav">اضافه به مورد علاقه</string>
+    <string name="removeFav">حذف از مورد علاقه</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>

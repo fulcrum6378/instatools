@@ -53,7 +53,7 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_LOADED -> (msg.obj as List<Unfollower>).apply {
-                        onLoad()
+                        onLoaded()
                         c.m.unfollowers = ArrayList(this)
                         c.m.unfollowers!!.sortBy { it.followedBy }
                         if (isNullOrEmpty()) preload() else adapt()
@@ -89,7 +89,7 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
                         c.m.unfollowers = ArrayList(msg.obj as List<Unfollower>)
                         c.m.unfollowers!!.sortBy { it.followedBy }
                         adapt()
-                        onLoad()
+                        onLoaded()
                     }
                     HANDLE_COULD_NOT ->
                         Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
@@ -114,7 +114,11 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
         return b.root
     }
 
-    override fun onLoad() {
+    override fun onFailed(message: String) {
+    }
+
+    override fun onLoaded() {
+        b.refresher.isRefreshing = false
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)

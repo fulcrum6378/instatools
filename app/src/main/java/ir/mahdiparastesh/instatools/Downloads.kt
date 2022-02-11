@@ -22,8 +22,6 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
     override val menuRes: Int? = null
-    private lateinit var db: Database
-    lateinit var dao: Database.DAO
     var tracker: SelectionTracker<String>? = null
     private var selectivity = false
 

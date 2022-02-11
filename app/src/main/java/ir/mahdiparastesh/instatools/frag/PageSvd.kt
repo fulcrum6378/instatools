@@ -39,26 +39,18 @@ class PageSvd(c: Main) : BasePage(c) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 HANDLE_FETCHED -> {
-                    adapt()
-                    b.refresher.isRefreshing = false
+                    onLoaded()
                     if (!c.m.saved.isNullOrEmpty() && c.m.nextSaved?.has_next_page == true &&
                         !b.rv.canScrollVertically(1)
                     ) thread = FetchSome().also { it.start() }
                 }
-                HANDLE_ABORTED -> {
-                    b.refresher.isRefreshing = false
-                    Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
-                }
+                HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
                 HANDLE_INIT_QUEUER -> Downloads.initService(c)
-                Api.HANDLE_ERROR -> {
-                    b.refresher.isRefreshing = false
-                    Snackbar.make(
-                        b.root, c.getString(
-                            R.string.unknownError,
-                            (msg.obj as NetworkResponse?)?.statusCode.toString()
-                        ), Snackbar.LENGTH_SHORT
-                    ).show()
-                }
+                Api.HANDLE_ERROR -> onFailed(
+                    c.getString(
+                        R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
+                    )
+                )
                 Expandable.HANDLE_EXPANDABLE_ERROR ->
                     Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
                 HANDLE_UNSAVE_DONE -> c.m.saved?.find { it.id == msg.obj as String }?.let { post ->
@@ -111,26 +103,32 @@ class PageSvd(c: Main) : BasePage(c) {
             }
         })
 
-        if (c.m.saved != null) adapt()
+        if (c.m.saved != null) onLoaded()
         else if (thread == null) thread = FetchSome().also { it.start() }
         return b.root
     }
 
-    override fun onLoad() {
+    override fun onFailed(message: String) {
+        b.refresher.isRefreshing = false
+        Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        if (b.root.contains(b.loading)) {
+            b.loading.animation?.cancel()
+            b.root.removeView(b.loading)
+        }
+        b.error.vis()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onLoaded() {
+        b.refresher.isRefreshing = false
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)
         }
         b.error.vis(false)
-    }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun adapt() {
-        if (b.rv.adapter != null) {
-            b.rv.adapter?.notifyDataSetChanged()
-            return; }
-        onLoad()
-        b.rv.adapter = ListSvd(c, this)
+        if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
+        else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) {
             tracker = SelectionTracker.Builder(
                 "saved", b.rv,

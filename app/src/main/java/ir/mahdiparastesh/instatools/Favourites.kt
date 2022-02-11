@@ -1,7 +1,9 @@
 package ir.mahdiparastesh.instatools
 
 import android.os.Bundle
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
+import ir.mahdiparastesh.instatools.list.ListFav
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
 class Favourites : BaseActivity() {
@@ -13,5 +15,9 @@ class Favourites : BaseActivity() {
         b = FavouritesBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.fvTitle)
+        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
+
+        m.fav = ArrayList(dao.favourites())
+        b.rv.adapter = ListFav(this)
     }
 }

@@ -18,7 +18,7 @@
         android:paddingStart="30dp"
         android:paddingEnd="30dp"
         android:textAlignment="center"
-        android:textColor="@color/defCA"
+        android:textColor="?attr/defCA"
         android:textSize="14sp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,7 +100,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="3dp"
             android:alpha="0.8"
-            android:textColor="@color/defCA"
+            android:textColor="?attr/defCA"
             android:textSize="11dp"
             app:layout_constraintBottom_toBottomOf="@id/reactions"
             tools:ignore="RtlHardcoded" />

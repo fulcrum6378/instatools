@@ -26,15 +26,23 @@ class MaterialMenu(
     }
 
     override fun show() {
-        menu.forEach {
-            val mNewTitle = SpannableString(it.title)
-            mNewTitle.setSpan(
-                CustomTypefaceSpan("", c.fontRegular, c.dm.density * 16f, ca ?: TypedValue().apply {
-                    c.theme.resolveAttribute(R.attr.colorAccent, this, true)
-                }.data), 0, mNewTitle.length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
-            )
-            it.title = mNewTitle
-        }
+        menu.forEach { it.stylise(c, ca) }
         super.show()
+    }
+
+    companion object {
+        fun MenuItem.stylise(c: BaseActivity, ca: Int? = null) {
+            if (title == null) return
+            title = SpannableString(title).apply {
+                setSpan(
+                    CustomTypefaceSpan(
+                        "", c.fontRegular, c.resources.getDimension(R.dimen.menuFont),
+                        ca ?: TypedValue().apply {
+                            c.theme.resolveAttribute(R.attr.colorAccent, this, true)
+                        }.data
+                    ), 0, length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
+                )
+            }
+        }
     }
 }

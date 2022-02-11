@@ -25,8 +25,6 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.view.PdfExporter
 
 class Exporter : ForegroundService() {
-    private lateinit var db: Database
-    private lateinit var dao: Database.DAO
     private var exp: Exportable? = null
 
     override val com: ForegroundServiceCompanion
@@ -59,7 +57,7 @@ class Exporter : ForegroundService() {
                             exp?.threadData?.items?.addAll(dmThd.items)
                             exp?.threadData?.has_older = dmThd.has_older
                         }
-                        fetchSome()
+                        fetchData()
                     }
                     Api.HANDLE_ERROR -> destroy()
                 }
@@ -72,17 +70,26 @@ class Exporter : ForegroundService() {
         exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
         if (exp == null) {
             destroy(); return; }
-        fetchSome()
+        fetchData()
     }
 
-    private fun fetchSome() {
+    private fun fetchData() {
         if (exp == null) return
         exp!!.threadData?.items?.sortBy { it.timestamp }
         if (exp!!.threadData?.has_older == false) {
-            export(); return; }
+            fetchMedia(); return; }
         FetchSomeDm(
             this, exp!!.thread, exp!!.threadData?.items?.getOrNull(0)?.item_id ?: "", handler
         ).start()
+    }
+
+    private fun fetchMedia() {
+        if (exp?.threadData?.items == null) {
+            end(exp); return; }
+
+        // TODO
+
+        export()
     }
 
     private fun export() {
@@ -99,14 +106,14 @@ class Exporter : ForegroundService() {
                 override fun createView(c: Context, parent: ViewGroup, i: Int): View {
                     val b = ListThdBinding.inflate(
                         LayoutInflater.from(c).cloneInContext(
-                            ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY.res)
+                            ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
                         ), parent, false
                     )
                     ListThd.onCreate(
                         b, Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
                         Typeface.createFromAsset(c.assets, c.getString(R.string.font_light))
                     )
-                    ListThd.onBind(c, b, list[i], list, i)
+                    ListThd.onBind(c, b, list, i)
                     return b.root
                 }
             }.start()

@@ -38,6 +38,7 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
+import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
@@ -46,9 +47,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 @SuppressLint("ApplySharedPref")
 class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
-    private lateinit var db: Database
-    lateinit var dao: Database.DAO
-
     override val menuRes = R.menu.main_tlb
     private lateinit var toggleNav: ActionBarDrawerToggle
     private var searchInput: SearchView.SearchAutoComplete? = null
@@ -202,9 +200,10 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 window.decorView.setBackgroundColor(it)
                 window.statusBarColor = it
                 window.navigationBarColor = it
-                b.bnv.setBackgroundColor(it)
                 b.nav.setBackgroundColor(it)
+                b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
                 b.searchRes.setBackgroundColor(it)
+                b.bnv.setBackgroundColor(it)
                 page2?.b?.expanded?.setBackgroundColor(it)
             }
             colorBG.value = bg[m.currentPage.value!!]
@@ -213,7 +212,11 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 if (it == null) return@observe
                 val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
                 b.toolbar.navigationIcon?.colorFilter = cf
-                b.toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
+                b.toolbar.overflowIcon?.colorFilter = cf
+                b.toolbar.menu.forEach { item ->
+                    item.icon?.colorFilter = cf
+                    item.stylise(this@Main, it)
+                }
                 tbTitle?.setTextColor(it)
                 searchInput?.setTextColor(it)
                 searchInput?.setHintTextColor(weaken(it))
@@ -374,6 +377,10 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         )
         b.bnv.menu.forEach { it.isEnabled = !bb }
         if (!night) colorAc.value = colorAc.value
+        else {
+            b.toolbar.overflowIcon?.colorFilter = pdcf(R.color.defCA)
+            b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
+        }
     }
 
     private fun transFrag(from: Int? = null, to: Int? = null) =

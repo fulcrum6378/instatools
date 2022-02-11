@@ -24,13 +24,15 @@ import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
+import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
 abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
+    protected lateinit var db: Database
+    lateinit var dao: Database.DAO
     lateinit var dm: DisplayMetrics
-
-    @Suppress("MemberVisibilityCanBePrivate")
     lateinit var fontBold: Typeface
     lateinit var fontRegular: Typeface
     lateinit var fontLight: Typeface
@@ -99,13 +101,22 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
             theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
         }.data.apply {
             val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
-            toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
+            toolbar.menu.forEach { item ->
+                item.icon?.colorFilter = cf
+                item.stylise(this@BaseActivity)
+            }
             if (!isMain) {
                 toolbar.navigationIcon?.colorFilter = cf
                 tbTitle?.setTextColor(this)
             }
+            toolbar.overflowIcon?.colorFilter = cf
         }
         return true
+    }
+
+    override fun onDestroy() {
+        if (::db.isInitialized) db.close()
+        super.onDestroy()
     }
 
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
@@ -135,6 +146,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         DEFAULT(R.style.Theme_InstaTools),
         PRIMARY(R.style.Theme_InstaTools_Primary),
         SECONDARY(R.style.Theme_InstaTools_Secondary),
-        TERTIARY(R.style.Theme_InstaTools_Tertiary)
+        TERTIARY(R.style.Theme_InstaTools_Tertiary),
+        TERTIARY_LIGHT(R.style.Theme_InstaTools_Tertiary_Light)
     }
 }

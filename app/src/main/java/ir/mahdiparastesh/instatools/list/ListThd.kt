@@ -40,7 +40,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         if (c.m.dmThread != null)
-            onBind(c.c, h.b, c.m.dmThread!!.items[i], c.m.dmThread!!.items, i, idealW)
+            onBind(c.c, h.b, c.m.dmThread!!.items, i, idealW)
     }
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
@@ -54,10 +54,10 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
 
         @SuppressLint("CheckResult", "SetTextI18n")
         fun onBind(
-            c: Context, b: ListThdBinding,
-            dm: Dm, list: List<Dm>,
-            i: Int, idealW: Float = Versioned.BEST
+            c: Context, b: ListThdBinding, list: List<Dm>, i: Int,
+            idealW: Float = Versioned.BEST
         ) {
+            val dm = list.getOrNull(0) ?: return
             b.root.vis(dm.action_log == null)
 
             // Layout
@@ -145,9 +145,9 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                     object : CustomTarget<Drawable>() {
                         override fun onLoadCleared(placeholder: Drawable?) {}
                         override fun onResourceReady(
-                            resource: Drawable, transition: Transition<in Drawable>?
+                            res: Drawable, trans: Transition<in Drawable>?
                         ) {
-                            b.msgIv.setImageDrawable(resource)
+                            b.msgIv.setImageDrawable(res)
                         }
                     })
             }

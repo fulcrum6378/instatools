@@ -15,12 +15,13 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
 
     abstract fun updateShadow()
     abstract fun updateJumper()
-    abstract fun onLoad()
+    abstract fun onLoaded()
+    abstract fun onFailed(message: String)
 
     protected fun guestMode(parent: ConstraintLayout, theme: BaseActivity.Theme) {
         val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
         gb.root.typeface = c.fontRegular
-        onLoad()
+        onLoaded()
     }
 
     companion object {

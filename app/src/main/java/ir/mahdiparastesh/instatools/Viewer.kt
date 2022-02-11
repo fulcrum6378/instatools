@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.Toast
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Database
+import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
@@ -35,13 +37,12 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     override val menuRes = R.menu.viewer_tlb
-    private lateinit var db: Database
-    lateinit var dao: Database.DAO
     private var user: String? = null
     private var id: String? = null
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
     private var selectivity = false
+    private var dbFav: Favourite? = null
 
     companion object {
         private const val EXTRA_USER = "EXTRA_USER"
@@ -102,6 +103,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
         // Toolbar
         b.toolbar.setOnMenuItemClickListener(this)
+        dbFav = dao.favourite(id!!).getOrNull(0)
+        fixTbMenu()
 
         // List
         b.rv.layoutManager = GridLayoutManager(c, 3)
@@ -123,13 +126,13 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         // Profile
         b.proPic.layoutParams = b.proPic.layoutParams.apply { height = dm.widthPixels }
         b.proClick.setOnClickListener { v ->
-            if (m.vwPic == null) return@setOnClickListener
+            if (m.vwFav?.photo == null) return@setOnClickListener
             MaterialMenu(this@Viewer, v, R.menu.viewer_pic_more, Act().apply {
                 this[R.id.vpDownload] = {
                     dao.addQueued(
                         Queued(
                             Queuer.now(), "", Queuer.now(), id, user, "profile_photo",
-                            m.vwPic, m.vwPic, 1
+                            m.vwFav!!.photo, m.vwFav!!.photo, 1
                         )
                     )
                     Downloads.initService(this@Viewer)
@@ -160,11 +163,34 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     fun selective(bb: Boolean) {
         b.toolbar.menu.clear()
         b.toolbar.inflateMenu(if (bb) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
+        fixTbMenu()
+    }
+
+    private fun fixTbMenu() {
+        b.toolbar.menu.findItem(R.id.vtFav)
+            ?.setIcon(if (dbFav != null) R.drawable.favourite else R.drawable.non_favourite)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        fixTbMenu()
+        return true
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         R.id.vtInsta -> {
             UiTools.openProfile(this, user!!); true; }
+        R.id.vtFav -> {
+            if (m.vwFav != null) {
+                if (dbFav == null) {
+                    dbFav = m.vwFav!!
+                    dao.addFavourite(dbFav!!)
+                } else {
+                    dao.deleteFavourite(dbFav!!)
+                    dbFav = null
+                }
+                fixTbMenu()
+            }; true; }
 
         R.id.vtDownload -> {
             if (tracker != null && m.vwEdges != null)
@@ -199,7 +225,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         m.vwEdges = null
         m.vwInfo = null
-        m.vwPic = null
+        m.vwFav = null
         super.onBackPressed()
     }
 
@@ -242,9 +268,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()
                     return@Api
                 }
-                m.vwPic = u.profile_pic_url_hd ?: u.profile_pic_url
+
+                m.vwFav = Favourite(
+                    this@Viewer.id!!, u.username, u.full_name,
+                    u.profile_pic_url_hd ?: u.profile_pic_url,
+                    u.is_private == true
+                )
                 Glide.with(c)
-                    .load(m.vwPic)
+                    .load(m.vwFav!!.photo)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .addListener(GlideShimmer(b.proPic, b.proPicIv))
                     .into(b.proPicIv)

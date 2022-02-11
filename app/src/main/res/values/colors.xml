@@ -19,7 +19,8 @@
     <color name="shadow">#55000000</color>
 
     <color name="defBG">#FFF</color>
-    <color name="defCA">#262626</color>
+    <color name="defCALight">#262626</color>
+    <color name="defCA">@color/defCALight</color>
     <array name="BG">
         <item>@color/defBG</item>
         <item>@color/defBG</item>
@@ -39,7 +40,8 @@
     <color name="unfollowers">@color/CPD</color>
     <color name="saved">@color/CSD</color>
     <color name="direct">@color/CTD</color>
-    <color name="dmFromMe">#08000000</color>
+    <color name="dmFromMeLight">#08000000</color>
+    <color name="dmFromMe">@color/dmFromMeLight</color>
 
     <!-- Settings -->
     <color name="stPath">#EFEFEF</color>

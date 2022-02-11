@@ -44,14 +44,8 @@ class PageBox(c: Main) : BasePage(c) {
         @Suppress("UNCHECKED_CAST")
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                HANDLE_FETCHED -> {
-                    adapt()
-                    b.refresher.isRefreshing = false
-                }
-                HANDLE_ABORTED -> {
-                    b.refresher.isRefreshing = false
-                    Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
-                }
+                HANDLE_FETCHED -> onLoaded()
+                HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
                 HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
                     val dmThd = msg.obj as Dm.DmThread
                     val bef = c.m.dmThread!!.items.size
@@ -64,15 +58,11 @@ class PageBox(c: Main) : BasePage(c) {
                         it.notifyItemRangeChanged(dif, c.m.dmThread!!.items.size)
                     }
                 }
-                Api.HANDLE_ERROR -> {
-                    b.refresher.isRefreshing = false
-                    Snackbar.make(
-                        b.root, c.getString(
-                            R.string.unknownError,
-                            (msg.obj as NetworkResponse?)?.statusCode.toString()
-                        ), Snackbar.LENGTH_LONG
-                    ).show()
-                }
+                Api.HANDLE_ERROR -> onFailed(
+                    c.getString(
+                        R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
+                    )
+                )
             }
         }
     }
@@ -120,26 +110,34 @@ class PageBox(c: Main) : BasePage(c) {
             }
         })
 
-        if (c.m.dmThreads != null) adapt()
+        if (c.m.dmThreads != null) onLoaded()
         else if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
         return b.root
     }
 
-    override fun onLoad() {
+    override fun onFailed(message: String) {
+        b.refresher.isRefreshing = false
+        Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        if (b.root.contains(b.loading)) {
+            b.loading.animation?.cancel()
+            b.root.removeView(b.loading)
+        }
+        b.error.vis()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onLoaded() {
+        b.refresher.isRefreshing = false
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)
         }
         b.error.vis(false)
-    }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun adapt() {
         if (c.m.dmThread == null) {
-            if (b.rv.adapter == null || b.rv.adapter !is ListBox) {
-                onLoad()
+            if (b.rv.adapter == null || b.rv.adapter !is ListBox)
                 b.rv.adapter = ListBox(c, this)
-            } else b.rv.adapter?.notifyDataSetChanged()
+            else b.rv.adapter?.notifyDataSetChanged()
         } else {
             if (b.rv.adapter == null || b.rv.adapter !is ListThd)
                 b.rv.adapter = ListThd(c, this)
@@ -188,7 +186,7 @@ class PageBox(c: Main) : BasePage(c) {
     override fun goBack(): Boolean {
         if (c.m.dmThread != null) {
             c.m.dmThread = null
-            adapt()
+            onLoaded()
             return true
         }
         return false

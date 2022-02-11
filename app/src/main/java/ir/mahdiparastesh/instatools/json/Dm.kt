@@ -170,7 +170,11 @@ class Dm(
         val type: String,
     )
 
-    class Reactions(val likes: Array<Any?>, val emojis: Array<Emoji>, val likes_count: Double)
+    class Reactions(
+        //val likes: Array<Any?>,
+        val emojis: Array<Emoji>,
+        //val likes_count: Double
+    )
 
     class Emoji(
         val timestamp: Double,

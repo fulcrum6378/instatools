@@ -5,9 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 class Favourite(
-    @PrimaryKey var id: Long,
-    val user: String,
-    val name: String,
-    val photo: String?,
-    val isPrivate: Boolean
+    @PrimaryKey var id: String,
+    var user: String,
+    var name: String,
+    var photo: String?,
+    var isPrivate: Boolean
 )

@@ -16,8 +16,6 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 
 class Inquisitor : ForegroundService() {
-    private lateinit var db: Database
-    private lateinit var dao: Database.DAO
     private var inquiry: Inquiry? = null
     var sumOfErrors = 0
 
