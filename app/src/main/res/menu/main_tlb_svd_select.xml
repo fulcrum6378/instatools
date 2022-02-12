@@ -5,7 +5,7 @@
     tools:ignore="UnusedAttribute">
     <item
         android:id="@+id/mtUnsaveDownload"
-        android:icon="@drawable/download"
+        android:icon="@drawable/unsave_download"
         android:title="@string/unsaveDownload"
         android:tooltipText="@string/unsaveDownload"
         app:showAsAction="ifRoom" />

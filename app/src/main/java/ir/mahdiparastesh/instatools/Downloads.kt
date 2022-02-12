@@ -7,11 +7,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.annotation.MainThread
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.recyclerview.selection.SelectionTracker
-import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
@@ -30,7 +30,6 @@ class Downloads : BaseActivity() {
         b = DownloadsBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.dwTitle)
-        if (m.acc == null) m.acc = Account.selected(this)
         db = Database.build(c, (m.acc?.id ?: -1L).toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
@@ -86,7 +85,7 @@ class Downloads : BaseActivity() {
         Thread {
             m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
-            if (!m.queueds.isNullOrEmpty()) initService(this)
+            if (!m.queueds.isNullOrEmpty()) Thread { initService(this) }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
         }.start()
     }
@@ -103,10 +102,14 @@ class Downloads : BaseActivity() {
         const val HANDLE_RESET = 3
         var handler: Handler? = null
 
-        // SHOULD ONLY BE INVOKED BY THE MAIN THREAD
+        @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             if (c.sPreference(Settings.spStorage) == null) {
-                c.goTo(Settings::class); return; }
+                c.startActivity(Intent(c, Settings::class.java).apply {
+                    putExtra(Settings.EXTRA_GIVE_LINK_BACK, link)
+                    putExtra(Settings.EXTRA_IS_GLOBAL, true)
+                })
+                return; }
             if (Queuer.active) {
                 if (link != null)
                     Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()

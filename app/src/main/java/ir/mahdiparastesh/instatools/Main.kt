@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
-import android.text.SpannableString
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -22,6 +21,7 @@ import com.android.volley.Request
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
@@ -36,7 +36,6 @@ import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.view.CustomTypefaceSpan
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -44,7 +43,8 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 // adb connect 192.168.1.20:
 
 @SuppressLint("ApplySharedPref")
-class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
+class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener,
+    Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
     override val menuRes = R.menu.main_tlb
     private lateinit var toggleNav: ActionBarDrawerToggle
@@ -58,18 +58,10 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     private lateinit var bg: IntArray
     private lateinit var ca: IntArray
     private val colorBG = MutableLiveData<Int?>(null)
-
     private var interstitialAd: InterstitialAd? = null
-    private var interstitialListener = object : FullScreenContentCallback() {
-        override fun onAdDismissedFullScreenContent() {}
-        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {}
-        override fun onAdShowedFullScreenContent() {
-            interstitialAd = null
-        }
-    }
 
     companion object {
-        const val EXTRA_TURN_TO_PAGE = "EXTRA_TURN_TO_PAGE"
+        const val EXTRA_TURN_TO_PAGE = "turnToPage"
         const val DEFAULT_PAGE = 1
         val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
@@ -90,94 +82,14 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         guest = m.acc!!.id == -1L
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
-
-        // Ads
-        MobileAds.initialize(c) {
-            InterstitialAd.load(
-                c, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/1033173712"
-                else "ca-app-pub-9457309151954418/5399016395",
-                AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        interstitialAd = null
-                    }
-
-                    override fun onAdLoaded(ad: InterstitialAd) {
-                        interstitialAd = ad.apply {
-                            fullScreenContentCallback = interstitialListener
-                        }
-                    }
-                })
-            // Test Version doesn't need VPN, not sure about the release version.
-        }
-
-        // Toolbar & Navigation
         toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
-        toggleNav = ActionBarDrawerToggle(
-            this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
-        ).apply {
-            b.root.addDrawerListener(this)
-            isDrawerIndicatorEnabled = true
-            syncState()
-        }
-        b.nav.setNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.mnDownloads -> goTo(Downloads::class)
-                R.id.mnFavourites -> goTo(Favourites::class)
-                R.id.mnGSettings -> {
-                    startActivity(Intent(this, Settings::class.java)
-                        .apply { putExtra(Settings.EXTRA_IS_GLOBAL, true) })
-                    true
-                }
-                R.id.mnSettings -> goTo(Settings::class)
-                R.id.mnSwitchAccount -> {
-                    if (ForegroundService.srvComps.any { it.active }) AlertDialog.Builder(c).apply {
-                        setTitle(R.string.backgroundTasks)
-                        setMessage(R.string.terminateBgTasks)
-                        setNegativeButton(R.string.no, null)
-                        setPositiveButton(R.string.yes) { _, _ ->
-                            ForegroundService.terminateTasks(c)
-                            switchAcc()
-                        }
-                    }.create().show() else switchAcc()
-                    true
-                }
-                R.id.mnSignOut -> {
-                    val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
-                    AlertDialog.Builder(this).apply {
-                        setTitle(R.string.signOut)
-                        setMessage(R.string.signOutSure)
-                        setView(bd.root)
-                        setNegativeButton(R.string.no, null)
-                        setPositiveButton(R.string.yes) { _, _ ->
-                            Api<Rest.Signing>(
-                                this@Main, Api.Type.SIGN_OUT.url, Rest.Signing::class, null,
-                                method = Request.Method.POST,
-                                body = "one_tap_app_login=1&user_id=${m.acc!!.id}",
-                                onError = { signOut(bd.root.isChecked) }
-                            ) { signOut(bd.root.isChecked) }
-                        }
-                    }.create().show()
-                    true
-                }
-                else -> super.onOptionsItemSelected(item)
-            }
-        }
-        if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
-            .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        b.nav.menu.forEach {
-            val col = colorAc.value ?: color(R.color.defCA)
-            it.title = SpannableString(it.title).apply {
-                setSpan(
-                    CustomTypefaceSpan(
-                        "", fontRegular, resources.getDimension(R.dimen.navFont),
-                        if (it.isEnabled) col else weaken(col)
-                    ), 0, length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
-                )
-            }
-        }
+        MobileAds.initialize(c) { loadInterstitial() }
 
         // Paging
-        m.currentPage.value = sp?.getInt(spMainPage, DEFAULT_PAGE) ?: DEFAULT_PAGE
+        m.currentPage.value =
+            intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+                ?: sp?.getInt(spMainPage, DEFAULT_PAGE)
+                        ?: DEFAULT_PAGE
         if (page1 == null) page1 = PageUnf(this)
         if (page2 == null) page2 = PageSvd(this)
         if (page3 == null) page3 = PageBox(this)
@@ -227,6 +139,19 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
             it.setTextColor(ca[i / 2])
             it.typeface = fontLight
         }
+
+        // Navigation
+        toggleNav = ActionBarDrawerToggle(
+            this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
+        ).apply {
+            b.root.addDrawerListener(this)
+            isDrawerIndicatorEnabled = true
+            syncState()
+        }
+        b.nav.setNavigationItemSelectedListener(this)
+        if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
+            .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
+        b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -237,8 +162,53 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
     override fun onResume() {
         super.onResume()
         if (Settings.recreateMain) {
+            Settings.recreateMain = false
             recreate(); return; }
         interstitialAd?.show(this)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.mnDownloads -> goTo(Downloads::class)
+        R.id.mnFavourites -> goTo(Favourites::class)
+        R.id.mnGSettings -> {
+            startActivity(Intent(this, Settings::class.java)
+                .apply { putExtra(Settings.EXTRA_IS_GLOBAL, true) })
+            true
+        }
+        R.id.mnSettings -> goTo(Settings::class)
+        R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
+            AlertDialog.Builder(this)
+                .apply {
+                    setTitle(R.string.backgroundTasks)
+                    setMessage(R.string.terminateBgTasks)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        ForegroundService.terminateTasks(c)
+                        switchAcc()
+                    }
+                }.create().show()
+            true
+        } else {
+            switchAcc(); true; }
+        R.id.mnSignOut -> {
+            val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.signOut)
+                setMessage(R.string.signOutSure)
+                setView(bd.root)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    Api<Rest.Signing>(
+                        this@Main, Api.Type.SIGN_OUT.url, Rest.Signing::class, null,
+                        method = Request.Method.POST,
+                        body = "one_tap_app_login=1&user_id=${m.acc!!.id}",
+                        onError = { signOut(bd.root.isChecked) }
+                    ) { signOut(bd.root.isChecked) }
+                }
+            }.create().show()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -307,20 +277,23 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         else -> false
     }
 
-    override fun onBackPressed() {
-        if (pages()[m.currentPage.value!!].goBack()) return
-        if (isDbInitialised()) db.close()
-        super.onBackPressed()
+    private fun loadInterstitial() {
+        interstitialAd = null
+        InterstitialAd.load( // "MobileAds.initialize" takes no time.
+            c, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/1033173712"
+            else "ca-app-pub-9457309151954418/5399016395",// doesn't work in debug mode
+            AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {}
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    interstitialAd = ad.apply {
+                        fullScreenContentCallback = InterstitialCallback()
+                    }
+                }
+            })
+        // TEST MODE:
+        // With VPN: Takes about 5 seconds and works correctly.
+        // Without VPN: Takes about half a minute and mostly either crashes or fails.
     }
-
-    override fun onDestroy() {
-        page1 = null
-        page2 = null
-        page3 = null
-        m.accountSwitched()
-        super.onDestroy()
-    }
-
 
     private fun loadPages() = pages().forEachIndexed { i, it ->
         transFrag().apply {
@@ -417,6 +390,22 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
         goTo(Login::class, true)
     }
 
+    override fun onBackPressed() {
+        if (pages()[m.currentPage.value!!].goBack()) return
+        interstitialAd?.show(this)
+        if (isDbInitialised() && !ForegroundService.anyRunning()) db.close()
+        super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        page1 = null
+        page2 = null
+        page3 = null
+        m.accountSwitched()
+        super.onDestroy()
+    }
+
+
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
             PageUnf::class.java.name -> {
@@ -435,6 +424,20 @@ class Main : BaseActivity(true), Toolbar.OnMenuItemClickListener {
                 PageBox(this@Main).also { page3 = it }
             }
             else -> super.instantiate(loader, name)
+        }
+    }
+
+    inner class InterstitialCallback : FullScreenContentCallback() {
+        override fun onAdDismissedFullScreenContent() {
+            interstitialAd = null
+        }
+
+        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+            interstitialAd = null
+        }
+
+        override fun onAdShowedFullScreenContent() {
+            interstitialAd = null
         }
     }
 }

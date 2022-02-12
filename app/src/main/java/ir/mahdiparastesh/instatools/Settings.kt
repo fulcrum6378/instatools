@@ -24,6 +24,7 @@ class Settings : BaseActivity() {
     override val menuRes: Int? = null
     private lateinit var prf: SharedPreferences
     private var globalMode = false
+    private var giveLinkBack: String? = null
     private val saveLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.data?.data == null) return@registerForActivityResult
@@ -33,20 +34,28 @@ class Settings : BaseActivity() {
             )
             prf.edit().putString(spStorage, uri.toString()).commit()
             updateMainPath(uri.toString())
+            if (giveLinkBack != null) {
+                Downloads.initService(this, giveLinkBack)
+                giveLinkBack = null
+                onBackPressed()
+            }
         }
 
     companion object {
-        const val EXTRA_IS_GLOBAL = "isGlobal"
+        // Preferences
         const val spStorage = "storage"
 
-        // Hidden Settings
+        // Hidden Preferences
         const val spMainPage = "main_page"
         const val spBranching = "branching"
 
-        // Non-Setting Saved Values
+        // Non-Preference Saved Values
         const val spIsUnfComplete = "is_unf_complete"
         const val spFollowingCount = "following_count"
 
+        const val EXTRA_IS_GLOBAL = "isGlobal"
+        const val EXTRA_GIVE_LINK_BACK = "giveLinkBack"
+        val allSps = arrayOf(spStorage, spMainPage, spBranching)
         var recreateMain = false
 
         fun deleteDb(id: String) {
@@ -57,8 +66,10 @@ class Settings : BaseActivity() {
             ).forEach { f -> if (f.exists()) f.delete() }
         }
 
+        @Suppress("unused")
         fun deleteSp(c: BaseActivity) {
             File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${c.m.acc!!.id}.xml")
+                .apply { if (exists()) delete() }
         }
     }
 
@@ -72,6 +83,7 @@ class Settings : BaseActivity() {
             changeTitleTo = getString(if (globalMode) R.string.gSettings else R.string.aSettings)
         )
         prf = if (globalMode || sp == null) gsp else sp!!
+        intent.extras?.getString(EXTRA_GIVE_LINK_BACK, null)?.let { giveLinkBack = it }
 
         // Font
         for (l in b.ll.iterator())
@@ -81,9 +93,9 @@ class Settings : BaseActivity() {
             .forEach { it.typeface = fontRegular }
 
         // Main Path
-        if (!prf.contains(spStorage)) mainPath()
+        if (!prf.contains(spStorage) && giveLinkBack != null) selectMainPath()
         updateMainPath()
-        b.stMainPath.setOnClickListener { mainPath() }
+        b.stMainPath.setOnClickListener { selectMainPath() }
         b.stBranching.isChecked = prf.getBoolean(spBranching, true)
         b.stBranching.setOnCheckedChangeListener { _, bb ->
             prf.edit().putBoolean(spBranching, bb).commit()
@@ -109,19 +121,21 @@ class Settings : BaseActivity() {
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    deleteSp(this@Settings)
-                    recreateMain = true
+                    prf.edit().apply {
+                        allSps.forEach { remove(it) }
+                        commit()
+                    }
+                    recreate()
                 }
             }.create().show()
         }
     }
 
-    private fun mainPath() {
+    private fun selectMainPath() {
         saveLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
     }
 
     private fun updateMainPath(value: String? = null) {
-        b.stMainPath.text =
-            Uri.decode(value ?: prf.getString(spStorage, ""))
+        b.stMainPath.text = Uri.decode(value ?: prf.getString(spStorage, ""))
     }
 }

@@ -31,12 +31,12 @@ class MaterialMenu(
     }
 
     companion object {
-        fun MenuItem.stylise(c: BaseActivity, ca: Int? = null) {
+        fun MenuItem.stylise(c: BaseActivity, ca: Int? = null, size: Int = R.dimen.menuFont) {
             if (title == null) return
             title = SpannableString(title).apply {
                 setSpan(
                     CustomTypefaceSpan(
-                        "", c.fontRegular, c.resources.getDimension(R.dimen.menuFont),
+                        c.fontRegular, c.resources.getDimension(size),
                         ca ?: TypedValue().apply {
                             c.theme.resolveAttribute(R.attr.colorAccent, this, true)
                         }.data

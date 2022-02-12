@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class ir.mahdiparastesh.instatools.** {*;}
+# WebView, Login and Account really need not to be obfuscated!

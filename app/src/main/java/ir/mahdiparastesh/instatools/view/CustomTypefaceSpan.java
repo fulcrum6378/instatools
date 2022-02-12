@@ -10,8 +10,8 @@ public class CustomTypefaceSpan extends TypefaceSpan {
     private final float textSize;
     private final int textColour;
 
-    public CustomTypefaceSpan(String family, Typeface type, float size, int colour) {
-        super(family);
+    public CustomTypefaceSpan(Typeface type, float size, int colour) {
+        super("");
         newType = type;
         textSize = size;
         textColour = colour;
@@ -20,14 +20,14 @@ public class CustomTypefaceSpan extends TypefaceSpan {
     private static void applyCustomTypeFace(Paint paint, Typeface tf, float ts, int tc) {
         int oldStyle;
         Typeface old = paint.getTypeface();
-        if (old == null) oldStyle = 0;
+        if (old == null) oldStyle = Typeface.NORMAL;
         else oldStyle = old.getStyle();
 
         int fake = oldStyle & ~tf.getStyle();
-        if ((fake & Typeface.BOLD) != 0)
+        if ((fake & Typeface.BOLD) != Typeface.NORMAL)
             paint.setFakeBoldText(true);
 
-        if ((fake & Typeface.ITALIC) != 0)
+        if ((fake & Typeface.ITALIC) != Typeface.NORMAL)
             paint.setTextSkewX(-0.25f);
 
         paint.setTextSize(ts);

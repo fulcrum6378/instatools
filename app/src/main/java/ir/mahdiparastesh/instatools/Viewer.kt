@@ -211,6 +211,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     override fun onDestroy() {
         handler = null
+        m.vwEdges = null
+        m.vwInfo = null
+        m.vwFav = null
         super.onDestroy()
     }
 
@@ -223,9 +226,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             tracker?.clearSelection()
             return
         }
-        m.vwEdges = null
-        m.vwInfo = null
-        m.vwFav = null
         super.onBackPressed()
     }
 

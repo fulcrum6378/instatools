@@ -89,7 +89,6 @@
         <activity
             android:name=".Settings"
             android:exported="false"
-            android:launchMode="standard"
             android:theme="@style/Theme.InstaTools.Tertiary">
 
             <meta-data

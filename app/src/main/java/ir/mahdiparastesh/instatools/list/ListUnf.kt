@@ -9,6 +9,7 @@ import com.android.volley.Request
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Unfollower
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
@@ -63,6 +64,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
 
     override fun getItemCount() = c.m.unfollowers?.size ?: 0
 
+    @SuppressLint("ApplySharedPref")
     private fun unfollow(unf: Unfollower) {
         Api<Rest>(
             c, Api.Type.UNFOLLOW.url.format(unf.id.toString()), Rest::class,
@@ -72,6 +74,9 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
                 PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 return@Api; }
             c.dao.deleteUnfollower(unf)
+            val countBefore = c.sp?.getInt(Settings.spFollowingCount, -1)
+            if (countBefore != null && countBefore != -1)
+                c.sp?.edit()?.putInt(Settings.spFollowingCount, countBefore - 1)?.commit()
             val index = c.m.unfollowers!!.indexOf(unf)
             c.m.unfollowers!!.remove(unf)
             f.b.rv.adapter?.notifyItemRemoved(index)

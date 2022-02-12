@@ -24,6 +24,7 @@ import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
@@ -51,6 +52,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
         gsp = Persistent.initGsp(c)
+        if (m.acc == null) m.acc = Account.selected(this, guestIfNotExists = false) // needs "gsp"
         sp = Persistent.initSp(c, m.acc)
 
         dm = resources.displayMetrics

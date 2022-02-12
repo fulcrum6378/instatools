@@ -27,7 +27,6 @@
         android:layout_marginStart="20dp"
         android:textAlignment="viewStart"
         android:textColor="?attr/colorAccent"
-        android:textDirection="ltr"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/date"
         app:layout_constraintEnd_toStartOf="@id/status"

@@ -34,7 +34,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     companion object {
         const val ACTION_STOP = "ACTION_STOP"
         private val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
-        val srvComps = arrayOf(Queuer, Inquisitor, Exporter)
+
+        fun anyRunning() = arrayOf(Queuer, Inquisitor, Exporter).any { it.active }
+        // Never reference "Queuer"'s self in a static context
 
         fun terminateTasks(c: Context) {
             services.forEach { service ->
