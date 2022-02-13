@@ -10,6 +10,12 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.NetworkResponse
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.HttpHeaderParser
+import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
@@ -19,13 +25,16 @@ import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchSomeDm
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.list.ListThd
+import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
+import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.view.PdfExporter
 
 class Exporter : ForegroundService() {
     private var exp: Exportable? = null
+    private var media = hashMapOf<String, Downloadable>()
 
     override val com: ForegroundServiceCompanion
         get() = Companion
@@ -41,6 +50,8 @@ class Exporter : ForegroundService() {
         )
         override var active: Boolean = false
         override var handler: Handler? = null
+
+        const val MEDIA_DELAY = 200L
     }
 
     override fun onCreate() {
@@ -86,10 +97,50 @@ class Exporter : ForegroundService() {
     private fun fetchMedia() {
         if (exp?.threadData?.items == null) {
             end(exp); return; }
+        media = hashMapOf()
+        for (dm in exp!!.threadData!!.items) (when {
+            dm.clip != null -> dm.clip.clip
+            dm.felix_share != null -> dm.felix_share.video
+            dm.media != null -> dm.media
+            dm.media_share != null -> dm.media_share
+            dm.reel_share != null -> dm.reel_share.media
+            dm.story_share != null -> dm.story_share.media
+            else -> null
+        })?.apply {
+            if (carousel_media == null && image_versions2 == null) return@apply
+            val url =
+                if (carousel_media != null) carousel_media[0].nearest(justImage = true)
+                else nearest(justImage = true) ?: return@apply
+            media[dm.item_id] = Downloadable(url!!, null)
+        }
+        fetchMedium()
+    }
 
-        // TODO
+    private fun fetchMedium() {
+        val dl = media.entries.filter { it.value.data == null }.getOrNull(0)
+        if (dl == null) {
+            export(); return; }
+        Volley.newRequestQueue(c).add(
+            object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
+                media[dl.key] = media[dl.key]!!.apply { data = byteArrayOf() }
+                Delay(MEDIA_DELAY) { fetchMedium() }
+            }) {
+                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
 
-        export()
+                override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
+                    Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
+
+                override fun deliverResponse(response: ByteArray) {
+                    media[dl.key] = media[dl.key]!!.apply { data = response }
+                    Delay(MEDIA_DELAY) { fetchMedium() }
+                }
+            }.apply {
+                setShouldCache(false)
+                tag = "EXP_${dl.key}"
+                retryPolicy = DefaultRetryPolicy(
+                    15000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                )
+            })
     }
 
     private fun export() {
@@ -103,19 +154,15 @@ class Exporter : ForegroundService() {
                     if (percent == 100f) end(exp)
                 }
 
-                override fun createView(c: Context, parent: ViewGroup, i: Int): View {
-                    val b = ListThdBinding.inflate(
+                override fun createView(c: Context, parent: ViewGroup, i: Int): View =
+                    ListThdBinding.inflate(
                         LayoutInflater.from(c).cloneInContext(
                             ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
                         ), parent, false
-                    )
-                    ListThd.onCreate(
-                        b, Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
+                    ).onCreate(
+                        Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
                         Typeface.createFromAsset(c.assets, c.getString(R.string.font_light))
-                    )
-                    ListThd.onBind(c, b, list, i)
-                    return b.root
-                }
+                    ).onBind(c, list, i, downloaded = media).root
             }.start()
             (1).toByte() -> TODO()
             else -> end(exp)
@@ -133,4 +180,6 @@ class Exporter : ForegroundService() {
         PDF(0, "application/pdf", "pdf"),
         HTML(1, "text/html", "html")
     }
+
+    class Downloadable(val url: String, var data: ByteArray?)
 }

@@ -73,7 +73,7 @@
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>
-    <string name="dwShare">دانلود</string>
+    <string name="dwShare">@string/download</string>
     <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
 
     <!-- Viewer -->

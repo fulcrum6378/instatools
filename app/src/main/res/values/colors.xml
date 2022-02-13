@@ -42,6 +42,7 @@
     <color name="direct">@color/CTD</color>
     <color name="dmFromMeLight">#08000000</color>
     <color name="dmFromMe">@color/dmFromMeLight</color>
+    <color name="navHeaderLL">#99FFFFFF</color>
 
     <!-- Settings -->
     <color name="stPath">#EFEFEF</color>

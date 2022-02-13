@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">InstaTools</string>
+
+    <!-- #GLOBAL -->
+    <string name="guest">Invitado</string>
+    <string name="navOpen">Abrelo</string>
+    <string name="navClose">Cierralo</string>
+    <string name="downloads">Descargas</string>
+    <string name="settings">Ajustes</string>
+    <string name="search">Búsqueda</string>
+    <string name="switchAccount">Cambiar Cuenta</string>
+    <string name="signOut">Desconectar</string>
+    <string name="download">Descargar</string>
+    <string name="remove">Eliminar</string>
+    <string name="openLink">Enlace Abierto</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+    <string name="no">No</string>
+    <string name="yes">Sí</string>
+    <string name="unsave">No Guardar</string>
+    <string name="favourites">Favoritos</string>
+    <string name="export">Exportar</string>
+    <string name="exportPdf">Exportar a PDF</string>
+    <string name="exportHtml">Exportar a HTML</string>
+    <string name="exportOptions">Opciones de exportación</string>
+    <string name="backgroundTasks">Tarea en Segundo Plano</string>
+    <string name="unknownError">Lo sentimos, ocurrió un error desconocido: %s</string>
+    <string name="unknownMyError">¡Lo sentimos, ocurrió un error desconocido!</string>
+    <string name="loadFailed">¡Carga fallida!</string>
+    <string name="selectAll">Seleccionar Todo</string>
+    <string name="deselectAll">Deseleccionar Todo</string>
+    <string name="viewProfile">Ver Perfil</string>
+    <string name="viewHere">Ver Aquí</string>
+    <string name="viewInInsta">Ver en Instagram</string>
+    <string name="addToFav">Agregar a los favoritos</string>
+    <string name="removeFav">Quitar de favoritos</string>
+    <string name="unfStat">¡%1$d de tus %2$d seguidores no te siguen!</string>
+
+    <!-- Login -->
+    <string name="addAccount">Añadir Cuenta</string>
+    <string name="guestShortDesc">Iniciar sesión sin autenticación</string>
+
+    <!-- Main -->
+    <string name="unfollowers">No Seguidores</string>
+    <string name="saved">Salvado</string>
+    <string name="direct">@string/export</string>
+    <string name="guestDesc">Estás usando esta aplicación en modo invitado.\n¡Así que no puedes usar esta función!</string>
+    <string name="gSettings">Ajustes globales</string>
+    <string name="aSettings">Configuración de esta cuenta</string>
+    <string name="signOutSure">¿Estás seguro de que quieres cerrar sesión en tu cuenta de Instagram?</string>
+    <string name="mtSearch">Escriba un nombre de perfil&#8230;</string>
+    <string name="boxUntil">Hasta %s</string>
+    <string name="unfFailed">¡Se abortó la búsqueda de no seguidores!</string>
+    <string name="unfollow">Dejar de seguir</string>
+    <string name="unfollowPV">Esta cuenta es privada. ¿Seguro que quieres dejar de seguirlos?</string>
+    <string name="unfCouldNot">¡No se pudo dejar de seguir a este usuario!</string>
+    <string name="terminateBgTasks">Algunas tareas se ejecutan en segundo plano. ¿Estás seguro de que quieres eliminarlos a todos?</string>
+    <string name="unsaveOnly">No guardar solo</string>
+    <string name="downloadOnly">Descargar solo</string>
+    <string name="unsaveDownload">No guardar &amp; descargar</string>
+    <string name="unfPreload">Encontrar a los que no siguen debe hacerse lentamente; de lo contrario, Instagram lo detectará como un robot y bloqueará temporalmente algunas de sus funciones, ¡o lo desconectará de esta sesión!</string>
+    <string name="unfHurry">¡Apurarse!</string>
+    <string name="alsoDeleteData">Eliminar también mis datos de usuario y configuración</string>
+    <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\nQuedan %4$d segundos&#8230;</string>
+    <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\nQuedan %4$d minutos&#8230;</string>
+
+    <!-- Downloads -->
+    <string name="dwTitle">@string/downloads</string>
+    <string name="dwShare">Descargar</string>
+    <string name="pasteLink">Pegar un enlace&#8230;</string>
+
+    <!-- Viewer -->
+    <string name="vwTitle">Visor de Perfil</string>
+    <string name="vwShare">Ver perfil</string>
+
+    <!-- Favourites -->
+    <string name="fvTitle">@string/favourites</string>
+
+    <!-- Settings -->
+    <string name="stDlPath">Carpeta de descarga principal</string>
+    <string name="stBranching">Divide los archivos descargados en ramas</string>
+    <string name="stUserData">Datos del usuario</string>
+    <string name="stResetData">Restablecer todos mis datos de usuario</string>
+    <string name="stResetDataSure">Esto incluye la lista de no seguidores, la lista de cuentas favoritas, la cola de descarga y la cola de exportación. Pero no se cerrará la sesión de su cuenta. ¿Continuar?</string>
+    <string name="stResetSettings">Restablecer mi Configuración</string>
+    <string name="stResetSettingsSure">¿Está seguro? (NO se cerrará la sesión de su cuenta)</string>
+
+
+    <!-- Inquisitor -->
+    <string name="inquiryChannel">@string/unfollowers</string>
+    <string name="inquiryChannelDesc">Encuentra seguidores</string>
+    <string name="inquiryTitle">Buscando no seguidores&#8230;</string>
+    <string name="inquiryStop">Detener</string>
+
+    <!-- Queuer -->
+    <string name="queuerChannel">Cola de Descarga</string>
+    <string name="queuerChannelDesc">Descarga los medios en cola</string>
+    <string name="queuerTitle">Descargando&#8230;</string>
+    <string name="queuerStop">Detener</string>
+
+    <!-- Exporter -->
+    <string name="exporterChannel">Exportador</string>
+    <string name="exporterChannelDesc">Exporta los mensajes directos</string>
+    <string name="exporterTitle">Exportador&#8230;</string>
+    <string name="exporterStop">Abortar</string>
+</resources>

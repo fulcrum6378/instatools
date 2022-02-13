@@ -102,7 +102,7 @@
             android:alpha="0.8"
             android:textColor="?attr/defCA"
             android:textSize="11dp"
-            app:layout_constraintBottom_toBottomOf="@id/reactions"
+            app:layout_constraintBottom_toBottomOf="@id/message"
             tools:ignore="RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

@@ -10,6 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.get
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 
 abstract class PdfExporter(val c: Context, val uri: Uri) : Thread() {
@@ -31,18 +34,19 @@ abstract class PdfExporter(val c: Context, val uri: Uri) : Thread() {
             percent(mess)
             page++
         }
-
-        try {
-            c.contentResolver.openFileDescriptor(uri, "w")?.use {
-                FileOutputStream(it.fileDescriptor).use { fos ->
-                    document.writeTo(fos)
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                c.contentResolver.openFileDescriptor(uri, "w")?.use {
+                    FileOutputStream(it.fileDescriptor).use { fos -> document.writeTo(fos) }
                 }
+            }.onSuccess {
+                progress(100f, true)
+                document.close()
+            }.onFailure {
+                progress(100f, false)
+                document.close()
             }
-            progress(100f, true)
-        } catch (ignored: Exception) {
-            progress(100f, false)
         }
-        document.close()
     }
 
     private var cutAt = 0

@@ -17,9 +17,9 @@ abstract class Versioned(
         // Any negative number except these represents an ideal height.
     }
 
-    fun nearest(ideal: Float = BEST): String? {
+    fun nearest(ideal: Float = BEST, justImage: Boolean = false): String? {
         var ret: String? = null
-        if (video_versions != null)
+        if (!justImage && video_versions != null)
             ret = funChooser(video_versions as Array<Media.Candidate>, ideal)
         if (ret == null && image_versions2 != null)
             ret = funChooser(image_versions2.candidates, ideal)

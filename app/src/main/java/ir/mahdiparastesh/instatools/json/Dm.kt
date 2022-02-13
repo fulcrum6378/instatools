@@ -30,7 +30,7 @@ class Dm(
     val reel_share: ReelShare?,
     val story_share: StoryShare?,
     val text: String?,
-    val video_call_event: Any?,
+    val video_call_event: VideoCallEvent?,
     val voice_media: Any?,
 ) {
     class Inbox(
@@ -130,17 +130,17 @@ class Dm(
     )
 
     class Link(
-        val client_context: String,
+        //val client_context: String,
         val link_context: LinkContext,
-        val mutation_token: String,
+        //val mutation_token: String,
         val text: String,
     )
 
     class LinkContext(
         val link_url: String,
-        val link_title: String,
-        val link_summary: String,
-        val link_image_url: String,
+        //val link_title: String,
+        //val link_summary: String,
+        //val link_image_url: String,
     )
 
     class ClipShare(val clip: Media)
@@ -187,5 +187,20 @@ class Dm(
     class ReactionInfo(
         val emoji: String,
         val intensity: Any?
+    )
+
+    class VideoCallEvent(
+        val action: String,
+        val call_duration: Double,
+        val call_start_time: Double,
+        val call_end_time: Double,
+        val description: String,
+        val did_join: Boolean,
+        val encoded_server_data_info: String,
+        val feature_set_str: String,
+        val text_attributes: Array<Any>,
+        val thread_has_audio_only_call: Boolean,
+        val thread_has_drop_in: Boolean,
+        val vc_id: String,
     )
 }

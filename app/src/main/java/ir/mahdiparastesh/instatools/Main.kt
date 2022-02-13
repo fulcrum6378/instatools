@@ -13,11 +13,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
+import com.bumptech.glide.Glide
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -27,6 +29,7 @@ import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
+import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
@@ -48,6 +51,7 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
     lateinit var b: MainBinding
     override val menuRes = R.menu.main_tlb
     private lateinit var toggleNav: ActionBarDrawerToggle
+    private lateinit var bh: MainNavHeaderBinding
     private var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
@@ -148,6 +152,16 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
             isDrawerIndicatorEnabled = true
             syncState()
         }
+        bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
+        if (m.acc!!.id != -1L) {
+            Glide.with(c).load(m.acc!!.pict).into(bh.pict)
+            bh.user.text = m.acc!!.user
+            bh.user.typeface = fontLight
+            if (!m.acc!!.name.isNullOrBlank()) {
+                bh.name.text = m.acc!!.name
+                bh.name.typeface = fontRegular
+            } else bh.name.vis(false)
+        } else bh.root.vis(false)
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
