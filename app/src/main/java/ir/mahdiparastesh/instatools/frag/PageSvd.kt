@@ -105,6 +105,7 @@ class PageSvd(c: Main) : BasePage(c) {
             }
         })
 
+        //b.refresher.isRefreshing = true
         if (c.m.saved != null) onLoaded()
         else if (thread == null) thread = FetchSome().also { it.start() }
         return b.root

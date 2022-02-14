@@ -59,6 +59,7 @@
         <activity
             android:name=".Viewer"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.InstaTools.Secondary">
 
             <meta-data
@@ -98,10 +99,6 @@
 
         <service
             android:name=".serv.Queuer"
-            android:exported="false" />
-
-        <service
-            android:name=".serv.Inquisitor"
             android:exported="false" />
 
         <service

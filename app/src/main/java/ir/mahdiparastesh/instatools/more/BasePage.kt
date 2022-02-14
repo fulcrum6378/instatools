@@ -11,7 +11,6 @@ import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
     abstract var inflater: LayoutInflater
     abstract var handler: Handler?
-    var fetching = false
 
     abstract fun updateShadow()
     abstract fun updateJumper()

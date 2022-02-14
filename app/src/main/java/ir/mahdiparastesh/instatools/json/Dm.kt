@@ -2,15 +2,15 @@ package ir.mahdiparastesh.instatools.json
 
 @Suppress("SpellCheckingInspection")
 class Dm(
-    val client_context: String,
+    //val client_context: String,
     val hide_in_thread: Float,
     val is_sent_by_viewer: Boolean,
-    val is_shh_mode: Boolean,
+    //val is_shh_mode: Boolean,
     val item_id: String,
     val item_type: String,
     val preview_medias: Array<Any?>,
     val reactions: Reactions?,
-    val show_forward_attribution: Boolean,
+    //val show_forward_attribution: Boolean,
     val timestamp: Double,
     val user_id: Double,
 
@@ -148,24 +148,24 @@ class Dm(
     class FelixShare(val video: Media, val text: String)
 
     class StoryShare(
-        val is_linked: Boolean?,
-        val is_reel_persisted: Boolean?,
+        //val is_linked: Boolean?,
+        //val is_reel_persisted: Boolean?,
         val media: Media?,
         val message: String?,
-        val reason: Double?,
-        val reel_id: String?,
-        val reel_type: String?,
-        val story_share_type: String?,
+        //val reason: Double?,
+        //val reel_id: String?,
+        //val reel_type: String?,
+        //val story_share_type: String?,
         val text: String,
         val title: String?,
     )
 
     class ReelShare(
-        val is_reel_persisted: Boolean,
+        //val is_reel_persisted: Boolean,
         val media: Media?,
-        val reaction_info: ReactionInfo?,
-        val reel_owner_id: Double,
-        val reel_type: String,
+        //val reaction_info: ReactionInfo?,
+        //val reel_owner_id: Double,
+        //val reel_type: String,
         val text: String,
         val type: String,
     )
@@ -177,11 +177,11 @@ class Dm(
     )
 
     class Emoji(
-        val timestamp: Double,
-        val client_context: Double,
-        val sender_id: Double,
+        //val timestamp: Double,
+        //val client_context: String,
+        //val sender_id: Double,
         val emoji: String,
-        val super_react_type: String,
+        //val super_react_type: String,
     )
 
     class ReactionInfo(
@@ -196,11 +196,11 @@ class Dm(
         val call_end_time: Double,
         val description: String,
         val did_join: Boolean,
-        val encoded_server_data_info: String,
-        val feature_set_str: String,
-        val text_attributes: Array<Any>,
-        val thread_has_audio_only_call: Boolean,
-        val thread_has_drop_in: Boolean,
-        val vc_id: String,
+        //val encoded_server_data_info: String,
+        //val feature_set_str: String,
+        //val text_attributes: Array<Any>,
+        //val thread_has_audio_only_call: Boolean,
+        //val thread_has_drop_in: Boolean,
+        //val vc_id: String,
     )
 }

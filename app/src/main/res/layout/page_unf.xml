@@ -5,19 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".frag.PageUnf"
-    tools:ignore="MissingConstraints">
-
-    <!--<TextView
-        TODO: android:id="@+id/stat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lines="1"
-        android:maxLines="1"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:textColor="?attr/colorAccent"
-        android:textSize="15sp"
-        android:visibility="gone" />-->
+    tools:ignore="ContentDescription,MissingConstraints">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
@@ -29,19 +17,11 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ImageView
+        android:id="@+id/error"
+        style="@style/simpleError" />
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loading"
         style="@style/simpleLoading" />
-
-    <ViewStub
-        android:id="@+id/preloadStub"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:inflatedId="@+id/preload"
-        android:layout="@layout/unf_preload"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.75" />
 </androidx.constraintlayout.widget.ConstraintLayout>

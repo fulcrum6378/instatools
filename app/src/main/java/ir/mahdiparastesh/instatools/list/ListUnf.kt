@@ -9,9 +9,8 @@ import com.android.volley.Request
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Viewer
-import ir.mahdiparastesh.instatools.data.Unfollower
+import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
@@ -42,13 +41,13 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers?.get(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.unf_more, Act().apply {
-                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id.toString(), u.user) }
+                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id, u.user) }
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }
         h.b.unfollow.setOnClickListener {
             if (c.m.unfollowers == null) return@setOnClickListener
-            if (!c.m.unfollowers!![h.layoutPosition].isPrivate)
+            if (!c.m.unfollowers!![h.layoutPosition].private)
                 unfollow(c.m.unfollowers!![h.layoutPosition])
             else AlertDialog.Builder(c).apply {
                 setTitle(R.string.unfollow)
@@ -65,21 +64,20 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
     override fun getItemCount() = c.m.unfollowers?.size ?: 0
 
     @SuppressLint("ApplySharedPref")
-    private fun unfollow(unf: Unfollower) {
+    private fun unfollow(unf: Friend) {
         Api<Rest>(
-            c, Api.Type.UNFOLLOW.url.format(unf.id.toString()), Rest::class,
-            PageUnf.theHandler, method = Request.Method.POST
+            c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, f.handler,
+            method = Request.Method.POST
         ) {
             if (it.status != "ok") {
-                PageUnf.theHandler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
+                f.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 return@Api; }
-            c.dao.deleteUnfollower(unf)
-            val countBefore = c.sp?.getInt(Settings.spFollowingCount, -1)
-            if (countBefore != null && countBefore != -1)
-                c.sp?.edit()?.putInt(Settings.spFollowingCount, countBefore - 1)?.commit()
+            if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
+            else c.dao.deleteFriend(unf)
             val index = c.m.unfollowers!!.indexOf(unf)
             c.m.unfollowers!!.remove(unf)
             f.b.rv.adapter?.notifyItemRemoved(index)
+            if (index > 0) f.b.rv.adapter?.notifyItemChanged(index - 1)
             f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers!!.size - 1)
         }
     }

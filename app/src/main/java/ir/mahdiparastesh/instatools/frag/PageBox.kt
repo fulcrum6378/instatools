@@ -110,6 +110,7 @@ class PageBox(c: Main) : BasePage(c) {
             }
         })
 
+        //b.refresher.isRefreshing = true
         if (c.m.dmThreads != null) onLoaded()
         else if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
         return b.root

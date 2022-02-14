@@ -103,17 +103,12 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
         // Toolbar
         b.toolbar.setOnMenuItemClickListener(this)
-        dbFav = dao.favourite(id!!).getOrNull(0)
-        fixTbMenu()
 
         // List
         b.rv.layoutManager = GridLayoutManager(c, 3)
         b.rv.isNestedScrollingEnabled = false
         b.refresher.setOnRefreshListener {
-            b.rv.adapter = null
-            m.vwInfo = null
-            m.vwEdges = null
-            tracker = null
+            reset()
             if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
         b.nsv.viewTreeObserver.addOnScrollChangedListener {
@@ -140,6 +135,24 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }).show()
         }
 
+        load()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.extras?.containsKey(EXTRA_USER) == true && intent.extras?.containsKey(EXTRA_ID) == true) {
+            intent.extras?.getString(EXTRA_USER)?.let { user = it }
+            intent.extras?.getString(EXTRA_ID)?.let { id = it }
+            load()
+            b.proPicIv.setImageDrawable(null)
+            b.toolbar.title = user
+        }
+    }
+
+    private fun load() {
+        reset()
+        dbFav = dao.favourite(id!!).getOrNull(0)
+        fixTbMenu()
         if (m.vwEdges != null) adapt()
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
@@ -158,6 +171,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             ).build()
             tracker?.addObserver(SelectObserver())
         }
+    }
+
+    private fun reset() {
+        b.rv.adapter = null
+        m.vwInfo = null
+        m.vwEdges = null
+        tracker = null
+        (b.rv.adapter as ListPrf?)?.let { if (it.expandable.zoomed) it.expandable.collapse() }
     }
 
     fun selective(bb: Boolean) {

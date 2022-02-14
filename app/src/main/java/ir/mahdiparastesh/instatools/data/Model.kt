@@ -8,18 +8,33 @@ import ir.mahdiparastesh.instatools.json.Profile
 
 class Model : ViewModel() {
     var acc: Account? = null
-    var unfollowers: ArrayList<Unfollower>? = null
+
+    // Login
+    var loginLoaded = false
+
+    // Main
+    var unfollowers: ArrayList<Friend>? = null
     var saved: ArrayList<Profile.Post>? = null
+    var nextSaved: Profile.PageInfo? = null
     var dmThreads: ArrayList<Dm.DmThread>? = null
     var dmThread: Dm.DmThread? = null
-    var queueds: ArrayList<Queued>? = null
-    var nextSaved: Profile.PageInfo? = null
-    var loginLoaded = false
     val currentPage = MutableLiveData(0)
+
+    // Downloads
+    var queueds: ArrayList<Queued>? = null
+
+    // Viewer
     var vwEdges: ArrayList<Profile.Post>? = null
     var vwInfo: Profile.PageInfo? = null
     var vwFav: Favourite? = null
+
+    // Favourites
     var fav: ArrayList<Favourite>? = null
+
+    // Followers & Following (Don't use them in Main)
+    var followers: ArrayList<Friend>? = null
+    var following: ArrayList<Friend>? = null
+
 
     fun accountSwitched() {
         unfollowers = null
@@ -33,6 +48,8 @@ class Model : ViewModel() {
         vwEdges = null
         vwInfo = null
         vwFav = null
+        followers = null
+        following = null
     }
 
     @Suppress("UNCHECKED_CAST")

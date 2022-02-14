@@ -4,25 +4,40 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Unfollower::class, Favourite::class, Queued::class, Exportable::class],
-    version = 4, exportSchema = false
+    entities = [Friend::class, Favourite::class, Queued::class, Exportable::class],
+    version = 5, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
 
     @Dao
     interface DAO {
-        @Query("SELECT * FROM Unfollower")
-        fun unfollowers(): List<Unfollower>
+        @Query("SELECT * FROM Friend")
+        fun friends(): List<Friend>
 
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addUnfollower(item: Unfollower)
+        @Query("SELECT * FROM Friend WHERE follows = 1")
+        fun followers(): List<Friend>
+
+        @Query("SELECT * FROM Friend WHERE followed = 1")
+        fun following(): List<Friend>
+
+        @Query("SELECT * FROM Friend WHERE followed = 1 AND follows = 0")
+        fun unfollowers(): List<Friend>
+
+        @Query("SELECT * FROM Friend WHERE id LIKE :id LIMIT 1")
+        fun friend(id: String): Friend
+
+        @Insert
+        fun addFriend(item: Friend)
+
+        @Update
+        fun updateFriend(item: Friend)
 
         @Delete
-        fun deleteUnfollower(item: Unfollower)
+        fun deleteFriend(item: Friend)
 
-        @Query("DELETE FROM Unfollower")
-        fun deleteUnfollowers(): Int
+        @Query("DELETE FROM Friend")
+        fun deleteFriends(): Int
 
 
         @Query("SELECT * FROM Queued")

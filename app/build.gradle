@@ -11,19 +11,20 @@ android {
         applicationId "ir.mahdiparastesh.instatools"
         minSdk 21
         targetSdk 31
-        versionCode 9
-        versionName '3.2'
+        versionCode 11
+        versionName '3.4'
     }
 
     buildTypes {
+        def obfuscate = true
         release {
-            minifyEnabled true
-            shrinkResources true // removes unused resources anywhere
+            minifyEnabled obfuscate
+            shrinkResources obfuscate // removes unused resources anywhere
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled obfuscate
+            shrinkResources obfuscate
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

@@ -58,8 +58,6 @@
     <string name="unsaveOnly">No guardar solo</string>
     <string name="downloadOnly">Descargar solo</string>
     <string name="unsaveDownload">No guardar &amp; descargar</string>
-    <string name="unfPreload">Encontrar a los que no siguen debe hacerse lentamente; de lo contrario, Instagram lo detectará como un robot y bloqueará temporalmente algunas de sus funciones, ¡o lo desconectará de esta sesión!</string>
-    <string name="unfHurry">¡Apurarse!</string>
     <string name="alsoDeleteData">Eliminar también mis datos de usuario y configuración</string>
     <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\nQuedan %4$d segundos&#8230;</string>
     <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\nQuedan %4$d minutos&#8230;</string>
@@ -85,12 +83,6 @@
     <string name="stResetSettings">Restablecer mi Configuración</string>
     <string name="stResetSettingsSure">¿Está seguro? (NO se cerrará la sesión de su cuenta)</string>
 
-
-    <!-- Inquisitor -->
-    <string name="inquiryChannel">@string/unfollowers</string>
-    <string name="inquiryChannelDesc">Encuentra seguidores</string>
-    <string name="inquiryTitle">Buscando no seguidores&#8230;</string>
-    <string name="inquiryStop">Detener</string>
 
     <!-- Queuer -->
     <string name="queuerChannel">Cola de Descarga</string>

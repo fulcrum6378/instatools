@@ -1,42 +1,40 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.contains
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Unfollower
+import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
-import ir.mahdiparastesh.instatools.databinding.UnfPreloadBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.serv.Inquisitor
+import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
-import java.text.DecimalFormat
 
-class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
+class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
-    private lateinit var bu: UnfPreloadBinding
+    private var thread: Inquiry? = null
     override lateinit var inflater: LayoutInflater
     override var handler: Handler? = null
 
     companion object {
         const val HANDLE_LOADED = 2
-        const val HANDLE_ANALYSED = 3
-        const val HANDLE_COMPLETED = 4
         const val HANDLE_COULD_NOT = 5
-        var theHandler: Handler? = null
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -48,58 +46,37 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
-        theHandler = object : Handler(Looper.getMainLooper()) {
+        handler = object : Handler(Looper.getMainLooper()) {
             @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_LOADED -> (msg.obj as List<Unfollower>).apply {
-                        onLoaded()
+                    HANDLE_LOADED -> (msg.obj as List<Friend>).apply {
                         c.m.unfollowers = ArrayList(this)
-                        c.m.unfollowers!!.sortBy { it.followedBy }
-                        if (isNullOrEmpty()) preload() else adapt()
-                    }
-                    Api.HANDLE_ERROR -> { // fetching following error
-                        fetching = false
-                        b.refresher.isRefreshing = false
-                        Snackbar.make(
-                            b.root, c.getString(
-                                R.string.unknownError,
-                                (msg.obj as NetworkResponse?)?.statusCode.toString()
-                            ), Snackbar.LENGTH_LONG
-                        ).show()
+                        c.m.unfollowers!!.sortBy { it.user }
+                        if (isNullOrEmpty() && msg.arg1 == 1)
+                            thread = Inquiry().also { it.start() }
+                        else onLoaded() // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
                     }
                     HANDLE_FETCHED -> {
-                        calcSum = msg.obj as Int
+                        load(false)
                         b.refresher.isRefreshing = false
                     }
-                    HANDLE_ABORTED -> {
-                        analysing(false)
-                        fetching = false
-                        b.refresher.isRefreshing = false
-                        Snackbar.make(b.root, R.string.unfFailed, Snackbar.LENGTH_SHORT).show()
-                        preload()
-                    }
-                    HANDLE_ANALYSED -> {
-                        calcItem = (msg.obj as Int) + 1
-                        calculate()
-                    }
-                    HANDLE_COMPLETED -> {
-                        analysing(false)
-                        fetching = false
-                        c.m.unfollowers = ArrayList(msg.obj as List<Unfollower>)
-                        c.m.unfollowers!!.sortBy { it.followedBy }
-                        adapt()
-                        onLoaded()
-                    }
+                    //HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
+                    Api.HANDLE_ERROR -> onFailed(
+                        c.getString(
+                            R.string.unknownError,
+                            (msg.obj as NetworkResponse?)?.statusCode.toString()
+                        )
+                    )
                     HANDLE_COULD_NOT ->
                         Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
-        handler = theHandler
 
-        b.preloadStub.setOnInflateListener(this)
-        b.refresher.setOnRefreshListener { fetch() }
+        b.refresher.setOnRefreshListener {
+            if (thread?.active != true) thread = Inquiry().also { it.start() }
+        }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateShadow()
@@ -107,88 +84,42 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
             }
         })
 
-        when {
-            Inquisitor.active -> preload()
-            c.m.unfollowers != null -> adapt()
-            else -> Thread {
-                handler?.obtainMessage(HANDLE_LOADED, c.dao.unfollowers())?.sendToTarget()
-            }.start()
-        }
+        //b.refresher.isRefreshing = true
+        if (c.m.unfollowers != null) onLoaded() else load(true)
         return b.root
     }
 
-    override fun onFailed(message: String) {
+    private fun load(initial: Boolean) {
+        Thread {
+            handler?.obtainMessage(HANDLE_LOADED, if (initial) 1 else 0, 0, c.dao.unfollowers())
+                ?.sendToTarget()
+        }.start()
     }
 
+    override fun onFailed(message: String) {
+        b.refresher.isRefreshing = false
+        try {
+            Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
+        } catch (ignored: IllegalArgumentException) {
+        }
+        if (b.root.contains(b.loading)) {
+            b.loading.animation?.cancel()
+            b.root.removeView(b.loading)
+        }
+        if (b.rv.adapter == null) b.error.vis()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded() {
         b.refresher.isRefreshing = false
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
             b.root.removeView(b.loading)
         }
-        if (::bu.isInitialized) bu.root.vis(false)
-    }
+        b.error.vis(false)
 
-    private fun fetch() {
-        if (fetching) return
-        fetching = true
-        preload()
-        c.startService(Intent(c, Inquisitor::class.java))
-        analysing(true)
-    }
-
-    private fun preload() {
-        b.rv.adapter = null
-        if (!::bu.isInitialized) b.preloadStub.inflate()
-        else bu.root.vis()
-    }
-
-    private fun analysing(bb: Boolean) {
-        bu.calc.vis(bb)
-        bu.working.vis(bb)
-        if (bb) bu.working.playAnimation()
-        else bu.working.pauseAnimation()
-        bu.start.vish(!bb)
-    }
-
-    override fun onInflate(stub: ViewStub, v: View) {
-        bu = UnfPreloadBinding.bind(v)
-        bu.calc.typeface = c.fontBold
-        bu.desc.typeface = c.fontRegular
-        bu.hurry.typeface = c.fontBold
-
-        bu.start.setOnClickListener {
-            if (!fetching) fetch()
-        }
-        bu.hurry.setOnCheckedChangeListener { _, bb ->
-            Inquisitor.hurry = bb
-            calculate()
-        }
-    }
-
-    private var calcItem = 0
-    private var calcSum = 0
-    private fun calculate() {
-        if (calcSum <= 0) return
-        val seconds = ((((if (!Inquisitor.hurry) Inquisitor.DELAY else Inquisitor.DELAY_HURRY))
-            .toFloat() / 1000f) * (calcSum.toFloat() - calcItem.toFloat())).toInt()
-        bu.calc.text = c.getString(
-            if (seconds >= 60) R.string.unfCalcMin else R.string.unfCalcSec, calcItem, calcSum,
-            DecimalFormat("#.##").format((100f / calcSum.toFloat()) * calcItem.toFloat()),
-            if (seconds >= 60) seconds / 60 else seconds
-        )
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun adapt() {
-        /*val flwCount = c.sp?.getInt(Settings.spFollowingCount, -2)
-        b.stat.vis(flwCount != -2)
-        b.stat.text = if (flwCount != -2) c.getString(
-            R.string.unfStat, flwCount, c.m.unfollowers?.size ?: 0
-        ) else ""*/
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
-        // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
@@ -200,5 +131,35 @@ class PageUnf(c: Main) : BasePage(c), ViewStub.OnInflateListener {
     }
 
     override fun updateJumper() {
+    }
+
+
+    inner class Inquiry : BasePage.BaseThread() {
+        override fun run() {
+            super.run()
+            c.dao.deleteFriends()
+            allFollow(theFollowers = true)
+        }
+
+        private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
+            if (!active) return
+            Api<Rest.Follow>(
+                c, (if (theFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
+                    .format(c.m.acc!!.id, next_max_id), Rest.Follow::class, handler
+            ) { flw ->
+                flw.users.forEach { u ->
+                    Friend.add(
+                        c.dao, Friend(
+                            u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
+                            theFollowers, !theFollowers
+                        ), theFollowers
+                    )
+                }
+                if (flw.next_max_id == null) {
+                    if (theFollowers) Delay { allFollow(theFollowers = false) }
+                    else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                } else Delay { allFollow(flw.next_max_id, theFollowers) }
+            }
+        }
     }
 }

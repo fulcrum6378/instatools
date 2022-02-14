@@ -64,8 +64,6 @@
     <string name="unsaveOnly">Unsave Only</string>
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
-    <string name="unfPreload">Finding unfollowers needs to be done slowly; otherwise Instagram will detect you as a robot and temporarily block some of your features, or sign you out of this session!</string>
-    <string name="unfHurry">Hurry!</string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\n%4$d seconds remaining&#8230;</string>
     <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\n%4$d minutes remaining&#8230;</string>
@@ -91,12 +89,6 @@
     <string name="stResetSettings">Reset my settings</string>
     <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
 
-
-    <!-- Inquisitor -->
-    <string name="inquiryChannel">@string/unfollowers</string>
-    <string name="inquiryChannelDesc">Finds unfollowers</string>
-    <string name="inquiryTitle">Looking for unfollowers&#8230;</string>
-    <string name="inquiryStop">Stop</string>
 
     <!-- Queuer -->
     <string name="queuerChannel">Download Queue</string>

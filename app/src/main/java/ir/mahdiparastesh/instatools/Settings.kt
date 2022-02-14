@@ -49,9 +49,6 @@ class Settings : BaseActivity() {
         const val spMainPage = "main_page"
         const val spBranching = "branching"
 
-        // Non-Preference Saved Values
-        const val spIsUnfComplete = "is_unf_complete"
-        const val spFollowingCount = "following_count"
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_GIVE_LINK_BACK = "giveLinkBack"

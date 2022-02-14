@@ -20,7 +20,6 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.serv.Inquisitor
 import ir.mahdiparastesh.instatools.serv.Queuer
 import kotlin.reflect.KClass
 
@@ -33,9 +32,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     companion object {
         const val ACTION_STOP = "ACTION_STOP"
-        private val services = arrayOf(Queuer::class, Inquisitor::class, Exporter::class)
+        private val services = arrayOf(Queuer::class, Exporter::class)
 
-        fun anyRunning() = arrayOf(Queuer, Inquisitor, Exporter).any { it.active }
+        fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active }
         // Never reference "Queuer"'s self in a static context
 
         fun terminateTasks(c: Context) {
