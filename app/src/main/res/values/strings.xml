@@ -65,8 +65,6 @@
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
-    <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\n%4$d seconds remaining&#8230;</string>
-    <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\n%4$d minutes remaining&#8230;</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>

@@ -45,8 +45,8 @@
     <string name="saved">Salvado</string>
     <string name="direct">@string/export</string>
     <string name="guestDesc">Estás usando esta aplicación en modo invitado.\n¡Así que no puedes usar esta función!</string>
-    <string name="gSettings">Ajustes globales</string>
-    <string name="aSettings">Configuración de esta cuenta</string>
+    <string name="gSettings">Ajustes Globales</string>
+    <string name="aSettings">Ajustes Locales</string>
     <string name="signOutSure">¿Estás seguro de que quieres cerrar sesión en tu cuenta de Instagram?</string>
     <string name="mtSearch">Escriba un nombre de perfil&#8230;</string>
     <string name="boxUntil">Hasta %s</string>
@@ -59,8 +59,6 @@
     <string name="downloadOnly">Descargar solo</string>
     <string name="unsaveDownload">No guardar &amp; descargar</string>
     <string name="alsoDeleteData">Eliminar también mis datos de usuario y configuración</string>
-    <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\nQuedan %4$d segundos&#8230;</string>
-    <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\nQuedan %4$d minutos&#8230;</string>
 
     <!-- Downloads -->
     <string name="dwTitle">@string/downloads</string>

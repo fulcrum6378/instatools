@@ -1,18 +1,19 @@
 package ir.mahdiparastesh.instatools.data
 
 import android.database.sqlite.SQLiteConstraintException
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
 class Friend(
-    @PrimaryKey var id: String,
-    var user: String,
-    var name: String,
-    var photo: String,
-    var private: Boolean,
-    var follows: Boolean,
-    var followed: Boolean
+    @PrimaryKey @ColumnInfo(name = "id") var id: String,
+    @ColumnInfo(name = "user") var user: String,
+    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name = "photo") var photo: String,
+    @ColumnInfo(name = "private") var private: Boolean,
+    @ColumnInfo(name = "follows") var follows: Boolean,
+    @ColumnInfo(name = "followed") var followed: Boolean
 ) {
     @Suppress("unused")
     constructor() : this("", "", "", "", false, false, false)

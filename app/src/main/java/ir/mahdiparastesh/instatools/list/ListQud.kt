@@ -57,9 +57,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                 }
                 this[R.id.qmOpen] = {
                     if (c.m.queueds != null && c.m.queueds!!.size > h.layoutPosition) c.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW, Uri.parse(c.m.queueds!![h.layoutPosition].link)
-                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        Intent(Intent.ACTION_VIEW, Uri.parse(c.m.queueds!![h.layoutPosition].link))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 }
             }).show()

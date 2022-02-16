@@ -1,0 +1,101 @@
+<resources>
+    <string name="app_name">InstaTools</string>
+
+    <!-- #FONTS -->
+    <string name="font_bold" translatable="false">exo2_semibold.ttf</string>
+    <string name="font_regular" translatable="false">exo2_regular.ttf</string>
+    <string name="font_light" translatable="false">exo2_regular.ttf</string>
+
+    <!-- #GLOBAL -->
+    <string name="guest">Гость</string>
+    <string name="navOpen">Открытым</string>
+    <string name="navClose">Закрой его</string>
+    <string name="downloads">Загрузки</string>
+    <string name="settings">Настройки</string>
+    <string name="search">Поиск</string>
+    <string name="switchAccount">Сменить аккаунт</string>
+    <string name="signOut">Выход</string>
+    <string name="download">Скачать</string>
+    <string name="remove">Удалять</string>
+    <string name="openLink">Открыть ссылку</string>
+    <string name="ok">В ПОРЯДКЕ!</string>
+    <string name="cancel">Отмена</string>
+    <string name="no">Нет</string>
+    <string name="yes">да</string>
+    <string name="unsave">Удалить</string>
+    <string name="favourites">Избранное</string>
+    <string name="export">Экспорт</string>
+    <string name="exportPdf">Экспорт в PDF</string>
+    <string name="exportHtml">Экспорт в HTML</string>
+    <string name="exportOptions">Параметры экспорта</string>
+    <string name="backgroundTasks">Фоновые задачи</string>
+    <string name="unknownError">Извините, произошла неизвестная ошибка: %s</string>
+    <string name="unknownMyError">Извините, произошла неизвестная ошибка!</string>
+    <string name="loadFailed">Загрузка не удалась!</string>
+    <string name="selectAll">Выбрать все</string>
+    <string name="deselectAll">Убрать выделение со всего</string>
+    <string name="viewProfile">Убрать выделение со всего</string>
+    <string name="viewHere">Посмотреть здесь</string>
+    <string name="viewInInsta">Посмотреть в инстаграме</string>
+    <string name="addToFav">Добавить в избранные</string>
+    <string name="removeFav">Удалить из избранного</string>
+    <string name="unfStat">%1$d из ваших %2$d подписчиков не подписались на вас!</string>
+
+    <!-- Login -->
+    <string name="addAccount">Добавить аккаунт</string>
+    <string name="guestShortDesc">Войти без авторизации</string>
+
+    <!-- Main -->
+    <string name="unfollowers">Отписаться</string>
+    <string name="saved">Сохранено</string>
+    <string name="direct">@string/export</string>
+    <string name="guestDesc">Вы используете это приложение в гостевом режиме.\nТаким образом, вы не можете использовать эту функцию!</string>
+    <string name="gSettings">Глобальные настройки</string>
+    <string name="aSettings">Локальные настройки</string>
+    <string name="signOutSure">Вы уверены, что хотите выйти из своей учетной записи Instagram?</string>
+    <string name="mtSearch">Введите имя профиля&#8230;</string>
+    <string name="boxUntil">До %s</string>
+    <string name="unfFailed">Поиск отписавшихся был прерван!</string>
+    <string name="unfollow">Отписаться</string>
+    <string name="unfollowPV">Этот аккаунт является частным. Вы уверены, что хотите отписаться от них?</string>
+    <string name="unfCouldNot">Не удалось отписаться от этого пользователя!</string>
+    <string name="terminateBgTasks">Некоторые задачи выполняются в фоновом режиме. Вы уверены, что хотите уничтожить их всех?</string>
+    <string name="unsaveOnly">Только отменить сохранение</string>
+    <string name="downloadOnly">Только скачать</string>
+    <string name="unsaveDownload">Удалить и загрузить</string>
+    <string name="alsoDeleteData">Также удалить мои пользовательские данные и настройки</string>
+
+    <!-- Downloads -->
+    <string name="dwTitle">@string/downloads</string>
+    <string name="dwShare">@string/download</string>
+    <string name="pasteLink">Вставьте ссылку&#8230;</string>
+
+    <!-- Viewer -->
+    <string name="vwTitle">Profile Viewer</string>
+    <string name="vwShare">Процент профиля</string>
+
+    <!-- Favourites -->
+    <string name="fvTitle">@string/favourites</string>
+
+    <!-- Settings -->
+    <string name="stDlPath">Основная папка загрузки</string>
+    <string name="stBranching">Разделите загруженные файлы на ветки</string>
+    <string name="stUserData">Данные пользователя</string>
+    <string name="stResetData">Сбросить все мои пользовательские данные</string>
+    <string name="stResetDataSure">Сюда входят список отписавшихся, список избранных учетных записей, очередь загрузки и очередь экспорта. Но вы не выйдете из своей учетной записи. Продолжить?</string>
+    <string name="stResetSettings">Сбросить мои настройки</string>
+    <string name="stResetSettingsSure">Уверены ли вы? (Вы НЕ будете выходить из своей учетной записи)</string>
+
+
+    <!-- Queuer -->
+    <string name="queuerChannel">Очередь загрузки</string>
+    <string name="queuerChannelDesc">Загружает носитель из очереди</string>
+    <string name="queuerTitle">Загрузка&#8230;</string>
+    <string name="queuerStop">Стой!</string>
+
+    <!-- Exporter -->
+    <string name="exporterChannel">Экспортер</string>
+    <string name="exporterChannelDesc">Экспортирует прямые сообщения</string>
+    <string name="exporterTitle">Экспорт&#8230;</string>
+    <string name="exporterStop">Прервать</string>
+</resources>

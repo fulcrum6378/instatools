@@ -11,8 +11,8 @@ android {
         applicationId "ir.mahdiparastesh.instatools"
         minSdk 21
         targetSdk 31
-        versionCode 11
-        versionName '3.4'
+        versionCode 12
+        versionName '3.5'
     }
 
     buildTypes {

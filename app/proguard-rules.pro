@@ -1,1 +1,12 @@
--keep class ir.mahdiparastesh.instatools.** {*;}
+-keep class ir.mahdiparastesh.instatools.data.Account { <fields>; }
+-keep class ir.mahdiparastesh.instatools.data.Exportable$Options { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Dm { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Dm$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Media { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Media$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Profile { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Profile$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Rest { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.Login$HostPage { <fields>; }
+-keep class ir.mahdiparastesh.instatools.Login$PageConfig { <fields>; }

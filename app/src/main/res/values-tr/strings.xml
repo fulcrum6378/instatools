@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">InstaTools</string>
+
+    <!-- #GLOBAL -->
+    <string name="guest">Misafir</string>
+    <string name="navOpen">Açık</string>
+    <string name="navClose">Kapat</string>
+    <string name="downloads">İndirilenler</string>
+    <string name="settings">Ayarlar</string>
+    <string name="search">Aramak</string>
+    <string name="switchAccount">Hesap değiştir</string>
+    <string name="signOut">Oturumu Kapat</string>
+    <string name="download">İndirmek</string>
+    <string name="remove">Kaldırmak</string>
+    <string name="openLink">Linki aç</string>
+    <string name="ok">Iyi</string>
+    <string name="cancel">İptal</string>
+    <string name="no">Hayır</string>
+    <string name="yes">Evet</string>
+    <string name="unsave">Kaydetmeyi iptal et</string>
+    <string name="favourites">Favoriler</string>
+    <string name="export">İhracat</string>
+    <string name="exportPdf">PDF\'ye aktar</string>
+    <string name="exportHtml">HTML\'ye aktar</string>
+    <string name="exportOptions">Dışa Aktarma Seçenekleri</string>
+    <string name="backgroundTasks">Arkaplan işlemleri</string>
+    <string name="unknownError">Üzgünüz, bilinmeyen bir hata oluştu: %s</string>
+    <string name="unknownMyError">Üzgünüz, bilinmeyen bir hata oluştu!</string>
+    <string name="loadFailed">Yükleme başarısız oldu!</string>
+    <string name="selectAll">Hepsini seç</string>
+    <string name="deselectAll">Tüm seçimleri kaldır</string>
+    <string name="viewProfile">Profili Görüntüle</string>
+    <string name="viewHere">Burada Görüntüle</string>
+    <string name="viewInInsta">Instagram\'da görüntüle</string>
+    <string name="addToFav">Favorilere ekle</string>
+    <string name="removeFav">Favorilerinden kaldır</string>
+    <string name="unfStat">%1$d takipçinizden %2$d\'ü sizi geri takip etmiyor!</string>
+
+    <!-- Login -->
+    <string name="addAccount">Hesap Eklemek</string>
+    <string name="guestShortDesc">Kimlik doğrulama olmadan oturum açın</string>
+
+    <!-- Main -->
+    <string name="unfollowers">Takipten çıkanlar</string>
+    <string name="saved">Kaydedildi</string>
+    <string name="direct">@string/export</string>
+    <string name="guestDesc">Bu uygulamayı misafir modunda kullanıyorsunuz.\nYani bu özelliği kullanamazsınız!</string>
+    <string name="gSettings">Genel Ayarlar</string>
+    <string name="aSettings">Bu Hesabın Ayarları</string>
+    <string name="signOutSure">Instagram hesabınızdan çıkış yapmak istediğinizden emin misiniz?</string>
+    <string name="mtSearch">Bir profil adı yazın&#8230;</string>
+    <string name="boxUntil">%s\'e kadar</string>
+    <string name="unfFailed">Takip etmeyenleri bulma işlemi iptal edildi!</string>
+    <string name="unfollow">Takibi bırak</string>
+    <string name="unfollowPV">Bu hesap özeldir. Onları takip etmeyi bırakmak istediğinizden emin misiniz?</string>
+    <string name="unfCouldNot">Bu kullanıcının takibi bırakılamadı!</string>
+    <string name="terminateBgTasks">Bazı görevler arka planda çalışıyor. Hepsini sonlandırmak istediğinizden emin misiniz?</string>
+    <string name="unsaveOnly">Yalnızca Kaydetmeyi Kaldır</string>
+    <string name="downloadOnly">Yalnızca İndir</string>
+    <string name="unsaveDownload">Kaydet ve İndir</string>
+    <string name="alsoDeleteData">Ayrıca kullanıcı verilerimi ve ayarlarımı sil</string>
+    <string name="unfCalcSec">%1$d / %2$d (%3$s%%)\n%4$d saniye kaldı&#8230;</string>
+    <string name="unfCalcMin">%1$d / %2$d (%3$s%%)\n%4$d dakika kaldı&#8230;</string>
+
+    <!-- Downloads -->
+    <string name="dwTitle">@string/downloads</string>
+    <string name="dwShare">@string/download</string>
+    <string name="pasteLink">Bağlantı yapıştır&#8230;</string>
+
+    <!-- Viewer -->
+    <string name="vwTitle">Profil Görüntüleyici</string>
+    <string name="vwShare">Profili Görüntüle</string>
+
+    <!-- Favourites -->
+    <string name="fvTitle">@string/favourites</string>
+
+    <!-- Settings -->
+    <string name="stDlPath">Ana indirme klasörü</string>
+    <string name="stBranching">İndirilen dosyaları dallara ayırın</string>
+    <string name="stUserData">Kullanıcı bilgisi</string>
+    <string name="stResetData">Tüm kullanıcı verilerimi sıfırla</string>
+    <string name="stResetDataSure">Buna takipçi olmayanlar listesi, favori hesaplar listesi, indirme sırası ve dışa aktarma sırası dahildir. Ancak hesabınızdan çıkış yapmayacaksınız. Devam etmek?</string>
+    <string name="stResetSettings">Ayarlarımı sıfırla</string>
+    <string name="stResetSettingsSure">Emin misin? (hesabınızdan çıkış yapmayacaksınız)</string>
+
+
+    <!-- Queuer -->
+    <string name="queuerChannel">İndirme Sırası</string>
+    <string name="queuerChannelDesc">Kuyruğa alınan medyayı indirir</string>
+    <string name="queuerTitle">İndiriliyor&#8230;</string>
+    <string name="queuerStop">Dur</string>
+
+    <!-- Exporter -->
+    <string name="exporterChannel">İhracatçı</string>
+    <string name="exporterChannelDesc">Doğrudan mesajları dışa aktarır</string>
+    <string name="exporterTitle">Dışa aktarılıyor&#8230;</string>
+    <string name="exporterStop">Iptal</string>
+</resources>

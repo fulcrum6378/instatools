@@ -65,8 +65,6 @@
     <string name="downloadOnly">فقط دانلود</string>
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
-    <string name="unfCalcSec">%1$d از %2$d (%3$s%%)\n%4$d ثانیه باقی مانده&#8230;</string>
-    <string name="unfCalcMin">%1$d از %2$d (%3$s%%)\n%4$d دقیقه باقی مانده&#8230;</string>
 
 
     <!-- Downloads -->

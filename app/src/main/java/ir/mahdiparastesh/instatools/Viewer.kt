@@ -141,8 +141,11 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (intent.extras?.containsKey(EXTRA_USER) == true && intent.extras?.containsKey(EXTRA_ID) == true) {
+            intent.extras?.getString(EXTRA_ID)?.let {
+                if (id == it) return@onNewIntent
+                id = it
+            }
             intent.extras?.getString(EXTRA_USER)?.let { user = it }
-            intent.extras?.getString(EXTRA_ID)?.let { id = it }
             load()
             b.proPicIv.setImageDrawable(null)
             b.toolbar.title = user
