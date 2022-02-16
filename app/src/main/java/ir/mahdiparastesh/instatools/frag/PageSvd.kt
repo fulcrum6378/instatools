@@ -60,7 +60,6 @@ class PageSvd(c: Main) : BasePage(c) {
                     c.m.saved!!.removeAt(x)
                     b.rv.adapter?.notifyItemRemoved(x)
                     b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.size)
-                    if (x > 0) b.rv.adapter?.notifyItemChanged(x - 1)
                 }
             }
         }
@@ -87,11 +86,12 @@ class PageSvd(c: Main) : BasePage(c) {
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
         }
         b.refresher.setOnRefreshListener {
+            if (thread?.active == true) return@setOnRefreshListener
             b.rv.adapter = null
             c.m.nextSaved = null
             c.m.saved = null
             tracker = null
-            if (thread?.active != true) thread = FetchSome().also { it.start() }
+            thread = FetchSome().also { it.start() }
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
             if (!b.rv.canScrollVertically(1) &&

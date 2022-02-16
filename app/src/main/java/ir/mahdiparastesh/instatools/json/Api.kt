@@ -80,7 +80,6 @@ class Api<JSON>(
         POST("https://www.instagram.com/p/%s/?__a=1"),
         SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
         INFO("https://i.instagram.com/api/v1/users/%s/info/"),
-        // Browser hover feature, takes ID, gets ~1% of what PROFILE gets
 
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),

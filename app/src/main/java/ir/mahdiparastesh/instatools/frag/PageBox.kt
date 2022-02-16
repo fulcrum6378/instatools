@@ -94,7 +94,9 @@ class PageBox(c: Main) : BasePage(c) {
             return@setOnChildScrollUpCallback c.m.dmThread != null
         }
         b.refresher.setOnRefreshListener {
-            if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
+            if (boxThread?.active == true) return@setOnRefreshListener
+            b.rv.adapter = null
+            boxThread = FetchInbox().also { it.start() }
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
             if (c.m.dmThread != null && thdThread?.active != true &&

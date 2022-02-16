@@ -30,7 +30,33 @@ class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
     override lateinit var inflater: LayoutInflater
-    override var handler: Handler? = null
+    override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
+        @Suppress("UNCHECKED_CAST")
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                HANDLE_LOADED -> (msg.obj as List<Friend>).apply {
+                    c.m.unfollowers = ArrayList(this)
+                    c.m.unfollowers!!.sortBy { it.user }
+                    if (isNullOrEmpty() && msg.arg1 == 1)
+                        thread = Inquiry().also { it.start() }
+                    else onLoaded() // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
+                }
+                HANDLE_FETCHED -> {
+                    load(false)
+                    b.refresher.isRefreshing = false
+                }
+                //HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
+                Api.HANDLE_ERROR -> onFailed(
+                    c.getString(
+                        R.string.unknownError,
+                        (msg.obj as NetworkResponse?)?.statusCode.toString()
+                    )
+                )
+                HANDLE_COULD_NOT ->
+                    Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     companion object {
         const val HANDLE_LOADED = 2
@@ -46,36 +72,10 @@ class PageUnf(c: Main) : BasePage(c) {
             b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
-        handler = object : Handler(Looper.getMainLooper()) {
-            @Suppress("UNCHECKED_CAST")
-            override fun handleMessage(msg: Message) {
-                when (msg.what) {
-                    HANDLE_LOADED -> (msg.obj as List<Friend>).apply {
-                        c.m.unfollowers = ArrayList(this)
-                        c.m.unfollowers!!.sortBy { it.user }
-                        if (isNullOrEmpty() && msg.arg1 == 1)
-                            thread = Inquiry().also { it.start() }
-                        else onLoaded() // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
-                    }
-                    HANDLE_FETCHED -> {
-                        load(false)
-                        b.refresher.isRefreshing = false
-                    }
-                    //HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
-                    Api.HANDLE_ERROR -> onFailed(
-                        c.getString(
-                            R.string.unknownError,
-                            (msg.obj as NetworkResponse?)?.statusCode.toString()
-                        )
-                    )
-                    HANDLE_COULD_NOT ->
-                        Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
-                }
-            }
-        }
-
         b.refresher.setOnRefreshListener {
-            if (thread?.active != true) thread = Inquiry().also { it.start() }
+            if (thread?.active == true) return@setOnRefreshListener
+            b.rv.adapter = null
+            thread = Inquiry().also { it.start() }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
