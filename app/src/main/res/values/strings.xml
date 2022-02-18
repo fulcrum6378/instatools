@@ -24,7 +24,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
-    <string name="favourites">Favourites</string>
+    <string name="favourites">Favorites</string>
     <string name="export">Export</string>
     <string name="exportPdf">Export to PDF</string>
     <string name="exportHtml">Export to HTML</string>
@@ -86,6 +86,7 @@
     <string name="stResetDataSure">This includes the unfollowers list, the favorite accounts list, the download queue and the export queue. But you won\'t be signed out of your account. Proceed?</string>
     <string name="stResetSettings">Reset my settings</string>
     <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
+    <string name="stAutoDeleteEmptyDirs">Automatically delete empty folders</string>
 
 
     <!-- Queuer -->

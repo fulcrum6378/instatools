@@ -80,6 +80,7 @@
     <string name="stResetDataSure">Esto incluye la lista de no seguidores, la lista de cuentas favoritas, la cola de descarga y la cola de exportación. Pero no se cerrará la sesión de su cuenta. ¿Continuar?</string>
     <string name="stResetSettings">Restablecer mi Configuración</string>
     <string name="stResetSettingsSure">¿Está seguro? (NO se cerrará la sesión de su cuenta)</string>
+    <string name="stAutoDeleteEmptyDirs">Eliminar carpetas vacías automáticamente</string>
 
 
     <!-- Queuer -->

@@ -27,13 +27,14 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PageBox(c: Main) : BasePage(c) {
     private lateinit var b: PageBoxBinding
@@ -72,8 +73,10 @@ class PageBox(c: Main) : BasePage(c) {
             if (it.data?.data == null || exportable == null) {
                 exportable = null; return@registerForActivityResult; }
             exportable!!.uri = it.data!!.data!!.toString()
-            c.dao.addExportable(exportable!!)
-            c.startService(Intent(c, Exporter::class.java))
+            CoroutineScope(Dispatchers.IO).launch {
+                c.dao.addExportable(exportable!!)
+                withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
+            }
         }
 
     companion object {

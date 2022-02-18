@@ -83,10 +83,9 @@ abstract class Database : RoomDatabase() {
     }
 
     companion object {
-        fun build(c: Context, user: String, mainThread: Boolean = true) =
+        fun build(c: Context, user: String) =
             Room.databaseBuilder(c, Database::class.java, "$user.db")
                 .fallbackToDestructiveMigration()
-                .apply { if (mainThread) allowMainThreadQueries() }
                 .build()
     }
 }

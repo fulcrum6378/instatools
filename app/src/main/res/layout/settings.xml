@@ -15,8 +15,9 @@
         android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintBottom_toTopOf="@id/adBanner"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:ignore="UnknownId">
 
         <LinearLayout
             android:id="@+id/ll"
@@ -43,6 +44,15 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/stBranching"
+                    android:textColor="?attr/colorAccent" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/stAutoDeleteEmptyDirs"
+                    style="@style/stSubItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/stAutoDeleteEmptyDirs"
                     android:textColor="?attr/colorAccent" />
             </LinearLayout>
 

@@ -72,8 +72,10 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
             if (it.status != "ok") {
                 f.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 return@Api; }
-            if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
-            else c.dao.deleteFriend(unf)
+            Thread {
+                if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
+                else c.dao.deleteFriend(unf)
+            }.start()
             val index = c.m.unfollowers!!.indexOf(unf)
             c.m.unfollowers!!.remove(unf)
             f.b.rv.adapter?.notifyItemRemoved(index)

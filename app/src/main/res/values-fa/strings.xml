@@ -87,6 +87,7 @@
     <string name="stResetDataSure">حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد، ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟</string>
     <string name="stResetSettings">بازنشانی تنظیمات</string>
     <string name="stResetSettingsSure">آیا مطمئن هستید؟ (از حسابتان خارج «نخواهید» شد)</string>
+    <string name="stAutoDeleteEmptyDirs">حذف خودکار فولدر های خالی</string>
 
 
     <!-- Queuer -->

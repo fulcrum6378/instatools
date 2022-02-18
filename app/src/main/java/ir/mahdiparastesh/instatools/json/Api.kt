@@ -29,7 +29,8 @@ class Api<JSON>(
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
-    onError: ((res: NetworkResponse?) -> Unit)? = null,
+    private val acc: Account = c.m.acc!!,
+    private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url), Response.ErrorListener {
     handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget() // NetworkResponse?
@@ -44,7 +45,7 @@ class Api<JSON>(
         Volley.newRequestQueue(c.c).add(this)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(c.m.acc!!, method == Method.POST)
+    override fun getHeaders(): Map<String, String> = Headers(acc, method == Method.POST)
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
@@ -59,11 +60,20 @@ class Api<JSON>(
             ) {
                 ForegroundService.terminateTasks(c.c)
                 c.gsp.edit().remove(Login.spAccount).commit()
-                if (c is BaseActivity) c.goTo(Login::class, true)
-            } else if (BuildConfig.DEBUG) throw Exception(response)
+                if (c is BaseActivity) {
+                    if (c !is Login) c.goTo(Login::class, true)
+                    else onError?.let { func -> func(null) }
+                } else invalidResponse(response, e)
+            } else invalidResponse(response, e)
         } catch (e: Exception) {
-            if (BuildConfig.DEBUG) throw Exception("ERROR: ${e.message}\nFIX THIS: $response")
+            invalidResponse(response, e)
         }
+    }
+
+    private fun invalidResponse(response: String, e: Exception? = null) {
+        if (BuildConfig.DEBUG)
+            throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
+        else onError?.let { func -> func(null) }
     }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =

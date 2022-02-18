@@ -26,13 +26,17 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListPrf
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
 import ir.mahdiparastesh.instatools.more.BaseSaver
+import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
@@ -124,13 +128,15 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             if (m.vwFav?.photo == null) return@setOnClickListener
             MaterialMenu(this@Viewer, v, R.menu.viewer_pic_more, Act().apply {
                 this[R.id.vpDownload] = {
-                    dao.addQueued(
-                        Queued(
-                            Queuer.now(), "", Queuer.now(), id, user, "profile_photo",
-                            m.vwFav!!.photo, m.vwFav!!.photo, 1
+                    CoroutineScope(Dispatchers.IO).launch {
+                        dao.addQueued(
+                            Queued(
+                                Queuer.now(), "", Queuer.now(), id, user, "profile_photo",
+                                m.vwFav!!.photo, m.vwFav!!.photo, 1
+                            )
                         )
-                    )
-                    Downloads.initService(this@Viewer)
+                        withContext(Dispatchers.Main) { Downloads.initService(this@Viewer) }
+                    }
                 }
             }).show()
         }
@@ -154,8 +160,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     private fun load() {
         reset()
-        dbFav = dao.favourite(id!!).getOrNull(0)
-        fixTbMenu()
+        CoroutineScope(Dispatchers.IO).launch {
+            dbFav = dao.favourite(id!!).getOrNull(0)
+            withContext(Dispatchers.Main) { fixTbMenu() }
+        }
         if (m.vwEdges != null) adapt()
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
@@ -205,7 +213,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         R.id.vtInsta -> {
             UiTools.openProfile(this, user!!); true; }
         R.id.vtFav -> {
-            if (m.vwFav != null) {
+            if (m.vwFav != null) CoroutineScope(Dispatchers.IO).launch {
                 if (dbFav == null) {
                     dbFav = m.vwFav!!
                     dao.addFavourite(dbFav!!)
@@ -213,7 +221,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     dao.deleteFavourite(dbFav!!)
                     dbFav = null
                 }
-                fixTbMenu()
+                withContext(Dispatchers.Main) { fixTbMenu() }
             }; true; }
 
         R.id.vtDownload -> {
@@ -282,7 +290,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
     }
 
-    inner class FetchSome : BasePage.BaseThread() {
+    inner class FetchSome : BaseThread() {
         override fun run() {
             if (m.vwEdges == null) Api<Profile>(
                 this@Viewer, Api.Type.PROFILE.url.format(user), Profile::class, handler

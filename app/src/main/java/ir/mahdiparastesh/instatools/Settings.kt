@@ -12,16 +12,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import androidx.core.view.iterator
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.view.UiTools
 import java.io.File
 
 @SuppressLint("ApplySharedPref")
 class Settings : BaseActivity() {
     private lateinit var b: SettingsBinding
     override val menuRes: Int? = null
+    private lateinit var adBanner: AdView
     private lateinit var prf: SharedPreferences
     private var globalMode = false
     private var giveLinkBack: String? = null
@@ -44,15 +49,19 @@ class Settings : BaseActivity() {
     companion object {
         // Preferences
         const val spStorage = "storage"
+        const val spBranching = "branching"
+        const val defSpBranching = true
+        const val spAutoDeleteEmptyDirs = "auto_delete_empty_dirs"
+        const val defSpAutoDeleteEmptyDirs = false
 
         // Hidden Preferences
         const val spMainPage = "main_page"
-        const val spBranching = "branching"
+        const val defSpMainPage = 1
 
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_GIVE_LINK_BACK = "giveLinkBack"
-        val allSps = arrayOf(spStorage, spMainPage, spBranching)
+        val allSps = arrayOf(spStorage, spBranching, spMainPage, spAutoDeleteEmptyDirs)
         var recreateMain = false
 
         fun deleteDb(id: String) {
@@ -64,8 +73,8 @@ class Settings : BaseActivity() {
         }
 
         @Suppress("unused")
-        fun deleteSp(c: BaseActivity) {
-            File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${c.m.acc!!.id}.xml")
+        fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
+            File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }
         }
     }
@@ -93,9 +102,14 @@ class Settings : BaseActivity() {
         if (!prf.contains(spStorage) && giveLinkBack != null) selectMainPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { selectMainPath() }
-        b.stBranching.isChecked = prf.getBoolean(spBranching, true)
+        b.stBranching.isChecked = prf.getBoolean(spBranching, defSpBranching)
         b.stBranching.setOnCheckedChangeListener { _, bb ->
             prf.edit().putBoolean(spBranching, bb).commit()
+        }
+        b.stAutoDeleteEmptyDirs.isChecked =
+            prf.getBoolean(spAutoDeleteEmptyDirs, defSpAutoDeleteEmptyDirs)
+        b.stAutoDeleteEmptyDirs.setOnCheckedChangeListener { _, bb ->
+            prf.edit().putBoolean(spAutoDeleteEmptyDirs, bb).commit()
         }
 
         // User Data
@@ -126,6 +140,11 @@ class Settings : BaseActivity() {
                 }
             }.create().show()
         }
+
+        // Ads
+        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/9910778917")
+        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
+        adBanner.loadAd(AdRequest.Builder().build())
     }
 
     private fun selectMainPath() {

@@ -10,3 +10,4 @@
 -keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.Login$HostPage { <fields>; }
 -keep class ir.mahdiparastesh.instatools.Login$PageConfig { <fields>; }
+-keep class ir.mahdiparastesh.instatools.more.Versioned { <fields>; }

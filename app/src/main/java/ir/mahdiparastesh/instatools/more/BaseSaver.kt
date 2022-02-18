@@ -2,7 +2,7 @@ package ir.mahdiparastesh.instatools.more
 
 import androidx.recyclerview.selection.Selection
 
-abstract class BaseSaver(selection: Selection<String>) : BasePage.BaseThread() {
+abstract class BaseSaver(selection: Selection<String>) : BaseThread() {
     val list = ArrayList(selection.toList())
 
     override fun run() {

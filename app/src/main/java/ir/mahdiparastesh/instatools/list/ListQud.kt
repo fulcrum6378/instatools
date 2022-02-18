@@ -14,6 +14,10 @@ import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     class ViewHolder(val b: ListQudBinding) : RecyclerView.ViewHolder(b.root)
@@ -47,12 +51,16 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
             MaterialMenu(c, it, R.menu.qud_more, Act().apply {
                 this[R.id.qmRemove] = {
                     if (c.m.queueds != null && c.m.queueds!!.size > h.layoutPosition) {
-                        c.dao.deleteQueued(c.m.queueds!![h.layoutPosition])
-                        c.m.queueds!!.removeAt(h.layoutPosition)
-                        c.b.rv.adapter?.notifyItemRemoved(h.layoutPosition)
-                        c.b.rv.adapter?.notifyItemRangeChanged(
-                            h.layoutPosition, c.m.queueds!!.size - 1
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            c.dao.deleteQueued(c.m.queueds!![h.layoutPosition])
+                            withContext(Dispatchers.Main) {
+                                c.m.queueds!!.removeAt(h.layoutPosition)
+                                c.b.rv.adapter?.notifyItemRemoved(h.layoutPosition)
+                                c.b.rv.adapter?.notifyItemRangeChanged(
+                                    h.layoutPosition, c.m.queueds!!.size - 1
+                                )
+                            }
+                        }
                     }
                 }
                 this[R.id.qmOpen] = {
@@ -64,10 +72,14 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
             }).show()
         }
         h.b.status.setOnClickListener(if (c.m.queueds!![i].failed) View.OnClickListener {
-            c.m.queueds!![h.layoutPosition].failed = false
-            c.dao.updateQueued(c.m.queueds!![h.layoutPosition])
-            c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
-            Downloads.initService(c)
+            CoroutineScope(Dispatchers.IO).launch {
+                c.m.queueds!![h.layoutPosition].failed = false
+                c.dao.updateQueued(c.m.queueds!![h.layoutPosition])
+                withContext(Dispatchers.Main) {
+                    c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
+                    Downloads.initService(c)
+                }
+            }
         } else null)
 
         // Separator

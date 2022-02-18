@@ -13,6 +13,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -22,14 +23,20 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Versioned
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.util.*
 
 class Queuer : ForegroundService() {
     private var dest: String? = null
     private var handlingLink: Queued? = null
+    private var download: BaseThread? = null
 
     override val com: ForegroundServiceCompanion
         get() = Companion
@@ -76,25 +83,25 @@ class Queuer : ForegroundService() {
                     HANDLE_LINK -> handleLink(msg.obj as String)
                     Api.HANDLE_ERROR -> if (handlingLink != null) {
                         handlingLink!!.failed = true
-                        dao.updateQueued(handlingLink!!)
+                        Thread { dao.updateQueued(handlingLink!!) }.start()
                         Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, handlingLink!!)
                             ?.sendToTarget()
                         handlingLink = null
-                        download()
+                        if (download?.active != true) download = Download().also { it.start() }
                     }
                 }
             }
         }
-        download()
+        if (download?.active != true) download = Download().also { it.start() }
     }
 
     @Suppress("LABEL_NAME_CLASH")
     private fun handleLink(link: String, theQud: Queued? = null) {
         val qud = theQud ?: Queued(now(), link)
-        if (theQud == null) {
+        if (theQud == null) Thread {
             qud.id = dao.addQueued(qud)
             Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
-        }
+        }.start()
         handlingLink = qud
 
         if (link.contains("/stories/")) {
@@ -125,9 +132,12 @@ class Queuer : ForegroundService() {
                         mediaType = med.media_type.toInt().toByte()
                     }
                     handlingLink = null
-                    dao.updateQueued(qud)
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
-                    download()
+                    Thread {
+                        dao.updateQueued(qud)
+                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)
+                            ?.sendToTarget()
+                    }.start()
+                    if (download?.active != true) download = Download().also { it.start() }
                 }
             }
         } else Api<Media.MediaWrapperApi>(
@@ -175,61 +185,78 @@ class Queuer : ForegroundService() {
                 }
             }
             handlingLink = null
-            if (found) {
+            if (found) CoroutineScope(Dispatchers.IO).launch {
                 dao.updateQueued(qud)
                 Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
                 addOns.forEach { qud ->
                     qud.id = dao.addQueued(qud)
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)
+                        ?.sendToTarget()
                 }
-                download()
+                withContext(Dispatchers.Main) {
+                    if (download?.active != true) download = Download().also { it.start() }
+                }
             }
         }
     }
 
-    private var downloading = false
-    private fun download() {
-        if (downloading) return
-        val queue = ArrayList(dao.readyQueueds().sortedBy { it.date })
-        if (queue.isNullOrEmpty()) {
-            destroy(); return; }
-        var q = 0
-        while (queue[q].url == null) {
-            if (handlingLink?.link != queue[q].link) handleLink(queue[q].link, queue[q])
-            q++
-            if (q >= queue.size) return
-        }
-        downloading = true
-
-        Volley.newRequestQueue(c).add(
-            object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
-                queue[q].failed = true
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[q])?.sendToTarget()
-                dao.updateQueued(queue[q])
-                downloading = false
-                download()
-            }) {
-                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
-
-                override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
-                    Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
-
-                override fun deliverResponse(response: ByteArray) {
-                    save(queue[q], response)
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])
-                        ?.sendToTarget()
-                    dao.deleteQueued(queue[q])
-                    downloading = false
-                    download()
-                }
-            }.apply {
-                setShouldCache(false)
-                tag = queue[q].itemId
-                retryPolicy = DefaultRetryPolicy(
-                    20000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
+    inner class Download : BaseThread() {
+        override fun run() {
+            super.run()
+            val queue = ArrayList(dao.readyQueueds().sortedBy { it.date })
+            if (queue.isNullOrEmpty()) {
+                this@Queuer.destroy(); return; }
+            var q = 0
+            while (queue[q].url == null) {
+                if (handlingLink?.link != queue[q].link) handleLink(queue[q].link, queue[q])
+                q++
+                if (q >= queue.size) return
             }
-        )
+
+            Volley.newRequestQueue(c).add(
+                object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
+                    queue[q].failed = true
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[q])
+                        ?.sendToTarget()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        dao.updateQueued(queue[q])
+                    }.invokeOnCompletion { downloaded() }
+                }) {
+                    override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
+
+                    override fun parseNetworkResponse(response: NetworkResponse): Response<ByteArray> =
+                        Response.success(
+                            response.data, HttpHeaderParser.parseCacheHeaders(response)
+                        )
+
+                    override fun deliverResponse(response: ByteArray) {
+                        Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])
+                            ?.sendToTarget()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            runCatching {
+                                save(queue[q], response)
+                                dao.deleteQueued(queue[q])
+                            }.onSuccess {
+                                downloaded()
+                            }.onFailure {
+                                if (BuildConfig.DEBUG) throw it else downloaded()
+                            }
+                        }
+                    }
+                }.apply {
+                    setShouldCache(false) // TODO: REALLY?!?
+                    tag = queue[q].itemId
+                    retryPolicy = DefaultRetryPolicy(
+                        20000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    )
+                }
+            )
+        }
+    }
+
+    private fun downloaded() {
+        download?.interrupt()
+        download = Download().also { it.start() }
     }
 
     private fun save(q: Queued, ba: ByteArray) {
@@ -252,6 +279,27 @@ class Queuer : ForegroundService() {
         leaf = branch.createFile(type.mime, fName)
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
+        }
+    }
+
+    override fun destroy() {
+        download?.interrupt()
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                if (dest == null || bPreference(
+                        Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs
+                    ) != true
+                ) return@runCatching
+                val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
+                for (branch in stem.listFiles())
+                    if (branch.isDirectory && branch.listFiles().isEmpty())
+                        branch.delete()
+            }.onSuccess {
+                super.destroy()
+            }.onFailure {
+                if (BuildConfig.DEBUG) throw it
+                else super.destroy()
+            }
         }
     }
 

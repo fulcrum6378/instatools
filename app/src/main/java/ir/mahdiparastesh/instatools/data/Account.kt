@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login.Companion.spAccount
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.File
@@ -35,7 +36,8 @@ class Account(
 
         fun save(c: Context, accounts: List<Account>) {
             FileOutputStream(Secured(c)).write(
-                GsonBuilder().setPrettyPrinting().create().toJson(accounts).encodeToByteArray()
+                (if (BuildConfig.DEBUG) GsonBuilder().setPrettyPrinting().create() else Gson())
+                    .toJson(accounts).encodeToByteArray()
             )
         }
     }

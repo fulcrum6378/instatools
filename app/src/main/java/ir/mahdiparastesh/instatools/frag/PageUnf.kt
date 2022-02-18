@@ -22,6 +22,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -134,7 +135,7 @@ class PageUnf(c: Main) : BasePage(c) {
     }
 
 
-    inner class Inquiry : BasePage.BaseThread() {
+    inner class Inquiry : BaseThread() {
         override fun run() {
             super.run()
             c.dao.deleteFriends()
@@ -147,18 +148,23 @@ class PageUnf(c: Main) : BasePage(c) {
                 c, (if (theFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
                     .format(c.m.acc!!.id, next_max_id), Rest.Follow::class, handler
             ) { flw ->
-                flw.users.forEach { u ->
-                    Friend.add(
-                        c.dao, Friend(
-                            u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
-                            theFollowers, !theFollowers
-                        ), theFollowers
-                    )
-                }
-                if (flw.next_max_id == null) {
-                    if (theFollowers) Delay { allFollow(theFollowers = false) }
-                    else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                } else Delay { allFollow(flw.next_max_id, theFollowers) }
+                Thread {
+                    flw.users.forEach { u ->
+                        Friend.add(
+                            c.dao, Friend(
+                                u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
+                                theFollowers, !theFollowers
+                            ), theFollowers
+                        )
+                    }
+                    if (flw.next_max_id == null) {
+                        if (theFollowers) Delay(looper = Looper.getMainLooper()) {
+                            allFollow(theFollowers = false)
+                        } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                    } else Delay(looper = Looper.getMainLooper()) {
+                        allFollow(flw.next_max_id, theFollowers)
+                    }
+                }.start()
             }
         }
     }

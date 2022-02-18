@@ -31,6 +31,10 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.view.PdfExporter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Exporter : ForegroundService() {
     private var exp: Exportable? = null
@@ -78,10 +82,14 @@ class Exporter : ForegroundService() {
     }
 
     private fun handle() {
-        exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
-        if (exp == null) {
-            destroy(); return; }
-        fetchData()
+        CoroutineScope(Dispatchers.IO).launch {
+            exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
+            withContext(Dispatchers.Main) {
+                if (exp == null)
+                    this@Exporter.destroy()
+                else fetchData()
+            }
+        }
     }
 
     private fun fetchData() {
@@ -171,8 +179,10 @@ class Exporter : ForegroundService() {
 
     private fun end(oldExp: Exportable?) {
         if (oldExp == null) return
-        dao.deleteExportable(oldExp)
-        handle()
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.deleteExportable(oldExp)
+            withContext(Dispatchers.Main) { handle() }
+        }
     }
 
     @Suppress("unused")

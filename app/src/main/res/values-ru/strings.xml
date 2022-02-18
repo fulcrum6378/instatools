@@ -85,6 +85,7 @@
     <string name="stResetDataSure">Сюда входят список отписавшихся, список избранных учетных записей, очередь загрузки и очередь экспорта. Но вы не выйдете из своей учетной записи. Продолжить?</string>
     <string name="stResetSettings">Сбросить мои настройки</string>
     <string name="stResetSettingsSure">Уверены ли вы? (Вы НЕ будете выходить из своей учетной записи)</string>
+    <string name="stAutoDeleteEmptyDirs">Автоматически удалять пустые папки</string>
 
 
     <!-- Queuer -->

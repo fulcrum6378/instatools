@@ -35,7 +35,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         private val services = arrayOf(Queuer::class, Exporter::class)
 
         fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active }
-        // Never reference "Queuer"'s self in a static context
+        // Never reference "Queuer"'s Companion in a static variable
 
         fun terminateTasks(c: Context) {
             services.forEach { service ->
@@ -130,7 +130,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onDestroy() {
         com.handler = null
         com.active = false
-        // if (::db.isInitialized && !Inquisitor.active && !Exporter.active && !Queuer.active) db.close()
+        // if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()
         super.onDestroy()
     }
 

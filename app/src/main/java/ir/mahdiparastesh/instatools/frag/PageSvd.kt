@@ -25,6 +25,7 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.BaseSaver
+import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools

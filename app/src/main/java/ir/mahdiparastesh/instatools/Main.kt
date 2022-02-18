@@ -66,7 +66,6 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
 
     companion object {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
-        const val DEFAULT_PAGE = 1
         val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
@@ -92,8 +91,8 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
         // Paging
         m.currentPage.value =
             intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-                ?: sp?.getInt(spMainPage, DEFAULT_PAGE)
-                        ?: DEFAULT_PAGE
+                ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
+                        ?: Settings.defSpMainPage
         if (page1 == null) page1 = PageUnf(this)
         if (page2 == null) page2 = PageSvd(this)
         if (page3 == null) page3 = PageBox(this)

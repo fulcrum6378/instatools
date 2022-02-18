@@ -117,7 +117,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
     }
 
     override fun onDestroy() {
-        // if (::db.isInitialized && !Inquisitor.active && !Exporter.active && !Queuer.active) db.close()
+        // if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()
         super.onDestroy()
     }
 

@@ -11,15 +11,22 @@ import android.os.VibratorManager
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
+import ir.mahdiparastesh.instatools.BuildConfig
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -109,5 +116,17 @@ class UiTools {
             Calendar.getInstance().apply { timeInMillis = instaTime(unix) }
 
         fun instaTime(time: Double) = time.toLong() / 1000L
+
+        fun adaptiveBanner(c: BaseActivity, unitId: String) = AdView(c).apply {
+            id = R.id.adBanner
+            adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                c, (c.dm.widthPixels / c.dm.density).toInt()
+            )
+            adUnitId = if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else unitId
+        }
+
+        fun adaptiveBannerLp() = ConstraintLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID }
     }
 }

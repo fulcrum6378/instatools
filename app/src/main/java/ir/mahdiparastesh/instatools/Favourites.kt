@@ -17,7 +17,9 @@ class Favourites : BaseActivity() {
         toolbar(b.toolbar, R.string.fvTitle)
         db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
 
-        m.fav = ArrayList(dao.favourites())
-        b.rv.adapter = ListFav(this)
+        Thread {
+            m.fav = ArrayList(dao.favourites())
+            b.rv.adapter = ListFav(this)
+        }.start()
     }
 }

@@ -11,12 +11,12 @@ android {
         applicationId "ir.mahdiparastesh.instatools"
         minSdk 21
         targetSdk 31
-        versionCode 12
-        versionName '3.5'
+        versionCode 13
+        versionName '3.7'
     }
 
     buildTypes {
-        def obfuscate = true
+        def obfuscate = false
         release {
             minifyEnabled obfuscate
             shrinkResources obfuscate // removes unused resources anywhere
