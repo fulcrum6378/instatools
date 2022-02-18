@@ -278,8 +278,9 @@ class PageSvd(c: Main) : BasePage(c) {
                     Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode))
                 )
                 if (unsave) Api<Rest>(
-                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, handler,
-                    method = Request.Method.POST
+                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
+                    method = Request.Method.POST,
+                    onError = { ended() }
                 ) { rest ->
                     if (rest.status == "ok")
                         handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()

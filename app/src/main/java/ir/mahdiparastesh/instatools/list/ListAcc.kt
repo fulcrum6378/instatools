@@ -48,7 +48,9 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
         h.b.more.setOnClickListener(if (!guest) View.OnClickListener {
             more(it, c.accounts[h.layoutPosition], h.layoutPosition)
         } else null)
-        h.b.root.setOnLongClickListener { more(it, c.accounts[h.layoutPosition], h.layoutPosition) }
+        h.b.root.setOnLongClickListener(if (!guest) View.OnLongClickListener {
+            more(it, c.accounts[h.layoutPosition], h.layoutPosition)
+        } else null)
 
         h.b.sep.vis(i < itemCount - 1)
     }

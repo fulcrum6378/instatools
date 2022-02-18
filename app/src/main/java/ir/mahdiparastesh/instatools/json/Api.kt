@@ -52,8 +52,8 @@ class Api<JSON>(
     @SuppressLint("ApplySharedPref")
     @Suppress("UNCHECKED_CAST")
     override fun deliverResponse(response: String) {
-        try {
-            onSuccess(Gson().fromJson(response, clazz.java) as JSON)
+        val data: JSON? = try {
+            Gson().fromJson(response, clazz.java) as JSON
         } catch (e: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>", true)
                 && response.contains("Log in • Instagram")
@@ -65,8 +65,16 @@ class Api<JSON>(
                     else onError?.let { func -> func(null) }
                 } else invalidResponse(response, e)
             } else invalidResponse(response, e)
+            null
         } catch (e: Exception) {
             invalidResponse(response, e)
+            null
+        }
+        try {
+            data?.let(onSuccess)
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) throw e
+            else onError?.let { func -> func(null) }
         }
     }
 

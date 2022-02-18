@@ -22,6 +22,10 @@ import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
@@ -94,12 +98,13 @@ class Downloads : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        Thread {
+        CoroutineScope(Dispatchers.IO).launch {
             m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
-            if (!m.queueds.isNullOrEmpty()) Thread { initService(this) }
+            if (!m.queueds.isNullOrEmpty())
+                withContext(Dispatchers.Main) { initService(this@Downloads) }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
-        }.start()
+        }
     }
 
     override fun onDestroy() {

@@ -29,13 +29,13 @@ import ir.mahdiparastesh.instatools.more.Versioned
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.util.*
 
 class Queuer : ForegroundService() {
     private var dest: String? = null
-    private var handlingLink: Queued? = null
+    private var handlingLinks = arrayListOf<Link>()
+    private var handlingLink = false
     private var download: BaseThread? = null
 
     override val com: ForegroundServiceCompanion
@@ -63,8 +63,10 @@ class Queuer : ForegroundService() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
-            ACTION_START -> if (intent.extras != null)
-                intent.getStringExtra(EXTRA_LINK)?.let { handleLink(it) }
+            ACTION_START -> intent.getStringExtra(EXTRA_LINK)?.let {
+                handlingLinks.add(Link(it))
+                handleLinks()
+            }
             ACTION_STOP -> if (active) destroy()
         }
         return START_NOT_STICKY
@@ -80,14 +82,15 @@ class Queuer : ForegroundService() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_LINK -> handleLink(msg.obj as String)
-                    Api.HANDLE_ERROR -> if (handlingLink != null) {
-                        handlingLink!!.failed = true
-                        Thread { dao.updateQueued(handlingLink!!) }.start()
-                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, handlingLink!!)
+                    HANDLE_LINK -> {
+                        handlingLinks.add(Link(msg.obj as String))
+                    }
+                    Api.HANDLE_ERROR -> if (handlingLinks.isNotEmpty()) {
+                        handlingLinks[0].qud!!.failed = true
+                        Thread { dao.updateQueued(handlingLinks[0].qud!!) }.start()
+                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, handlingLinks[0])
                             ?.sendToTarget()
-                        handlingLink = null
-                        if (download?.active != true) download = Download().also { it.start() }
+                        linkHandled()
                     }
                 }
             }
@@ -96,18 +99,24 @@ class Queuer : ForegroundService() {
     }
 
     @Suppress("LABEL_NAME_CLASH")
-    private fun handleLink(link: String, theQud: Queued? = null) {
-        val qud = theQud ?: Queued(now(), link)
-        if (theQud == null) Thread {
-            qud.id = dao.addQueued(qud)
-            Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
-        }.start()
-        handlingLink = qud
+    private fun handleLinks() {
+        if (handlingLink) return
+        val cur = handlingLinks.getOrNull(0)
+        if (cur == null) {
+            if (download?.active != true) destroy()
+            return; }
+        handlingLink = true
 
-        if (link.contains("/stories/")) {
-            val storyId = link.substringAfterLast("/").substringBefore("?")
+        if (cur.qud == null) Thread {
+            cur.qud = Queued(now(), cur.link)
+            cur.qud!!.id = dao.addQueued(cur.qud!!)
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, cur.qud!!)?.sendToTarget()
+        }.start()
+
+        if (cur.link.contains("/stories/")) {
+            val storyId = cur.link.substringAfterLast("/").substringBefore("?")
             Api<Profile.GraphQl>(
-                this, link.substringBefore("?") + "?__a=1", Profile.GraphQl::class,
+                this, cur.link.substringBefore("?") + "?__a=1", Profile.GraphQl::class,
                 handler, cache = true
             ) { graphQl ->
                 val user = graphQl.user
@@ -121,7 +130,7 @@ class Queuer : ForegroundService() {
                     if (med == null) med = reels.reels[user.id]?.items?.find { it.pk == storyId }
                     if (med == null) {
                         handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                    qud.apply {
+                    cur.qud!!.apply {
                         date = med.taken_at.toLong()
                         userId = user.id
                         userName = user.username
@@ -131,17 +140,11 @@ class Queuer : ForegroundService() {
                             ?: med.nearest(Versioned.WORST)
                         mediaType = med.media_type.toInt().toByte()
                     }
-                    handlingLink = null
-                    Thread {
-                        dao.updateQueued(qud)
-                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)
-                            ?.sendToTarget()
-                    }.start()
-                    if (download?.active != true) download = Download().also { it.start() }
+                    handleQueued(cur.qud!!, null)
                 }
             }
         } else Api<Media.MediaWrapperApi>(
-            this, link.substringBefore("?") + "?__a=1", Media.MediaWrapperApi::class,
+            this, cur.link.substringBefore("?") + "?__a=1", Media.MediaWrapperApi::class,
             handler
         ) { wrapper ->
             val med = wrapper.items?.get(0)
@@ -151,7 +154,7 @@ class Queuer : ForegroundService() {
             val addOns = arrayListOf<Queued>()
             when {
                 med.carousel_media != null -> for (car in med.carousel_media)
-                    if (qud.url == null) qud.apply {
+                    if (cur.qud!!.url == null) cur.qud!!.apply {
                         date = med.taken_at.toLong()
                         userId = med.user.pk
                         userName = med.user.username
@@ -162,14 +165,15 @@ class Queuer : ForegroundService() {
                         mediaType = car.media_type.toInt().toByte()
                     } else addOns.add(
                         Queued(
-                            qud.addedAt, qud.link, qud.date, med.user.pk, med.user.username,
+                            cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
+                            med.user.pk, med.user.username,
                             car.pk, car.nearest(Versioned.BEST),
                             med.thumbnails?.sprite_urls?.getOrNull(0)
                                 ?: car.nearest(Versioned.WORST),
                             car.media_type.toInt().toByte()
                         )
                     )
-                med.image_versions2 != null -> qud.apply {
+                med.image_versions2 != null -> cur.qud!!.apply {
                     date = med.taken_at.toLong()
                     userId = med.user.pk
                     userName = med.user.username
@@ -184,33 +188,50 @@ class Queuer : ForegroundService() {
                     Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
                 }
             }
-            handlingLink = null
-            if (found) CoroutineScope(Dispatchers.IO).launch {
-                dao.updateQueued(qud)
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
-                addOns.forEach { qud ->
-                    qud.id = dao.addQueued(qud)
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)
-                        ?.sendToTarget()
-                }
-                withContext(Dispatchers.Main) {
-                    if (download?.active != true) download = Download().also { it.start() }
-                }
+            if (found) handleQueued(cur.qud!!, addOns)
+            else {
+                linkHandled()
+                if (download?.active != true) destroy()
             }
         }
     }
 
+    private fun handleQueued(qud: Queued, addOns: ArrayList<Queued>?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.updateQueued(qud)
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
+            addOns?.forEach { qud ->
+                qud.id = dao.addQueued(qud)
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
+            }
+        }.invokeOnCompletion { linkHandled() }
+    }
+
+    private fun linkHandled() {
+        handlingLinks.removeAt(0)
+        handlingLink = false
+        if (handlingLinks.isNotEmpty()) handleLinks()
+        if (download?.active != true) download = Download().also { it.start() }
+    }
+
     inner class Download : BaseThread() {
         override fun run() {
-            super.run()
-            val queue = ArrayList(dao.readyQueueds().sortedBy { it.date })
+            val queue = ArrayList(dao.readyQueueds().sortedBy { it.addedAt })
             if (queue.isNullOrEmpty()) {
-                this@Queuer.destroy(); return; }
+                if (!handlingLink) this@Queuer.destroy()
+                else interrupt()
+                return; }
+
+            super.run()
             var q = 0
             while (queue[q].url == null) {
-                if (handlingLink?.link != queue[q].link) handleLink(queue[q].link, queue[q])
+                if (handlingLinks.all { it.link != queue[q].link }) {
+                    handlingLinks.add(Link(queue[q].link, queue[q]))
+                    handleLinks()
+                }
                 q++
-                if (q >= queue.size) return
+                if (q >= queue.size) {
+                    interrupt(); return; }
             }
 
             Volley.newRequestQueue(c).add(
@@ -244,7 +265,7 @@ class Queuer : ForegroundService() {
                         }
                     }
                 }.apply {
-                    setShouldCache(false) // TODO: REALLY?!?
+                    setShouldCache(false)
                     tag = queue[q].itemId
                     retryPolicy = DefaultRetryPolicy(
                         20000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
@@ -312,4 +333,6 @@ class Queuer : ForegroundService() {
         PHOTO("image/jpg", "jpg", 1),
         VIDEO("video/mp4", "mp4", 2)
     }
+
+    data class Link(val link: String, var qud: Queued? = null)
 }
