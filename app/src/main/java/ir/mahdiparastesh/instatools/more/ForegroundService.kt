@@ -32,6 +32,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     companion object {
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_PAUSE = "ACTION_PAUSE"
+        const val ACTION_RESUME = "ACTION_RESUME"
         private val services = arrayOf(Queuer::class, Exporter::class)
 
         fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active }

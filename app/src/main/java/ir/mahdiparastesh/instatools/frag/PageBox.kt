@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.contains
@@ -37,7 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageBox(c: Main) : BasePage(c) {
+class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
     private var boxThread: FetchInbox? = null
     var thdThread: FetchSomeDm? = null
@@ -70,15 +72,7 @@ class PageBox(c: Main) : BasePage(c) {
     }
     private var exportable: Exportable? = null
     private val exportLauncher =
-        c.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.data?.data == null || exportable == null) {
-                exportable = null; return@registerForActivityResult; }
-            exportable!!.uri = it.data!!.data!!.toString()
-            CoroutineScope(Dispatchers.IO).launch {
-                c.dao.addExportable(exportable!!)
-                withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
-            }
-        }
+        c.registerForActivityResult(ActivityResultContracts.StartActivityForResult(), this)
 
     companion object {
         const val HANDLE_FETCHED_SOME = 44
@@ -145,6 +139,7 @@ class PageBox(c: Main) : BasePage(c) {
         }
         b.error.vis(false)
 
+        c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
         if (c.m.dmThread == null) {
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
                 b.rv.adapter = ListBox(c, this)
@@ -194,6 +189,16 @@ class PageBox(c: Main) : BasePage(c) {
         }.show().stylise(c)
     }
 
+    override fun onActivityResult(result: ActivityResult) {
+        if (result.data?.data == null || exportable == null) {
+            exportable = null; return; }
+        exportable!!.uri = result.data!!.data!!.toString()
+        CoroutineScope(Dispatchers.IO).launch {
+            c.dao.addExportable(exportable!!)
+            withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
+        }
+    }
+
     override fun goBack(): Boolean {
         if (c.m.dmThread != null) {
             c.m.dmThread = null
@@ -219,7 +224,6 @@ class PageBox(c: Main) : BasePage(c) {
             ) { page ->
                 c.m.dmThreads?.addAll(page.inbox.threads)
                 c.m.dmThreads?.sortByDescending { it.last_activity_at }
-                c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
                 nextCursor = page.inbox.oldest_cursor
                 if (page.inbox.has_older) Delay(DELAY) { fetch() }
                 else {

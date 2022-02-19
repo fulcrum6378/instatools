@@ -28,7 +28,8 @@ class Api<JSON>(
     private val acc: Account = c.m.acc!!,
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
-) : Request<String>(method, encode(url), Response.ErrorListener { error(it) }) {
+) : Request<String>(method, encode(url),
+    Response.ErrorListener { gotError(handleError, onError, it) }) {
 
     init {
         setShouldCache(cache)
@@ -55,7 +56,7 @@ class Api<JSON>(
                 ForegroundService.terminateTasks(c.c)
                 c.gsp.edit().remove(Login.spAccount).commit()
                 c.needAuthentication()
-                error(null)
+                gotError(this, null)
             } else invalidResponse(response, e)
             null
         } catch (e: Exception) {
@@ -66,19 +67,14 @@ class Api<JSON>(
             data?.let(onSuccess)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) throw e
-            else error(null)
+            else gotError(this, null)
         }
-    }
-
-    fun error(res: VolleyError? = null) { // NetworkResponse?
-        handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
-        onError?.let { func -> func(res?.networkResponse) }
     }
 
     private fun invalidResponse(response: String, e: Exception? = null) {
         if (BuildConfig.DEBUG)
             throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else error(null)
+        else gotError(this, null)
     }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =
@@ -122,6 +118,19 @@ class Api<JSON>(
         const val HANDLE_ERROR = 100
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
         const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
+
+        fun <JSON> gotError(api: Api<JSON>, res: VolleyError? = null) { // NetworkResponse?
+            api.handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
+            api.onError?.let { func -> func(res?.networkResponse) }
+        }
+
+        fun gotError(
+            handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
+            res: VolleyError? = null
+        ) {
+            handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
+            onError?.let { func -> func(res?.networkResponse) }
+        }
 
         fun encode(uriString: String?): String? {
             if (uriString == null) return null

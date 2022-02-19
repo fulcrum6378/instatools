@@ -8,6 +8,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
@@ -24,7 +26,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import java.io.File
 
 @SuppressLint("ApplySharedPref")
-class Settings : BaseActivity() {
+class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
     override val menuRes: Int? = null
     private lateinit var adBanner: AdView
@@ -32,20 +34,7 @@ class Settings : BaseActivity() {
     private var globalMode = false
     private var giveLinkBack: String? = null
     private val saveLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.data?.data == null) return@registerForActivityResult
-            val uri = it.data!!.data!!
-            contentResolver.takePersistableUriPermission(
-                uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
-            prf.edit().putString(spStorage, uri.toString()).commit()
-            updateMainPath(uri.toString())
-            if (giveLinkBack != null) {
-                Downloads.initService(this, giveLinkBack)
-                giveLinkBack = null
-                onBackPressed()
-            }
-        }
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), this)
 
     companion object {
         // Preferences
@@ -154,5 +143,20 @@ class Settings : BaseActivity() {
 
     private fun updateMainPath(value: String? = null) {
         b.stMainPath.text = Uri.decode(value ?: prf.getString(spStorage, ""))
+    }
+
+    override fun onActivityResult(result: ActivityResult) {
+        if (result.data?.data == null) return
+        val uri = result.data!!.data!!
+        contentResolver.takePersistableUriPermission(
+            uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
+        prf.edit().putString(spStorage, uri.toString()).commit()
+        updateMainPath(uri.toString())
+        if (giveLinkBack != null) {
+            Downloads.initService(this, giveLinkBack)
+            giveLinkBack = null
+            onBackPressed()
+        }
     }
 }

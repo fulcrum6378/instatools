@@ -16,7 +16,7 @@ android {
     }
 
     buildTypes {
-        def obfuscate = true
+        def obfuscate = false
         release {
             minifyEnabled obfuscate
             shrinkResources obfuscate

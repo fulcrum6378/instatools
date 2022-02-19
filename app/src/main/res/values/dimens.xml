@@ -41,6 +41,10 @@
     <dimen name="qudPadH">15dp</dimen>
     <dimen name="qudPadV">10dp</dimen>
 
+    <!-- MassFollower -->
+    <dimen name="mfSearch">150dp</dimen>
+    <dimen name="mfSearchPad">30dp</dimen>
+
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>
     <dimen name="stItemName">13.5sp</dimen>

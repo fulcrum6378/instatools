@@ -43,6 +43,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        m.accountSwitched()
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)

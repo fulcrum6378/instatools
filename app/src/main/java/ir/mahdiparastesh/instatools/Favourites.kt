@@ -14,7 +14,7 @@ class Favourites : BaseActivity() {
         super.onCreate(savedInstanceState)
         b = FavouritesBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.fvTitle)
+        toolbar(b.toolbar, R.string.favourites)
         db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
 
         Thread {

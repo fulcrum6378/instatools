@@ -9,7 +9,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
-        app:title="@string/dwTitle" />
+        app:title="@string/downloads" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pasteBar"

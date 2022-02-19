@@ -187,6 +187,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mnDownloads -> goTo(Downloads::class)
         R.id.mnFavourites -> goTo(Favourites::class)
+        R.id.mnMassFollower -> goTo(MassFollower::class)
         R.id.mnGSettings -> {
             startActivity(Intent(this, Settings::class.java)
                 .apply { putExtra(Settings.EXTRA_IS_GLOBAL, true) })
@@ -436,7 +437,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         page1 = null
         page2 = null
         page3 = null
-        m.accountSwitched()
         super.onDestroy()
     }
 

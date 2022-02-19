@@ -50,29 +50,29 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="wrap_content"
                     android:descendantFocusability="blocksDescendants">
-
-                    <TextView
-                        android:id="@+id/privateAcc"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="90dp"
-                        android:layout_marginBottom="50dp"
-                        android:drawablePadding="15dp"
-                        android:lineSpacingMultiplier="1.2"
-                        android:text="@string/vwPrivate"
-                        android:textAlignment="center"
-                        android:textColor="?attr/colorAccent"
-                        android:textSize="@dimen/guestFont"
-                        android:visibility="gone"
-                        tools:ignore="RtlHardcoded" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
                 </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/privateAcc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="90dp"
+                    android:layout_marginBottom="50dp"
+                    android:drawablePadding="15dp"
+                    android:lineSpacingMultiplier="1.2"
+                    android:text="@string/vwPrivate"
+                    android:textAlignment="center"
+                    android:textColor="?attr/colorAccent"
+                    android:textSize="@dimen/guestFont"
+                    android:visibility="gone"
+                    tools:ignore="RtlHardcoded" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

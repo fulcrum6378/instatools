@@ -38,7 +38,7 @@ class Downloads : BaseActivity() {
         super.onCreate(savedInstanceState)
         b = DownloadsBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.dwTitle)
+        toolbar(b.toolbar, R.string.downloads)
         db = Database.build(c, (m.acc?.id ?: -1L).toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {

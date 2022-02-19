@@ -134,6 +134,7 @@ class PageSvd(c: Main) : BasePage(c) {
         }
         b.error.vis(false)
 
+        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) {
@@ -263,7 +264,6 @@ class PageSvd(c: Main) : BasePage(c) {
                     c.m.saved?.edges?.removeAll { it.node.id == post.node.id }
                     c.m.saved?.edges?.add(post)
                 }
-                c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()

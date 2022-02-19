@@ -10,6 +10,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_1.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_accent.xml" value="0.184" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_round.xml" value="0.112" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_round_bordered.xml" value="0.182" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/deselect_all.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/direct_off.xml" value="0.12604166666666666" />
@@ -66,6 +67,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/login.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/main.xml" value="0.12771739130434784" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/main_nav_header.xml" value="0.20199275362318841" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/mass_follower.xml" value="0.19067028985507245" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/saver.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/settings.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/unf_preload.xml" value="0.19701086956521738" />
@@ -80,6 +82,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/main_tb.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/main_tlb_select.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/menu_tb.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/mfw_tlb.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/qud_click.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/qud_more.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/menu/unf_click.xml" value="0.22447916666666667" />
