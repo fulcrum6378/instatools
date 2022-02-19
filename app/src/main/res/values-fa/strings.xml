@@ -65,6 +65,7 @@
     <string name="downloadOnly">فقط دانلود</string>
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
+    <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
 
 
     <!-- Downloads -->
@@ -75,6 +76,7 @@
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
     <string name="vwShare">نمایش پروفایل</string>
+    <string name="vwPrivate">این پروفایل خصوصی است!</string>
 
     <!-- Favourites -->
     <string name="fvTitle">@string/favourites</string>

@@ -40,6 +40,7 @@
     <string name="addToFav">Добавить в избранные</string>
     <string name="removeFav">Удалить из избранного</string>
     <string name="unfStat">%1$d из ваших %2$d подписчиков не подписались на вас!</string>
+    <string name="toExit">Нажмите дважды, чтобы выйти&#8230;</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -73,6 +74,7 @@
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
     <string name="vwShare">Процент профиля</string>
+    <string name="vwPrivate">Этот аккаунт является частным!</string>
 
     <!-- Favourites -->
     <string name="fvTitle">@string/favourites</string>

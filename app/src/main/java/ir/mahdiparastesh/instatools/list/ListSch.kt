@@ -19,6 +19,7 @@ class ListSch(val c: Main) : RecyclerView.Adapter<ListSch.ViewHolder>() {
         b.name.typeface = c.fontRegular
         b.user.typeface = c.fontRegular
         b.root.setPadding(hPad, 0, hPad, 0)
+        b.root.removeView(b.more)
         return ViewHolder(b)
     }
 

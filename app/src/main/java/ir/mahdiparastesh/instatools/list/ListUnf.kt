@@ -18,6 +18,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
@@ -34,34 +35,34 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.unfollowers == null) return
-        Glide.with(c.c).load(c.m.unfollowers!![i].photo).into(h.b.photo)
-        h.b.name.text = "${i + 1}. ${c.m.unfollowers!![i].name}"
-        h.b.user.text = c.m.unfollowers!![i].user
+        if (c.m.unfollowers.value == null) return
+        Glide.with(c.c).load(c.m.unfollowers.value!![i].photo).into(h.b.photo)
+        h.b.name.text = "${i + 1}. ${c.m.unfollowers.value!![i].name}"
+        h.b.user.text = c.m.unfollowers.value!![i].user
         h.b.root.setOnClickListener {
-            val u = c.m.unfollowers?.get(h.layoutPosition) ?: return@setOnClickListener
+            val u = c.m.unfollowers.value?.get(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.unf_more, Act().apply {
                 this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id, u.user) }
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }
         h.b.unfollow.setOnClickListener {
-            if (c.m.unfollowers == null) return@setOnClickListener
-            if (!c.m.unfollowers!![h.layoutPosition].private)
-                unfollow(c.m.unfollowers!![h.layoutPosition])
+            if (c.m.unfollowers.value == null) return@setOnClickListener
+            if (!c.m.unfollowers.value!![h.layoutPosition].private)
+                unfollow(c.m.unfollowers.value!![h.layoutPosition])
             else AlertDialog.Builder(c).apply {
                 setTitle(R.string.unfollow)
                 setMessage(R.string.unfollowPV)
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
-                    unfollow(c.m.unfollowers!![h.layoutPosition])
+                    unfollow(c.m.unfollowers.value!![h.layoutPosition])
                 }
-            }.create().show()
+            }.show().stylise(c)
         }
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.unfollowers?.size ?: 0
+    override fun getItemCount() = c.m.unfollowers.value?.size ?: 0
 
     @SuppressLint("ApplySharedPref")
     private fun unfollow(unf: Friend) {
@@ -76,11 +77,11 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
                 else c.dao.deleteFriend(unf)
             }.start()
-            val index = c.m.unfollowers!!.indexOf(unf)
-            c.m.unfollowers!!.remove(unf)
+            val index = c.m.unfollowers.value!!.indexOf(unf)
+            c.m.unfollowers.value!!.remove(unf)
             f.b.rv.adapter?.notifyItemRemoved(index)
             if (index > 0) f.b.rv.adapter?.notifyItemChanged(index - 1)
-            f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers!!.size - 1)
+            f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)
         }
     }
 }

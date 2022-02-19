@@ -83,8 +83,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         com.active = true
         c = applicationContext
         m = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
-        gsp = Persistent.initGsp(c)
-        sp = Persistent.initSp(c, m.acc)
+        gsp = initGsp()
+        sp = initSp(m.acc)
     }
 
     open fun notification(

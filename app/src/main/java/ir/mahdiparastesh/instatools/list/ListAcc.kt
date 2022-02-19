@@ -17,6 +17,7 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 @SuppressLint("ApplySharedPref")
@@ -61,6 +62,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
         MaterialMenu(c, v, R.menu.acc_more, Act().apply {
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
+                bd.root.typeface = c.fontRegular
                 AlertDialog.Builder(c).apply {
                     setTitle(R.string.signOut)
                     setMessage(R.string.signOutSure)
@@ -75,7 +77,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
                             onError = { signOut(acc, i, bd.root.isChecked) }
                         ) { signOut(acc, i, bd.root.isChecked) }
                     }
-                }.create().show()
+                }.show().stylise(c)
             }
         }).show()
         return true

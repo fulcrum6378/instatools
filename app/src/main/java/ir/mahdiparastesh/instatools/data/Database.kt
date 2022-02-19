@@ -75,6 +75,9 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
         fun favourite(id: String): List<Favourite>
 
+        @Query("SELECT * FROM Favourite WHERE user = :user LIMIT 1")
+        fun favouriteByUser(user: String): List<Favourite>
+
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addFavourite(item: Favourite)
 

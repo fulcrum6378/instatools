@@ -22,7 +22,8 @@ class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSv
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String?> =
             object : ItemDetailsLookup.ItemDetails<String?>() {
                 override fun getPosition(): Int = layoutPosition
-                override fun getSelectionKey(): String? = c.m.saved?.get(position)?.id
+                override fun getSelectionKey(): String? =
+                    c.m.saved?.edges?.get(position)?.node?.id
             }
     }
 
@@ -39,24 +40,24 @@ class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSv
         if (c.m.saved == null) return
 
         Glide.with(c.c)
-            .load(c.m.saved!![i].thumbnail_src)
+            .load(c.m.saved!!.edges[i].node.thumbnail_src)
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
         h.b.click.setBackgroundResource(
-            if (f.tracker == null || !f.tracker!!.isSelected(c.m.saved!![i].id)) R.drawable.button
+            if (f.tracker == null || !f.tracker!!.isSelected(c.m.saved!!.edges[i].node.id)) R.drawable.button
             else R.drawable.selected
         )
         h.b.click.setOnClickListener {
             expandable.thumb = it
             try {
-                expandable.expand(c.m.saved!![h.layoutPosition].shortcode)
+                expandable.expand(c.m.saved!!.edges[h.layoutPosition].node.shortcode)
             } catch (ignored: NullPointerException) {
             }
         }
     }
 
-    override fun getItemCount() = c.m.saved?.size ?: 0
+    override fun getItemCount() = c.m.saved?.edges?.size ?: 0
 }

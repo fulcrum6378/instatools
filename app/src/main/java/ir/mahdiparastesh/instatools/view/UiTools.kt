@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -25,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import ir.mahdiparastesh.instatools.BuildConfig
+import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
@@ -33,6 +35,7 @@ import java.util.*
 class UiTools {
     companion object {
         const val PROFILE = "https://www.instagram.com/%s/"
+        val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
 
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
             val list = ArrayList<AppCompatTextView>()
@@ -128,5 +131,22 @@ class UiTools {
         fun adaptiveBannerLp() = ConstraintLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply { bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID }
+
+        fun AlertDialog.stylise(c: BaseActivity): AlertDialog {
+            // If you move this function to BaseActivity, Fragments won't be able to provide "c".
+            // "ownerActivity" is always null though, even after calling Builder.show().
+            window?.findViewById<TextView>(R.id.alertTitle)
+                ?.apply { typeface = c.fontBold }
+            window?.findViewById<TextView>(android.R.id.message)
+                ?.apply { typeface = c.fontRegular }
+            getButton(AlertDialog.BUTTON_POSITIVE)?.apply { typeface = c.fontRegular }
+            getButton(AlertDialog.BUTTON_NEGATIVE)?.apply { typeface = c.fontRegular }
+            getButton(AlertDialog.BUTTON_NEUTRAL)?.apply { typeface = c.fontRegular }
+            return this
+        }
+
+        fun String.accFromUrl(host: String): String? =
+            if (startsWith(host)) substringAfter(host).substringBefore("/")
+                .substringBefore("?") else null
     }
 }

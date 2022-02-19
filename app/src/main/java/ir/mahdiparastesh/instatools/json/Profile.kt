@@ -69,7 +69,7 @@ class Profile(
 
     class FollowedBy(val count: Double)
 
-    class EdgeList(val page_info: PageInfo, val count: Double, val edges: Array<EdgePost>)
+    class EdgeList(var page_info: PageInfo, var count: Double, var edges: ArrayList<EdgePost>)
 
     class PageInfo(val has_next_page: Boolean, val end_cursor: String)
 

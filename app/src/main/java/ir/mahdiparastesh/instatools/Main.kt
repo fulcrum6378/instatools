@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -37,16 +38,18 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 // adb connect 192.168.1.20:
 
 @SuppressLint("ApplySharedPref")
-class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener,
+class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
     override val menuRes = R.menu.main_tlb
@@ -81,7 +84,7 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
         }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        sp = Persistent.initSp(c, m.acc)
+        sp = initSp(m.acc)
         guest = m.acc!!.id == -1L
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
@@ -106,6 +109,7 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
             pages()[it].updateShadow()
             pages()[it].updateJumper()
         }
+        m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
 
         // Theming
         if (night) {
@@ -199,12 +203,13 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
                         ForegroundService.terminateTasks(c)
                         switchAcc()
                     }
-                }.create().show()
+                }.show().stylise(this)
             true
         } else {
             switchAcc(); true; }
         R.id.mnSignOut -> {
             val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
+            bd.root.typeface = fontRegular
             AlertDialog.Builder(this).apply {
                 setTitle(R.string.signOut)
                 setMessage(R.string.signOutSure)
@@ -218,7 +223,7 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
                         onError = { signOut(bd.root.isChecked) }
                     ) { signOut(bd.root.isChecked) }
                 }
-            }.create().show()
+            }.show().stylise(this)
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -255,6 +260,14 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
                         else b.searchRes.adapter?.notifyDataSetChanged()
                         return true
                     }
+                    UiTools.ACC_FROM_URL.forEach { host ->
+                        newText.accFromUrl(host)?.let {
+                            if (searchInput == null) return@let
+                            searchInput?.setText(it)
+                            return true
+                        }
+                    }
+
                     Api<Rest.Search>(
                         this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
                         null, cache = true
@@ -303,9 +316,6 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
                     }
                 }
             })
-        // TEST MODE:
-        // With VPN: Takes about 5 seconds and works correctly.
-        // Without VPN: Takes about half a minute and mostly either crashes or fails.
     }
 
     private fun loadPages() = pages().forEachIndexed { i, it ->
@@ -342,6 +352,12 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
     }
 
     private fun pages() = arrayOf(page1!!, page2!!, page3!!)
+
+    fun bnvBadge(i: Int, num: Int?) {
+        b.bnv.getOrCreateBadge(bnvButtons[i]).isVisible = num != null
+        if (num == null) return
+        b.bnv.getOrCreateBadge(bnvButtons[i]).number = num
+    }
 
     private var isSelective = false
     fun selective(bb: Boolean) {
@@ -403,11 +419,17 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
         goTo(Login::class, true)
     }
 
+    private var exiting = false
     override fun onBackPressed() {
-        if (pages()[m.currentPage.value!!].goBack()) return
-        interstitialAd?.show(this)
+        if (pages()[m.currentPage.value!!].goBack())
+            return
+        if (!exiting) {
+            exiting = true
+            Delay(4000L) { exiting = false }
+            Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
+            return; }
         if (isDbInitialised() && !ForegroundService.anyRunning()) db.close()
-        super.onBackPressed()
+        super.onBackPressed() // Do NOT kill the process
     }
 
     override fun onDestroy() {
@@ -442,15 +464,15 @@ class Main : BaseActivity(true), NavigationView.OnNavigationItemSelectedListener
 
     inner class InterstitialCallback : FullScreenContentCallback() {
         override fun onAdDismissedFullScreenContent() {
-            interstitialAd = null
+            loadInterstitial()
         }
 
         override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-            interstitialAd = null
+            loadInterstitial()
         }
 
         override fun onAdShowedFullScreenContent() {
-            interstitialAd = null
+            loadInterstitial()
         }
     }
 }

@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
-import com.android.volley.DefaultRetryPolicy
-import com.android.volley.NetworkResponse
-import com.android.volley.Request
-import com.android.volley.Response
+import com.android.volley.*
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
@@ -15,7 +12,6 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
@@ -32,10 +28,8 @@ class Api<JSON>(
     private val acc: Account = c.m.acc!!,
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
-) : Request<String>(method, encode(url), Response.ErrorListener {
-    handleError?.obtainMessage(HANDLE_ERROR, it.networkResponse)?.sendToTarget() // NetworkResponse?
-    onError?.let { func -> func(it.networkResponse) }
-}) {
+) : Request<String>(method, encode(url), Response.ErrorListener { error(it) }) {
+
     init {
         setShouldCache(cache)
         tag = "fetch"
@@ -60,10 +54,8 @@ class Api<JSON>(
             ) {
                 ForegroundService.terminateTasks(c.c)
                 c.gsp.edit().remove(Login.spAccount).commit()
-                if (c is BaseActivity) {
-                    if (c !is Login) c.goTo(Login::class, true)
-                    else onError?.let { func -> func(null) }
-                } else invalidResponse(response, e)
+                c.needAuthentication()
+                error(null)
             } else invalidResponse(response, e)
             null
         } catch (e: Exception) {
@@ -74,14 +66,19 @@ class Api<JSON>(
             data?.let(onSuccess)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) throw e
-            else onError?.let { func -> func(null) }
+            else error(null)
         }
+    }
+
+    fun error(res: VolleyError? = null) { // NetworkResponse?
+        handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
+        onError?.let { func -> func(res?.networkResponse) }
     }
 
     private fun invalidResponse(response: String, e: Exception? = null) {
         if (BuildConfig.DEBUG)
             throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else onError?.let { func -> func(null) }
+        else error(null)
     }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =

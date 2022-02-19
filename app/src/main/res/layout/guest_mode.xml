@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     android:drawablePadding="15dp"
     android:lineSpacingMultiplier="1.2"
-    android:orientation="vertical"
     android:text="@string/guestDesc"
     android:textAlignment="center"
     android:textColor="?attr/colorAccent"

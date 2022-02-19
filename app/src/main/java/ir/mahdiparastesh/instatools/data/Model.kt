@@ -13,9 +13,8 @@ class Model : ViewModel() {
     var loginLoaded = false
 
     // Main
-    var unfollowers: ArrayList<Friend>? = null
-    var saved: ArrayList<Profile.Post>? = null
-    var nextSaved: Profile.PageInfo? = null
+    var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
+    var saved: Profile.EdgeList? = null
     var dmThreads: ArrayList<Dm.DmThread>? = null
     var dmThread: Dm.DmThread? = null
     val currentPage = MutableLiveData(0)
@@ -37,12 +36,11 @@ class Model : ViewModel() {
 
 
     fun accountSwitched() {
-        unfollowers = null
+        unfollowers.value = null
         saved = null
         dmThreads = null
         dmThread = null
         queueds = null
-        nextSaved = null
         loginLoaded = false
         currentPage.value = 0
         vwEdges = null

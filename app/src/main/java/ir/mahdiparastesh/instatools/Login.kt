@@ -33,6 +33,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     companion object {
         const val host = "https://www.instagram.com/"
+        const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"
         const val spAccount = "account"
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "

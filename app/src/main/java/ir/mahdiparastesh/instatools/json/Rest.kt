@@ -88,10 +88,10 @@ open class Rest(val status: String) {
     )
 
     class InboxPage(
-        val has_pending_top_requests: Boolean,
+        //val has_pending_top_requests: Boolean,
         val inbox: Dm.Inbox,
-        val pending_requests_total: Double,
-        val seq_id: Double,
+        //val pending_requests_total: Double,
+        //val seq_id: Double,
         val viewer: User,
         status: String
     ) : Rest(status)

@@ -41,9 +41,8 @@ class PageSvd(c: Main) : BasePage(c) {
             when (msg.what) {
                 HANDLE_FETCHED -> {
                     onLoaded()
-                    if (!c.m.saved.isNullOrEmpty() && c.m.nextSaved?.has_next_page == true &&
-                        !b.rv.canScrollVertically(1)
-                    ) thread = FetchSome().also { it.start() }
+                    if (c.m.saved != null && !b.rv.canScrollVertically(1))
+                        thread = FetchSome().also { it.start() }
                 }
                 HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
                 HANDLE_INIT_QUEUER -> Downloads.initService(c)
@@ -56,12 +55,13 @@ class PageSvd(c: Main) : BasePage(c) {
                     Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
                 } catch (ignored: IllegalArgumentException) {
                 }
-                HANDLE_UNSAVE_DONE -> c.m.saved?.find { it.id == msg.obj as String }?.let { post ->
-                    val x = c.m.saved!!.indexOf(post)
-                    c.m.saved!!.removeAt(x)
-                    b.rv.adapter?.notifyItemRemoved(x)
-                    b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.size)
-                }
+                HANDLE_UNSAVE_DONE -> c.m.saved?.edges?.find { it.node.id == msg.obj as String }
+                    ?.let { post ->
+                        val x = c.m.saved!!.edges.indexOf(post)
+                        c.m.saved!!.edges.removeAt(x)
+                        b.rv.adapter?.notifyItemRemoved(x)
+                        b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
+                    }
             }
         }
     }
@@ -89,14 +89,13 @@ class PageSvd(c: Main) : BasePage(c) {
         b.refresher.setOnRefreshListener {
             if (thread?.active == true) return@setOnRefreshListener
             b.rv.adapter = null
-            c.m.nextSaved = null
             c.m.saved = null
             tracker = null
             thread = FetchSome().also { it.start() }
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
             if (!b.rv.canScrollVertically(1) &&
-                thread?.active != true && c.m.nextSaved?.has_next_page != false
+                thread?.active != true && c.m.saved?.page_info?.has_next_page != false
             ) thread = FetchSome().also { it.start() }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -156,7 +155,8 @@ class PageSvd(c: Main) : BasePage(c) {
             true
         }
         R.id.mtSelectAll -> {
-            if (c.m.saved != null) tracker?.setItemsSelected(c.m.saved!!.map { it.id }, true)
+            if (c.m.saved != null)
+                tracker?.setItemsSelected(c.m.saved!!.edges.map { it.node.id }, true)
             true
         }
         R.id.mtDeselectAll -> {
@@ -200,9 +200,10 @@ class PageSvd(c: Main) : BasePage(c) {
     }
 
     inner class MyItemKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String = c.m.saved!![i].id
+        override fun getKey(i: Int): String = c.m.saved!!.edges[i].node.id
         override fun getPosition(key: String): Int {
-            for (i in c.m.saved!!.indices) if (c.m.saved!![i].id == key) return i
+            for (i in c.m.saved!!.edges.indices)
+                if (c.m.saved!!.edges[i].node.id == key) return i
             return -1
         }
     }
@@ -231,32 +232,38 @@ class PageSvd(c: Main) : BasePage(c) {
     inner class FetchSome : BaseThread() {
         override fun run() {
             super.run()
-            if (c.m.nextSaved?.has_next_page == false || c.m.acc == null) return
+            if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
             if (c.m.saved == null) Api<Profile>(
                 c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
             ) { profile ->
                 val edgeList = profile.graphql?.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                c.m.saved = arrayListOf()
+                c.m.saved = edgeList
                 done(edgeList)
             } else Api<Profile.GraphQlResponse>(
                 c, Api.Type.SAVED.url.format(
-                    c.m.acc!!.id, c.m.saved!!.size, c.m.nextSaved?.end_cursor ?: ""
+                    c.m.acc!!.id,
+                    c.m.saved!!.edges.size,
+                    c.m.saved?.page_info?.end_cursor ?: ""
                 ), Profile.GraphQlResponse::class, handler
             ) { res ->
                 val edgeList = res.data.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                done(edgeList)
+                done(edgeList, true)
             }
         }
 
-        private fun done(media: Profile.EdgeList) {
-            c.m.nextSaved = media.page_info
-            media.edges.map { it.node }.forEach { post ->
-                c.m.saved?.removeAll { it.id == post.id }
-                c.m.saved?.add(post)
+        private fun done(media: Profile.EdgeList, doAdd: Boolean = false) {
+            if (doAdd) {
+                c.m.saved?.page_info = media.page_info
+                c.m.saved?.count = media.count
+                media.edges.forEach { post ->
+                    c.m.saved?.edges?.removeAll { it.node.id == post.node.id }
+                    c.m.saved?.edges?.add(post)
+                }
+                c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
@@ -273,7 +280,7 @@ class PageSvd(c: Main) : BasePage(c) {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 return
             }
-            c.m.saved?.find { it.id == svd }?.let { post ->
+            c.m.saved?.edges?.find { it.node.id == svd }?.node?.let { post ->
                 if (download) c.dao.addQueued(
                     Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode))
                 )
@@ -282,8 +289,11 @@ class PageSvd(c: Main) : BasePage(c) {
                     method = Request.Method.POST,
                     onError = { ended() }
                 ) { rest ->
-                    if (rest.status == "ok")
+                    if (rest.status == "ok") {
                         handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
+                        c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
+                        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
+                    }
                     ended()
                 }
             }

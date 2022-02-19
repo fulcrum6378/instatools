@@ -29,6 +29,7 @@ import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -190,7 +191,7 @@ class PageBox(c: Main) : BasePage(c) {
                     putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
                 })
             }
-        }.create().show()
+        }.show().stylise(c)
     }
 
     override fun goBack(): Boolean {
@@ -208,6 +209,7 @@ class PageBox(c: Main) : BasePage(c) {
         override fun run() {
             super.run()
             c.m.dmThreads = arrayListOf()
+            c.bnvBadge(2, null)
             fetch()
         }
 
@@ -217,6 +219,7 @@ class PageBox(c: Main) : BasePage(c) {
             ) { page ->
                 c.m.dmThreads?.addAll(page.inbox.threads)
                 c.m.dmThreads?.sortByDescending { it.last_activity_at }
+                c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
                 nextCursor = page.inbox.oldest_cursor
                 if (page.inbox.has_older) Delay(DELAY) { fetch() }
                 else {

@@ -4,9 +4,12 @@ import android.os.Handler
 import android.view.LayoutInflater
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.iterator
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
     abstract var inflater: LayoutInflater
@@ -21,6 +24,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
         val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
         gb.root.typeface = c.fontRegular
         onLoaded()
+        for (ch in parent) if (ch is RecyclerView) ch.vis(false)
     }
 
     companion object {

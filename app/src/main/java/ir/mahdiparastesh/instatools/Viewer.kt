@@ -9,6 +9,7 @@ import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.selection.*
@@ -32,6 +33,8 @@ import ir.mahdiparastesh.instatools.more.BaseSaver
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.*
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,11 +66,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        intent.extras?.getString(EXTRA_USER)?.let { user = it }
-        intent.extras?.getString(EXTRA_ID)?.let { id = it }
-        if (user == null || id == null) {
-            onBackPressed(); return; }
-
+        if (!resolveIntent(intent, true)) return
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
@@ -82,6 +81,25 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                         if (!m.vwEdges.isNullOrEmpty() && m.vwInfo?.has_next_page == true &&
                             (m.vwEdges!!.size / 3) * (dm.widthPixels / 3) < dm.heightPixels
                         ) thread = FetchSome().also { it.start() }
+
+                        val pv = msg.obj as Boolean? ?: return
+                        b.privateAcc.vis(pv)
+                        b.rv.vis(!pv)
+                        if (!pv) return
+                        b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
+                            null, drawable(
+                                R.drawable.private_account,
+                                if (night) R.color.defCA else null
+                            )!!, null, null
+                        )
+                        b.privateAcc.typeface = fontRegular
+                        b.privateAcc.layoutParams =
+                            (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                                val vPad = ((dm.heightPixels.toFloat()
+                                        - dm.widthPixels.toFloat()) * 0.3f).toInt()
+                                topMargin = vPad
+                                bottomMargin = vPad
+                            }
                     }
                     HANDLE_ABORTED -> {
                         thread?.interrupt()
@@ -146,22 +164,40 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent.extras?.containsKey(EXTRA_USER) == true && intent.extras?.containsKey(EXTRA_ID) == true) {
-            intent.extras?.getString(EXTRA_ID)?.let {
-                if (id == it) return@onNewIntent
-                id = it
-            }
-            intent.extras?.getString(EXTRA_USER)?.let { user = it }
+        if (!resolveIntent(intent)) return
+    }
+
+    private fun resolveIntent(intent: Intent, onCreation: Boolean = false): Boolean {
+        intent.extras?.getString(EXTRA_USER)?.let {
+            if (!onCreation && user == it) {
+                onBackPressed()
+                return false; }
+            user = it
+        }
+        intent.data?.let {
+            var newUser: String? = null
+            for (host in UiTools.ACC_FROM_URL)
+                it.toString().accFromUrl(host)?.let { if (newUser == null) newUser = it }
+            if (newUser == null) return@let
+            if (!onCreation && newUser == it.toString()) {
+                onBackPressed()
+                return false; }
+            user = newUser
+        }
+        intent.extras?.getString(EXTRA_ID)?.let { id = it }
+        if (!onCreation) {
             load()
             b.proPicIv.setImageDrawable(null)
             b.toolbar.title = user
+            b.privateAcc.vis(false)
         }
+        return true
     }
 
     private fun load() {
         reset()
         CoroutineScope(Dispatchers.IO).launch {
-            dbFav = dao.favourite(id!!).getOrNull(0)
+            dbFav = dao.favouriteByUser(user!!).getOrNull(0)
             withContext(Dispatchers.Main) { fixTbMenu() }
         }
         if (m.vwEdges != null) adapt()
@@ -250,7 +286,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     }
 
     override fun onBackPressed() {
-        (b.rv.adapter as ListPrf?)?.let {
+        if (::b.isInitialized) (b.rv.adapter as ListPrf?)?.let {
             if (it.expandable.zoomed) {
                 it.expandable.collapse(); return; }
         }
@@ -300,6 +336,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()
                     return@Api
                 }
+                this@Viewer.id = u.id
+                b.privateAcc
 
                 m.vwFav = Favourite(
                     this@Viewer.id!!, u.username, u.full_name,
@@ -314,7 +352,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 val edgeList = u.edge_owner_to_timeline_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                done(edgeList)
+                done(edgeList, u.is_private == true && u.followed_by_viewer == false)
             } else Api<Profile.GraphQlResponse>(
                 this@Viewer, Api.Type.POSTS.url.format(id, m.vwEdges!!.size, m.vwInfo!!.end_cursor),
                 Profile.GraphQlResponse::class, handler
@@ -326,14 +364,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
         }
 
-        private fun done(media: Profile.EdgeList) {
+        private fun done(media: Profile.EdgeList, pv: Boolean? = null) {
             m.vwInfo = media.page_info
             if (m.vwEdges == null) m.vwEdges = arrayListOf()
             media.edges.map { it.node }.forEach { post ->
                 m.vwEdges?.removeAll { it.id == post.id }
                 m.vwEdges?.add(post)
             }
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            handler?.obtainMessage(HANDLE_FETCHED, pv)?.sendToTarget()
             interrupt()
         }
     }

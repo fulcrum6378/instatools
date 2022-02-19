@@ -82,13 +82,11 @@ class Queuer : ForegroundService() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_LINK -> {
-                        handlingLinks.add(Link(msg.obj as String))
-                    }
-                    Api.HANDLE_ERROR -> if (handlingLinks.isNotEmpty()) {
-                        handlingLinks[0].qud!!.failed = true
-                        Thread { dao.updateQueued(handlingLinks[0].qud!!) }.start()
-                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, handlingLinks[0])
+                    HANDLE_LINK -> handlingLinks.add(Link(msg.obj as String))
+                    Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
+                        qud!!.failed = true
+                        Thread { dao.updateQueued(qud!!) }.start()
+                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)
                             ?.sendToTarget()
                         linkHandled()
                     }

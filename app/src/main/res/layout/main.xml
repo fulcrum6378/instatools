@@ -33,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/bnv"
             android:background="@color/defBG"
+            android:theme="@style/Theme.MaterialComponents.DayNight"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/main_bnv" />
 

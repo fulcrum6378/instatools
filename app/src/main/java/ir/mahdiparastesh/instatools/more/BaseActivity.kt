@@ -14,6 +14,8 @@ import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -23,6 +25,8 @@ import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
@@ -30,7 +34,7 @@ import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
-abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActivity(), Persistent {
+abstract class BaseActivity : AppCompatActivity(), Persistent {
     protected lateinit var db: Database
     lateinit var dao: Database.DAO
     lateinit var dm: DisplayMetrics
@@ -51,9 +55,10 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         super.onCreate(savedInstanceState)
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
-        gsp = Persistent.initGsp(c)
-        if (m.acc == null) m.acc = Account.selected(this, guestIfNotExists = false) // needs "gsp"
-        sp = Persistent.initSp(c, m.acc)
+        gsp = initGsp()
+        if (m.acc == null) m.acc =
+            Account.selected(this, guestIfNotExists = this !is Login) // needs "gsp"
+        sp = initSp(m.acc)
 
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
@@ -67,7 +72,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
-        if (!isMain && night) TypedValue().apply {
+        if (this !is Main && night) TypedValue().apply {
             theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
         }.data.apply {
             window.decorView.setBackgroundColor(this)
@@ -90,8 +95,8 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         tbTitle?.typeface = font
         tbTitle?.textSize =
-            resources.getDimension(if (isMain) R.dimen.tbTitleMain else R.dimen.tbTitle)
-        if (!isMain) supportActionBar?.apply {
+            resources.getDimension(if (this is Main) R.dimen.tbTitleMain else R.dimen.tbTitle)
+        if (this !is Main) supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
         }
@@ -107,7 +112,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
                 item.icon?.colorFilter = cf
                 item.stylise(this@BaseActivity)
             }
-            if (!isMain) {
+            if (this@BaseActivity !is Main) {
                 toolbar.navigationIcon?.colorFilter = cf
                 tbTitle?.setTextColor(this)
             }
@@ -116,17 +121,20 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
         return true
     }
 
-    override fun onDestroy() {
-        // if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()
+    /*override fun onDestroy() {
+        if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()
         super.onDestroy()
-    }
+    }*/
 
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(ContextThemeWrapper(c, which.res))
 
-    fun color(res: Int) = ContextCompat.getColor(c, res)
+    fun color(@ColorRes res: Int) = ContextCompat.getColor(c, res)
 
-    fun pdcf(res: Int) =
+    fun drawable(@DrawableRes res: Int, @ColorRes cf: Int? = null) =
+        ContextCompat.getDrawable(c, res)?.apply { cf?.let { colorFilter = pdcf(it) } }
+
+    fun pdcf(@ColorRes res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
 
     fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, path)
@@ -136,7 +144,7 @@ abstract class BaseActivity(private val isMain: Boolean = false) : AppCompatActi
             Intent(this, activity.java),
             ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
         )
-        if (finish) Delay(500) { finish() }
+        if (finish) Delay(200) { finish() }
         // The phone's home screen may appear if there are no active activities at the moment.
         return true
     }

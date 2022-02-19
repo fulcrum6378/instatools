@@ -36,8 +36,8 @@ class PageUnf(c: Main) : BasePage(c) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 HANDLE_LOADED -> (msg.obj as List<Friend>).apply {
-                    c.m.unfollowers = ArrayList(this)
-                    c.m.unfollowers!!.sortBy { it.user }
+                    c.m.unfollowers.value = ArrayList(this)
+                    c.m.unfollowers.value!!.sortBy { it.user }
                     if (isNullOrEmpty() && msg.arg1 == 1)
                         thread = Inquiry().also { it.start() }
                     else onLoaded() // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
@@ -86,7 +86,7 @@ class PageUnf(c: Main) : BasePage(c) {
         })
 
         //b.refresher.isRefreshing = true
-        if (c.m.unfollowers != null) onLoaded() else load(true)
+        if (c.m.unfollowers.value != null) onLoaded() else load(true)
         return b.root
     }
 

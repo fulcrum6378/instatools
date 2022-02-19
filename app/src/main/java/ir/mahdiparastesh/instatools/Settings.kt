@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import java.io.File
 
 @SuppressLint("ApplySharedPref")
@@ -95,7 +96,7 @@ class Settings : BaseActivity() {
         for (l in b.ll.iterator())
             if (l is LinearLayout) (l[0] as TextView).typeface = fontRegular
         b.stMainPath.typeface = fontLight
-        arrayOf(b.stBranching, b.stResetData, b.stResetSettings)
+        arrayOf(b.stBranching, b.stAutoDeleteEmptyDirs, b.stResetData, b.stResetSettings)
             .forEach { it.typeface = fontRegular }
 
         // Main Path
@@ -123,7 +124,7 @@ class Settings : BaseActivity() {
                     deleteDb(m.acc!!.id.toString())
                     recreateMain = true
                 }
-            }.create().show()
+            }.show().stylise(this)
         }
         b.stResetSettings.setOnClickListener {
             AlertDialog.Builder(this).apply {
@@ -138,7 +139,7 @@ class Settings : BaseActivity() {
                     }
                     recreate()
                 }
-            }.create().show()
+            }.show().stylise(this)
         }
 
         // Ads
