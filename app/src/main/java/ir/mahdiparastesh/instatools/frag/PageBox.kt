@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.contains
 import androidx.recyclerview.widget.RecyclerView
@@ -71,8 +70,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         }
     }
     private var exportable: Exportable? = null
-    private val exportLauncher =
-        c.registerForActivityResult(ActivityResultContracts.StartActivityForResult(), this)
+    private val exportLauncher = c.launcher(this)
 
     companion object {
         const val HANDLE_FETCHED_SOME = 44
@@ -80,10 +78,8 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        inflater = c.themeInflater(BaseActivity.Theme.TERTIARY)
-        b = PageBoxBinding.inflate(
-            c.themeInflater(BaseActivity.Theme.TERTIARY, inf), parent, false
-        )
+        inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)
+        b = PageBoxBinding.inflate(inflater, parent, false)
         if (Main.guest) {
             b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }

@@ -112,7 +112,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
 
         // Theming
-        if (night) {
+        if (night()) {
             colorBG.observe(this) {
                 if (it == null) return@observe
                 window.decorView.setBackgroundColor(it)
@@ -339,11 +339,11 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.commit()
 
         anTheme?.cancel()
-        val col = if (night) bg else ca
+        val col = if (night()) bg else ca
         anTheme = ValueAnimator.ofArgb(col[lastPage], col[m.currentPage.value!!]).apply {
             duration = resources.getInteger(R.integer.transFrag).toLong()
             addUpdateListener {
-                if (night) colorBG.value = it.animatedValue as Int
+                if (night()) colorBG.value = it.animatedValue as Int
                 else colorAc.value = it.animatedValue as Int
             }
             start()
@@ -354,10 +354,9 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
 
     private fun pages() = arrayOf(page1!!, page2!!, page3!!)
 
-    fun bnvBadge(i: Int, num: Int?) {
-        b.bnv.getOrCreateBadge(bnvButtons[i]).isVisible = num != null
-        if (num == null) return
-        b.bnv.getOrCreateBadge(bnvButtons[i]).number = num
+    fun bnvBadge(i: Int, num: Int?) = b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
+        isVisible = num != null
+        number = num ?: 0
     }
 
     private var isSelective = false
@@ -379,7 +378,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
             )[m.currentPage.value!!] else this
         )
         b.bnv.menu.forEach { it.isEnabled = !bb }
-        if (!night) colorAc.value = colorAc.value
+        if (!night()) colorAc.value = colorAc.value
         else {
             b.toolbar.overflowIcon?.colorFilter = pdcf(R.color.defCA)
             b.toolbar.menu.forEach { item -> item.stylise(this@Main) }

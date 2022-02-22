@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
 import ir.mahdiparastesh.instatools.data.Favourite
+import java.text.DecimalFormat
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 class Profile(
@@ -80,7 +81,13 @@ class Profile(
             edge_owner_to_timeline_media?.edges?.size != edge_owner_to_timeline_media?.count?.toInt()
     }
 
-    class EdgeFollow(val count: Double)
+    class EdgeFollow(val count: Double) {
+        override fun toString(): String = when {
+            count > 1000000.0 -> DecimalFormat("#.##").format(count / 1000000.0) + "M"
+            count > 1000.0 -> DecimalFormat("#.##").format(count / 1000.0) + "K"
+            else -> count.toInt().toString()
+        } // Cannot move to strings.xml without Context
+    }
 
     class EdgeList(var page_info: PageInfo, var count: Double, var edges: ArrayList<EdgePost>)
 

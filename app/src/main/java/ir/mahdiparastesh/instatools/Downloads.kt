@@ -79,7 +79,7 @@ class Downloads : BaseActivity() {
             b.pasteLink.setText("")
         }
 
-        if (!night) color(R.color.CSD).apply {
+        if (!night()) color(R.color.CSD).apply {
             b.pasteLink.setTextColor(this)
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }

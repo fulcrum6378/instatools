@@ -55,11 +55,17 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
                     thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.pk, uu.username) }
                 }
             }, c.colorAc.value).apply {
-                if (thd.is_group) menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
+                if (thd.is_group || thd.users[0].full_name == "Instagram user")
+                    menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
             }.show()
         }
         h.b.sep.vis(i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.dmThreads?.size ?: 0
+
+    override fun onViewAttachedToWindow(h: ViewHolder) {
+        super.onViewAttachedToWindow(h)
+        h.b.more.setImageResource(R.drawable.more_vert)
+    }
 }

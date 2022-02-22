@@ -65,7 +65,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private val logoDestBias = 0.15f
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
-        if (night) bw.logo.colorFilter = pdcf(R.color.defCA)
+        if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
         accounts.sortBy { it.name }
         accounts.sortBy { it.id < 0 }
         bw.accounts.adapter = ListAcc(this)
@@ -150,22 +150,17 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        override fun onPageFinished(v: WebView, url: String) {
-            super.onPageFinished(v, url)
+        override fun onPageFinished(view: WebView, url: String) {
+            super.onPageFinished(view, url)
             if (url != host && !url.startsWith("$host?")) return
             try {
-                collect(v)
-            } catch (ignored: NumberFormatException) {
+                collect(view)
+            } catch (e: NumberFormatException) {
             }
         }
 
         @Throws(NumberFormatException::class)
         private fun collect(v: WebView) {
-            id = cookieManager.getCookie(host)
-                .substringAfter("ds_user_id=")
-                .substringBefore(";").toLong().toString()
-            gsp.edit().putString(spAccount, id).commit()
-
             v.evaluateJavascript(
                 """(function() {
         return document.getElementsByTagName('body')[0].innerHTML;
@@ -177,6 +172,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                         .substringBefore(posConfig),
                     HostPage::class.java
                 ).config.viewer
+                id = cookieManager.getCookie(host)
+                    .substringAfter("ds_user_id=")
+                    .substringBefore(";").toLong().toString()
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name,
                     u.profile_pic_url_hd ?: u.profile_pic_url,
@@ -186,6 +184,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     accounts.add(this)
                     Account.save(c, accounts)
                 }
+                gsp.edit().putString(spAccount, id).commit()
                 goTo(Main::class, true)
             }
         }

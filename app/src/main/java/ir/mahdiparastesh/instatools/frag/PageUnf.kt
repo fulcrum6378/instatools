@@ -40,7 +40,9 @@ class PageUnf(c: Main) : BasePage(c) {
                     c.m.unfollowers.value!!.sortBy { it.user }
                     if (isNullOrEmpty() && msg.arg1 == 1)
                         thread = Inquiry().also { it.start() }
-                    else onLoaded() // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
+                    else onLoaded()
+                    // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
+                    // TODO: OR THERE ARE NO FOLLOWERS/FOLLOWING!?!
                 }
                 HANDLE_FETCHED -> {
                     load(false)
@@ -65,10 +67,8 @@ class PageUnf(c: Main) : BasePage(c) {
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        inflater = c.themeInflater(BaseActivity.Theme.PRIMARY)
-        b = PageUnfBinding.inflate(
-            c.themeInflater(BaseActivity.Theme.PRIMARY, inf), parent, false
-        )
+        inflater = c.themeInflater(BaseActivity.Theme.PRIMARY, inf)
+        b = PageUnfBinding.inflate(inflater, parent, false)
         if (Main.guest) {
             b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
@@ -136,6 +136,10 @@ class PageUnf(c: Main) : BasePage(c) {
 
 
     inner class Inquiry : BaseThread() {
+        init {
+            c.m.unfollowers.value = null
+        }
+
         override fun run() {
             super.run()
             c.dao.deleteFriends()
@@ -160,7 +164,10 @@ class PageUnf(c: Main) : BasePage(c) {
                     if (flw.next_max_id == null) {
                         if (theFollowers) Delay(looper = Looper.getMainLooper()) {
                             allFollow(theFollowers = false)
-                        } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                        } else {
+                            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                            interrupt()
+                        }
                     } else Delay(looper = Looper.getMainLooper()) {
                         allFollow(flw.next_max_id, theFollowers)
                     }

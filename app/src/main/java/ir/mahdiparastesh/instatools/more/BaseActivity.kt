@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -13,6 +14,9 @@ import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -41,7 +45,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
     lateinit var fontBold: Typeface
     lateinit var fontRegular: Typeface
     lateinit var fontLight: Typeface
-    var night = false
     var dirRtl = false
     abstract val menuRes: Int?
     val colorAc = MutableLiveData<Int?>(null)
@@ -67,7 +70,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
             return; }
 
         dm = resources.displayMetrics
-        night = c.resources.getBoolean(R.bool.night)
         dirRtl = c.resources.getBoolean(R.bool.dirRtl)
         fontBold = font(getString(R.string.font_bold))
         fontRegular = font(getString(R.string.font_regular))
@@ -89,7 +91,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
-        if (this !is Main && night) TypedValue().apply {
+        if (this !is Main && night()) TypedValue().apply {
             theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
         }.data.apply {
             window.decorView.setBackgroundColor(this)
@@ -121,7 +123,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (menuRes != null) toolbar.inflateMenu(menuRes!!)
-        if (!night) colorAc.value ?: TypedValue().apply {
+        if (!night()) colorAc.value ?: TypedValue().apply {
             theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
         }.data.apply {
             val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
@@ -169,6 +171,12 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
     fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
 
     fun isDbInitialised() = ::db.isInitialized
+
+    fun launcher(callback: ActivityResultCallback<ActivityResult>) =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
+
+    fun night(): Boolean = resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
     @Suppress("unused")
     enum class Theme(val res: Int) {

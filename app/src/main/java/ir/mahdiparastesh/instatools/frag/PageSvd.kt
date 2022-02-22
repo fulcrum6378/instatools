@@ -70,10 +70,8 @@ class PageSvd(c: Main) : BasePage(c) {
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        inflater = c.themeInflater(BaseActivity.Theme.SECONDARY)
-        b = PageSvdBinding.inflate(
-            c.themeInflater(BaseActivity.Theme.SECONDARY, inf), parent, false
-        )
+        inflater = c.themeInflater(BaseActivity.Theme.SECONDARY, inf)
+        b = PageSvdBinding.inflate(inflater, parent, false)
         if (Main.guest) {
             b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }

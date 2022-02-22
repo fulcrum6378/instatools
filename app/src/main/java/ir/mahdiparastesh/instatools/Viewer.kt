@@ -87,14 +87,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                         b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
                             null, drawable(
                                 R.drawable.private_account,
-                                if (night) R.color.defCA else null
+                                if (night()) R.color.defCA else null
                             )!!, null, null
                         )
                         b.privateAcc.typeface = fontRegular
                         b.privateAcc.layoutParams =
                             (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
                                 val vPad = ((dm.heightPixels.toFloat()
-                                        - dm.widthPixels.toFloat()) * 0.3f).toInt()
+                                        - dm.widthPixels.toFloat()) * 0.19f).toInt()
                                 topMargin = vPad
                                 bottomMargin = vPad
                             }
@@ -347,8 +347,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .addListener(GlideShimmer(b.proPic, b.proPicIv))
                     .into(b.proPicIv)
-                b.followersNum.text = m.vwUser!!.edge_followed_by.count.toInt().toString()
-                b.followingNum.text = m.vwUser!!.edge_follow.count.toInt().toString()
+                b.followersNum.text = m.vwUser!!.edge_followed_by.toString()
+                b.followingNum.text = m.vwUser!!.edge_follow.toString()
                 done()
             } else Api<Profile.GraphQlResponse>(
                 this@Viewer,

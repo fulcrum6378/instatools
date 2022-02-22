@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import androidx.core.view.iterator
@@ -33,8 +32,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var prf: SharedPreferences
     private var globalMode = false
     private var giveLinkBack: String? = null
-    private val saveLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), this)
+    private val saveLauncher = launcher(this)
 
     companion object {
         // Preferences
