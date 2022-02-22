@@ -31,9 +31,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     lateinit var dao: Database.DAO
 
     companion object {
-        const val ACTION_STOP = "ACTION_STOP"
-        const val ACTION_PAUSE = "ACTION_PAUSE"
+        const val ACTION_START = "ACTION_START"
         const val ACTION_RESUME = "ACTION_RESUME"
+        const val ACTION_PAUSE = "ACTION_PAUSE"
+        const val ACTION_STOP = "ACTION_STOP"
         private val services = arrayOf(Queuer::class, Exporter::class)
 
         fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active }
@@ -75,9 +76,13 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
+            ACTION_START -> resolveIntent(intent)
             ACTION_STOP -> if (com.active) onCancel()
         }
         return START_NOT_STICKY
+    }
+
+    open fun resolveIntent(intent: Intent) {
     }
 
     override fun onCreate() {

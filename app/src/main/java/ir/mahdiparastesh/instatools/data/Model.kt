@@ -23,9 +23,7 @@ class Model : ViewModel() {
     var queueds: ArrayList<Queued>? = null
 
     // Viewer
-    var vwEdges: ArrayList<Profile.Post>? = null
-    var vwInfo: Profile.PageInfo? = null
-    var vwFav: Favourite? = null
+    var vwUser: Profile.User? = null
 
     // Favourites
     var fav: ArrayList<Favourite>? = null
@@ -43,9 +41,7 @@ class Model : ViewModel() {
         queueds = null
         loginLoaded = false
         currentPage.value = 0
-        vwEdges = null
-        vwInfo = null
-        vwFav = null
+        vwUser = null
         followers = null
         following = null
     }

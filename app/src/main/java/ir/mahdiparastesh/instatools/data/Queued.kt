@@ -21,10 +21,9 @@ class Queued(
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
-    fun fName(ext: String, includeUn: Boolean = false): String {
+    fun fName(ext: String): String {
         val cal = Calendar.getInstance().apply { timeInMillis = date!! }
-        return (if (includeUn) "${userName}_" else "") +
-                "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
+        return "${userName}_${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
                 "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
                 "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}_$itemId.$ext"
     }

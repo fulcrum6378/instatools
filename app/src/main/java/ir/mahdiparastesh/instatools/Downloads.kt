@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
@@ -47,7 +48,9 @@ class Downloads : BaseActivity() {
                 when (msg.what) {
                     HANDLE_INSERTED -> {
                         m.queueds!!.add(msg.obj as Queued)
-                        b.rv.adapter?.notifyItemInserted((m.queueds?.size ?: 1) - 1)
+                        val pos = (m.queueds?.size ?: 1)
+                        b.rv.adapter?.notifyItemInserted(pos - 1)
+                        if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
                     HANDLE_DELETED -> find(msg)?.let {
                         m.queueds!!.removeAt(it)
@@ -70,7 +73,6 @@ class Downloads : BaseActivity() {
                 if (m.queueds != null) Queued.find(msg.obj as Queued, m.queueds!!) else null
         }
 
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { initService(this, it) }
         b.linkButton.setOnClickListener {
             if (b.pasteLink.text.toString() == "") return@setOnClickListener
             initService(this, b.pasteLink.text.toString())
@@ -91,9 +93,9 @@ class Downloads : BaseActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
+    override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let { initService(this, it) }
+        return super.resolveIntent(intent, false)
     }
 
     override fun onResume() {
@@ -134,7 +136,7 @@ class Downloads : BaseActivity() {
             }
             c.startService(Intent(c, Queuer::class.java).apply {
                 if (link != null) putExtra(Queuer.EXTRA_LINK, link)
-                action = Queuer.ACTION_START
+                action = ForegroundService.ACTION_START
             })
         }
     }

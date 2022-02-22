@@ -1,14 +1,20 @@
 package ir.mahdiparastesh.instatools.serv
 
-import android.os.Handler
+import android.content.Intent
+import android.os.*
+import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.more.ForegroundService
 
 class Follower : ForegroundService() {
+    private var toBeEnqueued = arrayListOf<ToBeEnqueued>()
+    private var enqueuing = false
+
     override val com: ForegroundServiceCompanion
         get() = Companion
 
-    companion object : ForegroundServiceCompanion(516, Follower::class) {
+    companion object : ForegroundServiceCompanion(77, Follower::class) {
         override val channel: String = "$pack.FOLLOWING"
         override var chName: Int = R.string.followerChannel
         override var chDesc: Int = R.string.followerChannelDesc
@@ -20,9 +26,74 @@ class Follower : ForegroundService() {
         )
         override var active: Boolean = false
         override var handler: Handler? = null
+
+        const val EXTRA_ENQUEUE = "enqueue"
+        const val HANDLE_ENQUEUE = 0
+    }
+
+    override fun resolveIntent(intent: Intent) {
+        intent.getParcelableExtra<ToBeEnqueued>(EXTRA_ENQUEUE)?.let {
+            toBeEnqueued.add(it)
+            enqueue()
+        }
     }
 
     override fun onCreate() {
         super.onCreate()
+        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
+        notification(Follower, MassFollower::class)
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    HANDLE_ENQUEUE -> {
+                        toBeEnqueued.add(msg.obj as ToBeEnqueued)
+                        enqueue()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun enqueue() {
+        if (enqueuing) return
+        val cur = toBeEnqueued.getOrNull(0)
+        if (cur == null) {
+            //if (download?.active != true) destroy()
+            return; }
+        enqueuing = true
+
+        //
+    }
+
+    private fun enqueuingDone() {
+        toBeEnqueued.removeAt(0)
+        enqueuing = false
+        if (toBeEnqueued.isNotEmpty()) enqueue()
+        //if (download?.active != true) download = Download().also { it.start() }
+    }
+
+    class ToBeEnqueued(
+        val id: String,
+        val isItFollowers: Boolean,
+        val includePv: Boolean
+    ) : Parcelable {
+        constructor(parcel: Parcel) : this(
+            parcel.readString()!!,
+            parcel.readByte() != 0.toByte(),
+            parcel.readByte() != 0.toByte()
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeString(id)
+            parcel.writeByte(if (isItFollowers) 1 else 0)
+            parcel.writeByte(if (includePv) 1 else 0)
+        }
+
+        override fun describeContents(): Int = 0
+
+        companion object CREATOR : Parcelable.Creator<ToBeEnqueued> {
+            override fun createFromParcel(parcel: Parcel): ToBeEnqueued = ToBeEnqueued(parcel)
+            override fun newArray(size: Int): Array<ToBeEnqueued?> = arrayOfNulls(size)
+        }
     }
 }

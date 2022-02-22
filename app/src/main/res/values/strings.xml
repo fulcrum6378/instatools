@@ -75,12 +75,16 @@
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
     <string name="vwShare">View Profile</string>
+    <string name="vwFollowers">Followers</string>
+    <string name="vwFollowing">Following</string>
+    <string name="vwFlwZero" translatable="false">0</string>
     <string name="vwPrivate">This account is private!</string>
+    <string name="followAll">Follow All</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Mass Follower</string>
     <string name="mfGuide1">Instagram won\'t let you follow a large number of people so frequently. It may block your account or sign you out of your session.</string>
-    <string name="mfGuide2">But with this robot you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot.</string>
+    <string name="mfGuide2">But using this robot, you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot nor a spammer.</string>
     <string name="mfGuide3">Choose a profile and follow ALL of their followers/following&#8230;</string>
 
     <!-- Settings -->

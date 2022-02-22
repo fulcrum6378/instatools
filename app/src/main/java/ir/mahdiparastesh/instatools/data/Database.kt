@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Friend::class, Favourite::class, Queued::class, Exportable::class],
-    version = 5, exportSchema = false
+    entities = [
+        Friend::class, Queued::class, Exportable::class, Favourite::class//, Followable::class
+    ], version = 5, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -83,6 +84,10 @@ abstract class Database : RoomDatabase() {
 
         @Delete
         fun deleteFavourite(item: Favourite)
+
+
+        /*@Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addFollowable(item: Followable): Long*/
     }
 
     companion object {

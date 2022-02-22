@@ -25,12 +25,12 @@ import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Versioned
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
-import java.util.*
 
 class Queuer : ForegroundService() {
     private var dest: String? = null
@@ -54,22 +54,14 @@ class Queuer : ForegroundService() {
         override var handler: Handler? = null
 
         const val HANDLE_LINK = 0
-        val ACTION_START = "$pack.ACTION_START"
         val EXTRA_LINK = "$pack.EXTRA_LINK"
-
-        fun now() = Calendar.getInstance().timeInMillis
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
-        if (intent.action != null) when (intent.action) {
-            ACTION_START -> intent.getStringExtra(EXTRA_LINK)?.let {
-                handlingLinks.add(Link(it))
-                handleLinks()
-            }
-            ACTION_STOP -> if (active) destroy()
+    override fun resolveIntent(intent: Intent) {
+        intent.getStringExtra(EXTRA_LINK)?.let {
+            handlingLinks.add(Link(it))
+            handleLinks()
         }
-        return START_NOT_STICKY
     }
 
     override fun onCreate() {
@@ -82,7 +74,10 @@ class Queuer : ForegroundService() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_LINK -> handlingLinks.add(Link(msg.obj as String))
+                    HANDLE_LINK -> {
+                        handlingLinks.add(Link(msg.obj as String))
+                        handleLinks()
+                    }
                     Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
                         qud!!.failed = true
                         Thread { dao.updateQueued(qud!!) }.start()
@@ -106,7 +101,7 @@ class Queuer : ForegroundService() {
         handlingLink = true
 
         if (cur.qud == null) Thread {
-            cur.qud = Queued(now(), cur.link)
+            cur.qud = Queued(Persistent.now(), cur.link)
             cur.qud!!.id = dao.addQueued(cur.qud!!)
             Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, cur.qud!!)?.sendToTarget()
         }.start()
@@ -292,7 +287,7 @@ class Queuer : ForegroundService() {
             if (branch == null) branch = stem.createDirectory(q.userName!!)
         } else branch = stem
         val type = MediaType.values().find { it.inDb == q.mediaType }!!
-        val fName = q.fName(type.ext, !shouldBranch)
+        val fName = q.fName(type.ext)
         var leaf = branch!!.findFile(fName)
         if (leaf != null) return
         leaf = branch.createFile(type.mime, fName)

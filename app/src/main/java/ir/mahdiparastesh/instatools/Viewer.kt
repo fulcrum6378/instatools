@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.Menu
-import android.view.MenuItem
-import android.view.MotionEvent
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.selection.*
@@ -25,13 +22,14 @@ import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
-import ir.mahdiparastesh.instatools.list.ListPrf
+import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
 import ir.mahdiparastesh.instatools.more.BaseSaver
 import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -66,7 +64,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!resolveIntent(intent, true)) return
+        if (resolvedIntent == false) return
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
@@ -78,14 +76,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     HANDLE_FETCHED -> {
                         adapt()
                         b.refresher.isRefreshing = false
-                        if (!m.vwEdges.isNullOrEmpty() && m.vwInfo?.has_next_page == true &&
-                            (m.vwEdges!!.size / 3) * (dm.widthPixels / 3) < dm.heightPixels
+                        if (m.vwUser!!.hasMore() &&
+                            (m.vwUser!!.edges()!!.size / 3) * (dm.widthPixels / 3) < dm.heightPixels
                         ) thread = FetchSome().also { it.start() }
 
-                        val pv = msg.obj as Boolean? ?: return
-                        b.privateAcc.vis(pv)
-                        b.rv.vis(!pv)
-                        if (!pv) return
+                        val showPv = m.vwUser!!.pv() && m.vwUser!!.followed_by_viewer == false
+                        b.privateAcc.vis(showPv)
+                        b.rv.vis(!showPv)
+                        if (!showPv) return
                         b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
                             null, drawable(
                                 R.drawable.private_account,
@@ -136,21 +134,21 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         b.nsv.viewTreeObserver.addOnScrollChangedListener {
             b.tbShadow.vish(b.nsv.scrollY > 0)
             if (!b.nsv.canScrollVertically(1) && thread?.active != true &&
-                m.vwInfo?.has_next_page != false
+                m.vwUser?.hasMore() != false
             ) thread = FetchSome().also { it.start() }
         }
 
         // Profile
         b.proPic.layoutParams = b.proPic.layoutParams.apply { height = dm.widthPixels }
         b.proClick.setOnClickListener { v ->
-            if (m.vwFav?.photo == null) return@setOnClickListener
+            if (m.vwUser?.photo() == null) return@setOnClickListener
             MaterialMenu(this@Viewer, v, R.menu.viewer_pic_more, Act().apply {
                 this[R.id.vpDownload] = {
                     CoroutineScope(Dispatchers.IO).launch {
                         dao.addQueued(
                             Queued(
-                                Queuer.now(), "", Queuer.now(), id, user, "profile_photo",
-                                m.vwFav!!.photo, m.vwFav!!.photo, 1
+                                Persistent.now(), "", Persistent.now(), id, user,
+                                "profile_photo", m.vwUser!!.photo(), m.vwUser!!.photo(), 1
                             )
                         )
                         withContext(Dispatchers.Main) { Downloads.initService(this@Viewer) }
@@ -158,30 +156,26 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 }
             }).show()
         }
+        arrayOf(b.followersNum, b.followingNum).forEach { it.typeface = fontBold }
+        arrayOf(b.followersText, b.followingText).forEach { it.typeface = fontLight }
+        b.followers.setOnClickListener { flwClick(true, it) }
+        b.following.setOnClickListener { flwClick(false, it) }
 
         load()
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (!resolveIntent(intent)) return
-    }
-
-    private fun resolveIntent(intent: Intent, onCreation: Boolean = false): Boolean {
+    override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.extras?.getString(EXTRA_USER)?.let {
-            if (!onCreation && user == it) {
-                onBackPressed()
-                return false; }
+            if (!onCreation && user == it) return false
             user = it
         }
         intent.data?.let {
             var newUser: String? = null
             for (host in UiTools.ACC_FROM_URL)
-                it.toString().accFromUrl(host)?.let { if (newUser == null) newUser = it }
+                it.toString().accFromUrl(host)
+                    ?.let { u -> if (newUser == null) newUser = u }
             if (newUser == null) return@let
-            if (!onCreation && newUser == it.toString()) {
-                onBackPressed()
-                return false; }
+            if (!onCreation && newUser == it.toString()) return false
             user = newUser
         }
         intent.extras?.getString(EXTRA_ID)?.let { id = it }
@@ -194,51 +188,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         return true
     }
 
-    private fun load() {
-        reset()
-        CoroutineScope(Dispatchers.IO).launch {
-            dbFav = dao.favouriteByUser(user!!).getOrNull(0)
-            withContext(Dispatchers.Main) { fixTbMenu() }
-        }
-        if (m.vwEdges != null) adapt()
-        else if (thread?.active != true) thread = FetchSome().also { it.start() }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun adapt() {
-        if (b.rv.adapter != null) {
-            b.rv.adapter?.notifyDataSetChanged()
-            return; }
-        b.rv.adapter = ListPrf(this)
-        if (tracker == null) {
-            tracker = SelectionTracker.Builder(
-                "viewer", b.rv,
-                MyItemKeyProvider(), MyDetailsLookup(),
-                StorageStrategy.createStringStorage()
-            ).build()
-            tracker?.addObserver(SelectObserver())
-        }
-    }
-
-    private fun reset() {
-        b.rv.adapter = null
-        m.vwInfo = null
-        m.vwEdges = null
-        tracker = null
-        (b.rv.adapter as ListPrf?)?.let { if (it.expandable.zoomed) it.expandable.collapse() }
-    }
-
-    fun selective(bb: Boolean) {
-        b.toolbar.menu.clear()
-        b.toolbar.inflateMenu(if (bb) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
-        fixTbMenu()
-    }
-
-    private fun fixTbMenu() {
-        b.toolbar.menu.findItem(R.id.vtFav)
-            ?.setIcon(if (dbFav != null) R.drawable.favourite else R.drawable.non_favourite)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         fixTbMenu()
@@ -249,9 +198,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         R.id.vtInsta -> {
             UiTools.openProfile(this, user!!); true; }
         R.id.vtFav -> {
-            if (m.vwFav != null) CoroutineScope(Dispatchers.IO).launch {
+            if (m.vwUser != null) CoroutineScope(Dispatchers.IO).launch {
                 if (dbFav == null) {
-                    dbFav = m.vwFav!!
+                    dbFav = m.vwUser!!.favourite()
                     dao.addFavourite(dbFav!!)
                 } else {
                     dao.deleteFavourite(dbFav!!)
@@ -261,13 +210,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }; true; }
 
         R.id.vtDownload -> {
-            if (tracker != null && m.vwEdges != null)
+            if (tracker != null && m.vwUser?.edges() != null)
                 Saver(tracker!!.selection).start()
             tracker?.clearSelection()
             true
         }
         R.id.vtSelectAll -> {
-            if (m.vwEdges != null) tracker?.setItemsSelected(m.vwEdges!!.map { it.id }, true)
+            if (m.vwUser?.edges() != null)
+                tracker?.setItemsSelected(m.vwUser!!.edges()!!.map { it.node.id }, true)
             true
         }
         R.id.vtDeselectAll -> {
@@ -277,16 +227,64 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         else -> false
     }
 
-    override fun onDestroy() {
-        handler = null
-        m.vwEdges = null
-        m.vwInfo = null
-        m.vwFav = null
-        super.onDestroy()
+    private fun fixTbMenu() {
+        b.toolbar.menu.findItem(R.id.vtFav)
+            ?.setIcon(if (dbFav != null) R.drawable.favourite else R.drawable.non_favourite)
+    }
+
+    private fun load() {
+        reset()
+        CoroutineScope(Dispatchers.IO).launch {
+            dbFav = dao.favouriteByUser(user!!).getOrNull(0)
+            withContext(Dispatchers.Main) { fixTbMenu() }
+        }
+        if (m.vwUser != null) adapt()
+        else if (thread?.active != true) thread = FetchSome().also { it.start() }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun adapt() {
+        if (b.rv.adapter != null) {
+            b.rv.adapter?.notifyDataSetChanged()
+            return; }
+        b.rv.adapter = ListVwr(this)
+        if (tracker == null) {
+            tracker = SelectionTracker.Builder(
+                "viewer", b.rv,
+                MyItemKeyProvider(), MyDetailsLookup(),
+                StorageStrategy.createStringStorage()
+            ).build()
+            tracker?.addObserver(SelectObserver())
+        }
+    }
+
+    private fun flwClick(isItFollowers: Boolean, v: View) {
+        if (m.vwUser?.pv() != false || id == null) return
+        MaterialMenu(this, v, R.menu.vwr_flw_more, Act().apply {
+            this[R.id.vfFollowAll] = {
+                MassFollower.initService(
+                    this@Viewer,
+                    Follower.ToBeEnqueued(id!!, isItFollowers, false) // TODO: ASK
+                )
+            }
+        }).show()
+    }
+
+    private fun reset() {
+        b.rv.adapter = null
+        m.vwUser = null
+        tracker = null
+        (b.rv.adapter as ListVwr?)?.let { if (it.expandable.zoomed) it.expandable.collapse() }
+    }
+
+    fun selective(bb: Boolean) {
+        b.toolbar.menu.clear()
+        b.toolbar.inflateMenu(if (bb) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
+        fixTbMenu()
     }
 
     override fun onBackPressed() {
-        if (::b.isInitialized) (b.rv.adapter as ListPrf?)?.let {
+        if (::b.isInitialized) (b.rv.adapter as ListVwr?)?.let {
             if (it.expandable.zoomed) {
                 it.expandable.collapse(); return; }
         }
@@ -297,10 +295,17 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         super.onBackPressed()
     }
 
+    override fun onDestroy() {
+        handler = null
+        m.vwUser = null
+        super.onDestroy()
+    }
+
     inner class MyItemKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String = m.vwEdges!![i].id
+        override fun getKey(i: Int): String = m.vwUser!!.edges()!![i].node.id
         override fun getPosition(key: String): Int {
-            for (i in m.vwEdges!!.indices) if (m.vwEdges!![i].id == key) return i
+            for (i in m.vwUser!!.edges()!!.indices)
+                if (m.vwUser!!.edges()!![i].node.id == key) return i
             return -1
         }
     }
@@ -309,7 +314,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         override fun getItemDetails(e: MotionEvent): ItemDetails<String?>? {
             b.rv.findChildViewUnder(e.x, e.y)?.let {
                 val h = b.rv.getChildViewHolder(it)
-                if (h is ListPrf.ViewHolder) return@getItemDetails h.getItemDetails()
+                if (h is ListVwr.ViewHolder) return@getItemDetails h.getItemDetails()
             }
             return null
         }
@@ -328,34 +333,31 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     inner class FetchSome : BaseThread() {
         override fun run() {
-            if (m.vwEdges == null) Api<Profile>(
+            if (m.vwUser == null) Api<Profile>(
                 this@Viewer, Api.Type.PROFILE.url.format(user), Profile::class, handler
             ) { profile ->
-                val u = profile.graphql?.user
-                if (u == null) {
+                m.vwUser = profile.graphql?.user
+                if (m.vwUser == null) {
                     Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()
                     return@Api
                 }
-                this@Viewer.id = u.id
-                b.privateAcc
-
-                m.vwFav = Favourite(
-                    this@Viewer.id!!, u.username, u.full_name,
-                    u.profile_pic_url_hd ?: u.profile_pic_url,
-                    u.is_private == true
-                )
+                this@Viewer.id = m.vwUser!!.id
                 Glide.with(c)
-                    .load(m.vwFav!!.photo)
+                    .load(m.vwUser!!.photo())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .addListener(GlideShimmer(b.proPic, b.proPicIv))
                     .into(b.proPicIv)
-                val edgeList = u.edge_owner_to_timeline_media
-                if (edgeList == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                done(edgeList, u.is_private == true && u.followed_by_viewer == false)
+                b.followersNum.text = m.vwUser!!.edge_followed_by.count.toInt().toString()
+                b.followingNum.text = m.vwUser!!.edge_follow.count.toInt().toString()
+                done()
             } else Api<Profile.GraphQlResponse>(
-                this@Viewer, Api.Type.POSTS.url.format(id, m.vwEdges!!.size, m.vwInfo!!.end_cursor),
-                Profile.GraphQlResponse::class, handler
+                this@Viewer,
+                Api.Type.POSTS.url.format(
+                    id, m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
+                    m.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
+                ),
+                Profile.GraphQlResponse::class,
+                handler
             ) { res ->
                 val edgeList = res.data.user?.edge_owner_to_timeline_media
                 if (edgeList == null) {
@@ -364,14 +366,13 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
         }
 
-        private fun done(media: Profile.EdgeList, pv: Boolean? = null) {
-            m.vwInfo = media.page_info
-            if (m.vwEdges == null) m.vwEdges = arrayListOf()
-            media.edges.map { it.node }.forEach { post ->
-                m.vwEdges?.removeAll { it.id == post.id }
-                m.vwEdges?.add(post)
+        private fun done(add: Profile.EdgeList? = null) {
+            if (add != null) {
+                m.vwUser?.edge_owner_to_timeline_media?.page_info = add.page_info
+                m.vwUser?.edge_owner_to_timeline_media?.count = add.count
+                m.vwUser?.edge_owner_to_timeline_media?.edges?.addAll(add.edges)
             }
-            handler?.obtainMessage(HANDLE_FETCHED, pv)?.sendToTarget()
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
         }
     }
@@ -383,8 +384,12 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 return
             }
-            m.vwEdges?.find { it.id == svd }?.let { post ->
-                dao.addQueued(Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode)))
+            m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
+                dao.addQueued(
+                    Queued(
+                        Persistent.now(), Api.Type.POST.url.format(edge.node.shortcode)
+                    )
+                )
             }
             ended()
         }

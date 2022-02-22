@@ -95,6 +95,7 @@
         <activity
             android:name=".MassFollower"
             android:exported="false"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.InstaTools.Primary">
 
             <meta-data
@@ -114,11 +115,18 @@
 
         <service
             android:name=".serv.Queuer"
-            android:exported="false" />
+            android:exported="false"
+            android:stopWithTask="false" />
 
         <service
             android:name=".serv.Exporter"
-            android:exported="false" />
+            android:exported="false"
+            android:stopWithTask="false" />
+
+        <service
+            android:name=".serv.Follower"
+            android:exported="false"
+            android:stopWithTask="false" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

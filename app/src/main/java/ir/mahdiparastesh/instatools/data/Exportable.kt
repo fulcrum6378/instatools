@@ -5,7 +5,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.more.Persistent
 
 @Entity
 class Exportable(
@@ -17,7 +17,7 @@ class Exportable(
     @Ignore @Transient var threadData: Dm.DmThread? = null
 ) {
     @PrimaryKey
-    var addedAt: Long = Queuer.now()
+    var addedAt: Long = Persistent.now()
 
     @Suppress("unused")
     constructor() : this("", "", 0, "")

@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.instatools.json
 
-@Suppress("SpellCheckingInspection")
+import ir.mahdiparastesh.instatools.data.Favourite
+
+@Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 class Profile(
     //val always_show_message_button_to_pro_account: Boolean,
     val graphql: GraphQl?,
@@ -29,8 +31,8 @@ class Profile(
         //val connected_fb_page: Any?,
         //val country_block: Boolean?,
         //val edge_felix_video_timeline: Map<String?, *>?,
-        //val edge_follow: Map<String?, *>?,
-        val edge_followed_by: FollowedBy,
+        val edge_follow: EdgeFollow,
+        val edge_followed_by: EdgeFollow,
         //val edge_media_collections: Map<String?, *>?,
         //val edge_mutual_followed_by: Map<String?, *>?,
         val edge_owner_to_timeline_media: EdgeList?, // User Posts
@@ -65,9 +67,20 @@ class Profile(
         //val should_show_category: Boolean?,
         //val should_show_public_contacts: Boolean?,
         val username: String
-    )
+    ) {
+        fun photo() = profile_pic_url_hd ?: profile_pic_url
 
-    class FollowedBy(val count: Double)
+        fun favourite(): Favourite = Favourite(id, username, full_name, photo(), pv())
+
+        fun pv() = is_private == true
+
+        fun edges() = edge_owner_to_timeline_media?.edges
+
+        fun hasMore(): Boolean =
+            edge_owner_to_timeline_media?.edges?.size != edge_owner_to_timeline_media?.count?.toInt()
+    }
+
+    class EdgeFollow(val count: Double)
 
     class EdgeList(var page_info: PageInfo, var count: Double, var edges: ArrayList<EdgePost>)
 
@@ -82,7 +95,7 @@ class Profile(
         //val coauthor_producers: Array<Any>,
         //val comments_disabled: Boolean,
         //val dash_info: Map<String, *>,
-        val display_url: String,
+        //val display_url: String,
         //val dimensions: Map<String, Double>,
         //val edge_liked_by: Map<String, Double>,
         //val edge_media_preview_like: Map<String, *>,

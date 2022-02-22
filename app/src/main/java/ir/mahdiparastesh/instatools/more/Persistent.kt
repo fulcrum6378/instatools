@@ -6,6 +6,7 @@ import android.widget.Toast
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Model
+import java.util.*
 
 interface Persistent {
     val c: Context
@@ -35,5 +36,9 @@ interface Persistent {
             if (this is BaseActivity) goTo(Login::class, true)
         } else Toast.makeText(c, "InstaTools needs authentication!", Toast.LENGTH_SHORT).show()
         // TODO: IMPROVE THIS
+    }
+
+    companion object {
+        fun now() = Calendar.getInstance().timeInMillis
     }
 }

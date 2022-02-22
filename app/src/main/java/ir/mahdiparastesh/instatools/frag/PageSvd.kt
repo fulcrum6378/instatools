@@ -22,11 +22,7 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSvd
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.BaseSaver
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -134,7 +130,7 @@ class PageSvd(c: Main) : BasePage(c) {
         }
         b.error.vis(false)
 
-        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
+        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0) // TODO: NOT ACTUAL
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) {
@@ -241,7 +237,7 @@ class PageSvd(c: Main) : BasePage(c) {
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
                 c.m.saved = edgeList
-                done(edgeList)
+                done(null)
             } else Api<Profile.GraphQlResponse>(
                 c, Api.Type.SAVED.url.format(
                     c.m.acc!!.id,
@@ -252,15 +248,15 @@ class PageSvd(c: Main) : BasePage(c) {
                 val edgeList = res.data.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
-                done(edgeList, true)
+                done(edgeList)
             }
         }
 
-        private fun done(media: Profile.EdgeList, doAdd: Boolean = false) {
-            if (doAdd) {
-                c.m.saved?.page_info = media.page_info
-                c.m.saved?.count = media.count
-                media.edges.forEach { post ->
+        private fun done(add: Profile.EdgeList? = null) {
+            if (add != null) {
+                c.m.saved?.page_info = add.page_info
+                c.m.saved?.count = add.count
+                add.edges.forEach { post ->
                     c.m.saved?.edges?.removeAll { it.node.id == post.node.id }
                     c.m.saved?.edges?.add(post)
                 }
@@ -282,7 +278,7 @@ class PageSvd(c: Main) : BasePage(c) {
             }
             c.m.saved?.edges?.find { it.node.id == svd }?.node?.let { post ->
                 if (download) c.dao.addQueued(
-                    Queued(Queuer.now(), Api.Type.POST.url.format(post.shortcode))
+                    Queued(Persistent.now(), Api.Type.POST.url.format(post.shortcode))
                 )
                 if (unsave) Api<Rest>(
                     c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,

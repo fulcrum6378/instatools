@@ -52,6 +52,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
     override var sp: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        resolvedIntent = null
         super.onCreate(savedInstanceState)
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
@@ -59,6 +60,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
         if (m.acc == null) m.acc =
             Account.selected(this, guestIfNotExists = this !is Login) // needs "gsp"
         sp = initSp(m.acc)
+        resolvedIntent = resolveIntent(intent, true)
+        if (resolvedIntent == false) {
+            super.onBackPressed()
+            finish()
+            return; }
 
         dm = resources.displayMetrics
         night = c.resources.getBoolean(R.bool.night)
@@ -66,6 +72,17 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
         fontBold = font(getString(R.string.font_bold))
         fontRegular = font(getString(R.string.font_regular))
         fontLight = font(getString(R.string.font_light))
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        resolvedIntent = null
+        super.onNewIntent(intent)
+        resolvedIntent = resolveIntent(intent, false)
+    }
+
+    var resolvedIntent: Boolean? = null
+    open fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
+        return true // shall pass
     }
 
     override fun setContentView(root: View?) {
