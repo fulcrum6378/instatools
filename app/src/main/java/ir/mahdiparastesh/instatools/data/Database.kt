@@ -5,8 +5,8 @@ import androidx.room.*
 
 @androidx.room.Database(
     entities = [
-        Friend::class, Queued::class, Exportable::class, Favourite::class//, Followable::class
-    ], version = 5, exportSchema = false
+        Friend::class, Queued::class, Exportable::class, Favourite::class, Followable::class
+    ], version = 6
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -86,8 +86,14 @@ abstract class Database : RoomDatabase() {
         fun deleteFavourite(item: Favourite)
 
 
-        /*@Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addFollowable(item: Followable): Long*/
+        @Query("SELECT * FROM Followable")
+        fun followables(): Followable
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addFollowable(item: Followable): Long
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addFollowables(items: List<Followable>): List<Long>
     }
 
     companion object {

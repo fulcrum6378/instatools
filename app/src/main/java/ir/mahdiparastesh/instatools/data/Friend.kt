@@ -12,7 +12,8 @@ class Friend(
     var photo: String,
     var private: Boolean,
     var follows: Boolean,
-    var followed: Boolean
+    var followed: Boolean,
+    var unfollowedMeAt: Long? = null
 ) {
     @Suppress("unused")
     constructor() : this("", "", "", "", false, false, false)
@@ -26,6 +27,7 @@ class Friend(
             } catch (e: SQLiteConstraintException) {
                 dao.updateFriend(newer.apply {
                     val older = dao.friend(id)
+                    unfollowedMeAt = older.unfollowedMeAt
                     when (certainFollower) {
                         true -> follows = older.follows
                         false -> followed = older.followed

@@ -84,7 +84,7 @@
     <!-- Mass Follower -->
     <string name="massFollower">Mass Follower</string>
     <string name="mfGuide1">Instagram won\'t let you follow a large number of people so frequently. It may block your account or sign you out of your session.</string>
-    <string name="mfGuide2">But using this robot, you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot nor a spammer.</string>
+    <string name="mfGuide2">But using this robot, you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot or a spammer.</string>
     <string name="mfGuide3">Choose a profile and follow ALL of their followers/following&#8230;</string>
 
     <!-- Settings -->

@@ -20,12 +20,10 @@ import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.Delay
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
+import kotlinx.coroutines.runBlocking
 
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
@@ -136,13 +134,16 @@ class PageUnf(c: Main) : BasePage(c) {
 
 
     inner class Inquiry : BaseThread() {
+        private lateinit var oldFriends: List<Friend>
+        private var newFriends = arrayListOf<Friend>()
+
         init {
             c.m.unfollowers.value = null
         }
 
         override fun run() {
             super.run()
-            c.dao.deleteFriends()
+            runBlocking { oldFriends = c.dao.friends() }
             allFollow(theFollowers = true)
         }
 
@@ -154,25 +155,36 @@ class PageUnf(c: Main) : BasePage(c) {
             ) { flw ->
                 Thread {
                     flw.users.forEach { u ->
-                        Friend.add(
-                            c.dao, Friend(
-                                u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
-                                theFollowers, !theFollowers
-                            ), theFollowers
-                        )
+                        Friend(
+                            u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
+                            theFollowers, !theFollowers
+                        ).apply {
+                            newFriends.add(this)
+                            Friend.add(c.dao, this, theFollowers)
+                        }
                     }
                     if (flw.next_max_id == null) {
                         if (theFollowers) Delay(looper = Looper.getMainLooper()) {
                             allFollow(theFollowers = false)
-                        } else {
-                            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                            interrupt()
-                        }
+                        } else ended()
                     } else Delay(looper = Looper.getMainLooper()) {
                         allFollow(flw.next_max_id, theFollowers)
                     }
                 }.start()
             }
+        }
+
+        private fun ended() {
+            runBlocking {
+                oldFriends.filter { it.id !in newFriends.map { f -> f.id } }
+                    .forEach { c.dao.deleteFriend(it) }
+                newFriends.forEach { newer ->
+                    if (oldFriends.find { it.id == newer.id }?.follows == true && !newer.follows)
+                        c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
+                }
+            }
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            interrupt()
         }
     }
 }

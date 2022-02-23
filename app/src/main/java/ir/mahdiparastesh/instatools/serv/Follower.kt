@@ -5,11 +5,18 @@ import android.os.*
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
+import ir.mahdiparastesh.instatools.data.Followable
+import ir.mahdiparastesh.instatools.data.Friend
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.ForegroundService
 
 class Follower : ForegroundService() {
     private var toBeEnqueued = arrayListOf<ToBeEnqueued>()
-    private var enqueuing = false
+    private var enqueuer: Enqueuer? = null
+    private var scheduler: Scheduler? = null
+    private var following = arrayListOf<Friend>()
 
     override val com: ForegroundServiceCompanion
         get() = Companion
@@ -32,9 +39,9 @@ class Follower : ForegroundService() {
     }
 
     override fun resolveIntent(intent: Intent) {
-        intent.getParcelableExtra<ToBeEnqueued>(EXTRA_ENQUEUE)?.let {
-            toBeEnqueued.add(it)
-            enqueue()
+        intent.getParcelableExtra<ToBeEnqueued>(EXTRA_ENQUEUE)?.let { tbe ->
+            toBeEnqueued.add(tbe)
+            if (enqueuer?.active != true) enqueuer = Enqueuer().also { it.start() }
         }
     }
 
@@ -47,36 +54,62 @@ class Follower : ForegroundService() {
                 when (msg.what) {
                     HANDLE_ENQUEUE -> {
                         toBeEnqueued.add(msg.obj as ToBeEnqueued)
-                        enqueue()
+                        if (enqueuer?.active != true) enqueuer = Enqueuer().also { it.start() }
                     }
                 }
             }
         }
+        Thread { following.addAll(dao.following()) }.start()
     }
 
-    private fun enqueue() {
-        if (enqueuing) return
-        val cur = toBeEnqueued.getOrNull(0)
-        if (cur == null) {
-            //if (download?.active != true) destroy()
-            return; }
-        enqueuing = true
+    inner class Enqueuer : BaseThread() {
+        override fun run() {
+            super.run()
+            enqueue()
+        }
 
-        //
+        private fun enqueue() {
+            if (enqueuer?.active == true) return
+            val cur = toBeEnqueued.getOrNull(0)
+            if (cur == null) {
+                interrupt()
+                if (scheduler?.active != true) this@Follower.destroy()
+                return; }
+            allFollow()
+        }
+
+        private fun allFollow(next_max_id: String = "") {
+            Api<Rest.Follow>(this@Follower,
+                (if (toBeEnqueued[0].isItFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
+                    .format(toBeEnqueued[0].id, next_max_id), Rest.Follow::class,
+                null, onError = {
+                }) { flw ->
+                var sum: Int
+                dao.addFollowables(flw.users.filter {
+                    (toBeEnqueued[0].includePv || !it.is_private) &&
+                            it.pk !in following.map { f -> f.id }
+                }.map { Followable(it.pk, it.username, it.is_private) }
+                    .also { sum = it.size })
+                if (flw.next_max_id == null) enqueuingDone() else allFollow(flw.next_max_id)
+                if (sum > 0 && scheduler?.active != true)
+                    scheduler = Scheduler().also { it.start() }
+            }
+        }
+
+        private fun enqueuingDone() {
+            toBeEnqueued.removeAt(0)
+            enqueue()
+        }
     }
 
-    private fun enqueuingDone() {
-        toBeEnqueued.removeAt(0)
-        enqueuing = false
-        if (toBeEnqueued.isNotEmpty()) enqueue()
-        //if (download?.active != true) download = Download().also { it.start() }
+    inner class Scheduler : BaseThread() {
+        override fun run() {
+            super.run()
+        }
     }
 
-    class ToBeEnqueued(
-        val id: String,
-        val isItFollowers: Boolean,
-        val includePv: Boolean
-    ) : Parcelable {
+    class ToBeEnqueued(val id: String, val isItFollowers: Boolean, val includePv: Boolean) :
+        Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString()!!,
             parcel.readByte() != 0.toByte(),

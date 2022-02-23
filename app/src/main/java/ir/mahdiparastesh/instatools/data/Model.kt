@@ -28,10 +28,6 @@ class Model : ViewModel() {
     // Favourites
     var fav: ArrayList<Favourite>? = null
 
-    // Followers & Following (Don't use them in Main)
-    var followers: ArrayList<Friend>? = null
-    var following: ArrayList<Friend>? = null
-
 
     fun accountSwitched() {
         unfollowers.value = null
@@ -42,8 +38,6 @@ class Model : ViewModel() {
         loginLoaded = false
         currentPage.value = 0
         vwUser = null
-        followers = null
-        following = null
     }
 
     @Suppress("UNCHECKED_CAST")
