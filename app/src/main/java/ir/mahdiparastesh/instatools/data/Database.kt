@@ -87,13 +87,19 @@ abstract class Database : RoomDatabase() {
 
 
         @Query("SELECT * FROM Followable")
-        fun followables(): Followable
+        fun followables(): List<Followable>
+
+        @Query("SELECT * FROM Followable LIMIT 1")
+        fun aFollowable(): List<Followable>
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addFollowable(item: Followable): Long
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addFollowables(items: List<Followable>): List<Long>
+
+        @Delete
+        fun deleteFollowable(item: Followable)
     }
 
     companion object {

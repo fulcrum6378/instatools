@@ -28,6 +28,9 @@ class Model : ViewModel() {
     // Favourites
     var fav: ArrayList<Favourite>? = null
 
+    // Mass Follower
+    var fwb = MutableLiveData<ArrayList<Followable>?>(null)
+
 
     fun accountSwitched() {
         unfollowers.value = null

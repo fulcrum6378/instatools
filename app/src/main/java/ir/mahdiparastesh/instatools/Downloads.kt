@@ -135,8 +135,8 @@ class Downloads : BaseActivity() {
                 return
             }
             c.startService(Intent(c, Queuer::class.java).apply {
-                if (link != null) putExtra(Queuer.EXTRA_LINK, link)
                 action = ForegroundService.ACTION_START
+                if (link != null) putExtra(Queuer.EXTRA_LINK, link)
             })
         }
     }

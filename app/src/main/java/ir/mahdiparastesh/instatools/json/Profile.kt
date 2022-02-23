@@ -75,6 +75,8 @@ class Profile(
 
         fun pv() = is_private == true
 
+        fun access() = !pv() || followed_by_viewer == true
+
         fun edges() = edge_owner_to_timeline_media?.edges
 
         fun hasMore(): Boolean =

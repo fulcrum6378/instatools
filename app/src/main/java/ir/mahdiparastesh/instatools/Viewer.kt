@@ -259,7 +259,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     }
 
     private fun flwClick(isItFollowers: Boolean, v: View) {
-        if (m.vwUser?.pv() != false || id == null) return
+        if (m.vwUser?.access() != true || id == null) return
         MaterialMenu(this, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
                 MassFollower.initService(
