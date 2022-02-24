@@ -10,6 +10,7 @@ import androidx.annotation.MainThread
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
@@ -28,6 +29,7 @@ class MassFollower : BaseActivity() {
     override val menuRes: Int? = null
     private lateinit var adBanner: AdView
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         b = MassFollowerBinding.inflate(layoutInflater)
@@ -36,12 +38,8 @@ class MassFollower : BaseActivity() {
         db = Database.build(c, (m.acc?.id ?: -1L).toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
-            @SuppressLint("NotifyDataSetChanged")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_RESET ->
-                        if (b.rv.adapter == null) b.rv.adapter = ListFwb(this@MassFollower)
-                        else b.rv.adapter?.notifyDataSetChanged()
                 }
             }
         }
@@ -51,10 +49,17 @@ class MassFollower : BaseActivity() {
             .forEach { it.typeface = fontRegular }
         b.guideIv.setOnClickListener {
         }
+
+        // Listing
+        b.rv.layoutManager = ChipsLayoutManager.newBuilder(this).build()
         m.fwb.observe(this) {
             val queued = !it.isNullOrEmpty()
             b.rv.vis(queued)
             b.guide.vis(!queued)
+            if (queued) {
+                if (b.rv.adapter == null) b.rv.adapter = ListFwb(this@MassFollower)
+                else b.rv.adapter?.notifyDataSetChanged()
+            }
         }
 
         // Ads
@@ -73,7 +78,6 @@ class MassFollower : BaseActivity() {
                 m.fwb.value = ArrayList(data)
                 //if (!m.fwb.value.isNullOrEmpty()) initService(this@MassFollower)
             }
-            handler?.obtainMessage(Downloads.HANDLE_RESET)?.sendToTarget()
         }
     }
 
@@ -83,9 +87,8 @@ class MassFollower : BaseActivity() {
     }
 
     companion object {
-        const val HANDLE_RESET = 0
-        const val HANDLE_INSERTED = 1
-        const val HANDLE_DELETED = 2
+        const val HANDLE_INSERTED = 0
+        const val HANDLE_DELETED = 1
         var handler: Handler? = null
 
         @MainThread

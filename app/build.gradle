@@ -17,24 +17,22 @@ android {
 
     buildTypes {
         def obfuscate = false
-        release {
-            minifyEnabled obfuscate
-            shrinkResources obfuscate
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
+        all {
             minifyEnabled obfuscate
             shrinkResources obfuscate
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     buildFeatures {
         viewBinding true
     }
@@ -65,4 +63,6 @@ dependencies {
     implementation "androidx.media2:media2-player:$media2_version"
     implementation 'com.tbuonomo:dotsindicator:4.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+
+    implementation 'ir.mahdiparastesh:chipslayoutmanager:0.4.0@aar'
 }

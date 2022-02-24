@@ -1,11 +1,23 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.os.Handler
-import android.os.HandlerThread
+import android.os.Looper
 import android.os.Message
 
-abstract class LongThread(name: String) : HandlerThread(name) {
+open class BaseThread : Thread() {
     var active = false
+
+    override fun run() {
+        active = true
+    }
+
+    override fun interrupt() {
+        active = false
+        super.interrupt()
+    }
+}
+
+abstract class LongThread(private val looper: Looper) : BaseThread() {
     var handler: Handler? = null
     abstract val messages: Array<Pair<Int, ((msg: Message) -> Unit)>>
 
@@ -14,16 +26,13 @@ abstract class LongThread(name: String) : HandlerThread(name) {
         super.run()
         handler = object : Handler(looper) {
             override fun handleMessage(msg: Message) {
-                throw Exception("${msg.what}")
                 messages.find { it.first == msg.what }?.second?.let { func -> func(msg) }
             }
         }
     }
 
     override fun interrupt() {
-        quitSafely()
         handler = null
-        active = false
         super.interrupt()
     }
 }

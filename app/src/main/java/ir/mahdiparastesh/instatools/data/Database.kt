@@ -6,7 +6,7 @@ import androidx.room.*
 @androidx.room.Database(
     entities = [
         Friend::class, Queued::class, Exportable::class, Favourite::class, Followable::class
-    ], version = 6
+    ], version = 6, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO

@@ -15,7 +15,7 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() 
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        val fwb = c.m.fwb.value?.getOrNull(0) ?: return
+        val fwb = c.m.fwb.value?.getOrNull(i) ?: return
         h.b.root.text = fwb.user
         h.b.root.setOnClickListener {
         }

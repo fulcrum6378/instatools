@@ -38,6 +38,7 @@ class Queuer : ForegroundService() {
     private var handlingLink = false
     private var download: BaseThread? = null
 
+    override val requiresHandling = false
     override val com: ForegroundServiceCompanion
         get() = Companion
 

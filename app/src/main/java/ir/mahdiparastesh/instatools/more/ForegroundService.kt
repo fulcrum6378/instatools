@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     abstract val com: ForegroundServiceCompanion
     protected lateinit var db: Database
     lateinit var dao: Database.DAO
+    lateinit var handling: HandlerThread
+    abstract val requiresHandling: Boolean
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -48,7 +51,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     abstract class ForegroundServiceCompanion(val CH_ID: Int, private val klass: KClass<*>) {
-        protected val pack: String = klass.java.`package`!!.name
+        val pack: String = klass.java.`package`!!.name
         abstract val channel: String
         abstract var chName: Int
         abstract var chDesc: Int
@@ -92,6 +95,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         m = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
         sp = initSp(m.acc)
+        if (requiresHandling) handling = HandlerThread(com.pack).also { it.start() }
     }
 
     open fun notification(
@@ -135,6 +139,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
+        if (requiresHandling) handling.quitSafely()
         com.handler = null
         com.active = false
         // if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()

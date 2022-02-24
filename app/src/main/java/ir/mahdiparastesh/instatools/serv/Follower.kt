@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.serv
 
 import android.content.Intent
 import android.os.*
-import android.util.Log
 import com.android.volley.Request
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
@@ -22,6 +21,7 @@ class Follower : ForegroundService() {
     private var scheduler: Scheduler? = null
     private var following = arrayListOf<Friend>()
 
+    override val requiresHandling = true
     override val com: ForegroundServiceCompanion
         get() = Companion
 
@@ -69,11 +69,10 @@ class Follower : ForegroundService() {
         }.start()
     }
 
-    inner class Enqueuer : LongThread("Enqueuer") {
+    inner class Enqueuer : LongThread(handling.looper) {
         override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
             0 to { msg ->
                 val flw = msg.obj as Rest.Follow
-                Log.println(Log.ASSERT, "DAY", "${flw.page_size}")
                 var sum: Int
                 dao.addFollowables(flw.users.filter {
                     (toBeEnqueued[0].includePv || !it.is_private) &&
@@ -85,7 +84,6 @@ class Follower : ForegroundService() {
                     scheduler = Scheduler().also { it.start() }
             },
             Api.HANDLE_ERROR to {
-                Log.println(Log.ASSERT, "DAY", "HANDLE_ERROR")
             }
         )
 
@@ -118,7 +116,7 @@ class Follower : ForegroundService() {
         }
     }
 
-    inner class Scheduler : LongThread("Scheduler") {
+    inner class Scheduler : LongThread(handling.looper) {
         override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         )
 

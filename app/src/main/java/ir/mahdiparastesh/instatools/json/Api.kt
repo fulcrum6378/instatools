@@ -50,13 +50,16 @@ class Api<JSON>(
         val data: JSON? = try {
             Gson().fromJson(response, clazz.java) as JSON
         } catch (e: JsonSyntaxException) {
-            if (response.startsWith("<!DOCTYPE html>", true)
-                && response.contains("Log in • Instagram")
-            ) {
-                ForegroundService.terminateTasks(c.c)
-                c.gsp.edit().remove(Login.spAccount).commit()
-                c.needAuthentication()
-                gotError(this, null)
+            if (response.startsWith("<!DOCTYPE html>")) when {
+                response.contains("Log in • Instagram") -> {
+                    ForegroundService.terminateTasks(c.c)
+                    c.gsp.edit().remove(Login.spAccount).commit()
+                    c.needAuthentication()
+                    gotError(this, null)
+                }
+                response.contains("Content unavailable &bull; Instagram") ->
+                    gotError(this, null)
+                else -> invalidResponse(response, e)
             } else invalidResponse(response, e)
             null
         } catch (e: Exception) {

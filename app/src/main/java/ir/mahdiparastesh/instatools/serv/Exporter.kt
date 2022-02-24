@@ -40,6 +40,7 @@ class Exporter : ForegroundService() {
     private var exp: Exportable? = null
     private var media = hashMapOf<String, Downloadable>()
 
+    override val requiresHandling = false
     override val com: ForegroundServiceCompanion
         get() = Companion
 
