@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.contains
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
@@ -21,7 +21,6 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.runBlocking
 
@@ -29,6 +28,7 @@ class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
     override lateinit var inflater: LayoutInflater
+    override val root: ConstraintLayout get() = b.root
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         @Suppress("UNCHECKED_CAST")
         override fun handleMessage(msg: Message) {
@@ -38,7 +38,7 @@ class PageUnf(c: Main) : BasePage(c) {
                     c.m.unfollowers.value!!.sortBy { it.user }
                     if (isNullOrEmpty() && msg.arg1 == 1)
                         thread = Inquiry().also { it.start() }
-                    else onLoaded()
+                    else onLoaded(isNullOrEmpty())
                     // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
                     // TODO: OR THERE ARE NO FOLLOWERS/FOLLOWING!?!
                 }
@@ -68,7 +68,6 @@ class PageUnf(c: Main) : BasePage(c) {
         inflater = c.themeInflater(BaseActivity.Theme.PRIMARY, inf)
         b = PageUnfBinding.inflate(inflater, parent, false)
         if (Main.guest) {
-            b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
         b.refresher.setOnRefreshListener {
@@ -84,7 +83,8 @@ class PageUnf(c: Main) : BasePage(c) {
         })
 
         //b.refresher.isRefreshing = true
-        if (c.m.unfollowers.value != null) onLoaded() else load(true)
+        if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
+        else load(true)
         return b.root
     }
 
@@ -95,28 +95,9 @@ class PageUnf(c: Main) : BasePage(c) {
         }.start()
     }
 
-    override fun onFailed(message: String) {
-        b.refresher.isRefreshing = false
-        try {
-            Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
-        } catch (ignored: IllegalArgumentException) {
-        }
-        if (b.root.contains(b.loading)) {
-            b.loading.animation?.cancel()
-            b.root.removeView(b.loading)
-        }
-        if (b.rv.adapter == null) b.error.vis()
-    }
-
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(asGuest: Boolean) {
-        b.refresher.isRefreshing = false
-        if (b.root.contains(b.loading)) {
-            b.loading.animation?.cancel()
-            b.root.removeView(b.loading)
-        }
-        b.error.vis(false)
-
+    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
+        super.onLoaded(isEmpty, asGuest)
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
     }

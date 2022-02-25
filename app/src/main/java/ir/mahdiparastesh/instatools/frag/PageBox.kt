@@ -13,10 +13,9 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.contains
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
@@ -31,7 +30,6 @@ import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,11 +41,12 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     private var boxThread: FetchInbox? = null
     var thdThread: FetchSomeDm? = null
     override lateinit var inflater: LayoutInflater
+    override val root: ConstraintLayout get() = b.root
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         @Suppress("UNCHECKED_CAST")
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                HANDLE_FETCHED -> onLoaded()
+                HANDLE_FETCHED -> onLoaded(c.m.dmThreads.isNullOrEmpty())
                 HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
                 HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
                     val dmThd = msg.obj as Dm.DmThread
@@ -81,7 +80,6 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)
         b = PageBoxBinding.inflate(inflater, parent, false)
         if (Main.guest) {
-            b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }
 
         b.refresher.setOnChildScrollUpCallback { _, _ ->
@@ -107,34 +105,14 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         })
 
         //b.refresher.isRefreshing = true
-        if (c.m.dmThreads != null) onLoaded()
+        if (c.m.dmThreads != null) onLoaded(c.m.dmThreads.isNullOrEmpty())
         else if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
         return b.root
     }
 
-    override fun onFailed(message: String) {
-        b.refresher.isRefreshing = false
-        try {
-            Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
-        } catch (ignored: IllegalArgumentException) {
-            // No suitable parent found from the given view. Please provide a valid view.
-        }
-        if (b.root.contains(b.loading)) {
-            b.loading.animation?.cancel()
-            b.root.removeView(b.loading)
-        }
-        if (b.rv.adapter == null) b.error.vis()
-    }
-
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(asGuest: Boolean) {
-        b.refresher.isRefreshing = false
-        if (b.root.contains(b.loading)) {
-            b.loading.animation?.cancel()
-            b.root.removeView(b.loading)
-        }
-        b.error.vis(false)
-
+    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
+        super.onLoaded(isEmpty, asGuest)
         if (!asGuest) c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
         if (c.m.dmThread == null) {
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
@@ -198,7 +176,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     override fun goBack(): Boolean {
         if (c.m.dmThread != null) {
             c.m.dmThread = null
-            onLoaded()
+            onLoaded(c.m.dmThreads.isNullOrEmpty())
             return true
         }
         return false

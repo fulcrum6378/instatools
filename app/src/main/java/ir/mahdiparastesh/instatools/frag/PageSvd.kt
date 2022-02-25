@@ -6,7 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.*
-import androidx.core.view.contains
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,18 +25,18 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
     override lateinit var inflater: LayoutInflater
+    override val root: ConstraintLayout get() = b.root
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 HANDLE_FETCHED -> {
-                    onLoaded()
+                    onLoaded(c.m.saved?.edges.isNullOrEmpty())
                     if (c.m.saved != null && !b.rv.canScrollVertically(1))
                         thread = FetchSome().also { it.start() }
                 }
@@ -73,7 +73,6 @@ class PageSvd(c: Main) : BasePage(c) {
         inflater = c.themeInflater(BaseActivity.Theme.SECONDARY, inf)
         b = PageSvdBinding.inflate(inflater, parent, false)
         if (Main.guest) {
-            b.refresher.isEnabled = false
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
 
         b.rv.layoutManager = GridLayoutManager(c, 3)
@@ -100,34 +99,14 @@ class PageSvd(c: Main) : BasePage(c) {
         })
 
         //b.refresher.isRefreshing = true
-        if (c.m.saved != null) onLoaded()
+        if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
         else if (thread == null) thread = FetchSome().also { it.start() }
         return b.root
     }
 
-    override fun onFailed(message: String) {
-        b.refresher.isRefreshing = false
-        try {
-            Snackbar.make(b.root, message, Snackbar.LENGTH_LONG).show()
-        } catch (ignored: IllegalArgumentException) {
-            // No suitable parent found from the given view. Please provide a valid view.
-        }
-        if (b.root.contains(b.loading)) {
-            b.loading.animation?.cancel()
-            b.root.removeView(b.loading)
-        }
-        if (b.rv.adapter == null) b.error.vis()
-    }
-
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(asGuest: Boolean) {
-        b.refresher.isRefreshing = false
-        if (b.root.contains(b.loading)) {
-            b.loading.animation?.cancel()
-            b.root.removeView(b.loading)
-        }
-        b.error.vis(false)
-
+    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
+        super.onLoaded(isEmpty, asGuest)
         if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0) // TODO: NOT ACTUAL
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()

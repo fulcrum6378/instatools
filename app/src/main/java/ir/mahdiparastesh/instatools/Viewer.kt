@@ -158,8 +158,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         arrayOf(b.followersNum, b.followingNum).forEach { it.typeface = fontBold }
         arrayOf(b.followersText, b.followingText).forEach { it.typeface = fontLight }
-        //b.followers.setOnClickListener { flwClick(true, it) }
-        //b.following.setOnClickListener { flwClick(false, it) }
+        b.followers.setOnClickListener { flwClick(true, it) }
+        b.following.setOnClickListener { flwClick(false, it) }
 
         load()
     }

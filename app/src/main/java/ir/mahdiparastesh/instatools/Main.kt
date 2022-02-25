@@ -166,7 +166,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
             } else bh.name.vis(false)
         } else bh.root.vis(false)
         b.nav.setNavigationItemSelectedListener(this)
-        if (guest) arrayOf(R.id.mnSettings, R.id.mnSignOut)
+        if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
     }
