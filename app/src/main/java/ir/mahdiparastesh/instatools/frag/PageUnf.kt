@@ -109,7 +109,7 @@ class PageUnf(c: Main) : BasePage(c) {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded() {
+    override fun onLoaded(asGuest: Boolean) {
         b.refresher.isRefreshing = false
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()

@@ -5,7 +5,6 @@
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
-    <string name="downloads">Downloads</string>
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="switchAccount">Switch Account</string>
@@ -18,7 +17,6 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
-    <string name="favourites">Favourites</string>
     <string name="export">Export</string>
     <string name="exportPdf">Export to PDF</string>
     <string name="exportHtml">Export to HTML</string>
@@ -62,7 +60,7 @@
     <string name="toExit">Double tap to exit&#8230;</string>
 
     <!-- Downloads -->
-    <string name="dwTitle">@string/downloads</string>
+    <string name="downloads">Downloads</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Paste a link&#8230;</string>
 
@@ -72,7 +70,7 @@
     <string name="vwPrivate">This account is private!</string>
 
     <!-- Favourites -->
-    <string name="fvTitle">@string/favourites</string>
+    <string name="favourites">Favourites</string>
 
     <!-- Settings -->
     <string name="stDlPath">Main download folder</string>

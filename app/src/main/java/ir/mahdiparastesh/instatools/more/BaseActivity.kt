@@ -163,7 +163,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
             Intent(this, activity.java),
             ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
         )
-        if (finish) Delay(200) { finish() }
+        if (finish) Delay(1000) { finish() }
         // The phone's home screen may appear if there are no active activities at the moment.
         return true
     }

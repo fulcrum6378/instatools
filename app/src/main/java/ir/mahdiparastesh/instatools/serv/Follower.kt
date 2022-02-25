@@ -40,6 +40,7 @@ class Follower : ForegroundService() {
 
         const val EXTRA_ENQUEUE = "enqueue"
         const val HANDLE_ENQUEUE = 0
+        var DELAY = 10000L
     }
 
     override fun resolveIntent(intent: Intent) {
@@ -121,8 +122,8 @@ class Follower : ForegroundService() {
         )
 
         override fun run() {
-            //super.run()
-            //follow()
+            super.run()
+            follow()
         }
 
         private fun follow() {
@@ -136,7 +137,7 @@ class Follower : ForegroundService() {
                 method = Request.Method.POST, onError = {
                 }) {
                 dao.deleteFollowable(fwb)
-                Delay(10000L) { follow() }
+                Delay(DELAY) { follow() }
             }
         }
     }

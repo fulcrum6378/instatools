@@ -87,4 +87,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
     }
 
     override fun getItemCount() = c.m.queueds?.size ?: 0
+
+    override fun onViewDetachedFromWindow(h: ViewHolder) {
+        h.b.status.cancelAnimation()
+    }
 }

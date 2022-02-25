@@ -10,7 +10,6 @@
     <string name="guest">Гость</string>
     <string name="navOpen">Открытым</string>
     <string name="navClose">Закрой его</string>
-    <string name="downloads">Загрузки</string>
     <string name="settings">Настройки</string>
     <string name="search">Поиск</string>
     <string name="switchAccount">Сменить аккаунт</string>
@@ -23,7 +22,6 @@
     <string name="no">Нет</string>
     <string name="yes">да</string>
     <string name="unsave">Удалить</string>
-    <string name="favourites">Избранное</string>
     <string name="export">Экспорт</string>
     <string name="exportPdf">Экспорт в PDF</string>
     <string name="exportHtml">Экспорт в HTML</string>
@@ -67,7 +65,7 @@
     <string name="alsoDeleteData">Также удалить мои пользовательские данные и настройки</string>
 
     <!-- Downloads -->
-    <string name="dwTitle">@string/downloads</string>
+    <string name="downloads">Загрузки</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Вставьте ссылку&#8230;</string>
 
@@ -77,7 +75,7 @@
     <string name="vwPrivate">Этот аккаунт является частным!</string>
 
     <!-- Favourites -->
-    <string name="fvTitle">@string/favourites</string>
+    <string name="favourites">Избранное</string>
 
     <!-- Settings -->
     <string name="stDlPath">Основная папка загрузки</string>

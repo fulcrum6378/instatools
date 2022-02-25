@@ -127,7 +127,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded() {
+    override fun onLoaded(asGuest: Boolean) {
         b.refresher.isRefreshing = false
         if (b.root.contains(b.loading)) {
             b.loading.animation?.cancel()
@@ -135,7 +135,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         }
         b.error.vis(false)
 
-        c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
+        if (!asGuest) c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
         if (c.m.dmThread == null) {
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
                 b.rv.adapter = ListBox(c, this)

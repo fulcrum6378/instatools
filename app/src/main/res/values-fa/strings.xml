@@ -11,7 +11,6 @@
     <string name="guest">مهمان</string>
     <string name="navOpen">باز کردن</string>
     <string name="navClose">بستن</string>
-    <string name="downloads">دانلودها</string>
     <string name="settings">تنظیمات</string>
     <string name="search">جستجو</string>
     <string name="switchAccount">تعویض اکانت</string>
@@ -24,7 +23,6 @@
     <string name="no">نه</string>
     <string name="yes">آره</string>
     <string name="unsave">Unsave</string>
-    <string name="favourites">مورد علاقه</string>
     <string name="export">استخراج</string>
     <string name="exportPdf">استخراج در پی دی اف</string>
     <string name="exportHtml">استخراج در اچ تی ام ال</string>
@@ -69,7 +67,7 @@
 
 
     <!-- Downloads -->
-    <string name="dwTitle">@string/downloads</string>
+    <string name="downloads">دانلودها</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
 
@@ -79,7 +77,7 @@
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
 
     <!-- Favourites -->
-    <string name="fvTitle">@string/favourites</string>
+    <string name="favourites">مورد علاقه</string>
 
     <!-- Settings -->
     <string name="stDlPath">پوشه اصلی دانلود</string>

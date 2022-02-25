@@ -89,7 +89,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
-        MobileAds.initialize(c) { loadInterstitial() }
+        MobileAds.initialize(c) { }
 
         // Paging
         m.currentPage.value =
@@ -174,6 +174,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.extras?.getInt(EXTRA_TURN_TO_PAGE)?.let { turnToPage(it) }
+        loadInterstitial()
     }
 
     override fun onResume() {
@@ -181,7 +182,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         if (Settings.recreateMain) {
             Settings.recreateMain = false
             recreate(); return; }
-        interstitialAd?.show(this)
+        loadInterstitial()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -306,14 +307,15 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
 
     private fun loadInterstitial() {
         interstitialAd = null
-        InterstitialAd.load( // "MobileAds.initialize" takes no time.
+        InterstitialAd.load(
             c, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/1033173712"
-            else "ca-app-pub-9457309151954418/5399016395",// doesn't work in debug mode
+            else "ca-app-pub-9457309151954418/5399016395",
             AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {}
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad.apply {
                         fullScreenContentCallback = InterstitialCallback()
+                        show(this@Main)
                     }
                 }
             })

@@ -5,7 +5,6 @@
     <string name="guest">Misafir</string>
     <string name="navOpen">Açık</string>
     <string name="navClose">Kapat</string>
-    <string name="downloads">İndirilenler</string>
     <string name="settings">Ayarlar</string>
     <string name="search">Aramak</string>
     <string name="switchAccount">Hesap değiştir</string>
@@ -18,7 +17,6 @@
     <string name="no">Hayır</string>
     <string name="yes">Evet</string>
     <string name="unsave">Kaydetmeyi iptal et</string>
-    <string name="favourites">Favoriler</string>
     <string name="export">İhracat</string>
     <string name="exportPdf">PDF\'ye aktar</string>
     <string name="exportHtml">HTML\'ye aktar</string>
@@ -62,7 +60,7 @@
     <string name="alsoDeleteData">Ayrıca kullanıcı verilerimi ve ayarlarımı sil</string>
 
     <!-- Downloads -->
-    <string name="dwTitle">@string/downloads</string>
+    <string name="downloads">İndirilenler</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Bağlantı yapıştır&#8230;</string>
 
@@ -72,7 +70,7 @@
     <string name="vwPrivate">Bu hesap gizli!</string>
 
     <!-- Favourites -->
-    <string name="fvTitle">@string/favourites</string>
+    <string name="favourites">Favoriler</string>
 
     <!-- Settings -->
     <string name="stDlPath">Ana indirme klasörü</string>
