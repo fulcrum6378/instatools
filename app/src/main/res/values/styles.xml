@@ -119,6 +119,18 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="emptyList" parent="parentConstraint">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">15dp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textSize">@dimen/emptyListFont</item>
+        <item name="layout_constraintWidth_percent">0.75</item>
+    </style>
+
 
     <!-- Viewer -->
     <style name="vwFlwCl">

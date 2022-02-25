@@ -14,7 +14,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -82,6 +81,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         if (Main.guest) {
             guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }
 
+        essentials()
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback c.m.dmThread != null
         }
@@ -97,12 +97,6 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
                 c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
             ).also { it.start() }
         }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateShadow()
-                updateJumper()
-            }
-        })
 
         //b.refresher.isRefreshing = true
         if (c.m.dmThreads != null) onLoaded(c.m.dmThreads.isNullOrEmpty())

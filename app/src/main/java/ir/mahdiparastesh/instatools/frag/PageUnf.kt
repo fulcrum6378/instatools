@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
@@ -70,17 +69,12 @@ class PageUnf(c: Main) : BasePage(c) {
         if (Main.guest) {
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
+        essentials()
         b.refresher.setOnRefreshListener {
             if (thread?.active == true) return@setOnRefreshListener
             b.rv.adapter = null
             thread = Inquiry().also { it.start() }
         }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateShadow()
-                updateJumper()
-            }
-        })
 
         //b.refresher.isRefreshing = true
         if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())

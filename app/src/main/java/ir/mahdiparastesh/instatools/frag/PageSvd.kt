@@ -9,7 +9,6 @@ import android.view.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +24,7 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageSvd(c: Main) : BasePage(c) {
@@ -57,6 +57,7 @@ class PageSvd(c: Main) : BasePage(c) {
                         c.m.saved!!.edges.removeAt(x)
                         b.rv.adapter?.notifyItemRemoved(x)
                         b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
+                        if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
                     }
             }
         }
@@ -75,6 +76,7 @@ class PageSvd(c: Main) : BasePage(c) {
         if (Main.guest) {
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
 
+        essentials()
         b.rv.layoutManager = GridLayoutManager(c, 3)
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
@@ -83,6 +85,7 @@ class PageSvd(c: Main) : BasePage(c) {
             if (thread?.active == true) return@setOnRefreshListener
             b.rv.adapter = null
             c.m.saved = null
+            b.empty.vis(false)
             tracker = null
             thread = FetchSome().also { it.start() }
         }
@@ -91,12 +94,6 @@ class PageSvd(c: Main) : BasePage(c) {
                 thread?.active != true && c.m.saved?.page_info?.has_next_page != false
             ) thread = FetchSome().also { it.start() }
         }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateShadow()
-                updateJumper()
-            }
-        })
 
         //b.refresher.isRefreshing = true
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
@@ -205,8 +202,8 @@ class PageSvd(c: Main) : BasePage(c) {
 
     inner class FetchSome : BaseThread() {
         override fun run() {
-            super.run()
             if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
+            super.run()
             if (c.m.saved == null) Api<Profile>(
                 c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
             ) { profile ->
@@ -251,6 +248,7 @@ class PageSvd(c: Main) : BasePage(c) {
             val svd = list.getOrNull(0)
             if (svd == null) {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
+                interrupt()
                 return
             }
             c.m.saved?.edges?.find { it.node.id == svd }?.node?.let { post ->

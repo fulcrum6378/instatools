@@ -63,6 +63,9 @@
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="toExit">Double tap to exit&#8230;</string>
+    <string name="unfEmpty">You have no unfollowers!</string>
+    <string name="svdEmpty">You have no saved posts!</string>
+    <string name="boxEmpty">You have no messages!</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>

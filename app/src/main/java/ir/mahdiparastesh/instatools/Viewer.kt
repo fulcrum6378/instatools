@@ -382,6 +382,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             val svd = list.getOrNull(0)
             if (svd == null) {
                 handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
+                interrupt()
                 return
             }
             m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->

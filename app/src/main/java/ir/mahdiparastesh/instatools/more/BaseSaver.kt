@@ -15,7 +15,7 @@ abstract class BaseSaver(selection: Selection<String>) : BaseThread() {
 
     abstract fun handle()
 
-    fun ended() {
+    open fun ended() {
         list.removeAt(0)
         CoroutineScope(Dispatchers.IO).launch { handle() }
     }

@@ -33,14 +33,16 @@ class Model : ViewModel() {
 
 
     fun accountSwitched() {
+        loginLoaded = false
         unfollowers.value = null
         saved = null
         dmThreads = null
         dmThread = null
-        queueds = null
-        loginLoaded = false
         currentPage.value = 0
+        queueds = null
         vwUser = null
+        fav = null
+        fwb.value = null
     }
 
     @Suppress("UNCHECKED_CAST")

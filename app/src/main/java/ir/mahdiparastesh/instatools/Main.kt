@@ -196,16 +196,15 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         }
         R.id.mnSettings -> goTo(Settings::class)
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
-            AlertDialog.Builder(this)
-                .apply {
-                    setTitle(R.string.backgroundTasks)
-                    setMessage(R.string.terminateBgTasks)
-                    setNegativeButton(R.string.no, null)
-                    setPositiveButton(R.string.yes) { _, _ ->
-                        ForegroundService.terminateTasks(c)
-                        switchAcc()
-                    }
-                }.show().stylise(this)
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.backgroundTasks)
+                setMessage(R.string.terminateBgTasks)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    ForegroundService.terminateTasks(c)
+                    switchAcc()
+                }
+            }.show().stylise(this)
             true
         } else {
             switchAcc(); true; }

@@ -21,6 +21,7 @@
     <dimen name="svdSelectedPad">50dp</dimen>
     <dimen name="guestIcon">64dp</dimen>
     <dimen name="guestFont">16sp</dimen>
+    <dimen name="emptyListFont">@dimen/guestFont</dimen>
     <dimen name="dmCorner">20dp</dimen>
     <dimen name="dmPadV">13dp</dimen>
     <dimen name="dmPadH">17dp</dimen>

@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.more
 import android.os.Handler
 import android.view.LayoutInflater
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
@@ -27,6 +28,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
 
     private fun refresher() = root.findViewById<SwipeRefreshLayout>(R.id.refresher)
     private fun rv() = root.findViewById<RecyclerView>(R.id.rv)
+    private fun empty() = root.findViewById<TextView>(R.id.empty)
     private fun error() = root.findViewById<ImageView>(R.id.error)
     private fun loading() = root.findViewById<LottieAnimationView>(R.id.loading)
 
@@ -38,6 +40,16 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
         refresher().isEnabled = false
     }
 
+    protected fun essentials() {
+        empty().typeface = c.fontRegular
+        rv().addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateShadow()
+                updateJumper()
+            }
+        })
+    }
+
     open fun onLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
         refresher().isRefreshing = false
         if (loading() != null && root.contains(loading())) {
@@ -45,6 +57,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
             root.removeView(loading())
         }
         error().vis(false)
+        empty().vis(isEmpty)
     }
 
     open fun onFailed(message: String) {
@@ -59,6 +72,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
             root.removeView(loading())
         }
         if (rv().adapter == null) error().vis()
+        empty().vis(false)
     }
 
     companion object {
