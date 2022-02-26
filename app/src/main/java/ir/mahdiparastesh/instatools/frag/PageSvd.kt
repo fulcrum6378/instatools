@@ -37,11 +37,10 @@ class PageSvd(c: Main) : BasePage(c) {
             when (msg.what) {
                 HANDLE_FETCHED -> {
                     onLoaded(c.m.saved?.edges.isNullOrEmpty())
-                    if (c.m.saved != null && !b.rv.canScrollVertically(1))
-                        thread = FetchSome().also { it.start() }
+                    if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
+                    ) thread = FetchSome().also { it.start() }
                 }
                 HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
-                HANDLE_INIT_QUEUER -> Downloads.initService(c)
                 Api.HANDLE_ERROR -> onFailed(
                     c.getString(
                         R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
@@ -59,6 +58,7 @@ class PageSvd(c: Main) : BasePage(c) {
                         b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
                         if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
                     }
+                HANDLE_INIT_QUEUER -> Downloads.initService(c)
             }
         }
     }
@@ -205,7 +205,8 @@ class PageSvd(c: Main) : BasePage(c) {
             if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
             super.run()
             if (c.m.saved == null) Api<Profile>(
-                c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class, handler
+                c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class,
+                handler, onError = { interrupt() }
             ) { profile ->
                 val edgeList = profile.graphql?.user?.edge_saved_media
                 if (edgeList == null) {
@@ -217,7 +218,7 @@ class PageSvd(c: Main) : BasePage(c) {
                     c.m.acc!!.id,
                     c.m.saved!!.edges.size,
                     c.m.saved?.page_info?.end_cursor ?: ""
-                ), Profile.GraphQlResponse::class, handler
+                ), Profile.GraphQlResponse::class, handler, onError = { interrupt() }
             ) { res ->
                 val edgeList = res.data.user?.edge_saved_media
                 if (edgeList == null) {

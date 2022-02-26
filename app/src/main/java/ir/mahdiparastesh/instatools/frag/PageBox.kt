@@ -26,7 +26,10 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.more.BaseThread
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -37,7 +40,7 @@ import kotlinx.coroutines.withContext
 
 class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
-    private var boxThread: FetchInbox? = null
+    private var boxThread: FetchSomeThreads? = null
     var thdThread: FetchSomeDm? = null
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
@@ -45,9 +48,11 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         @Suppress("UNCHECKED_CAST")
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                HANDLE_FETCHED -> onLoaded(c.m.dmThreads.isNullOrEmpty())
-                HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
-                HANDLE_FETCHED_SOME -> if (c.m.dmThread != null) {
+                HANDLE_FETCHED -> if (c.m.dmThread == null) {
+                    onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
+                    if (c.m.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
+                    ) boxThread = FetchSomeThreads().also { it.start() }
+                } else {
                     val dmThd = msg.obj as Dm.DmThread
                     val bef = c.m.dmThread!!.items.size
                     c.m.dmThread!!.items.addAll(dmThd.items)
@@ -59,6 +64,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
                         it.notifyItemRangeChanged(dif, c.m.dmThread!!.items.size)
                     }
                 }
+                HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
                 Api.HANDLE_ERROR -> onFailed(
                     c.getString(
                         R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
@@ -69,11 +75,6 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     }
     private var exportable: Exportable? = null
     private val exportLauncher = c.launcher(this)
-
-    companion object {
-        const val HANDLE_FETCHED_SOME = 44
-        const val DELAY = 800L
-    }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)
@@ -88,26 +89,32 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         b.refresher.setOnRefreshListener {
             if (boxThread?.active == true) return@setOnRefreshListener
             b.rv.adapter = null
-            boxThread = FetchInbox().also { it.start() }
+            c.m.dmInbox = null
+            boxThread = FetchSomeThreads().also { it.start() }
         }
         b.rv.viewTreeObserver.addOnScrollChangedListener {
-            if (c.m.dmThread != null && thdThread?.active != true &&
-                c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
-            ) thdThread = FetchSomeDm(
-                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
-            ).also { it.start() }
+            if (c.m.dmThread == null) {
+                if (!b.rv.canScrollVertically(1) &&
+                    boxThread?.active != true && c.m.dmInbox?.has_older != false
+                ) boxThread = FetchSomeThreads().also { it.start() }
+            } else {
+                if (thdThread?.active != true &&
+                    c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
+                ) thdThread = FetchSomeDm(
+                    c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
+                ).also { it.start() }
+            }
         }
 
         //b.refresher.isRefreshing = true
-        if (c.m.dmThreads != null) onLoaded(c.m.dmThreads.isNullOrEmpty())
-        else if (boxThread?.active != true) boxThread = FetchInbox().also { it.start() }
+        if (c.m.dmInbox != null) onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
+        else if (boxThread?.active != true) boxThread = FetchSomeThreads().also { it.start() }
         return b.root
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        if (!asGuest) c.bnvBadge(2, c.m.dmThreads?.size ?: 0)
         if (c.m.dmThread == null) {
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
                 b.rv.adapter = ListBox(c, this)
@@ -170,34 +177,27 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     override fun goBack(): Boolean {
         if (c.m.dmThread != null) {
             c.m.dmThread = null
-            onLoaded(c.m.dmThreads.isNullOrEmpty())
+            onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
             return true
         }
         return false
     }
 
-    inner class FetchInbox : BaseThread() {
-        private var nextCursor: String? = null
-
+    inner class FetchSomeThreads : BaseThread() {
         override fun run() {
             super.run()
-            c.m.dmThreads = arrayListOf()
-            c.bnvBadge(2, null)
-            fetch()
-        }
-
-        private fun fetch() {
             Api<InboxPage>(
-                c, Api.Type.INBOX.url.format(nextCursor ?: ""), InboxPage::class, handler
+                c, Api.Type.INBOX.url.format(c.m.dmInbox?.oldest_cursor ?: ""),
+                InboxPage::class, handler, onError = { interrupt() }
             ) { page ->
-                c.m.dmThreads?.addAll(page.inbox.threads)
-                c.m.dmThreads?.sortByDescending { it.last_activity_at }
-                nextCursor = page.inbox.oldest_cursor
-                if (page.inbox.has_older) Delay(DELAY) { fetch() }
+                if (c.m.dmInbox == null) c.m.dmInbox = page.inbox
                 else {
-                    handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                    interrupt()
+                    c.m.dmInbox?.threads?.addAll(page.inbox.threads)
+                    c.m.dmInbox?.threads?.sortByDescending { it.last_activity_at }
+                    c.m.dmInbox?.oldest_cursor = page.inbox.oldest_cursor
                 }
+                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                interrupt()
             }
         }
     }
@@ -209,10 +209,11 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         override fun run() {
             super.run()
             Api<Rest.InboxThread>(
-                c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class, handler
+                c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class,
+                handler, onError = { interrupt() }
             ) { inbox ->
                 if (inbox.status == "ok")
-                    handler?.obtainMessage(HANDLE_FETCHED_SOME, inbox.thread)?.sendToTarget()
+                    handler?.obtainMessage(HANDLE_FETCHED, inbox.thread)?.sendToTarget()
                 interrupt()
             }
         }

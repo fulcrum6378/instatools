@@ -15,7 +15,7 @@ class Model : ViewModel() {
     // Main
     var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
     var saved: Profile.EdgeList? = null
-    var dmThreads: ArrayList<Dm.DmThread>? = null
+    var dmInbox: Dm.Inbox? = null
     var dmThread: Dm.DmThread? = null
     val currentPage = MutableLiveData(0)
 
@@ -36,7 +36,7 @@ class Model : ViewModel() {
         loginLoaded = false
         unfollowers.value = null
         saved = null
-        dmThreads = null
+        dmInbox = null
         dmThread = null
         currentPage.value = 0
         queueds = null

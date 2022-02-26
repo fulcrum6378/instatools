@@ -358,6 +358,8 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     fun bnvBadge(i: Int, num: Int?) = b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
         isVisible = num != null
         number = num ?: 0
+        backgroundColor = ca[i]
+        badgeTextColor = if (!night()) bg[i] else color(R.color.defBG)
     }
 
     private var isSelective = false

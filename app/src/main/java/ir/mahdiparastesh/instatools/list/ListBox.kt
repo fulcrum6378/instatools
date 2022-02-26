@@ -25,8 +25,8 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.dmThreads == null) return
-        var thd = c.m.dmThreads!![i]
+        if (c.m.dmInbox?.threads == null) return
+        var thd = c.m.dmInbox!!.threads[i]
         if (!thd.is_group) {
             Glide.with(c.c).load(thd.users[0].profile_pic_url).into(h.b.photo)
             h.b.name.text = thd.users[0].visName()
@@ -37,15 +37,15 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
 
         h.b.last.text = c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at))
         h.b.root.setOnClickListener {
-            c.m.dmThread = c.m.dmThreads?.get(h.layoutPosition)
-            f.onLoaded(c.m.dmThreads.isNullOrEmpty())
+            c.m.dmThread = c.m.dmInbox?.threads?.get(h.layoutPosition)
+            f.onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
             if (c.m.dmThread == null || !c.m.dmThread!!.has_older) return@setOnClickListener
             f.thdThread = PageBox.FetchSomeDm(
                 c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, f.handler
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {
-            thd = c.m.dmThreads?.get(h.layoutPosition) ?: return@setOnClickListener
+            thd = c.m.dmInbox?.threads?.get(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.box_more, Act().apply {
                 this[R.id.bmPdf] = {
                     thd.users.getOrNull(0)
@@ -62,7 +62,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.dmThreads?.size ?: 0
+    override fun getItemCount() = c.m.dmInbox?.threads?.size ?: 0
 
     override fun onViewAttachedToWindow(h: ViewHolder) {
         super.onViewAttachedToWindow(h)

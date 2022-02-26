@@ -126,7 +126,8 @@ class PageUnf(c: Main) : BasePage(c) {
             if (!active) return
             Api<Rest.Follow>(
                 c, (if (theFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
-                    .format(c.m.acc!!.id, next_max_id), Rest.Follow::class, handler
+                    .format(c.m.acc!!.id, next_max_id), Rest.Follow::class,
+                handler, onError = { interrupt() }
             ) { flw ->
                 Thread {
                     flw.users.forEach { u ->

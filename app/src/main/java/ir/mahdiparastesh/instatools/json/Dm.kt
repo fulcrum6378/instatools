@@ -35,11 +35,11 @@ class Dm(
 ) {
     class Inbox(
         //val blended_inbox_enabled: Boolean,
-        val has_older: Boolean,
+        var has_older: Boolean,
         //val next_cursor: ContinuumCursor?,
-        val oldest_cursor: String?,
+        var oldest_cursor: String?,
         //val prev_cursor: ContinuumCursor?,
-        val threads: Array<DmThread>,
+        var threads: ArrayList<DmThread>,
         //val unseen_count: Double,
         //val unseen_count_ts: Double,
     )
