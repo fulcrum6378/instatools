@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -9,8 +10,10 @@ import android.os.Message
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -131,15 +134,26 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             reset()
             if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
-        b.nsv.viewTreeObserver.addOnScrollChangedListener {
-            b.tbShadow.vish(b.nsv.scrollY > 0)
-            if (!b.nsv.canScrollVertically(1) && thread?.active != true &&
-                m.vwUser?.hasMore() != false
-            ) thread = FetchSome().also { it.start() }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateJumper()
+                b.tbShadow.vish(b.nsv.scrollY > 0)
+                if (!b.nsv.canScrollVertically(1) && thread?.active != true &&
+                    m.vwUser?.hasMore() != false
+                ) thread = FetchSome().also { it.start() }
+            }
+        })
+        b.jumper.setOnClickListener { b.rv.smoothScrollToPosition(0) }
+        b.jumper.translationY = UiTools.jumperTrans(dm)
+        shouldShowJumper.observe(this) {
+            anJumper?.cancel()
+            anJumper = UiTools.anJumper(this, b.jumper, it)
         }
 
         // Profile
-        b.proPic.layoutParams = b.proPic.layoutParams.apply { height = dm.widthPixels }
+        b.proPic.layoutParams = b.proPic.layoutParams.apply {
+            height = dm.widthPixels
+        }
         b.proClick.setOnClickListener { v ->
             if (m.vwUser?.photo() == null) return@setOnClickListener
             MaterialMenu(this@Viewer, v, R.menu.viewer_pic_more, Act().apply {
@@ -158,8 +172,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         arrayOf(b.followersNum, b.followingNum).forEach { it.typeface = fontBold }
         arrayOf(b.followersText, b.followingText).forEach { it.typeface = fontLight }
-        b.followers.setOnClickListener { flwClick(true, it) }
-        b.following.setOnClickListener { flwClick(false, it) }
+        if (BuildConfig.DEBUG) {
+            b.followers.setOnClickListener { flwClick(true, it) }
+            b.following.setOnClickListener { flwClick(false, it) }
+        }
 
         load()
     }
@@ -275,6 +291,13 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         m.vwUser = null
         tracker = null
         (b.rv.adapter as ListVwr?)?.let { if (it.expandable.zoomed) it.expandable.collapse() }
+    }
+
+    private var shouldShowJumper = MutableLiveData(false)
+    private var anJumper: ObjectAnimator? = null
+    private fun updateJumper() {
+        (b.rv.computeVerticalScrollOffset() > dm.heightPixels)
+            .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 
     fun selective(bb: Boolean) {

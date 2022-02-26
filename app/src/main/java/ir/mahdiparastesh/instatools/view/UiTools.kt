@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.view
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -10,8 +11,10 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -148,5 +151,16 @@ class UiTools {
         fun String.accFromUrl(host: String): String? =
             if (startsWith(host)) substringAfter(host).substringBefore("/")
                 .substringBefore("?") else null
+
+        fun jumperTrans(dm: DisplayMetrics) = dm.heightPixels / 2f
+
+        fun anJumper(c: BaseActivity, jumper: View, bb: Boolean): ObjectAnimator =
+            ObjectAnimator.ofFloat(
+                jumper, View.TRANSLATION_Y, if (bb) 0f else jumperTrans(c.dm)
+            ).apply {
+                duration = c.resources.getInteger(R.integer.transJumper).toLong()
+                interpolator = OvershootInterpolator()
+                start()
+            }
     }
 }

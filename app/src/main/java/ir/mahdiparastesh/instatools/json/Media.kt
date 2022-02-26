@@ -74,10 +74,10 @@ class Media(
     image_versions2, original_height, original_width, video_versions
 ) {
     class MediaWrapperApi(
-        val auto_load_more_enabled: Boolean,
+        //val auto_load_more_enabled: Boolean,
         val items: Array<Media>?,
-        val num_results: Float,
-        val more_available: Boolean
+        //val num_results: Float,
+        //val more_available: Boolean
     )
 
     class Thumbnails(
@@ -133,12 +133,12 @@ class Media(
         val id: String
     ) : Candidate(width, height, url)
 
-    class Caption : HashMap<String, Any?>()
+    //class Caption : HashMap<String, Any?>()
 
-    class MusicMetadata(
+    /*class MusicMetadata(
         val audio_type: Any?,
         val music_canonical_id: String,
         val music_info: Any?,
         val original_sound_info: Any?,
-    )
+    )*/
 }

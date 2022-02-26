@@ -64,20 +64,25 @@
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
-
+    <string name="unfEmpty">شما هیچ آنفالوری ندارید!</string>
+    <string name="svdEmpty">شما هیچ پستی را ذخیره نکرده اید!</string>
+    <string name="boxEmpty">شما هیچ پیامی ندارید!</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
 
+    <!-- Favourites -->
+    <string name="favourites">مورد علاقه</string>
+
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
     <string name="vwShare">نمایش پروفایل</string>
+    <string name="vwFollowers">دنبال کننده</string>
+    <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
-
-    <!-- Favourites -->
-    <string name="favourites">مورد علاقه</string>
+    <string name="followAll">فالو کردن همه</string>
 
     <!-- Settings -->
     <string name="stDlPath">پوشه اصلی دانلود</string>

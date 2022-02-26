@@ -17,6 +17,10 @@
             android:padding="0dp" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ImageView
+        android:id="@+id/jumper"
+        style="@style/jumper" />
+
     <TextView
         android:id="@+id/empty"
         style="@style/emptyList"

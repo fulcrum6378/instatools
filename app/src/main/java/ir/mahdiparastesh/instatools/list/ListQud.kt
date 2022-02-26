@@ -40,7 +40,13 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         h.b.date.text = UiTools.date(qud.addedAt)
 
         // Status
-        h.b.status.setAnimation(if (!qud.failed) R.raw.download else R.raw.failed)
+        h.b.status.setAnimation(
+            when {
+                qud.failed -> R.raw.failed
+                i == 0 -> R.raw.download
+                else -> R.raw.pending
+            }
+        )
         val pad = if (!qud.failed)
             c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
         h.b.status.setPadding(pad, pad, pad, pad)

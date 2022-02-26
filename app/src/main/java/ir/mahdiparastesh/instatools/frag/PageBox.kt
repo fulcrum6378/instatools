@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -32,7 +33,6 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -92,19 +92,21 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
             c.m.dmInbox = null
             boxThread = FetchSomeThreads().also { it.start() }
         }
-        b.rv.viewTreeObserver.addOnScrollChangedListener {
-            if (c.m.dmThread == null) {
-                if (!b.rv.canScrollVertically(1) &&
-                    boxThread?.active != true && c.m.dmInbox?.has_older != false
-                ) boxThread = FetchSomeThreads().also { it.start() }
-            } else {
-                if (thdThread?.active != true &&
-                    c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
-                ) thdThread = FetchSomeDm(
-                    c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
-                ).also { it.start() }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (c.m.dmThread == null) {
+                    if (!b.rv.canScrollVertically(1) &&
+                        boxThread?.active != true && c.m.dmInbox?.has_older != false
+                    ) boxThread = FetchSomeThreads().also { it.start() }
+                } else {
+                    if (thdThread?.active != true &&
+                        c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
+                    ) thdThread = FetchSomeDm(
+                        c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
+                    ).also { it.start() }
+                }
             }
-        }
+        })
 
         //b.refresher.isRefreshing = true
         if (c.m.dmInbox != null) onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
@@ -130,11 +132,8 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         else -> false
     }
 
-    override fun updateShadow() {
-        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
-    }
-
     override fun updateJumper() {
+        if (c.m.dmThread == null) super.updateJumper()
     }
 
     fun expOptions(

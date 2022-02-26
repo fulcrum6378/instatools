@@ -9,6 +9,7 @@ import android.view.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.*
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.google.android.material.snackbar.Snackbar
@@ -25,7 +26,6 @@ import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
@@ -89,11 +89,13 @@ class PageSvd(c: Main) : BasePage(c) {
             tracker = null
             thread = FetchSome().also { it.start() }
         }
-        b.rv.viewTreeObserver.addOnScrollChangedListener {
-            if (!b.rv.canScrollVertically(1) &&
-                thread?.active != true && c.m.saved?.page_info?.has_next_page != false
-            ) thread = FetchSome().also { it.start() }
-        }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (!b.rv.canScrollVertically(1) &&
+                    thread?.active != true && c.m.saved?.page_info?.has_next_page != false
+                ) thread = FetchSome().also { it.start() }
+            }
+        })
 
         //b.refresher.isRefreshing = true
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
@@ -149,13 +151,6 @@ class PageSvd(c: Main) : BasePage(c) {
             true
         }
         else -> false
-    }
-
-    override fun updateShadow() {
-        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
-    }
-
-    override fun updateJumper() {
     }
 
     override fun goBack(): Boolean {

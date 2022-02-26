@@ -33,7 +33,6 @@
     <string name="addToFav">Favorilere ekle</string>
     <string name="removeFav">Favorilerinden kaldır</string>
     <string name="unfStat">%1$d takipçinizden %2$d\'ü sizi geri takip etmiyor!</string>
-    <string name="toExit">Çıkmak için iki kez dokunun&#8230;</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -58,19 +57,26 @@
     <string name="downloadOnly">Yalnızca İndir</string>
     <string name="unsaveDownload">Kaydet ve İndir</string>
     <string name="alsoDeleteData">Ayrıca kullanıcı verilerimi ve ayarlarımı sil</string>
+    <string name="toExit">Çıkmak için iki kez dokunun&#8230;</string>
+    <string name="unfEmpty">Takipçiniz yok!</string>
+    <string name="svdEmpty">Kaydedilmiş yayınınız yok!</string>
+    <string name="boxEmpty">Mesajınız yok!</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Bağlantı yapıştır&#8230;</string>
 
+    <!-- Favourites -->
+    <string name="favourites">Favoriler</string>
+
     <!-- Viewer -->
     <string name="vwTitle">Profil Görüntüleyici</string>
     <string name="vwShare">Profili Görüntüle</string>
+    <string name="vwFollowers">Takipçi</string>
+    <string name="vwFollowing">Takip Edilen</string>
     <string name="vwPrivate">Bu hesap gizli!</string>
-
-    <!-- Favourites -->
-    <string name="favourites">Favoriler</string>
+    <string name="followAll">Hepsini takip et</string>
 
     <!-- Settings -->
     <string name="stDlPath">Ana indirme klasörü</string>

@@ -10,6 +10,9 @@
     <dimen name="userDescFont">13sp</dimen>
     <dimen name="moreAction">50dp</dimen>
     <dimen name="menuFont">17sp</dimen>
+    <dimen name="jumperSize">46dp</dimen>
+    <dimen name="jumperPad">10dp</dimen>
+    <dimen name="jumperBottom">35dp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>

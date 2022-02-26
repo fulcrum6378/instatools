@@ -58,19 +58,25 @@
     <string name="unsaveDownload">No guardar &amp; descargar</string>
     <string name="alsoDeleteData">Eliminar también mis datos de usuario y configuración</string>
     <string name="toExit">Toca dos veces para salir&#8230;</string>
+    <string name="unfEmpty">¡No tienes seguidores!</string>
+    <string name="svdEmpty">¡No tienes publicaciones guardadas!</string>
+    <string name="boxEmpty">¡No tienes mensajes!</string>
 
     <!-- Downloads -->
     <string name="downloads">Descargas</string>
     <string name="dwShare">Descargar</string>
     <string name="pasteLink">Pegar un enlace&#8230;</string>
 
+    <!-- Favourites -->
+    <string name="favourites">Favoritos</string>
+
     <!-- Viewer -->
     <string name="vwTitle">Visor de Perfil</string>
     <string name="vwShare">Ver perfil</string>
+    <string name="vwFollowers">Seguidores</string>
+    <string name="vwFollowing">Siguiendo</string>
     <string name="vwPrivate">¡Esta cuenta es privada!</string>
-
-    <!-- Favourites -->
-    <string name="favourites">Favoritos</string>
+    <string name="followAll">Seguir a todos</string>
 
     <!-- Settings -->
     <string name="stDlPath">Carpeta de descarga principal</string>

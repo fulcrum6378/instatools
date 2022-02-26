@@ -20,7 +20,6 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.runBlocking
 
 class PageUnf(c: Main) : BasePage(c) {
@@ -98,13 +97,6 @@ class PageUnf(c: Main) : BasePage(c) {
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
         else -> false
-    }
-
-    override fun updateShadow() {
-        c.b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
-    }
-
-    override fun updateJumper() {
     }
 
 

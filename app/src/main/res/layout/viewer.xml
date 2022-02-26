@@ -123,6 +123,10 @@
         android:id="@+id/tbShadow"
         style="@style/tbShadow" />
 
+    <ImageView
+        android:id="@+id/jumper"
+        style="@style/jumper" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/expanded"
         style="@style/expanded" />
