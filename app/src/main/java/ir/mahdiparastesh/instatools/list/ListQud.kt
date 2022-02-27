@@ -56,7 +56,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         h.b.root.setOnClickListener {
             MaterialMenu(c, it, R.menu.qud_more, Act().apply {
                 this[R.id.qmRemove] = {
-                    if (c.m.queueds != null && c.m.queueds!!.size > h.layoutPosition) {
+                    if (c.m.queueds != null && c.m.queueds!!.size > h.layoutPosition && h.layoutPosition != -1)
                         CoroutineScope(Dispatchers.IO).launch {
                             c.dao.deleteQueued(c.m.queueds!![h.layoutPosition])
                             withContext(Dispatchers.Main) {
@@ -67,7 +67,6 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                                 )
                             }
                         }
-                    }
                 }
                 this[R.id.qmOpen] = {
                     if (c.m.queueds != null && c.m.queueds!!.size > h.layoutPosition) c.startActivity(

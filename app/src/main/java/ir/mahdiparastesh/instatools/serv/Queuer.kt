@@ -277,12 +277,6 @@ class Queuer : ForegroundService() {
 
     private fun save(q: Queued, ba: ByteArray) {
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
-        // Sometimes the app's access to the Stem gets weak in a way that...
-        // when you invoke "listFiles()" on it, it returns an empty list,
-        // although it still can write into the Stem and create sub-folders in it.
-        // In that case it starts creating "fulcrum1378 (1)", "fulcrum1378 (2)", etc...
-        // It may be annoying but at least throws no exceptions :)
-        // TODO: IT HAPPENS AFTER REBOOT!!!
         var branch: DocumentFile?
         val shouldBranch = bPreference(Settings.spBranching, true) != false
         if (shouldBranch) {

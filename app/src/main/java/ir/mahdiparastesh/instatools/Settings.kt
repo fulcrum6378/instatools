@@ -144,9 +144,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     override fun onActivityResult(result: ActivityResult) {
         if (result.data?.data == null) return
         val uri = result.data!!.data!!
-        contentResolver.takePersistableUriPermission(
-            uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
+        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         prf.edit().putString(spStorage, uri.toString()).commit()
         updateMainPath(uri.toString())
         if (giveLinkBack != null) {
