@@ -21,7 +21,10 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
@@ -76,12 +79,9 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
-        if (gsp.contains(Login.spAccount))
-            m.acc = Account.selected(this)
-        if (!gsp.contains(Login.spAccount) || m.acc == null) {
+        if (m.acc == null) {
             goTo(Login::class, true)
-            return
-        }
+            return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         sp = initSp(m.acc)
@@ -89,7 +89,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
-        MobileAds.initialize(c) { }
 
         // Paging
         m.currentPage.value =
@@ -100,15 +99,15 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         if (page2 == null) page2 = PageSvd(this)
         if (page3 == null) page3 = PageBox(this)
         loadPages()
+        m.currentPage.observe(this) {
+            pages()[it].updateShadow()
+            pages()[it].updateJumper()
+        }
         bg = resources.getIntArray(R.array.BG)
         ca = resources.getIntArray(R.array.CA)
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
-        m.currentPage.observe(this) {
-            pages()[it].updateShadow()
-            pages()[it].updateJumper()
-        }
         m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
 
         // Theming
@@ -306,6 +305,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     }
 
     private fun loadInterstitial() {
+        if (!isAdsSdkInitialized) return
         interstitialAd = null
         InterstitialAd.load(
             c, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/1033173712"

@@ -14,7 +14,7 @@ import androidx.core.graphics.red
 import androidx.recyclerview.selection.SelectionTracker
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
@@ -84,13 +84,6 @@ class Downloads : BaseActivity() {
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
         b.pasteLink.typeface = fontRegular
-
-        // Ads
-        MobileAds.initialize(c) {
-            adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/4315014912")
-            b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-            adBanner.loadAd(AdRequest.Builder().build())
-        }
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -107,6 +100,12 @@ class Downloads : BaseActivity() {
                 withContext(Dispatchers.Main) { initService(this@Downloads) }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
         }
+    }
+
+    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/4315014912")
+        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
+        adBanner.loadAd(AdRequest.Builder().build())
     }
 
     override fun onDestroy() {

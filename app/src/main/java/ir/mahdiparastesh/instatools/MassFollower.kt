@@ -9,7 +9,7 @@ import android.os.Message
 import androidx.annotation.MainThread
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
@@ -61,13 +61,6 @@ class MassFollower : BaseActivity() {
                 else b.rv.adapter?.notifyDataSetChanged()
             }
         }
-
-        // Ads
-        MobileAds.initialize(c) {
-            adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/5087388141")
-            b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-            adBanner.loadAd(AdRequest.Builder().build())
-        }
     }
 
     override fun onResume() {
@@ -79,6 +72,12 @@ class MassFollower : BaseActivity() {
                 //if (!m.fwb.value.isNullOrEmpty()) initService(this@MassFollower)
             }
         }
+    }
+
+    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/5087388141")
+        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
+        adBanner.loadAd(AdRequest.Builder().build())
     }
 
     override fun onDestroy() {

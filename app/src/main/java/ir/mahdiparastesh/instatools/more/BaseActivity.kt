@@ -29,6 +29,9 @@ import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -38,7 +41,7 @@ import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
-abstract class BaseActivity : AppCompatActivity(), Persistent {
+abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener {
     protected lateinit var db: Database
     lateinit var dao: Database.DAO
     lateinit var dm: DisplayMetrics
@@ -53,6 +56,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null
+
+    companion object {
+        var isAdsSdkInitialized = false
+        var adsInitStatus: InitializationStatus? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         resolvedIntent = null
@@ -74,6 +82,10 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
         fontBold = font(getString(R.string.font_bold))
         fontRegular = font(getString(R.string.font_regular))
         fontLight = font(getString(R.string.font_light))
+
+        if (!isAdsSdkInitialized)
+            Delay(3000) { MobileAds.initialize(c, this) }
+        else if (adsInitStatus != null) onInitializationComplete(adsInitStatus!!)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -98,6 +110,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent {
             window.statusBarColor = this
             window.navigationBarColor = this
         }
+    }
+
+    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
     }
 
     var tbTitle: TextView? = null
