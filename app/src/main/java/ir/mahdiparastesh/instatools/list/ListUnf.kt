@@ -64,7 +64,6 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
 
     override fun getItemCount() = c.m.unfollowers.value?.size ?: 0
 
-    @SuppressLint("ApplySharedPref")
     private fun unfollow(unf: Friend) {
         Api<Rest>(
             c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, f.handler,

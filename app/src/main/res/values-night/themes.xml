@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/defCA</item>
         <item name="colorPrimaryDark">@color/defCA</item>
         <item name="colorAccent">@color/defCA</item>
-        <item name="backgroundColor">@color/defBG</item>
+        <item name="backgroundColor">?attr/colorPrimaryDark</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>

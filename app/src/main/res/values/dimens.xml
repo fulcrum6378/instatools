@@ -12,7 +12,7 @@
     <dimen name="menuFont">17sp</dimen>
     <dimen name="jumperSize">46dp</dimen>
     <dimen name="jumperPad">10dp</dimen>
-    <dimen name="jumperBottom">35dp</dimen>
+    <dimen name="jumperBottom">30dp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>

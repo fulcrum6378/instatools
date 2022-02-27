@@ -37,7 +37,7 @@ class Account(
         fun save(c: Context, accounts: List<Account>) {
             FileOutputStream(Secured(c)).write(
                 (if (BuildConfig.DEBUG) GsonBuilder().setPrettyPrinting().create() else Gson())
-                    .toJson(accounts).encodeToByteArray()
+                    .toJson(accounts.filter { it.cook != null || it.id == -1L }).encodeToByteArray()
             )
         }
     }

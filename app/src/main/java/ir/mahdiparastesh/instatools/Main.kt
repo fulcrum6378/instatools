@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -51,7 +52,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 // adb connect 192.168.1.20:
 
-@SuppressLint("ApplySharedPref")
 class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
@@ -84,7 +84,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
             return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        sp = initSp(m.acc)
         guest = m.acc!!.id == -1L
         if (m.acc!!.id > -1L)
             db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
@@ -109,6 +108,8 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
+
+        Log.println(Log.ASSERT, "AAA", "aa")
 
         // Theming
         if (night()) {
@@ -405,22 +406,14 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
             )
         }
 
-    private fun switchAcc() {
-        gsp.edit().remove(Login.spAccount).commit()
-        goTo(Login::class, true)
-    }
-
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
         if (bd) {
             Settings.deleteDb(m.acc!!.id.toString())
             Settings.deleteSp(this@Main)
         }
-        Account.save(
-            c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
-        gsp.edit().remove(Login.spAccount).commit()
-        m.acc = null
-        goTo(Login::class, true)
+        Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
+        switchAcc()
     }
 
     private var exiting = false

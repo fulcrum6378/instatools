@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -24,7 +23,6 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import java.io.File
 
-@SuppressLint("ApplySharedPref")
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
     override val menuRes: Int? = null

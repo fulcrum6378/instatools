@@ -68,8 +68,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
-        if (m.acc == null) m.acc =
-            Account.selected(this, guestIfNotExists = this !is Login) // needs "gsp"
+        if (this !is Login && m.acc == null)
+            m.acc = Account.selected(this, guestIfNotExists = this !is Main)
         sp = initSp(m.acc)
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
@@ -103,13 +103,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
-        if (this !is Main && night()) TypedValue().apply {
-            theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
-        }.data.apply {
-            window.decorView.setBackgroundColor(this)
-            window.statusBarColor = this
-            window.navigationBarColor = this
-        }
     }
 
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {

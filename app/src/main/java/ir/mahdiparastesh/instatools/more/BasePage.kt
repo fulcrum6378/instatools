@@ -53,7 +53,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
         })
         jumper().apply {
             setOnClickListener { rv().smoothScrollToPosition(0) }
-            translationY = UiTools.jumperTrans(c.dm)
+            translationY = UiTools.jumperTrans(c)
         }
         shouldShowJumper.observe(c) {
             anJumper?.cancel()
@@ -91,7 +91,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
         c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
     }
 
-    private var shouldShowJumper = MutableLiveData(false)
+    var shouldShowJumper = MutableLiveData(false)
     private var anJumper: ObjectAnimator? = null
     open fun updateJumper() {
         (rv().computeVerticalScrollOffset() > c.dm.heightPixels)

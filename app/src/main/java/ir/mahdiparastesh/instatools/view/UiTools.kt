@@ -11,7 +11,6 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
@@ -152,14 +151,15 @@ class UiTools {
             if (startsWith(host)) substringAfter(host).substringBefore("/")
                 .substringBefore("?") else null
 
-        fun jumperTrans(dm: DisplayMetrics) = dm.heightPixels / 2f
+        fun jumperTrans(c: BaseActivity) = (c.resources.getDimension(R.dimen.jumperSize) +
+                c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
 
         fun anJumper(c: BaseActivity, jumper: View, bb: Boolean): ObjectAnimator =
             ObjectAnimator.ofFloat(
-                jumper, View.TRANSLATION_Y, if (bb) 0f else jumperTrans(c.dm)
+                jumper, View.TRANSLATION_Y, if (bb) 0f else jumperTrans(c)
             ).apply {
-                duration = c.resources.getInteger(R.integer.transJumper).toLong()
-                interpolator = OvershootInterpolator()
+                duration = 500L
+                interpolator = OvershootInterpolator(1.75f)
                 start()
             }
     }

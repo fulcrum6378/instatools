@@ -144,7 +144,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
         })
         b.jumper.setOnClickListener { b.rv.smoothScrollToPosition(0) }
-        b.jumper.translationY = UiTools.jumperTrans(dm)
+        b.jumper.translationY = UiTools.jumperTrans(this)
         shouldShowJumper.observe(this) {
             anJumper?.cancel()
             anJumper = UiTools.anJumper(this, b.jumper, it)

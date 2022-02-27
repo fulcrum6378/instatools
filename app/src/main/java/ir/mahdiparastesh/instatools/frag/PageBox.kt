@@ -126,6 +126,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
                 b.rv.adapter = ListThd(c, this)
             else b.rv.adapter?.notifyDataSetChanged()
         }
+        updateJumper()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
@@ -134,6 +135,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
 
     override fun updateJumper() {
         if (c.m.dmThread == null) super.updateJumper()
+        else if (shouldShowJumper.value == true) shouldShowJumper.value = false
     }
 
     fun expOptions(

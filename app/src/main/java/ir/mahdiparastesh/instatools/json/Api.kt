@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.json
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
@@ -44,7 +43,6 @@ class Api<JSON>(
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
-    @SuppressLint("ApplySharedPref")
     @Suppress("UNCHECKED_CAST")
     override fun deliverResponse(response: String) {
         val data: JSON? = try {

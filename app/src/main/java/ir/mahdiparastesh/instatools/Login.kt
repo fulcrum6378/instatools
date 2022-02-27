@@ -23,7 +23,6 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import org.apache.commons.text.StringEscapeUtils
 
-@SuppressLint("ApplySharedPref")
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding
@@ -43,23 +42,18 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        m.accountSwitched()
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
         accounts = Account.load(c)
         if (accounts.find { it.id == -1L } == null)
             Account(-1L, "", "").apply { accounts.add(this) }
-        val selected = Account.selected(this, accounts, false)
-        for (i in (accounts.size - 1) downTo 0)
-            if (accounts[i].cook == null && accounts[i].id != -1L)
-                accounts.removeAt(i)
 
         // WebView
         b.web.settings.javaScriptEnabled = true
         b.web.webViewClient = myClient
 
-        if (selected == null) welcome() else selectAccount(selected)
+        if (m.acc == null) welcome() else selectAccount(m.acc!!)
     }
 
     private val logoDestBias = 0.15f

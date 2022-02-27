@@ -38,6 +38,13 @@ interface Persistent {
         // TODO: IMPROVE THIS
     }
 
+    fun switchAcc() {
+        gsp.edit().remove(Login.spAccount).commit()
+        m.acc = null
+        if (this is BaseActivity) goTo(Login::class, true)
+        m.accountSwitched()
+    }
+
     companion object {
         fun now() = Calendar.getInstance().timeInMillis
     }

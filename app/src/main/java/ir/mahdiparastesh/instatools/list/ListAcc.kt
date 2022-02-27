@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -20,7 +19,6 @@ import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
-@SuppressLint("ApplySharedPref")
 class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
     class ViewHolder(val b: ListAccBinding) : RecyclerView.ViewHolder(b.root)
 
