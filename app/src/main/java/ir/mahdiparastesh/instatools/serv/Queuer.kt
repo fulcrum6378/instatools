@@ -38,8 +38,7 @@ class Queuer : ForegroundService() {
     private var download: BaseThread? = null
 
     override val requiresHandling = false
-    override val com: ForegroundServiceCompanion
-        get() = Companion
+    override val com: ForegroundServiceCompanion get() = Companion
 
     companion object : ForegroundServiceCompanion(262, Queuer::class) {
         override val channel: String = "$pack.DOWNLOADING"

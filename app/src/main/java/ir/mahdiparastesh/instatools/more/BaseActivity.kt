@@ -52,11 +52,13 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val colorAc = MutableLiveData<Int?>(null)
 
     abstract val menuRes: Int?
-    abstract val com: Alive
+    abstract val com: ActivityCompanion
     override lateinit var c: Context
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null
+
+    abstract class ActivityCompanion : Alive()
 
     companion object {
         var isAdsSdkInitialized = false

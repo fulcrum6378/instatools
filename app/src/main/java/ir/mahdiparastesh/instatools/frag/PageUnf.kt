@@ -25,6 +25,7 @@ import kotlinx.coroutines.runBlocking
 class PageUnf(c: Main) : BasePage(c) {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
+
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
@@ -34,6 +35,7 @@ class PageUnf(c: Main) : BasePage(c) {
                 HANDLE_LOADED -> (msg.obj as List<Friend>).apply {
                     c.m.unfollowers.value = ArrayList(this)
                     c.m.unfollowers.value!!.sortBy { it.user }
+                    c.m.unfollowers.value!!.sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
                     if (isNullOrEmpty() && msg.arg1 == 1)
                         thread = Inquiry().also { it.start() }
                     else onLoaded(isNullOrEmpty())

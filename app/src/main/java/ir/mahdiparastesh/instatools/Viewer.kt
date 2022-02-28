@@ -25,9 +25,12 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListVwr
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
+import ir.mahdiparastesh.instatools.more.BaseSaver
+import ir.mahdiparastesh.instatools.more.BaseThread
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
@@ -48,9 +51,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     private var dbFav: Favourite? = null
 
     override val menuRes = R.menu.viewer_tlb
-    override val com: Alive get() = Viewer
+    override val com: ActivityCompanion get() = Companion
 
-    companion object : Alive() {
+    companion object : ActivityCompanion() {
         private const val EXTRA_USER = "EXTRA_USER"
         private const val EXTRA_ID = "EXTRA_ID"
 
@@ -271,7 +274,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     }
 
     private fun flwClick(isItFollowers: Boolean, v: View) {
-        if (m.vwUser?.access() != true || id == null) return
+        if (m.vwUser?.access() != true || id == null || Main.guest) return
         MaterialMenu(this, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
                 MassFollower.initService(

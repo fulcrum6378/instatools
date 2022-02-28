@@ -30,6 +30,9 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
+    var tracker: SelectionTracker<String>? = null
+    private var selectivity = false
+
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
@@ -62,8 +65,6 @@ class PageSvd(c: Main) : BasePage(c) {
             }
         }
     }
-    var tracker: SelectionTracker<String>? = null
-    private var selectivity = false
 
     companion object {
         const val HANDLE_UNSAVE_DONE = 10

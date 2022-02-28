@@ -37,6 +37,7 @@
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
     <string name="guestShortDesc">Kimlik doğrulama olmadan oturum açın</string>
+    <string name="needAuthentication">Devam etmek için giriş yapmalısınız&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">Takipten çıkanlar</string>
@@ -61,6 +62,7 @@
     <string name="unfEmpty">Takipçiniz yok!</string>
     <string name="svdEmpty">Kaydedilmiş yayınınız yok!</string>
     <string name="boxEmpty">Mesajınız yok!</string>
+    <string name="unfollowedAt">%s\'de takip edilmedi</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>

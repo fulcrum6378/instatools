@@ -39,7 +39,6 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -63,15 +62,15 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     private var page2: PageSvd? = null
     private var page3: PageBox? = null
     private var anTheme: ValueAnimator? = null
-    private lateinit var bg: IntArray
-    private lateinit var ca: IntArray
+    private val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
+    private val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
     private var interstitialAd: InterstitialAd? = null
 
     override val menuRes = R.menu.main_tlb
-    override val com: Alive get() = Main
+    override val com: ActivityCompanion get() = Companion
 
-    companion object : Alive() {
+    companion object : ActivityCompanion() {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
         val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
@@ -101,8 +100,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
             pages()[it].updateShadow()
             pages()[it].updateJumper()
         }
-        bg = resources.getIntArray(R.array.BG)
-        ca = resources.getIntArray(R.array.CA)
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
@@ -292,9 +289,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mtSearch -> {
-            true
-        }
+        R.id.mtSearch -> true
         else -> false
     }
 

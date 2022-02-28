@@ -20,7 +20,7 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
-import ir.mahdiparastesh.instatools.frag.PageBox.FetchSomeDm
+import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
@@ -40,8 +40,7 @@ class Exporter : ForegroundService() {
     private var media = hashMapOf<String, Downloadable>()
 
     override val requiresHandling = false
-    override val com: ForegroundServiceCompanion
-        get() = Companion
+    override val com: ForegroundServiceCompanion get() = Companion
 
     companion object : ForegroundServiceCompanion(103, Exporter::class) {
         override val channel: String = "$pack.EXPORTING"
@@ -94,7 +93,7 @@ class Exporter : ForegroundService() {
         exp!!.threadData?.items?.sortBy { it.timestamp }
         if (exp!!.threadData?.has_older == false) {
             fetchMedia(); return; }
-        FetchSomeDm(
+        FetchOfThread(
             this, exp!!.thread, exp!!.threadData?.items?.getOrNull(0)?.item_id ?: "", handler
         ).start()
     }

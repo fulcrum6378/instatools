@@ -15,7 +15,6 @@ import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
-import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Follower
@@ -33,7 +32,7 @@ class MassFollower : BaseActivity() {
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
 
     override val menuRes: Int? = null
-    override val com: Alive get() = MassFollower
+    override val com: ActivityCompanion get() = Companion
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,7 +115,7 @@ class MassFollower : BaseActivity() {
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
     }
 
-    companion object : Alive() {
+    companion object : ActivityCompanion() {
         const val HANDLE_INSERTED = 0
         const val HANDLE_DELETED = 1
 

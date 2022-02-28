@@ -43,6 +43,7 @@
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
     <string name="guestShortDesc">استفاده بدون اکانت</string>
+    <string name="needAuthentication">برای ادامه نیاز به لوگین دارید&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">آنفالورها</string>
@@ -67,6 +68,7 @@
     <string name="unfEmpty">شما هیچ آنفالوری ندارید!</string>
     <string name="svdEmpty">شما هیچ پستی را ذخیره نکرده اید!</string>
     <string name="boxEmpty">شما هیچ پیامی ندارید!</string>
+    <string name="unfollowedAt">تاریخ آنفالو: %s</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>

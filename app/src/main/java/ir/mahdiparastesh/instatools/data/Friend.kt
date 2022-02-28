@@ -19,8 +19,7 @@ class Friend(
     constructor() : this("", "", "", "", false, false, false)
 
     companion object {
-
-        @NotOnUiThread
+        @AvoidUiThread
         fun add(dao: Database.DAO, newer: Friend, certainFollower: Boolean?) {
             try {
                 dao.addFriend(newer)
@@ -44,5 +43,5 @@ class Friend(
         }
     }
 
-    annotation class NotOnUiThread
+    annotation class AvoidUiThread
 }

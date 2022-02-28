@@ -37,6 +37,7 @@
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
     <string name="guestShortDesc">Iniciar sesión sin autenticación</string>
+    <string name="needAuthentication">Necesitas iniciar sesión para continuar&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">No Seguidores</string>
@@ -61,6 +62,7 @@
     <string name="unfEmpty">¡No tienes seguidores!</string>
     <string name="svdEmpty">¡No tienes publicaciones guardadas!</string>
     <string name="boxEmpty">¡No tienes mensajes!</string>
+    <string name="unfollowedAt">No seguido el %s</string>
 
     <!-- Downloads -->
     <string name="downloads">Descargas</string>

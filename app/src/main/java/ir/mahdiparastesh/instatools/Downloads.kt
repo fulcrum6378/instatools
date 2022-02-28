@@ -17,7 +17,6 @@ import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
-import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Queuer
@@ -32,7 +31,7 @@ class Downloads : BaseActivity() {
     private lateinit var adBanner: AdView
 
     override val menuRes: Int? = null
-    override val com: Alive get() = Downloads
+    override val com: ActivityCompanion get() = Companion
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +107,7 @@ class Downloads : BaseActivity() {
         adBanner.loadAd(AdRequest.Builder().build())
     }
 
-    companion object : Alive() {
+    companion object : ActivityCompanion() {
         const val HANDLE_INSERTED = 0
         const val HANDLE_DELETED = 1
         const val HANDLE_CHANGED = 2

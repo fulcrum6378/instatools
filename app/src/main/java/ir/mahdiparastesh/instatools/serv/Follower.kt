@@ -23,8 +23,7 @@ class Follower : ForegroundService() {
     private var following = arrayListOf<Friend>()
 
     override val requiresHandling = true
-    override val com: ForegroundServiceCompanion
-        get() = Companion
+    override val com: ForegroundServiceCompanion get() = Companion
 
     companion object : ForegroundServiceCompanion(77, Follower::class) {
         override val channel: String = "$pack.FOLLOWING"

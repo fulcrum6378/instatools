@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
-import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
@@ -12,9 +11,9 @@ class Favourites : BaseActivity() {
     private lateinit var b: FavouritesBinding
 
     override val menuRes: Int? = null
-    override val com: Alive get() = Favourites
+    override val com: ActivityCompanion get() = Companion
 
-    companion object : Alive()
+    companion object : ActivityCompanion()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

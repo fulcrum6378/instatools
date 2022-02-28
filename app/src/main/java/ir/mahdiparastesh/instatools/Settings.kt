@@ -16,7 +16,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
-import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -34,9 +33,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private val saveLauncher = launcher(this)
 
     override val menuRes: Int? = null
-    override val com: Alive get() = Settings
+    override val com: ActivityCompanion get() = Companion
 
-    companion object : Alive() {
+    companion object : ActivityCompanion() {
         // Preferences
         const val spStorage = "storage"
         const val spBranching = "branching"

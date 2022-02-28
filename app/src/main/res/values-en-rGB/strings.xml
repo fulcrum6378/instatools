@@ -37,6 +37,7 @@
     <!-- Login -->
     <string name="addAccount">Add Account</string>
     <string name="guestShortDesc">Login without authentication</string>
+    <string name="needAuthentication">You need to login to continue&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">Unfollowers</string>
@@ -61,6 +62,7 @@
     <string name="unfEmpty">You have no unfollowers!</string>
     <string name="svdEmpty">You have no saved posts!</string>
     <string name="boxEmpty">You have no messages!</string>
+    <string name="unfollowedAt">Unfollowed at %s</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>

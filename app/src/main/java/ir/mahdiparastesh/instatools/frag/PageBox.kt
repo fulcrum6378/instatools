@@ -40,8 +40,11 @@ import kotlinx.coroutines.withContext
 
 class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
-    private var boxThread: FetchSomeThreads? = null
-    var thdThread: FetchSomeDm? = null
+    private var boxThread: FetchOfInbox? = null
+    var thdThread: FetchOfThread? = null
+    private var exportable: Exportable? = null
+    private val exportLauncher = c.launcher(this)
+
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
     override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
@@ -51,7 +54,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
                 HANDLE_FETCHED -> if (c.m.dmThread == null) {
                     onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
                     if (c.m.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
-                    ) boxThread = FetchSomeThreads().also { it.start() }
+                    ) boxThread = FetchOfInbox().also { it.start() }
                 } else {
                     val dmThd = msg.obj as Dm.DmThread
                     val bef = c.m.dmThread!!.items.size
@@ -73,8 +76,6 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
             }
         }
     }
-    private var exportable: Exportable? = null
-    private val exportLauncher = c.launcher(this)
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)
@@ -90,18 +91,18 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
             if (boxThread?.active == true) return@setOnRefreshListener
             b.rv.adapter = null
             c.m.dmInbox = null
-            boxThread = FetchSomeThreads().also { it.start() }
+            boxThread = FetchOfInbox().also { it.start() }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (c.m.dmThread == null) {
                     if (!b.rv.canScrollVertically(1) &&
                         boxThread?.active != true && c.m.dmInbox?.has_older != false
-                    ) boxThread = FetchSomeThreads().also { it.start() }
+                    ) boxThread = FetchOfInbox().also { it.start() }
                 } else {
                     if (thdThread?.active != true &&
                         c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
-                    ) thdThread = FetchSomeDm(
+                    ) thdThread = FetchOfThread(
                         c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
                     ).also { it.start() }
                 }
@@ -110,7 +111,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
 
         //b.refresher.isRefreshing = true
         if (c.m.dmInbox != null) onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
-        else if (boxThread?.active != true) boxThread = FetchSomeThreads().also { it.start() }
+        else if (boxThread?.active != true) boxThread = FetchOfInbox().also { it.start() }
         return b.root
     }
 
@@ -184,7 +185,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         return false
     }
 
-    inner class FetchSomeThreads : BaseThread() {
+    inner class FetchOfInbox : BaseThread() {
         override fun run() {
             super.run()
             Api<InboxPage>(
@@ -196,6 +197,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
                     c.m.dmInbox?.threads?.addAll(page.inbox.threads)
                     c.m.dmInbox?.threads?.sortByDescending { it.last_activity_at }
                     c.m.dmInbox?.oldest_cursor = page.inbox.oldest_cursor
+                    c.m.dmInbox?.has_older = page.inbox.has_older
                 }
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 interrupt()
@@ -203,7 +205,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         }
     }
 
-    class FetchSomeDm(
+    class FetchOfThread(
         val c: Persistent, private val threadId: String, private val oldestId: String,
         val handler: Handler?
     ) : BaseThread() {

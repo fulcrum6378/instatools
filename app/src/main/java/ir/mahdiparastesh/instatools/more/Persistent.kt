@@ -1,12 +1,14 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
-import android.widget.Toast
+import android.os.Process
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Model
 import java.util.*
+import kotlin.system.exitProcess
 
 interface Persistent {
     val c: Context
@@ -31,11 +33,18 @@ interface Persistent {
 
 
     fun needAuthentication() {
-        val signedOut = m.acc?.id != -1L
-        if (signedOut) {
-            if (this is BaseActivity) goTo(Login::class, true)
-        } else Toast.makeText(c, "InstaTools needs authentication!", Toast.LENGTH_SHORT).show()
-        // TODO: IMPROVE THIS
+        if (Login.cameHereToAuth) return
+        // val signedOut = m.acc?.id != -1L
+        if (this is BaseActivity)
+            goTo(Login::class, true) { putExtra(Login.EXTRA_NEED_AUTH, true) }
+        else {
+            c.startActivity(Intent(c, Login::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra(Login.EXTRA_NEED_AUTH, true)
+            })
+            Process.killProcess(Process.myPid())
+            exitProcess(0)
+        }
     }
 
     fun switchAcc() {

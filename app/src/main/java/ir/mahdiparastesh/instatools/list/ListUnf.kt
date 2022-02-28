@@ -38,7 +38,10 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         if (c.m.unfollowers.value == null) return
         Glide.with(c.c).load(c.m.unfollowers.value!![i].photo).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${c.m.unfollowers.value!![i].name}"
-        h.b.user.text = c.m.unfollowers.value!![i].user
+        h.b.user.text = if (c.m.unfollowers.value!![i].unfollowedMeAt != null) c.getString(
+            R.string.unfollowedAt, UiTools.date(c.m.unfollowers.value!![i].unfollowedMeAt!!)
+        ) else c.m.unfollowers.value!![i].user
+
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.get(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.unf_more, Act().apply {

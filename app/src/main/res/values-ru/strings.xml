@@ -42,6 +42,7 @@
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
     <string name="guestShortDesc">Войти без авторизации</string>
+    <string name="needAuthentication">Вам необходимо авторизоваться, чтобы продолжить&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">Отписаться</string>
@@ -66,6 +67,7 @@
     <string name="unfEmpty">У вас нет отписавшихся!</string>
     <string name="svdEmpty">У вас нет сохраненных сообщений!</string>
     <string name="boxEmpty">У вас нет сообщений!</string>
+    <string name="unfollowedAt">Отписался на %s</string>
 
     <!-- Downloads -->
     <string name="downloads">Загрузки</string>

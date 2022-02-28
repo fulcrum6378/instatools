@@ -3,6 +3,8 @@ package ir.mahdiparastesh.instatools
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Process.killProcess
+import android.os.Process.myPid
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.view.View
@@ -12,17 +14,18 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListAcc
-import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import org.apache.commons.text.StringEscapeUtils
+import kotlin.system.exitProcess
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
@@ -31,15 +34,17 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     lateinit var accounts: ArrayList<Account>
 
     override val menuRes: Int? = null
-    override val com: Alive get() = Login
+    override val com: ActivityCompanion get() = Companion
 
-    companion object : Alive() {
+    companion object : ActivityCompanion() {
         const val host = "https://www.instagram.com/"
         const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"
         const val spAccount = "account"
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
         const val posConfig = ";</script>"
+        const val EXTRA_NEED_AUTH = "needAuthentication"
+        var cameHereToAuth = false
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -56,7 +61,16 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.web.settings.javaScriptEnabled = true
         b.web.webViewClient = myClient
 
-        if (m.acc == null) welcome() else selectAccount(m.acc!!)
+        when {
+            intent.getBooleanExtra(EXTRA_NEED_AUTH, false) -> { // if (accounts.size <= 1)
+                cameHereToAuth = true
+                Snackbar.make(b.root, R.string.needAuthentication, Snackbar.LENGTH_LONG).show()
+                gonnaAdd = true
+                browse()
+            }
+            //m.acc != null -> selectAccount(m.acc!!)
+            else -> welcome()
+        }
     }
 
     private val logoDestBias = 0.15f
@@ -129,6 +143,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         doClearHistory = true
     }
 
+    override fun onDestroy() {
+        cameHereToAuth = false
+        super.onDestroy()
+    }
+
     private val myClient = object : WebViewClient() {
         lateinit var id: String
 
@@ -195,7 +214,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             b.web.loadUrl("")
             welcome()
             return; }
-        super.onBackPressed()
+        moveTaskToBack(true)
+        killProcess(myPid())
+        exitProcess(0)
     }
 
     data class HostPage(val config: PageConfig)
