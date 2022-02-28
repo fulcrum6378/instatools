@@ -14,10 +14,10 @@ import androidx.core.graphics.red
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.InitializationStatus
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
+import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Queuer
@@ -29,15 +29,16 @@ import kotlinx.coroutines.withContext
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
-    override val menuRes: Int? = null
     private lateinit var adBanner: AdView
+
+    override val menuRes: Int? = null
+    override val com: Alive get() = Downloads
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         b = DownloadsBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.downloads)
-        db = Database.build(c, (m.acc?.id ?: -1L).toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
             @SuppressLint("NotifyDataSetChanged")
@@ -107,17 +108,11 @@ class Downloads : BaseActivity() {
         adBanner.loadAd(AdRequest.Builder().build())
     }
 
-    override fun onDestroy() {
-        handler = null
-        super.onDestroy()
-    }
-
-    companion object {
+    companion object : Alive() {
         const val HANDLE_INSERTED = 0
         const val HANDLE_DELETED = 1
         const val HANDLE_CHANGED = 2
         const val HANDLE_RESET = 3
-        var handler: Handler? = null
 
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {

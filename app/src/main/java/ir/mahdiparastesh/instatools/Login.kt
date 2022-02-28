@@ -18,6 +18,7 @@ import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListAcc
+import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -26,11 +27,13 @@ import org.apache.commons.text.StringEscapeUtils
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding
-    override val menuRes: Int? = null
     private lateinit var cookieManager: CookieManager
     lateinit var accounts: ArrayList<Account>
 
-    companion object {
+    override val menuRes: Int? = null
+    override val com: Alive get() = Login
+
+    companion object : Alive() {
         const val host = "https://www.instagram.com/"
         const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"

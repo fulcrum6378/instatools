@@ -18,7 +18,6 @@ import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
@@ -26,12 +25,9 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListVwr
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
-import ir.mahdiparastesh.instatools.more.BaseSaver
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
@@ -44,7 +40,6 @@ import kotlinx.coroutines.withContext
 
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
-    override val menuRes = R.menu.viewer_tlb
     private var user: String? = null
     private var id: String? = null
     private var thread: FetchSome? = null
@@ -52,10 +47,12 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     private var selectivity = false
     private var dbFav: Favourite? = null
 
-    companion object {
+    override val menuRes = R.menu.viewer_tlb
+    override val com: Alive get() = Viewer
+
+    companion object : Alive() {
         private const val EXTRA_USER = "EXTRA_USER"
         private const val EXTRA_ID = "EXTRA_ID"
-        var handler: Handler? = null
 
         fun comeHere(c: BaseActivity, id: String, user: String) {
             c.goTo(Viewer::class) {
@@ -71,7 +68,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
-        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -319,7 +315,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     }
 
     override fun onDestroy() {
-        handler = null
         m.vwUser = null
         super.onDestroy()
     }

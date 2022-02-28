@@ -30,7 +30,6 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
@@ -40,6 +39,7 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
+import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -54,7 +54,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     Toolbar.OnMenuItemClickListener {
     lateinit var b: MainBinding
-    override val menuRes = R.menu.main_tlb
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
     private var searchInput: SearchView.SearchAutoComplete? = null
@@ -69,7 +68,10 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     private val colorBG = MutableLiveData<Int?>(null)
     private var interstitialAd: InterstitialAd? = null
 
-    companion object {
+    override val menuRes = R.menu.main_tlb
+    override val com: Alive get() = Main
+
+    companion object : Alive() {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
         val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
@@ -84,8 +86,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         guest = m.acc!!.id == -1L
-        if (m.acc!!.id > -1L)
-            db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
 
         // Paging
@@ -418,7 +418,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
             return; }
-        if (isDbInitialised() && !ForegroundService.anyRunning()) db.close()
         super.onBackPressed() // Do NOT kill the process
     }
 

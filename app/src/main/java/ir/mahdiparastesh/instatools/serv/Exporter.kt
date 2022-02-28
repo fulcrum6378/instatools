@@ -18,7 +18,6 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchSomeDm
@@ -46,22 +45,19 @@ class Exporter : ForegroundService() {
 
     companion object : ForegroundServiceCompanion(103, Exporter::class) {
         override val channel: String = "$pack.EXPORTING"
-        override var chName: Int = R.string.exporterChannel
-        override var chDesc: Int = R.string.exporterChannelDesc
-        override var ntfSmallIcon: Int = R.mipmap.launcher_round
-        override var ntfTitle: Int = R.string.exporterTitle
-        override var ntfActions: Array<Pair<String, Int>> = arrayOf(
+        override val chName: Int = R.string.exporterChannel
+        override val chDesc: Int = R.string.exporterChannelDesc
+        override val ntfSmallIcon: Int = R.mipmap.launcher_round
+        override val ntfTitle: Int = R.string.exporterTitle
+        override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.exporterStop
         )
-        override var active: Boolean = false
-        override var handler: Handler? = null
 
         const val MEDIA_DELAY = 200L
     }
 
     override fun onCreate() {
         super.onCreate()
-        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         notification(Companion, Main::class, 2)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {

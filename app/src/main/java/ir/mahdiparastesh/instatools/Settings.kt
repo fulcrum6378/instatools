@@ -16,6 +16,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
+import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -26,14 +27,16 @@ import java.io.File
 
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
-    override val menuRes: Int? = null
     private lateinit var adBanner: AdView
     private lateinit var prf: SharedPreferences
     private var globalMode = false
     private var giveLinkBack: String? = null
     private val saveLauncher = launcher(this)
 
-    companion object {
+    override val menuRes: Int? = null
+    override val com: Alive get() = Settings
+
+    companion object : Alive() {
         // Preferences
         const val spStorage = "storage"
         const val spBranching = "branching"

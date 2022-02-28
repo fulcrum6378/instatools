@@ -32,26 +32,27 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
-import ir.mahdiparastesh.instatools.Login
-import ir.mahdiparastesh.instatools.Main
-import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener {
-    protected lateinit var db: Database
-    lateinit var dao: Database.DAO
-    lateinit var dm: DisplayMetrics
-    lateinit var fontBold: Typeface
-    lateinit var fontRegular: Typeface
-    lateinit var fontLight: Typeface
-    var dirRtl = false
-    abstract val menuRes: Int?
+    val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    val db: Database by dbLazy
+    val dao: Database.DAO by lazy { db.dao() }
+    val dm: DisplayMetrics by lazy { resources.displayMetrics }
+    val fontBold: Typeface by lazy { font(getString(R.string.font_bold)) }
+    val fontRegular: Typeface by lazy { font(getString(R.string.font_regular)) }
+    val fontLight: Typeface by lazy { font(getString(R.string.font_light)) }
+    val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
 
+    abstract val menuRes: Int?
+    abstract val com: Alive
     override lateinit var c: Context
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
@@ -60,9 +61,14 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     companion object {
         var isAdsSdkInitialized = false
         var adsInitStatus: InitializationStatus? = null
+
+        fun anyActive() = arrayOf(
+            Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
+        ).any { it.active }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        com.active = true
         resolvedIntent = null
         super.onCreate(savedInstanceState)
         c = applicationContext
@@ -76,12 +82,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             super.onBackPressed()
             finish()
             return; }
-
-        dm = resources.displayMetrics
-        dirRtl = c.resources.getBoolean(R.bool.dirRtl)
-        fontBold = font(getString(R.string.font_bold))
-        fontRegular = font(getString(R.string.font_regular))
-        fontLight = font(getString(R.string.font_light))
 
         if (!isAdsSdkInitialized)
             Delay(3000) { MobileAds.initialize(c, this) }
@@ -148,10 +148,12 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         return true
     }
 
-    /*override fun onDestroy() {
-        if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()
+    override fun onDestroy() {
+        com.handler = null
+        com.active = false
+        if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
         super.onDestroy()
-    }*/
+    }
 
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(ContextThemeWrapper(c, which.res))
@@ -181,8 +183,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
-
-    fun isDbInitialised() = ::db.isInitialized
 
     fun launcher(callback: ActivityResultCallback<ActivityResult>) =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)

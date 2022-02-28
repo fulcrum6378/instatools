@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
-import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -21,15 +20,18 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.serv.Queuer
 import kotlin.reflect.KClass
 
+@Suppress("MemberVisibilityCanBePrivate")
 @SuppressLint("UnspecifiedImmutableFlag")
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
     abstract val com: ForegroundServiceCompanion
-    protected lateinit var db: Database
-    lateinit var dao: Database.DAO
+    val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    val db: Database by dbLazy
+    val dao: Database.DAO by lazy { db.dao() }
     lateinit var handling: HandlerThread
     abstract val requiresHandling: Boolean
 
@@ -40,7 +42,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         const val ACTION_STOP = "ACTION_STOP"
         private val services = arrayOf(Queuer::class, Exporter::class)
 
-        fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active }
+        fun anyRunning() = arrayOf(Queuer, Exporter, Follower).any { it.active }
         // Never reference "Queuer"'s Companion in a static variable
 
         fun terminateTasks(c: Context) {
@@ -50,17 +52,15 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         }
     }
 
-    abstract class ForegroundServiceCompanion(val CH_ID: Int, private val klass: KClass<*>) {
+    abstract class ForegroundServiceCompanion(val CH_ID: Int, private val klass: KClass<*>) :
+        Alive() {
         val pack: String = klass.java.`package`!!.name
         abstract val channel: String
-        abstract var chName: Int
-        abstract var chDesc: Int
-        abstract var ntfSmallIcon: Int
-        abstract var ntfTitle: Int
-        abstract var ntfActions: Array<Pair<String, Int>>
-
-        abstract var active: Boolean
-        abstract var handler: Handler?
+        abstract val chName: Int
+        abstract val chDesc: Int
+        abstract val ntfSmallIcon: Int
+        abstract val ntfTitle: Int
+        abstract val ntfActions: Array<Pair<String, Int>>
 
         open fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
             c, 0, Intent(c, klass.java).apply { action = code },
@@ -142,13 +142,11 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         if (requiresHandling) handling.quitSafely()
         com.handler = null
         com.active = false
-        // if (::db.isInitialized && !Exporter.active && !Queuer.active) db.close()
+        if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun getViewModelStore(): ViewModelStore = mViewModelStore
-
-    fun isDbInitialised() = ::db.isInitialized
 }

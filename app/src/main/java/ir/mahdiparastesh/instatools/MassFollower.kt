@@ -13,9 +13,9 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
+import ir.mahdiparastesh.instatools.more.Alive
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Follower
@@ -29,9 +29,11 @@ import kotlinx.coroutines.withContext
 
 class MassFollower : BaseActivity() {
     private lateinit var b: MassFollowerBinding
-    override val menuRes: Int? = null
     private lateinit var adBanner: AdView
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
+
+    override val menuRes: Int? = null
+    override val com: Alive get() = MassFollower
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +41,6 @@ class MassFollower : BaseActivity() {
         b = MassFollowerBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.massFollower)
-        db = Database.build(c, (m.acc?.id ?: -1L).toString()).also { dao = it.dao() }
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -115,15 +116,9 @@ class MassFollower : BaseActivity() {
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
     }
 
-    override fun onDestroy() {
-        handler = null
-        super.onDestroy()
-    }
-
-    companion object {
+    companion object : Alive() {
         const val HANDLE_INSERTED = 0
         const val HANDLE_DELETED = 1
-        var handler: Handler? = null
 
         @MainThread
         fun initService(c: BaseActivity, enq: Follower.ToBeEnqueued? = null) {

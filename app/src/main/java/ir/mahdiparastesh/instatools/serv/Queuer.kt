@@ -17,7 +17,6 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
@@ -44,15 +43,13 @@ class Queuer : ForegroundService() {
 
     companion object : ForegroundServiceCompanion(262, Queuer::class) {
         override val channel: String = "$pack.DOWNLOADING"
-        override var chName: Int = R.string.queuerChannel
-        override var chDesc: Int = R.string.queuerChannelDesc
-        override var ntfSmallIcon: Int = R.mipmap.launcher_round
-        override var ntfTitle: Int = R.string.queuerTitle
-        override var ntfActions: Array<Pair<String, Int>> = arrayOf(
+        override val chName: Int = R.string.queuerChannel
+        override val chDesc: Int = R.string.queuerChannelDesc
+        override val ntfSmallIcon: Int = R.mipmap.launcher_round
+        override val ntfTitle: Int = R.string.queuerTitle
+        override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.queuerStop
         )
-        override var active: Boolean = false
-        override var handler: Handler? = null
 
         const val HANDLE_LINK = 0
         val EXTRA_LINK = "$pack.EXTRA_LINK"
@@ -61,7 +58,7 @@ class Queuer : ForegroundService() {
     override fun resolveIntent(intent: Intent) {
         intent.getStringExtra(EXTRA_LINK)?.let {
             handlingLinks.add(Link(it))
-            if (isDbInitialised()) handleLinks()
+            handleLinks()
         }
     }
 
@@ -70,7 +67,6 @@ class Queuer : ForegroundService() {
         dest = sPreference(Settings.spStorage)
         if (m.acc == null || dest == null) {
             destroy(); return; }
-        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         notification(Companion, Downloads::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -89,7 +85,6 @@ class Queuer : ForegroundService() {
                 }
             }
         }
-        handleLinks()
         if (download?.active != true) download = Download().also { it.start() }
     }
 

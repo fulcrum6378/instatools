@@ -6,7 +6,6 @@ import com.android.volley.Request
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.json.Api
@@ -29,16 +28,14 @@ class Follower : ForegroundService() {
 
     companion object : ForegroundServiceCompanion(77, Follower::class) {
         override val channel: String = "$pack.FOLLOWING"
-        override var chName: Int = R.string.followerChannel
-        override var chDesc: Int = R.string.followerChannelDesc
-        override var ntfSmallIcon: Int = R.mipmap.launcher_round
-        override var ntfTitle: Int = R.string.followerTitle
-        override var ntfActions: Array<Pair<String, Int>> = arrayOf(
+        override val chName: Int = R.string.followerChannel
+        override val chDesc: Int = R.string.followerChannelDesc
+        override val ntfSmallIcon: Int = R.mipmap.launcher_round
+        override val ntfTitle: Int = R.string.followerTitle
+        override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.followerStop,
             ACTION_PAUSE to R.string.followerPause,
         )
-        override var active: Boolean = false
-        override var handler: Handler? = null
 
         const val EXTRA_ENQUEUE = "enqueue"
         const val HANDLE_ENQUEUE = 0
@@ -58,7 +55,6 @@ class Follower : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
-        db = Database.build(c, m.acc!!.id.toString()).also { dao = it.dao() }
         notification(Follower, MassFollower::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
