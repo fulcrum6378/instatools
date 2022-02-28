@@ -53,9 +53,4 @@
         app:layout_constraintBottom_toTopOf="@id/adBanner"
         app:layout_constraintTop_toBottomOf="@id/pasteBar"
         tools:ignore="UnknownId" />
-
-    <View
-        android:id="@+id/tbShadow"
-        style="@style/tbShadow"
-        app:layout_constraintTop_toBottomOf="@id/pasteBar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

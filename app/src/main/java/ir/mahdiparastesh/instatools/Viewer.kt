@@ -58,10 +58,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         var handler: Handler? = null
 
         fun comeHere(c: BaseActivity, id: String, user: String) {
-            c.startActivity(Intent(c.c, Viewer::class.java).apply {
+            c.goTo(Viewer::class) {
                 putExtra(EXTRA_USER, user)
                 putExtra(EXTRA_ID, id)
-            })
+            }
         }
     }
 

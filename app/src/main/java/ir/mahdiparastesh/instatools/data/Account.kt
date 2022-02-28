@@ -18,14 +18,11 @@ class Account(
     var cook: String? = null
 ) {
     companion object {
-        fun load(c: Context): ArrayList<Account> {
-            if (!Secured(c).exists()) return arrayListOf()
-            FileInputStream(Secured(c)).let {
-                return@load ArrayList(
-                    Gson().fromJson(String(it.readBytes()), Array<Account>::class.java).toList()
-                )
-            }
-        }
+        fun load(c: Context): ArrayList<Account> = if (Secured(c).exists()) ArrayList(
+            Gson().fromJson(
+                String(FileInputStream(Secured(c)).readBytes()), Array<Account>::class.java
+            ).toList()
+        ) else arrayListOf()
 
         fun selected(
             c: Persistent, list: List<Account> = load(c.c), guestIfNotExists: Boolean = true

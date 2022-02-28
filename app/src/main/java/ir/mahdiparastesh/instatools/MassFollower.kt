@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.widget.SeekBar
 import androidx.annotation.MainThread
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.InitializationStatus
@@ -19,6 +21,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,6 +31,7 @@ class MassFollower : BaseActivity() {
     private lateinit var b: MassFollowerBinding
     override val menuRes: Int? = null
     private lateinit var adBanner: AdView
+    val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,12 +59,37 @@ class MassFollower : BaseActivity() {
         m.fwb.observe(this) {
             val queued = !it.isNullOrEmpty()
             b.rv.vis(queued)
+            b.panel.vis(queued)
+            b.tbShadow.vis(queued)
+            b.panelShadow.vis(queued)
             b.guide.vis(!queued)
             if (queued) {
-                if (b.rv.adapter == null) b.rv.adapter = ListFwb(this@MassFollower)
+                if (b.rv.adapter == null) b.rv.adapter = ListFwb(this)
                 else b.rv.adapter?.notifyDataSetChanged()
             }
         }
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+            }
+        })
+
+        // Control Panel
+        b.seekTitle.typeface = fontLight
+        b.seekIndicator.typeface = fontLight
+        b.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                Follower.DELAY = ((progress + seekMin) * 1000).toLong()
+                indicateSeek()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                sp?.edit()?.putLong(Settings.spFollowerDelay, Follower.DELAY)?.commit()
+            }
+        })
     }
 
     override fun onResume() {
@@ -72,12 +101,18 @@ class MassFollower : BaseActivity() {
                 //if (!m.fwb.value.isNullOrEmpty()) initService(this@MassFollower)
             }
         }
+        indicateSeek(true)
     }
 
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/5087388141")
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun indicateSeek(updateSb: Boolean = false) {
+        b.seekIndicator.text = getString(R.string.mfSeconds, Follower.DELAY / 1000)
+        if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
     }
 
     override fun onDestroy() {

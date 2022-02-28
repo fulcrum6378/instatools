@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -109,8 +108,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
 
-        Log.println(Log.ASSERT, "AAA", "aa")
-
         // Theming
         if (night()) {
             colorBG.observe(this) {
@@ -190,11 +187,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
         R.id.mnDownloads -> goTo(Downloads::class)
         R.id.mnFavourites -> goTo(Favourites::class)
         R.id.mnMassFollower -> goTo(MassFollower::class)
-        R.id.mnGSettings -> {
-            startActivity(Intent(this, Settings::class.java)
-                .apply { putExtra(Settings.EXTRA_IS_GLOBAL, true) })
-            true
-        }
+        R.id.mnGSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, true) }
         R.id.mnSettings -> goTo(Settings::class)
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
             AlertDialog.Builder(this).apply {

@@ -11,7 +11,6 @@ import androidx.annotation.MainThread
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import androidx.recyclerview.selection.SelectionTracker
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.InitializationStatus
@@ -32,8 +31,6 @@ class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
     override val menuRes: Int? = null
     private lateinit var adBanner: AdView
-    var tracker: SelectionTracker<String>? = null
-    private var selectivity = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +81,8 @@ class Downloads : BaseActivity() {
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
         b.pasteLink.typeface = fontRegular
+
+        // TODO: IMPLEMENT DRAG TO DELETE FOR QUEUED ITEMS
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {

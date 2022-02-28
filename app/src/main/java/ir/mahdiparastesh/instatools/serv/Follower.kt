@@ -5,6 +5,7 @@ import android.os.*
 import com.android.volley.Request
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.data.Friend
@@ -13,6 +14,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.LongThread
+import ir.mahdiparastesh.instatools.more.Persistent
 import kotlinx.coroutines.runBlocking
 
 class Follower : ForegroundService() {
@@ -40,7 +42,11 @@ class Follower : ForegroundService() {
 
         const val EXTRA_ENQUEUE = "enqueue"
         const val HANDLE_ENQUEUE = 0
-        var DELAY = 10000L
+        var DELAY = Settings.defSpFollowerDelay
+
+        fun properDelay(c: Persistent) =
+            c.sp?.getLong(Settings.spFollowerDelay, Settings.defSpFollowerDelay)
+                ?: Settings.defSpFollowerDelay
     }
 
     override fun resolveIntent(intent: Intent) {
@@ -64,6 +70,7 @@ class Follower : ForegroundService() {
                 }
             }
         }
+        DELAY = properDelay(this)
         Thread {
             runBlocking { following.addAll(dao.following()) }
             if (scheduler?.active != true) scheduler = Scheduler().also { it.start() }

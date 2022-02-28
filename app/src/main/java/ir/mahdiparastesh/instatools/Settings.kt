@@ -21,6 +21,7 @@ import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import java.io.File
 
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
@@ -43,6 +44,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // Hidden Preferences
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
+        const val spFollowerDelay = "follower_delay"
+        const val defSpFollowerDelay = 20000L
 
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
@@ -77,12 +80,15 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         prf = if (globalMode || sp == null) gsp else sp!!
         intent.extras?.getString(EXTRA_GIVE_LINK_BACK, null)?.let { giveLinkBack = it }
 
-        // Font
+        // Beauty
         for (l in b.ll.iterator())
             if (l is LinearLayout) (l[0] as TextView).typeface = fontRegular
         b.stMainPath.typeface = fontLight
         arrayOf(b.stBranching, b.stAutoDeleteEmptyDirs, b.stResetData, b.stResetSettings)
             .forEach { it.typeface = fontRegular }
+        b.sv.viewTreeObserver.addOnScrollChangedListener {
+            b.tbShadow.vish(b.sv.scrollY > 0)
+        }
 
         // Main Path
         if (!prf.contains(spStorage) && giveLinkBack != null) selectMainPath()

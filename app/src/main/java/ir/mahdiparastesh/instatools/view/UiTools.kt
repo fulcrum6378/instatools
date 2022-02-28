@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.view
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,7 +17,6 @@ import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
@@ -59,10 +59,8 @@ class UiTools {
             visibility = if (bb) View.VISIBLE else View.INVISIBLE
         }
 
-        fun openProfile(c: AppCompatActivity, user: String) {
-            c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
-            )
+        fun openProfile(c: Activity, user: String) {
+            c.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user))))
         }
 
         fun z(n: Int): String {

@@ -11,12 +11,13 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionCode 16
-        versionName '5.0'
+        versionCode 17
+        versionName '5.1'
     }
 
     buildTypes {
         debug {
+            debuggable true
             minifyEnabled false
         }
         demo {
@@ -66,7 +67,7 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
-    implementation 'com.google.android.gms:play-services-ads:20.5.0'
+    implementation 'com.google.android.gms:play-services-ads:20.6.0'
     implementation "androidx.media2:media2-widget:$media2_version"
     implementation "androidx.media2:media2-player:$media2_version"
     implementation 'com.tbuonomo:dotsindicator:4.2'

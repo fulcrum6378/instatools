@@ -48,6 +48,7 @@
     <!-- MassFollower -->
     <dimen name="mfSearch">150dp</dimen>
     <dimen name="mfSearchPad">30dp</dimen>
+    <dimen name="mfPadV">15dp</dimen>
 
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>

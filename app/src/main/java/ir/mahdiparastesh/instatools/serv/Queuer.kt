@@ -61,7 +61,7 @@ class Queuer : ForegroundService() {
     override fun resolveIntent(intent: Intent) {
         intent.getStringExtra(EXTRA_LINK)?.let {
             handlingLinks.add(Link(it))
-            handleLinks()
+            if (isDbInitialised()) handleLinks()
         }
     }
 
@@ -89,6 +89,7 @@ class Queuer : ForegroundService() {
                 }
             }
         }
+        handleLinks()
         if (download?.active != true) download = Download().also { it.start() }
     }
 

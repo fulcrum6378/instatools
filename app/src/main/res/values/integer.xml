@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Main -->
     <integer name="transFrag">120</integer>
+
+    <!-- Mass Follower -->
+    <integer name="mfMin">5</integer>
+    <integer name="mfMax">300</integer>
+    <integer name="mfMaxNominal">295</integer>
 </resources>

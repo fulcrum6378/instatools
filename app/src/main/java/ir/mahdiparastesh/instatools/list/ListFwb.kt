@@ -1,24 +1,33 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.content.res.ColorStateList
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.util.TypedValue
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListFwbBinding
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() {
-    private val tc = TypedValue().apply {
+    private val bg = TypedValue().apply {
+        c.theme.resolveAttribute(R.attr.backgroundColor, this, true)
+    }.data
+    private val ca = TypedValue().apply {
         c.theme.resolveAttribute(R.attr.colorAccent, this, true)
     }.data
-    private val night = c.night()
+    private val bgCf = PorterDuffColorFilter(bg, PorterDuff.Mode.SRC_IN)
 
     class ViewHolder(val b: ListFwbBinding) : RecyclerView.ViewHolder(b.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val b = ListFwbBinding.inflate(c.layoutInflater, parent, false)
         b.root.typeface = c.fontRegular
-        if (night) b.root.setTextColor(tc)
+        b.root.chipBackgroundColor = ColorStateList.valueOf(ca)
+        b.root.setTextColor(bg)
+        b.root.closeIcon?.apply { colorFilter = bgCf }
         return ViewHolder(b)
     }
 
@@ -26,6 +35,7 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() 
         val fwb = c.m.fwb.value?.getOrNull(i) ?: return
         h.b.root.text = fwb.user
         h.b.root.setOnClickListener {
+            UiTools.openProfile(c, fwb.user)
         }
         h.b.root.setOnCloseIconClickListener {
         }

@@ -166,9 +166,13 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, path)
 
-    fun goTo(activity: KClass<*>, finish: Boolean = false): Boolean {
+    fun goTo(
+        activity: KClass<*>,
+        finish: Boolean = false,
+        onIntent: (Intent.() -> Unit)? = null
+    ): Boolean {
         startActivity(
-            Intent(this, activity.java),
+            Intent(this, activity.java).apply { onIntent?.let { it() } },
             ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
         )
         if (finish) Delay(1000) { finish() }

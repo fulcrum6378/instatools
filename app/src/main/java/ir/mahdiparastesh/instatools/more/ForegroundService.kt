@@ -149,4 +149,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun getViewModelStore(): ViewModelStore = mViewModelStore
+
+    fun isDbInitialised() = ::db.isInitialized
 }
