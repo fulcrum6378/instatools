@@ -5,19 +5,23 @@ import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.TypefaceSpan;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+
 public class CustomTypefaceSpan extends TypefaceSpan {
     private final Typeface newType;
     private final float textSize;
-    private final int textColour;
+    private Integer textColour = null;
 
-    public CustomTypefaceSpan(Typeface type, float size, int colour) {
+    public CustomTypefaceSpan(Typeface type, float size, @Nullable @ColorInt Integer colour) {
         super("");
         newType = type;
         textSize = size;
-        textColour = colour;
+        if (colour != null) textColour = colour;
     }
 
-    private static void applyCustomTypeFace(Paint paint, Typeface tf, float ts, int tc) {
+    private static void applyCustomTypeFace(Paint paint, Typeface tf, float ts,
+                                            @Nullable @ColorInt Integer tc) {
         int oldStyle;
         Typeface old = paint.getTypeface();
         if (old == null) oldStyle = Typeface.NORMAL;
@@ -31,7 +35,7 @@ public class CustomTypefaceSpan extends TypefaceSpan {
             paint.setTextSkewX(-0.25f);
 
         paint.setTextSize(ts);
-        paint.setColor(tc);
+        if (tc != null) paint.setColor(tc);
         paint.setTypeface(tf);
     }
 

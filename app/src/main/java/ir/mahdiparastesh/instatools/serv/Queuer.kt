@@ -266,14 +266,14 @@ class Queuer : ForegroundService() {
 
     private fun downloaded() {
         download?.interrupt()
-        if (!active) return
+        if (!active.value!!) return
         download = Download().also { it.start() }
     }
 
     private fun save(q: Queued, ba: ByteArray) {
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
         var branch: DocumentFile?
-        val shouldBranch = bPreference(Settings.spBranching, true) != false
+        val shouldBranch = bPreference(Settings.spBranching, Settings.defSpBranching)
         if (shouldBranch) {
             branch = stem.findFile(q.userName!!)
             if (branch == null) branch = stem.createDirectory(q.userName!!)
@@ -286,15 +286,17 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
+        sp?.edit()?.putLong(
+            Settings.spDownloadCount, (sp?.getLong(Settings.spDownloadCount, 0L) ?: 0L) + 1L
+        )?.commit()
     }
 
     override fun destroy() {
         download?.interrupt()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                if (dest == null || bPreference(
-                        Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs
-                    ) != true
+                if (dest == null ||
+                    !bPreference(Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs)
                 ) return@runCatching
                 val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
                 for (branch in stem.listFiles())

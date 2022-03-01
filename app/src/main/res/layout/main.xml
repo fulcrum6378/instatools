@@ -48,6 +48,19 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/bnv"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/searchStatus"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:alpha="0.4"
+            android:padding="3dp"
+            app:layout_constraintBottom_toBottomOf="@id/searchRes"
+            app:layout_constraintLeft_toLeftOf="@id/searchRes"
+            app:layout_constraintRight_toRightOf="@id/searchRes"
+            app:layout_constraintTop_toTopOf="@id/searchRes"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/pending" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

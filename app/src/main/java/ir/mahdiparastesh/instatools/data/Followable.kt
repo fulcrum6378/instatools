@@ -9,4 +9,10 @@ class Followable(
     var user: String,
     var priv: Boolean,
 ) {
+    companion object {
+        fun find(it: Followable, inList: List<Followable>): Int? {
+            for (i in inList.indices) if (inList[i].id == it.id) return i
+            return null
+        }
+    }
 }

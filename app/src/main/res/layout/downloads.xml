@@ -15,8 +15,8 @@
         android:id="@+id/pasteBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/pasteLink"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="3dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <EditText
@@ -50,7 +50,33 @@
         android:layout_marginTop="20dp"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/adBanner"
-        app:layout_constraintTop_toBottomOf="@id/pasteBar"
-        tools:ignore="UnknownId" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pasteBar" />
+
+    <LinearLayout
+        android:id="@+id/empty"
+        style="@style/tip"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rv"
+        app:layout_constraintEnd_toEndOf="@id/rv"
+        app:layout_constraintStart_toStartOf="@id/rv"
+        app:layout_constraintTop_toTopOf="@id/rv">
+
+        <TextView
+            android:id="@+id/downloadsHelp1"
+            style="@style/downloadsHelp"
+            android:lineSpacingMultiplier="1.6"
+            android:text="@string/downloadsHelp1"
+            android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/downloadsHelp2"
+            style="@style/downloadsHelp"
+            android:layout_marginTop="36sp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/downloadsHelp2"
+            android:textAlignment="center"
+            android:textSize="15sp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

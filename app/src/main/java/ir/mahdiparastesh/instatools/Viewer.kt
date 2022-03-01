@@ -123,9 +123,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
         }
 
-        // Toolbar
-        b.toolbar.setOnMenuItemClickListener(this)
-
         // List
         b.rv.layoutManager = GridLayoutManager(c, 3)
         b.rv.isNestedScrollingEnabled = false
@@ -209,11 +206,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         return true
     }
 
-    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.vtInsta -> {
-            UiTools.openProfile(this, user!!); true; }
-        R.id.vtFav -> {
-            if (m.vwUser != null) CoroutineScope(Dispatchers.IO).launch {
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.vtInsta -> UiTools.openProfile(this, user!!)
+            R.id.vtFav -> if (m.vwUser != null) CoroutineScope(Dispatchers.IO).launch {
                 if (dbFav == null) {
                     dbFav = m.vwUser!!.favourite()
                     dao.addFavourite(dbFav!!)
@@ -222,24 +218,17 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     dbFav = null
                 }
                 withContext(Dispatchers.Main) { fixTbMenu() }
-            }; true; }
-
-        R.id.vtDownload -> {
-            if (tracker != null && m.vwUser?.edges() != null)
-                Saver(tracker!!.selection).start()
-            tracker?.clearSelection()
-            true
-        }
-        R.id.vtSelectAll -> {
-            if (m.vwUser?.edges() != null)
+            }
+            R.id.vtDownload -> {
+                if (tracker != null && m.vwUser?.edges() != null)
+                    Saver(tracker!!.selection).start()
+                tracker?.clearSelection()
+            }
+            R.id.vtSelectAll -> if (m.vwUser?.edges() != null)
                 tracker?.setItemsSelected(m.vwUser!!.edges()!!.map { it.node.id }, true)
-            true
+            R.id.vtDeselectAll -> tracker?.clearSelection()
         }
-        R.id.vtDeselectAll -> {
-            tracker?.clearSelection()
-            true
-        }
-        else -> false
+        return super.onMenuItemClick(item)
     }
 
     private fun fixTbMenu() {
@@ -281,6 +270,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     this@Viewer,
                     Follower.ToBeEnqueued(id!!, isItFollowers, false) // TODO: ASK
                 )
+                goTo(MassFollower::class)
             }
         }).show()
     }

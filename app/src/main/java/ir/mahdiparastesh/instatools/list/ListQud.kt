@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
+import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -43,8 +44,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         h.b.status.setAnimation(
             when {
                 qud.failed -> R.raw.failed
-                i == 0 -> R.raw.download
-                else -> R.raw.pending
+                i > 0 || !Queuer.active.value!! -> R.raw.pending
+                else -> R.raw.download
             }
         )
         val pad = if (!qud.failed)
@@ -76,7 +77,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                 }
             }).show()
         }
-        h.b.status.setOnClickListener(if (c.m.queueds!![i].failed) View.OnClickListener {
+        h.b.status.isClickable = qud.failed
+        h.b.status.setOnClickListener(if (qud.failed) View.OnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 c.m.queueds!![h.layoutPosition].failed = false
                 c.dao.updateQueued(c.m.queueds!![h.layoutPosition])
@@ -86,6 +88,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                 }
             }
         } else null)
+
+        // TODO: IMPLEMENT DRAG TO DELETE FOR QUEUED ITEMS
 
         // Separator
         h.b.sep.vis(i < itemCount - 1)

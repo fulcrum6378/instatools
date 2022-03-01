@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
@@ -32,7 +33,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private var giveLinkBack: String? = null
     private val saveLauncher = launcher(this)
 
-    override val menuRes: Int? = null
+    override val menuRes = R.menu.settings_tlb
     override val com: ActivityCompanion get() = Companion
 
     companion object : ActivityCompanion() {
@@ -48,6 +49,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val defSpMainPage = 1
         const val spFollowerDelay = "follower_delay"
         const val defSpFollowerDelay = 20000L
+        const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
+        const val spUnfLastChecked = "unf_last_checked" // def: 0L
+        const val spDownloadCount = "download_count" // def: 0L
 
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
@@ -139,6 +143,17 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/9910778917")
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.stHelp -> AlertDialog.Builder(this).apply {
+                setTitle(R.string.stHelp)
+                setMessage(R.string.stHelpMessage)
+                setNeutralButton(R.string.ok, null)
+            }.show().stylise(this)
+        }
+        return super.onMenuItemClick(item)
     }
 
     private fun selectMainPath() {

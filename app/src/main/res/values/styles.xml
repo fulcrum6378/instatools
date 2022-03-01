@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="root">
         <item name="android:layout_width">match_parent</item>
@@ -144,6 +144,25 @@
         <item name="layout_constraintEnd_toEndOf">parent</item>
     </style>
 
+    <style name="tip" parent="parentConstraint">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:justificationMode" tools:ignore="NewApi">inter_word</item>
+        <item name="layout_constraintWidth_percent">0.75</item>
+    </style>
+
+
+    <!-- Downloads -->
+    <style name="downloadsHelp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
 
     <!-- Viewer -->
     <style name="vwFlwCl">
@@ -177,6 +196,7 @@
         <item name="android:textSize">15sp</item>
         <item name="android:layout_marginTop">4dp</item>
     </style>
+
 
     <!-- Settings -->
     <style name="stItem">

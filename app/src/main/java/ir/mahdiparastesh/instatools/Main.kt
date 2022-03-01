@@ -50,14 +50,10 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 // adb connect 192.168.1.20:
 
-class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    Toolbar.OnMenuItemClickListener {
+class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
-    private var searchInput: SearchView.SearchAutoComplete? = null
-    private var searchClose: ImageView? = null
-    var schRes: Array<Rest.ItemUser>? = null
     private var page1: PageUnf? = null
     private var page2: PageSvd? = null
     private var page3: PageBox? = null
@@ -66,13 +62,19 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     private val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
     private var interstitialAd: InterstitialAd? = null
+    private val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+
+    private var searchInput: SearchView.SearchAutoComplete? = null
+    private var searchClose: ImageView? = null
+    var schRes: Array<Rest.ItemUser>? = null
+    private var searcher: Api<Rest.Search>? = null
+    private var searchErrored = false
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
 
     companion object : ActivityCompanion() {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
-        val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
         var guest = false
     }
 
@@ -223,7 +225,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
-        b.toolbar.setOnMenuItemClickListener(this)
         colorAc.value?.let {
             val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
             searchInput?.setTextColor(it)
@@ -260,10 +261,20 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
                         }
                     }
 
-                    Api<Rest.Search>(
+                    if (searchErrored) b.searchStatus.setAnimation(R.raw.pending)
+                    searchErrored = false
+                    b.searchStatus.playAnimation()
+                    b.searchStatus.vis()
+                    searcher?.cancel()
+                    searcher = Api(
                         this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
-                        null, cache = true
+                        null, cache = true, onError = {
+                            searchErrored = true
+                            b.searchStatus.setAnimation(R.raw.failed)
+                        }
                     ) { res ->
+                        b.searchStatus.vis(false)
+                        b.searchStatus.pauseAnimation()
                         schRes = res.users.sortedBy { it.position }.toTypedArray()
                         b.searchRes.adapter?.notifyDataSetChanged()
                     }
@@ -282,15 +293,12 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
                 b.searchRes.vis(false)
                 b.searchRes.adapter = null
                 schRes = null
+                b.searchStatus.vis(false)
+                b.searchStatus.pauseAnimation()
                 return true
             }
         })
         return true
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mtSearch -> true
-        else -> false
     }
 
     private fun loadInterstitial() {

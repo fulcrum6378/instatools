@@ -10,6 +10,7 @@ import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListFwbBinding
 import ir.mahdiparastesh.instatools.view.UiTools
+import kotlinx.coroutines.runBlocking
 
 class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() {
     private val bg = TypedValue().apply {
@@ -38,6 +39,11 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() 
             UiTools.openProfile(c, fwb.user)
         }
         h.b.root.setOnCloseIconClickListener {
+            Thread {
+                runBlocking { c.dao.deleteFollowable(fwb) }
+                MassFollower.handler?.obtainMessage(MassFollower.HANDLE_DELETED, fwb)
+                    ?.sendToTarget()
+            }.start()
         }
     }
 

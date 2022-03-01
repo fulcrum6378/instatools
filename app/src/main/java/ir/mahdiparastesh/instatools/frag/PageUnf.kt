@@ -1,19 +1,24 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.*
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.json.Api
@@ -36,15 +41,16 @@ class PageUnf(c: Main) : BasePage(c) {
                     c.m.unfollowers.value = ArrayList(this)
                     c.m.unfollowers.value!!.sortBy { it.user }
                     c.m.unfollowers.value!!.sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
-                    if (isNullOrEmpty() && msg.arg1 == 1)
-                        thread = Inquiry().also { it.start() }
+                    if (isNullOrEmpty() && msg.arg1 == 1 &&
+                        (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
+                            ?: 0L)) > 86400000
+                    ) thread = Inquiry().also { it.start() }
                     else onLoaded(isNullOrEmpty())
-                    // TODO: WHAT IF ALL FOLLOWING, FOLLOW BACK!?!
-                    // TODO: OR THERE ARE NO FOLLOWERS/FOLLOWING!?!
                 }
                 HANDLE_FETCHED -> {
                     load(false)
                     b.refresher.isRefreshing = false
+                    c.sp?.edit()?.putLong(Settings.spUnfLastChecked, Persistent.now())?.commit()
                 }
                 //HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
                 Api.HANDLE_ERROR -> onFailed(
@@ -61,7 +67,7 @@ class PageUnf(c: Main) : BasePage(c) {
 
     companion object {
         const val HANDLE_LOADED = 2
-        const val HANDLE_COULD_NOT = 5
+        const val HANDLE_COULD_NOT = 3
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -103,6 +109,7 @@ class PageUnf(c: Main) : BasePage(c) {
 
 
     inner class Inquiry : BaseThread() {
+        private val CHANNEL_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
         private lateinit var oldFriends: List<Friend>
         private var newFriends = arrayListOf<Friend>()
 
@@ -153,8 +160,44 @@ class PageUnf(c: Main) : BasePage(c) {
                         c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
                 }
             }
+            val newUnf = newFriends.filter {
+                it.unfollowedMeAt != null
+                        && it.unfollowedMeAt!! > c.sp?.getLong(Settings.spNotifiedUnfTill, 0L) ?: 0L
+            }
+            if (newUnf.isNotEmpty()) {
+                gotNewOnes(newUnf.size)
+                // TODO: HIGHLIGHT THEM
+            }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
+        }
+
+        @SuppressLint("UnspecifiedImmutableFlag")
+        private fun gotNewOnes(num: Int) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                    .createNotificationChannel(NotificationChannel(
+                        CHANNEL_NEW_ITEMS, c.getString(R.string.newUnfNtfChannel),
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        description = c.resources.getString(R.string.newUnfNtfChannelDesc)
+                    })
+            with(NotificationManagerCompat.from(c)) {
+                notify(368, NotificationCompat.Builder(c, CHANNEL_NEW_ITEMS).apply {
+                    setSmallIcon(R.mipmap.launcher_round)
+                    setContentTitle(getString(R.string.newUnfNtfChannel))
+                    setContentText(getString(R.string.newUnfNtfText, num))
+                    priority = NotificationCompat.PRIORITY_HIGH
+                    setContentIntent(
+                        PendingIntent.getActivity(
+                            c, 0, Intent(c, Main::class.java)
+                                .apply { putExtra(Main.EXTRA_TURN_TO_PAGE, 0) },
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                    )
+                }.build())
+            }
+            c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.commit()
         }
     }
 }

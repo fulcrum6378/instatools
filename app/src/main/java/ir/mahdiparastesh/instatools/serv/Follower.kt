@@ -32,8 +32,7 @@ class Follower : ForegroundService() {
         override val ntfSmallIcon: Int = R.mipmap.launcher_round
         override val ntfTitle: Int = R.string.followerTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-            ACTION_STOP to R.string.followerStop,
-            ACTION_PAUSE to R.string.followerPause,
+            ACTION_STOP to R.string.followerStop
         )
 
         const val EXTRA_ENQUEUE = "enqueue"
@@ -80,13 +79,17 @@ class Follower : ForegroundService() {
                 dao.addFollowables(flw.users.filter {
                     (toBeEnqueued[0].includePv || !it.is_private) &&
                             it.pk !in following.map { f -> f.id }
-                }.map { Followable(it.pk, it.username, it.is_private) }
-                    .also { sum = it.size })
+                }.map { Followable(it.pk, it.username, it.is_private) }.also {
+                    sum = it.size
+                    MassFollower.handler?.obtainMessage(MassFollower.HANDLE_INSERTED, it)
+                        ?.sendToTarget()
+                })
                 if (flw.next_max_id == null) enqueuingDone() else allFollow(flw.next_max_id)
                 if (sum > 0 && scheduler?.active != true)
                     scheduler = Scheduler().also { it.start() }
             },
             Api.HANDLE_ERROR to {
+                /////
             }
         )
 
@@ -98,7 +101,7 @@ class Follower : ForegroundService() {
         private fun enqueue() {
             if (enqueuer?.active == false) return
             val cur = toBeEnqueued.getOrNull(0)
-            if (cur == null) {
+            if (cur == null || !Follower.active.value!!) {
                 interrupt()
                 if (scheduler?.active != true) this@Follower.destroy()
                 return; }
@@ -121,6 +124,18 @@ class Follower : ForegroundService() {
 
     inner class Scheduler : LongThread(handling.looper) {
         override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
+            0 to {
+                (it.obj as Followable).apply {
+                    dao.deleteFollowable(this)
+                    MassFollower.handler?.obtainMessage(MassFollower.HANDLE_DELETED, this)
+                        ?.sendToTarget()
+                }
+                Delay(DELAY) { follow() }
+            },
+            Api.HANDLE_ERROR to {
+                /////
+                Delay(DELAY) { follow() }
+            }
         )
 
         override fun run() {
@@ -130,17 +145,14 @@ class Follower : ForegroundService() {
 
         private fun follow() {
             val fwb = dao.aFollowable().getOrNull(0)
-            if (fwb == null) {
-                this@Follower.destroy()
+            if (fwb == null || !Follower.active.value!!) {
+                if (toBeEnqueued.isEmpty() && enqueuer?.active != true) this@Follower.destroy()
                 interrupt()
                 return; }
             Api<Rest>(
-                this@Follower, Api.Type.FOLLOW.url.format(fwb.id), Rest::class, null,
-                method = Request.Method.POST, onError = {
-                }) {
-                dao.deleteFollowable(fwb)
-                Delay(DELAY) { follow() }
-            }
+                this@Follower, Api.Type.FOLLOW.url.format(fwb.id), Rest::class, handler,
+                method = Request.Method.POST
+            ) { handler?.obtainMessage(0, fwb)?.sendToTarget() }
         }
     }
 

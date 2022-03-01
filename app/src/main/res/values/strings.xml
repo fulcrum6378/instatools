@@ -38,6 +38,8 @@
     <string name="addToFav">Add to favorites</string>
     <string name="removeFav">Remove from favorites</string>
     <string name="unfStat">%1$d of your %2$d following don\'t follow you back!</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -68,11 +70,16 @@
     <string name="svdEmpty">You have no saved posts!</string>
     <string name="boxEmpty">You have no messages!</string>
     <string name="unfollowedAt">Unfollowed at %s</string>
+    <string name="newUnfNtfChannel">New Unfollowers</string>
+    <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
+    <string name="newUnfNtfText">%d new people have unfollowed you!</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Paste a link&#8230;</string>
+    <string name="downloadsHelp1">1. Open Instagram,\n2. Choose a post or story,\n3. Share it into this app;</string>
+    <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
 
     <!-- Favourites -->
     <string name="favourites">Favorites</string>
@@ -93,6 +100,7 @@
     <string name="mfGuide3">Choose a profile and follow ALL of their followers/following&#8230;</string>
     <string name="mfSeekTitle">Delay between each follow action:</string>
     <string name="mfSeconds">%d seconds</string>
+    <string name="mfClear">Clear the queue</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>
@@ -104,6 +112,9 @@
     <string name="stResetSettings">Reset my settings</string>
     <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
     <string name="stAutoDeleteEmptyDirs">Automatically delete empty folders</string>
+    <string name="stHelp">Help</string>
+    <string name="stHelpMessage">The Settings of This Account will override the Global Settings, wherever you have left a settings of this account empty.</string>
+    <!-- TODO: MORE EXPLANATION FOR THIS -->
 
 
     <!-- Queuer -->
@@ -122,6 +133,5 @@
     <string name="followerChannel">Mass Follower</string>
     <string name="followerChannelDesc">Follows a large number of accounts slowly</string>
     <string name="followerTitle">Mass Following&#8230;</string>
-    <string name="followerStop">Cancel</string>
-    <string name="followerPause">Pause</string>
+    <string name="followerStop">Stop</string>
 </resources>

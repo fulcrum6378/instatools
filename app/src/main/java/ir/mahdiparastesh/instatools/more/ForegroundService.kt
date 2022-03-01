@@ -37,12 +37,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     companion object {
         const val ACTION_START = "ACTION_START"
-        const val ACTION_RESUME = "ACTION_RESUME"
-        const val ACTION_PAUSE = "ACTION_PAUSE"
         const val ACTION_STOP = "ACTION_STOP"
         private val services = arrayOf(Queuer::class, Exporter::class)
 
-        fun anyRunning() = arrayOf(Queuer, Exporter, Follower).any { it.active }
+        fun anyRunning() = arrayOf(Queuer, Exporter, Follower).any { it.active.value!! }
         // Never reference "Queuer"'s Companion in a static variable
 
         fun terminateTasks(c: Context) {
@@ -80,7 +78,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
             ACTION_START -> resolveIntent(intent)
-            ACTION_STOP -> if (com.active) onCancel()
+            ACTION_STOP -> if (com.active.value!!) onCancel()
         }
         return START_NOT_STICKY
     }
@@ -90,7 +88,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     override fun onCreate() {
         super.onCreate()
-        com.active = true
+        com.active.value = true
         c = applicationContext
         m = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
@@ -141,7 +139,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onDestroy() {
         if (requiresHandling) handling.quitSafely()
         com.handler = null
-        com.active = false
+        com.active.value = false
         if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
         super.onDestroy()
     }

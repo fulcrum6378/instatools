@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.MenuItem
 import androidx.annotation.MainThread
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -21,16 +23,16 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class Downloads : BaseActivity() {
     lateinit var b: DownloadsBinding
     private lateinit var adBanner: AdView
 
-    override val menuRes: Int? = null
+    override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +42,8 @@ class Downloads : BaseActivity() {
         toolbar(b.toolbar, R.string.downloads)
 
         handler = object : Handler(Looper.getMainLooper()) {
+            var lastState = true
+
             @SuppressLint("NotifyDataSetChanged")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
@@ -64,25 +68,42 @@ class Downloads : BaseActivity() {
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                 }
+                val newState = !m.queueds.isNullOrEmpty()
+                if (lastState != newState) {
+                    findControl()?.isEnabled = newState
+                    b.empty.vis(!newState)
+                    lastState = newState
+                }
             }
 
             fun find(msg: Message): Int? =
                 if (m.queueds != null) Queued.find(msg.obj as Queued, m.queueds!!) else null
         }
 
+        // Overflow Menu
+        Queuer.active.observe(this) {
+            findControl()?.apply {
+                setIcon(if (it) R.drawable.pause else R.drawable.play)
+                setTitle(if (it) R.string.stop else R.string.start)
+            }
+        }
+        Queuer.active.value = Queuer.active.value
+
+        // Paste Link
         b.linkButton.setOnClickListener {
             if (b.pasteLink.text.toString() == "") return@setOnClickListener
             initService(this, b.pasteLink.text.toString())
             b.pasteLink.setText("")
         }
-
         if (!night()) color(R.color.CSD).apply {
             b.pasteLink.setTextColor(this)
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
         b.pasteLink.typeface = fontRegular
 
-        // TODO: IMPLEMENT DRAG TO DELETE FOR QUEUED ITEMS
+        // More
+        b.downloadsHelp1.typeface = fontRegular
+        b.downloadsHelp2.typeface = fontRegular
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -95,8 +116,6 @@ class Downloads : BaseActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
-            if (!m.queueds.isNullOrEmpty())
-                withContext(Dispatchers.Main) { initService(this@Downloads) }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
         }
     }
@@ -105,7 +124,22 @@ class Downloads : BaseActivity() {
         adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/4315014912")
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
+        b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
+            .apply { bottomToTop = R.id.adBanner }
     }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.dtControl -> if (!m.queueds.isNullOrEmpty()) {
+                if (Queuer.active.value!!) stopService(Intent(c, Queuer::class.java)
+                    .apply { action = ForegroundService.ACTION_STOP })
+                else initService(this@Downloads)
+            }
+        }
+        return super.onMenuItemClick(item)
+    }
+
+    private fun findControl() = b.toolbar.menu.findItem(R.id.dtControl)
 
     companion object : ActivityCompanion() {
         const val HANDLE_INSERTED = 0
@@ -121,7 +155,7 @@ class Downloads : BaseActivity() {
                     putExtra(Settings.EXTRA_IS_GLOBAL, true)
                 })
                 return; }
-            if (Queuer.active) {
+            if (Queuer.active.value!!) {
                 if (link != null)
                     Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()
                 return

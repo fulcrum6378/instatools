@@ -40,7 +40,8 @@ import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener {
+abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener,
+    Toolbar.OnMenuItemClickListener {
     val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
     val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
@@ -66,11 +67,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
         fun anyActive() = arrayOf(
             Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
-        ).any { it.active }
+        ).any { it.active.value!! }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        com.active = true
+        com.active.value = true
         resolvedIntent = null
         super.onCreate(savedInstanceState)
         c = applicationContext
@@ -147,12 +148,15 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             }
             toolbar.overflowIcon?.colorFilter = cf
         }
+        toolbar.setOnMenuItemClickListener(this)
         return true
     }
 
+    override fun onMenuItemClick(item: MenuItem): Boolean = true
+
     override fun onDestroy() {
         com.handler = null
-        com.active = false
+        com.active.value = false
         if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
         super.onDestroy()
     }
