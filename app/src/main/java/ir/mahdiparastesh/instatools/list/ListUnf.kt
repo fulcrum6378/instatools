@@ -35,31 +35,28 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.unfollowers.value == null) return
-        Glide.with(c.c).load(c.m.unfollowers.value!![i].photo).into(h.b.photo)
-        h.b.name.text = "${i + 1}. ${c.m.unfollowers.value!![i].name}"
-        h.b.user.text = if (c.m.unfollowers.value!![i].unfollowedMeAt != null) c.getString(
-            R.string.unfollowedAt, UiTools.date(c.m.unfollowers.value!![i].unfollowedMeAt!!)
-        ) else c.m.unfollowers.value!![i].user
+        val unf = c.m.unfollowers.value?.getOrNull(i) ?: return
+        Glide.with(c.c).load(unf.photo).into(h.b.photo)
+        h.b.name.text = "${i + 1}. ${unf.name}"
+        h.b.user.text = if (unf.unfollowedMeAt != null) c.getString(
+            R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
+        ) else unf.user
 
         h.b.root.setOnClickListener {
-            val u = c.m.unfollowers.value?.get(h.layoutPosition) ?: return@setOnClickListener
+            val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.unf_more, Act().apply {
                 this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id, u.user) }
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }
         h.b.unfollow.setOnClickListener {
-            if (c.m.unfollowers.value == null) return@setOnClickListener
-            if (!c.m.unfollowers.value!![h.layoutPosition].private)
-                unfollow(c.m.unfollowers.value!![h.layoutPosition])
+            val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            if (!u.private) unfollow(u)
             else AlertDialog.Builder(c).apply {
                 setTitle(R.string.unfollow)
                 setMessage(R.string.unfollowPV)
                 setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ ->
-                    unfollow(c.m.unfollowers.value!![h.layoutPosition])
-                }
+                setPositiveButton(R.string.yes) { _, _ -> unfollow(u) }
             }.show().stylise(c)
         }
         h.b.sep.vis(i < itemCount - 1)

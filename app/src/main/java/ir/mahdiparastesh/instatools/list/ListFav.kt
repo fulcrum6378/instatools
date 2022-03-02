@@ -28,12 +28,12 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<ListFav.ViewHolder>() {
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.fav == null) return
-        Glide.with(c.c).load(c.m.fav!![i].photo).into(h.b.photo)
-        h.b.name.text = "${i + 1}. ${c.m.fav!![i].name}"
-        h.b.user.text = c.m.fav!![i].user
+        val fav = c.m.fav?.getOrNull(i) ?: return
+        Glide.with(c.c).load(fav.photo).into(h.b.photo)
+        h.b.name.text = "${i + 1}. ${fav.name}"
+        h.b.user.text = fav.user
         h.b.root.setOnClickListener {
-            val u = c.m.fav?.get(h.layoutPosition) ?: return@setOnClickListener
+            val u = c.m.fav?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.fav_more, Act().apply {
                 this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id, u.user) }
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }

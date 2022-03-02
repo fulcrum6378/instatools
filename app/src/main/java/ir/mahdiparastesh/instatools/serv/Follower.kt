@@ -75,10 +75,10 @@ class Follower : ForegroundService() {
                 var sum: Int
                 dao.addFollowables(flw.users.filter {
                     (toBeEnqueued[0].includePv || !it.is_private) &&
-                            it.pk !in following.map { f -> f.id }
+                            it.pk !in following.map { f -> f.id } && it.pk != m.acc!!.id.toString()
                 }.map { Followable(it.pk, it.username, it.is_private) }.also {
                     sum = it.size
-                    MassFollower.handler?.obtainMessage(ServiceOwner.HANDLE_INSERTED, it)
+                    MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_INSERTED, it)
                         ?.sendToTarget()
                 })
                 if (flw.next_max_id == null) enqueuingDone() else allFollow(flw.next_max_id)
@@ -124,7 +124,7 @@ class Follower : ForegroundService() {
             0 to {
                 (it.obj as Followable).apply {
                     dao.deleteFollowable(this)
-                    MassFollower.handler?.obtainMessage(ServiceOwner.HANDLE_DELETED, this)
+                    MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, this)
                         ?.sendToTarget()
                 }
                 Delay(DELAY) { follow() }
@@ -146,9 +146,9 @@ class Follower : ForegroundService() {
                 if (toBeEnqueued.isEmpty() && enqueuer?.active != true) this@Follower.destroy()
                 interrupt()
                 return; }
-            Api<Rest>(
-                this@Follower, Api.Type.FOLLOW.url.format(fwb.id), Rest::class, handler,
-                method = Request.Method.POST
+            Api<Rest.DoFollow>(
+                this@Follower, Api.Type.FOLLOW.url.format(fwb.id), Rest.DoFollow::class,
+                handler, method = Request.Method.POST
             ) { handler?.obtainMessage(0, fwb)?.sendToTarget() }
         }
     }

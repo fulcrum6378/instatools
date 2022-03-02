@@ -3,13 +3,23 @@ package ir.mahdiparastesh.instatools.more
 import android.view.MenuItem
 import ir.mahdiparastesh.instatools.R
 
-interface ServiceOwner {
-    fun findControl(): MenuItem?
+abstract class ServiceOwnerActivity : BaseActivity() {
+    private var lastEmptinessState = true
+
+    private val controller: MenuItem? get() = toolbar.menu.findItem(R.id.mftControl)
 
     fun updateControlButton(it: Boolean) {
-        findControl()?.apply {
+        controller?.apply {
             setIcon(if (it) R.drawable.pause else R.drawable.play)
             setTitle(if (it) R.string.stop else R.string.start)
+        }
+    }
+
+    fun updateIfEmpty(isEmpty: Boolean) {
+        val newState = !isEmpty
+        if (lastEmptinessState != newState) {
+            controller?.isEnabled = newState
+            lastEmptinessState = newState
         }
     }
 

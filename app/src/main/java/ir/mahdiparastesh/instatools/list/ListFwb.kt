@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListFwbBinding
-import ir.mahdiparastesh.instatools.more.ServiceOwner
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.runBlocking
 
@@ -36,13 +36,11 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         val fwb = c.m.fwb.value?.getOrNull(i) ?: return
         h.b.root.text = fwb.user
-        h.b.root.setOnClickListener {
-            UiTools.openProfile(c, fwb.user)
-        }
+        h.b.root.setOnClickListener { UiTools.openProfile(c, fwb.user) }
         h.b.root.setOnCloseIconClickListener {
             Thread {
                 runBlocking { c.dao.deleteFollowable(fwb) }
-                MassFollower.handler?.obtainMessage(ServiceOwner.HANDLE_DELETED, fwb)
+                MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, fwb)
                     ?.sendToTarget()
             }.start()
         }

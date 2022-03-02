@@ -21,7 +21,7 @@ import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.ServiceOwner
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
@@ -32,7 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MassFollower : BaseActivity(), ServiceOwner {
+class MassFollower : ServiceOwnerActivity() {
     private lateinit var b: MassFollowerBinding
     private lateinit var adBanner: AdView
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
@@ -48,27 +48,26 @@ class MassFollower : BaseActivity(), ServiceOwner {
         toolbar(b.toolbar, R.string.massFollower)
 
         handler = object : Handler(Looper.getMainLooper()) {
-            var lastState = true
-
             @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    ServiceOwner.HANDLE_INSERTED -> (msg.obj as List<Followable>).apply {
-                        m.fwb.value!!.addAll(this)
+                    HANDLE_INSERTED -> (msg.obj as List<Followable>).apply {
+                        if (m.fwb.value == null) m.fwb.value = ArrayList(this)
+                        else {
+                            val wasEmpty = m.fwb.value!!.isEmpty()
+                            m.fwb.value!!.addAll(this)
+                            if (wasEmpty) m.fwb.value = m.fwb.value
+                        }
                         val firstPos = (m.fwb.value?.size ?: 1) - 1
                         b.rv.adapter?.notifyItemRangeInserted(firstPos, firstPos + size)
                     }
-                    ServiceOwner.HANDLE_DELETED -> find(msg)?.let {
+                    HANDLE_DELETED -> find(msg)?.let {
                         m.fwb.value!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.fwb.value!!.size)
                     }
                 }
-                val newState = !m.queueds.isNullOrEmpty()
-                if (lastState != newState) {
-                    findControl()?.isEnabled = newState
-                    lastState = newState
-                }
+                updateIfEmpty(m.fwb.value.isNullOrEmpty())
             }
 
             fun find(msg: Message): Int? = if (m.fwb.value != null)
@@ -92,6 +91,7 @@ class MassFollower : BaseActivity(), ServiceOwner {
                 if (b.rv.adapter == null) b.rv.adapter = ListFwb(this)
                 else b.rv.adapter?.notifyDataSetChanged()
             }
+            updateIfEmpty(m.fwb.value.isNullOrEmpty())
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -168,8 +168,6 @@ class MassFollower : BaseActivity(), ServiceOwner {
         b.seekIndicator.text = getString(R.string.mfSeconds, Follower.DELAY / 1000)
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
     }
-
-    override fun findControl(): MenuItem? = b.toolbar.menu.findItem(R.id.mftControl)
 
     companion object : ActivityCompanion() {
         @MainThread

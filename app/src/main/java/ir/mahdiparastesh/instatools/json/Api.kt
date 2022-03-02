@@ -73,9 +73,9 @@ class Api<JSON>(
     }
 
     private fun invalidResponse(response: String, e: Exception? = null) {
-        if (BuildConfig.DEBUG)
+        /*if (BuildConfig.DEBUG)
             throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else gotError(this, null)
+        else */gotError(this, null)
     }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =
@@ -175,13 +175,13 @@ class Api<JSON>(
                     this["x-csrftoken"] = cookies
                         .substringAfter("csrftoken=")
                         .substringBefore(";")
-                //this["x-instagram-ajax"] = "7f7346b22318"
-                //"Referer": "https://www.instagram.com/instagram/",
+                // this["x-instagram-ajax"] = "7f7346b22318"
             } else { // Cookie "rur" is different between POST and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
             }
-            //this["x-asbd-id"] = "198387"
-            //this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
+            this["x-asbd-id"] = "198387" // MIGHT BE THE SAME FOR DIFFERENT ACCOUNTS
+            // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
+            // But this one is NOT
             this["x-ig-app-id"] = "936619743392459"
             this["cookie"] = cookies
             this["Referer"] = "https://www.instagram.com/"

@@ -74,7 +74,7 @@ class Queuer : ForegroundService() {
                     Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
                         qud!!.failed = true
                         Thread { dao.updateQueued(qud!!) }.start()
-                        Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_CHANGED, qud)
+                        Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, qud)
                             ?.sendToTarget()
                         linkHandled()
                     }
@@ -96,7 +96,7 @@ class Queuer : ForegroundService() {
         if (cur.qud == null) Thread {
             cur.qud = Queued(Persistent.now(), cur.link)
             cur.qud!!.id = dao.addQueued(cur.qud!!)
-            Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_INSERTED, cur.qud!!)
+            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_INSERTED, cur.qud!!)
                 ?.sendToTarget()
         }.start()
 
@@ -186,10 +186,12 @@ class Queuer : ForegroundService() {
     private fun handleQueued(qud: Queued, addOns: ArrayList<Queued>?) {
         CoroutineScope(Dispatchers.IO).launch {
             dao.updateQueued(qud)
-            Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_CHANGED, qud)?.sendToTarget()
+            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, qud)
+                ?.sendToTarget()
             addOns?.forEach { qud ->
                 qud.id = dao.addQueued(qud)
-                Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_INSERTED, qud)?.sendToTarget()
+                Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_INSERTED, qud)
+                    ?.sendToTarget()
             }
         }.invokeOnCompletion { linkHandled() }
     }
@@ -224,7 +226,7 @@ class Queuer : ForegroundService() {
             Volley.newRequestQueue(c).add(
                 object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
                     queue[q].failed = true
-                    Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_CHANGED, queue[q])
+                    Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, queue[q])
                         ?.sendToTarget()
                     CoroutineScope(Dispatchers.IO).launch {
                         dao.updateQueued(queue[q])
@@ -238,7 +240,10 @@ class Queuer : ForegroundService() {
                         )
 
                     override fun deliverResponse(response: ByteArray) {
-                        Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_DELETED, queue[q])
+                        Downloads.handler?.obtainMessage(
+                            ServiceOwnerActivity.HANDLE_DELETED,
+                            queue[q]
+                        )
                             ?.sendToTarget()
                         CoroutineScope(Dispatchers.IO).launch {
                             runCatching {
@@ -310,7 +315,7 @@ class Queuer : ForegroundService() {
     }
 
     override fun onDestroy() {
-        Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_RESET)?.sendToTarget()
+        Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET)?.sendToTarget()
         super.onDestroy()
     }
 

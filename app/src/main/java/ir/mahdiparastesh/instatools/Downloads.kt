@@ -22,15 +22,14 @@ import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.ServiceOwner
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Downloads : BaseActivity(), ServiceOwner {
+class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
     private lateinit var adBanner: AdView
 
@@ -44,38 +43,31 @@ class Downloads : BaseActivity(), ServiceOwner {
         toolbar(b.toolbar, R.string.downloads)
 
         handler = object : Handler(Looper.getMainLooper()) {
-            var lastState = true
-
             @SuppressLint("NotifyDataSetChanged")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    ServiceOwner.HANDLE_INSERTED -> {
+                    HANDLE_INSERTED -> {
                         m.queueds!!.add(msg.obj as Queued)
                         val pos = (m.queueds?.size ?: 1)
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
-                    ServiceOwner.HANDLE_DELETED -> find(msg)?.let {
+                    HANDLE_DELETED -> find(msg)?.let {
                         m.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
-                    ServiceOwner.HANDLE_CHANGED -> find(msg)?.let {
+                    HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
                         m.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
-                    ServiceOwner.HANDLE_RESET ->
+                    HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                 }
-                val newState = !m.queueds.isNullOrEmpty()
-                if (lastState != newState) {
-                    findControl()?.isEnabled = newState
-                    b.empty.vis(!newState)
-                    lastState = newState
-                }
+                updateIfEmpty(m.queueds.isNullOrEmpty())
             }
 
             fun find(msg: Message): Int? =
@@ -109,7 +101,7 @@ class Downloads : BaseActivity(), ServiceOwner {
         CoroutineScope(Dispatchers.IO).launch {
             m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
-            handler?.obtainMessage(ServiceOwner.HANDLE_RESET)?.sendToTarget()
+            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
         }
     }
 
@@ -137,8 +129,6 @@ class Downloads : BaseActivity(), ServiceOwner {
         }
         return super.onMenuItemClick(item)
     }
-
-    override fun findControl(): MenuItem? = b.toolbar.menu.findItem(R.id.dtControl)
 
     companion object : ActivityCompanion() {
         @MainThread

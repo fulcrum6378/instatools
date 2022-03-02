@@ -25,8 +25,9 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.dmInbox?.threads == null) return
+        if (c.m.dmInbox?.threads == null || c.m.dmInbox?.threads?.getOrNull(i) == null) return
         var thd = c.m.dmInbox!!.threads[i]
+        // TODO: thd.users MAY HAVE BEEN EMPTY AND CAUSED THOSE 34-TIME CRASHES
         if (!thd.is_group) {
             Glide.with(c.c).load(thd.users[0].profile_pic_url).into(h.b.photo)
             h.b.name.text = thd.users[0].visName()
@@ -37,15 +38,15 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
 
         h.b.last.text = c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at))
         h.b.root.setOnClickListener {
-            c.m.dmThread = c.m.dmInbox?.threads?.get(h.layoutPosition)
-            f.onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
+            c.m.dmThread = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition)
             if (c.m.dmThread == null || !c.m.dmThread!!.has_older) return@setOnClickListener
+            f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
                 c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, f.handler
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {
-            thd = c.m.dmInbox?.threads?.get(h.layoutPosition) ?: return@setOnClickListener
+            thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.box_more, Act().apply {
                 this[R.id.bmPdf] = {
                     thd.users.getOrNull(0)

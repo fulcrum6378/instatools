@@ -37,23 +37,24 @@ class ListSvd(val c: Main, private val f: PageSvd) : RecyclerView.Adapter<ListSv
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.saved == null) return
+        val svd = c.m.saved?.edges?.getOrNull(i) ?: return
 
         Glide.with(c.c)
-            .load(c.m.saved!!.edges[i].node.thumbnail_src)
+            .load(svd.node.thumbnail_src)
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
         h.b.click.setBackgroundResource(
-            if (f.tracker == null || !f.tracker!!.isSelected(c.m.saved!!.edges[i].node.id)) R.drawable.button
+            if (f.tracker == null || !f.tracker!!.isSelected(svd.node.id)) R.drawable.button
             else R.drawable.selected
         )
         h.b.click.setOnClickListener {
+            val s = c.m.saved?.edges?.getOrNull(i) ?: return@setOnClickListener
             expandable.thumb = it
             try {
-                expandable.expand(c.m.saved!!.edges[h.layoutPosition].node.shortcode)
+                expandable.expand(s.node.shortcode)
             } catch (ignored: NullPointerException) {
             }
         }
