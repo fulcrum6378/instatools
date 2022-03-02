@@ -100,6 +100,9 @@ abstract class Database : RoomDatabase() {
 
         @Delete
         fun deleteFollowable(item: Followable)
+
+        @Query("DELETE FROM Followable")
+        fun deleteFollowables()
     }
 
     companion object {

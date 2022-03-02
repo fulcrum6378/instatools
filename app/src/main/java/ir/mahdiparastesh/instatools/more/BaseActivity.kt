@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -37,6 +38,7 @@ import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -73,6 +75,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     override fun onCreate(savedInstanceState: Bundle?) {
         com.active.value = true
         resolvedIntent = null
+        notFirstResume = false
         super.onCreate(savedInstanceState)
         c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
@@ -95,6 +98,12 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         resolvedIntent = null
         super.onNewIntent(intent)
         resolvedIntent = resolveIntent(intent, false)
+    }
+
+    var notFirstResume = false
+    override fun onResume() {
+        super.onResume()
+        notFirstResume = true
     }
 
     var resolvedIntent: Boolean? = null
@@ -123,7 +132,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             ) tbTitle = getTitle
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
-        tbTitle?.typeface = font
+        tbTitle?.bolden(this, font)
         tbTitle?.textSize =
             resources.getDimension(if (this is Main) R.dimen.tbTitleMain else R.dimen.tbTitle)
         if (this !is Main) supportActionBar?.apply {
@@ -195,6 +204,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     fun night(): Boolean = resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+    @Suppress("DEPRECATION")
+    fun shallBolden() = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        resources.configuration.locales[0].toString()
+    else resources.configuration.locale.toString()) in arrayOf("fa_IR")
 
     @Suppress("unused")
     enum class Theme(val res: Int) {

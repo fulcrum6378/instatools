@@ -33,6 +33,9 @@
     <string name="addToFav">Add to favourites</string>
     <string name="removeFav">Remove from favourites</string>
     <string name="unfStat">%1$d of your %2$d following don\'t follow you back!</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="openDmInInsta">Open Chat in Instagram</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -63,11 +66,16 @@
     <string name="svdEmpty">You have no saved posts!</string>
     <string name="boxEmpty">You have no messages!</string>
     <string name="unfollowedAt">Unfollowed at %s</string>
+    <string name="newUnfNtfChannel">New Unfollowers</string>
+    <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
+    <string name="newUnfNtfText">%d new people have unfollowed you!</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Paste a link&#8230;</string>
+    <string name="downloadsHelp1">1. Open Instagram,\n2. Choose a post or story,\n3. Share it into this app;</string>
+    <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
 
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
@@ -79,6 +87,17 @@
 
     <!-- Favourites -->
     <string name="favourites">Favourites</string>
+    <string name="favEmpty">Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.</string>
+
+    <!-- Mass Follower -->
+    <string name="massFollower">Mass Follower</string>
+    <string name="mfGuide1">Instagram won\'t let you follow a large number of people so frequently. It may block your account or sign you out of your session.</string>
+    <string name="mfGuide2">But using this tool, you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot or a spammer.</string>
+    <string name="mfGuide3">1. Open a profile in InstaTools,\n\n2. Tap on the number of their followers or following,\n\n3. Select \"Follow All\"&#8230;</string>
+    <string name="mfSeekTitle">Delay between each follow action:</string>
+    <string name="mfSeconds">%d seconds</string>
+    <string name="mfMinutes">%d minute(s)</string>
+    <string name="mfClear">Clear the queue</string>
 
     <!-- Settings -->
     <string name="stDlPath">Main download folder</string>
@@ -89,6 +108,8 @@
     <string name="stResetSettings">Reset my settings</string>
     <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
     <string name="stAutoDeleteEmptyDirs">Automatically delete empty folders</string>
+    <string name="stHelp">Help</string>
+    <string name="stHelpMessage">The Settings of This Account inherit the Global Settings, wherever you have left a setting of this account empty.</string>
 
 
     <!-- Queuer -->
@@ -102,4 +123,8 @@
     <string name="exporterChannelDesc">Exports the direct messages</string>
     <string name="exporterTitle">Exporting&#8230;</string>
     <string name="exporterStop">Abort</string>
+
+    <!-- Follower -->
+    <string name="followerChannelDesc">Follow a large number of accounts slowly&#8230;</string>
+    <string name="followerTitle">Following Furtively&#8230;</string>
 </resources>

@@ -3,8 +3,10 @@ package ir.mahdiparastesh.instatools.view
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
@@ -160,5 +162,22 @@ class UiTools {
                 interpolator = OvershootInterpolator(1.75f)
                 start()
             }
+
+        @Suppress("SpellCheckingInspection")
+        fun openDm(c: Activity, threadId: String) {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).apply {
+                    component = ComponentName(
+                        "com.instagram.android",
+                        "com.instagram.mainactivity.MainActivity"
+                    )
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+        }
+
+        fun TextView.bolden(c: BaseActivity, font: Typeface = c.fontBold) {
+            if (!c.shallBolden()) typeface = font
+            else setTypeface(font, Typeface.BOLD)
+        }
     }
 }

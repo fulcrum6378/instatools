@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
@@ -87,12 +86,6 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback c.m.dmThread != null
         }
-        b.refresher.setOnRefreshListener {
-            if (boxThread?.active == true) return@setOnRefreshListener
-            b.rv.adapter = null
-            c.m.dmInbox = null
-            boxThread = FetchOfInbox().also { it.start() }
-        }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (c.m.dmThread == null) {
@@ -115,6 +108,13 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
         return b.root
     }
 
+    override fun onRefresh() {
+        if (boxThread?.active == true) return
+        b.rv.adapter = null
+        c.m.dmInbox = null
+        boxThread = FetchOfInbox().also { it.start() }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
@@ -128,10 +128,6 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
             else b.rv.adapter?.notifyDataSetChanged()
         }
         updateJumper()
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        else -> false
     }
 
     override fun updateJumper() {

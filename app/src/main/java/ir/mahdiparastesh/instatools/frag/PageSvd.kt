@@ -82,14 +82,6 @@ class PageSvd(c: Main) : BasePage(c) {
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
         }
-        b.refresher.setOnRefreshListener {
-            if (thread?.active == true) return@setOnRefreshListener
-            b.rv.adapter = null
-            c.m.saved = null
-            b.empty.vis(false)
-            tracker = null
-            thread = FetchSome().also { it.start() }
-        }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) &&
@@ -102,6 +94,15 @@ class PageSvd(c: Main) : BasePage(c) {
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
         else if (thread == null) thread = FetchSome().also { it.start() }
         return b.root
+    }
+
+    override fun onRefresh() {
+        if (thread?.active == true) return
+        b.rv.adapter = null
+        c.m.saved = null
+        b.empty.vis(false)
+        tracker = null
+        thread = FetchSome().also { it.start() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -120,38 +121,31 @@ class PageSvd(c: Main) : BasePage(c) {
         }
     }
 
-    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mtUnsaveDownload -> {
-            if (tracker != null && c.m.saved != null) Saver(
-                tracker!!.selection, unsave = true, download = true
-            ).start()
-            tracker?.clearSelection()
-            true
-        }
-        R.id.mtSelectAll -> {
-            if (c.m.saved != null)
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.mtUnsaveDownload -> {
+                if (tracker != null && c.m.saved != null) Saver(
+                    tracker!!.selection, unsave = true, download = true
+                ).start()
+                tracker?.clearSelection()
+            }
+            R.id.mtSelectAll -> if (c.m.saved != null)
                 tracker?.setItemsSelected(c.m.saved!!.edges.map { it.node.id }, true)
-            true
+            R.id.mtDeselectAll -> tracker?.clearSelection()
+            R.id.mtDownload -> {
+                if (tracker != null && c.m.saved != null) Saver(
+                    tracker!!.selection, unsave = false, download = true
+                ).start()
+                tracker?.clearSelection()
+            }
+            R.id.mtUnsave -> {
+                if (tracker != null && c.m.saved != null) Saver(
+                    tracker!!.selection, unsave = true, download = false
+                ).start()
+                tracker?.clearSelection()
+            }
         }
-        R.id.mtDeselectAll -> {
-            tracker?.clearSelection()
-            true
-        }
-        R.id.mtDownload -> {
-            if (tracker != null && c.m.saved != null) Saver(
-                tracker!!.selection, unsave = false, download = true
-            ).start()
-            tracker?.clearSelection()
-            true
-        }
-        R.id.mtUnsave -> {
-            if (tracker != null && c.m.saved != null) Saver(
-                tracker!!.selection, unsave = true, download = false
-            ).start()
-            tracker?.clearSelection()
-            true
-        }
-        else -> false
+        return super.onMenuItemClick(item)
     }
 
     override fun goBack(): Boolean {

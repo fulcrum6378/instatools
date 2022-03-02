@@ -10,9 +10,9 @@
     <dimen name="userDescFont">13sp</dimen>
     <dimen name="moreAction">50dp</dimen>
     <dimen name="menuFont">17sp</dimen>
-    <dimen name="jumperSize">46dp</dimen>
-    <dimen name="jumperPad">10dp</dimen>
-    <dimen name="jumperBottom">30dp</dimen>
+    <dimen name="jumperSize">38dp</dimen>
+    <dimen name="jumperPad">8.5dp</dimen>
+    <dimen name="jumperBottom">27dp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>
@@ -44,11 +44,12 @@
     <dimen name="qudLoadingPad">14dp</dimen>
     <dimen name="qudPadH">24dp</dimen>
     <dimen name="qudPadV">10dp</dimen>
+    <dimen name="downloadsHelp1">19sp</dimen>
+    <dimen name="downloadsHelp2">15sp</dimen>
 
     <!-- MassFollower -->
-    <dimen name="mfSearch">150dp</dimen>
-    <dimen name="mfSearchPad">30dp</dimen>
     <dimen name="mfPadV">15dp</dimen>
+    <dimen name="mfGuideTv">19sp</dimen>
 
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>

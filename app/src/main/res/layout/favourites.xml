@@ -4,24 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/root"
     tools:context=".Favourites"
-    tools:ignore="MissingConstraints">
+    tools:ignore="ContentDescription,MissingConstraints">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
         app:title="@string/favourites" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresher"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_marginTop="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            style="@style/rv"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/empty"
+        style="@style/tip"
+        android:text="@string/favEmpty"
+        android:textSize="17sp"
+        android:visibility="gone" />
 
     <View
         android:id="@+id/tbShadow"
         style="@style/tbShadow" />
+
+    <ImageView
+        android:id="@+id/jumper"
+        style="@style/jumper" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.*
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -77,16 +76,17 @@ class PageUnf(c: Main) : BasePage(c) {
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
 
         essentials()
-        b.refresher.setOnRefreshListener {
-            if (thread?.active == true) return@setOnRefreshListener
-            b.rv.adapter = null
-            thread = Inquiry().also { it.start() }
-        }
 
         //b.refresher.isRefreshing = true
         if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
         else load(true)
         return b.root
+    }
+
+    override fun onRefresh() {
+        if (thread?.active == true) return
+        b.rv.adapter = null
+        thread = Inquiry().also { it.start() }
     }
 
     private fun load(initial: Boolean) {
@@ -101,10 +101,6 @@ class PageUnf(c: Main) : BasePage(c) {
         super.onLoaded(isEmpty, asGuest)
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean = when (item.itemId) {
-        else -> false
     }
 
 

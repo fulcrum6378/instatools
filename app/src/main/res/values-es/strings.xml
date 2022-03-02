@@ -33,6 +33,9 @@
     <string name="addToFav">Agregar a los favoritos</string>
     <string name="removeFav">Quitar de favoritos</string>
     <string name="unfStat">¡%1$d de tus %2$d seguidores no te siguen!</string>
+    <string name="start">Comienzo</string>
+    <string name="stop">Detener</string>
+    <string name="openDmInInsta">Abrir chat en Instagram</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -63,14 +66,20 @@
     <string name="svdEmpty">¡No tienes publicaciones guardadas!</string>
     <string name="boxEmpty">¡No tienes mensajes!</string>
     <string name="unfollowedAt">No seguido el %s</string>
+    <string name="newUnfNtfChannel">Nuevos no seguidores</string>
+    <string name="newUnfNtfChannelDesc">Algunos personas simplemente no te siguieron!</string>
+    <string name="newUnfNtfText">¡%d nuevos personas te han dejado!</string>
 
     <!-- Downloads -->
     <string name="downloads">Descargas</string>
     <string name="dwShare">Descargar</string>
     <string name="pasteLink">Pegar un enlace&#8230;</string>
+    <string name="downloadsHelp1">1. Abre Instagram,\n2. Elija una publicación o historia,\n3. Compártalo en esta aplicación;</string>
+    <string name="downloadsHelp2">para que se descargue inmediatamente!</string>
 
     <!-- Favourites -->
     <string name="favourites">Favoritos</string>
+    <string name="favEmpty">Abra un perfil en InstaTools y toque el ícono del \"corazón\" en la parte superior derecha para agregarlo a esta lista.</string>
 
     <!-- Viewer -->
     <string name="vwTitle">Visor de Perfil</string>
@@ -79,6 +88,16 @@
     <string name="vwFollowing">Siguiendo</string>
     <string name="vwPrivate">¡Esta cuenta es privada!</string>
     <string name="followAll">Seguir a todos</string>
+
+    <!-- Mass Follower -->
+    <string name="massFollower">Seguidor Masivo</string>
+    <string name="mfGuide1">Instagram no te permitirá seguir a un gran número de personas con tanta frecuencia. Puede bloquear su cuenta o cerrar su sesión.</string>
+    <string name="mfGuide2">Pero usando este robot, puedes seguir a numerosas personas lentamente y una por una, para que Instagram no sospeche que es un robot o un spammer.</string>
+    <string name="mfGuide3">1. Abra un perfil en InstaTools,\n\n2. Toque el número de sus seguidores o siguiendo,\n\n3. Seleccione \"Seguir a todos\"&#8230;</string>
+    <string name="mfSeekTitle">Retraso entre cada acción de seguimiento:</string>
+    <string name="mfSeconds">%d segundos</string>
+    <string name="mfMinutes">%d minuto(s)</string>
+    <string name="mfClear">Borrar la cola</string>
 
     <!-- Settings -->
     <string name="stDlPath">Carpeta de descarga principal</string>
@@ -89,6 +108,8 @@
     <string name="stResetSettings">Restablecer mi Configuración</string>
     <string name="stResetSettingsSure">¿Está seguro? (NO se cerrará la sesión de su cuenta)</string>
     <string name="stAutoDeleteEmptyDirs">Eliminar carpetas vacías automáticamente</string>
+    <string name="stHelp">Ayuda</string>
+    <string name="stHelpMessage">Ajustes Locales (la configuración de esta cuenta) hereda Ajustes Globales, siempre que haya dejado una configuración de esta cuenta vacía.</string>
 
 
     <!-- Queuer -->
@@ -102,4 +123,8 @@
     <string name="exporterChannelDesc">Exporta los mensajes directos</string>
     <string name="exporterTitle">Exportador&#8230;</string>
     <string name="exporterStop">Abortar</string>
+
+    <!-- Follower -->
+    <string name="followerChannelDesc">Sigue un gran número de cuentas lentamente&#8230;</string>
+    <string name="followerTitle">Siguiendo Furtivamente&#8230;</string>
 </resources>

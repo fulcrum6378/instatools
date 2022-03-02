@@ -10,10 +10,7 @@ import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.LongThread
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.*
 import kotlinx.coroutines.runBlocking
 
 class Follower : ForegroundService() {
@@ -81,7 +78,7 @@ class Follower : ForegroundService() {
                             it.pk !in following.map { f -> f.id }
                 }.map { Followable(it.pk, it.username, it.is_private) }.also {
                     sum = it.size
-                    MassFollower.handler?.obtainMessage(MassFollower.HANDLE_INSERTED, it)
+                    MassFollower.handler?.obtainMessage(ServiceOwner.HANDLE_INSERTED, it)
                         ?.sendToTarget()
                 })
                 if (flw.next_max_id == null) enqueuingDone() else allFollow(flw.next_max_id)
@@ -127,7 +124,7 @@ class Follower : ForegroundService() {
             0 to {
                 (it.obj as Followable).apply {
                     dao.deleteFollowable(this)
-                    MassFollower.handler?.obtainMessage(MassFollower.HANDLE_DELETED, this)
+                    MassFollower.handler?.obtainMessage(ServiceOwner.HANDLE_DELETED, this)
                         ?.sendToTarget()
                 }
                 Delay(DELAY) { follow() }

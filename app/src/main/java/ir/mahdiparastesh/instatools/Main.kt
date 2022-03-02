@@ -164,7 +164,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        if (!BuildConfig.DEBUG) b.nav.menu.findItem(R.id.mnMassFollower)?.isVisible = false
         b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
     }
 

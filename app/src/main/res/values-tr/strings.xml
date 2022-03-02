@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">InstaTools</string>
 
     <!-- #GLOBAL -->
@@ -33,6 +33,9 @@
     <string name="addToFav">Favorilere ekle</string>
     <string name="removeFav">Favorilerinden kaldır</string>
     <string name="unfStat">%1$d takipçinizden %2$d\'ü sizi geri takip etmiyor!</string>
+    <string name="start">Başlama</string>
+    <string name="stop">Durmak</string>
+    <string name="openDmInInsta">Instagram\'da Sohbeti Aç</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -63,14 +66,20 @@
     <string name="svdEmpty">Kaydedilmiş yayınınız yok!</string>
     <string name="boxEmpty">Mesajınız yok!</string>
     <string name="unfollowedAt">%s\'de takip edilmedi</string>
+    <string name="newUnfNtfChannel">Yeni takip etmeyenler</string>
+    <string name="newUnfNtfChannelDesc">Bazı insanlar sizi takibi bıraktı!</string>
+    <string name="newUnfNtfText">%d yeni kişi seni takibi bıraktı!</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Bağlantı yapıştır&#8230;</string>
+    <string name="downloadsHelp1">1. Instagram\'ı açın,\n2. Bir gönderi veya hikaye seçin,\n3. Bu uygulamada paylaşın;</string>
+    <string name="downloadsHelp2">böylece hemen indirilecek!</string>
 
     <!-- Favourites -->
     <string name="favourites">Favoriler</string>
+    <string name="favEmpty">InstaTools\'ta bir profil açın ve bu listeye eklemek için sağ üstteki \"kalp\" simgesine dokunun.</string>
 
     <!-- Viewer -->
     <string name="vwTitle">Profil Görüntüleyici</string>
@@ -79,6 +88,16 @@
     <string name="vwFollowing">Takip Edilen</string>
     <string name="vwPrivate">Bu hesap gizli!</string>
     <string name="followAll">Hepsini takip et</string>
+
+    <!-- Mass Follower -->
+    <string name="massFollower">Kitle Takipçisi</string>
+    <string name="mfGuide1">Instagram, çok sayıda insanı bu kadar sık takip etmenize izin vermez. Hesabınızı engelleyebilir veya oturumunuzu kapatabilir.</string>
+    <string name="mfGuide2" tools:ignore="Typos">Ancak bu robotu kullanarak çok sayıda kişiyi yavaş yavaş ve tek tek takip edebilirsiniz, böylece Instagram bir robot veya spam gönderici olduğundan şüphelenmesin.</string>
+    <string name="mfGuide3">1. InstaTools\'ta bir profil açın,\n\n2. Takipçilerinin veya takip edenlerin sayısına dokunun,\n\n3. "Tümünü İzle"yi seçin&#8230;</string>
+    <string name="mfSeekTitle">Her takip eylemi arasındaki gecikme:</string>
+    <string name="mfSeconds">%d saniye</string>
+    <string name="mfMinutes">%d dakika</string>
+    <string name="mfClear">Kuyruğu temizle</string>
 
     <!-- Settings -->
     <string name="stDlPath">Ana indirme klasörü</string>
@@ -89,6 +108,8 @@
     <string name="stResetSettings">Ayarlarımı sıfırla</string>
     <string name="stResetSettingsSure">Emin misin? (hesabınızdan çıkış yapmayacaksınız)</string>
     <string name="stAutoDeleteEmptyDirs">Boş klasörleri otomatik olarak sil</string>
+    <string name="stHelp">Kılavuz</string>
+    <string name="stHelpMessage">Bu hesabın bir ayarını boş bıraktığınız her yerde, Bu Hesabın Ayarları Genel Ayarları devralır.</string>
 
 
     <!-- Queuer -->
@@ -102,4 +123,8 @@
     <string name="exporterChannelDesc">Doğrudan mesajları dışa aktarır</string>
     <string name="exporterTitle">Dışa aktarılıyor&#8230;</string>
     <string name="exporterStop">Iptal</string>
+
+    <!-- Follower -->
+    <string name="followerChannelDesc" tools:ignore="Typos">Çok sayıda hesabı yavaş yavaş takip edin&#8230;</string>
+    <string name="followerTitle">Gizlice Takip Etmek&#8230;</string>
 </resources>

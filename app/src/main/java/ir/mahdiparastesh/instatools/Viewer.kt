@@ -132,8 +132,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateJumper()
                 b.tbShadow.vish(b.nsv.scrollY > 0)
+                updateJumper()
                 if (!b.nsv.canScrollVertically(1) && thread?.active != true &&
                     m.vwUser?.hasMore() != false
                 ) thread = FetchSome().also { it.start() }
@@ -168,10 +168,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         arrayOf(b.followersNum, b.followingNum).forEach { it.typeface = fontBold }
         arrayOf(b.followersText, b.followingText).forEach { it.typeface = fontLight }
-        if (BuildConfig.DEBUG) {
-            b.followers.setOnClickListener { flwClick(true, it) }
-            b.following.setOnClickListener { flwClick(false, it) }
-        }
+        b.followers.setOnClickListener { flwClick(true, it) }
+        b.following.setOnClickListener { flwClick(false, it) }
 
         load()
     }
@@ -217,6 +215,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     dao.deleteFavourite(dbFav!!)
                     dbFav = null
                 }
+                m.fav = null
                 withContext(Dispatchers.Main) { fixTbMenu() }
             }
             R.id.vtDownload -> {

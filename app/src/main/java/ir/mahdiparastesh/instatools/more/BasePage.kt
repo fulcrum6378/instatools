@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.more
 import android.animation.ObjectAnimator
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -22,7 +23,8 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
-abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener {
+abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMenuItemClickListener,
+    SwipeRefreshLayout.OnRefreshListener {
     abstract var inflater: LayoutInflater
     abstract var handler: Handler?
     abstract val root: ConstraintLayout
@@ -45,6 +47,7 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
     }
 
     protected fun essentials() {
+        refresher().setOnRefreshListener(this)
         rv().addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateShadow()
@@ -59,7 +62,13 @@ abstract class BasePage(val c: Main) : Fragment(), BackStackOwner, Toolbar.OnMen
             anJumper?.cancel()
             anJumper = UiTools.anJumper(c, jumper(), it)
         }
+        error().setOnClickListener {
+            refresher().isRefreshing = true
+            onRefresh()
+        }
     }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean = true
 
     open fun onLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
         refresher().isRefreshing = false

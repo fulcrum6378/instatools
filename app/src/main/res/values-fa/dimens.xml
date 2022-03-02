@@ -2,9 +2,17 @@
 <resources>
     <dimen name="tbTitleMain">9sp</dimen>
     <dimen name="tbTitle">6.5sp</dimen>
+    <dimen name="menuFont">15sp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">14sp</dimen>
     <dimen name="dmFont">14sp</dimen>
     <dimen name="searchFont">5.5sp</dimen>
+
+    <!-- Downloads -->
+    <dimen name="downloadsHelp1">18sp</dimen>
+    <dimen name="downloadsHelp2">15sp</dimen>
+
+    <!-- MassFollower -->
+    <dimen name="mfGuideTv">17sp</dimen>
 </resources>

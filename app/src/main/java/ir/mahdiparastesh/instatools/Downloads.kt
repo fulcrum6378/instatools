@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.MainThread
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +22,7 @@ import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.ServiceOwner
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -28,7 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Downloads : BaseActivity() {
+class Downloads : BaseActivity(), ServiceOwner {
     lateinit var b: DownloadsBinding
     private lateinit var adBanner: AdView
 
@@ -47,24 +49,24 @@ class Downloads : BaseActivity() {
             @SuppressLint("NotifyDataSetChanged")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_INSERTED -> {
+                    ServiceOwner.HANDLE_INSERTED -> {
                         m.queueds!!.add(msg.obj as Queued)
                         val pos = (m.queueds?.size ?: 1)
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
-                    HANDLE_DELETED -> find(msg)?.let {
+                    ServiceOwner.HANDLE_DELETED -> find(msg)?.let {
                         m.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
-                    HANDLE_CHANGED -> find(msg)?.let {
+                    ServiceOwner.HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
                         m.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
-                    HANDLE_RESET ->
+                    ServiceOwner.HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                 }
@@ -79,15 +81,6 @@ class Downloads : BaseActivity() {
             fun find(msg: Message): Int? =
                 if (m.queueds != null) Queued.find(msg.obj as Queued, m.queueds!!) else null
         }
-
-        // Overflow Menu
-        Queuer.active.observe(this) {
-            findControl()?.apply {
-                setIcon(if (it) R.drawable.pause else R.drawable.play)
-                setTitle(if (it) R.string.stop else R.string.start)
-            }
-        }
-        Queuer.active.value = Queuer.active.value
 
         // Paste Link
         b.linkButton.setOnClickListener {
@@ -116,7 +109,7 @@ class Downloads : BaseActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
-            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+            handler?.obtainMessage(ServiceOwner.HANDLE_RESET)?.sendToTarget()
         }
     }
 
@@ -126,6 +119,12 @@ class Downloads : BaseActivity() {
         adBanner.loadAd(AdRequest.Builder().build())
         b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
             .apply { bottomToTop = R.id.adBanner }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val ret = super.onCreateOptionsMenu(menu)
+        Queuer.active.observe(this) { updateControlButton(it) }
+        return ret
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -139,14 +138,9 @@ class Downloads : BaseActivity() {
         return super.onMenuItemClick(item)
     }
 
-    private fun findControl() = b.toolbar.menu.findItem(R.id.dtControl)
+    override fun findControl(): MenuItem? = b.toolbar.menu.findItem(R.id.dtControl)
 
     companion object : ActivityCompanion() {
-        const val HANDLE_INSERTED = 0
-        const val HANDLE_DELETED = 1
-        const val HANDLE_CHANGED = 2
-        const val HANDLE_RESET = 3
-
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             if (c.sPreference(Settings.spStorage) == null) {

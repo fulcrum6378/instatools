@@ -4,6 +4,9 @@
         android:id="@+id/bmPdf"
         android:title="@string/exportPdf" />
     <item
+        android:id="@+id/bmOpenDmInInsta"
+        android:title="@string/openDmInInsta" />
+    <item
         android:id="@+id/bmView"
         android:title="@string/viewProfile" />
 </menu>

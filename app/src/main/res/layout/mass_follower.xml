@@ -85,49 +85,22 @@
 
             <TextView
                 android:id="@+id/guideTv1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:justificationMode="inter_word"
-                android:text="@string/mfGuide1"
-                android:textAlignment="center"
-                android:textColor="?attr/colorAccent"
-                android:textSize="18sp"
-                tools:ignore="UnusedAttribute" />
+                style="@style/mfGuideTv"
+                android:layout_marginTop="0sp"
+                android:text="@string/mfGuide1" />
 
             <TextView
                 android:id="@+id/guideTv2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:justificationMode="inter_word"
-                android:text="@string/mfGuide2"
-                android:textAlignment="center"
-                android:textColor="?attr/colorAccent"
-                android:textSize="19sp"
-                tools:ignore="UnusedAttribute" />
+                style="@style/mfGuideTv"
+                android:text="@string/mfGuide2" />
 
             <TextView
                 android:id="@+id/guideTv3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:justificationMode="inter_word"
+                style="@style/mfGuideTv"
+                android:justificationMode="none"
+                android:lineSpacingMultiplier="1.0"
                 android:text="@string/mfGuide3"
-                android:textAlignment="center"
-                android:textColor="?attr/colorAccent"
-                android:textSize="17sp"
                 tools:ignore="UnusedAttribute" />
-
-            <ImageView
-                android:id="@+id/guideIv"
-                android:layout_width="@dimen/mfSearch"
-                android:layout_height="@dimen/mfSearch"
-                android:layout_gravity="center"
-                android:layout_marginTop="42dp"
-                android:background="@drawable/button_round_bordered"
-                android:contentDescription="@string/search"
-                android:padding="@dimen/mfSearchPad"
-                android:src="@drawable/search" />
         </LinearLayout>
     </ScrollView>
 

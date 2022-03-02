@@ -39,6 +39,9 @@
     <string name="addToFav">اضافه به مورد علاقه</string>
     <string name="removeFav">حذف از مورد علاقه</string>
     <string name="unfStat">%1$d مورد از %2$d نفری که فالو می کنید، شما را فالو نکرده اند!</string>
+    <string name="start">شروع</string>
+    <string name="stop">ایست</string>
+    <string name="openDmInInsta">بازکردن چت در اینستا</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -69,14 +72,20 @@
     <string name="svdEmpty">شما هیچ پستی را ذخیره نکرده اید!</string>
     <string name="boxEmpty">شما هیچ پیامی ندارید!</string>
     <string name="unfollowedAt">تاریخ آنفالو: %s</string>
+    <string name="newUnfNtfChannel">آنفالورهای جدید</string>
+    <string name="newUnfNtfChannelDesc">بعضی ها شما را آنفالو کرده اند!</string>
+    <string name="newUnfNtfText">%d شخص جدید شما را آنفالو کردند!</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
+    <string name="downloadsHelp1">۱. اینستاگرام را باز کنید،\n۲. یک پست یا استوری را انتخاب کنید،\n۳. آنرا در این اپ به اشتراک بگذارید؛</string>
+    <string name="downloadsHelp2">تا بلافاصله دانلود شود!</string>
 
     <!-- Favourites -->
     <string name="favourites">مورد علاقه</string>
+    <string name="favEmpty">یک پروفایل را در اینستاتولز باز کنید و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.</string>
 
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
@@ -85,6 +94,16 @@
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
     <string name="followAll">فالو کردن همه</string>
+
+    <!-- Mass Follower -->
+    <string name="massFollower">دنبال کردن دسته جمعی</string>
+    <string name="mfGuide1">اینستاگرام به شما اجازه نمی دهد که افراد زیادی را در مدت زمان کوتاه یکباره فالو کنید. ممکن است اکانت شما را معلق کرده یا شما را از حسابتان خارج کند.</string>
+    <string name="mfGuide2">اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید بدون اینکه اینستاگرام به شما حساس شود.</string>
+    <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
+    <string name="mfSeekTitle">تاخیر بین هر عمل فالو:</string>
+    <string name="mfSeconds">%d ثانیه</string>
+    <string name="mfMinutes">%d دقیقه</string>
+    <string name="mfClear">پاک کردن لیست</string>
 
     <!-- Settings -->
     <string name="stDlPath">پوشه اصلی دانلود</string>
@@ -95,6 +114,8 @@
     <string name="stResetSettings">بازنشانی تنظیمات</string>
     <string name="stResetSettingsSure">آیا مطمئن هستید؟ (از حسابتان خارج «نخواهید» شد)</string>
     <string name="stAutoDeleteEmptyDirs">حذف خودکار فولدر های خالی</string>
+    <string name="stHelp">راهنما</string>
+    <string name="stHelpMessage">«تنظیمات این اکانت» از «تنظیمات همه اکانت ها» ارث می برد؛ یعنی شما هر تنظیمی را که در «تنظیمات این اکانت» خالی بگذارید، اپلیکیشن در آن مورد بخصوص از «تنظیمات همه اکانت ها» تبعیت می کند.</string>
 
 
     <!-- Queuer -->
@@ -108,4 +129,8 @@
     <string name="exporterChannelDesc">دایرکت ها را برایتان استخراج می کند</string>
     <string name="exporterTitle">در حال استخراج&#8230;</string>
     <string name="exporterStop">ایست</string>
+
+    <!-- Follower -->
+    <string name="followerChannelDesc">فالو کردن دسته جمعی&#8230;</string>
+    <string name="followerTitle">در حال یواشکی فالو کردن&#8230;</string>
 </resources>

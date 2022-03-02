@@ -51,6 +51,9 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
                     thd.users.getOrNull(0)
                         ?.let { uu -> f.expOptions(Exporter.Method.PDF, uu.username, thd) }
                 }
+                this[R.id.bmOpenDmInInsta] = {
+                    UiTools.openDm(c, thd.thread_id)
+                }
                 this[R.id.bmView] = {
                     thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.pk, uu.username) }
                 }

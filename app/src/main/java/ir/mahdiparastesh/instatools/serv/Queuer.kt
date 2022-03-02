@@ -22,10 +22,7 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.more.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,7 +74,7 @@ class Queuer : ForegroundService() {
                     Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
                         qud!!.failed = true
                         Thread { dao.updateQueued(qud!!) }.start()
-                        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)
+                        Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_CHANGED, qud)
                             ?.sendToTarget()
                         linkHandled()
                     }
@@ -99,7 +96,8 @@ class Queuer : ForegroundService() {
         if (cur.qud == null) Thread {
             cur.qud = Queued(Persistent.now(), cur.link)
             cur.qud!!.id = dao.addQueued(cur.qud!!)
-            Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, cur.qud!!)?.sendToTarget()
+            Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_INSERTED, cur.qud!!)
+                ?.sendToTarget()
         }.start()
 
         if (cur.link.contains("/stories/")) {
@@ -188,10 +186,10 @@ class Queuer : ForegroundService() {
     private fun handleQueued(qud: Queued, addOns: ArrayList<Queued>?) {
         CoroutineScope(Dispatchers.IO).launch {
             dao.updateQueued(qud)
-            Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, qud)?.sendToTarget()
+            Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_CHANGED, qud)?.sendToTarget()
             addOns?.forEach { qud ->
                 qud.id = dao.addQueued(qud)
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_INSERTED, qud)?.sendToTarget()
+                Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_INSERTED, qud)?.sendToTarget()
             }
         }.invokeOnCompletion { linkHandled() }
     }
@@ -226,7 +224,7 @@ class Queuer : ForegroundService() {
             Volley.newRequestQueue(c).add(
                 object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
                     queue[q].failed = true
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, queue[q])
+                    Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_CHANGED, queue[q])
                         ?.sendToTarget()
                     CoroutineScope(Dispatchers.IO).launch {
                         dao.updateQueued(queue[q])
@@ -240,7 +238,7 @@ class Queuer : ForegroundService() {
                         )
 
                     override fun deliverResponse(response: ByteArray) {
-                        Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, queue[q])
+                        Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_DELETED, queue[q])
                             ?.sendToTarget()
                         CoroutineScope(Dispatchers.IO).launch {
                             runCatching {
@@ -312,7 +310,7 @@ class Queuer : ForegroundService() {
     }
 
     override fun onDestroy() {
-        Downloads.handler?.obtainMessage(Downloads.HANDLE_RESET)?.sendToTarget()
+        Downloads.handler?.obtainMessage(ServiceOwner.HANDLE_RESET)?.sendToTarget()
         super.onDestroy()
     }
 

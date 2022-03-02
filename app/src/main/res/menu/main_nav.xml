@@ -10,7 +10,7 @@
         android:title="@string/favourites" />
     <item
         android:id="@+id/mnMassFollower"
-        android:icon="@drawable/add"
+        android:icon="@drawable/follow"
         android:title="@string/massFollower" />
     <item
         android:id="@+id/mnGSettings"

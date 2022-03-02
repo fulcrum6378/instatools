@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.annotation.MainThread
@@ -20,8 +21,10 @@ import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.ServiceOwner
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MassFollower : BaseActivity() {
+class MassFollower : BaseActivity(), ServiceOwner {
     private lateinit var b: MassFollowerBinding
     private lateinit var adBanner: AdView
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
@@ -50,12 +53,12 @@ class MassFollower : BaseActivity() {
             @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_INSERTED -> (msg.obj as List<Followable>).apply {
+                    ServiceOwner.HANDLE_INSERTED -> (msg.obj as List<Followable>).apply {
                         m.fwb.value!!.addAll(this)
                         val firstPos = (m.fwb.value?.size ?: 1) - 1
                         b.rv.adapter?.notifyItemRangeInserted(firstPos, firstPos + size)
                     }
-                    HANDLE_DELETED -> find(msg)?.let {
+                    ServiceOwner.HANDLE_DELETED -> find(msg)?.let {
                         m.fwb.value!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.fwb.value!!.size)
@@ -72,20 +75,9 @@ class MassFollower : BaseActivity() {
                 Followable.find(msg.obj as Followable, m.fwb.value!!) else null
         }
 
-        // Overflow Menu
-        Follower.active.observe(this) {
-            b.toolbar.menu.findItem(R.id.mftControl)?.apply {
-                setIcon(if (it) R.drawable.pause else R.drawable.play)
-                setTitle(if (it) R.string.stop else R.string.start)
-            }
-        }
-        Follower.active.value = Follower.active.value
-
         // Guide
-        arrayOf(b.guideTv1, b.guideTv2, b.guideTv3)
-            .forEach { it.typeface = fontRegular }
-        b.guideIv.setOnClickListener {
-        }
+        arrayOf(b.guideTv1, b.guideTv2).forEach { it.typeface = fontRegular }
+        b.guideTv3.bolden(this)
 
         // Listing
         b.rv.layoutManager = ChipsLayoutManager.newBuilder(this).build()
@@ -123,14 +115,13 @@ class MassFollower : BaseActivity() {
                 sp?.edit()?.putLong(Settings.spFollowerDelay, Follower.DELAY)?.commit()
             }
         })
+
+        if (m.fwb.value == null) load()
     }
 
     override fun onResume() {
         super.onResume()
-        CoroutineScope(Dispatchers.IO).launch {
-            val data = dao.followables()
-            withContext(Dispatchers.Main) { m.fwb.value = ArrayList(data) }
-        }
+        if (notFirstResume) load()
         indicateSeek(true)
     }
 
@@ -144,17 +135,33 @@ class MassFollower : BaseActivity() {
             .apply { bottomToTop = R.id.adBanner }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val ret = super.onCreateOptionsMenu(menu)
+        Follower.active.observe(this) { updateControlButton(it) }
+        return ret
+    }
+
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.mftControl -> {
+            R.id.mftControl -> if (!m.fwb.value.isNullOrEmpty()) {
                 if (Follower.active.value!!) stopService(Intent(c, Follower::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this)
             }
-            R.id.mftClear -> {
-            }
+            R.id.mftClear -> if (!m.fwb.value.isNullOrEmpty())
+                CoroutineScope(Dispatchers.IO).launch {
+                    dao.deleteFollowables()
+                    withContext(Dispatchers.Main) { m.fwb.value = arrayListOf() }
+                }
         }
         return super.onMenuItemClick(item)
+    }
+
+    private fun load() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val data = dao.followables()
+            withContext(Dispatchers.Main) { m.fwb.value = ArrayList(data) }
+        }
     }
 
     private fun indicateSeek(updateSb: Boolean = false) {
@@ -162,12 +169,9 @@ class MassFollower : BaseActivity() {
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
     }
 
-    private fun findControl() = b.toolbar.menu.findItem(R.id.mftControl)
+    override fun findControl(): MenuItem? = b.toolbar.menu.findItem(R.id.mftControl)
 
     companion object : ActivityCompanion() {
-        const val HANDLE_INSERTED = 0
-        const val HANDLE_DELETED = 1
-
         @MainThread
         fun initService(c: BaseActivity, enq: Follower.ToBeEnqueued? = null) {
             c.startService(Intent(c, Follower::class.java).apply {
