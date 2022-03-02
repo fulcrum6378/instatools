@@ -11,7 +11,6 @@
     <string name="guest">مهمان</string>
     <string name="navOpen">باز کردن</string>
     <string name="navClose">بستن</string>
-    <string name="settings">تنظیمات</string>
     <string name="search">جستجو</string>
     <string name="switchAccount">تعویض اکانت</string>
     <string name="signOut">خروج از اکانت</string>
@@ -42,6 +41,7 @@
     <string name="start">شروع</string>
     <string name="stop">ایست</string>
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
+    <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -53,8 +53,6 @@
     <string name="saved">ذخیره شده</string>
     <string name="direct">@string/export</string>
     <string name="guestDesc">در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.</string>
-    <string name="gSettings">تنظیمات همه اکانت ها</string>
-    <string name="aSettings">تنظیمات این اکانت</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یک پروفایل را وارد کنید&#8230;</string>
     <string name="boxUntil">تا %s</string>
@@ -94,6 +92,7 @@
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
     <string name="followAll">فالو کردن همه</string>
+    <string name="followAllSure">آیا مطمئن هستید که می خواهید تمام این %d نفر را فالو کنید؟ (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">دنبال کردن دسته جمعی</string>
@@ -106,6 +105,9 @@
     <string name="mfClear">پاک کردن لیست</string>
 
     <!-- Settings -->
+    <string name="settings">تنظیمات</string>
+    <string name="gSettings">تنظیمات همه اکانت ها</string>
+    <string name="aSettings">تنظیمات این اکانت</string>
     <string name="stDlPath">پوشه اصلی دانلود</string>
     <string name="stBranching">شاخه شاخه کردن دانلودها</string>
     <string name="stUserData">اطلاعات من</string>

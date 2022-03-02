@@ -5,7 +5,6 @@
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
-    <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="switchAccount">Switch Account</string>
     <string name="signOut">Sign Out</string>
@@ -36,6 +35,7 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="openDmInInsta">Open Chat in Instagram</string>
+    <string name="pageNotExist">This page doesn\'t exist!</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -47,8 +47,6 @@
     <string name="saved">Saved</string>
     <string name="direct">@string/export</string>
     <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
-    <string name="gSettings">Global Settings</string>
-    <string name="aSettings">Settings of This Account</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Type a profile name&#8230;</string>
     <string name="boxUntil">Until %s</string>
@@ -84,6 +82,7 @@
     <string name="vwFollowing">Following</string>
     <string name="vwPrivate">This account is private!</string>
     <string name="followAll">Follow All</string>
+    <string name="followAllSure">Are you sure you want to follow all of these %d account? (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)</string>
 
     <!-- Favourites -->
     <string name="favourites">Favourites</string>
@@ -100,6 +99,9 @@
     <string name="mfClear">Clear the queue</string>
 
     <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="gSettings">Global Settings</string>
+    <string name="aSettings">Settings of This Account</string>
     <string name="stDlPath">Main download folder</string>
     <string name="stBranching">Divide downloaded files into branches</string>
     <string name="stUserData">User Data</string>

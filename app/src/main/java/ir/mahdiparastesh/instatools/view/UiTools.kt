@@ -176,7 +176,7 @@ class UiTools {
         }
 
         fun TextView.bolden(c: BaseActivity, font: Typeface = c.fontBold) {
-            if (!c.shallBolden()) typeface = font
+            if (!c.shallBolden) typeface = font
             else setTypeface(font, Typeface.BOLD)
         }
     }

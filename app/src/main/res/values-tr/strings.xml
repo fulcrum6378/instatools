@@ -1,11 +1,10 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
     <string name="app_name">InstaTools</string>
 
     <!-- #GLOBAL -->
     <string name="guest">Misafir</string>
     <string name="navOpen">Açık</string>
     <string name="navClose">Kapat</string>
-    <string name="settings">Ayarlar</string>
     <string name="search">Aramak</string>
     <string name="switchAccount">Hesap değiştir</string>
     <string name="signOut">Oturumu Kapat</string>
@@ -36,6 +35,7 @@
     <string name="start">Başlama</string>
     <string name="stop">Durmak</string>
     <string name="openDmInInsta">Instagram\'da Sohbeti Aç</string>
+    <string name="pageNotExist">Bu sayfa mevcut değil!</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -47,8 +47,6 @@
     <string name="saved">Kaydedildi</string>
     <string name="direct">@string/export</string>
     <string name="guestDesc">Bu uygulamayı misafir modunda kullanıyorsunuz.\nYani bu özelliği kullanamazsınız!</string>
-    <string name="gSettings">Genel Ayarlar</string>
-    <string name="aSettings">Bu Hesabın Ayarları</string>
     <string name="signOutSure">Instagram hesabınızdan çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="mtSearch">Bir profil adı yazın&#8230;</string>
     <string name="boxUntil">%s\'e kadar</string>
@@ -88,11 +86,12 @@
     <string name="vwFollowing">Takip Edilen</string>
     <string name="vwPrivate">Bu hesap gizli!</string>
     <string name="followAll">Hepsini takip et</string>
+    <string name="followAllSure">Bu %d hesabın hepsini takip etmek istediğinizden emin misiniz? (Instagram hassaslaşmasın diye yavaş yavaş ve tek tek takip edilecekler!)</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Kitle Takipçisi</string>
     <string name="mfGuide1">Instagram, çok sayıda insanı bu kadar sık takip etmenize izin vermez. Hesabınızı engelleyebilir veya oturumunuzu kapatabilir.</string>
-    <string name="mfGuide2" tools:ignore="Typos">Ancak bu robotu kullanarak çok sayıda kişiyi yavaş yavaş ve tek tek takip edebilirsiniz, böylece Instagram bir robot veya spam gönderici olduğundan şüphelenmesin.</string>
+    <string name="mfGuide2">Ancak bu robotu kullanarak çok sayıda kişiyi yavaş yavaş ve tek tek takip edebilirsiniz, böylece Instagram bir robot veya spam gönderici olduğundan şüphelenmesin.</string>
     <string name="mfGuide3">1. InstaTools\'ta bir profil açın,\n\n2. Takipçilerinin veya takip edenlerin sayısına dokunun,\n\n3. "Tümünü İzle"yi seçin&#8230;</string>
     <string name="mfSeekTitle">Her takip eylemi arasındaki gecikme:</string>
     <string name="mfSeconds">%d saniye</string>
@@ -100,6 +99,9 @@
     <string name="mfClear">Kuyruğu temizle</string>
 
     <!-- Settings -->
+    <string name="settings">Ayarlar</string>
+    <string name="gSettings">Genel Ayarlar</string>
+    <string name="aSettings">Bu Hesabın Ayarları</string>
     <string name="stDlPath">Ana indirme klasörü</string>
     <string name="stBranching">İndirilen dosyaları dallara ayırın</string>
     <string name="stUserData">Kullanıcı bilgisi</string>
@@ -125,6 +127,6 @@
     <string name="exporterStop">Iptal</string>
 
     <!-- Follower -->
-    <string name="followerChannelDesc" tools:ignore="Typos">Çok sayıda hesabı yavaş yavaş takip edin&#8230;</string>
+    <string name="followerChannelDesc">Çok sayıda hesabı yavaş yavaş takip edin&#8230;</string>
     <string name="followerTitle">Gizlice Takip Etmek&#8230;</string>
 </resources>

@@ -12,7 +12,7 @@ android {
         minSdk 21
         targetSdk 31
         versionCode 18
-        versionName '5.7'
+        versionName '5.8'
     }
 
     buildTypes {
@@ -64,7 +64,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0' // Only for ActivityResultLauncher
     implementation 'androidx.core:core-ktx:1.7.0' // For Iterable ViewGroup/Menu and Int:RGB
     implementation 'org.apache.commons:commons-text:1.9' // StringEscapeUtils
-    implementation 'com.airbnb.android:lottie:5.0.1'
+    implementation 'com.airbnb.android:lottie:5.0.2'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'

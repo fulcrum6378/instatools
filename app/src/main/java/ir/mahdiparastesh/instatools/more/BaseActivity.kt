@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -52,6 +51,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val fontRegular: Typeface by lazy { font(getString(R.string.font_regular)) }
     val fontLight: Typeface by lazy { font(getString(R.string.font_light)) }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
+    val shallBolden by lazy { c.resources.getBoolean(R.bool.shallBolden) }
     val colorAc = MutableLiveData<Int?>(null)
 
     abstract val menuRes: Int?
@@ -204,11 +204,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     fun night(): Boolean = resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-    @Suppress("DEPRECATION")
-    fun shallBolden() = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        resources.configuration.locales[0].toString()
-    else resources.configuration.locale.toString()) in arrayOf("fa_IR")
 
     @Suppress("unused")
     enum class Theme(val res: Int) {

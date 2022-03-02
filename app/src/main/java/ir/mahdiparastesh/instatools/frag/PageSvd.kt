@@ -108,7 +108,7 @@ class PageSvd(c: Main) : BasePage(c) {
     @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0) // TODO: NOT ACTUAL
+        if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) {

@@ -89,8 +89,6 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
             }
         } else null)
 
-        // TODO: IMPLEMENT DRAG TO DELETE FOR QUEUED ITEMS
-
         // Separator
         h.b.sep.vis(i < itemCount - 1)
     }

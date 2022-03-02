@@ -9,6 +9,7 @@ import android.os.Looper
 import android.os.Message
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.selection.*
@@ -34,6 +35,7 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -265,11 +267,24 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         if (m.vwUser?.access() != true || id == null || Main.guest) return
         MaterialMenu(this, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
-                MassFollower.initService(
-                    this@Viewer,
-                    Follower.ToBeEnqueued(id!!, isItFollowers, false) // TODO: ASK
-                )
-                goTo(MassFollower::class)
+                AlertDialog.Builder(this@Viewer).apply {
+                    setTitle(R.string.followAll)
+                    setMessage(
+                        this@Viewer.getString(
+                            R.string.followAllSure,
+                            ((if (isItFollowers) m.vwUser?.edge_followed_by?.count else m.vwUser?.edge_follow?.count)
+                                ?: 0.0).toInt()
+                        )
+                    )
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        MassFollower.initService(
+                            this@Viewer,
+                            Follower.ToBeEnqueued(id!!, isItFollowers, false)
+                        )
+                        goTo(MassFollower::class)
+                    }
+                }.show().stylise(this@Viewer)
             }
         }).show()
     }
@@ -348,7 +363,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             ) { profile ->
                 m.vwUser = profile.graphql?.user
                 if (m.vwUser == null) {
-                    Toast.makeText(c, "This page doesn\'t exist!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
                     return@Api
                 }
                 this@Viewer.id = m.vwUser!!.id

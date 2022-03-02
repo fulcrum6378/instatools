@@ -10,7 +10,6 @@
     <string name="guest">Гость</string>
     <string name="navOpen">Открытым</string>
     <string name="navClose">Закрой его</string>
-    <string name="settings">Настройки</string>
     <string name="search">Поиск</string>
     <string name="switchAccount">Сменить аккаунт</string>
     <string name="signOut">Выход</string>
@@ -41,6 +40,7 @@
     <string name="start">Начинать</string>
     <string name="stop">Останавливаться</string>
     <string name="openDmInInsta">Открыть чат в Instagram</string>
+    <string name="pageNotExist">Эта страница не существует!</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -52,8 +52,6 @@
     <string name="saved">Сохранено</string>
     <string name="direct">@string/export</string>
     <string name="guestDesc">Вы используете это приложение в гостевом режиме.\nТаким образом, вы не можете использовать эту функцию!</string>
-    <string name="gSettings">Глобальные настройки</string>
-    <string name="aSettings">Локальные настройки</string>
     <string name="signOutSure">Вы уверены, что хотите выйти из своей учетной записи Instagram?</string>
     <string name="mtSearch">Введите имя профиля&#8230;</string>
     <string name="boxUntil">До %s</string>
@@ -93,6 +91,7 @@
     <string name="vwFollowing">Подписок</string>
     <string name="vwPrivate">Этот аккаунт является частным!</string>
     <string name="followAll">Следить за всеми</string>
+    <string name="followAllSure">Вы уверены, что хотите подписаться на все эти %d аккаунтов? (За ними будут следить медленно и один за другим, чтобы Instagram не стал чувствительным!)</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Массовый Последователь</string>
@@ -105,6 +104,9 @@
     <string name="mfClear">Очистить очередь</string>
 
     <!-- Settings -->
+    <string name="settings">Настройки</string>
+    <string name="gSettings">Глобальные настройки</string>
+    <string name="aSettings">Локальные настройки</string>
     <string name="stDlPath">Основная папка загрузки</string>
     <string name="stBranching">Разделите загруженные файлы на ветки</string>
     <string name="stUserData">Данные пользователя</string>
