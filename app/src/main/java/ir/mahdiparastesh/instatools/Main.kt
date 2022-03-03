@@ -21,12 +21,6 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
@@ -42,11 +36,9 @@ import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 // adb connect 192.168.1.20:
 
@@ -61,7 +53,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     private val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    private var interstitialAd: InterstitialAd? = null
     private val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
 
     private var searchInput: SearchView.SearchAutoComplete? = null
@@ -76,6 +67,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object : ActivityCompanion() {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
         var guest = false
+        var doNotShowInterstitialAgain = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,7 +110,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
                 b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
                 b.searchRes.setBackgroundColor(it)
                 b.bnv.setBackgroundColor(it)
-                page2?.b?.expanded?.setBackgroundColor(it)
+                page2?.b?.expanded?.root?.setBackgroundColor(it)
             }
             colorBG.value = bg[m.currentPage.value!!]
         } else {
@@ -170,7 +162,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.extras?.getInt(EXTRA_TURN_TO_PAGE)?.let { turnToPage(it) }
-        loadInterstitial()
     }
 
     override fun onResume() {
@@ -178,7 +169,11 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
         if (Settings.recreateMain) {
             Settings.recreateMain = false
             recreate(); return; }
-        loadInterstitial()
+        if (notFirstResume) {
+            if (!doNotShowInterstitialAgain)
+                loadInterstitial("ca-app-pub-9457309151954418/5399016395")
+            else doNotShowInterstitialAgain = false
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
@@ -298,23 +293,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
             }
         })
         return true
-    }
-
-    private fun loadInterstitial() {
-        if (!isAdsSdkInitialized) return
-        interstitialAd = null
-        InterstitialAd.load(
-            c, if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/1033173712"
-            else "ca-app-pub-9457309151954418/5399016395",
-            AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {}
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    interstitialAd = ad.apply {
-                        fullScreenContentCallback = InterstitialCallback()
-                        show(this@Main)
-                    }
-                }
-            })
     }
 
     private fun loadPages() = pages().forEachIndexed { i, it ->
@@ -449,20 +427,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
                 PageBox(this@Main).also { page3 = it }
             }
             else -> super.instantiate(loader, name)
-        }
-    }
-
-    inner class InterstitialCallback : FullScreenContentCallback() {
-        override fun onAdDismissedFullScreenContent() {
-            loadInterstitial()
-        }
-
-        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-            loadInterstitial()
-        }
-
-        override fun onAdShowedFullScreenContent() {
-            loadInterstitial()
         }
     }
 }

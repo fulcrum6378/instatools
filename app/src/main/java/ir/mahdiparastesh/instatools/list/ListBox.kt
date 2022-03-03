@@ -12,7 +12,6 @@ import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)
@@ -25,12 +24,13 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
     }
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.dmInbox?.threads == null || c.m.dmInbox?.threads?.getOrNull(i) == null) return
-        var thd = c.m.dmInbox!!.threads[i]
-        // TODO: thd.users MAY HAVE BEEN EMPTY AND CAUSED THOSE 34-TIME CRASHES
+        var thd = c.m.dmInbox?.threads?.getOrNull(i) ?: return
+        val firstUser = thd.users.getOrNull(0)
+        if (firstUser == null && !thd.is_group) return
+        // thd.users MAY HAVE BEEN EMPTY AND CAUSED THOSE 34-TIME CRASHES
         if (!thd.is_group) {
-            Glide.with(c.c).load(thd.users[0].profile_pic_url).into(h.b.photo)
-            h.b.name.text = thd.users[0].visName()
+            Glide.with(c.c).load(firstUser!!.profile_pic_url).into(h.b.photo)
+            h.b.name.text = firstUser.visName()
         } else {
             h.b.photo.setImageResource(R.drawable.switch_account)
             h.b.name.text = thd.thread_title
@@ -59,7 +59,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
                     thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.pk, uu.username) }
                 }
             }, c.colorAc.value).apply {
-                if (thd.is_group || thd.users[0].full_name == "Instagram user")
+                if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
             }.show()
         }

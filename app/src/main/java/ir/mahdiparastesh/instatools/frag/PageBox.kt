@@ -170,6 +170,7 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
             c.dao.addExportable(exportable!!)
             withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
         }
+        c.loadInterstitial("ca-app-pub-9457309151954418/8317918650")
     }
 
     override fun goBack(): Boolean {

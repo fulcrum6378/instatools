@@ -127,11 +127,7 @@
         android:id="@+id/jumper"
         style="@style/jumper" />
 
-    <androidx.viewpager2.widget.ViewPager2
+    <include
         android:id="@+id/expanded"
-        style="@style/expanded" />
-
-    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
-        android:id="@+id/expandedIndicator"
-        style="@style/expandedIndicator" />
+        layout="@layout/expandable" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
@@ -23,7 +24,7 @@ import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.more.Persistent
 import org.apache.commons.text.StringEscapeUtils
 import kotlin.system.exitProcess
 
@@ -77,8 +78,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
-        accounts.sortBy { it.name }
-        accounts.sortBy { it.id < 0 }
+        accounts.sortByDescending { (it.last ?: 0L).toString() }
+        accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)
 
         // Add Account
@@ -169,40 +170,52 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             if (url != host && !url.startsWith("$host?")) return
-            try {
-                collect(view)
-            } catch (e: NumberFormatException) {
+            try { // Don't remove the explanatory comments
+                view.evaluateJavascript(
+                    """(function() {
+        return document.getElementsByTagName('body')[0].innerHTML;
+    })()""".trimMargin()
+                ) { html ->
+                    try {
+                        collect(html)
+                    } catch (e: JsonSyntaxException) {
+                        if (BuildConfig.DEBUG) throw e
+                        // This has happened for some users with an unknown cause
+                    } catch (e: NumberFormatException) {
+                        // This happens when you go to, for example, the profiles/hashtags page,
+                        // tap on the pretty "Instagram" title in the header, then you go to
+                        // another page, e.g. sign up page, then you come back to the same
+                        // "instagram.com" page, then you repeat this act once more.
+                    }
+                }
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) throw e
             }
         }
 
-        @Throws(NumberFormatException::class)
-        private fun collect(v: WebView) {
-            v.evaluateJavascript(
-                """(function() {
-        return document.getElementsByTagName('body')[0].innerHTML;
-    })()""".trimMargin()
-            ) { html ->
-                val u = Gson().fromJson(
-                    StringEscapeUtils.unescapeJava(html)
-                        .substringAfter(preConfig)
-                        .substringBefore(posConfig),
-                    HostPage::class.java
-                ).config.viewer
-                id = cookieManager.getCookie(host)
-                    .substringAfter("ds_user_id=")
-                    .substringBefore(";").toLong().toString()
-                m.acc = Account(
-                    id.toLong(), u.username, u.full_name,
-                    u.profile_pic_url_hd ?: u.profile_pic_url,
-                    cookieManager.getCookie(host)
-                ).apply {
-                    accounts.removeAll { it.id == id }
-                    accounts.add(this)
-                    Account.save(c, accounts)
-                }
-                gsp.edit().putString(spAccount, id).commit()
-                goTo(Main::class, true)
+        @Throws(JsonSyntaxException::class, NumberFormatException::class)
+        private fun collect(html: String) {
+            val u = Gson().fromJson(
+                StringEscapeUtils.unescapeJava(html)
+                    .substringAfter(preConfig)
+                    .substringBefore(posConfig),
+                HostPage::class.java
+            ).config.viewer
+            id = cookieManager.getCookie(host)
+                .substringAfter("ds_user_id=")
+                .substringBefore(";").toLong().toString()
+            m.acc = Account(
+                id.toLong(), u.username, u.full_name,
+                u.profile_pic_url_hd ?: u.profile_pic_url,
+                cookieManager.getCookie(host),
+                Persistent.now()
+            ).apply {
+                accounts.removeAll { it.id == id }
+                accounts.add(this)
+                Account.save(c, accounts)
             }
+            gsp.edit().putString(spAccount, id).commit()
+            goTo(Main::class, true)
         }
     }
 

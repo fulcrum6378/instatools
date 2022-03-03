@@ -114,7 +114,9 @@ class Dm(
         //val video_call_id: Any?,
         //val viewer_id: Double,
         //val visual_thread: Any?,
-    )
+    ) {
+        fun firstUser(): Rest.User? = users.getOrNull(0)
+    }
 
     class DmList(val items: Array<Dm>)
 

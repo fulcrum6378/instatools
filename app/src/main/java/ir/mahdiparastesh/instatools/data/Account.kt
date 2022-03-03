@@ -15,7 +15,8 @@ class Account(
     var user: String? = null,
     var name: String? = null,
     var pict: String? = null,
-    var cook: String? = null
+    var cook: String? = null,
+    var last: Long? = null
 ) {
     companion object {
         fun load(c: Context): ArrayList<Account> = if (Secured(c).exists()) ArrayList(

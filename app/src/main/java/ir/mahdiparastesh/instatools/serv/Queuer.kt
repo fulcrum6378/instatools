@@ -113,7 +113,8 @@ class Queuer : ForegroundService() {
                     this, Api.Type.REELS.url.format(user.id), Rest.Reels::class, handler,
                     cache = true
                 ) { reels ->
-                    var med: Media? = reels.reels_media[0].items.find { it.pk == storyId }
+                    var med: Media? =
+                        reels.reels_media.getOrNull(0)?.items?.find { it.pk == storyId }
                     if (med == null) med = reels.reels[user.id]?.items?.find { it.pk == storyId }
                     if (med == null) {
                         handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
@@ -134,7 +135,7 @@ class Queuer : ForegroundService() {
             this, cur.link.substringBefore("?") + "?__a=1", Media.MediaWrapperApi::class,
             handler
         ) { wrapper ->
-            val med = wrapper.items?.get(0)
+            val med = wrapper.items?.getOrNull(0)
             if (med == null) {
                 handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
             var found = true

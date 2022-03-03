@@ -23,8 +23,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -39,6 +41,8 @@ import java.util.*
 class UiTools {
     companion object {
         const val PROFILE = "https://www.instagram.com/%s/"
+        const val POST_LINK = "https://www.instagram.com/p/%s/"
+        const val INSTA_PACKAGE = "com.instagram.android"
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
 
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
@@ -62,7 +66,11 @@ class UiTools {
         }
 
         fun openProfile(c: Activity, user: String) {
-            c.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user))))
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
+                    .setPackage(INSTA_PACKAGE)
+                //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         }
 
         fun z(n: Int): String {
@@ -166,18 +174,33 @@ class UiTools {
         @Suppress("SpellCheckingInspection")
         fun openDm(c: Activity, threadId: String) {
             c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).apply {
-                    component = ComponentName(
-                        "com.instagram.android",
-                        "com.instagram.mainactivity.MainActivity"
+                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId"))
+                    .setComponent(
+                        ComponentName(
+                            "com.instagram.android", "com.instagram.mainactivity.MainActivity"
+                        )
                     )
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                })
+                //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
         }
 
         fun TextView.bolden(c: BaseActivity, font: Typeface = c.fontBold) {
             if (!c.shallBolden) typeface = font
             else setTypeface(font, Typeface.BOLD)
+        }
+    }
+
+    class InterstitialCallback(private val c: BaseActivity) : FullScreenContentCallback() {
+        override fun onAdDismissedFullScreenContent() {
+            c.interstitialAd = null
+        }
+
+        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+            c.interstitialAd = null
+        }
+
+        override fun onAdShowedFullScreenContent() {
+            c.interstitialAd = null
         }
     }
 }

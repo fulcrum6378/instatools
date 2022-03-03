@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/expanded"
+    tools:ignore="ContentDescription,MissingConstraints">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/slider"
+        style="@style/expandedSlider" />
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5.5dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/viewInInsta"
+            style="@style/expandableButton"
+            android:padding="9dp"
+            android:src="@drawable/instagram" />
+    </LinearLayout>
+
+    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+        android:id="@+id/indicator"
+        style="@style/expandedIndicator" />
+</androidx.constraintlayout.widget.ConstraintLayout>

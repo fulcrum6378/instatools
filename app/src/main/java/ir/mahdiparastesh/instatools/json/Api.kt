@@ -73,9 +73,9 @@ class Api<JSON>(
     }
 
     private fun invalidResponse(response: String, e: Exception? = null) {
-        /*if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG)
             throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else */gotError(this, null)
+        else gotError(this, null)
     }
 
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> =

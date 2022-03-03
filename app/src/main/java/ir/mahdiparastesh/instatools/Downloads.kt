@@ -35,6 +35,7 @@ class Downloads : ServiceOwnerActivity() {
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
+    override val controllerId = R.id.dtControl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,10 @@ class Downloads : ServiceOwnerActivity() {
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                 }
-                updateIfEmpty(m.queueds.isNullOrEmpty())
+                updateIfEmpty(m.queueds.isNullOrEmpty()) {
+                    loadInterstitial("ca-app-pub-9457309151954418/4215022118")
+                    Main.doNotShowInterstitialAgain = true
+                }
             }
 
             fun find(msg: Message): Int? =

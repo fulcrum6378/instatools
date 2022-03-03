@@ -53,16 +53,19 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/settings.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/shadow.xml" value="0.139" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/st_button.xml" value="0.184" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/stack.xml" value="0.1015" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/switch_account.xml" value="0.1795" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/unfollowers.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/unfollowers_off.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/unfollowers_on.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/up.xml" value="0.1815" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/video.xml" value="0.1015" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/welcome.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/also_delete_data.xml" value="0.19701086956521738" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/direct.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/downloader.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/downloads.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/expandable.xml" value="0.213768115942029" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/export_options.xml" value="0.19293478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/favourites.xml" value="0.19293478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/guest_mode.xml" value="0.19293478260869565" />

@@ -4,9 +4,10 @@ import android.view.MenuItem
 import ir.mahdiparastesh.instatools.R
 
 abstract class ServiceOwnerActivity : BaseActivity() {
+    abstract val controllerId: Int
     private var lastEmptinessState = true
 
-    private val controller: MenuItem? get() = toolbar.menu.findItem(R.id.mftControl)
+    private val controller: MenuItem? get() = toolbar.menu.findItem(controllerId)
 
     fun updateControlButton(it: Boolean) {
         controller?.apply {
@@ -15,10 +16,11 @@ abstract class ServiceOwnerActivity : BaseActivity() {
         }
     }
 
-    fun updateIfEmpty(isEmpty: Boolean) {
+    fun updateIfEmpty(isEmpty: Boolean, payThePrice: () -> Unit = {}) {
         val newState = !isEmpty
         if (lastEmptinessState != newState) {
             controller?.isEnabled = newState
+            if (lastEmptinessState && !newState) payThePrice()
             lastEmptinessState = newState
         }
     }

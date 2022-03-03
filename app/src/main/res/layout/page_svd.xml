@@ -35,11 +35,7 @@
         android:id="@+id/loading"
         style="@style/simpleLoading" />
 
-    <androidx.viewpager2.widget.ViewPager2
+    <include
         android:id="@+id/expanded"
-        style="@style/expanded" />
-
-    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
-        android:id="@+id/expandedIndicator"
-        style="@style/expandedIndicator" />
+        layout="@layout/expandable" />
 </androidx.constraintlayout.widget.ConstraintLayout>

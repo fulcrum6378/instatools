@@ -21,11 +21,11 @@ import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
@@ -173,7 +173,7 @@ class PageSvd(c: Main) : BasePage(c) {
         override fun getItemDetails(e: MotionEvent): ItemDetails<String?>? {
             b.rv.findChildViewUnder(e.x, e.y)?.let {
                 val h = b.rv.getChildViewHolder(it)
-                if (h is ListSvd.ViewHolder) return@getItemDetails h.getItemDetails()
+                if (h is ListPost<*>.ViewHolder) return@getItemDetails h.getItemDetails()
             }
             return null
         }

@@ -20,8 +20,8 @@ class Profile(
     class GraphQl(val user: User?)
 
     class User(
-        val biography: String?,
-        val blocked_by_viewer: Boolean?,
+        //val biography: String?,
+        //val blocked_by_viewer: Boolean?,
         //val business_address_json: Any?,
         //val business_category_name: Any?,
         //val business_contact_method: Any?,
@@ -42,10 +42,10 @@ class Profile(
         //val external_url_linkshimmed: Any?,
         //val fbid: String?,
         val followed_by_viewer: Boolean?,
-        val follows_viewer: Boolean?,
+        //val follows_viewer: Boolean?,
         val full_name: String,
         //val has_ar_effects: Boolean?,
-        val has_blocked_viewer: Boolean?,
+        //val has_blocked_viewer: Boolean?,
         //val has_channel: Boolean?,
         //val has_clips: Boolean?,
         //val has_guides: Boolean?,
@@ -98,7 +98,7 @@ class Profile(
     class EdgePost(val node: Post)
 
     class Post(
-        //val __typename: String,
+        val __typename: String,
         //val accessibility_caption: String?,
         //val clips_music_attribution_info: Any?,
         //val coauthor_producers: Array<Any>,
@@ -127,7 +127,7 @@ class Profile(
         //val product_type: String,
         //val sharing_friction_info: Map<String, *>,
         val shortcode: String,
-        val taken_at_timestamp: Double,
+        //val taken_at_timestamp: Double,
         //val thumbnail_resources: Array<Src>,
         val thumbnail_src: String,
         //val tracking_token: String,
@@ -135,7 +135,7 @@ class Profile(
         //val video_view_count: Double,
     )
 
-    class Owner(val id: String, val username: String?)
+    //class Owner(val id: String, val username: String?)
 
     //class EdgesCaption(val edges: Array<EdgeCaption>)
 

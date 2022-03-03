@@ -24,9 +24,6 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +36,7 @@ class MassFollower : ServiceOwnerActivity() {
 
     override val menuRes = R.menu.follower_tlb
     override val com: ActivityCompanion get() = Companion
+    override val controllerId = R.id.mftControl
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {

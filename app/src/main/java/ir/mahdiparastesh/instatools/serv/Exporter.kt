@@ -23,8 +23,6 @@ import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
-import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
@@ -113,7 +111,7 @@ class Exporter : ForegroundService() {
         })?.apply {
             if (carousel_media == null && image_versions2 == null) return@apply
             val url =
-                if (carousel_media != null) carousel_media[0].nearest(justImage = true)
+                if (carousel_media != null) carousel_media.getOrNull(0)?.nearest(justImage = true)
                 else nearest(justImage = true) ?: return@apply
             media[dm.item_id] = Downloadable(url!!, null)
         }

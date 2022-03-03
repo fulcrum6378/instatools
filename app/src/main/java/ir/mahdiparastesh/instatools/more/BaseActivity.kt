@@ -29,14 +29,19 @@ import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import kotlin.reflect.KClass
 
@@ -53,6 +58,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val shallBolden by lazy { c.resources.getBoolean(R.bool.shallBolden) }
     val colorAc = MutableLiveData<Int?>(null)
+    var interstitialAd: InterstitialAd? = null
 
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
@@ -162,6 +168,33 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true
+
+    var retryForAd = 0
+    fun loadInterstitial(adUnitId: String) {
+        if (!isAdsSdkInitialized) {
+            if (retryForAd < 2) Delay(2000L) {
+                loadInterstitial(adUnitId)
+                retryForAd++
+            } else retryForAd = 0
+            return; }
+        if (interstitialAd != null) {
+            showInterstitial()
+            return; }
+        InterstitialAd.load(
+            c, if (!BuildConfig.DEBUG) adUnitId else "ca-app-pub-3940256099942544/1033173712",
+            AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {}
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    interstitialAd = ad
+                    showInterstitial()
+                }
+            })
+    }
+
+    fun showInterstitial() {
+        interstitialAd?.fullScreenContentCallback = UiTools.InterstitialCallback(this@BaseActivity)
+        interstitialAd?.show(this@BaseActivity)
+    }
 
     override fun onDestroy() {
         com.handler = null

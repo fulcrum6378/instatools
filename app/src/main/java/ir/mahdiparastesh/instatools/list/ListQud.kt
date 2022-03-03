@@ -15,7 +15,6 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,9 +76,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                 }
                 this[R.id.qmOpen] = {
                     c.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW, Uri.parse(q.link)
-                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        Intent(Intent.ACTION_VIEW, Uri.parse(q.link))
+                        //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 }
             }).show()

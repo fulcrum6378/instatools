@@ -82,7 +82,12 @@
     <style name="expanded">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:visibility">gone</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="expandedSlider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="expandedIndicator">
@@ -100,6 +105,13 @@
         <item name="layout_constraintBottom_toBottomOf">parent</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
+    <style name="expandableButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:background">@drawable/button_round</item>
     </style>
 
     <style name="simpleLoading" parent="parentConstraint">
@@ -148,7 +160,7 @@
     <style name="tip" parent="parentConstraint">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:lineSpacingMultiplier">1.25</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:justificationMode" tools:ignore="NewApi">inter_word</item>

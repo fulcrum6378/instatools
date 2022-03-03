@@ -25,6 +25,7 @@ import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
@@ -36,8 +37,6 @@ import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -339,7 +338,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         override fun getItemDetails(e: MotionEvent): ItemDetails<String?>? {
             b.rv.findChildViewUnder(e.x, e.y)?.let {
                 val h = b.rv.getChildViewHolder(it)
-                if (h is ListVwr.ViewHolder) return@getItemDetails h.getItemDetails()
+                if (h is ListPost<*>.ViewHolder) return@getItemDetails h.getItemDetails()
             }
             return null
         }
@@ -376,13 +375,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 b.followingNum.text = m.vwUser!!.edge_follow.toString()
                 done()
             } else Api<Profile.GraphQlResponse>(
-                this@Viewer,
-                Api.Type.POSTS.url.format(
+                this@Viewer, Api.Type.POSTS.url.format(
                     id, m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
                     m.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
-                ),
-                Profile.GraphQlResponse::class,
-                handler
+                ), Profile.GraphQlResponse::class, handler
             ) { res ->
                 val edgeList = res.data.user?.edge_owner_to_timeline_media
                 if (edgeList == null) {
@@ -412,9 +408,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
             m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
                 dao.addQueued(
-                    Queued(
-                        Persistent.now(), Api.Type.POST.url.format(edge.node.shortcode)
-                    )
+                    Queued(Persistent.now(), Api.Type.POST.url.format(edge.node.shortcode))
                 )
             }
             ended()
