@@ -36,9 +36,11 @@ import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 // adb connect 192.168.1.20:
 

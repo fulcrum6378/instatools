@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools
 
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -27,16 +26,15 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
-import ir.mahdiparastesh.instatools.more.BaseSaver
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +43,6 @@ import kotlinx.coroutines.withContext
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     private var user: String? = null
-    private var id: String? = null
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
     private var selectivity = false
@@ -56,13 +53,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
     companion object : ActivityCompanion() {
         private const val EXTRA_USER = "EXTRA_USER"
-        private const val EXTRA_ID = "EXTRA_ID"
 
-        fun comeHere(c: BaseActivity, id: String, user: String) {
-            c.goTo(Viewer::class) {
-                putExtra(EXTRA_USER, user)
-                putExtra(EXTRA_ID, id)
-            }
+        fun comeHere(c: BaseActivity, user: String) {
+            c.goTo(Viewer::class) { putExtra(EXTRA_USER, user) }
         }
     }
 
@@ -77,10 +70,10 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_FETCHED -> {
-                        adapt()
+                        if (msg.arg1 != msg.arg2) adapt(msg.arg1, msg.arg2) else adapt()
                         b.refresher.isRefreshing = false
-                        if (m.vwUser!!.hasMore() &&
-                            (m.vwUser!!.edges()!!.size / 3) * (dm.widthPixels / 3) < dm.heightPixels
+                        if (m.vwUser!!.hasMore() && thread?.active != true
+                            && !b.rv.canScrollVertically(1)
                         ) thread = FetchSome().also { it.start() }
 
                         val showPv = m.vwUser!!.pv() && m.vwUser!!.followed_by_viewer == false
@@ -89,8 +82,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                         if (!showPv) return
                         b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
                             null, drawable(
-                                R.drawable.private_account,
-                                if (night()) R.color.defCA else null
+                                R.drawable.private_account, if (night()) R.color.defCA else null
                             )!!, null, null
                         )
                         b.privateAcc.typeface = fontRegular
@@ -103,13 +95,11 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                             }
                     }
                     HANDLE_ABORTED -> {
-                        thread?.interrupt()
                         b.refresher.isRefreshing = false
                         Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
                     }
                     PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Api.HANDLE_ERROR -> {
-                        thread?.interrupt()
                         b.refresher.isRefreshing = false
                         Snackbar.make(
                             b.root, c.getString(
@@ -126,16 +116,17 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
 
         // List
         b.rv.layoutManager = GridLayoutManager(c, 3)
-        b.rv.isNestedScrollingEnabled = false
         b.refresher.setOnRefreshListener {
             reset()
             if (thread?.active != true) thread = FetchSome().also { it.start() }
         }
+        b.nsv.viewTreeObserver.addOnScrollChangedListener {
+            b.tbShadow.vish(b.nsv.scrollY > 0)
+        }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                b.tbShadow.vish(b.nsv.scrollY > 0)
-                updateJumper()
-                if (!b.nsv.canScrollVertically(1) && thread?.active != true &&
+                updateJumper() // TODO ^
+                if (!b.rv.canScrollVertically(1) && thread?.active != true &&
                     m.vwUser?.hasMore() != false
                 ) thread = FetchSome().also { it.start() }
             }
@@ -146,6 +137,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             anJumper?.cancel()
             anJumper = UiTools.anJumper(this, b.jumper, it)
         }
+        Delay(3000) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
         // Profile
         b.proPic.layoutParams = b.proPic.layoutParams.apply {
@@ -158,7 +150,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     CoroutineScope(Dispatchers.IO).launch {
                         dao.addQueued(
                             Queued(
-                                Persistent.now(), "", Persistent.now(), id, user,
+                                Persistent.now(), "", Persistent.now(), m.vwUser!!.id, user,
                                 "profile_photo", m.vwUser!!.photo(), m.vwUser!!.photo(), 1
                             )
                         )
@@ -189,7 +181,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             if (!onCreation && newUser == it.toString()) return false
             user = newUser
         }
-        intent.extras?.getString(EXTRA_ID)?.let { id = it }
         if (!onCreation) {
             load()
             b.proPicIv.setImageDrawable(null)
@@ -246,10 +237,9 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun adapt() {
-        if (b.rv.adapter != null) {
-            b.rv.adapter?.notifyDataSetChanged()
+    private fun adapt(begin: Int? = null, count: Int? = null) {
+        if (b.rv.adapter != null && begin != null && count != null) {
+            b.rv.adapter?.notifyItemRangeInserted(begin, count)
             return; }
         b.rv.adapter = ListVwr(this)
         if (tracker == null) {
@@ -263,7 +253,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     }
 
     private fun flwClick(isItFollowers: Boolean, v: View) {
-        if (m.vwUser?.access() != true || id == null || Main.guest) return
+        if (m.vwUser?.access() != true || m.vwUser?.id == null || Main.guest) return
         MaterialMenu(this, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
                 AlertDialog.Builder(this@Viewer).apply {
@@ -279,7 +269,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     setPositiveButton(R.string.yes) { _, _ ->
                         MassFollower.initService(
                             this@Viewer,
-                            Follower.ToBeEnqueued(id!!, isItFollowers, false)
+                            Follower.ToBeEnqueued(m.vwUser!!.id, isItFollowers, false)
                         )
                         goTo(MassFollower::class)
                     }
@@ -358,14 +348,14 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     inner class FetchSome : BaseThread() {
         override fun run() {
             if (m.vwUser == null) Api<Profile>(
-                this@Viewer, Api.Type.PROFILE.url.format(user), Profile::class, handler
+                this@Viewer, Api.Type.PROFILE.url.format(user), Profile::class,
+                handler, onError = { interrupt() }
             ) { profile ->
                 m.vwUser = profile.graphql?.user
                 if (m.vwUser == null) {
                     Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
-                    return@Api
+                    interrupt(); return@Api
                 }
-                this@Viewer.id = m.vwUser!!.id
                 Glide.with(c)
                     .load(m.vwUser!!.photo())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -376,24 +366,27 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 done()
             } else Api<Profile.GraphQlResponse>(
                 this@Viewer, Api.Type.POSTS.url.format(
-                    id, m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
+                    // I was gonna give the "id" (Thread.getId()) of Java thread to this API... XD
+                    m.vwUser!!.id, m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
                     m.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
-                ), Profile.GraphQlResponse::class, handler
+                ), Profile.GraphQlResponse::class, handler, onError = { interrupt() }
             ) { res ->
                 val edgeList = res.data.user?.edge_owner_to_timeline_media
                 if (edgeList == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
+                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
+                    interrupt(); return@Api; }
                 done(edgeList)
             }
         }
 
         private fun done(add: Profile.EdgeList? = null) {
-            if (add != null) {
-                m.vwUser?.edge_owner_to_timeline_media?.page_info = add.page_info
-                m.vwUser?.edge_owner_to_timeline_media?.count = add.count
-                m.vwUser?.edge_owner_to_timeline_media?.edges?.addAll(add.edges)
-            }
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            if (add != null) m.vwUser?.edge_owner_to_timeline_media?.apply {
+                page_info = add.page_info
+                count = add.count
+                val lastBefore = edges.size
+                edges.addAll(add.edges)
+                handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)?.sendToTarget()
+            } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
         }
     }

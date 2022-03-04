@@ -19,6 +19,8 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 class Expandable(
     private val c: BaseActivity,

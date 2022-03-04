@@ -45,7 +45,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.unf_more, Act().apply {
-                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id, u.user) }
+                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }

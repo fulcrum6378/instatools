@@ -21,7 +21,8 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nsv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:isScrollContainer="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,16 +91,11 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
 
-                <RelativeLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:descendantFocusability="blocksDescendants">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </RelativeLayout>
+                    android:layout_height="match_parent"
+                    android:nestedScrollingEnabled="true" />
 
                 <TextView
                     android:id="@+id/privateAcc"

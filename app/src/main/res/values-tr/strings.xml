@@ -40,6 +40,7 @@
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
     <string name="guestShortDesc">Kimlik doğrulama olmadan oturum açın</string>
+    <string name="guestSure">Maalesef Instagram, oturum açmadan web sitesindeki kişileri bu kadar sık görüntülemenize izin vermiyor. Bunu yapmak için oturum açmanızı veya kaydolmanızı zorunlu kılacaktır. (Bu gerçeği, tarayıcınızın \"Gizli\" modunda Instagram\'ı açarak kontrol edebilirsiniz.) Dolayısıyla Misafir moduna girdikten hemen sonra giriş yapmanız gerekmeyeceğinin garantisi yoktur. Devam et?</string>
     <string name="needAuthentication">Devam etmek için giriş yapmalısınız&#8230;</string>
 
     <!-- Main -->

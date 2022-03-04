@@ -36,8 +36,7 @@ abstract class ListPost<C>(protected val c: C) :
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String?> =
             object : ItemDetailsLookup.ItemDetails<String?>() {
                 override fun getPosition(): Int = layoutPosition
-                override fun getSelectionKey(): String? =
-                    edges?.getOrNull(position)?.node?.id
+                override fun getSelectionKey(): String? = edges?.getOrNull(position)?.node?.id
             }
     }
 

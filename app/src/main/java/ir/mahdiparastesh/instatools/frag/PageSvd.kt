@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -26,6 +25,7 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
@@ -105,7 +105,6 @@ class PageSvd(c: Main) : BasePage(c) {
         thread = FetchSome().also { it.start() }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
         if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
@@ -200,7 +199,8 @@ class PageSvd(c: Main) : BasePage(c) {
             ) { profile ->
                 val edgeList = profile.graphql?.user?.edge_saved_media
                 if (edgeList == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
+                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
+                    interrupt(); return@Api; }
                 c.m.saved = edgeList
                 done(null)
             } else Api<Profile.GraphQlResponse>(
@@ -212,7 +212,8 @@ class PageSvd(c: Main) : BasePage(c) {
             ) { res ->
                 val edgeList = res.data.user?.edge_saved_media
                 if (edgeList == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget(); return@Api; }
+                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
+                    interrupt(); return@Api; }
                 done(edgeList)
             }
         }

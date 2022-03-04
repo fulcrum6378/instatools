@@ -15,6 +15,7 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

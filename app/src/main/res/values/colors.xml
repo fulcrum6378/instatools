@@ -33,7 +33,7 @@
     </array>
 
     <!-- #GLOBAL -->
-    <color name="selectedTick">#AAFFFFFF</color>
+    <color name="selectedTick">#FFFFFF</color>
     <color name="shimmerIvBg">#DADADA</color>
 
     <!-- Main -->

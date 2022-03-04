@@ -12,6 +12,7 @@ import android.view.ViewStub
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +26,8 @@ import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import org.apache.commons.text.StringEscapeUtils
 import kotlin.system.exitProcess
 
@@ -112,11 +115,16 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     fun selectAccount(acc: Account) {
         gonnaBeGuest = false
         when {
-            acc.id == -1L -> {
-                m.acc = acc
-                gonnaBeGuest = true
-                browse()
-            }
+            acc.id == -1L -> AlertDialog.Builder(this).apply {
+                setTitle(R.string.guest)
+                setMessage(R.string.guestSure)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    m.acc = acc
+                    gonnaBeGuest = true
+                    browse()
+                }
+            }.show().stylise(this)
             acc.cook != null -> browse(acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }

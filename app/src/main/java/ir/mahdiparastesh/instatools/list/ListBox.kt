@@ -12,6 +12,7 @@ import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)
@@ -56,7 +57,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
                     UiTools.openDm(c, thd.thread_id)
                 }
                 this[R.id.bmView] = {
-                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.pk, uu.username) }
+                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
                 }
             }, c.colorAc.value).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")

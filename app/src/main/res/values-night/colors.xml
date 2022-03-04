@@ -19,6 +19,4 @@
     <color name="saved">@color/defCA</color>
     <color name="direct">@color/defCA</color>
     <color name="dmFromMe">#11FFFFFF</color>
-
-    <!-- Settings -->
 </resources>

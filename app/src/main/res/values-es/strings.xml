@@ -40,6 +40,7 @@
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
     <string name="guestShortDesc">Iniciar sesión sin autenticación</string>
+    <string name="guestSure">Lo siento, pero Instagram no te permitirá ver personas en su sitio web con tanta frecuencia sin iniciar sesión. Te obligará a iniciar sesión o registrarte para hacerlo. (Puede verificar este hecho abriendo Instagram en el modo \"Incógnito\" de su navegador). Por lo tanto, no hay garantía de que no necesite iniciar sesión poco después de ingresar al modo Invitado. ¿Continuar?</string>
     <string name="needAuthentication">Necesitas iniciar sesión para continuar&#8230;</string>
 
     <!-- Main -->

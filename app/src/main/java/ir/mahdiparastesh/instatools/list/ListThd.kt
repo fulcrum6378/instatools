@@ -2,19 +2,31 @@ package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.PROFILE
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.anchor
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.util.*
 
 class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListThd.ViewHolder>() {

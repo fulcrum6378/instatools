@@ -35,7 +35,7 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<ListFav.ViewHolder>() {
         h.b.root.setOnClickListener {
             val u = c.m.fav?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.fav_more, Act().apply {
-                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.id, u.user) }
+                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }
