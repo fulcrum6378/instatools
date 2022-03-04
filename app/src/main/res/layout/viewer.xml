@@ -94,8 +94,10 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:nestedScrollingEnabled="true" />
+                    android:layout_height="1000dp"
+                    android:nestedScrollingEnabled="false" />
+                <!-- layout_height="wrap_content|match_parent" will cause an
+                ArrayIndexOutOfBoundsException sometimes -->
 
                 <TextView
                     android:id="@+id/privateAcc"

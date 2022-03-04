@@ -80,7 +80,7 @@ class UiTools {
 
         @SuppressLint("MissingPermission")
         @Suppress("DEPRECATION")
-        fun shake(c: Context, dur: Long = 55L) {
+        fun shake(c: Context, dur: Long = 48L) {
             val vib = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 (c.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
             else c.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)

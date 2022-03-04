@@ -76,9 +76,13 @@ class Media(
     class MediaWrapperApi(
         //val auto_load_more_enabled: Boolean,
         val items: Array<Media>?,
-        //val num_results: Float,
         //val more_available: Boolean
-    )
+        //val new_photos: Array<Any?>?,
+        val next_max_id: String?,
+        //val num_results: Float,
+        //val requires_review: Boolean
+        //val total_count: Float
+    ) // "TAGGED" contains "status", but "POST_ITEM" doesn't.
 
     class Thumbnails(
         //val video_length: Float,

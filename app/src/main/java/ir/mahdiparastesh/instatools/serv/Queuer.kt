@@ -110,7 +110,7 @@ class Queuer : ForegroundService() {
                 if (user == null) {
                     handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
                 Api<Rest.Reels>(
-                    this, Api.Type.REELS.url.format(user.id), Rest.Reels::class, handler,
+                    this, Api.Type.REEL_ITEM.url.format(user.id), Rest.Reels::class, handler,
                     cache = true
                 ) { reels ->
                     var med: Media? =

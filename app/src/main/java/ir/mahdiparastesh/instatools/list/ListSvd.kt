@@ -14,4 +14,8 @@ class ListSvd(c: Main, private val f: PageSvd) : ListPost<Main>(c) {
     override val tracker: SelectionTracker<String>? get() = f.tracker
     override val handler: Handler? get() = f.handler
     override val expanded: ExpandableBinding = f.b.expanded
+
+    override fun selective(status: Boolean) {
+        c.selective(status)
+    }
 }

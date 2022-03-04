@@ -4,10 +4,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.selection.*
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.media2.common.SessionPlayer
+import androidx.recyclerview.selection.Selection
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -20,18 +25,17 @@ import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class PageSvd(c: Main) : BasePage(c) {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
-    private var selectivity = false
 
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
@@ -39,7 +43,12 @@ class PageSvd(c: Main) : BasePage(c) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 HANDLE_FETCHED -> {
-                    onLoaded(c.m.saved?.edges.isNullOrEmpty())
+                    if (b.rv.adapter != null && msg.arg1 != msg.arg2) {
+                        superOnLoaded(c.m.saved?.edges.isNullOrEmpty())
+                        b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
+                        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
+                    } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
+
                     if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
                     ) thread = FetchSome().also { it.start() }
                 }
@@ -78,7 +87,6 @@ class PageSvd(c: Main) : BasePage(c) {
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
 
         essentials()
-        b.rv.layoutManager = GridLayoutManager(c, 3)
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
         }
@@ -108,16 +116,18 @@ class PageSvd(c: Main) : BasePage(c) {
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
         if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-        if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
-        else b.rv.adapter?.notifyDataSetChanged()
-        if (tracker == null) {
+        b.rv.adapter = ListSvd(c, this)
+        (b.rv.adapter as ListSvd?)?.let { adp ->
             tracker = SelectionTracker.Builder(
                 "saved", b.rv,
-                MyItemKeyProvider(), MyDetailsLookup(),
+                adp.PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
                 StorageStrategy.createStringStorage()
-            ).build()
-            tracker?.addObserver(SelectObserver())
+            ).build().also { it.addObserver(adp.SelectObserver()) }
         }
+    }
+
+    fun superOnLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
+        super.onLoaded(isEmpty, asGuest)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -147,6 +157,12 @@ class PageSvd(c: Main) : BasePage(c) {
         return super.onMenuItemClick(item)
     }
 
+    override fun onPause() {
+        super.onPause()
+        (b.expanded.slider.adapter as ListCar?)?.players
+            ?.forEach { if (it?.playerState == SessionPlayer.PLAYER_STATE_PLAYING) it.pause() }
+    }
+
     override fun goBack(): Boolean {
         (b.rv.adapter as ListSvd?)?.let {
             if (it.expandable.zoomed) {
@@ -157,36 +173,6 @@ class PageSvd(c: Main) : BasePage(c) {
             return true
         }
         return false
-    }
-
-    inner class MyItemKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String = c.m.saved!!.edges[i].node.id
-        override fun getPosition(key: String): Int {
-            for (i in c.m.saved!!.edges.indices)
-                if (c.m.saved!!.edges[i].node.id == key) return i
-            return -1
-        }
-    }
-
-    inner class MyDetailsLookup : ItemDetailsLookup<String?>() {
-        override fun getItemDetails(e: MotionEvent): ItemDetails<String?>? {
-            b.rv.findChildViewUnder(e.x, e.y)?.let {
-                val h = b.rv.getChildViewHolder(it)
-                if (h is ListPost<*>.ViewHolder) return@getItemDetails h.getItemDetails()
-            }
-            return null
-        }
-    }
-
-    inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
-        override fun onSelectionChanged() {
-            super.onSelectionChanged()
-            val status = tracker?.hasSelection() == true
-            if (selectivity == status) return
-            selectivity = status
-            UiTools.shake(c.c)
-            c.selective(selectivity)
-        }
     }
 
     inner class FetchSome : BaseThread() {
@@ -219,15 +205,16 @@ class PageSvd(c: Main) : BasePage(c) {
         }
 
         private fun done(add: Profile.EdgeList? = null) {
-            if (add != null) {
-                c.m.saved?.page_info = add.page_info
-                c.m.saved?.count = add.count
+            if (add != null) c.m.saved?.apply {
+                page_info = add.page_info
+                count = add.count
+                val lastBefore = edges.size
                 add.edges.forEach { post ->
-                    c.m.saved?.edges?.removeAll { it.node.id == post.node.id }
-                    c.m.saved?.edges?.add(post)
+                    edges.removeAll { it.node.id == post.node.id }
+                    edges.add(post)
                 }
-            }
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)?.sendToTarget()
+            } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
         }
     }
@@ -245,7 +232,7 @@ class PageSvd(c: Main) : BasePage(c) {
             }
             c.m.saved?.edges?.find { it.node.id == svd }?.node?.let { post ->
                 if (download) c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST.url.format(post.shortcode))
+                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(post.shortcode))
                 )
                 if (unsave) Api<Rest>(
                     c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,

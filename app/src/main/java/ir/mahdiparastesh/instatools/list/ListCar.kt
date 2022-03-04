@@ -18,7 +18,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 class ListCar(val c: BaseActivity, private val med: Media) :
     RecyclerView.Adapter<ListCar.ViewHolder>() {
     private val slides = arrayListOf<Slide>()
-    private val players: ArrayList<MediaPlayer?>
+    val players: ArrayList<MediaPlayer?>
 
     init {
         if (med.carousel_media != null) for (slide in med.carousel_media) slides.add(

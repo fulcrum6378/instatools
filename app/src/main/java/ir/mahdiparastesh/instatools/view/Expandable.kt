@@ -56,7 +56,7 @@ class Expandable(
         zoomed = true
         currentAnimator?.cancel()
         Api<Media.MediaWrapperApi>(
-            c, Api.Type.POST.url.format(node!!.shortcode), Media.MediaWrapperApi::class,
+            c, Api.Type.POST_ITEM.url.format(node!!.shortcode), Media.MediaWrapperApi::class,
             handler, cache = true
         ) { wrapper ->
             val med = wrapper.items?.getOrNull(0)

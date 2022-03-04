@@ -6,12 +6,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.selection.*
+import androidx.media2.common.SessionPlayer
+import androidx.recyclerview.selection.Selection
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
@@ -24,6 +30,7 @@ import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
@@ -40,12 +47,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// TAGGED -> MediaWrapperApi
+// STORY -> Story
+// HIGHLIGHTS -> Highlights
+
 class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     private var user: String? = null
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
-    private var selectivity = false
     private var dbFav: Favourite? = null
 
     override val menuRes = R.menu.viewer_tlb
@@ -70,6 +80,16 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_FETCHED -> {
+                        if (msg.obj == true) {
+                            Glide.with(c)
+                                .load(m.vwUser!!.photo())
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .addListener(GlideShimmer(b.proPic, b.proPicIv))
+                                .into(b.proPicIv)
+                            b.followersNum.text = m.vwUser!!.edge_followed_by.toString()
+                            b.followingNum.text = m.vwUser!!.edge_follow.toString()
+                        }
+
                         if (msg.arg1 != msg.arg2) adapt(msg.arg1, msg.arg2) else adapt()
                         b.refresher.isRefreshing = false
                         if (m.vwUser!!.hasMore() && thread?.active != true
@@ -122,10 +142,11 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         }
         b.nsv.viewTreeObserver.addOnScrollChangedListener {
             b.tbShadow.vish(b.nsv.scrollY > 0)
+            b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateJumper() // TODO ^
+                updateJumper()
                 if (!b.rv.canScrollVertically(1) && thread?.active != true &&
                     m.vwUser?.hasMore() != false
                 ) thread = FetchSome().also { it.start() }
@@ -137,7 +158,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             anJumper?.cancel()
             anJumper = UiTools.anJumper(this, b.jumper, it)
         }
-        Delay(3000) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
+        Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
         // Profile
         b.proPic.layoutParams = b.proPic.layoutParams.apply {
@@ -164,7 +185,8 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         b.followers.setOnClickListener { flwClick(true, it) }
         b.following.setOnClickListener { flwClick(false, it) }
 
-        load()
+        if (m.vwUser == null) load()
+        else handler?.obtainMessage(HANDLE_FETCHED, true)?.sendToTarget()
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -222,7 +244,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
         return super.onMenuItemClick(item)
     }
 
-    private fun fixTbMenu() {
+    fun fixTbMenu() {
         b.toolbar.menu.findItem(R.id.vtFav)
             ?.setIcon(if (dbFav != null) R.drawable.favourite else R.drawable.non_favourite)
     }
@@ -242,13 +264,12 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             b.rv.adapter?.notifyItemRangeInserted(begin, count)
             return; }
         b.rv.adapter = ListVwr(this)
-        if (tracker == null) {
+        (b.rv.adapter as ListVwr?)?.let { adp ->
             tracker = SelectionTracker.Builder(
                 "viewer", b.rv,
-                MyItemKeyProvider(), MyDetailsLookup(),
+                adp.PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
                 StorageStrategy.createStringStorage()
-            ).build()
-            tracker?.addObserver(SelectObserver())
+            ).build().also { it.addObserver(adp.SelectObserver()) }
         }
     }
 
@@ -292,57 +313,24 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 
-    fun selective(bb: Boolean) {
-        b.toolbar.menu.clear()
-        b.toolbar.inflateMenu(if (bb) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
-        fixTbMenu()
+    override fun onPause() {
+        super.onPause()
+        (b.expanded.slider.adapter as ListCar?)?.players
+            ?.forEach { if (it?.playerState == SessionPlayer.PLAYER_STATE_PLAYING) it.pause() }
     }
 
     override fun onBackPressed() {
-        if (::b.isInitialized) (b.rv.adapter as ListVwr?)?.let {
-            if (it.expandable.zoomed) {
-                it.expandable.collapse(); return; }
+        if (::b.isInitialized) {
+            val adp = (b.rv.adapter as ListVwr?)
+            if (adp != null && adp.expandable.zoomed) {
+                adp.expandable.collapse(); return; }
         }
         if (tracker?.hasSelection() == true) {
             tracker?.clearSelection()
             return
         }
-        super.onBackPressed()
-    }
-
-    override fun onDestroy() {
         m.vwUser = null
-        super.onDestroy()
-    }
-
-    inner class MyItemKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String = m.vwUser!!.edges()!![i].node.id
-        override fun getPosition(key: String): Int {
-            for (i in m.vwUser!!.edges()!!.indices)
-                if (m.vwUser!!.edges()!![i].node.id == key) return i
-            return -1
-        }
-    }
-
-    inner class MyDetailsLookup : ItemDetailsLookup<String?>() {
-        override fun getItemDetails(e: MotionEvent): ItemDetails<String?>? {
-            b.rv.findChildViewUnder(e.x, e.y)?.let {
-                val h = b.rv.getChildViewHolder(it)
-                if (h is ListPost<*>.ViewHolder) return@getItemDetails h.getItemDetails()
-            }
-            return null
-        }
-    }
-
-    inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
-        override fun onSelectionChanged() {
-            super.onSelectionChanged()
-            val status = tracker?.hasSelection() == true
-            if (selectivity == status) return
-            selectivity = status
-            selective(status)
-            UiTools.shake(c)
-        }
+        super.onBackPressed()
     }
 
     inner class FetchSome : BaseThread() {
@@ -356,13 +344,6 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                     Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
                     interrupt(); return@Api
                 }
-                Glide.with(c)
-                    .load(m.vwUser!!.photo())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .addListener(GlideShimmer(b.proPic, b.proPicIv))
-                    .into(b.proPicIv)
-                b.followersNum.text = m.vwUser!!.edge_followed_by.toString()
-                b.followingNum.text = m.vwUser!!.edge_follow.toString()
                 done()
             } else Api<Profile.GraphQlResponse>(
                 this@Viewer, Api.Type.POSTS.url.format(
@@ -386,7 +367,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
                 val lastBefore = edges.size
                 edges.addAll(add.edges)
                 handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)?.sendToTarget()
-            } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            } else handler?.obtainMessage(HANDLE_FETCHED, true)?.sendToTarget()
             interrupt()
         }
     }
@@ -401,7 +382,7 @@ class Viewer : BaseActivity(), Toolbar.OnMenuItemClickListener {
             }
             m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
                 dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST.url.format(edge.node.shortcode))
+                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
                 )
             }
             ended()

@@ -31,12 +31,12 @@ class Profile(
         //val category_name: Any?,
         //val connected_fb_page: Any?,
         //val country_block: Boolean?,
-        //val edge_felix_video_timeline: Map<String?, *>?,
+        //val edge_felix_video_timeline: EdgeList?, // Useless "VIDEOS" tab
         val edge_follow: EdgeFollow,
         val edge_followed_by: EdgeFollow,
-        //val edge_media_collections: Map<String?, *>?,
+        val edge_media_collections: EdgeList?,
         //val edge_mutual_followed_by: Map<String?, *>?,
-        val edge_owner_to_timeline_media: EdgeList?, // User Posts
+        val edge_owner_to_timeline_media: EdgeList?, // Main posts
         val edge_saved_media: EdgeList?, // Saved Posts
         //val external_url: Any?,
         //val external_url_linkshimmed: Any?,
@@ -51,7 +51,7 @@ class Profile(
         //val has_guides: Boolean?,
         //val has_requested_viewer: Boolean?,
         //val hide_like_and_view_counts: Boolean?,
-        //val highlight_reel_count: Double?,
+        val highlight_reel_count: Double?,
         val id: String, // The same as Rest.User.pk
         //val is_business_account: Boolean?,
         //val is_embeds_disabled: Boolean?,
@@ -83,13 +83,15 @@ class Profile(
             edge_owner_to_timeline_media?.edges?.size != edge_owner_to_timeline_media?.count?.toInt()
     }
 
-    class EdgeFollow(val count: Double) {
+    open class EdgeFollow(val count: Double) {
         override fun toString(): String = when {
             count > 1000000.0 -> DecimalFormat("#.##").format(count / 1000000.0) + "M"
             count > 1000.0 -> DecimalFormat("#.##").format(count / 1000.0) + "K"
             else -> count.toInt().toString()
         } // Cannot move to strings.xml without Context
     }
+
+    //class EdgeFollowMutual(count: Double, val edges: Array<Any>) : EdgeFollow(count)
 
     class EdgeList(var page_info: PageInfo, var count: Double, var edges: ArrayList<EdgePost>)
 

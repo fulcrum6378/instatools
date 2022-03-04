@@ -34,7 +34,7 @@ class Api<JSON>(
         setShouldCache(cache)
         tag = "fetch"
         retryPolicy = DefaultRetryPolicy(
-            10000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+            15000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         )
         Volley.newRequestQueue(c.c).add(this)
     }
@@ -84,14 +84,17 @@ class Api<JSON>(
     @Suppress("unused")
     enum class Type(val url: String) {
         PROFILE("https://www.instagram.com/%s/?__a=1"),
+        INFO("https://i.instagram.com/api/v1/users/%s/info/"),
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
-        REELS("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
-        POST("https://www.instagram.com/p/%s/?__a=1"),
-        SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
-        INFO("https://i.instagram.com/api/v1/users/%s/info/"),
+        TAGGED("https://i.instagram.com/api/v1/usertags/%s/feed/"), //?count=12
+        POST_ITEM("https://www.instagram.com/p/%s/?__a=1"),
+        STORY("https://i.instagram.com/api/v1/feed/user/%s/story/"),
+        HIGHLIGHTS("https://i.instagram.com/api/v1/highlights/%s/highlights_tray/"),
+        REEL_ITEM("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
+        // StoryReel = "Full-Screen Video"; Story { reel, reel, ... }, Highlights { reel, reel, ... }
 
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
@@ -108,11 +111,12 @@ class Api<JSON>(
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
         INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-
-        //persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]&limit=10
         DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
+        //persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]&limit=10
 
-        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// POST
+        SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
+
+        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// POST_ITEM
     }
 
     companion object {
@@ -176,7 +180,7 @@ class Api<JSON>(
                         .substringAfter("csrftoken=")
                         .substringBefore(";")
                 // this["x-instagram-ajax"] = "7f7346b22318"
-            } else { // Cookie "rur" is different between POST and GET but the same between themselves
+            } else { // Cookie "rur" is different between POST_ITEM and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
             }
             this["x-asbd-id"] = "198387" // MIGHT BE THE SAME FOR DIFFERENT ACCOUNTS

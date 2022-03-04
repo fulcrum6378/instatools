@@ -2,8 +2,10 @@ package ir.mahdiparastesh.instatools.list
 
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,10 +18,12 @@ import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
+import ir.mahdiparastesh.instatools.view.UiTools
 
 abstract class ListPost<C>(protected val c: C) :
     RecyclerView.Adapter<ListPost<C>.ViewHolder>() where C : BaseActivity {
 
+    private var selectivity = false
     private val typeVideo = c.drawable(R.drawable.video)!!
     private val typeStack = c.drawable(R.drawable.stack)!!
     val expandable: Expandable by lazy {
@@ -33,8 +37,8 @@ abstract class ListPost<C>(protected val c: C) :
     abstract val expanded: ExpandableBinding
 
     inner class ViewHolder(val b: ListPostBinding) : RecyclerView.ViewHolder(b.root) {
-        fun getItemDetails(): ItemDetailsLookup.ItemDetails<String?> =
-            object : ItemDetailsLookup.ItemDetails<String?>() {
+        fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
+            object : ItemDetailsLookup.ItemDetails<String>() {
                 override fun getPosition(): Int = layoutPosition
                 override fun getSelectionKey(): String? = edges?.getOrNull(position)?.node?.id
             }
@@ -69,8 +73,7 @@ abstract class ListPost<C>(protected val c: C) :
         )
 
         h.b.click.setBackgroundResource(
-            if (tracker == null || !tracker!!.isSelected(node.id)) R.drawable.button
-            else R.drawable.selected
+            if (tracker?.isSelected(node.id) != true) R.drawable.button else R.drawable.selected
         )
         h.b.click.setOnClickListener {
             expandable.node = edges?.getOrNull(h.layoutPosition)?.node ?: return@setOnClickListener
@@ -84,4 +87,36 @@ abstract class ListPost<C>(protected val c: C) :
     }
 
     override fun getItemCount() = edges?.size ?: 0
+
+    abstract fun selective(status: Boolean)
+
+
+    inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
+        override fun getKey(i: Int): String? = edges?.getOrNull(i)?.node?.id
+        override fun getPosition(key: String): Int {
+            edges?.forEachIndexed { i, edge -> if (edge.node.id == key) return@getPosition i }
+            return -1
+        }
+    }
+
+    class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {
+        override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
+            rv.findChildViewUnder(e.x, e.y)?.let {
+                val h = rv.getChildViewHolder(it)
+                if (h is ListPost<*>.ViewHolder) return@getItemDetails h.getItemDetails()
+            }
+            return null
+        }
+    }
+
+    inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
+        override fun onSelectionChanged() {
+            super.onSelectionChanged()
+            val status = tracker?.hasSelection() == true
+            if (selectivity == status) return
+            selectivity = status
+            selective(status)
+            UiTools.shake(c.c)
+        }
+    }
 }

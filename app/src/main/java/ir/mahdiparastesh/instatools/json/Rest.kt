@@ -101,35 +101,72 @@ open class Rest(val status: String) {
         status: String
     ) : Rest(status)
 
+    open class DynamicReelsList(val broadcast: Array<Any?>? = null, status: String) : Rest(status)
+
+    class Story(val reel: StoryReel, broadcast: Array<Any?>?, status: String) :
+        DynamicReelsList(broadcast, status)
+
+    interface TrayWrapper<T> where T : Reel {
+        val tray: Array<T>
+    }
+
+    class Highlights(
+        override val tray: Array<HighlightReel>,
+        val show_empty_state: Boolean,
+        status: String,
+    ) : Rest(status), TrayWrapper<HighlightReel>
+
     class Reels(
-        val reels: Map<String, Reel>,
-        val reels_media: Array<Reel>,
+        val reels: Map<String, StoryReel>,
+        val reels_media: Array<StoryReel>,
         status: String
     ) : Rest(status)
 
-    class Reel(
-        val ad_expiry_timestamp_in_millis: Any?,
+    open class Reel(
+        //val ad_expiry_timestamp_in_millis: Any?,
         //val can_gif_quick_reply: Boolean,
         //val can_reply: Boolean,
         //val can_reshare: Boolean,
-        //val expiring_at: Double,
-        val id: Double, // User Id not that of the reel
         //val is_cta_sticker_available: Any?,
-        val items: Array<Media>,
         //val latest_reel_media: Double,
-        //val media_count: Float,
-        //val media_ids: Array<String>,
-        //val prefetch_count: Float,
         //val reel_type: String,
         //val seen: Double,
         val user: User
     )
 
+    class StoryReel(
+        //val expiring_at: Double,
+        //val has_besties_media: Boolean?,
+        //val has_fan_club_media: Boolean?,
+        val id: Double, // User Id not that of the reel
+        val items: Array<Media>,
+        //val media_count: Float,
+        //val media_ids: Array<String>,
+        //val prefetch_count: Float,
+        user: User
+    ) : Reel(user)
+
+    class HighlightReel(
+        //val cover_media: HighlightCover?, // uncertain "?"
+        //val created_at: Double,
+        val id: String, // starts with "highlight:"
+        //val is_converted_to_clips: Boolean,
+        //val is_pinned_highlight: Boolean,
+        val media_count: Float,
+        //val prefetch_count: Double,
+        //val ranked_position: Double,
+        //val seen_ranked_position: Double,
+        val title: String,
+        user: User
+    ) : Reel(user)
+
+    //class HighlightCover(val cropped_image_version: Media.Candidate, val crop_rect: Any?)
+
     class Search(
-        val places: Array<HashMap<String, *>>,
-        val hashtags: Array<HashMap<String, *>>,
-        val rank_token: String,
-        val has_more: Boolean,
+        //val places: Array<HashMap<String, *>>,
+        //val hashtags: Array<HashMap<String, *>>,
+        //val rank_token: String,
+        //val has_more: Boolean,
         val users: Array<ItemUser>,
         status: String
     ) : Rest(status)
