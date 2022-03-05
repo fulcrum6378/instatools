@@ -19,8 +19,4 @@ class ListSvd(c: Main, private val f: PageSvd) : ListPost<Main>(c) {
         Expandable(c, expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CSD))
     }
     override val expanded: ExpandableBinding = f.b.expanded
-
-    override fun selective(status: Boolean) {
-        c.selective(status)
-    }
 }

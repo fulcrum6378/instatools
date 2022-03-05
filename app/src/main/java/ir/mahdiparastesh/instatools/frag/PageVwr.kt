@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.frag
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Message
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +28,8 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
-import ir.mahdiparastesh.instatools.view.*
+import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -35,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@SuppressLint("NotifyDataSetChanged")
 class PageVwr(c: Viewer) : BasePageViewer(c) {
     lateinit var b: PageVwrBinding
     private var thread: FetchSome? = null
@@ -148,14 +152,16 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        b.rv.adapter = ListVwr(c, this)
-        (b.rv.adapter as ListVwr?)?.let { adp ->
-            tracker = SelectionTracker.Builder(
-                "viewer", b.rv,
-                adp.PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
-                StorageStrategy.createStringStorage()
-            ).build().also { it.addObserver(adp.SelectObserver()) }
-        }
+
+        if (b.rv.adapter == null) b.rv.adapter = ListVwr(c, this)
+        else b.rv.adapter?.notifyDataSetChanged()
+
+        if (tracker != null) return
+        tracker = SelectionTracker.Builder(
+            "viewer_main", b.rv,
+            PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
+            StorageStrategy.createStringStorage()
+        ).build().also { it.addObserver(SelectObserver()) }
     }
 
     private fun flwClick(isItFollowers: Boolean, v: View) {
@@ -195,6 +201,16 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
                 it.expandable.collapse(); return@goBack true; }
         }
         return false
+    }
+
+    inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
+        override fun getKey(i: Int): String? = c.m.vwUser?.edges()?.getOrNull(i)?.node?.id
+        override fun getPosition(key: String): Int {
+            c.m.vwUser?.edges()?.forEachIndexed { i, edge ->
+                if (edge.node.id == key) return@getPosition i
+            }
+            return -1
+        }
     }
 
     inner class FetchSome : BaseThread() {

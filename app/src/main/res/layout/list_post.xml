@@ -17,6 +17,12 @@
             android:id="@+id/thumbnail"
             style="@style/shimmerIv" />
 
+        <View
+            android:id="@+id/click"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button" />
+
         <ImageView
             android:id="@+id/type"
             style="@style/parentConstraint"
@@ -28,11 +34,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.05"
             app:layout_constraintWidth_percent="0.16" />
-
-        <View
-            android:id="@+id/click"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/button" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>

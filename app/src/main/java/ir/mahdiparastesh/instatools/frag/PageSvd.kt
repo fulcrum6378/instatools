@@ -1,13 +1,16 @@
 package ir.mahdiparastesh.instatools.frag
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Message
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.media2.common.SessionPlayer
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -28,24 +31,30 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
+@SuppressLint("NotifyDataSetChanged")
 class PageSvd(c: Main) : BasePageMain(c) {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
+    private var selectivity = false
 
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
-            if (b.rv.adapter != null && msg.arg1 != msg.arg2) {
+            if (b.rv.adapter != null && msg.arg2 > 0) {
                 super@PageSvd.onLoaded(c.m.saved?.edges.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
                 c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
             } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
 
+            Log.println(Log.ASSERT, "KOS", "(${msg.arg1} : ${msg.arg2})")
+
             if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
+                && thread?.active != true
             ) thread = FetchSome().also { it.start() }
         },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
@@ -101,31 +110,32 @@ class PageSvd(c: Main) : BasePageMain(c) {
 
         //b.refresher.isRefreshing = true
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
-        else if (thread == null) thread = FetchSome().also { it.start() }
+        else if (thread?.active != true) thread = FetchSome().also { it.start() }
         return b.root
     }
 
     override fun onRefresh() {
         if (thread?.active == true) return
-        b.rv.adapter = null
         c.m.saved = null
+        b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
-        tracker = null
+        tracker?.clearSelection()
         thread = FetchSome().also { it.start() }
     }
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
         if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-        b.rv.adapter = ListSvd(c, this)
-        tracker = null
-        (b.rv.adapter as ListSvd?)?.let { adp ->
-            tracker = SelectionTracker.Builder(
-                "saved", b.rv,
-                adp.PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
-                StorageStrategy.createStringStorage()
-            ).build().also { it.addObserver(adp.SelectObserver()) }
-        }
+
+        if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
+        else b.rv.adapter?.notifyDataSetChanged() // created only once
+
+        if (tracker != null) return
+        tracker = SelectionTracker.Builder( // created only once
+            "saved", b.rv,
+            PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
+            StorageStrategy.createStringStorage()
+        ).build().also { it.addObserver(SelectObserver()) }
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -173,6 +183,27 @@ class PageSvd(c: Main) : BasePageMain(c) {
         return false
     }
 
+    inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
+        override fun getKey(i: Int): String? = c.m.saved?.edges?.getOrNull(i)?.node?.id
+        override fun getPosition(key: String): Int {
+            c.m.saved?.edges?.forEachIndexed { i, edge ->
+                if (edge.node.id == key) return@getPosition i
+            }
+            return -1
+        }
+    }
+
+    inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
+        override fun onSelectionChanged() {
+            super.onSelectionChanged()
+            val status = tracker?.hasSelection() == true
+            if (selectivity == status) return
+            selectivity = status
+            c.selective(status)
+            UiTools.shake(c.c)
+        }
+    }
+
     inner class FetchSome : BaseThread() {
         override fun run() {
             if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
@@ -206,11 +237,9 @@ class PageSvd(c: Main) : BasePageMain(c) {
             if (add != null) c.m.saved?.apply {
                 page_info = add.page_info
                 count = add.count
+                edges.removeAll { it.node.id in add.edges.map { addable -> addable.node.id } }
                 val lastBefore = edges.size
-                add.edges.forEach { post ->
-                    edges.removeAll { it.node.id == post.node.id }
-                    edges.add(post)
-                }
+                edges.addAll(add.edges)
                 handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)?.sendToTarget()
             } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
