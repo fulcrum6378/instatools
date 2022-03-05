@@ -33,8 +33,9 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
+    }
 
-        // Paging
+    open fun createPages() {
         currentPage.value = defPage()
         if (page1 == null) page1 = aCreate()
         if (page2 == null) page2 = bCreate()

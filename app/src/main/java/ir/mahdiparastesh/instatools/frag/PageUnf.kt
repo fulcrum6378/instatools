@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
@@ -111,8 +110,8 @@ class PageUnf(c: Main) : BasePageMain(c) {
 
     inner class Inquiry : BaseThread() {
         private val CHANNEL_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
-        private lateinit var oldFriends: List<Friend>
-        private var newFriends = arrayListOf<Friend>()
+        lateinit var oldFriends: List<Friend>
+        var newFriends = arrayListOf<Friend>()
 
         init {
             c.m.unfollowers.value = null
@@ -133,21 +132,16 @@ class PageUnf(c: Main) : BasePageMain(c) {
             ) { flw ->
                 Thread {
                     flw.users.forEach { u ->
-                        Friend(
-                            u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
-                            theFollowers, !theFollowers
-                        ).apply {
-                            newFriends.add(this)
-                            Friend.add(c.dao, this, theFollowers)
-                        }
+                        Friend.add(
+                            c.dao, this, Friend(
+                                u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
+                                theFollowers, !theFollowers
+                            ), theFollowers
+                        )
                     }
                     if (flw.next_max_id == null) {
-                        if (theFollowers) Delay(looper = Looper.getMainLooper()) {
-                            allFollow(theFollowers = false)
-                        } else ended()
-                    } else Delay(looper = Looper.getMainLooper()) {
-                        allFollow(flw.next_max_id, theFollowers)
-                    }
+                        if (theFollowers) allFollow(theFollowers = false) else ended()
+                    } else allFollow(flw.next_max_id, theFollowers)
                 }.start()
             }
         }

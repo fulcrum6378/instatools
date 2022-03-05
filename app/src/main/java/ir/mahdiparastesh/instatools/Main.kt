@@ -86,6 +86,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         setContentView(b.root)
         guest = m.acc!!.id == -1L
         toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
+        createPages()
 
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.

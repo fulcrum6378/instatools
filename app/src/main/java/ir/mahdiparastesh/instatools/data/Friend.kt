@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import ir.mahdiparastesh.instatools.frag.PageUnf
 
 @Entity
 class Friend(
@@ -20,19 +21,29 @@ class Friend(
 
     companion object {
         @AvoidUiThread
-        fun add(dao: Database.DAO, newer: Friend, certainFollower: Boolean?) {
+        fun add(
+            dao: Database.DAO, thread: PageUnf.Inquiry, newer: Friend, inFollowersList: Boolean
+        ) {
             try {
                 dao.addFriend(newer)
+                thread.newFriends.add(newer)
             } catch (e: SQLiteConstraintException) {
-                dao.updateFriend(newer.apply {
-                    val older = dao.friend(id)
-                    unfollowedMeAt = older.unfollowedMeAt
-                    when (certainFollower) {
-                        true -> follows = older.follows
-                        false -> followed = older.followed
-                        else -> {}
+                newer.apply {
+                    val older = thread.oldFriends.find { it.id == id } ?: dao.friend(id)
+                    if (inFollowersList) {
+                        followed = older.followed
+                        unfollowedMeAt = null
+                    } else {
+                        val followsNow = thread.newFriends.find { it.id == id } != null
+                        follows = followsNow
+                        unfollowedMeAt = if (followsNow) null else older.unfollowedMeAt
                     }
-                })
+
+                    dao.updateFriend(this)
+                    val index = find(this, thread.newFriends)
+                    if (index != null) thread.newFriends[index] = this
+                    else thread.newFriends.add(this)
+                }
             }
         }
 
