@@ -4,23 +4,23 @@ package ir.mahdiparastesh.instatools.json
 open class Rest(val status: String) {
 
     class User(
-        //val account_badges: Array<Map<String, *>>,
+        //val account_badges: Array<Map<String, *>>?,
         //val account_type: Float?,
         //val auto_expand_chaining: Boolean?,
         //val biography: String?,
         //val can_be_reported_as_fraud: Boolean?,
         //val creator_shopping_info: Map<String, *>?,
         //val external_url: String?,
-        //val fbid_v2: Double,
+        //val fbid_v2: Double?,
         //val follow_friction_type: Float?,
         //val follower_count: Float?,
         //val following_count: Float?,
         //val following_tag_count: Float?,
         val friendship_status: Friendship?, // INFO appears to lack this
         val full_name: String,
-        //val has_anonymous_profile_picture: Boolean,
+        //val has_anonymous_profile_picture: Boolean?,
         //val has_guides: Boolean?,
-        //val has_highlight_reels: Boolean,
+        //val has_highlight_reels: Boolean?,
         //val has_unseen_besties_media: Boolean?,
         //val has_videos: Boolean?,
         //val hd_profile_pic_versions: Array<Media.Candidate>?,
@@ -37,7 +37,7 @@ open class Rest(val status: String) {
         val is_private: Boolean,
         //val is_using_unified_inbox_for_direct: Boolean?,
         //val is_verified: Boolean,
-        //val latest_reel_media: Double,
+        //val latest_reel_media: Double?,
         //val media_count: Float?,
         //val mutual_followers_count: Float?,
         //val open_external_url_with_in_app_browser: Boolean?,
@@ -116,18 +116,19 @@ open class Rest(val status: String) {
         status: String,
     ) : Rest(status), TrayWrapper<HighlightReel>
 
-    class Reels(
-        val reels: Map<String, StoryReel>,
-        val reels_media: Array<StoryReel>,
+    class Reels<R>(
+        val reels: Map<String, R>,
+        val reels_media: Array<R>,
         status: String
-    ) : Rest(status)
+    ) : Rest(status) where R : Reel
 
-    open class Reel(
+    abstract class Reel(
         //val ad_expiry_timestamp_in_millis: Any?,
         //val can_gif_quick_reply: Boolean,
         //val can_reply: Boolean,
         //val can_reshare: Boolean,
         //val is_cta_sticker_available: Any?,
+        val items: Array<Media>,
         //val latest_reel_media: Double,
         //val reel_type: String,
         //val seen: Double,
@@ -139,12 +140,12 @@ open class Rest(val status: String) {
         //val has_besties_media: Boolean?,
         //val has_fan_club_media: Boolean?,
         val id: Double, // User Id not that of the reel
-        val items: Array<Media>,
+        items: Array<Media>,
         //val media_count: Float,
         //val media_ids: Array<String>,
         //val prefetch_count: Float,
         user: User
-    ) : Reel(user)
+    ) : Reel(items, user)
 
     class HighlightReel(
         //val cover_media: HighlightCover?, // uncertain "?"
@@ -152,13 +153,15 @@ open class Rest(val status: String) {
         val id: String, // starts with "highlight:"
         //val is_converted_to_clips: Boolean,
         //val is_pinned_highlight: Boolean,
+        items: Array<Media>,
         val media_count: Float,
+        val media_ids: Array<String>?,
         //val prefetch_count: Double,
         //val ranked_position: Double,
         //val seen_ranked_position: Double,
         val title: String,
         user: User
-    ) : Reel(user)
+    ) : Reel(items, user)
 
     //class HighlightCover(val cropped_image_version: Media.Candidate, val crop_rect: Any?)
 

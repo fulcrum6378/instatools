@@ -88,12 +88,8 @@ class UiTools {
             else vib.vibrate(dur)
         }
 
-        fun date(time: Any): String {
-            val cal = when (time) {
-                is Long -> time.calendar()
-                is Double -> time.calendar()
-                else -> throw IllegalArgumentException("Unsupported unix time type!")
-            }
+        fun date(time: Long): String {
+            val cal = time.calendar()
             return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
                     "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
                     "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
@@ -121,12 +117,12 @@ class UiTools {
         at android.widget.TextView.onTouchEvent(TextView.java:9646)*/
         }
 
-        fun Long.calendar(): Calendar =
+        fun Long.calendar(): Calendar = // needs milliseconds
             Calendar.getInstance().apply { timeInMillis = this@calendar }
 
-        fun Double.calendar(): Calendar = Calendar.getInstance().apply { timeInMillis = toUnix() }
+        fun Double.xFromMicroseconds() = toLong() / 1000L
 
-        fun Double.toUnix() = toLong() / 1000L
+        fun Double.xFromSeconds() = toLong() * 1000L
 
         fun adaptiveBanner(c: BaseActivity, unitId: String) = AdView(c).apply {
             id = R.id.adBanner

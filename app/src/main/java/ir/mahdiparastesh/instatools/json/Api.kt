@@ -25,6 +25,7 @@ class Api<JSON>(
     cache: Boolean = false,
     method: Int = Method.GET,
     private val acc: Account = c.m.acc!!,
+    private val typeToken: java.lang.reflect.Type? = null,
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url),
@@ -46,17 +47,17 @@ class Api<JSON>(
     @Suppress("UNCHECKED_CAST")
     override fun deliverResponse(response: String) {
         val data: JSON? = try {
-            Gson().fromJson(response, clazz.java) as JSON
+            Gson().fromJson(response, typeToken ?: clazz.java) as JSON
         } catch (e: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>")) when {
                 response.contains("Log in • Instagram") -> {
                     ForegroundService.terminateTasks(c.c)
                     c.gsp.edit().remove(Login.spAccount).commit()
                     c.needAuthentication()
-                    gotError(this, null)
+                    gotError(this)
                 }
                 response.contains("Content unavailable &bull; Instagram") ->
-                    gotError(this, null)
+                    gotError(this)
                 else -> invalidResponse(response, e)
             } else invalidResponse(response, e)
             null
@@ -68,18 +69,21 @@ class Api<JSON>(
             data?.let(onSuccess)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) throw e
-            else gotError(this, null)
+            else gotError(this)
         }
     }
 
     private fun invalidResponse(response: String, e: Exception? = null) {
-        if (BuildConfig.DEBUG)
+        /*if (BuildConfig.DEBUG)
             throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else gotError(this, null)
+        else*/ gotError(this)
     }
 
-    override fun parseNetworkResponse(response: NetworkResponse): Response<String> =
-        Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
+    var nwRes: NetworkResponse? = null
+    override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
+        nwRes = response
+        return Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
+    }
 
     @Suppress("unused")
     enum class Type(val url: String) {
@@ -124,9 +128,9 @@ class Api<JSON>(
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
         const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
 
-        fun <JSON> gotError(api: Api<JSON>, res: VolleyError? = null) { // NetworkResponse?
-            api.handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
-            api.onError?.let { func -> func(res?.networkResponse) }
+        fun <JSON> gotError(api: Api<JSON>, res: NetworkResponse? = api.nwRes) {
+            api.handleError?.obtainMessage(HANDLE_ERROR, res)?.sendToTarget()
+            api.onError?.let { func -> func(res) }
         }
 
         fun gotError(

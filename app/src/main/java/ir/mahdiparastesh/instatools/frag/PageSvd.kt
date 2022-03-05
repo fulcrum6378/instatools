@@ -40,7 +40,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg1 != msg.arg2) {
-                superOnLoaded(c.m.saved?.edges.isNullOrEmpty())
+                super@PageSvd.onLoaded(c.m.saved?.edges.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
                 c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
             } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
@@ -118,6 +118,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
         super.onLoaded(isEmpty, asGuest)
         if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
         b.rv.adapter = ListSvd(c, this)
+        tracker = null
         (b.rv.adapter as ListSvd?)?.let { adp ->
             tracker = SelectionTracker.Builder(
                 "saved", b.rv,
@@ -125,10 +126,6 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 StorageStrategy.createStringStorage()
             ).build().also { it.addObserver(adp.SelectObserver()) }
         }
-    }
-
-    private fun superOnLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
-        super.onLoaded(isEmpty, asGuest)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

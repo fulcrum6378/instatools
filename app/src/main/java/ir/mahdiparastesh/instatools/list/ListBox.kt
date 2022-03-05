@@ -13,6 +13,8 @@ import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
 
 class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)
@@ -37,7 +39,8 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             h.b.name.text = thd.thread_title
         }
 
-        h.b.last.text = c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at))
+        h.b.last.text =
+            c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at.xFromMicroseconds()))
         h.b.root.setOnClickListener {
             c.m.dmThread = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition)
             if (c.m.dmThread == null || !c.m.dmThread!!.has_older) return@setOnClickListener

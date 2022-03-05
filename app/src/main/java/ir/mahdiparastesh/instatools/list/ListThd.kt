@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.anchor
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.util.*
 
@@ -90,10 +91,10 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 else TextView.TEXT_ALIGNMENT_VIEW_START
 
             // Date
-            val cal = dm.timestamp.calendar()
+            val cal = dm.timestamp.xFromMicroseconds().calendar()
             var showDate = true
             if (i > 0) {
-                val prev = list[i - 1].timestamp.calendar()
+                val prev = list[i - 1].timestamp.xFromMicroseconds().calendar()
                 if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
                     cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
                     cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
