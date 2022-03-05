@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +26,7 @@ import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.more.BasePageMain
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
@@ -37,7 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
+class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
     private var boxThread: FetchOfInbox? = null
     var thdThread: FetchOfThread? = null
@@ -46,35 +45,34 @@ class PageBox(c: Main) : BasePage(c), ActivityResultCallback<ActivityResult> {
 
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
-    override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
-        @Suppress("UNCHECKED_CAST")
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                HANDLE_FETCHED -> if (c.m.dmThread == null) {
-                    onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
-                    if (c.m.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
-                    ) boxThread = FetchOfInbox().also { it.start() }
-                } else {
-                    val dmThd = msg.obj as Dm.DmThread
-                    val bef = c.m.dmThread!!.items.size
-                    c.m.dmThread!!.items.addAll(dmThd.items)
-                    c.m.dmThread!!.has_older = dmThd.has_older
-                    c.m.dmThread!!.items.sortBy { it.timestamp }
-                    val dif = c.m.dmThread!!.items.size - bef
-                    b.rv.adapter?.let {
-                        it.notifyItemRangeInserted(0, dif)
-                        it.notifyItemRangeChanged(dif, c.m.dmThread!!.items.size)
-                    }
+    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
+        HANDLE_FETCHED to { msg ->
+            if (c.m.dmThread == null) {
+                onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
+                if (c.m.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
+                ) boxThread = FetchOfInbox().also { it.start() }
+            } else {
+                val dmThd = msg.obj as Dm.DmThread
+                val bef = c.m.dmThread!!.items.size
+                c.m.dmThread!!.items.addAll(dmThd.items)
+                c.m.dmThread!!.has_older = dmThd.has_older
+                c.m.dmThread!!.items.sortBy { it.timestamp }
+                val dif = c.m.dmThread!!.items.size - bef
+                b.rv.adapter?.let {
+                    it.notifyItemRangeInserted(0, dif)
+                    it.notifyItemRangeChanged(dif, c.m.dmThread!!.items.size)
                 }
-                HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
-                Api.HANDLE_ERROR -> onFailed(
-                    c.getString(
-                        R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
-                    )
-                )
             }
+        },
+        HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
+        Api.HANDLE_ERROR to {
+            onFailed(
+                c.getString(
+                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
+                )
+            )
         }
-    }
+    )
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)

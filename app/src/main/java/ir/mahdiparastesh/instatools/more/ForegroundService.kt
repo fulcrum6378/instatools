@@ -15,7 +15,6 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
@@ -115,7 +114,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             setContentIntent(
                 PendingIntent.getActivity(
                     c, 0, Intent(c, openActivity.java).apply {
-                        if (turnToPage != null) putExtra(Main.EXTRA_TURN_TO_PAGE, turnToPage)
+                        if (turnToPage != null)
+                            putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, turnToPage)
                     }, PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )

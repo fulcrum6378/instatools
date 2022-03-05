@@ -1,0 +1,25 @@
+package ir.mahdiparastesh.instatools.frag
+
+import android.os.Bundle
+import android.os.Message
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.databinding.PageRelBinding
+import ir.mahdiparastesh.instatools.more.BasePageViewer
+
+class PageRel(c: Viewer) : BasePageViewer(c) {
+    private lateinit var b: PageRelBinding
+
+    override val root: ConstraintLayout get() = b.root
+    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf()
+
+    override fun bInitialised(): Boolean = ::b.isInitialized
+
+    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
+        b = PageRelBinding.inflate(inf, parent, false)
+        return b.root
+    }
+}

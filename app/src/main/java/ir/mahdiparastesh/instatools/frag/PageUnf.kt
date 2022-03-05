@@ -6,7 +6,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Looper
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,43 +29,43 @@ import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
 import kotlinx.coroutines.runBlocking
 
-class PageUnf(c: Main) : BasePage(c) {
+@Suppress("UNCHECKED_CAST")
+class PageUnf(c: Main) : BasePageMain(c) {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
 
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
-    override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
-        @Suppress("UNCHECKED_CAST")
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                HANDLE_LOADED -> (msg.obj as List<Friend>).apply {
-                    c.m.unfollowers.value = ArrayList(this)
-                    c.m.unfollowers.value!!.sortBy { it.user }
-                    c.m.unfollowers.value!!.sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
-                    if (isNullOrEmpty() && msg.arg1 == 1 &&
-                        (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
-                            ?: 0L)) > 86400000
-                    ) thread = Inquiry().also { it.start() }
-                    else onLoaded(isNullOrEmpty())
-                }
-                HANDLE_FETCHED -> {
-                    load(false)
-                    b.refresher.isRefreshing = false
-                    c.sp?.edit()?.putLong(Settings.spUnfLastChecked, Persistent.now())?.commit()
-                }
-                //HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
-                Api.HANDLE_ERROR -> onFailed(
-                    c.getString(
-                        R.string.unknownError,
-                        (msg.obj as NetworkResponse?)?.statusCode.toString()
-                    )
-                )
-                HANDLE_COULD_NOT ->
-                    Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
+    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
+        HANDLE_LOADED to { msg ->
+            (msg.obj as List<Friend>).apply {
+                c.m.unfollowers.value = ArrayList(this)
+                c.m.unfollowers.value!!.sortBy { it.user }
+                c.m.unfollowers.value!!.sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
+                if (isNullOrEmpty() && msg.arg1 == 1 &&
+                    (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
+                        ?: 0L)) > 86400000
+                ) thread = Inquiry().also { it.start() }
+                else onLoaded(isNullOrEmpty())
             }
+        },
+        HANDLE_FETCHED to {
+            load(false)
+            b.refresher.isRefreshing = false
+            c.sp?.edit()?.putLong(Settings.spUnfLastChecked, Persistent.now())?.commit()
+        },
+        //HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) }
+        Api.HANDLE_ERROR to {
+            onFailed(
+                c.getString(
+                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
+                )
+            )
+        },
+        HANDLE_COULD_NOT to {
+            Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
         }
-    }
+    )
 
     companion object {
         const val HANDLE_LOADED = 2
@@ -187,7 +190,7 @@ class PageUnf(c: Main) : BasePage(c) {
                     setContentIntent(
                         PendingIntent.getActivity(
                             c, 0, Intent(c, Main::class.java)
-                                .apply { putExtra(Main.EXTRA_TURN_TO_PAGE, 0) },
+                                .apply { putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, 0) },
                             PendingIntent.FLAG_CANCEL_CURRENT
                         )
                     )

@@ -1,8 +1,6 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -32,48 +30,51 @@ import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
-class PageSvd(c: Main) : BasePage(c) {
+class PageSvd(c: Main) : BasePageMain(c) {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
 
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
-    override var handler: Handler? = object : Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                HANDLE_FETCHED -> {
-                    if (b.rv.adapter != null && msg.arg1 != msg.arg2) {
-                        superOnLoaded(c.m.saved?.edges.isNullOrEmpty())
-                        b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-                        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-                    } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
+    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
+        HANDLE_FETCHED to { msg ->
+            if (b.rv.adapter != null && msg.arg1 != msg.arg2) {
+                superOnLoaded(c.m.saved?.edges.isNullOrEmpty())
+                b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
+                c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
+            } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
 
-                    if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
-                    ) thread = FetchSome().also { it.start() }
-                }
-                HANDLE_ABORTED -> onFailed(c.getString(R.string.loadFailed))
-                Api.HANDLE_ERROR -> onFailed(
-                    c.getString(
-                        R.string.unknownError, (msg.obj as NetworkResponse?)?.statusCode.toString()
-                    )
+            if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
+            ) thread = FetchSome().also { it.start() }
+        },
+        HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
+        Api.HANDLE_ERROR to {
+            onFailed(
+                c.getString(
+                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
                 )
-                Expandable.HANDLE_EXPANDABLE_ERROR -> try {
-                    Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
-                } catch (ignored: IllegalArgumentException) {
-                }
-                HANDLE_UNSAVE_DONE -> c.m.saved?.edges?.find { it.node.id == msg.obj as String }
-                    ?.let { post ->
-                        val x = c.m.saved!!.edges.indexOf(post)
-                        c.m.saved!!.edges.removeAt(x)
-                        b.rv.adapter?.notifyItemRemoved(x)
-                        b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
-                        if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
-                    }
-                HANDLE_INIT_QUEUER -> Downloads.initService(c)
+            )
+        },
+        Expandable.HANDLE_EXPANDABLE_ERROR to {
+            try {
+                Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
+            } catch (ignored: IllegalArgumentException) {
             }
-        }
-    }
+        },
+        HANDLE_UNSAVE_DONE to { msg ->
+            c.m.saved?.edges?.find { it.node.id == msg.obj as String }
+                ?.let { post ->
+                    val x = c.m.saved!!.edges.indexOf(post)
+                    c.m.saved!!.edges.removeAt(x)
+                    b.rv.adapter?.notifyItemRemoved(x)
+                    b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
+                    if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
+                }
+        },
+        HANDLE_INIT_QUEUER to { Downloads.initService(c) }
+    )
+
 
     companion object {
         const val HANDLE_UNSAVE_DONE = 10
@@ -126,7 +127,7 @@ class PageSvd(c: Main) : BasePage(c) {
         }
     }
 
-    fun superOnLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
+    private fun superOnLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
         super.onLoaded(isEmpty, asGuest)
     }
 

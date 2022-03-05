@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/root"
     tools:context=".Viewer"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -14,116 +14,19 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nsv"
+        <FrameLayout
+            android:id="@+id/frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:isScrollContainer="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/proPic"
-                    style="@style/shimmer"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp">
-
-                    <ImageView
-                        android:id="@+id/proPicIv"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        android:background="@color/shimmerIvBg" />
-
-                    <View
-                        android:id="@+id/proClick"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/button" />
-                </com.facebook.shimmer.ShimmerFrameLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/followers"
-                        style="@style/vwFlwCl">
-
-                        <LinearLayout style="@style/vwFlwLl">
-
-                            <TextView
-                                android:id="@+id/followersNum"
-                                style="@style/vwFlwNum"
-                                android:text="@string/vwFlwZero" />
-
-                            <TextView
-                                android:id="@+id/followersText"
-                                style="@style/vwFlwText"
-                                android:text="@string/vwFollowers" />
-                        </LinearLayout>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/following"
-                        style="@style/vwFlwCl">
-
-                        <LinearLayout style="@style/vwFlwLl">
-
-                            <TextView
-                                android:id="@+id/followingNum"
-                                style="@style/vwFlwNum"
-                                android:text="@string/vwFlwZero" />
-
-                            <TextView
-                                android:id="@+id/followingText"
-                                style="@style/vwFlwText"
-                                android:text="@string/vwFollowing" />
-                        </LinearLayout>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="1000dp"
-                    android:nestedScrollingEnabled="false" />
-                <!-- layout_height="wrap_content|match_parent" will cause an
-                ArrayIndexOutOfBoundsException sometimes -->
-
-                <TextView
-                    android:id="@+id/privateAcc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="90dp"
-                    android:layout_marginBottom="50dp"
-                    android:drawablePadding="15dp"
-                    android:lineSpacingMultiplier="1.2"
-                    android:text="@string/vwPrivate"
-                    android:textAlignment="center"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="@dimen/guestFont"
-                    android:visibility="gone"
-                    tools:ignore="RtlHardcoded" />
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <View
         android:id="@+id/tbShadow"
         style="@style/tbShadow" />
-
-    <ImageView
-        android:id="@+id/jumper"
-        style="@style/jumper" />
 
     <include
         android:id="@+id/expanded"

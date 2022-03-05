@@ -26,14 +26,12 @@ abstract class ListPost<C>(protected val c: C) :
     private var selectivity = false
     private val typeVideo = c.drawable(R.drawable.video)!!
     private val typeStack = c.drawable(R.drawable.stack)!!
-    val expandable: Expandable by lazy {
-        Expandable(c, expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CSD))
-    }
 
     abstract val edges: ArrayList<Profile.EdgePost>?
     abstract val inflater: LayoutInflater
     abstract val tracker: SelectionTracker<String>?
     abstract val handler: Handler?
+    abstract val expandable: Expandable
     abstract val expanded: ExpandableBinding
 
     inner class ViewHolder(val b: ListPostBinding) : RecyclerView.ViewHolder(b.root) {

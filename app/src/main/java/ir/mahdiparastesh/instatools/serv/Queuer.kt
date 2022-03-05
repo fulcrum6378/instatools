@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.toUnix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,7 +120,7 @@ class Queuer : ForegroundService() {
                     if (med == null) {
                         handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
                     cur.qud!!.apply {
-                        date = med.taken_at.toLong()
+                        date = med.taken_at.toUnix()
                         userId = user.id
                         userName = user.username
                         itemId = med.pk
@@ -143,7 +144,7 @@ class Queuer : ForegroundService() {
             when {
                 med.carousel_media != null -> for (car in med.carousel_media)
                     if (cur.qud!!.url == null) cur.qud!!.apply {
-                        date = med.taken_at.toLong()
+                        date = med.taken_at.toUnix()
                         userId = med.user.pk
                         userName = med.user.username
                         itemId = car.pk
@@ -162,7 +163,7 @@ class Queuer : ForegroundService() {
                         )
                     )
                 med.image_versions2 != null -> cur.qud!!.apply {
-                    date = med.taken_at.toLong()
+                    date = med.taken_at.toUnix()
                     userId = med.user.pk
                     userName = med.user.username
                     itemId = med.pk

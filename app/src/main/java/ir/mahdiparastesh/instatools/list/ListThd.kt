@@ -90,10 +90,10 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 else TextView.TEXT_ALIGNMENT_VIEW_START
 
             // Date
-            val cal = calendar(dm.timestamp)
+            val cal = dm.timestamp.calendar()
             var showDate = true
             if (i > 0) {
-                val prev = calendar(list[i - 1].timestamp)
+                val prev = list[i - 1].timestamp.calendar()
                 if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
                     cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
                     cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]

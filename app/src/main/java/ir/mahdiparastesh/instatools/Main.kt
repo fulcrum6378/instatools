@@ -13,11 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.bumptech.glide.Glide
@@ -33,24 +30,23 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import kotlin.reflect.KClass
 
 // adb connect 192.168.1.20:
 
-class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
+    NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
-    private var page1: PageUnf? = null
-    private var page2: PageSvd? = null
-    private var page3: PageBox? = null
     private var anTheme: ValueAnimator? = null
     private val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     private val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
@@ -65,15 +61,20 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
+    override val currentPage: MutableLiveData<Int> get() = m.currentPage
+    override val aKlass: KClass<PageUnf> = PageUnf::class
+    override val bKlass: KClass<PageSvd> = PageSvd::class
+    override val cKlass: KClass<PageBox> = PageBox::class
+    override fun aCreate(): PageUnf = PageUnf(this)
+    override fun bCreate(): PageSvd = PageSvd(this)
+    override fun cCreate(): PageBox = PageBox(this)
 
     companion object : ActivityCompanion() {
-        const val EXTRA_TURN_TO_PAGE = "turnToPage"
         var guest = false
         var doNotShowInterstitialAgain = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        supportFragmentManager.fragmentFactory = PageFactory()
         super.onCreate(savedInstanceState)
         if (m.acc == null) {
             goTo(Login::class, true)
@@ -83,19 +84,7 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
         guest = m.acc!!.id == -1L
         toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
 
-        // Paging
-        m.currentPage.value =
-            intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-                ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
-                        ?: Settings.defSpMainPage
-        if (page1 == null) page1 = PageUnf(this)
-        if (page2 == null) page2 = PageSvd(this)
-        if (page3 == null) page3 = PageBox(this)
-        loadPages()
-        m.currentPage.observe(this) {
-            pages()[it].updateShadow()
-            pages()[it].updateJumper()
-        }
+        // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
@@ -297,23 +286,8 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
         return true
     }
 
-    private fun loadPages() = pages().forEachIndexed { i, it ->
-        transFrag().apply {
-            if (it.isAdded) remove(it)
-            add(R.id.frame, it)
-            if (i != m.currentPage.value) hide(it)
-            commit()
-        }
-    }
-
-    private fun turnToPage(i: Int): Boolean {
-        if (i == m.currentPage.value) return true
-        val lastPage = m.currentPage.value!!
-        m.currentPage.value = i
-        transFrag(lastPage, m.currentPage.value!!)
-            .hide(pages()[lastPage])
-            .show(pages()[m.currentPage.value!!])
-            .commit()
+    override fun turnToPage(i: Int): Boolean {
+        if (!super.turnToPage(i)) return true
         sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.commit()
 
         anTheme?.cancel()
@@ -330,8 +304,6 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
         return true
     }
 
-    private fun pages() = arrayOf(page1!!, page2!!, page3!!)
-
     fun bnvBadge(i: Int, num: Int?) = b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
         isVisible = num != null
         number = num ?: 0
@@ -339,47 +311,26 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
         badgeTextColor = if (!night()) bg[i] else color(R.color.defBG)
     }
 
-    private var isSelective = false
-    fun selective(bb: Boolean) {
-        if (isSelective == bb) return
-        isSelective = bb
+    override fun selective(bb: Boolean): Boolean {
+        if (!super.selective(bb)) return false
         b.toolbar.menu.clear()
         b.toolbar.inflateMenu(
             when {
-                //bb && m.currentPage.value == 0 -> R.menu.main_tlb_unf_select
-                bb && m.currentPage.value == 1 -> R.menu.main_tlb_svd_select
-                //bb && m.currentPage.value == 2 -> R.menu.main_tlb_box_select
+                //bb && currentPage.value == 0 -> R.menu.main_tlb_unf_select
+                bb && currentPage.value == 1 -> R.menu.main_tlb_svd_select
+                //bb && currentPage.value == 2 -> R.menu.main_tlb_box_select
                 else -> R.menu.main_tlb
             }
         )
-        b.toolbar.setOnMenuItemClickListener(
-            if (bb) arrayOf<Toolbar.OnMenuItemClickListener>(
-                page1!!, page2!!, page3!!
-            )[m.currentPage.value!!] else this
-        )
+        super.applySelectivity()
         b.bnv.menu.forEach { it.isEnabled = !bb }
         if (!night()) colorAc.value = colorAc.value
         else {
             b.toolbar.overflowIcon?.colorFilter = pdcf(R.color.defCA)
             b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
         }
+        return true
     }
-
-    private fun transFrag(from: Int? = null, to: Int? = null) =
-        supportFragmentManager.beginTransaction().apply {
-            if (from == null || to == null || from == to) return@apply
-            if (if (!dirRtl) from < to else from > to) setCustomAnimations(
-                R.anim.enter_from_right,
-                R.anim.exit_to_left,
-                R.anim.enter_from_left,
-                R.anim.exit_to_right
-            ) else setCustomAnimations(
-                R.anim.enter_from_left,
-                R.anim.exit_to_right,
-                R.anim.enter_from_right,
-                R.anim.exit_to_left
-            )
-        }
 
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
@@ -393,42 +344,12 @@ class Main : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private var exiting = false
     override fun onBackPressed() {
-        if (pages()[m.currentPage.value!!].goBack())
-            return
+        if (pageGoBack()) return
         if (!exiting) {
             exiting = true
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
             return; }
         super.onBackPressed() // Do NOT kill the process
-    }
-
-    override fun onDestroy() {
-        page1 = null
-        page2 = null
-        page3 = null
-        super.onDestroy()
-    }
-
-
-    private inner class PageFactory : FragmentFactory() {
-        override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
-            PageUnf::class.java.name -> {
-                if (page1 != null && page1?.isAdded == true)
-                    transFrag().remove(page1!!).commit()
-                PageUnf(this@Main).also { page1 = it }
-            }
-            PageSvd::class.java.name -> {
-                if (page2 != null && page2?.isAdded == true)
-                    transFrag().remove(page2!!).commit()
-                PageSvd(this@Main).also { page2 = it }
-            }
-            PageBox::class.java.name -> {
-                if (page3 != null && page3?.isAdded == true)
-                    transFrag().remove(page3!!).commit()
-                PageBox(this@Main).also { page3 = it }
-            }
-            else -> super.instantiate(loader, name)
-        }
     }
 }

@@ -24,6 +24,7 @@ class Model : ViewModel() {
 
     // Viewer
     var vwUser: Profile.User? = null
+    var vwCurrentPage = MutableLiveData(1)
 
     // Favourites
     var fav: ArrayList<Favourite>? = null
@@ -47,7 +48,7 @@ class Model : ViewModel() {
 
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(Model::class.java)) {
                 val key = "Model"
                 return if (hashMapViewModel.containsKey(key)) getViewModel(key) as T

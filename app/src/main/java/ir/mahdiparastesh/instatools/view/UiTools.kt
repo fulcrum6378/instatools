@@ -37,7 +37,6 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
-@Suppress("MemberVisibilityCanBePrivate")
 class UiTools {
     companion object {
         const val PROFILE = "https://www.instagram.com/%s/"
@@ -91,8 +90,8 @@ class UiTools {
 
         fun date(time: Any): String {
             val cal = when (time) {
-                is Long -> calendar(time)
-                is Double -> calendar(time)
+                is Long -> time.calendar()
+                is Double -> time.calendar()
                 else -> throw IllegalArgumentException("Unsupported unix time type!")
             }
             return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
@@ -122,13 +121,12 @@ class UiTools {
         at android.widget.TextView.onTouchEvent(TextView.java:9646)*/
         }
 
-        fun calendar(unix: Long): Calendar =
-            Calendar.getInstance().apply { timeInMillis = unix }
+        fun Long.calendar(): Calendar =
+            Calendar.getInstance().apply { timeInMillis = this@calendar }
 
-        fun calendar(unix: Double): Calendar =
-            Calendar.getInstance().apply { timeInMillis = instaTime(unix) }
+        fun Double.calendar(): Calendar = Calendar.getInstance().apply { timeInMillis = toUnix() }
 
-        fun instaTime(time: Double) = time.toLong() / 1000L
+        fun Double.toUnix() = toLong() / 1000L
 
         fun adaptiveBanner(c: BaseActivity, unitId: String) = AdView(c).apply {
             id = R.id.adBanner
