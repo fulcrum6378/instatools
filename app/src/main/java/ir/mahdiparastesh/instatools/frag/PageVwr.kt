@@ -43,10 +43,11 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
     lateinit var b: PageVwrBinding
     private var thread: FetchSome? = null
 
+    override val com: PageCompanion = Companion
     override val root: ConstraintLayout get() = b.root
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
-            if (b.rv.adapter != null && msg.arg1 != msg.arg2) {
+            if (b.rv.adapter != null && msg.arg2 > 0) {
                 super.onLoaded(c.m.vwUser?.edges().isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
             } else onLoaded(c.m.vwUser?.edges().isNullOrEmpty())
@@ -89,6 +90,8 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
 
     override fun bInitialised(): Boolean = ::b.isInitialized
 
+    companion object : PageCompanion()
+
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageVwrBinding.inflate(inf, parent, false)
         essentials()
@@ -105,6 +108,9 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
                 ) thread = FetchSome().also { it.start() }
             }
         })
+        c.b.refresher.setOnChildScrollUpCallback { _, _ ->
+            return@setOnChildScrollUpCallback b.nsv.canScrollVertically(-1)
+        }
         Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
         // Profile
@@ -196,10 +202,6 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
 
     override fun goBack(): Boolean {
         if (super.goBack()) return true
-        (b.rv.adapter as ListSvd?)?.let {
-            if (it.expandable.zoomed) {
-                it.expandable.collapse(); return@goBack true; }
-        }
         return false
     }
 

@@ -14,7 +14,7 @@ class ListSvd(c: Main, private val f: PageSvd) : ListPost<Main>(c) {
     override val edges: ArrayList<Profile.EdgePost>? get() = c.m.saved?.edges
     override val inflater: LayoutInflater by lazy { f.inflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
-    override val handler: Handler? get() = f.handler
+    override val handler: Handler? get() = PageSvd.handler
     override val expandable: Expandable by lazy {
         Expandable(c, expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CSD))
     }

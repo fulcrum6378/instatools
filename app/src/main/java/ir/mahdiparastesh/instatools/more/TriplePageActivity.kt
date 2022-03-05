@@ -2,11 +2,12 @@ package ir.mahdiparastesh.instatools.more
 
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
 abstract class TriplePageActivity<A, B, C> : BaseActivity()
@@ -23,6 +24,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     abstract fun aCreate(): A
     abstract fun bCreate(): B
     abstract fun cCreate(): C
+    abstract fun defPage(): Int
 
     companion object {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
@@ -33,10 +35,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         super.onCreate(savedInstanceState)
 
         // Paging
-        currentPage.value =
-            intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-                ?: sp?.getInt(Settings.spMainPage, Settings.defSpMainPage)
-                        ?: Settings.defSpMainPage
+        currentPage.value = defPage()
         if (page1 == null) page1 = aCreate()
         if (page2 == null) page2 = bCreate()
         if (page3 == null) page3 = cCreate()
@@ -90,15 +89,17 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     open fun selective(bb: Boolean): Boolean { // shall pass
         if (isSelective == bb) return false
         isSelective = bb
-        return true
-    }
-
-    protected fun applySelectivity() {
+        toolbar.inflateMenu(if (bb) pages()[currentPage.value!!].selectiveMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(
             if (isSelective) arrayOf<Toolbar.OnMenuItemClickListener>(
                 page1!!, page2!!, page3!!
             )[currentPage.value!!] else this
         )
+        if (night()) {
+            toolbar.overflowIcon?.colorFilter = pdcf(R.color.defCA)
+            toolbar.menu.forEach { item -> item.stylise(this) }
+        }
+        return true
     }
 
     protected fun pageGoBack() = pages()[currentPage.value!!].goBack()

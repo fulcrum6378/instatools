@@ -63,6 +63,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun aCreate(): PageRel = PageRel(this)
     override fun bCreate(): PageVwr = PageVwr(this)
     override fun cCreate(): PageTag = PageTag(this)
+    override fun defPage(): Int = 1
 
     companion object : ActivityCompanion() {
         private const val EXTRA_USER = "EXTRA_USER"
@@ -93,6 +94,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                             b.followersNum.text = m.vwUser!!.edge_followed_by.toString()
                             b.followingNum.text = m.vwUser!!.edge_follow.toString()
                         }
+                        PageVwr.handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                     }
                     HANDLE_ABORTED -> {
                         b.refresher.isRefreshing = false

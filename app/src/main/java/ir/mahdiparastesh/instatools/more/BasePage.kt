@@ -17,17 +17,20 @@ import ir.mahdiparastesh.instatools.view.UiTools
 
 abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
     Toolbar.OnMenuItemClickListener where C : BaseActivity {
-    var handler: Handler? = null
 
+    abstract val com: PageCompanion
     abstract val root: ConstraintLayout
+    abstract val selectiveMenuRes: Int?
     abstract val messages: Array<Pair<Int, ((msg: Message) -> Unit)>>
     open var afterMessageHandled: () -> Unit = {}
 
     protected open fun rv(): RecyclerView = root.findViewById(R.id.rv)
     protected open fun jumper(): ImageView = root.findViewById(R.id.jumper)
 
+    abstract class PageCompanion : Alive()
+
     protected open fun essentials() {
-        handler = object : Handler(Looper.getMainLooper()) {
+        com.handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 messages.find { it.first == msg.what }?.second?.let { func -> func(msg) }
                 afterMessageHandled()
@@ -76,7 +79,8 @@ abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
     }
 
     override fun onDestroy() {
-        handler = null
+        com.handler = null
+        com.active.value = false
         super.onDestroy()
     }
 

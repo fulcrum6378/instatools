@@ -13,10 +13,13 @@ import ir.mahdiparastesh.instatools.more.BasePageViewer
 class PageTag(c: Viewer) : BasePageViewer(c) {
     private lateinit var b: PageTagBinding
 
+    override val com: PageCompanion = Companion
     override val root: ConstraintLayout get() = b.root
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf()
 
     override fun bInitialised(): Boolean = ::b.isInitialized
+
+    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageTagBinding.inflate(inf, parent, false)

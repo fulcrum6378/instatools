@@ -68,6 +68,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override fun aCreate(): PageUnf = PageUnf(this)
     override fun bCreate(): PageSvd = PageSvd(this)
     override fun cCreate(): PageBox = PageBox(this)
+    override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+        ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
+        ?: Settings.defSpMainPage
 
     companion object : ActivityCompanion() {
         var guest = false
@@ -313,22 +316,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun selective(bb: Boolean): Boolean {
         if (!super.selective(bb)) return false
-        b.toolbar.menu.clear()
-        b.toolbar.inflateMenu(
-            when {
-                //bb && currentPage.value == 0 -> R.menu.main_tlb_unf_select
-                bb && currentPage.value == 1 -> R.menu.main_tlb_svd_select
-                //bb && currentPage.value == 2 -> R.menu.main_tlb_box_select
-                else -> R.menu.main_tlb
-            }
-        )
-        super.applySelectivity()
         b.bnv.menu.forEach { it.isEnabled = !bb }
         if (!night()) colorAc.value = colorAc.value
-        else {
-            b.toolbar.overflowIcon?.colorFilter = pdcf(R.color.defCA)
-            b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
-        }
         return true
     }
 

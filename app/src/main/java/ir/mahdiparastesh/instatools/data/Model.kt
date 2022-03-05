@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Profile
 
@@ -17,7 +18,7 @@ class Model : ViewModel() {
     var saved: Profile.EdgeList? = null
     var dmInbox: Dm.Inbox? = null
     var dmThread: Dm.DmThread? = null
-    val currentPage = MutableLiveData(0)
+    val currentPage = MutableLiveData(Settings.defSpMainPage)
 
     // Downloads
     var queueds: ArrayList<Queued>? = null

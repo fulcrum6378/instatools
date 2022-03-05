@@ -34,8 +34,10 @@ class PageUnf(c: Main) : BasePageMain(c) {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
 
+    override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
+    override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_LOADED to { msg ->
             (msg.obj as List<Friend>).apply {
@@ -67,7 +69,7 @@ class PageUnf(c: Main) : BasePageMain(c) {
         }
     )
 
-    companion object {
+    companion object : PageCompanion() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
     }

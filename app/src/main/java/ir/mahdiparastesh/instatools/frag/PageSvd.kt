@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.frag
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Message
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -41,8 +40,10 @@ class PageSvd(c: Main) : BasePageMain(c) {
     var tracker: SelectionTracker<String>? = null
     private var selectivity = false
 
+    override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
+    override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
@@ -50,8 +51,6 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
                 c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
             } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
-
-            Log.println(Log.ASSERT, "KOS", "(${msg.arg1} : ${msg.arg2})")
 
             if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
@@ -84,8 +83,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
         HANDLE_INIT_QUEUER to { Downloads.initService(c) }
     )
 
-
-    companion object {
+    companion object : PageCompanion() {
         const val HANDLE_UNSAVE_DONE = 10
         const val HANDLE_INIT_QUEUER = 11
     }

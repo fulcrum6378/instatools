@@ -14,7 +14,6 @@ import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
 
 class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
     class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)
@@ -46,7 +45,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             if (c.m.dmThread == null || !c.m.dmThread!!.has_older) return@setOnClickListener
             f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
-                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, f.handler
+                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, PageBox.handler
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {

@@ -16,6 +16,8 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
     var tracker: SelectionTracker<String>? = null
     var selectivity = false
 
+    override val selectiveMenuRes = R.menu.viewer_tlb_select
+
     abstract fun bInitialised(): Boolean
 
     override fun updateShadow() {
@@ -24,7 +26,6 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
 
     fun reset() {
         if (bInitialised()) rv().adapter?.notifyDataSetChanged()
-        tracker = null
     }
 
     override fun goBack(): Boolean {

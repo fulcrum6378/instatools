@@ -43,8 +43,10 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
     private var exportable: Exportable? = null
     private val exportLauncher = c.launcher(this)
 
+    override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
     override val root: ConstraintLayout get() = b.root
+    override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (c.m.dmThread == null) {
@@ -73,6 +75,8 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
             )
         }
     )
+
+    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)
