@@ -31,7 +31,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -129,7 +128,7 @@ class UiTools {
             adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 c, (c.dm.widthPixels / c.dm.density).toInt()
             )
-            adUnitId = if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/6300978111" else unitId
+            adUnitId = unitId
         }
 
         fun adaptiveBannerLp() = ConstraintLayout.LayoutParams(

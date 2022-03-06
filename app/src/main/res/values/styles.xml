@@ -167,6 +167,30 @@
         <item name="layout_constraintWidth_percent">0.75</item>
     </style>
 
+    <style name="payForItItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/button</item>
+        <item name="android:paddingTop">15sp</item>
+        <item name="android:paddingBottom">15sp</item>
+        <item name="android:paddingStart">20sp</item>
+        <item name="android:paddingEnd">20sp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="payForItItemIv">
+        <item name="android:layout_width">@dimen/mfPayForItIcon</item>
+        <item name="android:layout_height">@dimen/mfPayForItIcon</item>
+    </style>
+
+    <style name="payForItItemTv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:paddingStart">10sp</item>
+    </style>
+
 
     <!-- Downloads -->
     <style name="downloadsHelp">

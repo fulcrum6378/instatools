@@ -32,6 +32,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/guest.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/info.xml" value="0.192" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/instagram.xml" value="0.1815" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/metered_video.xml" value="0.1885" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/more_vert.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/no_bnv_highlight.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/non_favourite.xml" value="0.1845" />
@@ -68,6 +69,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/expandable.xml" value="0.213768115942029" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/export_options.xml" value="0.19293478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/favourites.xml" value="0.19293478260869565" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/follower_options.xml" value="0.20652173913043478" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/guest_mode.xml" value="0.19293478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_acc.xml" value="0.15489130434782608" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_box.xml" value="0.1793478260869565" />

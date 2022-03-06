@@ -42,11 +42,15 @@
     <string name="stop">Stop</string>
     <string name="openDmInInsta">Open Chat in Instagram</string>
     <string name="pageNotExist">This page doesn\'t exist!</string>
+    <string name="sContinue">Continue</string>
+    <string name="watchAnAd">Watch an Ad</string>
+    <string name="failedToLoadAd">Loading ad failed: %s</string>
+    <string name="failedToShowAd">Showing ad failed: %s</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
     <string name="guestShortDesc">Login without authentication</string>
-    <string name="guestSure">Unfortunately Instagram won\'t let you view people in its website so frequently without signing in. It\'ll force you sign in or sign up to do that. (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.) So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode. Continue?</string>
+    <string name="guestSure">Unfortunately Instagram won\'t let you view people in its website so frequently without signing in. It\'ll force you sign in or sign up to do that. (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.) So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.</string>
     <string name="needAuthentication">You need to login to continue&#8230;</string>
 
     <!-- Main -->
@@ -94,7 +98,10 @@
     <string name="vwFlwZero" translatable="false">0</string>
     <string name="vwPrivate">This account is private!</string>
     <string name="followAll">Follow All</string>
-    <string name="followAllSure">Are you sure you want to follow all of these %d account? (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)</string>
+    <string name="followAllSure">Are you sure you want to follow all of these accounts? (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)</string>
+    <!-- TODO: RE-TRANSLATE THIS ^ -->
+    <string name="alsoRequestPv">Also send request for private accounts</string>
+    <string name="mfLimit">Limit their number to:</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Mass Follower</string>
@@ -103,8 +110,9 @@
     <string name="mfGuide3">1. Open a profile in InstaTools,\n\n2. Tap on the number of their followers or following,\n\n3. Select \"Follow All\"&#8230;</string>
     <string name="mfSeekTitle">Delay between each follow action:</string>
     <string name="mfSeconds">%d seconds</string>
-    <string name="mfMinutes">%d minute(s)</string>
+    <string name="mfMinutes">%1$d minute(s), %2$d seconds</string>
     <string name="mfClear">Clear the queue</string>
+    <string name="mfPayForIt">Watch an ad to unlock this feature for 5 times&#8230;</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

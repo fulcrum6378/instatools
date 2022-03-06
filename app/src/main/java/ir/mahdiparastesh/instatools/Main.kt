@@ -40,7 +40,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlin.reflect.KClass
 
-// adb connect 192.168.1.20:
+// adb connect 192.168.1.20:adb connect 192.168.1.20:
 
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {

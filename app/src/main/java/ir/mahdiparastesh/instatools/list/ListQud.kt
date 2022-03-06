@@ -9,11 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
 import ir.mahdiparastesh.instatools.serv.Queuer
-import ir.mahdiparastesh.instatools.view.Act
-import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
@@ -55,33 +52,12 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
 
         // Clicks
         h.b.root.setOnClickListener {
-            val q = c.m.queueds?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            MaterialMenu(c, it, R.menu.qud_more, Act().apply {
-                this[R.id.qmRemove] = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            c.dao.deleteQueued(q)
-                        } catch (e: Exception) {
-                        }
-                        withContext(Dispatchers.Main) {
-                            if (c.m.queueds == null) return@withContext
-                            Queued.find(q, c.m.queueds!!)?.apply {
-                                c.m.queueds!!.removeAt(this)
-                                c.b.rv.adapter?.notifyItemRemoved(this)
-                                c.b.rv.adapter?.notifyItemRangeChanged(
-                                    this, c.m.queueds!!.size - 1
-                                )
-                            }
-                        }
-                    }
-                }
-                this[R.id.qmOpen] = {
-                    c.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(q.link))
-                        //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                }
-            }).show()
+            c.m.queueds?.getOrNull(h.layoutPosition)?.let {
+                c.startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse(it.link))
+                    //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            }
         }
         h.b.status.isClickable = qud.failed
         h.b.status.setOnClickListener(if (qud.failed) View.OnClickListener {

@@ -14,6 +14,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.InitializationStatus
@@ -25,9 +27,11 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
@@ -72,6 +76,7 @@ class Downloads : ServiceOwnerActivity() {
                     loadInterstitial("ca-app-pub-9457309151954418/4215022118")
                     Main.doNotShowInterstitialAgain = true
                 }
+                b.empty.vis(m.queueds.isNullOrEmpty())
             }
 
             fun find(msg: Message): Int? =
@@ -93,6 +98,7 @@ class Downloads : ServiceOwnerActivity() {
         // More
         b.downloadsHelp1.typeface = fontRegular
         b.downloadsHelp2.typeface = fontRegular
+        ItemTouchHelper(SwipeToRemove()).attachToRecyclerView(b.rv)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -152,6 +158,35 @@ class Downloads : ServiceOwnerActivity() {
                 action = ForegroundService.ACTION_START
                 if (link != null) putExtra(Queuer.EXTRA_LINK, link)
             })
+        }
+    }
+
+    inner class SwipeToRemove : ItemTouchHelper.Callback() {
+        override fun getMovementFlags(rv: RecyclerView, h: RecyclerView.ViewHolder): Int =
+            makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+
+        override fun onMove(
+            rv: RecyclerView, h: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
+        ): Boolean = false
+
+        override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
+            val q = m.queueds?.getOrNull(h.layoutPosition) ?: return
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    dao.deleteQueued(q)
+                } catch (e: Exception) {
+                }
+                if (m.queueds != null) withContext(Dispatchers.Main) {
+                    Queued.find(q, m.queueds)?.let {
+                        m.queueds?.removeAt(it)
+                        b.rv.adapter?.notifyItemRemoved(it)
+                        if (m.queueds == null) return@let
+                        b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size - 1)
+                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
+                    }
+                }
+                handler?.obtainMessage(-1)?.sendToTarget()
+            }
         }
     }
 }

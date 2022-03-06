@@ -24,7 +24,7 @@ class Api<JSON>(
     private val body: String? = null,
     cache: Boolean = false,
     method: Int = Method.GET,
-    private val acc: Account = c.m.acc!!,
+    private val acc: Account? = c.m.acc,
     private val typeToken: java.lang.reflect.Type? = null,
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
@@ -32,15 +32,17 @@ class Api<JSON>(
     Response.ErrorListener { gotError(handleError, onError, it) }) {
 
     init {
-        setShouldCache(cache)
-        tag = "fetch"
-        retryPolicy = DefaultRetryPolicy(
-            15000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-        )
-        Volley.newRequestQueue(c.c).add(this)
+        if (acc != null) {
+            setShouldCache(cache)
+            tag = "fetch"
+            retryPolicy = DefaultRetryPolicy(
+                15000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+            )
+            Volley.newRequestQueue(c.c).add(this)
+        } else gotError(handleError, onError)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(acc, method == Method.POST)
+    override fun getHeaders(): Map<String, String> = Headers(acc!!, method == Method.POST)
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 

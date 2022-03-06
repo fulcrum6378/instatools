@@ -50,6 +50,7 @@
     <!-- MassFollower -->
     <dimen name="mfPadV">15dp</dimen>
     <dimen name="mfGuideTv">19sp</dimen>
+    <dimen name="mfPayForItIcon">28sp</dimen>
 
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>

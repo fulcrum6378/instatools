@@ -17,6 +17,7 @@ import com.android.volley.NetworkResponse
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.databinding.FollowerOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
@@ -173,22 +174,28 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
         if (c.m.vwUser?.access() != true || c.m.vwUser?.id == null || Main.guest) return
         MaterialMenu(c, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
+                val bo = FollowerOptionsBinding.inflate(layoutInflater)
+                bo.alsoRequestPv.typeface = c.fontRegular
+                bo.limitTv.typeface = c.fontRegular
+                bo.limit.typeface = c.fontBold
+                bo.limit.setText(
+                    ((if (isItFollowers) c.m.vwUser?.edge_followed_by?.count
+                    else c.m.vwUser?.edge_follow?.count) ?: 0.0).toInt().toString()
+                )
                 AlertDialog.Builder(c).apply {
                     setTitle(R.string.followAll)
-                    setMessage(
-                        c.getString(
-                            R.string.followAllSure,
-                            ((if (isItFollowers) c.m.vwUser?.edge_followed_by?.count
-                            else c.m.vwUser?.edge_follow?.count)
-                                ?: 0.0).toInt()
-                        )
-                    )
+                    setMessage(c.getString(R.string.followAllSure))
+                    setView(bo.root)
                     setNegativeButton(R.string.no, null)
                     setPositiveButton(R.string.yes) { _, _ ->
                         MassFollower.initService(
-                            c, Follower.ToBeEnqueued(c.m.vwUser!!.id, isItFollowers, false)
-                        )
-                        c.goTo(MassFollower::class)
+                            c, Follower.ToBeEnqueued(
+                                c.m.vwUser!!.id,
+                                isItFollowers,
+                                bo.alsoRequestPv.isChecked,
+                                bo.limit.text.toString().toLong()
+                            )
+                        ) { c.goTo(MassFollower::class) }
                     }
                 }.show().stylise(c)
             }

@@ -243,6 +243,7 @@ class Queuer : ForegroundService() {
     private fun linkHandled() {
         handlingLinks.removeAt(0)
         handlingLink = false
+        if (!active.value!!) return
         if (handlingLinks.isNotEmpty()) handleLinks()
         if (download?.active != true) download = Download().also { it.start() }
     }

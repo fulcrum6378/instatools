@@ -64,6 +64,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         // WebView
         b.web.settings.javaScriptEnabled = true
         b.web.webViewClient = myClient
+        b.refresher.setOnRefreshListener { b.web.reload() }
 
         when {
             intent.getBooleanExtra(EXTRA_NEED_AUTH, false) -> { // if (accounts.size <= 1)
@@ -107,7 +108,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private fun welcome() {
-        b.web.vis(false)
+        b.refresher.vis(false)
         if (!::bw.isInitialized) b.welcomeStub.inflate()
         else bw.root.vis()
     }
@@ -118,8 +119,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             acc.id == -1L -> AlertDialog.Builder(this).apply {
                 setTitle(R.string.guest)
                 setMessage(R.string.guestSure)
-                setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ ->
+                setNegativeButton(R.string.cancel, null)
+                setPositiveButton(R.string.sContinue) { _, _ ->
                     m.acc = acc
                     gonnaBeGuest = true
                     browse()
@@ -138,7 +139,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private var gonnaAdd = false
     private var gonnaBeGuest = false
     private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
-        b.web.vis()
+        b.refresher.vis()
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also {
             it.setAcceptCookie(true)
@@ -162,6 +163,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
+            b.refresher.isRefreshing = true
             if (gonnaBeGuest) {
                 id = "-1"
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
@@ -177,6 +179,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
+            b.refresher.isRefreshing = false
             if (url != host && !url.startsWith("$host?")) return
             try { // Don't remove the explanatory comments
                 view.evaluateJavascript(

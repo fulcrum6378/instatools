@@ -2,7 +2,9 @@ package ir.mahdiparastesh.instatools.serv
 
 import android.content.Intent
 import android.os.*
+import com.android.volley.NetworkResponse
 import com.android.volley.Request
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -21,6 +23,7 @@ class Follower : ForegroundService() {
 
     override val requiresHandling = true
     override val com: ForegroundServiceCompanion get() = Companion
+    override val waveLockTimeout = 60
 
     companion object : ForegroundServiceCompanion(77, Follower::class) {
         override val channel: String = "$pack.FOLLOWING"
@@ -69,6 +72,8 @@ class Follower : ForegroundService() {
     }
 
     inner class Enqueuer : LongThread(handling.looper) {
+        private var total = 0
+
         override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
             0 to { msg ->
                 val flw = msg.obj as Rest.Follow
@@ -78,10 +83,12 @@ class Follower : ForegroundService() {
                             it.pk !in following.map { f -> f.id } && it.pk != m.acc!!.id.toString()
                 }.map { Followable(it.pk, it.username, it.is_private) }.also {
                     sum = it.size
+                    total += sum
                     MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_INSERTED, it)
                         ?.sendToTarget()
                 })
-                if (flw.next_max_id == null) enqueuingDone() else allFollow(flw.next_max_id)
+                if (flw.next_max_id == null || total >= toBeEnqueued[0].limitTo) enqueuingDone()
+                else allFollow(flw.next_max_id)
                 if (sum > 0 && scheduler?.active != true)
                     scheduler = Scheduler().also { it.start() }
             },
@@ -98,6 +105,7 @@ class Follower : ForegroundService() {
         private fun enqueue() {
             if (enqueuer?.active == false) return
             val cur = toBeEnqueued.getOrNull(0)
+            total = 0
             if (cur == null || !Follower.active.value!!) {
                 interrupt()
                 if (scheduler?.active != true) this@Follower.destroy()
@@ -120,51 +128,76 @@ class Follower : ForegroundService() {
     }
 
     inner class Scheduler : LongThread(handling.looper) {
+        private var fwb: Followable? = null
+        private var errorCount = 0
+
         override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-            0 to {
-                (it.obj as Followable).apply {
-                    dao.deleteFollowable(this)
-                    MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, this)
-                        ?.sendToTarget()
-                }
-                Delay(DELAY) { follow() }
-            },
+            0 to { followed() },
             Api.HANDLE_ERROR to {
-                /////
-                Delay(DELAY) { follow() }
+                if ((it.obj as NetworkResponse?)?.statusCode == 200) followed() else {
+                    errorCount++
+                    if (errorCount > 5) {
+                        if (toBeEnqueued.isEmpty() && enqueuer?.active != true)
+                            this@Follower.destroy()
+                        interrupt()
+                        if (BuildConfig.DEBUG) throw Exception(
+                            (it.obj as NetworkResponse?)?.statusCode.toString() + " : " + String(
+                                (it.obj as NetworkResponse?)?.data ?: "null".encodeToByteArray()
+                            )
+                        )
+                    }
+                }
             }
         )
 
         override fun run() {
             super.run()
+            m.acc!!.mfrw--
+            m.acc!!.saveMe(c)
             follow()
         }
 
         private fun follow() {
-            val fwb = dao.aFollowable().getOrNull(0)
+            fwb = dao.aFollowable().getOrNull(0)
             if (fwb == null || !Follower.active.value!!) {
                 if (toBeEnqueued.isEmpty() && enqueuer?.active != true) this@Follower.destroy()
                 interrupt()
                 return; }
             Api<Rest.DoFollow>(
-                this@Follower, Api.Type.FOLLOW.url.format(fwb.id), Rest.DoFollow::class,
+                this@Follower, Api.Type.FOLLOW.url.format(fwb!!.id), Rest.DoFollow::class,
                 handler, method = Request.Method.POST
             ) { handler?.obtainMessage(0, fwb)?.sendToTarget() }
         }
+
+        private fun followed() {
+            errorCount = 0
+            fwb?.let {
+                dao.deleteFollowable(it)
+                MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, it)
+                    ?.sendToTarget()
+            }
+            Delay(DELAY) { follow() }
+        }
     }
 
-    class ToBeEnqueued(val id: String, val isItFollowers: Boolean, val includePv: Boolean) :
-        Parcelable {
+    class ToBeEnqueued(
+        val id: String,
+        val isItFollowers: Boolean,
+        val includePv: Boolean,
+        val limitTo: Long
+    ) : Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString()!!,
             parcel.readByte() != 0.toByte(),
-            parcel.readByte() != 0.toByte()
+            parcel.readByte() != 0.toByte(),
+            parcel.readLong()
         )
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(id)
             parcel.writeByte(if (isItFollowers) 1 else 0)
             parcel.writeByte(if (includePv) 1 else 0)
+            parcel.writeLong(limitTo)
         }
 
         override fun describeContents(): Int = 0

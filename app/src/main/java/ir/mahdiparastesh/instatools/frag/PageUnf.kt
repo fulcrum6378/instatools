@@ -161,7 +161,7 @@ class PageUnf(c: Main) : BasePageMain(c) {
             }
             if (newUnf.isNotEmpty()) {
                 gotNewOnes(newUnf.size)
-                // TODO: HIGHLIGHT THEM
+                // HIGHLIGHT THEM IF YOU WANT
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()

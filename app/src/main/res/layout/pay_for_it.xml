@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="21sp"
+    tools:ignore="ContentDescription,UseCompoundDrawables">
+
+    <LinearLayout
+        android:id="@+id/watchAnAd"
+        style="@style/payForItItem">
+
+        <ImageView
+            style="@style/payForItItemIv"
+            android:src="@drawable/metered_video" />
+
+        <TextView
+            style="@style/payForItItemTv"
+            android:text="@string/watchAnAd" />
+    </LinearLayout>
+</LinearLayout>

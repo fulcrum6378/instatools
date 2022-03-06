@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -8,16 +9,24 @@ import android.os.Looper
 import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.MainThread
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.forEach
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.*
 import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
+import ir.mahdiparastesh.instatools.databinding.PayForItBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -25,6 +34,7 @@ import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -69,6 +79,7 @@ class MassFollower : ServiceOwnerActivity() {
                     }
                 }
                 updateIfEmpty(m.fwb.value.isNullOrEmpty())
+                updateShadow()
             }
 
             fun find(msg: Message): Int? = if (m.fwb.value != null)
@@ -85,7 +96,7 @@ class MassFollower : ServiceOwnerActivity() {
             val queued = !it.isNullOrEmpty()
             b.rv.vis(queued)
             b.panel.vis(queued)
-            b.tbShadow.vis(queued)
+            if (!queued) b.tbShadow.vis(false)
             b.panelShadow.vis(queued)
             b.guide.vis(!queued)
             if (queued) {
@@ -96,7 +107,7 @@ class MassFollower : ServiceOwnerActivity() {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+                updateShadow()
             }
         })
 
@@ -166,17 +177,94 @@ class MassFollower : ServiceOwnerActivity() {
     }
 
     private fun indicateSeek(updateSb: Boolean = false) {
-        b.seekIndicator.text = getString(R.string.mfSeconds, Follower.DELAY / 1000)
+        val sec = Follower.DELAY / 1000L
+        b.seekIndicator.text =
+            if (Follower.DELAY < 60) getString(R.string.mfSeconds, sec)
+            else getString(R.string.mfMinutes, sec / 60L, sec % 60L)
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
     }
 
+    private fun updateShadow() {
+        b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+    }
+
     companion object : ActivityCompanion() {
+        private var mRewardedAd: RewardedAd? = null
+
+        fun initService(
+            c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit = {}
+        ) {
+            if (c.m.acc!!.mfrw > 0) {
+                onStart()
+                actuallyInitService(c, enq)
+                return; }
+            val bp = PayForItBinding.inflate(c.layoutInflater)
+            bp.root.forEach { ((it as ViewGroup)[1] as TextView).typeface = c.fontBold }
+            AlertDialog.Builder(c).apply {
+                setTitle(R.string.massFollower)
+                setMessage(R.string.mfPayForIt)
+                setView(bp.root)
+            }.show().apply {
+                stylise(c)
+                bp.watchAnAd.setOnClickListener {
+                    watchAnAd(c, enq, onStart)
+                    cancel()
+                }
+            }
+        }
+
         @MainThread
-        fun initService(c: BaseActivity, enq: Follower.ToBeEnqueued? = null) {
+        private fun watchAnAd(
+            c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit
+        ) {
+            RewardedAd.load(
+                c, "ca-app-pub-9457309151954418/3824726608",
+                AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
+                    override fun onAdLoaded(rewardedAd: RewardedAd) {
+                        mRewardedAd = rewardedAd
+                        mRewardedAd?.fullScreenContentCallback = RewardAdCallback(c)
+                        mRewardedAd?.show(c) {
+                            c.m.acc!!.mfrw += it.amount
+                            c.m.acc!!.saveMe(c.c)
+                            actuallyInitService(c, enq)
+                            onStart()
+                            // TODO: SHOW A BADGE ON CONTROLLER THE REMAINING AMOUNT
+                        }
+                    }
+
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        Toast.makeText(
+                            c, c.getString(R.string.failedToLoadAd, adError.message),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        mRewardedAd = null
+                    }
+                })
+        }
+
+        @MainThread
+        private fun actuallyInitService(c: BaseActivity, enq: Follower.ToBeEnqueued? = null) {
             c.startService(Intent(c, Follower::class.java).apply {
                 action = ForegroundService.ACTION_START
                 if (enq != null) putExtra(Follower.EXTRA_ENQUEUE, enq)
             })
+        }
+    }
+
+    class RewardAdCallback(private val c: Context) : FullScreenContentCallback() {
+        override fun onAdShowedFullScreenContent() {
+            mRewardedAd = null
+        }
+
+        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+            Toast.makeText(
+                c, c.getString(R.string.failedToShowAd, adError.message), Toast.LENGTH_LONG
+            ).show()
+            mRewardedAd = null
+        }
+
+        override fun onAdDismissedFullScreenContent() {
+            mRewardedAd = null
         }
     }
 }

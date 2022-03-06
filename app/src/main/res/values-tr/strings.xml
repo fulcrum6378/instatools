@@ -40,7 +40,7 @@
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
     <string name="guestShortDesc">Kimlik doğrulama olmadan oturum açın</string>
-    <string name="guestSure">Maalesef Instagram, oturum açmadan web sitesindeki kişileri bu kadar sık görüntülemenize izin vermiyor. Bunu yapmak için oturum açmanızı veya kaydolmanızı zorunlu kılacaktır. (Bu gerçeği, tarayıcınızın \"Gizli\" modunda Instagram\'ı açarak kontrol edebilirsiniz.) Dolayısıyla Misafir moduna girdikten hemen sonra giriş yapmanız gerekmeyeceğinin garantisi yoktur. Devam et?</string>
+    <string name="guestSure">Maalesef Instagram, oturum açmadan web sitesindeki kişileri bu kadar sık görüntülemenize izin vermiyor. Bunu yapmak için oturum açmanızı veya kaydolmanızı zorunlu kılacaktır. (Bu gerçeği, tarayıcınızın \"Gizli\" modunda Instagram\'ı açarak kontrol edebilirsiniz.) Dolayısıyla Misafir moduna girdikten hemen sonra giriş yapmanız gerekmeyeceğinin garantisi yoktur.</string>
     <string name="needAuthentication">Devam etmek için giriş yapmalısınız&#8230;</string>
 
     <!-- Main -->
@@ -96,7 +96,7 @@
     <string name="mfGuide3">1. InstaTools\'ta bir profil açın,\n\n2. Takipçilerinin veya takip edenlerin sayısına dokunun,\n\n3. "Tümünü İzle"yi seçin&#8230;</string>
     <string name="mfSeekTitle">Her takip eylemi arasındaki gecikme:</string>
     <string name="mfSeconds">%d saniye</string>
-    <string name="mfMinutes">%d dakika</string>
+    <string name="mfMinutes">%1$d dakika, %2$d saniye</string>
     <string name="mfClear">Kuyruğu temizle</string>
 
     <!-- Settings -->

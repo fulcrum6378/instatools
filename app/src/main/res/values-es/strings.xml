@@ -40,7 +40,7 @@
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
     <string name="guestShortDesc">Iniciar sesión sin autenticación</string>
-    <string name="guestSure">Lo siento, pero Instagram no te permitirá ver personas en su sitio web con tanta frecuencia sin iniciar sesión. Te obligará a iniciar sesión o registrarte para hacerlo. (Puede verificar este hecho abriendo Instagram en el modo \"Incógnito\" de su navegador). Por lo tanto, no hay garantía de que no necesite iniciar sesión poco después de ingresar al modo Invitado. ¿Continuar?</string>
+    <string name="guestSure">Lo siento, pero Instagram no te permitirá ver personas en su sitio web con tanta frecuencia sin iniciar sesión. Te obligará a iniciar sesión o registrarte para hacerlo. (Puede verificar este hecho abriendo Instagram en el modo \"Incógnito\" de su navegador). Por lo tanto, no hay garantía de que no necesite iniciar sesión poco después de ingresar al modo Invitado.</string>
     <string name="needAuthentication">Necesitas iniciar sesión para continuar&#8230;</string>
 
     <!-- Main -->
@@ -96,7 +96,7 @@
     <string name="mfGuide3">1. Abra un perfil en InstaTools,\n\n2. Toque el número de sus seguidores o siguiendo,\n\n3. Seleccione \"Seguir a todos\"&#8230;</string>
     <string name="mfSeekTitle">Retraso entre cada acción de seguimiento:</string>
     <string name="mfSeconds">%d segundos</string>
-    <string name="mfMinutes">%d minuto(s)</string>
+    <string name="mfMinutes">%1$d minuto(s), %2$d segundos</string>
     <string name="mfClear">Borrar la cola</string>
 
     <!-- Settings -->

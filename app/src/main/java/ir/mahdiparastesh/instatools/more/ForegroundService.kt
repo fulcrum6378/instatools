@@ -11,6 +11,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.HandlerThread
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
@@ -27,12 +28,15 @@ import kotlin.reflect.KClass
 @SuppressLint("UnspecifiedImmutableFlag")
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
-    abstract val com: ForegroundServiceCompanion
     val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
     val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
     lateinit var handling: HandlerThread
+    protected var wakeLock: PowerManager.WakeLock? = null
+
+    abstract val com: ForegroundServiceCompanion
     abstract val requiresHandling: Boolean
+    open val waveLockTimeout: Int? = null // in minutes
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -92,7 +96,14 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         m = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
         sp = initSp(m.acc)
+
         if (requiresHandling) handling = HandlerThread(com.pack).also { it.start() }
+        if (waveLockTimeout != null) wakeLock =
+            (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${com.pack}::lock").apply {
+                    acquire(waveLockTimeout!! * 60000L)
+                }
+            }
     }
 
     open fun notification(
@@ -137,7 +148,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
+        if (waveLockTimeout != null) wakeLock?.let { if (it.isHeld) it.release() }
         if (requiresHandling) handling.quitSafely()
+
         com.handler = null
         com.active.value = false
         if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()

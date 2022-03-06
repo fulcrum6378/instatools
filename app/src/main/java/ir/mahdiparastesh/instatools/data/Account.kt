@@ -16,8 +16,13 @@ class Account(
     var name: String? = null,
     var pict: String? = null,
     var cook: String? = null,
-    var last: Long? = null
+    var last: Long? = null,
+    var mfrw: Int = 0
 ) {
+    fun saveMe(c: Context) {
+        save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
+    }
+
     companion object {
         fun load(c: Context): ArrayList<Account> = if (Secured(c).exists()) ArrayList(
             Gson().fromJson(
@@ -37,6 +42,12 @@ class Account(
                 (if (BuildConfig.DEBUG) GsonBuilder().setPrettyPrinting().create() else Gson())
                     .toJson(accounts.filter { it.cook != null || it.id == -1L }).encodeToByteArray()
             )
+        }
+
+        fun find(it: Account, inList: List<Account>?): Int? {
+            if (inList == null) return null
+            for (i in inList.indices) if (inList[i].id == it.id) return i
+            return null
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -59,6 +60,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val shallBolden by lazy { c.resources.getBoolean(R.bool.shallBolden) }
     val colorAc = MutableLiveData<Int?>(null)
     var interstitialAd: InterstitialAd? = null
+    var retryForAd = 0
 
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
@@ -169,7 +171,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true
 
-    var retryForAd = 0
+    @MainThread
     fun loadInterstitial(adUnitId: String) {
         if (!isAdsSdkInitialized) {
             if (retryForAd < 2) Delay(2000L) {
@@ -181,8 +183,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             showInterstitial()
             return; }
         InterstitialAd.load(
-            c, if (!BuildConfig.DEBUG) adUnitId else "ca-app-pub-3940256099942544/1033173712",
-            AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+            c, adUnitId, AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {}
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad
@@ -191,6 +192,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             })
     }
 
+    @MainThread
     fun showInterstitial() {
         interstitialAd?.fullScreenContentCallback = UiTools.InterstitialCallback(this@BaseActivity)
         interstitialAd?.show(this@BaseActivity)
