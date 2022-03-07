@@ -9,7 +9,7 @@ import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.view.Expandable
 
-class ListVwr(c: Viewer, private val f: PageVwr) : ListPost<Viewer>(c) {
+class ListVwr(c: Viewer, f: PageVwr) : ListPost<Viewer, PageVwr>(c, f) {
     override val edges: ArrayList<Profile.EdgePost>? get() = c.m.vwUser?.edges()
     override val inflater: LayoutInflater by lazy { c.layoutInflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker

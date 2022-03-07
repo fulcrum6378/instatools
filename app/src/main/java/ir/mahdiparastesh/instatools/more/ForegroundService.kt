@@ -16,7 +16,6 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
@@ -41,7 +40,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
-        private val services = arrayOf(Queuer::class, Exporter::class)
+        private val services = arrayOf(Queuer::class, Exporter::class, Follower::class)
 
         fun anyRunning() = arrayOf(Queuer, Exporter, Follower).any { it.active.value!! }
         // Never reference "Queuer"'s Companion in a static variable
@@ -116,7 +115,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                         com.channel, c.resources.getString(com.chName),
                         NotificationManager.IMPORTANCE_LOW
                     ).apply { description = c.resources.getString(com.chDesc) })
-        startForeground(Exporter.CH_ID, NotificationCompat.Builder(c, com.channel).apply {
+        startForeground(com.CH_ID, NotificationCompat.Builder(c, com.channel).apply {
             setSmallIcon(com.ntfSmallIcon)
             setContentTitle(c.resources.getString(com.ntfTitle))
             setOngoing(true)
@@ -130,7 +129,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                     }, PendingIntent.FLAG_UPDATE_CURRENT
                 )
             )
-            addAction(0, c.resources.getString(R.string.exporterStop), com.pi(c, ACTION_STOP))
+            for (a in com.ntfActions)
+                addAction(0, c.resources.getString(a.second), com.pi(c, a.first))
         }.build())
     }
 

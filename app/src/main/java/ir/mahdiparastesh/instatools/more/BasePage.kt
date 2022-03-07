@@ -24,8 +24,8 @@ abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
     abstract val messages: Array<Pair<Int, ((msg: Message) -> Unit)>>
     open var afterMessageHandled: () -> Unit = {}
 
-    protected open fun rv(): RecyclerView = root.findViewById(R.id.rv)
-    protected open fun jumper(): ImageView = root.findViewById(R.id.jumper)
+    open fun rv(): RecyclerView = root.findViewById(R.id.rv)
+    open fun jumper(): ImageView = root.findViewById(R.id.jumper)
 
     abstract class PageCompanion : Alive()
 

@@ -90,6 +90,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     open fun selective(bb: Boolean): Boolean { // shall pass
         if (isSelective == bb) return false
         isSelective = bb
+        toolbar.menu.clear()
         toolbar.inflateMenu(if (bb) pages()[currentPage.value!!].selectiveMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(
             if (isSelective) arrayOf<Toolbar.OnMenuItemClickListener>(

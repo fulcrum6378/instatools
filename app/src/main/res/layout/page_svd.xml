@@ -17,6 +17,8 @@
             android:padding="0dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="3" />
+        <!-- TODO: THREW IndexOutOfBoundsException: Inconsistency detected.
+        Invalid view holder adapter id=-1, oldPos=12, pLpos:12-->
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView

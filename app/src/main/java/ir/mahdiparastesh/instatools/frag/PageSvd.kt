@@ -172,6 +172,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
     override fun goBack(): Boolean {
         (b.rv.adapter as ListSvd?)?.let {
             if (it.expandable.zoomed) {
+                jumper().vis(true)
                 it.expandable.collapse(); return@goBack true; }
         }
         if (tracker?.hasSelection() == true) {

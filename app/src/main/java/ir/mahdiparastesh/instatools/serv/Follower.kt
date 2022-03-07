@@ -12,7 +12,10 @@ import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.LongThread
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import kotlinx.coroutines.runBlocking
 
 class Follower : ForegroundService() {
@@ -176,7 +179,8 @@ class Follower : ForegroundService() {
                 MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, it)
                     ?.sendToTarget()
             }
-            Delay(DELAY) { follow() }
+            sleep(DELAY)
+            follow()
         }
     }
 

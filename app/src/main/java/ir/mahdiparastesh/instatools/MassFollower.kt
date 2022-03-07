@@ -208,6 +208,7 @@ class MassFollower : ServiceOwnerActivity() {
                 stylise(c)
                 bp.watchAnAd.setOnClickListener {
                     watchAnAd(c, enq, onStart)
+                    // TODO: SHOW A LOADING INDICATOR
                     cancel()
                 }
             }

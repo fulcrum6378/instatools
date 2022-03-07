@@ -8,7 +8,9 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 @SuppressLint("NotifyDataSetChanged")
@@ -29,6 +31,11 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
     }
 
     override fun goBack(): Boolean {
+        (rv().adapter as ListSvd?)?.let {
+            if (it.expandable.zoomed) {
+                jumper().vis(true)
+                it.expandable.collapse(); return@goBack true; }
+        }
         if (tracker?.hasSelection() == true) {
             tracker?.clearSelection()
             return true

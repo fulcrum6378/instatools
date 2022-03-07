@@ -15,11 +15,13 @@ import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
-abstract class ListPost<C>(protected val c: C) :
-    RecyclerView.Adapter<ListPost<C>.ViewHolder>() where C : BaseActivity {
+abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
+    RecyclerView.Adapter<ListPost<C, F>.ViewHolder>() where C : BaseActivity, F : BasePage<C> {
 
     private val typeVideo = c.drawable(R.drawable.video)!!
     private val typeStack = c.drawable(R.drawable.stack)!!
@@ -75,6 +77,7 @@ abstract class ListPost<C>(protected val c: C) :
             expandable.thumb = it
             try {
                 expandable.expand()
+                f.jumper().vis(false)
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) throw e
             }
@@ -87,7 +90,7 @@ abstract class ListPost<C>(protected val c: C) :
         override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
             rv.findChildViewUnder(e.x, e.y)?.let {
                 val h = rv.getChildViewHolder(it)
-                if (h is ListPost<*>.ViewHolder) return@getItemDetails h.getItemDetails()
+                if (h is ListPost<*, *>.ViewHolder) return@getItemDetails h.getItemDetails()
             }
             return null
         }
