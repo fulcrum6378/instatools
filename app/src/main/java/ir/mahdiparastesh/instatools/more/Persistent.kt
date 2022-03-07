@@ -18,6 +18,7 @@ interface Persistent {
 
     fun initGsp(): SharedPreferences =
         c.getSharedPreferences("global", Context.MODE_PRIVATE)
+    // While using MODE_PRIVATE, only this app can access the information within the shared preferences file.
 
     fun initSp(acc: Account?): SharedPreferences? =
         if (acc != null) c.getSharedPreferences(acc.id.toString(), Context.MODE_PRIVATE)

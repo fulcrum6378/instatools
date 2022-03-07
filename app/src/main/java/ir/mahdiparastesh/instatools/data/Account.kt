@@ -2,8 +2,6 @@ package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login.Companion.spAccount
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.File
@@ -39,8 +37,8 @@ class Account(
 
         fun save(c: Context, accounts: List<Account>) {
             FileOutputStream(Secured(c)).write(
-                (if (BuildConfig.DEBUG) GsonBuilder().setPrettyPrinting().create() else Gson())
-                    .toJson(accounts.filter { it.cook != null || it.id == -1L }).encodeToByteArray()
+                Gson().toJson(accounts.filter { it.cook != null || it.id == -1L })
+                    .encodeToByteArray()
             )
         }
 
@@ -52,4 +50,5 @@ class Account(
     }
 
     class Secured(c: Context) : File(c.filesDir, "cache.json")
+    // Since this file is stored in the internal storage, using EncryptedFile is not urgent so much.
 }
