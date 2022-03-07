@@ -8,7 +8,7 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.list.ListSvd
+import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -20,18 +20,16 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
 
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 
-    abstract fun bInitialised(): Boolean
-
     override fun updateShadow() {
-        c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
+        if (bInitialised) c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
     }
 
     fun reset() {
-        if (bInitialised()) rv().adapter?.notifyDataSetChanged()
+        if (bInitialised) rv().adapter?.notifyDataSetChanged()
     }
 
     override fun goBack(): Boolean {
-        (rv().adapter as ListSvd?)?.let {
+        (rv().adapter as ListPost<*, *>?)?.let {
             if (it.expandable.zoomed) {
                 jumper().vis(true)
                 it.expandable.collapse(); return@goBack true; }

@@ -45,6 +45,7 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
+    override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
     override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(

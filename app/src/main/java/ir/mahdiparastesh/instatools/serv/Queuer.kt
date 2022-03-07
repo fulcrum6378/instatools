@@ -130,8 +130,7 @@ class Queuer : ForegroundService() {
                                 userName = reel.user.username
                                 itemId = med.pk
                                 url = med.nearest(Versioned.BEST)
-                                thumb = med.thumbnails?.sprite_urls?.getOrNull(0)
-                                    ?: med.nearest(Versioned.WORST)
+                                thumb = med.thumb()
                                 mediaType = med.media_type.toInt().toByte()
                             }
                             handleQueued(cur.qud!!, null)
@@ -165,8 +164,7 @@ class Queuer : ForegroundService() {
                             userName = user.username
                             itemId = med.pk
                             url = med.nearest(Versioned.BEST)
-                            thumb = med.thumbnails?.sprite_urls?.getOrNull(0)
-                                ?: med.nearest(Versioned.WORST)
+                            thumb = med.thumb()
                             mediaType = med.media_type.toInt().toByte()
                         }
                         handleQueued(cur.qud!!, null)
@@ -190,8 +188,7 @@ class Queuer : ForegroundService() {
                             userName = med.user.username
                             itemId = car.pk
                             url = car.nearest(Versioned.BEST)
-                            thumb = med.thumbnails?.sprite_urls?.getOrNull(0)
-                                ?: car.nearest(Versioned.WORST)
+                            thumb = med.thumb()
                             mediaType = car.media_type.toInt().toByte()
                         } else addOns.add(
                             Queued(
@@ -209,8 +206,7 @@ class Queuer : ForegroundService() {
                         userName = med.user.username
                         itemId = med.pk
                         url = med.nearest(Versioned.BEST)
-                        thumb = med.thumbnails?.sprite_urls?.getOrNull(0)
-                            ?: med.nearest(Versioned.WORST)
+                        thumb = med.thumb()
                         mediaType = med.media_type.toInt().toByte()
                     }
                     else -> {

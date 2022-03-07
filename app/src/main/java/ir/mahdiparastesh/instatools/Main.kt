@@ -65,6 +65,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val aKlass: KClass<PageUnf> = PageUnf::class
     override val bKlass: KClass<PageSvd> = PageSvd::class
     override val cKlass: KClass<PageBox> = PageBox::class
+    override val mode: TripleMode = TripleMode.FRAGMENT_MANAGER
     override fun aCreate(): PageUnf = PageUnf(this)
     override fun bCreate(): PageSvd = PageSvd(this)
     override fun cCreate(): PageBox = PageBox(this)
@@ -147,6 +148,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 bh.name.text = m.acc!!.name
                 bh.name.typeface = fontRegular
             } else bh.name.vis(false)
+            bh.ll.setOnClickListener { UiTools.openProfile(this, m.acc!!.user!!) }
         } else bh.root.vis(false)
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)

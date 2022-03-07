@@ -18,8 +18,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <FrameLayout
+        <!--<FrameLayout
             android:id="@+id/frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />-->
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -24,6 +24,7 @@ abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
     abstract val messages: Array<Pair<Int, ((msg: Message) -> Unit)>>
     open var afterMessageHandled: () -> Unit = {}
 
+    abstract val bInitialised: Boolean
     open fun rv(): RecyclerView = root.findViewById(R.id.rv)
     open fun jumper(): ImageView = root.findViewById(R.id.jumper)
 
@@ -74,7 +75,7 @@ abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
     var shouldShowJumper = MutableLiveData(false)
     private var anJumper: ObjectAnimator? = null
     open fun updateJumper() {
-        (rv().computeVerticalScrollOffset() > c.dm.heightPixels)
+        if (bInitialised) (rv().computeVerticalScrollOffset() > c.dm.heightPixels)
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 

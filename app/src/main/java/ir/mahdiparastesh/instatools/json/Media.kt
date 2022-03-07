@@ -13,7 +13,7 @@ class Media(
     val carousel_media: Array<CarouselMedia>?,
     //val carousel_media_count: Double?,
     //val client_cache_key: String,
-    //val code: String,
+    val code: String,
     //val comment_count: Double,
     //val comment_inform_treatment: Map<String, *>,
     //val comment_likes_enabled: Boolean,
@@ -73,15 +73,19 @@ class Media(
 ) : Versioned(
     image_versions2, original_height, original_width, video_versions
 ) {
+    fun thumb() = thumbnails?.sprite_urls?.getOrNull(0)
+        ?: carousel_media?.getOrNull(0)?.nearest(WORST)
+        ?: nearest(WORST)
+
     class MediaWrapperApi(
-        //val auto_load_more_enabled: Boolean,
-        val items: Array<Media>?,
-        //val more_available: Boolean
-        //val new_photos: Array<Any?>?,
-        val next_max_id: String?,
-        //val num_results: Float,
-        //val requires_review: Boolean
-        //val total_count: Float
+        //var auto_load_more_enabled: Boolean,
+        var items: ArrayList<Media>?,
+        var more_available: Boolean,
+        //var new_photos: Array<Any?>?,
+        var next_max_id: String?,
+        //var num_results: Float,
+        //var requires_review: Boolean
+        //var total_count: Float
     ) // "TAGGED" contains "status", but "POST_ITEM" doesn't.
 
     class Thumbnails(

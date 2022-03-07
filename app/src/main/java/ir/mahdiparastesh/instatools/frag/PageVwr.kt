@@ -14,6 +14,8 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Queued
@@ -29,6 +31,7 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -38,12 +41,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@SuppressLint("NotifyDataSetChanged")
 class PageVwr(c: Viewer) : BasePageViewer(c) {
     lateinit var b: PageVwrBinding
     private var thread: FetchSome? = null
 
     override val com: PageCompanion = Companion
+    override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
@@ -87,8 +90,6 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
             ).show()
         }
     )
-
-    override fun bInitialised(): Boolean = ::b.isInitialized
 
     companion object : PageCompanion()
 
@@ -138,6 +139,7 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
         arrayOf(b.followersText, b.followingText).forEach { it.typeface = c.fontLight }
         b.followers.setOnClickListener { flwClick(true, it) }
         b.following.setOnClickListener { flwClick(false, it) }
+        showProfile()
 
         return b.root
     }
@@ -156,6 +158,19 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
         return super.onMenuItemClick(item)
     }
 
+    fun showProfile() {
+        if (c.m.vwUser == null || !bInitialised) return
+        Glide.with(c.c)
+            .load(c.m.vwUser!!.photo())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .addListener(GlideShimmer(b.proPic, b.proPicIv))
+            .into(b.proPicIv)
+        b.followersNum.text = c.m.vwUser!!.edge_followed_by.toString()
+        b.followingNum.text = c.m.vwUser!!.edge_follow.toString()
+        handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
 
@@ -171,7 +186,9 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
     }
 
     private fun flwClick(isItFollowers: Boolean, v: View) {
-        if (c.m.vwUser?.access() != true || c.m.vwUser?.id == null || Main.guest) return
+        if (c.m.vwUser?.access() != true || c.m.vwUser?.id == null || Main.guest ||
+            c.m.vwUser?.id == c.m.acc?.id.toString()
+        ) return
         MaterialMenu(c, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
                 val bo = FollowerOptionsBinding.inflate(layoutInflater)
@@ -203,12 +220,7 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
     }
 
     override fun updateShadow() {
-        c.b.tbShadow.vish(b.nsv.scrollY > 0)
-    }
-
-    override fun goBack(): Boolean {
-        if (super.goBack()) return true
-        return false
+        if (bInitialised) c.b.tbShadow.vish(b.nsv.scrollY > 0)
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

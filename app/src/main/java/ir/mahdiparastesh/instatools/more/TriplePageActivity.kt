@@ -6,6 +6,8 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
@@ -20,6 +22,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     abstract val aKlass: KClass<A>
     abstract val bKlass: KClass<B>
     abstract val cKlass: KClass<C>
+    abstract val mode: TripleMode
 
     abstract fun aCreate(): A
     abstract fun bCreate(): B
@@ -35,12 +38,16 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         super.onCreate(savedInstanceState)
     }
 
-    open fun createPages() {
+    open fun createPages(pager: ViewPager2? = null) {
         currentPage.value = defPage()
         if (page1 == null) page1 = aCreate()
         if (page2 == null) page2 = bCreate()
         if (page3 == null) page3 = cCreate()
-        loadPages()
+        if (mode == TripleMode.FRAGMENT_MANAGER) loadPages()
+        else {
+            pager!!.adapter = PageAdapter(this)
+            pager.setCurrentItem(currentPage.value!!, false)
+        }
         currentPage.observe(this) {
             pages()[it].updateShadow()
             pages()[it].updateJumper()
@@ -116,21 +123,34 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
             aKlass.java.name -> {
-                if (page1 != null && page1?.isAdded == true)
+                if (mode == TripleMode.FRAGMENT_MANAGER && page1 != null && page1?.isAdded == true)
                     transFrag().remove(page1!!).commit()
                 aCreate().also { page1 = it }
             }
             bKlass.java.name -> {
-                if (page2 != null && page2?.isAdded == true)
+                if (mode == TripleMode.FRAGMENT_MANAGER && page2 != null && page2?.isAdded == true)
                     transFrag().remove(page2!!).commit()
                 bCreate().also { page2 = it }
             }
             cKlass.java.name -> {
-                if (page3 != null && page3?.isAdded == true)
+                if (mode == TripleMode.FRAGMENT_MANAGER && page3 != null && page3?.isAdded == true)
                     transFrag().remove(page3!!).commit()
                 cCreate().also { page3 = it }
             }
             else -> super.instantiate(loader, name)
         }
     }
+
+    private inner class PageAdapter(c: TriplePageActivity<*, *, *>) : FragmentStateAdapter(c) {
+        override fun getItemCount(): Int = 3
+
+        override fun createFragment(i: Int): Fragment = when (i) {
+            0 -> page1!!
+            1 -> page2!!
+            2 -> page3!!
+            else -> throw IllegalArgumentException("Page $i?!?")
+        }
+    }
+
+    enum class TripleMode { FRAGMENT_MANAGER, VIEW_PAGER }
 }

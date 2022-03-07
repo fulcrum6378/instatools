@@ -12,8 +12,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.MutableLiveData
 import androidx.media2.common.SessionPlayer
 import com.android.volley.NetworkResponse
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
@@ -31,7 +29,6 @@ import ir.mahdiparastesh.instatools.more.BasePageViewer
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -60,6 +57,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override val aKlass: KClass<PageRel> = PageRel::class
     override val bKlass: KClass<PageVwr> = PageVwr::class
     override val cKlass: KClass<PageTag> = PageTag::class
+    override val mode: TripleMode = TripleMode.VIEW_PAGER
     override fun aCreate(): PageRel = PageRel(this)
     override fun bCreate(): PageVwr = PageVwr(this)
     override fun cCreate(): PageTag = PageTag(this)
@@ -79,23 +77,15 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
-        createPages()
+        createPages(b.pager)
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_FETCHED -> {
                         b.refresher.isRefreshing = false
-                        page2?.apply {
-                            Glide.with(c)
-                                .load(m.vwUser!!.photo())
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .addListener(GlideShimmer(b.proPic, b.proPicIv))
-                                .into(b.proPicIv)
-                            b.followersNum.text = m.vwUser!!.edge_followed_by.toString()
-                            b.followingNum.text = m.vwUser!!.edge_follow.toString()
-                        }
-                        PageVwr.handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                        page2?.showProfile()
+                        page3?.fetch()
                     }
                     HANDLE_ABORTED -> {
                         b.refresher.isRefreshing = false
@@ -122,7 +112,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (thread?.active != true) thread = Initial().also { it.start() }
         }
 
-        load()
+        load(true)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -178,11 +168,11 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             ?.setIcon(if (dbFav != null) R.drawable.favourite else R.drawable.non_favourite)
     }
 
-    private fun load() {
+    private fun load(firstLoad: Boolean = false) {
         if (m.vwUser != null) {
             handler?.obtainMessage(HANDLE_FETCHED, true)?.sendToTarget()
             return; }
-        reset()
+        reset(firstLoad)
         CoroutineScope(Dispatchers.IO).launch {
             dbFav = dao.favouriteByUser(user!!).getOrNull(0)
             withContext(Dispatchers.Main) { fixTbMenu() }
@@ -190,8 +180,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         if (thread?.active != true) thread = Initial().also { it.start() }
     }
 
-    private fun reset() {
-        pages().forEach { (it as BasePageViewer).reset() }
+    private fun reset(firstLoad: Boolean = false) {
+        if (!firstLoad) pages().forEach { (it as BasePageViewer).reset() }
         if (expandable.zoomed) expandable.collapse()
     }
 

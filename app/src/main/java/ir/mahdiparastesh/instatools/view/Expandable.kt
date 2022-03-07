@@ -29,6 +29,7 @@ class Expandable(
     private val colorBg: Int = c.color(R.color.defBG),
 ) {
     var node: Profile.Post? = null
+    var media: Media? = null
     var thumb: View? = null
     var zoomed = false
     private var currentAnimator: Animator? = null
@@ -41,21 +42,30 @@ class Expandable(
     }
 
     init {
-        b.buttons.setOnClickListener {
-            if (node == null) return@setOnClickListener
+        b.viewInInsta.setOnClickListener {
+            if (node == null && media == null) return@setOnClickListener
             c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.POST_LINK.format(node!!.shortcode)))
-                    .setPackage(UiTools.INSTA_PACKAGE)
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(UiTools.POST_LINK.format(if (node != null) node!!.shortcode else media!!.code))
+                ).setPackage(UiTools.INSTA_PACKAGE)
                 //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         }
     }
 
+    private fun loaded(med: Media) {
+        b.slider.adapter = ListCar(c, med)
+        b.indicator.setViewPager2(b.slider)
+        b.indicator.vis()
+        b.buttons.vis()
+    }
+
     fun expand() {
-        if (thumb == null || node == null || zoomed) return
+        if (thumb == null || (node == null && media == null) || zoomed) return
         zoomed = true
         currentAnimator?.cancel()
-        Api<Media.MediaWrapperApi>(
+        if (media == null) Api<Media.MediaWrapperApi>(
             c, Api.Type.POST_ITEM.url.format(node!!.shortcode), Media.MediaWrapperApi::class,
             handler, cache = true
         ) { wrapper ->
@@ -63,11 +73,8 @@ class Expandable(
             if (med == null) {
                 handler?.obtainMessage(HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
                 return@Api; }
-            b.slider.adapter = ListCar(c, med)
-            b.indicator.setViewPager2(b.slider)
-            b.indicator.vis()
-            b.buttons.vis()
-        }
+            loaded(med)
+        } else loaded(media!!)
         val startBoundsInt = Rect()
         val finalBoundsInt = Rect()
         val globalOffset = Point()

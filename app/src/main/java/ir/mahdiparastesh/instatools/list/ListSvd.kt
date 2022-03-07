@@ -10,7 +10,7 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.view.Expandable
 
-class ListSvd(c: Main, f: PageSvd) : ListPost<Main, PageSvd>(c, f) {
+class ListSvd(c: Main, f: PageSvd) : ListEdge<Main, PageSvd>(c, f) {
     override val edges: ArrayList<Profile.EdgePost>? get() = c.m.saved?.edges
     override val inflater: LayoutInflater by lazy { f.inflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker

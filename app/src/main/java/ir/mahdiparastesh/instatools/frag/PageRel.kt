@@ -14,15 +14,21 @@ class PageRel(c: Viewer) : BasePageViewer(c) {
     private lateinit var b: PageRelBinding
 
     override val com: PageCompanion = Companion
+    override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf()
-
-    override fun bInitialised(): Boolean = ::b.isInitialized
 
     companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageRelBinding.inflate(inf, parent, false)
+        essentials()
+
         return b.root
+    }
+
+    override fun onRecyclerViewScrolled() {
+        updateShadow()
+        updateJumper()
     }
 }

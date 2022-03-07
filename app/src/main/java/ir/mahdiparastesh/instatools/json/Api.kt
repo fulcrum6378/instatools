@@ -95,7 +95,7 @@ class Api<JSON>(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
-        TAGGED("https://i.instagram.com/api/v1/usertags/%s/feed/"), //?count=12
+        TAGGED("https://i.instagram.com/api/v1/usertags/%1\$s/feed/?count=12&max_id=%2\$s"),
         POST_ITEM("https://www.instagram.com/p/%s/?__a=1"),
         STORY("https://i.instagram.com/api/v1/feed/user/%s/story/"),
         HIGHLIGHTS("https://i.instagram.com/api/v1/highlights/%s/highlights_tray/"),

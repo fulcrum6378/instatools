@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
-import ir.mahdiparastesh.instatools.frag.PageVwr
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.frag.PageTag
+import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.view.Expandable
 
-class ListVwr(c: Viewer, f: PageVwr) : ListEdge<Viewer, PageVwr>(c, f) {
-    override val edges: ArrayList<Profile.EdgePost>? get() = c.m.vwUser?.edges()
+class ListTag(c: Viewer, f: PageTag) : ListMedia<Viewer, PageTag>(c, f) {
+    override val media: ArrayList<Media>? get() = c.m.vwTagged?.items
     override val inflater: LayoutInflater by lazy { c.layoutInflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
     override val handler: Handler? get() = Viewer.handler
