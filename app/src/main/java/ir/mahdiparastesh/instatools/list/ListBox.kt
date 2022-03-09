@@ -42,7 +42,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at.xFromMicroseconds()))
         h.b.root.setOnClickListener {
             c.m.dmThread = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition)
-            if (c.m.dmThread == null || !c.m.dmThread!!.has_older) return@setOnClickListener
+            if (c.m.dmThread == null) return@setOnClickListener
             f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
                 c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, PageBox.handler

@@ -31,11 +31,14 @@
     <string name="viewInInsta">Instagram\'da görüntüle</string>
     <string name="addToFav">Favorilere ekle</string>
     <string name="removeFav">Favorilerinden kaldır</string>
-    <string name="unfStat">%1$d takipçinizden %2$d\'ü sizi geri takip etmiyor!</string>
     <string name="start">Başlama</string>
     <string name="stop">Durmak</string>
     <string name="openDmInInsta">Instagram\'da Sohbeti Aç</string>
     <string name="pageNotExist">Bu sayfa mevcut değil!</string>
+    <string name="sContinue">Devam et</string>
+    <string name="watchAnAd">Reklam İzle</string>
+    <string name="failedToLoadAd">Reklam yüklenemedi: %s</string>
+    <string name="failedToShowAd">Reklam gösterilemedi: %s</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -51,7 +54,6 @@
     <string name="signOutSure">Instagram hesabınızdan çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="mtSearch">Bir profil adı yazın&#8230;</string>
     <string name="boxUntil">%s\'e kadar</string>
-    <string name="unfFailed">Takip etmeyenleri bulma işlemi iptal edildi!</string>
     <string name="unfollow">Takibi bırak</string>
     <string name="unfollowPV">Bu hesap özeldir. Onları takip etmeyi bırakmak istediğinizden emin misiniz?</string>
     <string name="unfCouldNot">Bu kullanıcının takibi bırakılamadı!</string>
@@ -87,7 +89,9 @@
     <string name="vwFollowing">Takip Edilen</string>
     <string name="vwPrivate">Bu hesap gizli!</string>
     <string name="followAll">Hepsini takip et</string>
-    <string name="followAllSure">Bu %d hesabın hepsini takip etmek istediğinizden emin misiniz? (Instagram hassaslaşmasın diye yavaş yavaş ve tek tek takip edilecekler!)</string>
+    <string name="followAllSure">Tüm bu hesapları takip etmek istediğinizden emin misiniz? (Instagram hassaslaşmasın diye yavaş yavaş ve tek tek takip edilecekler!)</string>
+    <string name="alsoRequestPv">Ayrıca özel hesaplara istek gönderin.</string>
+    <string name="mfLimit">Sayılarını şu şekilde sınırlayın:</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Kitle Takipçisi</string>
@@ -98,6 +102,7 @@
     <string name="mfSeconds">%d saniye</string>
     <string name="mfMinutes">%1$d dakika, %2$d saniye</string>
     <string name="mfClear">Kuyruğu temizle</string>
+    <string name="mfPayForIt">Bu özelliğin kilidini %d kez açmak için bir reklam izleyin&#8230;</string>
 
     <!-- Settings -->
     <string name="settings">Ayarlar</string>

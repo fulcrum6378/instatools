@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -20,6 +21,7 @@ import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.PROFILE
@@ -46,10 +48,13 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
 
     companion object {
-        fun ListThdBinding.onCreate(fontRegular: Typeface, fontLight: Typeface): ListThdBinding {
+        fun ListThdBinding.onCreate(
+            fontRegular: Typeface, fontLight: Typeface, isExporting: Boolean = false
+        ): ListThdBinding {
             date.typeface = fontLight
             msgTv.typeface = fontRegular
             time.typeface = fontLight
+            if (isExporting) msgIvRl.removeView(msgLoading)
             return this
         }
 
@@ -106,14 +111,16 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
 
             // Message
             msgTv.anchor(null, null)
+            msgIvHint.vis(false)
             var media: Media? = null
             when {
-                dm.action_log != null -> msgTv.text = dm.action_log.description
+                dm.action_log != null ->
+                    msgIvHint.apply { text = dm.action_log.description; vis() }
                 dm.clip != null -> media = dm.clip.clip
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
-                    /*if (dm.felix_share.message == null)
-                        b.msgIv.contentDescription = dm.felix_share.message*/
+                    if (dm.felix_share.message != null)
+                        msgIvHint.apply { text = dm.felix_share.message; vis() }
                     msgTv.text = dm.felix_share.text
                 }
                 dm.link != null -> msgTv.anchor(dm.link.text, dm.link.link_context.link_url)
@@ -123,22 +130,26 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                     msgTv.anchor("@${dm.profile.username}", PROFILE.format(dm.profile.username))
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
-                    /*if (dm.reel_share.message == null)
-                        b.msgIv.contentDescription = dm.reel_share.message*/
+                    if (dm.reel_share.message != null)
+                        msgIvHint.apply { text = dm.reel_share.message; vis() }
                     msgTv.text = dm.reel_share.text
                 }
                 dm.story_share != null -> {
                     media = dm.story_share.media
-                    if (dm.story_share.message == null)
-                        msgIv.contentDescription = dm.story_share.message
+                    if (dm.story_share.message != null)
+                        msgIvHint.apply { text = dm.story_share.message; vis() }
                     msgTv.text = dm.story_share.text
                 }
                 dm.text != null -> msgTv.text = dm.text
                 dm.video_call_event != null ->
-                    msgTv.text = "\"${dm.video_call_event.description}\""
+                    msgIvHint.apply { text = dm.video_call_event.description; vis() }
+                dm.voice_media != null -> {
+                    msgIvHint.apply { text = "Voice"; vis() }
+                }
+                dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
                 //else -> b.msgTv.text = dm.item_type
             }
-            msgIv.vis(media != null)
+            msgIvRl.vis(media != null)
             media?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
                 var data: ByteArray? = null
@@ -147,16 +158,27 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 if (data != null && data.isNotEmpty()) {
                     msgIv.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
                     return@apply; }
+                if (downloaded != null) return@apply
 
+                msgLoading.apply {
+                    setAnimation(if (!c.night()) R.raw.pending_tertiary else R.raw.pending)
+                    playAnimation()
+                    vis()
+                }
                 Glide.with(c).load(
-                    if (carousel_media != null) carousel_media.getOrNull(0)?.nearest(idealW)
-                    else nearest(idealW)
+                    carousel_media?.getOrNull(0)?.nearest(idealW) ?: nearest(idealW)
                 ).diskCacheStrategy(DiskCacheStrategy.ALL).into(
                     object : CustomTarget<Drawable>() {
                         override fun onLoadCleared(placeholder: Drawable?) {}
                         override fun onResourceReady(
                             res: Drawable, trans: Transition<in Drawable>?
                         ) {
+                            msgLoading.pauseAnimation()
+                            msgLoading.vis(false)
+                            msgIv.layoutParams = msgIv.layoutParams.apply {
+                                width = WRAP_CONTENT
+                                height = WRAP_CONTENT
+                            }
                             msgIv.setImageDrawable(res)
                         }
                     })
@@ -168,10 +190,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
             reactions.vis(dm.reactions != null)
             if (dm.reactions != null) for (r in dm.reactions.emojis) reactions.addView(
                 TextView(c).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
+                    layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
                     text = r.emoji
                 }
             )

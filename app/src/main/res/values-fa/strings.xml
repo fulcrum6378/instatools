@@ -37,11 +37,14 @@
     <string name="viewInInsta">باز کردن در اینستاگرام</string>
     <string name="addToFav">اضافه به مورد علاقه</string>
     <string name="removeFav">حذف از مورد علاقه</string>
-    <string name="unfStat">%1$d مورد از %2$d نفری که فالو می کنید، شما را فالو نکرده اند!</string>
     <string name="start">شروع</string>
     <string name="stop">ایست</string>
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
     <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
+    <string name="sContinue">ادامه</string>
+    <string name="watchAnAd">تماشای تبلیغات</string>
+    <string name="failedToLoadAd">بارگذاری تبلیغات دچار خطا شد: %s</string>
+    <string name="failedToShowAd">نمایش تبلیغات دچار خطا شد: %s</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -57,7 +60,6 @@
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یک پروفایل را وارد کنید&#8230;</string>
     <string name="boxUntil">تا %s</string>
-    <string name="unfFailed">یافتن آنفالورها ناتمام ماند!</string>
     <string name="unfollow">آنفالو</string>
     <string name="unfollowPV">این پروفایل شخصی (پرایوت) است. آیا از آنفالو کردن مطمئن هستید؟</string>
     <string name="unfCouldNot">پروفایل آنفالو نشد!</string>
@@ -93,7 +95,9 @@
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
     <string name="followAll">فالو کردن همه</string>
-    <string name="followAllSure">آیا مطمئن هستید که می خواهید تمام این %d نفر را فالو کنید؟ (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)</string>
+    <string name="followAllSure">آیا مطمئن هستید که می خواهید تمام این افراد را فالو کنید؟ (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)</string>
+    <string name="alsoRequestPv">همچنین به اکانت های خصوصی درخواست بفرست.</string>
+    <string name="mfLimit">محدودیت تعداد اکانت ها:</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">دنبال کردن دسته جمعی</string>
@@ -104,6 +108,7 @@
     <string name="mfSeconds">%d ثانیه</string>
     <string name="mfMinutes">%1$d دقیقه، %2$d ثانیه</string>
     <string name="mfClear">پاک کردن لیست</string>
+    <string name="mfPayForIt">برای %d بار فعال کردن این قابلیت یک بار تبلیغات تماشا کنید&#8230;</string>
 
     <!-- Settings -->
     <string name="settings">تنظیمات</string>

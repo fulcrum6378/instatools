@@ -2,9 +2,9 @@
 
     <style name="Theme.InstaTools" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/defCA</item>
-        <item name="colorPrimaryDark">@color/defCA</item>
+        <item name="colorPrimaryDark">?attr/colorPrimary</item>
         <item name="colorAccent">@color/defCA</item>
-        <item name="backgroundColor">?attr/colorPrimaryDark</item>
+        <item name="backgroundColor">?attr/colorPrimary</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>

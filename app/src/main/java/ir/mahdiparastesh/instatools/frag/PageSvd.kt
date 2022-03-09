@@ -30,7 +30,7 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 @SuppressLint("NotifyDataSetChanged")
@@ -200,7 +200,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
             if (selectivity == status) return
             selectivity = status
             c.selective(status)
-            UiTools.shake(c.c)
+            c.shake()
         }
     }
 

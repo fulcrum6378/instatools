@@ -4,9 +4,9 @@
     <color name="defBG">#111</color>
     <color name="defCA">#FFF</color>
     <array name="BG">
-        <item>@color/CPD</item>
-        <item>@color/CSD</item>
-        <item>@color/CTD</item>
+        <item>@color/CP</item>
+        <item>@color/CS</item>
+        <item>@color/CT</item>
     </array>
     <array name="CA">
         <item>@color/defCA</item>

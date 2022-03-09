@@ -31,11 +31,14 @@
     <string name="viewInInsta">Ver en Instagram</string>
     <string name="addToFav">Agregar a los favoritos</string>
     <string name="removeFav">Quitar de favoritos</string>
-    <string name="unfStat">¡%1$d de tus %2$d seguidores no te siguen!</string>
     <string name="start">Comienzo</string>
     <string name="stop">Detener</string>
     <string name="openDmInInsta">Abrir chat en Instagram</string>
     <string name="pageNotExist">¡Esta página no existe!</string>
+    <string name="sContinue">Continuar</string>
+    <string name="watchAnAd">Ver un anuncio</string>
+    <string name="failedToLoadAd">Error al cargar el anuncio: %s</string>
+    <string name="failedToShowAd">No se pudo mostrar el anuncio: %s</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -51,7 +54,6 @@
     <string name="signOutSure">¿Estás seguro de que quieres cerrar sesión en tu cuenta de Instagram?</string>
     <string name="mtSearch">Escriba un nombre de perfil&#8230;</string>
     <string name="boxUntil">Hasta %s</string>
-    <string name="unfFailed">¡Se abortó la búsqueda de no seguidores!</string>
     <string name="unfollow">Dejar de seguir</string>
     <string name="unfollowPV">Esta cuenta es privada. ¿Seguro que quieres dejar de seguirlos?</string>
     <string name="unfCouldNot">¡No se pudo dejar de seguir a este usuario!</string>
@@ -87,7 +89,9 @@
     <string name="vwFollowing">Siguiendo</string>
     <string name="vwPrivate">¡Esta cuenta es privada!</string>
     <string name="followAll">Seguir a todos</string>
-    <string name="followAllSure">¿Estás seguro de que quieres seguir todas estas %d cuentas? (¡Serán seguidos lentamente y uno por uno para que Instagram no se vuelva sensible!)</string>
+    <string name="followAllSure">¿Seguro que quieres seguir todas estas cuentas? (¡Serán seguidos lentamente y uno por uno para que Instagram no se vuelva sensible!)</string>
+    <string name="alsoRequestPv">También envíe solicitud a las cuentas privadas.</string>
+    <string name="mfLimit">Limite su número a:</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Seguidor Masivo</string>
@@ -98,6 +102,7 @@
     <string name="mfSeconds">%d segundos</string>
     <string name="mfMinutes">%1$d minuto(s), %2$d segundos</string>
     <string name="mfClear">Borrar la cola</string>
+    <string name="mfPayForIt">Mire un anuncio para desbloquear esta función %d veces&#8230;</string>
 
     <!-- Settings -->
     <string name="settings">Ajustes</string>

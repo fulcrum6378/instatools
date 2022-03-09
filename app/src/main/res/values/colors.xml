@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="CP">#FFD453</color>
+    <color name="CP">#705000</color><!--#FFD453-->
     <color name="CPW">#44FFD453</color>
-    <color name="CPD">#705000</color>
-    <color name="CS">#C938A9</color>
+    <color name="CS">#8B006D</color><!--#C938A9-->
     <color name="CSW">#44C938A9</color>
-    <color name="CSD">#8B006D</color>
-    <color name="CT">#406AC9</color>
+    <color name="CT">#002680</color><!--#406AC9-->
     <color name="CTW">#44406AC9</color>
-    <color name="CTD">#002680</color>
-    <array name="CW">
-        <item>@color/CPW</item>
-        <item>@color/CSW</item>
-        <item>@color/CTW</item>
-    </array>
-    <color name="CPO">#FFF</color>
     <color name="tp">#00000000</color>
     <color name="shadow">#55000000</color>
 
@@ -27,9 +18,9 @@
         <item>@color/defBG</item>
     </array>
     <array name="CA">
-        <item>@color/CPD</item>
-        <item>@color/CSD</item>
-        <item>@color/CTD</item>
+        <item>@color/CP</item>
+        <item>@color/CS</item>
+        <item>@color/CT</item>
     </array>
 
     <!-- #GLOBAL -->
@@ -37,9 +28,9 @@
     <color name="shimmerIvBg">#DADADA</color>
 
     <!-- Main -->
-    <color name="unfollowers">@color/CPD</color>
-    <color name="saved">@color/CSD</color>
-    <color name="direct">@color/CTD</color>
+    <color name="unfollowers">@color/CP</color>
+    <color name="saved">@color/CS</color>
+    <color name="direct">@color/CT</color>
     <color name="dmFromMeLight">#08000000</color>
     <color name="dmFromMe">@color/dmFromMeLight</color>
     <color name="navHeaderLL">#99FFFFFF</color>

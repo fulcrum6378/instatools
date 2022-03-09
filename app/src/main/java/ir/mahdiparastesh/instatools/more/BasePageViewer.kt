@@ -8,8 +8,7 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.list.ListPost
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
@@ -29,11 +28,9 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
     }
 
     override fun goBack(): Boolean {
-        (rv().adapter as ListPost<*, *>?)?.let {
-            if (it.expandable.zoomed) {
-                jumper().vis(true)
-                it.expandable.collapse(); return@goBack true; }
-        }
+        if (c.expandable.zoomed) {
+            jumper().vis(true)
+            c.expandable.collapse(); return true; }
         if (tracker?.hasSelection() == true) {
             tracker?.clearSelection()
             return true
@@ -51,7 +48,7 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
             c.b.toolbar.menu.clear()
             c.b.toolbar.inflateMenu(if (status) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
             c.fixTbMenu()
-            UiTools.shake(c.c)
+            c.shake()
         }
     }
 

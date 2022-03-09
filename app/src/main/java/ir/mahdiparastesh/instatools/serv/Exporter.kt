@@ -165,7 +165,8 @@ class Exporter : ForegroundService() {
                         ), parent, false
                     ).onCreate(
                         Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
-                        Typeface.createFromAsset(c.assets, c.getString(R.string.font_light))
+                        Typeface.createFromAsset(c.assets, c.getString(R.string.font_light)),
+                        true
                     ).onBind(c, list, i, downloaded = media).root
             }.start()
             // (1).toByte() ->

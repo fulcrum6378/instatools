@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.json
 
-@Suppress("SpellCheckingInspection")
+@Suppress("PropertyName", "SpellCheckingInspection")
 class Dm(
     //val client_context: String,
     val hide_in_thread: Float,
@@ -12,7 +12,9 @@ class Dm(
     val reactions: Reactions?,
     //val show_forward_attribution: Boolean,
     val timestamp: Double,
-    val user_id: Double,
+    //val tq_seq_id: Double,
+    //val uq_seq_id: Double,
+    //val user_id: Double,
 
     // Item Types
     val action_log: ActionLog?,
@@ -24,14 +26,14 @@ class Dm(
     val live_viewer_invite: Any?,
     val media: Media?,
     val media_share: Media?,
-    val placeholder: Any?,
+    val placeholder: PlaceHolder?,
     val profile: Rest.User?,
     val raven_media: Any?,
     val reel_share: ReelShare?,
     val story_share: StoryShare?,
     val text: String?,
     val video_call_event: VideoCallEvent?,
-    val voice_media: Any?,
+    val voice_media: Voice?,
 ) {
     class Inbox(
         //val blended_inbox_enabled: Boolean,
@@ -147,20 +149,17 @@ class Dm(
 
     class ClipShare(val clip: Media)
 
-    class FelixShare(val video: Media, val text: String)
+    class FelixShare(val video: Media, val text: String) : PlaceHolder()
 
     class StoryShare(
-        //val is_linked: Boolean?,
         //val is_reel_persisted: Boolean?,
         val media: Media?,
-        val message: String?,
         //val reason: Double?,
         //val reel_id: String?,
         //val reel_type: String?,
         //val story_share_type: String?,
         val text: String,
-        val title: String?,
-    )
+    ) : PlaceHolder()
 
     class ReelShare(
         //val is_reel_persisted: Boolean,
@@ -170,7 +169,7 @@ class Dm(
         //val reel_type: String,
         val text: String,
         val type: String,
-    )
+    ) : PlaceHolder()
 
     class Reactions(
         //val likes: Array<Any?>,
@@ -191,6 +190,35 @@ class Dm(
         val intensity: Any?
     )
 
+    class Voice(
+        val is_shh_mode: Boolean,
+        val replay_expiring_at_us: Any?,
+        val seen_count: Float,
+        val seen_user_ids: Array<Any>,
+        val view_mode: String,
+    )
+
+    class VoiceMedia(
+        val audio: Audio,
+        val id: String,
+        //val media_type: Float,
+        //val organic_tracking_token: String,
+        //val product_type: String,
+        //val user: Rest.User,
+    )
+
+    open class AudioSrc {
+        lateinit var audio_src: String
+    }
+
+    class Audio(
+        //val audio_src_expiration_timestamp_us: Double,
+        val duration: Double,
+        val fallback: AudioSrc,
+        val waveform_data: Array<Float>, // waves
+        //val waveform_sampling_frequency_hz: Float,
+    ) : AudioSrc()
+
     class VideoCallEvent(
         val action: String,
         val call_duration: Double,
@@ -205,4 +233,11 @@ class Dm(
         //val thread_has_drop_in: Boolean,
         //val vc_id: String,
     )
+
+    @Suppress("PropertyName")
+    open class PlaceHolder {
+        var is_linked: Boolean? = null
+        var title: String? = null
+        var message: String? = null
+    }
 }

@@ -14,6 +14,7 @@ class Account(
     var name: String? = null,
     var pict: String? = null,
     var cook: String? = null,
+    var roll: String? = null,
     var last: Long? = null,
     var mfrw: Int = 0
 ) {

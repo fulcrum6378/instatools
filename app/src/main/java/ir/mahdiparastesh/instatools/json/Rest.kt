@@ -1,7 +1,8 @@
 package ir.mahdiparastesh.instatools.json
 
 @Suppress("SpellCheckingInspection")
-open class Rest(val status: String) {
+open class Rest {
+    lateinit var status: String
 
     class User(
         //val account_badges: Array<Map<String, *>>?,
@@ -69,22 +70,20 @@ open class Rest(val status: String) {
     class Follow( // Both following and followers
         val next_max_id: String? = null,
         val users: Array<User>,
-        val big_list: Boolean,
-        val page_size: Double,
-        status: String
-    ) : Rest(status)
+        //val big_list: Boolean,
+        //val page_size: Double,// TODO !?!
+    ) : Rest()
 
-    class Friendships(val friendship_statuses: Map<String, Friendship>, status: String) :
-        Rest(status)
+    //class Friendships(val friendship_statuses: Map<String, Friendship>) : Rest()
 
     class Friendship(
         val following: Boolean,
-        val incoming_request: Boolean,
-        val is_bestie: Boolean,
-        val is_feed_favorite: Boolean,
-        val is_private: Boolean,
-        val is_restricted: Boolean,
-        val outgoing_request: Boolean,
+        //val incoming_request: Boolean,
+        //val is_bestie: Boolean,
+        //val is_feed_favorite: Boolean,
+        //val is_private: Boolean,
+        //val is_restricted: Boolean,
+        //val outgoing_request: Boolean,
     )
 
     class InboxPage(
@@ -93,18 +92,15 @@ open class Rest(val status: String) {
         //val pending_requests_total: Double,
         //val seq_id: Double,
         val viewer: User,
-        status: String
-    ) : Rest(status)
+    ) : Rest()
 
-    class InboxThread(
-        val thread: Dm.DmThread,
-        status: String
-    ) : Rest(status)
+    class InboxThread(val thread: Dm.DmThread) : Rest()
 
-    open class DynamicReelsList(val broadcast: Array<Any?>? = null, status: String) : Rest(status)
+    open class DynamicReelsList : Rest() {
+        var broadcast: Array<Any?>? = null
+    }
 
-    class Story(val reel: StoryReel, broadcast: Array<Any?>?, status: String) :
-        DynamicReelsList(broadcast, status)
+    class Story(val reel: StoryReel) : DynamicReelsList()
 
     interface TrayWrapper<T> where T : Reel {
         val tray: Array<T>
@@ -113,14 +109,12 @@ open class Rest(val status: String) {
     class Highlights(
         override val tray: Array<HighlightReel>,
         val show_empty_state: Boolean,
-        status: String,
-    ) : Rest(status), TrayWrapper<HighlightReel>
+    ) : Rest(), TrayWrapper<HighlightReel>
 
     class Reels<R>(
         val reels: Map<String, R>,
         val reels_media: Array<R>,
-        status: String
-    ) : Rest(status) where R : Reel
+    ) : Rest() where R : Reel
 
     abstract class Reel(
         //val ad_expiry_timestamp_in_millis: Any?,
@@ -171,12 +165,11 @@ open class Rest(val status: String) {
         //val rank_token: String,
         //val has_more: Boolean,
         val users: Array<ItemUser>,
-        status: String
-    ) : Rest(status)
+    ) : Rest()
 
     class ItemUser(val position: Float, val user: User)
 
-    class Signing(val login_nonce: String?, status: String) : Rest(status)
+    class Signing(val login_nonce: String?) : Rest()
 
-    class DoFollow(val result: String, status: String) : Rest(status)
+    class DoFollow(val result: String) : Rest()
 }

@@ -206,19 +206,20 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         @Throws(JsonSyntaxException::class, NumberFormatException::class)
         private fun collect(html: String) {
-            val u = Gson().fromJson(
+            val profile = Gson().fromJson(
                 StringEscapeUtils.unescapeJava(html)
                     .substringAfter(preConfig)
                     .substringBefore(posConfig),
                 HostPage::class.java
-            ).config.viewer
+            )
+            val u = profile.config?.viewer ?: return
             id = cookieManager.getCookie(host)
                 .substringAfter("ds_user_id=")
                 .substringBefore(";").toLong().toString()
             m.acc = Account(
                 id.toLong(), u.username, u.full_name,
                 u.profile_pic_url_hd ?: u.profile_pic_url,
-                cookieManager.getCookie(host),
+                cookieManager.getCookie(host), profile.rollout_hash,
                 Persistent.now()
             ).apply {
                 accounts.removeAll { it.id == id }
@@ -243,7 +244,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         exitProcess(0)
     }
 
-    data class HostPage(val config: PageConfig)
+    data class HostPage(val config: PageConfig?, val rollout_hash: String?)
 
-    data class PageConfig(val viewer: Profile.User)
+    data class PageConfig(val viewer: Profile.User?)
 }

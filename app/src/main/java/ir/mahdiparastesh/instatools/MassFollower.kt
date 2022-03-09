@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -23,6 +24,8 @@ import com.google.android.gms.ads.*
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
@@ -46,6 +49,7 @@ class MassFollower : ServiceOwnerActivity() {
     private lateinit var b: MassFollowerBinding
     private lateinit var adBanner: AdView
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
+    private var controllerBadge: BadgeDrawable? = null
 
     override val menuRes = R.menu.follower_tlb
     override val com: ActivityCompanion get() = Companion
@@ -77,6 +81,7 @@ class MassFollower : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.fwb.value!!.size)
                     }
+                    HANDLE_REWARD_CONSUMED -> countPermissions()
                 }
                 updateIfEmpty(m.fwb.value.isNullOrEmpty())
                 updateShadow()
@@ -150,6 +155,7 @@ class MassFollower : ServiceOwnerActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
         Follower.active.observe(this) { updateControlButton(it) }
+        countPermissions()
         return ret
     }
 
@@ -188,12 +194,31 @@ class MassFollower : ServiceOwnerActivity() {
         b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
+    fun countPermissions() {
+        BadgeUtils.detachBadgeDrawable(controllerBadge, b.toolbar, R.id.mftControl)
+        BadgeUtils.attachBadgeDrawable(
+            BadgeDrawable.create(
+                ContextThemeWrapper(c, R.style.Theme_MaterialComponents_DayNight)
+            ).apply {
+                number = m.acc?.mfrw ?: 0
+                backgroundColor = if (!night()) color(R.color.CP) else color(R.color.defCA)
+                badgeTextColor = if (!night()) color(R.color.defBG) else color(R.color.CP)
+                controllerBadge = this
+            }, b.toolbar, R.id.mftControl
+        )
+    }
+
     companion object : ActivityCompanion() {
+        const val HANDLE_REWARD_CONSUMED = 5
+        const val UNLOCK_TIMES = 5
         private var mRewardedAd: RewardedAd? = null
+        private var loadingAd = false
 
         fun initService(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit = {}
         ) {
+            if (loadingAd || mRewardedAd != null) return
             if (c.m.acc!!.mfrw > 0) {
                 onStart()
                 actuallyInitService(c, enq)
@@ -202,7 +227,7 @@ class MassFollower : ServiceOwnerActivity() {
             bp.root.forEach { ((it as ViewGroup)[1] as TextView).typeface = c.fontBold }
             AlertDialog.Builder(c).apply {
                 setTitle(R.string.massFollower)
-                setMessage(R.string.mfPayForIt)
+                setMessage(c.getString(R.string.mfPayForIt, UNLOCK_TIMES))
                 setView(bp.root)
             }.show().apply {
                 stylise(c)
@@ -218,22 +243,25 @@ class MassFollower : ServiceOwnerActivity() {
         private fun watchAnAd(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit
         ) {
+            loadingAd = true
             RewardedAd.load(
                 c, "ca-app-pub-9457309151954418/3824726608",
                 AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
                     override fun onAdLoaded(rewardedAd: RewardedAd) {
+                        loadingAd = false
                         mRewardedAd = rewardedAd
                         mRewardedAd?.fullScreenContentCallback = RewardAdCallback(c)
                         mRewardedAd?.show(c) {
                             c.m.acc!!.mfrw += it.amount
                             c.m.acc!!.saveMe(c.c)
+                            if (c is MassFollower) c.countPermissions()
                             actuallyInitService(c, enq)
                             onStart()
-                            // TODO: SHOW A BADGE ON CONTROLLER THE REMAINING AMOUNT
                         }
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
+                        loadingAd = false
                         Toast.makeText(
                             c, c.getString(R.string.failedToLoadAd, adError.message),
                             Toast.LENGTH_LONG

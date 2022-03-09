@@ -76,9 +76,9 @@ class Api<JSON>(
     }
 
     private fun invalidResponse(response: String, e: Exception? = null) {
-        /*if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG)
             throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else*/ gotError(this)
+        else gotError(this)
     }
 
     var nwRes: NetworkResponse? = null
@@ -165,7 +165,8 @@ class Api<JSON>(
     }
 
     @Suppress("SpellCheckingInspection")
-    class Headers(acc: Account, isImperative: Boolean = false) : HashMap<String, String>() {
+    class Headers(acc: Account, isImperative: Boolean = false) :
+        HashMap<String, String>() {
         init {
             this["accept"] = "*/*"
             this["accept-language"] = "en-GB"
@@ -185,11 +186,13 @@ class Api<JSON>(
                     this["x-csrftoken"] = cookies
                         .substringAfter("csrftoken=")
                         .substringBefore(";")
-                // this["x-instagram-ajax"] = "7f7346b22318"
+                if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
             } else { // Cookie "rur" is different between POST_ITEM and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
             }
             this["x-asbd-id"] = "198387" // MIGHT BE THE SAME FOR DIFFERENT ACCOUNTS
+            // For ^, load "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/5bb0ab377d4d.js"
+            // Substring after "e.ASBD_ID='", substring before "'"
             // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
             // But this one is NOT
             this["x-ig-app-id"] = "936619743392459"

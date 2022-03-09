@@ -36,11 +36,14 @@
     <string name="viewInInsta">Посмотреть в инстаграме</string>
     <string name="addToFav">Добавить в избранные</string>
     <string name="removeFav">Удалить из избранного</string>
-    <string name="unfStat">%1$d из ваших %2$d подписчиков не подписались на вас!</string>
     <string name="start">Начинать</string>
     <string name="stop">Останавливаться</string>
     <string name="openDmInInsta">Открыть чат в Instagram</string>
     <string name="pageNotExist">Эта страница не существует!</string>
+    <string name="sContinue">Продолжать</string>
+    <string name="watchAnAd">Смотреть рекламу</string>
+    <string name="failedToLoadAd">Не удалось загрузить объявление: %s</string>
+    <string name="failedToShowAd">Не удалось показать объявление: %s</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -56,7 +59,6 @@
     <string name="signOutSure">Вы уверены, что хотите выйти из своей учетной записи Instagram?</string>
     <string name="mtSearch">Введите имя профиля&#8230;</string>
     <string name="boxUntil">До %s</string>
-    <string name="unfFailed">Поиск отписавшихся был прерван!</string>
     <string name="unfollow">Отписаться</string>
     <string name="unfollowPV">Этот аккаунт является частным. Вы уверены, что хотите отписаться от них?</string>
     <string name="unfCouldNot">Не удалось отписаться от этого пользователя!</string>
@@ -92,7 +94,9 @@
     <string name="vwFollowing">Подписок</string>
     <string name="vwPrivate">Этот аккаунт является частным!</string>
     <string name="followAll">Следить за всеми</string>
-    <string name="followAllSure">Вы уверены, что хотите подписаться на все эти %d аккаунтов? (За ними будут следить медленно и один за другим, чтобы Instagram не стал чувствительным!)</string>
+    <string name="followAllSure">Вы уверены, что хотите подписаться на все эти аккаунты? (За ними будут следить медленно и один за другим, чтобы Instagram не стал чувствительным!)</string>
+    <string name="alsoRequestPv">Также отправьте запрос в личные кабинеты.</string>
+    <string name="mfLimit">Ограничьте их количество до:</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Массовый Последователь</string>
@@ -103,6 +107,7 @@
     <string name="mfSeconds">%d секунды</string>
     <string name="mfMinutes">%1$d минуты, %2$d секунды</string>
     <string name="mfClear">Очистить очередь</string>
+    <string name="mfPayForIt">Посмотрите рекламу, чтобы разблокировать эту функцию %d раз&#8230;</string>
 
     <!-- Settings -->
     <string name="settings">Настройки</string>

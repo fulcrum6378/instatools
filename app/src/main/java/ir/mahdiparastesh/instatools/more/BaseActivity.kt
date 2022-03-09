@@ -78,6 +78,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         fun anyActive() = arrayOf(
             Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
         ).any { it.active.value!! }
+
+        fun Context.night(): Boolean = resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,7 +155,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (menuRes != null) toolbar.inflateMenu(menuRes!!)
         if (!night()) colorAc.value ?: TypedValue().apply {
-            theme.resolveAttribute(R.attr.colorPrimaryDark, this, true)
+            theme.resolveAttribute(R.attr.colorPrimary, this, true)
         }.data.apply {
             val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
             toolbar.menu.forEach { item ->
@@ -236,9 +239,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     fun launcher(callback: ActivityResultCallback<ActivityResult>) =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
-
-    fun night(): Boolean = resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
     @Suppress("unused")
     enum class Theme(val res: Int) {

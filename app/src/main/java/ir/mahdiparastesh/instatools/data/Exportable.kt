@@ -22,7 +22,7 @@ class Exportable(
     @Suppress("unused")
     constructor() : this("", "", 0, "")
 
-    class Options() {
+    class Options {
 
         fun parse(json: String): Options = Gson().fromJson(json, Options::class.java)
 

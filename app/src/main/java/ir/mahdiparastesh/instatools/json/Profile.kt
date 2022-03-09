@@ -15,7 +15,7 @@ class Profile(
     //val show_view_shop: Boolean,
     //val toast_content_on_load: Any?,
 ) {
-    class GraphQlResponse(val data: GraphQl, status: String) : Rest(status)
+    class GraphQlResponse(val data: GraphQl) : Rest()
 
     class GraphQl(val user: User?)
 
@@ -34,7 +34,7 @@ class Profile(
         //val edge_felix_video_timeline: EdgeList?, // Useless "VIDEOS" tab
         val edge_follow: EdgeFollow,
         val edge_followed_by: EdgeFollow,
-        val edge_media_collections: EdgeList?,
+        //val edge_media_collections: EdgeList?,
         //val edge_mutual_followed_by: Map<String?, *>?,
         val edge_owner_to_timeline_media: EdgeList?, // Main posts
         val edge_saved_media: EdgeList?, // Saved Posts

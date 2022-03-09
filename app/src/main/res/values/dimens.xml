@@ -17,7 +17,6 @@
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>
     <dimen name="bnv">66dp</dimen>
-    <dimen name="bnvFont">5sp</dimen>
     <dimen name="mainPadH">26dp</dimen>
     <dimen name="padGallery">2dp</dimen>
     <dimen name="unfAction">@dimen/moreAction</dimen>
@@ -29,11 +28,10 @@
     <dimen name="dmPadV">13dp</dimen>
     <dimen name="dmPadH">17dp</dimen>
     <dimen name="dmFont">16sp</dimen>
+    <dimen name="dmHintFont">14sp</dimen>
     <dimen name="searchFont">6sp</dimen>
     <dimen name="simpleLoading">200dp</dimen>
     <dimen name="simpleError">120dp</dimen>
-    <dimen name="unfStart">130dp</dimen>
-    <dimen name="unfStartPad">15dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">45dp</dimen>

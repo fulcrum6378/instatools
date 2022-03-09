@@ -8,6 +8,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 
 class ListSvd(c: Main, f: PageSvd) : ListEdge<Main, PageSvd>(c, f) {
@@ -16,7 +17,7 @@ class ListSvd(c: Main, f: PageSvd) : ListEdge<Main, PageSvd>(c, f) {
     override val tracker: SelectionTracker<String>? get() = f.tracker
     override val handler: Handler? get() = PageSvd.handler
     override val expandable: Expandable by lazy {
-        Expandable(c, expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CSD))
+        Expandable(c, expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CS))
     }
     override val expanded: ExpandableBinding = f.b.expanded
 }

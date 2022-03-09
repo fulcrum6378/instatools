@@ -2,8 +2,8 @@
 
     <style name="Theme.InstaTools" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/defCA</item>
-        <item name="colorPrimaryDark">@color/defCA</item>
-        <item name="colorAccent">?attr/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">?attr/colorPrimary</item>
+        <item name="colorAccent">?attr/colorPrimary</item>
         <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
@@ -14,19 +14,16 @@
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
-        <item name="colorPrimaryDark">@color/CPD</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
-        <item name="colorPrimaryDark">@color/CSD</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CT</item>
-        <item name="colorPrimaryDark">@color/CTD</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
         <item name="dmFromMe">@color/dmFromMe</item>
@@ -38,9 +35,9 @@
 
     <style name="Theme.InstaTools.Tertiary.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/CT</item>
-        <item name="colorPrimaryDark">@color/CTD</item>
+        <item name="colorPrimaryDark">?attr/colorPrimary</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
-        <item name="colorAccent">?attr/colorPrimaryDark</item>
+        <item name="colorAccent">?attr/colorPrimary</item>
         <item name="backgroundColor">#FFF</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="defCA">@color/defCALight</item>
