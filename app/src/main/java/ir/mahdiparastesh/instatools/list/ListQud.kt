@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.view.View
@@ -53,10 +54,13 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         // Clicks
         h.b.root.setOnClickListener {
             c.m.queueds?.getOrNull(h.layoutPosition)?.let {
-                c.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse(it.link))
-                    //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
+                try {
+                    c.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(it.link))
+                        //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                } catch (e: ActivityNotFoundException) {
+                }
             }
         }
         h.b.status.isClickable = qud.failed

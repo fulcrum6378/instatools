@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.view
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -64,11 +65,14 @@ class UiTools {
         }
 
         fun openProfile(c: Activity, user: String) {
-            c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
-                    .setPackage(INSTA_PACKAGE)
-                //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
+            try {
+                c.startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
+                        .setPackage(INSTA_PACKAGE)
+                    //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            } catch (e: ActivityNotFoundException) {
+            }
         }
 
         fun z(n: Int): String {
@@ -105,7 +109,7 @@ class UiTools {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
             else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
-            // INSTAGRAM WAS INSTALLED YET....
+            // INSTAGRAM WAS INSTALLED YET.... TODO:
             /*android.util.AndroidRuntimeException: Calling startActivity() from outside of an Activity  context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
         at android.app.ContextImpl.startActivity(ContextImpl.java:1682)
         at android.app.ContextImpl.startActivity(ContextImpl.java:1669)

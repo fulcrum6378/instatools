@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Point
 import android.graphics.Rect
@@ -43,14 +44,16 @@ class Expandable(
 
     init {
         b.viewInInsta.setOnClickListener {
-            if (node == null && media == null) return@setOnClickListener
-            c.startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(UiTools.POST_LINK.format(if (node != null) node!!.shortcode else media!!.code))
-                ).setPackage(UiTools.INSTA_PACKAGE)
-                //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
+            if (node != null || media != null) try {
+                c.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(UiTools.POST_LINK.format(if (node != null) node!!.shortcode else media!!.code))
+                    ).setPackage(UiTools.INSTA_PACKAGE)
+                    //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            } catch (e: ActivityNotFoundException) {
+            }
         }
     }
 
