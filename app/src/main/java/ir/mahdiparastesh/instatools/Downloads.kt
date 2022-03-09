@@ -144,19 +144,18 @@ class Downloads : ServiceOwnerActivity() {
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             if (c.sPreference(Settings.spStorage) == null) {
-                c.startActivity(Intent(c, Settings::class.java).apply {
+                c.goTo(Settings::class) {
                     putExtra(Settings.EXTRA_GIVE_LINK_BACK, link)
                     putExtra(Settings.EXTRA_IS_GLOBAL, true)
-                })
-                return; }
+                }; return; }
             if (Queuer.active.value!!) {
-                if (link != null)
+                if (!link.isNullOrBlank())
                     Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()
                 return
             }
             c.startService(Intent(c, Queuer::class.java).apply {
                 action = ForegroundService.ACTION_START
-                if (link != null) putExtra(Queuer.EXTRA_LINK, link)
+                if (!link.isNullOrBlank()) putExtra(Queuer.EXTRA_LINK, link)
             })
         }
     }

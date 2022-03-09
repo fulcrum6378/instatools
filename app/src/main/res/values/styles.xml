@@ -20,6 +20,7 @@
         <item name="layout_constraintTop_toTopOf">parent</item>
         <item name="popupTheme">@style/Widget.MaterialComponents.PopupMenu</item>
         <item name="titleTextColor">?attr/colorAccent</item>
+        <item name="titleTextAppearance">@style/Theme.InstaTools.Toolbar</item>
     </style>
 
     <style name="sep">

@@ -14,6 +14,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
@@ -230,7 +231,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
             searchInput?.typeface = fontRegular
             searchInput?.setHint(R.string.mtSearch)
-            searchInput?.textSize = resources.getDimension(R.dimen.searchFont)
+            searchInput?.textSize = dimen(R.dimen.searchFont)
 
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String) = true
@@ -336,6 +337,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     private var exiting = false
     override fun onBackPressed() {
+        if (b.root.isDrawerOpen(GravityCompat.START)) {
+            b.root.closeDrawer(GravityCompat.START)
+            toggleNav.syncState()
+            return; }
         if (pageGoBack()) return
         if (!exiting) {
             exiting = true

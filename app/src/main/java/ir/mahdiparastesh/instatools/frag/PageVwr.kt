@@ -131,7 +131,7 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
                                 c.m.vwUser!!.photo(), 1
                             )
                         )
-                        withContext(Dispatchers.Main) { Downloads.initService(c) }
+                        withContext(Dispatchers.Main) { Downloads.initService(c, "") }
                     }
                 }
             }).show()

@@ -1,0 +1,5 @@
+<resources>
+
+    <!-- Downloads -->
+    <integer name="dwLaunchMode">3</integer>
+</resources>

@@ -17,10 +17,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.MainThread
+import androidx.annotation.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -144,8 +141,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         tbTitle?.bolden(this, font)
-        tbTitle?.textSize =
-            resources.getDimension(if (this is Main) R.dimen.tbTitleMain else R.dimen.tbTitle)
         if (this !is Main) supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
@@ -220,6 +215,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
 
     fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, path)
+
+    // Only for TextView.textSize
+    fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density
 
     fun goTo(
         activity: KClass<*>,

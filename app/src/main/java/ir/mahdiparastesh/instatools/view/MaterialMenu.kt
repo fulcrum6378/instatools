@@ -37,6 +37,7 @@ class MaterialMenu(
                 setSpan(
                     CustomTypefaceSpan(
                         c.fontRegular, c.resources.getDimension(size),
+                        // DON'T USE c.dimen(), apparently it'll turn to DIP automatically!
                         ca ?: TypedValue().apply {
                             c.theme.resolveAttribute(R.attr.colorAccent, this, true)
                         }.data

@@ -46,8 +46,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                 else -> R.raw.download
             }
         )
-        val pad = if (!qud.failed)
-            c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
+        val pad = if (!qud.failed) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
         h.b.status.setPadding(pad, pad, pad, pad)
         h.b.status.isClickable = qud.failed
 
@@ -71,7 +70,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
                     c.dao.updateQueued(this)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
-                        Downloads.initService(c)
+                        Downloads.initService(c, "")
                     }
                 }
             }

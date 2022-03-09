@@ -15,7 +15,8 @@
             android:id="@+id/toolbar"
             style="@style/toolbar"
             app:title="@string/app_name"
-            app:titleMarginTop="@dimen/tbTitleMainMarginTop" />
+            app:titleMarginTop="@dimen/tbTitleMainMarginTop"
+            app:titleTextAppearance="@style/Theme.InstaTools.Toolbar.Main" />
 
         <FrameLayout
             android:id="@+id/frame"

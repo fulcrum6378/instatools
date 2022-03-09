@@ -43,4 +43,12 @@
         <item name="defCA">@color/defCALight</item>
         <item name="dmFromMe">@color/dmFromMeLight</item>
     </style>
+
+    <style name="Theme.InstaTools.Toolbar" parent="Theme.InstaTools">
+        <item name="android:textSize">@dimen/tbTitle</item>
+    </style>
+
+    <style name="Theme.InstaTools.Toolbar.Main" parent="Theme.InstaTools.Toolbar">
+        <item name="android:textSize">@dimen/tbTitleMain</item>
+    </style>
 </resources>

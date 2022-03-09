@@ -28,7 +28,7 @@
             android:hint="@string/pasteLink"
             android:importantForAutofill="no"
             android:inputType="textUri"
-            android:textSize="15sp"
+            android:textSize="@dimen/pasteLinkFont"
             app:layout_constraintEnd_toStartOf="@id/linkButton"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="UnusedAttribute" />

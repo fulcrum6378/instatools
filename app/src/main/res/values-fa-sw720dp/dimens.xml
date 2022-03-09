@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="tbTitleMain">17sp</dimen>
-    <dimen name="tbTitle">13sp</dimen>
+    <dimen name="tbTitleMain">30sp</dimen>
+    <dimen name="tbTitle">23.5sp</dimen>
     <dimen name="tbTitleMainMarginTop">10sp</dimen>
     <dimen name="userFont">24sp</dimen>
     <dimen name="userDescFont">17sp</dimen>
+    <dimen name="menuFont">20sp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">18sp</dimen>
     <dimen name="dmFont">23sp</dimen>
-    <dimen name="searchFont">11sp</dimen>
+    <dimen name="searchFont">22sp</dimen>
+
+    <!-- Downloads -->
+    <dimen name="downloadsHelp1">25sp</dimen>
+    <dimen name="downloadsHelp2">18sp</dimen>
+
+    <!-- MassFollower -->
+    <dimen name="mfGuideTv">23sp</dimen>
 
     <!-- Settings -->
     <dimen name="stSubItemFont">21sp</dimen>

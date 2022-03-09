@@ -81,7 +81,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
                     if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
                 }
         },
-        HANDLE_INIT_QUEUER to { Downloads.initService(c) }
+        HANDLE_INIT_QUEUER to { Downloads.initService(c, "") }
     )
 
     companion object : PageCompanion() {

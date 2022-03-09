@@ -29,7 +29,7 @@
         android:id="@+id/empty"
         style="@style/tip"
         android:text="@string/favEmpty"
-        android:textSize="17sp"
+        android:textSize="@dimen/favEmpty"
         android:visibility="gone" />
 
     <View

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="tbTitleMain">9sp</dimen>
-    <dimen name="tbTitle">6.5sp</dimen>
+    <dimen name="tbTitleMain">27sp</dimen>
+    <dimen name="tbTitle">19sp</dimen>
     <dimen name="menuFont">15sp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">14sp</dimen>
     <dimen name="dmFont">14sp</dimen>
-    <dimen name="searchFont">5.5sp</dimen>
+    <dimen name="searchFont">14.5sp</dimen>
 
     <!-- Downloads -->
     <dimen name="downloadsHelp1">18sp</dimen>

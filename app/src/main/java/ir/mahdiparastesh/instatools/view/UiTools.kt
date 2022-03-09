@@ -14,7 +14,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Html
-import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
@@ -105,19 +104,10 @@ class UiTools {
                 setText("")
                 return
             }
-            movementMethod = LinkMovementMethod.getInstance()
+            movementMethod = SafeLinkMovementMethod.getInstance()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
             else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
-            // INSTAGRAM WAS INSTALLED YET.... TODO:
-            /*android.util.AndroidRuntimeException: Calling startActivity() from outside of an Activity  context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
-        at android.app.ContextImpl.startActivity(ContextImpl.java:1682)
-        at android.app.ContextImpl.startActivity(ContextImpl.java:1669)
-        at android.content.ContextWrapper.startActivity(ContextWrapper.java:338)
-        at android.content.ContextWrapper.startActivity(ContextWrapper.java:338)
-        at android.text.style.URLSpan.onClick(URLSpan.java:72)
-        at android.text.method.LinkMovementMethod.onTouchEvent(LinkMovementMethod.java:217)
-        at android.widget.TextView.onTouchEvent(TextView.java:9646)*/
         }
 
         fun Long.calendar(): Calendar = // needs milliseconds
@@ -171,13 +161,11 @@ class UiTools {
         @Suppress("SpellCheckingInspection")
         fun openDm(c: Activity, threadId: String) {
             c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId"))
-                    .setComponent(
-                        ComponentName(
-                            "com.instagram.android", "com.instagram.mainactivity.MainActivity"
-                        )
+                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
+                    ComponentName(
+                        "com.instagram.android", "com.instagram.mainactivity.MainActivity"
                     )
-                //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ) //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         }
 

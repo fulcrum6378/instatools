@@ -11,6 +11,7 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
@@ -56,7 +57,7 @@ class Api<JSON>(
                     ForegroundService.terminateTasks(c.c)
                     c.gsp.edit().remove(Login.spAccount).commit()
                     c.needAuthentication()
-                    gotError(this)
+                    if (c is BaseActivity) gotError(this)
                 }
                 response.contains("Content unavailable &bull; Instagram") ->
                     gotError(this)

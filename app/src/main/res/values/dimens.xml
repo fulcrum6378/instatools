@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="tbTitleMain">7sp</dimen>
-    <dimen name="tbTitle">7sp</dimen>
+    <dimen name="tbTitleMain">20sp</dimen>
+    <dimen name="tbTitle">20sp</dimen>
     <dimen name="tbTitleMainMarginTop">0sp</dimen>
     <dimen name="profilePhoto">50dp</dimen>
     <dimen name="thumbPhoto">60dp</dimen>
@@ -29,7 +29,7 @@
     <dimen name="dmPadH">17dp</dimen>
     <dimen name="dmFont">16sp</dimen>
     <dimen name="dmHintFont">14sp</dimen>
-    <dimen name="searchFont">6sp</dimen>
+    <dimen name="searchFont">15sp</dimen>
     <dimen name="simpleLoading">200dp</dimen>
     <dimen name="simpleError">120dp</dimen>
 
@@ -39,11 +39,15 @@
     <!-- Downloads -->
     <dimen name="pasteLink">50dp</dimen>
     <dimen name="pasteLinkPad">10dp</dimen>
+    <dimen name="pasteLinkFont">15sp</dimen>
     <dimen name="qudLoadingPad">14dp</dimen>
     <dimen name="qudPadH">24dp</dimen>
     <dimen name="qudPadV">10dp</dimen>
     <dimen name="downloadsHelp1">19sp</dimen>
     <dimen name="downloadsHelp2">15sp</dimen>
+
+    <!-- Favourites -->
+    <dimen name="favEmpty">17sp</dimen>
 
     <!-- MassFollower -->
     <dimen name="mfPadV">15dp</dimen>
