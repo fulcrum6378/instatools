@@ -10,9 +10,13 @@ abstract class BaseSaver(selection: Selection<String>) : BaseThread() {
 
     override fun run() {
         super.run()
-        handle()
+        try {
+            handle()
+        } catch (e: ConcurrentModificationException) {
+        }
     }
 
+    @Throws(ConcurrentModificationException::class)
     abstract fun handle()
 
     open fun ended() {

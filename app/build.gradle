@@ -11,11 +11,23 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionCode 27
-        versionName '7.9'
+        versionCode 28
+        versionName '8.1'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('D:\\Experimental\\mahdiparastesh.jks')
+            keyAlias 'instatools'
+            storePassword "${System.getenv("JERK")}"
+            keyPassword "${System.getenv("JERK")}"
+        }
     }
 
     buildTypes {
+        all {
+            signingConfig signingConfigs.release
+        }
         debug {
             debuggable true
             minifyEnabled false
@@ -25,7 +37,6 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true
@@ -64,7 +75,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0' // Only for ActivityResultLauncher
     implementation 'androidx.core:core-ktx:1.7.0' // For Iterable ViewGroup/Menu and Int:RGB
     implementation 'org.apache.commons:commons-text:1.9' // StringEscapeUtils
-    implementation 'com.airbnb.android:lottie:5.0.2'
+    implementation 'com.airbnb.android:lottie:5.0.3'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'

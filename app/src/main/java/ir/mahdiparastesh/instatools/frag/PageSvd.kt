@@ -81,12 +81,16 @@ class PageSvd(c: Main) : BasePageMain(c) {
                     if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
                 }
         },
+        HANDLE_SHOW_AD to {
+            c.loadInterstitial("ca-app-pub-9457309151954418/6541958088", true)
+        },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") }
     )
 
     companion object : PageCompanion() {
         const val HANDLE_UNSAVE_DONE = 10
         const val HANDLE_INIT_QUEUER = 11
+        const val HANDLE_SHOW_AD = 12
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -250,6 +254,12 @@ class PageSvd(c: Main) : BasePageMain(c) {
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
     ) : BaseSaver(selection) {
 
+        override fun run() {
+            if (unsave && download && list.size > 4)
+                handler?.obtainMessage(HANDLE_SHOW_AD)?.sendToTarget()
+            super.run()
+        }
+
         override fun handle() {
             val svd = list.getOrNull(0)
             if (svd == null) {
@@ -263,8 +273,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 )
                 if (unsave) Api<Rest>(
                     c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
-                    method = Request.Method.POST,
-                    onError = { ended() }
+                    method = Request.Method.POST, onError = { ended() }
                 ) { rest ->
                     if (rest.status == "ok") {
                         handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()

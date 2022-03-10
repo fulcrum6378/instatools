@@ -76,7 +76,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     companion object : ActivityCompanion() {
         var guest = false
-        var doNotShowInterstitialAgain = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -167,11 +166,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (Settings.recreateMain) {
             Settings.recreateMain = false
             recreate(); return; }
-        if (notFirstResume) {
-            if (!doNotShowInterstitialAgain)
-                loadInterstitial("ca-app-pub-9457309151954418/5399016395")
-            else doNotShowInterstitialAgain = false
-        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {

@@ -2,11 +2,13 @@ package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @androidx.room.Database(
     entities = [
         Friend::class, Queued::class, Exportable::class, Favourite::class, Followable::class
-    ], version = 6, exportSchema = false
+    ], version = 7, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -106,9 +108,14 @@ abstract class Database : RoomDatabase() {
     }
 
     companion object {
-        fun build(c: Context, user: String) =
-            Room.databaseBuilder(c, Database::class.java, "$user.db")
-                .fallbackToDestructiveMigration()
-                .build()
+        fun build(c: Context, user: String) = Room
+            .databaseBuilder(c, Database::class.java, "$user.db")
+            //.fallbackToDestructiveMigration()
+            .addMigrations(object : Migration(6, 7) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("ALTER TABLE Friend RENAME COLUMN photo TO pict")
+                    db.execSQL("ALTER TABLE Friend ADD COLUMN priv INTEGER NOT NULL DEFAULT 0")
+                }
+            }).build()
     }
 }

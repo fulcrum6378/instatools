@@ -211,7 +211,7 @@ class MassFollower : ServiceOwnerActivity() {
 
     companion object : ActivityCompanion() {
         const val HANDLE_REWARD_CONSUMED = 5
-        const val UNLOCK_TIMES = 5
+        private const val UNLOCK_TIMES = 5
         private var mRewardedAd: RewardedAd? = null
         private var loadingAd = false
 
@@ -281,10 +281,7 @@ class MassFollower : ServiceOwnerActivity() {
     }
 
     class RewardAdCallback(private val c: Context) : FullScreenContentCallback() {
-        override fun onAdShowedFullScreenContent() {
-            mRewardedAd = null
-        }
-
+        override fun onAdShowedFullScreenContent() {}
         override fun onAdFailedToShowFullScreenContent(adError: AdError) {
             Toast.makeText(
                 c, c.getString(R.string.failedToShowAd, adError.message), Toast.LENGTH_LONG

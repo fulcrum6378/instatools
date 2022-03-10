@@ -84,7 +84,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             changeTitleTo = getString(if (globalMode) R.string.gSettings else R.string.aSettings)
         )
         prf = if (globalMode || sp == null) gsp else sp!!
-        intent.extras?.getString(EXTRA_GIVE_LINK_BACK, null)?.let { giveLinkBack = it }
+        intent.getStringExtra(EXTRA_GIVE_LINK_BACK)?.let { giveLinkBack = it }
 
         // Beauty
         for (l in b.ll.iterator())
@@ -97,7 +97,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         // Main Path
-        if (!prf.contains(spStorage) && giveLinkBack != null) selectMainPath()
+        if (giveLinkBack != null) selectMainPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { selectMainPath() }
         b.stBranching.isChecked = prf.getBoolean(spBranching, defSpBranching)
@@ -174,7 +174,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         if (giveLinkBack != null) {
             Downloads.initService(this, giveLinkBack)
             giveLinkBack = null
-            onBackPressed()
+            goTo(Downloads::class, true)
         }
     }
 }

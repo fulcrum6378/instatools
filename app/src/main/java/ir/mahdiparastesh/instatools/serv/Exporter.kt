@@ -70,7 +70,7 @@ class Exporter : ForegroundService() {
                         }
                         fetchData()
                     }
-                    Api.HANDLE_ERROR -> destroy()
+                    Api.HANDLE_ERROR -> finish(false)
                 }
             }
         }
@@ -82,7 +82,7 @@ class Exporter : ForegroundService() {
             exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
             withContext(Dispatchers.Main) {
                 if (exp == null)
-                    this@Exporter.destroy()
+                    this@Exporter.finish(false)
                 else fetchData()
             }
         }

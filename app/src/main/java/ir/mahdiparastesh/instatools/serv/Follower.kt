@@ -111,7 +111,7 @@ class Follower : ForegroundService() {
             total = 0
             if (cur == null || !Follower.active.value!!) {
                 interrupt()
-                if (scheduler?.active != true) this@Follower.destroy()
+                if (scheduler?.active != true) this@Follower.finish(false)
                 return; }
             allFollow()
         }
@@ -141,7 +141,7 @@ class Follower : ForegroundService() {
                     errorCount++
                     if (errorCount > 5) {
                         if (toBeEnqueued.isEmpty() && enqueuer?.active != true)
-                            this@Follower.destroy()
+                            this@Follower.finish(false)
                         interrupt()
                         if (BuildConfig.DEBUG) throw Exception(
                             (it.obj as NetworkResponse?)?.statusCode.toString() + " : " + String(
@@ -166,7 +166,7 @@ class Follower : ForegroundService() {
         private fun follow(): Boolean {
             fwb = dao.aFollowable().getOrNull(0)
             if (fwb == null || !Follower.active.value!!) {
-                if (toBeEnqueued.isEmpty() && enqueuer?.active != true) this@Follower.destroy()
+                if (toBeEnqueued.isEmpty() && enqueuer?.active != true) this@Follower.finish(false)
                 interrupt()
                 return false; }
             Api<Rest.DoFollow>(

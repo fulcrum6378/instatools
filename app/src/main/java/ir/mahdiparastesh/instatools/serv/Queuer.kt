@@ -1,10 +1,14 @@
 package ir.mahdiparastesh.instatools.serv
 
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.os.Process.myPid
+import android.os.Process.myUid
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
@@ -51,6 +55,15 @@ class Queuer : ForegroundService() {
 
         const val HANDLE_LINK = 0
         val EXTRA_LINK = "$pack.EXTRA_LINK"
+
+        fun hasPerm(c: Context, path: String): Boolean {
+            val uri = Uri.parse(path)
+            return c.checkUriPermission(
+                uri, myPid(), myUid(), Intent.FLAG_GRANT_READ_URI_PERMISSION
+            ) == PackageManager.PERMISSION_GRANTED && c.checkUriPermission(
+                uri, myPid(), myUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            ) == PackageManager.PERMISSION_GRANTED
+        }
     }
 
     override fun resolveIntent(intent: Intent) {
@@ -64,7 +77,7 @@ class Queuer : ForegroundService() {
         super.onCreate()
         dest = sPreference(Settings.spStorage)
         if (m.acc == null || dest == null) {
-            destroy(); return; }
+            finish(false); return; }
         notification(Companion, Downloads::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -91,7 +104,7 @@ class Queuer : ForegroundService() {
         if (handlingLink) return
         val cur = handlingLinks.getOrNull(0)
         if (cur == null) {
-            if (download?.active != true) destroy()
+            if (download?.active != true) finish(false)
             return; }
         handlingLink = true
 
@@ -217,7 +230,7 @@ class Queuer : ForegroundService() {
                 if (found) handleQueued(cur.qud!!, addOns)
                 else {
                     linkHandled()
-                    if (download?.active != true) destroy()
+                    if (download?.active != true) finish(false)
                 }
             }
         }
@@ -248,7 +261,7 @@ class Queuer : ForegroundService() {
         override fun run() {
             val queue = ArrayList(dao.readyQueueds().sortedBy { it.addedAt })
             if (queue.isNullOrEmpty()) {
-                if (!handlingLink) this@Queuer.destroy()
+                if (!handlingLink) this@Queuer.finish(false)
                 else interrupt()
                 return; }
 
@@ -322,17 +335,23 @@ class Queuer : ForegroundService() {
             branch = stem.findFile(q.userName!!)
             if (branch == null) branch = stem.createDirectory(q.userName!!)
         } else branch = stem
+        if (branch == null) return
         val type = MediaType.values().find { it.inDb == q.mediaType }!!
         val fName = q.fName(type.ext)
-        var leaf = branch!!.findFile(fName)
+        var leaf = branch.findFile(fName)
         if (leaf != null) return
-        leaf = branch.createFile(type.mime, fName)
-        c.contentResolver.openFileDescriptor(leaf!!.uri, "w")?.use { des ->
+        leaf = branch.createFile(type.mime, fName) ?: return
+        c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
         sp?.edit()?.putLong(
             Settings.spDownloadCount, (sp?.getLong(Settings.spDownloadCount, 0L) ?: 0L) + 1L
         )?.commit()
+    }
+
+    override fun finish(cancelled: Boolean) {
+        if (!cancelled) Downloads.handler?.obtainMessage(Downloads.SHOW_AD)?.sendToTarget()
+        destroy()
     }
 
     override fun destroy() {

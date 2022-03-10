@@ -36,7 +36,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         val unf = c.m.unfollowers.value?.getOrNull(i) ?: return
-        Glide.with(c.c).load(unf.photo).into(h.b.photo)
+        Glide.with(c.c).load(unf.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${unf.name}"
         h.b.user.text = if (unf.unfollowedMeAt != null) c.getString(
             R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
@@ -51,7 +51,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         }
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            if (!u.private) unfollow(u)
+            if (!u.priv) unfollow(u)
             else AlertDialog.Builder(c).apply {
                 setTitle(R.string.unfollow)
                 setMessage(R.string.unfollowPV)
@@ -81,6 +81,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
             f.b.rv.adapter?.notifyItemRemoved(index)
             if (index > 0) f.b.rv.adapter?.notifyItemChanged(index - 1)
             f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)
+            c.m.unfollowers.value = c.m.unfollowers.value
         }
     }
 }

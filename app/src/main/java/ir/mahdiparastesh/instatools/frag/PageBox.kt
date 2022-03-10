@@ -161,6 +161,7 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
                     type = method.mime
                     putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
                 })
+                c.loadInterstitial("ca-app-pub-9457309151954418/8317918650")
             }
         }.show().stylise(c)
     }
@@ -173,7 +174,7 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
             c.dao.addExportable(exportable!!)
             withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
         }
-        c.loadInterstitial("ca-app-pub-9457309151954418/8317918650")
+        c.showInterstitial()
     }
 
     override fun goBack(): Boolean {

@@ -27,19 +27,17 @@ import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ir.mahdiparastesh.instatools.*
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import kotlin.reflect.KClass
 
@@ -57,6 +55,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val shallBolden by lazy { c.resources.getBoolean(R.bool.shallBolden) }
     val colorAc = MutableLiveData<Int?>(null)
     var interstitialAd: InterstitialAd? = null
+    var loadingAd = false
+    var showingAd = false
     var retryForAd = 0
 
     abstract val menuRes: Int?
@@ -109,8 +109,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     var notFirstResume = false
-    override fun onResume() {
-        super.onResume()
+    override fun onPause() {
+        super.onPause()
         notFirstResume = true
     }
 
@@ -126,6 +126,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+        isAdsSdkInitialized = true
     }
 
     var tbTitle: TextView? = null
@@ -151,15 +152,14 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         if (menuRes != null) toolbar.inflateMenu(menuRes!!)
         if (!night()) colorAc.value ?: TypedValue().apply {
             theme.resolveAttribute(R.attr.colorPrimary, this, true)
-        }.data.apply {
-            val cf = PorterDuffColorFilter(this, PorterDuff.Mode.SRC_IN)
+            val cf = PorterDuffColorFilter(data, PorterDuff.Mode.SRC_IN)
             toolbar.menu.forEach { item ->
                 item.icon?.colorFilter = cf
                 item.stylise(this@BaseActivity)
             }
             if (this@BaseActivity !is Main) {
                 toolbar.navigationIcon?.colorFilter = cf
-                tbTitle?.setTextColor(this)
+                tbTitle?.setTextColor(data)
             }
             toolbar.overflowIcon?.colorFilter = cf
         }
@@ -170,29 +170,36 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     override fun onMenuItemClick(item: MenuItem): Boolean = true
 
     @MainThread
-    fun loadInterstitial(adUnitId: String) {
+    fun loadInterstitial(adUnitId: String, autoPlay: () -> Boolean) {
         if (!isAdsSdkInitialized) {
             if (retryForAd < 2) Delay(2000L) {
                 loadInterstitial(adUnitId)
                 retryForAd++
             } else retryForAd = 0
             return; }
-        if (interstitialAd != null) {
-            showInterstitial()
-            return; }
+        if (interstitialAd != null || loadingAd) return
+        loadingAd = true
         InterstitialAd.load(
             c, adUnitId, AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {}
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    loadingAd = false
+                }
+
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    interstitialAd = ad
-                    showInterstitial()
+                    loadingAd = false
+                    interstitialAd = ad.apply { fullScreenContentCallback = InterstitialCallback() }
+                    if (autoPlay()) showInterstitial()
                 }
             })
     }
 
+    fun loadInterstitial(adUnitId: String, autoPlay: Boolean = false) {
+        loadInterstitial(adUnitId) { autoPlay }
+    }
+
     @MainThread
     fun showInterstitial() {
-        interstitialAd?.fullScreenContentCallback = UiTools.InterstitialCallback(this@BaseActivity)
+        if (showingAd) return
         interstitialAd?.show(this@BaseActivity)
     }
 
@@ -245,5 +252,21 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         SECONDARY(R.style.Theme_InstaTools_Secondary),
         TERTIARY(R.style.Theme_InstaTools_Tertiary),
         TERTIARY_LIGHT(R.style.Theme_InstaTools_Tertiary_Light)
+    }
+
+    inner class InterstitialCallback : FullScreenContentCallback() {
+        override fun onAdShowedFullScreenContent() {
+            showingAd = true
+        }
+
+        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+            showingAd = false
+            interstitialAd = null
+        }
+
+        override fun onAdDismissedFullScreenContent() {
+            showingAd = false
+            interstitialAd = null
+        }
     }
 }

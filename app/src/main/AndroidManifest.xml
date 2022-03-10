@@ -41,9 +41,8 @@
         <activity
             android:name=".Downloads"
             android:exported="true"
-            android:launchMode="@integer/dwLaunchMode"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.InstaTools.Secondary">
-            <!-- except "singleInstance" all worked fine in Mum's tablet, until where TODO -->
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

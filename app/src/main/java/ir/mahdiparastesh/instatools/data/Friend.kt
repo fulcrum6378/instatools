@@ -10,8 +10,8 @@ class Friend(
     @PrimaryKey var id: String,
     var user: String,
     var name: String,
-    var photo: String,
-    var private: Boolean,
+    var pict: String,
+    var priv: Boolean,
     var follows: Boolean,
     var followed: Boolean,
     var unfollowedMeAt: Long? = null

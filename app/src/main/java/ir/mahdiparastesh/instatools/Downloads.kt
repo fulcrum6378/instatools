@@ -36,6 +36,7 @@ import kotlinx.coroutines.withContext
 class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
     private lateinit var adBanner: AdView
+    private val handledLinks = mutableSetOf<String>()
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
@@ -57,11 +58,17 @@ class Downloads : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
-                    HANDLE_DELETED -> find(msg)?.let {
-                        m.queueds!!.removeAt(it)
-                        b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size)
-                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
+                    HANDLE_DELETED -> {
+                        if (m.queueds?.size in 1..5)
+                            loadInterstitial("ca-app-pub-9457309151954418/4215022118") {
+                                m.queueds?.filter { !it.failed }.isNullOrEmpty()
+                            }
+                        find(msg)?.let {
+                            m.queueds!!.removeAt(it)
+                            b.rv.adapter?.notifyItemRemoved(it)
+                            b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size)
+                            if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
+                        }
                     }
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
@@ -71,11 +78,9 @@ class Downloads : ServiceOwnerActivity() {
                     HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
+                    SHOW_AD -> showInterstitial()
                 }
-                updateIfEmpty(m.queueds.isNullOrEmpty()) {
-                    loadInterstitial("ca-app-pub-9457309151954418/4215022118")
-                    Main.doNotShowInterstitialAgain = true
-                }
+                updateIfEmpty(m.queueds.isNullOrEmpty())
                 b.empty.vis(m.queueds.isNullOrEmpty())
             }
 
@@ -102,7 +107,11 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let { initService(this, it) }
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+            if (it in handledLinks) return@let
+            initService(this, it)
+            handledLinks.add(it)
+        }
         return super.resolveIntent(intent, false)
     }
 
@@ -141,9 +150,12 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
+        const val SHOW_AD = 5
+
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
-            if (c.sPreference(Settings.spStorage) == null) {
+            val uri = c.sPreference(Settings.spStorage)
+            if (uri == null || !Queuer.hasPerm(c.c, uri)) {
                 c.goTo(Settings::class) {
                     putExtra(Settings.EXTRA_GIVE_LINK_BACK, link)
                     putExtra(Settings.EXTRA_IS_GLOBAL, true)

@@ -23,10 +23,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
-import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -162,9 +160,7 @@ class UiTools {
         fun openDm(c: Activity, threadId: String) {
             c.startActivity(
                 Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
-                    ComponentName(
-                        "com.instagram.android", "com.instagram.mainactivity.MainActivity"
-                    )
+                    ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
                 ) //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         }
@@ -172,20 +168,6 @@ class UiTools {
         fun TextView.bolden(c: BaseActivity, font: Typeface = c.fontBold) {
             if (!c.shallBolden) typeface = font
             else setTypeface(font, Typeface.BOLD)
-        }
-    }
-
-    class InterstitialCallback(private val c: BaseActivity) : FullScreenContentCallback() {
-        override fun onAdDismissedFullScreenContent() {
-            c.interstitialAd = null
-        }
-
-        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-            c.interstitialAd = null
-        }
-
-        override fun onAdShowedFullScreenContent() {
-            c.interstitialAd = null
         }
     }
 }

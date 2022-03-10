@@ -8,19 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
+import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.more.BasePageViewer
+import ir.mahdiparastesh.instatools.more.BaseSaver
 import ir.mahdiparastesh.instatools.more.BaseThread
+import ir.mahdiparastesh.instatools.more.Persistent
 
 class PageTag(c: Viewer) : BasePageViewer(c) {
     private lateinit var b: PageTagBinding
@@ -126,6 +130,23 @@ class PageTag(c: Viewer) : BasePageViewer(c) {
                 }
                 interrupt()
             }
+        }
+    }
+
+    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {// TODO: CUSTOMISE IT
+        override fun handle() {
+            val svd = list.getOrNull(0)
+            if (svd == null) {
+                Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
+                interrupt()
+                return
+            }
+            c.m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
+                c.dao.addQueued(
+                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
+                )
+            }
+            ended()
         }
     }
 }

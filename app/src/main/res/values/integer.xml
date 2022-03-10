@@ -3,10 +3,6 @@
     <!-- Main -->
     <integer name="transFrag">90</integer>
 
-    <!-- Downloads -->
-    <integer name="dwLaunchMode">1</integer>
-    <!-- 0=>standard, 1=>singleTop, 2=>singleTask, 3=>singleInstance, 4=>singleInstancePerTask(31+) -->
-
     <!-- Mass Follower -->
     <integer name="mfMin">15</integer>
     <integer name="mfMaxNominal">885</integer><!--actually 900-->

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
+import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
@@ -25,11 +26,8 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.GlideShimmer
@@ -259,6 +257,23 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
                         ?.sendToTarget()
                 }
             }
+        }
+    }
+
+    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
+        override fun handle() {
+            val svd = list.getOrNull(0)
+            if (svd == null) {
+                Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
+                interrupt()
+                return
+            }
+            c.m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
+                c.dao.addQueued(
+                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
+                )
+            }
+            ended()
         }
     }
 }

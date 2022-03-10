@@ -135,10 +135,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     open fun onCancel() {
-        onAbort(true)
+        finish(true)
     }
 
-    open fun onAbort(cancelled: Boolean) {
+    open fun finish(cancelled: Boolean) {
         destroy()
     }
 

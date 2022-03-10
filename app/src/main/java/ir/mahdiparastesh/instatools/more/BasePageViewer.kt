@@ -1,13 +1,9 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.annotation.SuppressLint
-import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
-import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -49,23 +45,6 @@ abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
             c.b.toolbar.inflateMenu(if (status) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
             c.fixTbMenu()
             c.shake()
-        }
-    }
-
-    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
-        override fun handle() {
-            val svd = list.getOrNull(0)
-            if (svd == null) {
-                Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
-                interrupt()
-                return
-            }
-            c.m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
-                c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
-                )
-            }
-            ended()
         }
     }
 }
