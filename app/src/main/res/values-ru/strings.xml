@@ -53,6 +53,8 @@
         <item>%d секунды</item>
     </string-array>
     <string name="inaccurateTimeSep">,&#160;</string>
+    <string name="downloadAll">Скачать все слайды</string>
+    <string name="downloadThis">Скачать только этот слайд</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -112,7 +114,7 @@
     <string name="mfGuide1">Instagram не позволит вам так часто подписываться на большое количество людей. Он может заблокировать вашу учетную запись или вывести вас из сеанса.</string>
     <string name="mfGuide2">Но с помощью этого робота вы можете медленно и по одному подписаться на множество людей, чтобы Instagram не заподозрил, что это робот или спамер.</string>
     <string name="mfGuide3">1. Откройте профиль в InstaTools,\n\n2. Нажмите на количество их подписчиков или подписчиков,\n\n3. Выберите «Следить за всеми»&#8230;</string>
-    <string name="mfSeekTitle">Для %1$d элементов потребуется %2$d минуты.\nЗадержка между каждым последующим действием:</string>
+    <string name="mfSeekTitle">Для %1$s элементов потребуется %2$d минуты.\nЗадержка между каждым последующим действием:</string>
     <string name="mfClear">Очистить очередь</string>
     <string name="mfPayForIt">Посмотрите рекламу, чтобы разблокировать эту функцию %d раз&#8230;</string>
 

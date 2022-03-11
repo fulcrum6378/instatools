@@ -79,4 +79,12 @@
             android:textAlignment="center"
             android:textSize="@dimen/downloadsHelp2" />
     </LinearLayout>
+
+    <ViewStub
+        android:id="@+id/guideSwipeDeleteStub"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout="@layout/guide_swipe_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

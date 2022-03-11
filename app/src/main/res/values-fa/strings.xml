@@ -54,6 +54,8 @@
         <item>%d ثانیه</item>
     </string-array>
     <string name="inaccurateTimeSep">،&#160;</string>
+    <string name="downloadAll">دانلود تمام اسلایدها</string>
+    <string name="downloadThis">دانلود این اسلاید</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -113,7 +115,7 @@
     <string name="mfGuide1">اینستاگرام به شما اجازه نمی دهد که افراد زیادی را در مدت زمان کوتاه یکباره فالو کنید. ممکن است اکانت شما را معلق کرده یا شما را از حسابتان خارج کند.</string>
     <string name="mfGuide2">اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید بدون اینکه اینستاگرام به شما حساس شود.</string>
     <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
-    <string name="mfSeekTitle">%1$d برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
+    <string name="mfSeekTitle">%1$s برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
     <string name="mfClear">پاک کردن لیست</string>
     <string name="mfPayForIt">برای %d بار فعال کردن این قابلیت یک بار تبلیغات تماشا کنید&#8230;</string>
 

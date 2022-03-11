@@ -17,13 +17,29 @@
         android:layout_marginEnd="5.5dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UnusedAttribute">
+
+        <ImageView
+            android:id="@+id/downloadThis"
+            style="@style/expandableButton"
+            android:padding="9dp"
+            android:src="@drawable/download_one"
+            android:tooltipText="@string/downloadThis" />
+
+        <ImageView
+            android:id="@+id/downloadAll"
+            style="@style/expandableButton"
+            android:padding="9dp"
+            android:src="@drawable/download_all"
+            android:tooltipText="@string/downloadAll" />
 
         <ImageView
             android:id="@+id/viewInInsta"
             style="@style/expandableButton"
             android:padding="9dp"
-            android:src="@drawable/instagram" />
+            android:src="@drawable/instagram"
+            android:tooltipText="@string/viewInInsta" />
     </LinearLayout>
 
     <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator

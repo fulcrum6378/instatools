@@ -13,15 +13,24 @@ import android.net.Uri
 import android.os.Handler
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Expandable(
     private val c: BaseActivity,
@@ -43,13 +52,47 @@ class Expandable(
     }
 
     init {
+        b.downloadThis.setOnClickListener {
+            if (media == null) return@setOnClickListener
+            val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
+                ?: return@setOnClickListener
+            media?.apply {
+                CoroutineScope(Dispatchers.IO).launch {
+                    c.dao.addQueued(
+                        Queued(
+                            Persistent.now(), code, taken_at.xFromSeconds(),
+                            user.pk, user.username,
+                            car.pk, car.nearest(Versioned.BEST),
+                            thumb(car), car.media_type.toInt().toByte()
+                        )
+                    )
+                    withContext(Dispatchers.Main) { Downloads.initService(c) }
+                }
+            }
+        }
+        b.downloadAll.setOnClickListener {
+            if (media == null) return@setOnClickListener
+            val cars = media?.carousel_media ?: return@setOnClickListener
+            media?.apply {
+                CoroutineScope(Dispatchers.IO).launch {
+                    for (car in cars) c.dao.addQueued(
+                        Queued(
+                            Persistent.now(), code, taken_at.xFromSeconds(),
+                            user.pk, user.username,
+                            car.pk, car.nearest(Versioned.BEST),
+                            thumb(car), car.media_type.toInt().toByte()
+                        )
+                    )
+                    withContext(Dispatchers.Main) { Downloads.initService(c) }
+                }
+            }
+        }
         b.viewInInsta.setOnClickListener {
-            if (node != null || media != null) try {
+            if (media == null) return@setOnClickListener
+            try {
                 c.startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(UiTools.POST_LINK.format(if (node != null) node!!.shortcode else media!!.code))
-                    ).setPackage(UiTools.INSTA_PACKAGE)
+                    Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.POST_LINK.format(media!!.code)))
+                        .setPackage(UiTools.INSTA_PACKAGE)
                     //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
             } catch (e: ActivityNotFoundException) {
@@ -57,11 +100,13 @@ class Expandable(
         }
     }
 
-    private fun loaded(med: Media) {
-        b.slider.adapter = ListCar(c, med)
+    private fun loaded() {
+        if (media == null) return
+        b.slider.adapter = ListCar(c, media!!)
         b.indicator.setViewPager2(b.slider)
         b.indicator.vis()
         b.buttons.vis()
+        b.downloadAll.vis(media?.carousel_media != null)
     }
 
     fun expand() {
@@ -72,12 +117,11 @@ class Expandable(
             c, Api.Type.POST_ITEM.url.format(node!!.shortcode), Media.MediaWrapperApi::class,
             handler, cache = true
         ) { wrapper ->
-            val med = wrapper.items?.getOrNull(0)
-            if (med == null) {
+            media = wrapper.items?.getOrNull(0)
+            if (media == null)
                 handler?.obtainMessage(HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
-                return@Api; }
-            loaded(med)
-        } else loaded(media!!)
+            else loaded()
+        } else loaded()
         val startBoundsInt = Rect()
         val finalBoundsInt = Rect()
         val globalOffset = Point()
@@ -141,6 +185,7 @@ class Expandable(
 
     fun collapse() {
         if (startBounds == null || startScale == null || !zoomed) return
+        media = null
         b.indicator.vis(false)
         b.buttons.vis(false)
         currentAnimator?.cancel()

@@ -7,19 +7,26 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.media2.common.SessionPlayer
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
@@ -29,6 +36,7 @@ import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -39,6 +47,8 @@ class PageSvd(c: Main) : BasePageMain(c) {
     private var thread: FetchSome? = null
     var tracker: SelectionTracker<String>? = null
     private var selectivity = false
+    private var selectionBadge: BadgeDrawable? = null
+    private var selectionGuide: LottieAnimationView? = null
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
@@ -102,6 +112,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
         essentials()
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
+                    || selectionGuide != null
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -110,6 +121,10 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 ) thread = FetchSome().also { it.start() }
             }
         })
+        b.rv.layoutManager = object : GridLayoutManager(c, 3) {
+            override fun canScrollVertically(): Boolean =
+                super.canScrollVertically() && selectionGuide == null
+        }
 
         //b.refresher.isRefreshing = true
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
@@ -133,6 +148,21 @@ class PageSvd(c: Main) : BasePageMain(c) {
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged() // created only once
 
+        // Selection Guide
+        if (!isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, Settings.defSpLearntSelection)
+            && selectionGuide == null
+        ) selectionGuide = LottieAnimationView(c).apply {
+            layoutParams = ConstraintLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { topToTop = ConstraintLayout.LayoutParams.PARENT_ID }
+            repeatCount = INFINITE
+            setAnimation(R.raw.guide_selection)
+            playAnimation()
+            translationX = c.dm.widthPixels * -0.12f
+            translationY = c.dm.widthPixels * -0.01f
+            b.root.addView(this, 1)
+        }
+
         if (tracker != null) return
         tracker = SelectionTracker.Builder( // created only once
             "saved", b.rv,
@@ -149,9 +179,6 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 ).start()
                 tracker?.clearSelection()
             }
-            R.id.mtSelectAll -> if (c.m.saved != null)
-                tracker?.setItemsSelected(c.m.saved!!.edges.map { it.node.id }, true)
-            R.id.mtDeselectAll -> tracker?.clearSelection()
             R.id.mtDownload -> {
                 if (tracker != null && c.m.saved != null) Saver(
                     tracker!!.selection, unsave = false, download = true
@@ -164,6 +191,9 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 ).start()
                 tracker?.clearSelection()
             }
+            R.id.mtSelectAll -> if (c.m.saved != null)
+                tracker?.setItemsSelected(c.m.saved!!.edges.map { it.node.id }, true)
+            R.id.mtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
     }
@@ -197,7 +227,22 @@ class PageSvd(c: Main) : BasePageMain(c) {
         }
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
+        override fun onItemStateChanged(key: String, selected: Boolean) {
+            BadgeUtils.detachBadgeDrawable(selectionBadge, c.tbTitle!!)
+            BadgeUtils.attachBadgeDrawable(
+                BadgeDrawable.create(
+                    ContextThemeWrapper(c, R.style.Theme_MaterialComponents_DayNight)
+                ).apply {
+                    number = tracker?.selection?.size() ?: 0
+                    backgroundColor = c.ca[1]
+                    badgeTextColor = if (!c.night()) c.bg[1] else c.color(R.color.defBG)
+                    selectionBadge = this
+                }, c.tbTitle!!
+            )
+        }
+
         override fun onSelectionChanged() {
             super.onSelectionChanged()
             val status = tracker?.hasSelection() == true
@@ -205,6 +250,12 @@ class PageSvd(c: Main) : BasePageMain(c) {
             selectivity = status
             c.selective(status)
             c.shake()
+            if (!status) BadgeUtils.detachBadgeDrawable(selectionBadge, c.tbTitle!!)
+            else if (selectionGuide != null) {
+                b.root.removeView(selectionGuide)
+                c.gsp.edit().putBoolean(Settings.spLearntSelection, true).apply()
+                b.rv.suppressLayout(false)
+            }
         }
     }
 
@@ -255,7 +306,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
     ) : BaseSaver(selection) {
 
         override fun run() {
-            //if (/*unsave && */list.size > 4)
+            if (unsave && list.size > 4)
                 handler?.obtainMessage(HANDLE_SHOW_AD)?.sendToTarget()
             super.run()
         }

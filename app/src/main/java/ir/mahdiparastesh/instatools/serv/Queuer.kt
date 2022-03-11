@@ -208,9 +208,7 @@ class Queuer : ForegroundService() {
                                 cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
                                 med.user.pk, med.user.username,
                                 car.pk, car.nearest(Versioned.BEST),
-                                med.thumbnails?.sprite_urls?.getOrNull(0)
-                                    ?: car.nearest(Versioned.WORST),
-                                car.media_type.toInt().toByte()
+                                med.thumb(car), car.media_type.toInt().toByte()
                             )
                         )
                     med.image_versions2 != null -> cur.qud!!.apply {
@@ -344,9 +342,9 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
-        sp?.edit()?.putLong(
-            Settings.spDownloadCount, (sp?.getLong(Settings.spDownloadCount, 0L) ?: 0L) + 1L
-        )?.commit()
+        gsp.edit().putLong(
+            Settings.spDownloadCount, gsp.getLong(Settings.spDownloadCount, 0L) + 1L
+        ).apply()
     }
 
     override fun finish(cancelled: Boolean) {

@@ -89,7 +89,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
         c.accounts.removeAll { it.id == acc.id }
         Account.save(c, c.accounts)
         if (c.gsp.getString(Login.spAccount, null) == acc.id.toString())
-            c.gsp.edit().remove(Login.spAccount).commit()
+            c.gsp.edit().remove(Login.spAccount).apply()
         notifyItemRemoved(i)
         notifyItemRangeChanged(i, c.accounts.size)
         if (i > 0) notifyItemChanged(i - 1)

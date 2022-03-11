@@ -55,7 +55,7 @@ class Api<JSON>(
             if (response.startsWith("<!DOCTYPE html>")) when {
                 response.contains("Log in • Instagram") -> {
                     ForegroundService.terminateTasks(c.c)
-                    c.gsp.edit().remove(Login.spAccount).commit()
+                    c.gsp.edit().remove(Login.spAccount).apply()
                     c.needAuthentication()
                     if (c is BaseActivity) gotError(this)
                 }

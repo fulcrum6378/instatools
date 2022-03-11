@@ -58,7 +58,7 @@ class PageUnf(c: Main) : BasePageMain(c) {
         HANDLE_FETCHED to {
             load(false)
             b.refresher.isRefreshing = false
-            c.sp?.edit()?.putLong(Settings.spUnfLastChecked, Persistent.now())?.commit()
+            c.sp?.edit()?.putLong(Settings.spUnfLastChecked, Persistent.now())?.apply()
         },
         //HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) }
         Api.HANDLE_ERROR to {
@@ -200,7 +200,7 @@ class PageUnf(c: Main) : BasePageMain(c) {
                     )
                 }.build())
             }
-            c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.commit()
+            c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.apply()
         }
     }
 }

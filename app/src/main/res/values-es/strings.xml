@@ -48,6 +48,8 @@
         <item>%d segundos</item>
     </string-array>
     <string name="inaccurateTimeSep">,&#160;</string>
+    <string name="downloadAll">Descargar todas las diapositivas</string>
+    <string name="downloadThis">Descargar solo esta diapositiva</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -107,7 +109,7 @@
     <string name="mfGuide1">Instagram no te permitirá seguir a un gran número de personas con tanta frecuencia. Puede bloquear su cuenta o cerrar su sesión.</string>
     <string name="mfGuide2">Pero usando este robot, puedes seguir a numerosas personas lentamente y una por una, para que Instagram no sospeche que es un robot o un spammer.</string>
     <string name="mfGuide3">1. Abra un perfil en InstaTools,\n\n2. Toque el número de sus seguidores o siguiendo,\n\n3. Seleccione \"Seguir a todos\"&#8230;</string>
-    <string name="mfSeekTitle">Tomará %1$d minutos para %2$d artículos.\nRetraso entre cada acción de seguimiento:</string>
+    <string name="mfSeekTitle">Tomará %1$s minutos para %2$d artículos.\nRetraso entre cada acción de seguimiento:</string>
     <string name="mfClear">Borrar la cola</string>
     <string name="mfPayForIt">Mire un anuncio para desbloquear esta función %d veces&#8230;</string>
 

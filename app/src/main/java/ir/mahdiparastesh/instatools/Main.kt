@@ -43,22 +43,23 @@ import kotlin.reflect.KClass
 
 // adb connect 192.168.1.20:
 
+@Suppress("MemberVisibilityCanBePrivate")
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
-    private lateinit var toggleNav: ActionBarDrawerToggle
-    private lateinit var bh: MainNavHeaderBinding
-    private var anTheme: ValueAnimator? = null
-    private val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
-    private val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
-    private val colorBG = MutableLiveData<Int?>(null)
-    private val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+    lateinit var toggleNav: ActionBarDrawerToggle
+    lateinit var bh: MainNavHeaderBinding
+    var anTheme: ValueAnimator? = null
+    val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
+    val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
+    val colorBG = MutableLiveData<Int?>(null)
+    val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
 
-    private var searchInput: SearchView.SearchAutoComplete? = null
-    private var searchClose: ImageView? = null
+    var searchInput: SearchView.SearchAutoComplete? = null
+    var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
-    private var searcher: Api<Rest.Search>? = null
-    private var searchErrored = false
+    var searcher: Api<Rest.Search>? = null
+    var searchErrored = false
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
@@ -292,7 +293,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
-        sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.commit()
+        sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.apply()
 
         anTheme?.cancel()
         val col = if (night()) bg else ca
@@ -319,6 +320,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (!super.selective(bb)) return false
         b.bnv.menu.forEach { it.isEnabled = !bb }
         if (!night()) colorAc.value = colorAc.value
+        toggleNav.isDrawerIndicatorEnabled = !bb
         return true
     }
 

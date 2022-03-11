@@ -111,6 +111,7 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
         c.b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback b.nsv.canScrollVertically(-1)
         }
+        b.rv.setHasFixedSize(true)
         Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
         // Profile

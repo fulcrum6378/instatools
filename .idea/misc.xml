@@ -24,6 +24,8 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/done_svd.xml" value="0.182" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/done_unf.xml" value="0.182" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download.xml" value="0.175" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download_all.xml" value="0.1865" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download_one.xml" value="0.1865" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/error.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/error_outline.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/exit.xml" value="0.1795" />
@@ -38,6 +40,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/nav_header.xml" value="0.1885" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/no_bnv_highlight.xml" value="0.12604166666666666" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/non_favourite.xml" value="0.1845" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/one.xml" value="0.1865" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/path_selector.xml" value="0.105" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/pause.xml" value="0.192" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/play.xml" value="0.192" />
@@ -57,6 +60,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/shadow.xml" value="0.139" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/st_button.xml" value="0.184" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/stack.xml" value="0.1015" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/stack_themed.xml" value="0.1865" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/switch_account.xml" value="0.1795" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/unfollowers.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/unfollowers_off.xml" value="0.240625" />
@@ -73,6 +77,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/favourites.xml" value="0.19293478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/follower_options.xml" value="0.20652173913043478" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/guest_mode.xml" value="0.19293478260869565" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/guide_swipe_delete.xml" value="0.20244565217391305" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_acc.xml" value="0.15489130434782608" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_box.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/list_car.xml" value="0.19293478260869565" />

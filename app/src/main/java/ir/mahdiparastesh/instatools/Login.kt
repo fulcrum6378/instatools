@@ -169,7 +169,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
                     cookieManager.getCookie(host)
                 Account.save(c, accounts)
-                gsp.edit().putString(spAccount, id).commit()
+                gsp.edit().putString(spAccount, id).apply()
                 goTo(Main::class, true); return; }
             if (doClearHistory) {
                 b.web.clearHistory()
@@ -226,7 +226,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 accounts.add(this)
                 Account.save(c, accounts)
             }
-            gsp.edit().putString(spAccount, id).commit()
+            gsp.edit().putString(spAccount, id).apply()
             goTo(Main::class, true)
         }
     }

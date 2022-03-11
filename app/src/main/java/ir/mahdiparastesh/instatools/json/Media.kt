@@ -77,6 +77,9 @@ class Media(
         ?: carousel_media?.getOrNull(0)?.nearest(WORST)
         ?: nearest(WORST)
 
+    fun thumb(car: CarouselMedia) =
+        thumbnails?.sprite_urls?.getOrNull(0) ?: car.nearest(WORST)
+
     class MediaWrapperApi(
         //var auto_load_more_enabled: Boolean,
         var items: ArrayList<Media>?,

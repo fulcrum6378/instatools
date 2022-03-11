@@ -51,7 +51,13 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val defSpFollowerDelay = 60 * 1000L
         const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
         const val spUnfLastChecked = "unf_last_checked" // def: 0L
+
+        // Global Hidden Preferences
         const val spDownloadCount = "download_count" // def: 0L
+        const val spLearntSelection = "learnt_selection"
+        const val defSpLearntSelection = false
+        const val spLearntSwipeDelete = "learnt_swipe_delete"
+        const val defSpLearntSwipeDelete = false
 
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
@@ -102,12 +108,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stMainPath.setOnClickListener { selectMainPath() }
         b.stBranching.isChecked = prf.getBoolean(spBranching, defSpBranching)
         b.stBranching.setOnCheckedChangeListener { _, bb ->
-            prf.edit().putBoolean(spBranching, bb).commit()
+            prf.edit().putBoolean(spBranching, bb).apply()
         }
         b.stAutoDeleteEmptyDirs.isChecked =
             prf.getBoolean(spAutoDeleteEmptyDirs, defSpAutoDeleteEmptyDirs)
         b.stAutoDeleteEmptyDirs.setOnCheckedChangeListener { _, bb ->
-            prf.edit().putBoolean(spAutoDeleteEmptyDirs, bb).commit()
+            prf.edit().putBoolean(spAutoDeleteEmptyDirs, bb).apply()
         }
 
         // User Data
@@ -132,7 +138,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     ForegroundService.terminateTasks(c)
                     prf.edit().apply {
                         allSps.forEach { remove(it) }
-                        commit()
+                        apply()
                     }
                     recreate()
                 }
@@ -169,7 +175,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         val uri = result.data!!.data!!
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        prf.edit().putString(spStorage, uri.toString()).commit()
+        prf.edit().putString(spStorage, uri.toString()).apply()
         updateMainPath(uri.toString())
         if (giveLinkBack != null) {
             Downloads.initService(this, giveLinkBack)

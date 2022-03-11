@@ -10,6 +10,18 @@
         android:tooltipText="@string/unsaveDownload"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/mtDownload"
+        android:icon="@drawable/download"
+        android:title="@string/downloadOnly"
+        android:tooltipText="@string/downloadOnly"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mtUnsave"
+        android:icon="@drawable/saved_off"
+        android:title="@string/unsaveOnly"
+        android:tooltipText="@string/unsave"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/mtSelectAll"
         android:icon="@drawable/select_all"
         android:title="@string/selectAll"
@@ -21,12 +33,4 @@
         android:title="@string/deselectAll"
         android:tooltipText="@string/deselectAll"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/mtDownload"
-        android:title="@string/downloadOnly"
-        android:tooltipText="@string/downloadOnly" />
-    <item
-        android:id="@+id/mtUnsave"
-        android:title="@string/unsaveOnly"
-        android:tooltipText="@string/unsave" />
 </menu>

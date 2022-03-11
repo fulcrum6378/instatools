@@ -21,6 +21,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
+import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -35,6 +36,7 @@ import kotlinx.coroutines.withContext
 
 class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
+    private lateinit var bd: GuideSwipeDeleteBinding
     private lateinit var adBanner: AdView
     private val handledLinks = mutableSetOf<String>()
 
@@ -81,7 +83,6 @@ class Downloads : ServiceOwnerActivity() {
                     SHOW_AD -> showInterstitial()
                 }
                 updateIfEmpty(m.queueds.isNullOrEmpty())
-                b.empty.vis(m.queueds.isNullOrEmpty())
             }
 
             fun find(msg: Message): Int? =
@@ -121,6 +122,9 @@ class Downloads : ServiceOwnerActivity() {
             m.queueds = ArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+            withContext(Dispatchers.Main) {
+                if (m.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
+            }
         }
     }
 
@@ -130,6 +134,9 @@ class Downloads : ServiceOwnerActivity() {
         adBanner.loadAd(AdRequest.Builder().build())
         b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
             .apply { bottomToTop = R.id.adBanner }
+        b.guideSwipeDeleteStub.layoutParams =
+            (b.guideSwipeDeleteStub.layoutParams as ConstraintLayout.LayoutParams)
+                .apply { bottomToTop = R.id.adBanner }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -147,6 +154,25 @@ class Downloads : ServiceOwnerActivity() {
             }
         }
         return super.onMenuItemClick(item)
+    }
+
+    private var isSwipeDeleteInflated: Boolean? = false
+    override fun onStateChanged(hasContent: Boolean) {
+        super.onStateChanged(hasContent)
+        b.empty.vis(m.queueds.isNullOrEmpty())
+
+        // Swipe to Delete Guide
+        if (isSwipeDeleteInflated == null) return
+        if (!gsp.getBoolean(Settings.spLearntSwipeDelete, Settings.defSpLearntSwipeDelete)) when {
+            isSwipeDeleteInflated == false && hasContent -> {
+                b.guideSwipeDeleteStub.setOnInflateListener { _, inflated ->
+                    bd = GuideSwipeDeleteBinding.bind(inflated)
+                }
+                b.guideSwipeDeleteStub.inflate()
+                isSwipeDeleteInflated = true
+            }
+            isSwipeDeleteInflated == true -> bd.root.vis(hasContent)
+        } else isSwipeDeleteInflated = null
     }
 
     companion object : ActivityCompanion() {
@@ -197,6 +223,11 @@ class Downloads : ServiceOwnerActivity() {
                     }
                 }
                 handler?.obtainMessage(-1)?.sendToTarget()
+            }
+            if (isSwipeDeleteInflated != null) {
+                b.root.removeView(bd.root)
+                gsp.edit().putBoolean(Settings.spLearntSwipeDelete, true).apply()
+                isSwipeDeleteInflated = null
             }
         }
     }

@@ -122,17 +122,19 @@ class MassFollower : ServiceOwnerActivity() {
         // Bottom Panel
         b.seekTitle.typeface = fontLight
         b.seekIndicator.typeface = fontLight
+        if (Follower.active.value != true) Follower.DELAY =
+            sp?.getLong(Settings.spFollowerDelay, Settings.defSpFollowerDelay)
+                ?: Settings.defSpFollowerDelay
         b.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
                 Follower.DELAY = ((progress + seekMin) * 1000).toLong()
                 indicateSeek()
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-            }
-
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                sp?.edit()?.putLong(Settings.spFollowerDelay, Follower.DELAY)?.commit()
+                sp?.edit()?.putLong(Settings.spFollowerDelay, Follower.DELAY)?.apply()
             }
         })
 

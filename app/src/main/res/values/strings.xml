@@ -54,6 +54,8 @@
         <item>%d seconds</item>
     </string-array>
     <string name="inaccurateTimeSep">,&#160;</string>
+    <string name="downloadAll">Download all slides</string>
+    <string name="downloadThis">Download only this slide</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
