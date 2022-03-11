@@ -255,7 +255,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
     ) : BaseSaver(selection) {
 
         override fun run() {
-            if (unsave && download && list.size > 4)
+            //if (/*unsave && */list.size > 4)
                 handler?.obtainMessage(HANDLE_SHOW_AD)?.sendToTarget()
             super.run()
         }
@@ -265,23 +265,26 @@ class PageSvd(c: Main) : BasePageMain(c) {
             if (svd == null) {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
-                return
-            }
-            c.m.saved?.edges?.find { it.node.id == svd }?.node?.let { post ->
-                if (download) c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(post.shortcode))
-                )
-                if (unsave) Api<Rest>(
-                    c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
-                    method = Request.Method.POST, onError = { ended() }
-                ) { rest ->
-                    if (rest.status == "ok") {
-                        handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
-                        c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
-                        c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-                    }
-                    ended()
+                return; }
+            val post = if (c.m.saved?.edges != null) synchronized(c.m.saved!!.edges) {
+                c.m.saved?.edges?.find { it.node.id == svd }?.node
+            } else null
+            if (post == null) {
+                ended(); return; }
+
+            if (download) c.dao.addQueued(
+                Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(post.shortcode))
+            )
+            if (unsave) Api<Rest>(
+                c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
+                method = Request.Method.POST, onError = { ended() }
+            ) { rest ->
+                if (rest.status == "ok") {
+                    handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
+                    c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
+                    c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
                 }
+                ended()
             }
             if (!unsave) ended()
         }

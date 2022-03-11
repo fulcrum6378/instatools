@@ -2,6 +2,9 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
@@ -10,10 +13,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 
 class Favourites : BaseActivity() {
     private lateinit var b: FavouritesBinding
@@ -21,13 +21,26 @@ class Favourites : BaseActivity() {
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
 
-    companion object : ActivityCompanion()
+    companion object : ActivityCompanion() {
+        const val HANDLE_LOADED = 0
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         b = FavouritesBinding.inflate(layoutInflater)
         setContentView(b.root)
         toolbar(b.toolbar, R.string.favourites)
+
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    HANDLE_LOADED -> {
+                        b.refresher.isRefreshing = false
+                        adapt()
+                    }
+                }
+            }
+        }
 
         b.refresher.setOnRefreshListener { load() }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -44,7 +57,7 @@ class Favourites : BaseActivity() {
         }
         b.empty.typeface = fontRegular
 
-        if (m.fav != null) adapt() else load()
+        load()
     }
 
     override fun onResume() {
@@ -53,13 +66,7 @@ class Favourites : BaseActivity() {
     }
 
     private fun load() {
-        CoroutineScope(Dispatchers.IO).launch {
-            m.fav = ArrayList(dao.favourites())
-            withContext(Dispatchers.Main) {
-                b.refresher.isRefreshing = false
-                adapt()
-            }
-        }
+        FavLoader(this).start()
     }
 
     private fun adapt() {
@@ -75,5 +82,12 @@ class Favourites : BaseActivity() {
     private fun updateJumper() {
         (b.rv.computeVerticalScrollOffset() > dm.heightPixels)
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
+    }
+
+    class FavLoader(private val c: BaseActivity) : Thread() {
+        override fun run() {
+            runBlocking { c.m.fav = ArrayList(c.dao.favourites()) }
+            handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
+        }
     }
 }

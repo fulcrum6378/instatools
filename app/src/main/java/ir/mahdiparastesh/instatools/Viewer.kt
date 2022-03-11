@@ -156,7 +156,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     dao.deleteFavourite(dbFav!!)
                     dbFav = null
                 }
-                m.fav = null
                 withContext(Dispatchers.Main) { fixTbMenu() }
             }
         }

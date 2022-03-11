@@ -206,10 +206,8 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
                     setPositiveButton(R.string.yes) { _, _ ->
                         MassFollower.initService(
                             c, Follower.ToBeEnqueued(
-                                c.m.vwUser!!.id,
-                                isItFollowers,
-                                bo.alsoRequestPv.isChecked,
-                                bo.limit.text.toString().toLong()
+                                c.m.vwUser!!.id, isItFollowers,
+                                bo.alsoRequestPv.isChecked, bo.limit.text.toString().toLong()
                             )
                         ) { c.goTo(MassFollower::class) }
                     }

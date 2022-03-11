@@ -39,6 +39,16 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<ListFav.ViewHolder>() {
                 this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
             }).show()
         }
+        h.b.unFav.setOnClickListener {
+            val f = c.m.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }
+                ?: return@setOnClickListener
+            Thread {
+                if (f.tempDeleted) c.dao.deleteFavourite(f) else c.dao.addFavourite(f)
+            }.start()
+            h.b.unFav.setImageResource(
+                if (f.tempDeleted) R.drawable.non_favourite else R.drawable.favourite
+            )
+        }
         h.b.sep.vis(i < itemCount - 1)
     }
 

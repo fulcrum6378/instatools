@@ -40,6 +40,7 @@ class UiTools {
         const val POST_LINK = "https://www.instagram.com/p/%s/"
         const val INSTA_PACKAGE = "com.instagram.android"
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
+        private const val maxInaccurateTimeItems = 2
 
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
             val list = ArrayList<AppCompatTextView>()
@@ -168,6 +169,40 @@ class UiTools {
         fun TextView.bolden(c: BaseActivity, font: Typeface = c.fontBold) {
             if (!c.shallBolden) typeface = font
             else setTypeface(font, Typeface.BOLD)
+        }
+
+        fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {
+            var shrinking = milliseconds / 1000L
+            val mon = (shrinking / 2592000L).toInt()
+            shrinking -= mon * 86400L
+            val wek = (shrinking / 604800L).toInt()
+            shrinking -= wek * 604800L
+            val day = (shrinking / 86400L).toInt()
+            shrinking -= day * 86400L
+            val hor = (shrinking / 3600L).toInt()
+            shrinking -= hor * 3600L
+            val mns = (shrinking / 60L).toInt()
+            shrinking -= mns * 60L
+            val sex = shrinking.toInt()
+
+            val arr = resources.getStringArray(R.array.inaccurateTime)
+            var pairs = arrayOf(mon, wek, day, hor, mns, sex)
+                .mapIndexed { index, i -> arr[index] to i }.toMutableList()
+            if (pairs.all { it.second == 0 } && zeroIfNothing)
+                pairs = arrayListOf(pairs.last())
+            else {
+                while (pairs.isNotEmpty())
+                    if (pairs.first().second == 0)
+                        pairs.removeFirst()
+                    else break
+                if (pairs.size > maxInaccurateTimeItems)
+                    pairs = pairs.subList(0, maxInaccurateTimeItems)
+                while (pairs.isNotEmpty())
+                    if (pairs.last().second == 0)
+                        pairs.removeLast()
+                    else break
+            }
+            return pairs.joinToString(getString(R.string.inaccurateTimeSep)) { it.first.format(it.second) }
         }
     }
 }

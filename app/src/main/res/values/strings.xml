@@ -45,6 +45,15 @@
     <string name="watchAnAd">Watch an Ad</string>
     <string name="failedToLoadAd">Loading ad failed: %s</string>
     <string name="failedToShowAd">Showing ad failed: %s</string>
+    <string-array name="inaccurateTime">
+        <item>%d months</item>
+        <item>%d weeks</item>
+        <item>%d days</item>
+        <item>%d hours</item>
+        <item>%d minutes</item>
+        <item>%d seconds</item>
+    </string-array>
+    <string name="inaccurateTimeSep">,&#160;</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -58,7 +67,7 @@
     <string name="direct">@string/export</string>
     <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
-    <string name="mtSearch">Type a profile name&#8230;</string>
+    <string name="mtSearch">Enter a profile name or link&#8230;</string>
     <string name="boxUntil">Until %s</string>
     <string name="unfollow">Unfollow</string>
     <string name="unfollowPV">This account is private. Are you sure you want to unfollow them?</string>
@@ -105,9 +114,7 @@
     <string name="mfGuide1">Instagram won\'t let you follow a large number of people so frequently. It may block your account or sign you out of your session.</string>
     <string name="mfGuide2">But using this tool, you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot or a spammer.</string>
     <string name="mfGuide3">1. Open a profile in InstaTools,\n\n2. Tap on the number of their followers or following,\n\n3. Select \"Follow All\"&#8230;</string>
-    <string name="mfSeekTitle">Delay between each follow action:</string>
-    <string name="mfSeconds">%d seconds</string>
-    <string name="mfMinutes">%1$d minute(s), %2$d seconds</string>
+    <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
     <string name="mfClear">Clear the queue</string>
     <string name="mfPayForIt">Watch an ad to unlock this feature for %d times&#8230;</string>
 

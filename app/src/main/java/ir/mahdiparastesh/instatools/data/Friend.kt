@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.data
 
 import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import ir.mahdiparastesh.instatools.frag.PageUnf
 
@@ -14,7 +15,8 @@ class Friend(
     var priv: Boolean,
     var follows: Boolean,
     var followed: Boolean,
-    var unfollowedMeAt: Long? = null
+    var unfollowedMeAt: Long? = null,
+    @Ignore @Transient var inFav: Boolean = false
 ) {
     @Suppress("unused")
     constructor() : this("", "", "", "", false, false, false)

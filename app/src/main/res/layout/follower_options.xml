@@ -2,7 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingTop="35dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="5dp">
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/alsoRequestPv"
@@ -17,7 +21,8 @@
         android:id="@+id/limitLl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="7dp">
 
         <TextView
             android:id="@+id/limitTv"
@@ -31,11 +36,13 @@
 
         <EditText
             android:id="@+id/limit"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:importantForAutofill="no"
             android:inputType="number"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:textColor="@color/defCA"
             android:textSize="16sp" />
     </LinearLayout>

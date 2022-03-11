@@ -45,6 +45,15 @@
     <string name="watchAnAd">تماشای تبلیغات</string>
     <string name="failedToLoadAd">بارگذاری تبلیغات دچار خطا شد: %s</string>
     <string name="failedToShowAd">نمایش تبلیغات دچار خطا شد: %s</string>
+    <string-array name="inaccurateTime">
+        <item>%d ماه</item>
+        <item>%d هفته</item>
+        <item>%d روز</item>
+        <item>%d ساعت</item>
+        <item>%d دقیقه</item>
+        <item>%d ثانیه</item>
+    </string-array>
+    <string name="inaccurateTimeSep">،&#160;</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -58,7 +67,7 @@
     <string name="direct">@string/export</string>
     <string name="guestDesc">در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
-    <string name="mtSearch">نام یک پروفایل را وارد کنید&#8230;</string>
+    <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
     <string name="boxUntil">تا %s</string>
     <string name="unfollow">آنفالو</string>
     <string name="unfollowPV">این پروفایل شخصی (پرایوت) است. آیا از آنفالو کردن مطمئن هستید؟</string>
@@ -104,9 +113,7 @@
     <string name="mfGuide1">اینستاگرام به شما اجازه نمی دهد که افراد زیادی را در مدت زمان کوتاه یکباره فالو کنید. ممکن است اکانت شما را معلق کرده یا شما را از حسابتان خارج کند.</string>
     <string name="mfGuide2">اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید بدون اینکه اینستاگرام به شما حساس شود.</string>
     <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
-    <string name="mfSeekTitle">تاخیر بین هر عمل فالو:</string>
-    <string name="mfSeconds">%d ثانیه</string>
-    <string name="mfMinutes">%1$d دقیقه، %2$d ثانیه</string>
+    <string name="mfSeekTitle">%1$d برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
     <string name="mfClear">پاک کردن لیست</string>
     <string name="mfPayForIt">برای %d بار فعال کردن این قابلیت یک بار تبلیغات تماشا کنید&#8230;</string>
 

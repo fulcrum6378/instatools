@@ -41,9 +41,13 @@ class PageUnf(c: Main) : BasePageMain(c) {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_LOADED to { msg ->
             (msg.obj as List<Friend>).apply {
-                c.m.unfollowers.value = ArrayList(this)
-                c.m.unfollowers.value!!.sortBy { it.user }
-                c.m.unfollowers.value!!.sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
+                c.m.unfollowers.value = ArrayList(this).apply {
+                    val favIds = (c.m.fav ?: listOf()).map { it.id }
+                    for (f in 0 until size) this[f].inFav = this[f].id in favIds
+                    sortBy { it.user }
+                    sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
+                    sortBy { it.inFav }
+                }
                 if (isNullOrEmpty() && msg.arg1 == 1 &&
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
                         ?: 0L)) > 86400000
@@ -72,6 +76,9 @@ class PageUnf(c: Main) : BasePageMain(c) {
     companion object : PageCompanion() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
+
+        val CH_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
+        const val CH_NEW_ITEMS_ID = 368
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
@@ -82,6 +89,7 @@ class PageUnf(c: Main) : BasePageMain(c) {
 
         essentials()
 
+        NotificationManagerCompat.from(c).cancel(CH_NEW_ITEMS_ID)
         //b.refresher.isRefreshing = true
         if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
         else load(true)
@@ -110,7 +118,6 @@ class PageUnf(c: Main) : BasePageMain(c) {
 
 
     inner class Inquiry : BaseThread() {
-        private val CHANNEL_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
         lateinit var oldFriends: List<Friend>
         var newFriends = arrayListOf<Friend>()
 
@@ -173,13 +180,13 @@ class PageUnf(c: Main) : BasePageMain(c) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .createNotificationChannel(NotificationChannel(
-                        CHANNEL_NEW_ITEMS, c.getString(R.string.newUnfNtfChannel),
+                        CH_NEW_ITEMS, c.getString(R.string.newUnfNtfChannel),
                         NotificationManager.IMPORTANCE_HIGH
                     ).apply {
                         description = c.resources.getString(R.string.newUnfNtfChannelDesc)
                     })
             with(NotificationManagerCompat.from(c)) {
-                notify(368, NotificationCompat.Builder(c, CHANNEL_NEW_ITEMS).apply {
+                notify(CH_NEW_ITEMS_ID, NotificationCompat.Builder(c, CH_NEW_ITEMS).apply {
                     setSmallIcon(R.mipmap.launcher_round)
                     setContentTitle(getString(R.string.newUnfNtfChannel))
                     setContentText(getString(R.string.newUnfNtfText, num))

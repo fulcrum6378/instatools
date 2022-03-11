@@ -154,6 +154,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
+
+        // Miscellaneous
+        Favourites.FavLoader(this).start()
     }
 
     override fun onNewIntent(intent: Intent) {

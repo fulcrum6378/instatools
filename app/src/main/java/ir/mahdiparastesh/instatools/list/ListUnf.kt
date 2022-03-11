@@ -41,6 +41,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
         h.b.user.text = if (unf.unfollowedMeAt != null) c.getString(
             R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
         ) else unf.user
+        h.b.root.alpha = if (unf.inFav) FAV_ALPHA else 1f
 
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
@@ -83,5 +84,9 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
             f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)
             c.m.unfollowers.value = c.m.unfollowers.value
         }
+    }
+
+    companion object {
+        const val FAV_ALPHA = 0.5f
     }
 }

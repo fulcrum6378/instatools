@@ -37,6 +37,7 @@ import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.inaccurateTime
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -85,6 +86,7 @@ class MassFollower : ServiceOwnerActivity() {
                 }
                 updateIfEmpty(m.fwb.value.isNullOrEmpty())
                 updateShadow()
+                estimate()
             }
 
             fun find(msg: Message): Int? = if (m.fwb.value != null)
@@ -109,6 +111,7 @@ class MassFollower : ServiceOwnerActivity() {
                 else b.rv.adapter?.notifyDataSetChanged()
             }
             updateIfEmpty(m.fwb.value.isNullOrEmpty())
+            estimate()
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -183,11 +186,17 @@ class MassFollower : ServiceOwnerActivity() {
     }
 
     private fun indicateSeek(updateSb: Boolean = false) {
-        val sec = Follower.DELAY / 1000L
-        b.seekIndicator.text =
-            if (Follower.DELAY < 60) getString(R.string.mfSeconds, sec)
-            else getString(R.string.mfMinutes, sec / 60L, sec % 60L)
+        b.seekIndicator.text = c.inaccurateTime(Follower.DELAY)
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
+        estimate()
+    }
+
+    private fun estimate() {
+        b.seekTitle.text = getString(
+            R.string.mfSeekTitle,
+            c.inaccurateTime(Follower.DELAY * (m.fwb.value?.size ?: 0)),
+            (m.fwb.value?.size ?: 0)
+        )
     }
 
     private fun updateShadow() {

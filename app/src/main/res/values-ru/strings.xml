@@ -44,6 +44,15 @@
     <string name="watchAnAd">Смотреть рекламу</string>
     <string name="failedToLoadAd">Не удалось загрузить объявление: %s</string>
     <string name="failedToShowAd">Не удалось показать объявление: %s</string>
+    <string-array name="inaccurateTime">
+        <item>%d месяца</item>
+        <item>%d недели</item>
+        <item>%d дня</item>
+        <item>%d часа</item>
+        <item>%d минуты</item>
+        <item>%d секунды</item>
+    </string-array>
+    <string name="inaccurateTimeSep">,&#160;</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -57,7 +66,7 @@
     <string name="direct">@string/export</string>
     <string name="guestDesc">Вы используете это приложение в гостевом режиме.\nТаким образом, вы не можете использовать эту функцию!</string>
     <string name="signOutSure">Вы уверены, что хотите выйти из своей учетной записи Instagram?</string>
-    <string name="mtSearch">Введите имя профиля&#8230;</string>
+    <string name="mtSearch">Введите имя профиля или ссылку&#8230;</string>
     <string name="boxUntil">До %s</string>
     <string name="unfollow">Отписаться</string>
     <string name="unfollowPV">Этот аккаунт является частным. Вы уверены, что хотите отписаться от них?</string>
@@ -103,9 +112,7 @@
     <string name="mfGuide1">Instagram не позволит вам так часто подписываться на большое количество людей. Он может заблокировать вашу учетную запись или вывести вас из сеанса.</string>
     <string name="mfGuide2">Но с помощью этого робота вы можете медленно и по одному подписаться на множество людей, чтобы Instagram не заподозрил, что это робот или спамер.</string>
     <string name="mfGuide3">1. Откройте профиль в InstaTools,\n\n2. Нажмите на количество их подписчиков или подписчиков,\n\n3. Выберите «Следить за всеми»&#8230;</string>
-    <string name="mfSeekTitle">Задержка между каждым последующим действием:</string>
-    <string name="mfSeconds">%d секунды</string>
-    <string name="mfMinutes">%1$d минуты, %2$d секунды</string>
+    <string name="mfSeekTitle">Для %1$d элементов потребуется %2$d минуты.\nЗадержка между каждым последующим действием:</string>
     <string name="mfClear">Очистить очередь</string>
     <string name="mfPayForIt">Посмотрите рекламу, чтобы разблокировать эту функцию %d раз&#8230;</string>
 
