@@ -184,12 +184,26 @@
         <item name="android:layout_height">@dimen/mfPayForItIcon</item>
     </style>
 
+    <style name="payForItItemTvLl">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">10sp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="payForItItemTv">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">?attr/colorAccent</item>
-        <item name="android:paddingStart">10sp</item>
+    </style>
+
+    <style name="payForItItemTv1" parent="payForItItemTv">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="payForItItemTv2" parent="payForItItemTv">
+        <item name="android:textSize">15sp</item>
     </style>
 
 

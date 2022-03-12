@@ -36,6 +36,7 @@
     <string name="openDmInInsta">Open Chat in Instagram</string>
     <string name="pageNotExist">This page doesn\'t exist!</string>
     <string name="sContinue">Continue</string>
+    <string name="rateUs">Rate this App</string>
     <string name="watchAnAd">Watch an Ad</string>
     <string name="failedToLoadAd">Loading ad failed: %s</string>
     <string name="failedToShowAd">Showing ad failed: %s</string>
@@ -111,7 +112,8 @@
     <string name="mfGuide3">1. Open a profile in InstaTools,\n\n2. Tap on the number of their followers or following,\n\n3. Select \"Follow All\"&#8230;</string>
     <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
     <string name="mfClear">Clear the queue</string>
-    <string name="mfPayForIt">Watch an ad to unlock this feature for %d times&#8230;</string>
+    <string name="mfPayForIt">In order to unlock this feature, choose one of the following methods:</string>
+    <string name="mfUnlockTimes">Unlock for %d times</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

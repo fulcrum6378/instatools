@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Main -->
-    <integer name="transFrag">90</integer>
+    <integer name="transFrag">100</integer>
 
     <!-- Mass Follower -->
     <integer name="mfMin">5</integer>

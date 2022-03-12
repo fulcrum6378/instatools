@@ -10,7 +10,7 @@ import android.os.Message
 import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +18,7 @@ import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
+import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.*
@@ -26,6 +27,8 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.android.play.core.review.testing.FakeReviewManager
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
@@ -222,7 +225,7 @@ class MassFollower : ServiceOwnerActivity() {
 
     companion object : ActivityCompanion() {
         const val HANDLE_REWARD_CONSUMED = 5
-        private const val UNLOCK_TIMES = 5
+        private val UNLOCK_TIMES = arrayOf(50, 5)
         private var mRewardedAd: RewardedAd? = null
         private var loadingAd = false
 
@@ -235,24 +238,60 @@ class MassFollower : ServiceOwnerActivity() {
                 actuallyInitService(c, enq)
                 return; }
             val bp = PayForItBinding.inflate(c.layoutInflater)
-            bp.root.forEach { ((it as ViewGroup)[1] as TextView).typeface = c.fontBold }
+            bp.root.forEachIndexed { i, v ->
+                if (v !is LinearLayout) return@forEachIndexed
+                val tvLl = v[1] as LinearLayout
+                (tvLl[0] as TextView).typeface = c.fontBold
+                (tvLl[1] as TextView).apply {
+                    text = c.getString(R.string.mfUnlockTimes, UNLOCK_TIMES[i])
+                    typeface = c.fontRegular
+                }
+            }
             AlertDialog.Builder(c).apply {
                 setTitle(R.string.massFollower)
-                setMessage(c.getString(R.string.mfPayForIt, UNLOCK_TIMES))
+                setMessage(R.string.mfPayForIt)
                 setView(bp.root)
             }.show().apply {
                 stylise(c)
+                if (c.gsp.getBoolean(Settings.spRatedUs, false))
+                    bp.root.removeView(bp.rateUs)
+                else bp.rateUs.setOnClickListener {
+                    bp.loading(true)
+                    val reviewManager =
+                        if (!BuildConfig.DEBUG) ReviewManagerFactory.create(c)
+                        else FakeReviewManager(c)
+                    reviewManager.requestReviewFlow().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            this@apply.cancel()
+                            reviewManager.launchReviewFlow(c, task.result).addOnCompleteListener {
+                                c.rewardAccount(UNLOCK_TIMES[0])
+                                c.gsp.edit().putBoolean(Settings.spRatedUs, true).apply()
+                            }
+                        } else if (BuildConfig.DEBUG) task.exception?.let { throw it }
+                        bp.loading(false)
+                    }
+                }
                 bp.watchAnAd.setOnClickListener {
-                    watchAnAd(c, enq, onStart)
-                    // TODO: SHOW A LOADING INDICATOR
-                    cancel()
+                    bp.loading(true)
+                    watchAnAd(c, enq, onStart) {
+                        bp.loading(it)
+                        if (it) cancel()
+                    }
                 }
             }
         }
 
+        private fun PayForItBinding.loading(bb: Boolean) {
+            root.forEach { if (it is LinearLayout) it.vis(!bb) }
+            loading.vis(bb)
+            if (bb) loading.playAnimation()
+            else loading.pauseAnimation()
+        }
+
         @MainThread
         private fun watchAnAd(
-            c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit
+            c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit,
+            onResult: (success: Boolean) -> Unit
         ) {
             loadingAd = true
             RewardedAd.load(
@@ -261,17 +300,16 @@ class MassFollower : ServiceOwnerActivity() {
                     override fun onAdLoaded(rewardedAd: RewardedAd) {
                         loadingAd = false
                         mRewardedAd = rewardedAd
-                        mRewardedAd?.fullScreenContentCallback = RewardAdCallback(c)
+                        mRewardedAd?.fullScreenContentCallback = RewardAdCallback(c, onResult)
                         mRewardedAd?.show(c) {
-                            c.m.acc!!.mfrw += it.amount
-                            c.m.acc!!.saveMe(c.c)
-                            if (c is MassFollower) c.countPermissions()
+                            c.rewardAccount(it.amount)
                             actuallyInitService(c, enq)
                             onStart()
                         }
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
+                        onResult(false)
                         loadingAd = false
                         Toast.makeText(
                             c, c.getString(R.string.failedToLoadAd, adError.message),
@@ -280,6 +318,12 @@ class MassFollower : ServiceOwnerActivity() {
                         mRewardedAd = null
                     }
                 })
+        }
+
+        private fun BaseActivity.rewardAccount(times: Int) {
+            m.acc!!.mfrw += times
+            m.acc!!.saveMe(c)
+            if (this is MassFollower) countPermissions()
         }
 
         @MainThread
@@ -291,9 +335,17 @@ class MassFollower : ServiceOwnerActivity() {
         }
     }
 
-    class RewardAdCallback(private val c: Context) : FullScreenContentCallback() {
-        override fun onAdShowedFullScreenContent() {}
+    class RewardAdCallback(
+        private val c: Context,
+        private val onResult: (success: Boolean) -> Unit
+    ) :
+        FullScreenContentCallback() {
+        override fun onAdShowedFullScreenContent() {
+            onResult(true)
+        }
+
         override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+            onResult(false)
             Toast.makeText(
                 c, c.getString(R.string.failedToShowAd, adError.message), Toast.LENGTH_LONG
             ).show()

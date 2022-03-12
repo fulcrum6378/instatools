@@ -36,6 +36,7 @@
     <string name="openDmInInsta">Instagram\'da Sohbeti Aç</string>
     <string name="pageNotExist">Bu sayfa mevcut değil!</string>
     <string name="sContinue">Devam et</string>
+    <string name="rateUs">Bu uygulamayı oyla</string>
     <string name="watchAnAd">Reklam İzle</string>
     <string name="failedToLoadAd">Reklam yüklenemedi: %s</string>
     <string name="failedToShowAd">Reklam gösterilemedi: %s</string>
@@ -111,7 +112,8 @@
     <string name="mfGuide3">1. InstaTools\'ta bir profil açın,\n\n2. Takipçilerinin veya takip edenlerin sayısına dokunun,\n\n3. "Tümünü İzle"yi seçin&#8230;</string>
     <string name="mfSeekTitle">%2$d adet için %1$s sürecektir.\nHer takip eylemi arasındaki gecikme:</string>
     <string name="mfClear">Kuyruğu temizle</string>
-    <string name="mfPayForIt">Bu özelliğin kilidini %d kez açmak için bir reklam izleyin&#8230;</string>
+    <string name="mfPayForIt">Bu özelliğin kilidini açmak için aşağıdaki yöntemlerden birini seçin:</string>
+    <string name="mfUnlockTimes">%d kez kilidini aç</string>
 
     <!-- Settings -->
     <string name="settings">Ayarlar</string>

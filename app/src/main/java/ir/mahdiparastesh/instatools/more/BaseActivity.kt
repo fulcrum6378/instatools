@@ -269,4 +269,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             interstitialAd = null
         }
     }
+
+    // In case of heavy UI blocking, reboot the device, it could be because of so much debugging!
 }

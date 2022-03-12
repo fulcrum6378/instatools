@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="16sp"
-    tools:ignore="ContentDescription,UseCompoundDrawables">
+    tools:ignore="ContentDescription">
+
+    <LinearLayout
+        android:id="@+id/rateUs"
+        style="@style/payForItItem">
+
+        <ImageView
+            style="@style/payForItItemIv"
+            android:src="@drawable/rate" />
+
+        <LinearLayout style="@style/payForItItemTvLl">
+
+            <TextView
+                style="@style/payForItItemTv1"
+                android:text="@string/rateUs" />
+
+            <TextView style="@style/payForItItemTv2" />
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/watchAnAd"
@@ -15,8 +34,23 @@
             style="@style/payForItItemIv"
             android:src="@drawable/metered_video" />
 
-        <TextView
-            style="@style/payForItItemTv"
-            android:text="@string/watchAnAd" />
+        <LinearLayout style="@style/payForItItemTvLl">
+
+            <TextView
+                style="@style/payForItItemTv1"
+                android:text="@string/watchAnAd" />
+
+            <TextView style="@style/payForItItemTv2" />
+        </LinearLayout>
     </LinearLayout>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:lottie_loop="true"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:lottie_colorFilter="@color/CP"
+        app:lottie_rawRes="@raw/pending" />
 </LinearLayout>

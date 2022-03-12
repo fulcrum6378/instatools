@@ -15,6 +15,8 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -26,6 +28,7 @@ import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import org.apache.commons.text.StringEscapeUtils
@@ -34,8 +37,9 @@ import kotlin.system.exitProcess
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding
-    private lateinit var cookieManager: CookieManager
     lateinit var accounts: ArrayList<Account>
+    private lateinit var cookieManager: CookieManager
+    private var adBanner: AdView? = null
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -48,6 +52,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
         const val posConfig = ";</script>"
         const val EXTRA_NEED_AUTH = "needAuthentication"
+        const val EXTRA_SHOW_AD = "show_ad"
         var cameHereToAuth = false
     }
 
@@ -74,7 +79,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 browse()
             }
             //m.acc != null -> selectAccount(m.acc!!)
-            else -> welcome()
+            else -> {
+                welcome()
+                if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
+                    loadInterstitial("ca-app-pub-9457309151954418/9218833137", true)
+            }
         }
     }
 
@@ -82,7 +91,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
-        accounts.sortByDescending { (it.last ?: 0L).toString() }
+        accounts.sortByDescending { it.last.toString() }
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)
 
@@ -109,6 +118,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private fun welcome() {
         b.refresher.vis(false)
+        adBanner?.vis(false)
         if (!::bw.isInitialized) b.welcomeStub.inflate()
         else bw.root.vis()
     }
@@ -140,6 +150,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private var gonnaBeGuest = false
     private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
         b.refresher.vis()
+        adBanner?.vis(true)
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also {
             it.setAcceptCookie(true)
@@ -151,6 +162,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
         doClearHistory = true
+
+        if (isAdsSdkInitialized && adBanner == null) {
+            adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/6652379544")
+            b.root.addView(adBanner, 1, UiTools.adaptiveBannerLp())
+            adBanner!!.loadAd(AdRequest.Builder().build())
+            b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)
+                .apply { bottomToTop = R.id.adBanner }
+        }
     }
 
     override fun onDestroy() {
@@ -222,6 +241,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 cookieManager.getCookie(host), profile.rollout_hash,
                 Persistent.now()
             ).apply {
+                accounts.find { it.id == id }?.let {
+                    mfrw = it.mfrw
+                }
                 accounts.removeAll { it.id == id }
                 accounts.add(this)
                 Account.save(c, accounts)

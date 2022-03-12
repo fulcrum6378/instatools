@@ -15,19 +15,22 @@ class Account(
     var pict: String? = null,
     var cook: String? = null,
     var roll: String? = null,
-    var last: Long? = null,
-    var mfrw: Int = 0
+    var last: Long = 0L,
+    var mfrw: Int = 0,
+    // keep in mind to update the fields whose data need to persist after another Login
 ) {
     fun saveMe(c: Context) {
         save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
     }
 
     companion object {
-        fun load(c: Context): ArrayList<Account> = if (Secured(c).exists()) ArrayList(
-            Gson().fromJson(
-                String(FileInputStream(Secured(c)).readBytes()), Array<Account>::class.java
-            ).toList()
-        ) else arrayListOf()
+        fun load(c: Context): ArrayList<Account> {
+            val data: ByteArray
+            FileInputStream(Secured(c)).use { data = it.readBytes() }
+            return if (Secured(c).exists()) ArrayList(
+                Gson().fromJson(String(data), Array<Account>::class.java).toList()
+            ) else arrayListOf()
+        }
 
         fun selected(
             c: Persistent, list: List<Account> = load(c.c), guestIfNotExists: Boolean = true
@@ -37,10 +40,12 @@ class Account(
         }
 
         fun save(c: Context, accounts: List<Account>) {
-            FileOutputStream(Secured(c)).write(
-                Gson().toJson(accounts.filter { it.cook != null || it.id == -1L })
-                    .encodeToByteArray()
-            )
+            FileOutputStream(Secured(c)).use { fos ->
+                fos.write(
+                    Gson().toJson(accounts.filter { it.cook != null || it.id == -1L })
+                        .encodeToByteArray()
+                )
+            }
         }
 
         fun find(it: Account, inList: List<Account>?): Int? {

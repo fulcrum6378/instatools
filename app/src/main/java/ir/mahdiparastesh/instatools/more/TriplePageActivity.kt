@@ -76,7 +76,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         transFrag().apply {
             if (it.isAdded) remove(it)
             add(R.id.frame, it)
-            if (i != currentPage.value) hide(it)
+            if (i != currentPage.value) detach(it)
             commit()
         }
     }
@@ -87,8 +87,8 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         lastPage = currentPage.value!!
         currentPage.value = i
         transFrag(lastPage, currentPage.value!!)
-            .hide(pages()[lastPage])
-            .show(pages()[currentPage.value!!])
+            .detach(pages()[lastPage])
+            .attach(pages()[currentPage.value!!])
             .commit()
         return true
     }

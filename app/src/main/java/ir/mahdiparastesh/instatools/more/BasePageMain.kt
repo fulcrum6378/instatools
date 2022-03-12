@@ -71,6 +71,6 @@ abstract class BasePageMain(c: Main) : BasePage<Main>(c), SwipeRefreshLayout.OnR
     }
 
     override fun updateShadow() {
-        c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
+        if (bInitialised) c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
     }
 }

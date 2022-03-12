@@ -41,6 +41,7 @@
     <string name="openDmInInsta">Открыть чат в Instagram</string>
     <string name="pageNotExist">Эта страница не существует!</string>
     <string name="sContinue">Продолжать</string>
+    <string name="rateUs">Оцени это приложение</string>
     <string name="watchAnAd">Смотреть рекламу</string>
     <string name="failedToLoadAd">Не удалось загрузить объявление: %s</string>
     <string name="failedToShowAd">Не удалось показать объявление: %s</string>
@@ -116,7 +117,8 @@
     <string name="mfGuide3">1. Откройте профиль в InstaTools,\n\n2. Нажмите на количество их подписчиков или подписчиков,\n\n3. Выберите «Следить за всеми»&#8230;</string>
     <string name="mfSeekTitle">Для %1$s элементов потребуется %2$d минуты.\nЗадержка между каждым последующим действием:</string>
     <string name="mfClear">Очистить очередь</string>
-    <string name="mfPayForIt">Посмотрите рекламу, чтобы разблокировать эту функцию %d раз&#8230;</string>
+    <string name="mfPayForIt">Чтобы разблокировать эту функцию, выберите один из следующих способов:</string>
+    <string name="mfUnlockTimes">Разблокировать %d раз</string>
 
     <!-- Settings -->
     <string name="settings">Настройки</string>

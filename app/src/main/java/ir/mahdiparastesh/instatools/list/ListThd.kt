@@ -47,6 +47,11 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
 
+    override fun onViewDetachedFromWindow(h: ViewHolder) {
+        super.onViewDetachedFromWindow(h)
+        Glide.with(c.c).clear(h.b.msgIv)
+    }
+
     companion object {
         fun ListThdBinding.onCreate(
             fontRegular: Typeface, fontLight: Typeface, isExporting: Boolean = false

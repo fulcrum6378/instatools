@@ -42,9 +42,9 @@ class Model : ViewModel() {
         saved = null
         dmInbox = null
         dmThread = null
-        currentPage.value = 0
         queueds = null
         vwUser = null
+        vwTagged = null
         fav = null
         fwb.value = null
     }

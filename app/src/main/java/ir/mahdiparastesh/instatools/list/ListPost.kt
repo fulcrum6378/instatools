@@ -82,6 +82,11 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
         }
     }
 
+    override fun onViewDetachedFromWindow(h: ViewHolder) {
+        super.onViewDetachedFromWindow(h)
+        Glide.with(c.c).clear(h.b.thumbnail)
+    }
+
     abstract fun Expandable.settings(pos: Int)
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {
@@ -99,4 +104,8 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
     // and the user won't be able to scroll while selection. If you can't annihilate it, so never
     // recreate it! And since the tracker is only created once, the adapter too must be created
     // only once!
+
+    /* TODO: THREW IndexOutOfBoundsException: Inconsistency detected.
+    *   Invalid view holder adapter id=-1, oldPos=12, pLpos:12
+    *   Both PageSvd and PageVwr affected in version code 28 */
 }

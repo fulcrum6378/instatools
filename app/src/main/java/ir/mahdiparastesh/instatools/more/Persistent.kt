@@ -50,7 +50,8 @@ interface Persistent {
     fun switchAcc() {
         gsp.edit().remove(Login.spAccount).apply()
         m.acc = null
-        if (this is BaseActivity) goTo(Login::class, true)
+        if (this is BaseActivity)
+            goTo(Login::class, true) { putExtra(Login.EXTRA_SHOW_AD, true) }
         m.accountSwitched()
     }
 

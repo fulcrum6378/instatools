@@ -42,6 +42,7 @@
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
     <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
     <string name="sContinue">ادامه</string>
+    <string name="rateUs">امتیاز دادن به این اپ</string>
     <string name="watchAnAd">تماشای تبلیغات</string>
     <string name="failedToLoadAd">بارگذاری تبلیغات دچار خطا شد: %s</string>
     <string name="failedToShowAd">نمایش تبلیغات دچار خطا شد: %s</string>
@@ -117,7 +118,8 @@
     <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
     <string name="mfSeekTitle">%1$s برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
     <string name="mfClear">پاک کردن لیست</string>
-    <string name="mfPayForIt">برای %d بار فعال کردن این قابلیت یک بار تبلیغات تماشا کنید&#8230;</string>
+    <string name="mfPayForIt">برای فعالسازی این قابلیت یکی از روش های زیر را انتخاب کنید:</string>
+    <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
 
     <!-- Settings -->
     <string name="settings">تنظیمات</string>

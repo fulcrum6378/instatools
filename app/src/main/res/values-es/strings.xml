@@ -36,6 +36,7 @@
     <string name="openDmInInsta">Abrir chat en Instagram</string>
     <string name="pageNotExist">¡Esta página no existe!</string>
     <string name="sContinue">Continuar</string>
+    <string name="rateUs">Califica esta aplicación</string>
     <string name="watchAnAd">Ver un anuncio</string>
     <string name="failedToLoadAd">Error al cargar el anuncio: %s</string>
     <string name="failedToShowAd">No se pudo mostrar el anuncio: %s</string>
@@ -111,7 +112,8 @@
     <string name="mfGuide3">1. Abra un perfil en InstaTools,\n\n2. Toque el número de sus seguidores o siguiendo,\n\n3. Seleccione \"Seguir a todos\"&#8230;</string>
     <string name="mfSeekTitle">Tomará %1$s minutos para %2$d artículos.\nRetraso entre cada acción de seguimiento:</string>
     <string name="mfClear">Borrar la cola</string>
-    <string name="mfPayForIt">Mire un anuncio para desbloquear esta función %d veces&#8230;</string>
+    <string name="mfPayForIt">Para desbloquear esta característica, elija uno de los siguientes métodos:</string>
+    <string name="mfUnlockTimes">Desbloquear por %d veces</string>
 
     <!-- Settings -->
     <string name="settings">Ajustes</string>
