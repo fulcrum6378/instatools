@@ -107,7 +107,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
                 b.searchRes.setBackgroundColor(it)
                 b.bnv.setBackgroundColor(it)
-                page2?.b?.expanded?.root?.setBackgroundColor(it)
+                if (page2?.bInitialised == true)
+                    page2?.b?.expanded?.root?.setBackgroundColor(it)
             }
             colorBG.value = bg[m.currentPage.value!!]
         } else {

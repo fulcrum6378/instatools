@@ -133,8 +133,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         if (!onCreation) {
             load()
             b.toolbar.title = user
-            page2?.b?.proPicIv?.setImageDrawable(null)
-            page2?.b?.privateAcc?.vis(false)
+            if (page2?.bInitialised == true) {
+                page2?.b?.proPicIv?.setImageDrawable(null)
+                page2?.b?.privateAcc?.vis(false)
+            }
         }
         return true
     }

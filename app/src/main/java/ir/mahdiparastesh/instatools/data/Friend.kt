@@ -41,7 +41,11 @@ class Friend(
                         unfollowedMeAt = if (followsNow) null else older.unfollowedMeAt
                     }
 
-                    dao.updateFriend(this)
+                    try {
+                        dao.updateFriend(this)
+                    } catch (e: IllegalStateException) {
+                        // Thrown rarely by SQLiteSession::throwIfNoTransaction with an unknown cause
+                    }
                     val index = find(this, thread.newFriends)
                     if (index != null) thread.newFriends[index] = this
                     else thread.newFriends.add(this)
