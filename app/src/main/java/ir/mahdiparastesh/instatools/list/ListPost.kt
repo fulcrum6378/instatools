@@ -51,6 +51,7 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
 
     abstract class FlexiblePost(val id: String, val thumb: String?) {
         abstract fun typeDrw(): Drawable?
+        abstract fun isStored(): Boolean
     }
 
     abstract fun flexible(i: Int): FlexiblePost?
@@ -66,6 +67,7 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
             .into(h.b.thumbnail)
 
         h.b.type.setImageDrawable(flex.typeDrw())
+        h.b.stored.vis(flex.isStored())
 
         h.b.click.setBackgroundResource(
             if (tracker?.isSelected(flex.id) != true) R.drawable.button else R.drawable.selected
@@ -104,8 +106,4 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
     // and the user won't be able to scroll while selection. If you can't annihilate it, so never
     // recreate it! And since the tracker is only created once, the adapter too must be created
     // only once!
-
-    /* TODO: THREW IndexOutOfBoundsException: Inconsistency detected.
-    *   Invalid view holder adapter id=-1, oldPos=12, pLpos:12
-    *   Both PageSvd and PageVwr affected in version code 28 */
 }

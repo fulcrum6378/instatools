@@ -10,6 +10,7 @@ import ir.mahdiparastesh.instatools.json.Profile
 
 class Model : ViewModel() {
     var acc: Account? = null
+    val files = MutableLiveData<MutableSet<String>?>(null)
 
     // Login
     var loginLoaded = false

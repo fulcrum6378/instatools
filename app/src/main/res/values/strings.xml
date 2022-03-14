@@ -57,6 +57,15 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
+    <string-array name="bytes" translatable="false">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
+    <string name="maximum">Maximum: %s</string>
+    <string name="unlimited">Unlimited</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -128,6 +137,8 @@
     <string name="aSettings">Settings of This Account</string>
     <string name="stDlPath">Main download folder</string>
     <string name="stBranching">Divide downloaded files into branches</string>
+    <string name="stCache">Caching (currently: %s)</string>
+    <string name="stClearCache">Clear Cache</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
     <string name="stResetDataSure">This includes the unfollowers list, the favorite accounts list, the download queue and the export queue. But you won\'t be signed out of your account. Proceed?</string>

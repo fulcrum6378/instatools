@@ -38,15 +38,14 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 @SuppressLint("NotifyDataSetChanged")
-class PageSvd(c: Main) : BasePageMain(c) {
+class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
     private var thread: FetchSome? = null
-    var tracker: SelectionTracker<String>? = null
-    private var selectivity = false
     private var selectionBadge: BadgeDrawable? = null
     private var selectionGuide: LottieAnimationView? = null
 
@@ -82,20 +81,23 @@ class PageSvd(c: Main) : BasePageMain(c) {
             }
         },
         HANDLE_UNSAVE_DONE to { msg ->
-            c.m.saved?.edges?.find { it.node.id == msg.obj as String }
-                ?.let { post ->
-                    val x = c.m.saved!!.edges.indexOf(post)
-                    c.m.saved!!.edges.removeAt(x)
-                    b.rv.adapter?.notifyItemRemoved(x)
-                    b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
-                    if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
-                }
+            c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
+            c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
+            c.m.saved?.edges?.find { it.node.id == msg.obj as String }?.let { post ->
+                val x = c.m.saved!!.edges.indexOf(post)
+                c.m.saved!!.edges.removeAt(x)
+                b.rv.adapter?.notifyItemRemoved(x)
+                b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
+                if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
+            }
         },
         HANDLE_SHOW_AD to {
             c.loadInterstitial("ca-app-pub-9457309151954418/6541958088", true)
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") }
     )
+    override var tracker: SelectionTracker<String>? = null
+    override var selectivity = false
 
     companion object : PageCompanion() {
         const val HANDLE_UNSAVE_DONE = 10
@@ -108,8 +110,13 @@ class PageSvd(c: Main) : BasePageMain(c) {
         b = PageSvdBinding.inflate(inflater, parent, false)
         if (Main.guest) {
             guestMode(b.root, BaseActivity.Theme.SECONDARY); return b.root; }
+        return b.root
+    }
 
-        essentials()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (Main.guest) return
+        super.onViewCreated(view, savedInstanceState)
+
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
                     || selectionGuide != null
@@ -124,12 +131,19 @@ class PageSvd(c: Main) : BasePageMain(c) {
         b.rv.layoutManager = object : GridLayoutManager(c, 3) {
             override fun canScrollVertically(): Boolean =
                 super.canScrollVertically() && selectionGuide == null
+
+            override fun onLayoutChildren(
+                rv: RecyclerView.Recycler?, state: RecyclerView.State?
+            ) {
+                try {
+                    super.onLayoutChildren(rv, state)
+                } catch (e: IndexOutOfBoundsException) {
+                }
+            }
         }
 
-        //b.refresher.isRefreshing = true
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
-        return b.root
     }
 
     override fun onRefresh() {
@@ -163,12 +177,12 @@ class PageSvd(c: Main) : BasePageMain(c) {
             b.root.addView(this, 1)
         }
 
-        if (tracker != null) return
-        tracker = SelectionTracker.Builder( // created only once
-            "saved", b.rv,
-            PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
-            StorageStrategy.createStringStorage()
-        ).build().also { it.addObserver(SelectObserver()) }
+        if (tracker == null) buildSelection()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (bInitialised && b.rv.adapter != null) buildSelection()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -196,6 +210,15 @@ class PageSvd(c: Main) : BasePageMain(c) {
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
+    }
+
+    override fun buildSelection() {
+        // created only once, except after FragmentTransaction::attach()
+        tracker = SelectionTracker.Builder(
+            "saved", b.rv,
+            PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
+            StorageStrategy.createStringStorage()
+        ).build().also { it.addObserver(SelectObserver()) }
     }
 
     override fun onPause() {
@@ -317,9 +340,7 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return; }
-            val post = if (c.m.saved?.edges != null) synchronized(c.m.saved!!.edges) {
-                c.m.saved?.edges?.find { it.node.id == svd }?.node
-            } else null
+            val post = c.m.saved?.edges?.find { it.node.id == svd }?.node
             if (post == null) {
                 ended(); return; }
 
@@ -330,11 +351,8 @@ class PageSvd(c: Main) : BasePageMain(c) {
                 c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
                 method = Request.Method.POST, onError = { ended() }
             ) { rest ->
-                if (rest.status == "ok") {
+                if (rest.status == "ok")
                     handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
-                    c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
-                    c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-                }
                 ended()
             }
             if (!unsave) ended()

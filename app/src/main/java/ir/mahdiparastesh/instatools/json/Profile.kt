@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.json
 
 import ir.mahdiparastesh.instatools.data.Favourite
 import java.text.DecimalFormat
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 class Profile(
@@ -93,7 +94,11 @@ class Profile(
 
     //class EdgeFollowMutual(count: Double, val edges: Array<Any>) : EdgeFollow(count)
 
-    class EdgeList(var page_info: PageInfo, var count: Double, var edges: ArrayList<EdgePost>)
+    class EdgeList(
+        var page_info: PageInfo,
+        var count: Double,
+        var edges: CopyOnWriteArrayList<EdgePost>
+    )
 
     class PageInfo(val has_next_page: Boolean, val end_cursor: String)
 
@@ -125,7 +130,7 @@ class Profile(
         //val location: Location?,
         //val media_overlay_info: Any?,
         //val media_preview: Any?,
-        //val owner: Owner,
+        val owner: Owner,
         //val product_type: String,
         //val sharing_friction_info: Map<String, *>,
         val shortcode: String,
@@ -137,7 +142,7 @@ class Profile(
         //val video_view_count: Double,
     )
 
-    //class Owner(val id: String, val username: String?)
+    class Owner(val id: String, val username: String)
 
     //class EdgesCaption(val edges: Array<EdgeCaption>)
 

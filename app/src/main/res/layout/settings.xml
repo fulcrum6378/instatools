@@ -24,8 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp">
+            android:paddingTop="@dimen/stMarginV"
+            android:paddingBottom="@dimen/stMarginV">
 
             <LinearLayout style="@style/stItem">
 
@@ -57,6 +57,37 @@
             </LinearLayout>
 
             <View style="@style/stSep" />
+
+            <LinearLayout
+                android:id="@+id/stCache"
+                style="@style/stItem">
+
+                <TextView
+                    android:id="@+id/stCaching"
+                    style="@style/stItemName" />
+
+                <SeekBar
+                    android:id="@+id/stCacheLimit"
+                    style="@style/stSubItem"
+                    android:max="@integer/stCacheMaxNominal" />
+
+                <TextView
+                    android:id="@+id/stCacheLimitTv"
+                    style="@style/stSubItem"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:textAlignment="center"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/stClearCache"
+                    style="@style/stButton"
+                    android:text="@string/stClearCache" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/stSepCache"
+                style="@style/stSep" />
 
             <LinearLayout style="@style/stItem">
 

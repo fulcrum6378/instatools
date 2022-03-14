@@ -131,7 +131,7 @@ class MassFollower : ServiceOwnerActivity() {
         b.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return
-                Follower.DELAY = ((progress + seekMin) * 1000).toLong()
+                Follower.DELAY = (progress + seekMin) * 1000L
                 indicateSeek()
             }
 

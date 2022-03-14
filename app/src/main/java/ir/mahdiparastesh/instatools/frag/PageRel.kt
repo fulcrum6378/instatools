@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.more.BasePageViewer
 
-class PageRel(c: Viewer) : BasePageViewer(c) {
+class PageRel : BasePageViewer() {
     private lateinit var b: PageRelBinding
 
     override val com: PageCompanion = Companion
@@ -22,9 +21,10 @@ class PageRel(c: Viewer) : BasePageViewer(c) {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageRelBinding.inflate(inf, parent, false)
-        essentials()
-
         return b.root
+    }
+
+    override fun buildSelection() {
     }
 
     override fun onRecyclerViewScrolled() {

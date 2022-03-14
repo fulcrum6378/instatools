@@ -36,12 +36,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult> {
+class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
     private var boxThread: FetchOfInbox? = null
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
-    private val exportLauncher = c.launcher(this)
+    private val exportLauncher by lazy { c.launcher(this) }
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
@@ -84,8 +84,13 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
         b = PageBoxBinding.inflate(inflater, parent, false)
         if (Main.guest) {
             guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }
+        return b.root
+    }
 
-        essentials()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (Main.guest) return
+        super.onViewCreated(view, savedInstanceState)
+
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback c.m.dmThread != null
         }
@@ -105,10 +110,8 @@ class PageBox(c: Main) : BasePageMain(c), ActivityResultCallback<ActivityResult>
             }
         })
 
-        //b.refresher.isRefreshing = true
         if (c.m.dmInbox != null) onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
         else if (boxThread?.active != true) boxThread = FetchOfInbox().also { it.start() }
-        return b.root
     }
 
     override fun onRefresh() {

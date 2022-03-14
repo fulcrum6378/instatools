@@ -29,7 +29,7 @@ import ir.mahdiparastesh.instatools.more.*
 import kotlinx.coroutines.runBlocking
 
 @Suppress("UNCHECKED_CAST")
-class PageUnf(c: Main) : BasePageMain(c) {
+class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
 
@@ -86,14 +86,16 @@ class PageUnf(c: Main) : BasePageMain(c) {
         b = PageUnfBinding.inflate(inflater, parent, false)
         if (Main.guest) {
             guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
+        return b.root
+    }
 
-        essentials()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (Main.guest) return
+        super.onViewCreated(view, savedInstanceState)
 
         NotificationManagerCompat.from(c).cancel(CH_NEW_ITEMS_ID)
-        //b.refresher.isRefreshing = true
         if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
         else load(true)
-        return b.root
     }
 
     override fun onRefresh() {

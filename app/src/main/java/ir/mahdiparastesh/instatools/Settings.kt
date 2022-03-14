@@ -5,8 +5,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.StatFs
+import android.util.Log
 import android.view.MenuItem
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
@@ -20,8 +23,11 @@ import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import java.io.File
 
@@ -32,6 +38,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private var globalMode = false
     private var giveLinkBack: String? = null
     private val saveLauncher = launcher(this)
+    private var cacheLimit: Long = defSpCacheLimit
+    private val cacheMin: Int by lazy { resources.getInteger(R.integer.stCacheMin) }
+    private val cacheMax: Int by lazy { cacheMin + resources.getInteger(R.integer.stCacheMaxNominal) }
 
     override val menuRes = R.menu.settings_tlb
     override val com: ActivityCompanion get() = Companion
@@ -44,6 +53,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spAutoDeleteEmptyDirs = "auto_delete_empty_dirs"
         const val defSpAutoDeleteEmptyDirs = false
 
+        // Mere-Global Preferences
+        const val spCacheLimit = "cache_limit"
+        private const val defSpCacheLimit = 100L * 1024L * 1024L
+
         // Hidden Preferences
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
@@ -52,7 +65,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
         const val spUnfLastChecked = "unf_last_checked" // def: 0L
 
-        // Global Hidden Preferences
+        // Mere-Global Hidden Preferences
         const val spDownloadCount = "download_count" // def: 0L
         const val spLearntSelection = "learnt_selection"
         const val defSpLearntSelection = false
@@ -63,6 +76,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_GIVE_LINK_BACK = "giveLinkBack"
+        private const val MB = 1048576L
         val allSps = arrayOf(spStorage, spBranching, spMainPage, spAutoDeleteEmptyDirs)
         var recreateMain = false
 
@@ -79,6 +93,30 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }
         }
+
+        fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() }
+
+        fun Context.clearCache() {
+            cacheDir.deleteRecursively()
+        }
+
+        fun defaultCacheLimit(c: Context): Long = c.getExternalFilesDir(null)?.let {
+            val minie = c.resources.getInteger(R.integer.stCacheMin)
+            val maxie = c.resources.getInteger(R.integer.stCacheMaxNominal) + minie
+            val stat = StatFs(it.path)
+            var ret = (stat.blockSizeLong * stat.availableBlocksLong) / 275L
+            if (ret < minie.toBytes()) ret = minie.toBytes()
+            if (ret > maxie.toBytes()) ret = maxie.toBytes()
+            return ret
+        } ?: defSpCacheLimit
+
+        fun Persistent.clearCacheIfNecessary() {
+            gsp.getLong(spCacheLimit, defaultCacheLimit(c))
+        }
+
+        fun Long.toMBs() = (this / MB).toInt()
+
+        fun Int.toBytes() = this * MB
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,9 +134,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // Beauty
         for (l in b.ll.iterator())
             if (l is LinearLayout) (l[0] as TextView).typeface = fontRegular
-        b.stMainPath.typeface = fontLight
-        arrayOf(b.stBranching, b.stAutoDeleteEmptyDirs, b.stResetData, b.stResetSettings)
-            .forEach { it.typeface = fontRegular }
+        arrayOf(b.stMainPath, b.stCacheLimitTv).forEach { it.typeface = fontLight }
+        arrayOf(
+            b.stBranching, b.stAutoDeleteEmptyDirs, b.stClearCache, b.stResetData, b.stResetSettings
+        ).forEach { it.typeface = fontRegular }
         b.sv.viewTreeObserver.addOnScrollChangedListener {
             b.tbShadow.vish(b.sv.scrollY > 0)
         }
@@ -117,8 +156,32 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             prf.edit().putBoolean(spAutoDeleteEmptyDirs, bb).apply()
         }
 
+        // Caching
+        cacheLimit = gsp.getLong(spCacheLimit, defaultCacheLimit(c))
+        Log.println(Log.ASSERT, "KOS", cacheLimit.toString())
+        b.stCacheLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
+                cacheLimit = (progress + cacheMin).toBytes()
+                updateCacheLimit()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                gsp.edit().putLong(spCacheLimit, cacheLimit).apply()
+            }
+        })
+        if (!globalMode) {
+            b.stCache.vis(false)
+            b.stSepCache.vis(false)
+        } else b.stClearCache.setOnClickListener {
+            clearCache()
+            updateCacheSize()
+        }
+
         // User Data
-        b.stResetData.setOnClickListener {
+        if (globalMode) b.stResetData.vis(false)
+        else b.stResetData.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle(R.string.stResetData)
                 setMessage(R.string.stResetDataSure)
@@ -152,6 +215,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         adBanner.loadAd(AdRequest.Builder().build())
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateCacheSize()
+        updateCacheLimit(true)
+    }
+
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.stHelp -> AlertDialog.Builder(this).apply {
@@ -169,6 +238,20 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
     private fun updateMainPath(value: String? = null) {
         b.stMainPath.text = Uri.decode(value ?: prf.getString(spStorage, ""))
+    }
+
+    private fun updateCacheSize() {
+        b.stCaching.text = getString(R.string.stCache, c.showBytes(c.cacheSize()))
+    }
+
+    private fun updateCacheLimit(updateSb: Boolean = false) {
+        val limitInMbs = cacheLimit.toMBs()
+        b.stCacheLimitTv.text = getString(
+            R.string.maximum, if (limitInMbs != cacheMax)
+                resources.getStringArray(R.array.bytes)[2].format(limitInMbs)
+            else getString(R.string.unlimited)
+        )
+        if (updateSb) b.stCacheLimit.progress = limitInMbs - cacheMin
     }
 
     override fun onActivityResult(result: ActivityResult) {

@@ -62,6 +62,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
+        m.accountSwitched()
         accounts = Account.load(c)
         if (accounts.find { it.id == -1L } == null)
             Account(-1L, "", "").apply { accounts.add(this) }
@@ -196,6 +197,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
+        private var improperLoading = 0
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
@@ -209,14 +211,23 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     try {
                         collect(html)
                     } catch (e: JsonSyntaxException) {
-                        if (BuildConfig.DEBUG) throw e
                         // This has happened for some users with an unknown cause
+                        // Also the page may have failed to load properly.
+                        Delay { b.web.reload() }
+                        if (improperLoading < 3) improperLoading++
+                        else if (BuildConfig.DEBUG) throw e
+                    } catch (e: IllegalStateException) {
+                        // The page may have failed to load properly.
+                        Delay { b.web.reload() }
+                        if (improperLoading < 3) improperLoading++
+                        else if (BuildConfig.DEBUG) throw e
                     } catch (e: NumberFormatException) {
                         // This happens when you go to, for example, the profiles/hashtags page,
                         // tap on the pretty "Instagram" title in the header, then you go to
                         // another page, e.g. sign up page, then you come back to the same
                         // "instagram.com" page, then you repeat this act once more.
                     }
+                    improperLoading = 0
                 }
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) throw e

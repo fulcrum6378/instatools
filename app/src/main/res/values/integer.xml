@@ -6,4 +6,8 @@
     <!-- Mass Follower -->
     <integer name="mfMin">5</integer>
     <integer name="mfMaxNominal">595</integer><!--actually 600-->
+
+    <!-- Settings -->
+    <integer name="stCacheMin">5</integer>
+    <integer name="stCacheMaxNominal">496</integer><!--actually 500 (+1 => unlimited)-->
 </resources>

@@ -23,10 +23,6 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     abstract val bKlass: KClass<B>
     abstract val cKlass: KClass<C>
     abstract val mode: TripleMode
-
-    abstract fun aCreate(): A
-    abstract fun bCreate(): B
-    abstract fun cCreate(): C
     abstract fun defPage(): Int
 
     companion object {
@@ -40,9 +36,9 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
 
     open fun createPages(pager: ViewPager2? = null) {
         currentPage.value = defPage()
-        if (page1 == null) page1 = aCreate()
-        if (page2 == null) page2 = bCreate()
-        if (page3 == null) page3 = cCreate()
+        if (page1 == null) page1 = aKlass.java.newInstance()
+        if (page2 == null) page2 = bKlass.java.newInstance()
+        if (page3 == null) page3 = cKlass.java.newInstance()
         if (mode == TripleMode.FRAGMENT_MANAGER) loadPages()
         else {
             pager!!.adapter = PageAdapter(this)
@@ -125,17 +121,17 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             aKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page1 != null && page1?.isAdded == true)
                     transFrag().remove(page1!!).commit()
-                aCreate().also { page1 = it }
+                aKlass.java.newInstance().also { page1 = it }
             }
             bKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page2 != null && page2?.isAdded == true)
                     transFrag().remove(page2!!).commit()
-                bCreate().also { page2 = it }
+                bKlass.java.newInstance().also { page2 = it }
             }
             cKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page3 != null && page3?.isAdded == true)
                     transFrag().remove(page3!!).commit()
-                cCreate().also { page3 = it }
+                cKlass.java.newInstance().also { page3 = it }
             }
             else -> super.instantiate(loader, name)
         }

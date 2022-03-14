@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
-// TAGGED -> MediaWrapperApi
 // STORY -> Story
 // HIGHLIGHTS -> Highlights
 
@@ -58,9 +57,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override val bKlass: KClass<PageVwr> = PageVwr::class
     override val cKlass: KClass<PageTag> = PageTag::class
     override val mode: TripleMode = TripleMode.VIEW_PAGER
-    override fun aCreate(): PageRel = PageRel(this)
-    override fun bCreate(): PageVwr = PageVwr(this)
-    override fun cCreate(): PageTag = PageTag(this)
     override fun defPage(): Int = 1
 
     companion object : ActivityCompanion() {

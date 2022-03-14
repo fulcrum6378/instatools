@@ -204,5 +204,17 @@ class UiTools {
             }
             return pairs.joinToString(getString(R.string.inaccurateTimeSep)) { it.first.format(it.second) }
         }
+
+        fun Context.showBytes(length: Long): String {
+            val units = resources.getStringArray(R.array.bytes)
+            var unit = 0
+            var nominalSize = length
+            while ((nominalSize / 1024L) > 1) {
+                nominalSize /= 1024L
+                unit++
+                if (unit == units.size - 1) break
+            }
+            return units[unit].format(nominalSize)
+        }
     }
 }

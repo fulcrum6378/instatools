@@ -11,6 +11,7 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.R
@@ -26,7 +27,7 @@ import ir.mahdiparastesh.instatools.more.BaseSaver
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 
-class PageTag(c: Viewer) : BasePageViewer(c) {
+class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
     private var thread: FetchSome? = null
 
@@ -58,9 +59,23 @@ class PageTag(c: Viewer) : BasePageViewer(c) {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageTagBinding.inflate(inf, parent, false)
-        essentials()
+        return b.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // List
+        b.rv.layoutManager = object : GridLayoutManager(c, 3) {
+            override fun onLayoutChildren(
+                rv: RecyclerView.Recycler?, state: RecyclerView.State?
+            ) {
+                try {
+                    super.onLayoutChildren(rv, state)
+                } catch (e: IndexOutOfBoundsException) {
+                }
+            }
+        }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && thread?.active != true &&
@@ -69,22 +84,22 @@ class PageTag(c: Viewer) : BasePageViewer(c) {
             }
         })
         fetch()
-
-        return b.root
     }
 
     fun fetch() {
+        if (com.active.value != true) return
         thread = FetchSome().also { it.start() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-
         if (b.rv.adapter == null) b.rv.adapter = ListTag(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
+        if (tracker == null) buildSelection()
+    }
 
-        if (tracker != null) return
+    override fun buildSelection() {
         tracker = SelectionTracker.Builder(
             "viewer_tagged", b.rv,
             PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
@@ -133,7 +148,8 @@ class PageTag(c: Viewer) : BasePageViewer(c) {
         }
     }
 
-    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {// TODO: CUSTOMISE IT
+    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
+        // TODO: CUSTOMISE IT
         override fun handle() {
             val svd = list.getOrNull(0)
             if (svd == null) {

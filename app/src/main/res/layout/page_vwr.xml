@@ -84,9 +84,7 @@
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
                 android:layout_height="1000dp"
-                android:nestedScrollingEnabled="false"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="3" />
+                android:nestedScrollingEnabled="false" />
             <!-- layout_height="wrap_content|match_parent" will cause an
             ArrayIndexOutOfBoundsException sometimes -->
 

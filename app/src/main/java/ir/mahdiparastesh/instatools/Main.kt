@@ -20,6 +20,7 @@ import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
+import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
@@ -40,8 +41,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlin.reflect.KClass
-
-// adb connect 192.168.1.20:
 
 @Suppress("MemberVisibilityCanBePrivate")
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
@@ -68,9 +67,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val bKlass: KClass<PageSvd> = PageSvd::class
     override val cKlass: KClass<PageBox> = PageBox::class
     override val mode: TripleMode = TripleMode.FRAGMENT_MANAGER
-    override fun aCreate(): PageUnf = PageUnf(this)
-    override fun bCreate(): PageSvd = PageSvd(this)
-    override fun cCreate(): PageBox = PageBox(this)
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
         ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
         ?: Settings.defSpMainPage
@@ -346,6 +342,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             exiting = true
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
+            clearCacheIfNecessary()
             return; }
         super.onBackPressed() // Do NOT kill the process
     }

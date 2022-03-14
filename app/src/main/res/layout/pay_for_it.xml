@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingBottom="16sp"
+    android:theme="@style/Theme.InstaTools.Primary"
     tools:ignore="ContentDescription">
 
     <LinearLayout
@@ -48,9 +49,9 @@
         android:id="@+id/loading"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:lottie_loop="true"
         android:layout_gravity="center"
         android:visibility="gone"
-        app:lottie_colorFilter="@color/CP"
+        app:lottie_colorFilter="?attr/colorAccent"
+        app:lottie_loop="true"
         app:lottie_rawRes="@raw/pending" />
 </LinearLayout>

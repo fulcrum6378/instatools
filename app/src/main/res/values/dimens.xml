@@ -61,4 +61,5 @@
     <dimen name="stSubItemFont">16sp</dimen>
     <dimen name="stPathFont">16sp</dimen>
     <dimen name="stPathCorner">20dp</dimen>
+    <dimen name="stMarginV">18dp</dimen>
 </resources>

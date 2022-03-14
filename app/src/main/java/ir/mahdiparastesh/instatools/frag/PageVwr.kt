@@ -13,6 +13,7 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
@@ -40,7 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageVwr(c: Viewer) : BasePageViewer(c) {
+class PageVwr : BasePageViewer() {
     lateinit var b: PageVwrBinding
     private var thread: FetchSome? = null
 
@@ -54,11 +55,11 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
             } else onLoaded(c.m.vwUser?.edges().isNullOrEmpty())
 
-            if (c.m.vwUser!!.hasMore() && thread?.active != true
+            if (c.m.vwUser?.hasMore() == true && thread?.active != true
                 && !b.rv.canScrollVertically(1)
             ) thread = FetchSome().also { it.start() }
 
-            val showPv = c.m.vwUser!!.pv() && c.m.vwUser!!.followed_by_viewer == false
+            val showPv = c.m.vwUser?.pv() == true && c.m.vwUser?.followed_by_viewer == false
             b.privateAcc.vis(showPv)
             b.rv.vis(!showPv)
             if (showPv) {
@@ -94,12 +95,26 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
         b = PageVwrBinding.inflate(inf, parent, false)
-        essentials()
+        return b.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // List
         b.nsv.viewTreeObserver.addOnScrollChangedListener {
             updateShadow()
             b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
+        }
+        b.rv.layoutManager = object : GridLayoutManager(c, 3) {
+            override fun onLayoutChildren(
+                rv: RecyclerView.Recycler?, state: RecyclerView.State?
+            ) {
+                try {
+                    super.onLayoutChildren(rv, state)
+                } catch (e: IndexOutOfBoundsException) {
+                }
+            }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -140,8 +155,6 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
         b.followers.setOnClickListener { flwClick(true, it) }
         b.following.setOnClickListener { flwClick(false, it) }
         showProfile()
-
-        return b.root
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -159,7 +172,7 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
     }
 
     fun showProfile() {
-        if (c.m.vwUser == null || !bInitialised) return
+        if (com.active.value != true || c.m.vwUser == null || !bInitialised) return
         Glide.with(c.c)
             .load(c.m.vwUser!!.photo())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -173,11 +186,12 @@ class PageVwr(c: Viewer) : BasePageViewer(c) {
     @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-
         if (b.rv.adapter == null) b.rv.adapter = ListVwr(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
+        if (tracker == null) buildSelection()
+    }
 
-        if (tracker != null) return
+    override fun buildSelection() {
         tracker = SelectionTracker.Builder(
             "viewer_main", b.rv,
             PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),

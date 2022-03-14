@@ -1,14 +1,10 @@
 package ir.mahdiparastesh.instatools.serv
 
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.os.Process.myPid
-import android.os.Process.myUid
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
@@ -22,6 +18,7 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
@@ -55,15 +52,6 @@ class Queuer : ForegroundService() {
 
         const val HANDLE_LINK = 0
         val EXTRA_LINK = "$pack.EXTRA_LINK"
-
-        fun hasPerm(c: Context, path: String): Boolean {
-            val uri = Uri.parse(path)
-            return c.checkUriPermission(
-                uri, myPid(), myUid(), Intent.FLAG_GRANT_READ_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED && c.checkUriPermission(
-                uri, myPid(), myUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED
-        }
     }
 
     override fun resolveIntent(intent: Intent) {
@@ -342,6 +330,7 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
+        m.files.value?.add(fName)
         gsp.edit().putLong(
             Settings.spDownloadCount, gsp.getLong(Settings.spDownloadCount, 0L) + 1L
         ).apply()
@@ -356,6 +345,7 @@ class Queuer : ForegroundService() {
         download?.interrupt()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
+                clearCacheIfNecessary()
                 if (dest == null ||
                     !bPreference(Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs)
                 ) return@runCatching

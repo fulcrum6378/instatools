@@ -18,6 +18,15 @@ abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
                 med.video_versions != null -> typeVideo
                 else -> null
             }
+
+            override fun isStored(): Boolean {
+                val theirs = c.m.files.value?.filter { it.startsWith("${med.user.username}_") }
+                    ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
+                    ?: return false
+                return if (med.carousel_media != null)
+                    med.carousel_media.all { it.pk in theirs }
+                else med.pk in theirs
+            }
         }
     }
 

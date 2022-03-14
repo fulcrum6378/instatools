@@ -1,10 +1,12 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.animation.ObjectAnimator
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -15,8 +17,11 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.view.UiTools
 
-abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
+abstract class BasePage<C> : Fragment(), BackStackOwner,
     Toolbar.OnMenuItemClickListener where C : BaseActivity {
+
+    @Suppress("UNCHECKED_CAST")
+    protected val c: C by lazy { activity as C }
 
     abstract val com: PageCompanion
     abstract val root: ConstraintLayout
@@ -30,7 +35,9 @@ abstract class BasePage<C>(protected val c: C) : Fragment(), BackStackOwner,
 
     abstract class PageCompanion : Alive()
 
-    protected open fun essentials() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         com.handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 messages.find { it.first == msg.what }?.second?.let { func -> func(msg) }

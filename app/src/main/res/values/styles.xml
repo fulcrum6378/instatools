@@ -279,7 +279,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/stItemName</item>
         <item name="android:textColor">?attr/colorAccent</item>
-        <item name="android:paddingTop">5dp</item>
         <item name="android:paddingStart">@dimen/stStarter</item>
         <!--<item name="android:drawableStart">@drawable/settings</item>
         <item name="android:drawablePadding">10dp</item>-->
@@ -292,6 +291,7 @@
         <item name="android:paddingLeft">@dimen/stStarter</item>
         <item name="android:paddingRight">@dimen/stStarter</item>
         <item name="android:textSize">@dimen/stSubItemFont</item>
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="stPath" parent="stSubItem">
@@ -308,14 +308,13 @@
         <item name="android:paddingBottom">12dp</item>
         <item name="android:background">@drawable/st_button</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="stSep" parent="sep">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginLeft">@dimen/stPadH</item>
         <item name="android:layout_marginRight">@dimen/stPadH</item>
-        <item name="android:layout_marginTop">20dp</item>
-        <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_marginTop">@dimen/stMarginV</item>
+        <item name="android:layout_marginBottom">@dimen/stMarginV</item>
     </style>
 </resources>

@@ -4,14 +4,15 @@ import android.annotation.SuppressLint
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 @SuppressLint("NotifyDataSetChanged")
-abstract class BasePageViewer(c: Viewer) : BasePage<Viewer>(c) {
-    var tracker: SelectionTracker<String>? = null
-    var selectivity = false
+abstract class BasePageViewer : BasePage<Viewer>(), Selective {
+    override var tracker: SelectionTracker<String>? = null
+    override var selectivity = false
 
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 

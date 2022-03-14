@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.instatools.more
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +17,7 @@ import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
-abstract class BasePageMain(c: Main) : BasePage<Main>(c), SwipeRefreshLayout.OnRefreshListener {
+abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     abstract var inflater: LayoutInflater
 
     private fun refresher(): SwipeRefreshLayout = root.findViewById(R.id.refresher)
@@ -33,9 +35,10 @@ abstract class BasePageMain(c: Main) : BasePage<Main>(c), SwipeRefreshLayout.OnR
         rv().vis(false)
     }
 
-    override fun essentials() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         refresher().setOnRefreshListener(this)
-        super.essentials()
+        super.onViewCreated(view, savedInstanceState)
+
         error().setOnClickListener {
             refresher().isRefreshing = true
             onRefresh()

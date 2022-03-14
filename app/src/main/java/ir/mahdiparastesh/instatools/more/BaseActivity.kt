@@ -100,18 +100,14 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         if (!isAdsSdkInitialized)
             Delay(3000) { MobileAds.initialize(c, this) }
         else if (adsInitStatus != null) onInitializationComplete(adsInitStatus!!)
+
+        if (m.files.value == null) checkFiles()// Delay(5000) {  }
     }
 
     override fun onNewIntent(intent: Intent) {
         resolvedIntent = null
         super.onNewIntent(intent)
         resolvedIntent = resolveIntent(intent, false)
-    }
-
-    var notFirstResume = false
-    override fun onPause() {
-        super.onPause()
-        notFirstResume = true
     }
 
     var resolvedIntent: Boolean? = null
@@ -201,6 +197,12 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     fun showInterstitial() {
         if (showingAd) return
         interstitialAd?.show(this@BaseActivity)
+    }
+
+    var notFirstResume = false
+    override fun onPause() {
+        super.onPause()
+        notFirstResume = true
     }
 
     override fun onDestroy() {
