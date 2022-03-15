@@ -56,6 +56,15 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Скачать все слайды</string>
     <string name="downloadThis">Скачать только этот слайд</string>
+    <string-array name="bytes">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
+    <string name="maximum">Максимум: %s</string>
+    <string name="unlimited">Неограниченный</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -126,6 +135,8 @@
     <string name="aSettings">Локальные настройки</string>
     <string name="stDlPath">Основная папка загрузки</string>
     <string name="stBranching">Разделите загруженные файлы на ветки</string>
+    <string name="stCache">Кэширование (текущий размер: %s)</string>
+    <string name="stClearCache">Очистить кэш</string>
     <string name="stUserData">Данные пользователя</string>
     <string name="stResetData">Сбросить все мои пользовательские данные</string>
     <string name="stResetDataSure">Сюда входят список отписавшихся, список избранных учетных записей, очередь загрузки и очередь экспорта. Но вы не выйдете из своей учетной записи. Продолжить?</string>

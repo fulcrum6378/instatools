@@ -29,6 +29,7 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -130,6 +131,8 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+        super.onInitializationComplete(adsInitStatus)
+        if (!adsInitStatus.isReady()) return
         adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/4315014912")
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())

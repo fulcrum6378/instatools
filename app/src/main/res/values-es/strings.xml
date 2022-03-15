@@ -51,6 +51,15 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Descargar todas las diapositivas</string>
     <string name="downloadThis">Descargar solo esta diapositiva</string>
+    <string-array name="bytes">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
+    <string name="maximum">Máxima: %s</string>
+    <string name="unlimited">Ilimitado</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -121,6 +130,8 @@
     <string name="aSettings">Ajustes Locales</string>
     <string name="stDlPath">Carpeta de descarga principal</string>
     <string name="stBranching">Divide los archivos descargados en ramas</string>
+    <string name="stCache">Almacenamiento en caché (tamaño actual: %s)</string>
+    <string name="stClearCache">Limpiar cache</string>
     <string name="stUserData">Datos del usuario</string>
     <string name="stResetData">Restablecer todos mis datos de usuario</string>
     <string name="stResetDataSure">Esto incluye la lista de no seguidores, la lista de cuentas favoritas, la cola de descarga y la cola de exportación. Pero no se cerrará la sesión de su cuenta. ¿Continuar?</string>

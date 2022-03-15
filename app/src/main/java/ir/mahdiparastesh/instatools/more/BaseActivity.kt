@@ -39,6 +39,7 @@ import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -69,7 +70,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     abstract class ActivityCompanion : Alive()
 
     companion object {
-        var isAdsSdkInitialized = false
+        const val ADMOB_DELAY = 2000L
+        const val MAX_AD_RETRY = 2
         var adsInitStatus: InitializationStatus? = null
 
         fun anyActive() = arrayOf(
@@ -78,6 +80,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
         fun Context.night(): Boolean = resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        fun areAdsReady() = adsInitStatus?.isReady() == true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,11 +101,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             finish()
             return; }
 
-        if (!isAdsSdkInitialized)
-            Delay(3000) { MobileAds.initialize(c, this) }
-        else if (adsInitStatus != null) onInitializationComplete(adsInitStatus!!)
-
-        if (m.files.value == null) checkFiles()// Delay(5000) {  }
+        if (m.files.value == null) checkFiles()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -121,8 +121,26 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (adsInitStatus?.isReady() != true)
+            Delay(ADMOB_DELAY) { initAdmob() }
+        else onInitializationComplete(adsInitStatus!!)
+    }
+
+    fun initAdmob() {
+        retryForAd = 0
+        MobileAds.initialize(c, this)
+    }
+
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
-        isAdsSdkInitialized = true
+        Companion.adsInitStatus = adsInitStatus
+        if (!adsInitStatus.isReady()) {
+            if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
+                initAdmob()
+                retryForAd++
+            } else retryForAd = 0
+            return; }
     }
 
     var tbTitle: TextView? = null
@@ -167,8 +185,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     @MainThread
     fun loadInterstitial(adUnitId: String, autoPlay: () -> Boolean) {
-        if (!isAdsSdkInitialized) {
-            if (retryForAd < 2) Delay(2000L) {
+        if (adsInitStatus?.isReady() != true) {
+            if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
                 loadInterstitial(adUnitId)
                 retryForAd++
             } else retryForAd = 0
@@ -195,8 +213,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     @MainThread
     fun showInterstitial() {
-        if (showingAd) return
-        interstitialAd?.show(this@BaseActivity)
+        if (!showingAd) interstitialAd?.show(this@BaseActivity)
     }
 
     var notFirstResume = false

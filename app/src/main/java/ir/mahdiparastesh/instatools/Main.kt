@@ -53,6 +53,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     val colorBG = MutableLiveData<Int?>(null)
     val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+    val exportLauncher = launcher { page3?.onActivityResult(it) }
 
     var searchInput: SearchView.SearchAutoComplete? = null
     var searchClose: ImageView? = null

@@ -13,6 +13,7 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
+import ir.mahdiparastesh.instatools.frag.PageUnf.Companion.MAX_UNFOLLOW_AD
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
@@ -78,6 +79,11 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
             if (it.status != "ok") {
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 return@Api; }
+            f.counter++
+            if (f.counter >= MAX_UNFOLLOW_AD) {
+                c.loadInterstitial("ca-app-pub-9457309151954418/9545936506", true)
+                f.counter = 0
+            }
             Thread {
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
                 else c.dao.deleteFriend(unf)

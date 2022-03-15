@@ -57,7 +57,7 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
-    <string-array name="bytes" translatable="false">
+    <string-array name="bytes">
         <item>%d B</item>
         <item>%d KB</item>
         <item>%d MB</item>
@@ -137,7 +137,7 @@
     <string name="aSettings">Settings of This Account</string>
     <string name="stDlPath">Main download folder</string>
     <string name="stBranching">Divide downloaded files into branches</string>
-    <string name="stCache">Caching (currently: %s)</string>
+    <string name="stCache">Caching (current size: %s)</string>
     <string name="stClearCache">Clear Cache</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>

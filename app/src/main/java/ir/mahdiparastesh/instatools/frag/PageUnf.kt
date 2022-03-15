@@ -32,6 +32,7 @@ import kotlinx.coroutines.runBlocking
 class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     private var thread: Inquiry? = null
+    var counter = 0
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
@@ -76,6 +77,7 @@ class PageUnf : BasePageMain() {
     companion object : PageCompanion() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
+        const val MAX_UNFOLLOW_AD = 15
 
         val CH_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
         const val CH_NEW_ITEMS_ID = 368

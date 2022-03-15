@@ -46,12 +46,12 @@ class PageRel : BasePageViewer() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //fetch()
+        fetch()
     }
 
     fun fetch() {
         if (com.active.value != true) return
-        thread = FetchAll().also { it.start() }
+        //thread = FetchAll().also { it.start() }
     }
 
     @SuppressLint("NotifyDataSetChanged")

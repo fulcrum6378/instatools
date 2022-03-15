@@ -41,7 +41,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private var boxThread: FetchOfInbox? = null
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
-    private val exportLauncher by lazy { c.launcher(this) }
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
@@ -159,16 +158,20 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     thread.thread_id, selection?.joinToString(","), method.id, opt.toJson(),
                     threadData = thread
                 )
-                exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = method.mime
                     putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
                 })
-                c.loadInterstitial("ca-app-pub-9457309151954418/8317918650")
+                activityResulted = false
+                c.loadInterstitial("ca-app-pub-9457309151954418/8317918650") {
+                    !c.showingAd && activityResulted
+                }
             }
         }.show().stylise(c)
     }
 
+    private var activityResulted = false
     override fun onActivityResult(result: ActivityResult) {
         if (result.data?.data == null || exportable == null) {
             exportable = null; return; }
@@ -178,6 +181,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
         }
         c.showInterstitial()
+        activityResulted = true
     }
 
     override fun goBack(): Boolean {

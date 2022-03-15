@@ -57,6 +57,15 @@
     <string name="inaccurateTimeSep">،&#160;</string>
     <string name="downloadAll">دانلود تمام اسلایدها</string>
     <string name="downloadThis">دانلود این اسلاید</string>
+    <string-array name="bytes">
+        <item>%d بایت</item>
+        <item>%d کیلوبایت</item>
+        <item>%d مگابایت</item>
+        <item>%d گیگابایت</item>
+        <item>%d ترابایت</item>
+    </string-array>
+    <string name="maximum">حداکثر: %s</string>
+    <string name="unlimited">بی نهایت</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -127,6 +136,8 @@
     <string name="aSettings">تنظیمات این اکانت</string>
     <string name="stDlPath">پوشه اصلی دانلود</string>
     <string name="stBranching">شاخه شاخه کردن دانلودها</string>
+    <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
+    <string name="stClearCache">پاک کردن حافظه پنهان</string>
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
     <string name="stResetDataSure">حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد، ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟</string>

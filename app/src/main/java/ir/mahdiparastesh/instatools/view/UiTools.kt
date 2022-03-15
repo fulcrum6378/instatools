@@ -25,6 +25,8 @@ import androidx.core.view.forEach
 import androidx.core.view.get
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.initialization.AdapterStatus
+import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -39,6 +41,7 @@ class UiTools {
         const val PROFILE = "https://www.instagram.com/%s/"
         const val POST_LINK = "https://www.instagram.com/p/%s/"
         const val INSTA_PACKAGE = "com.instagram.android"
+        private const val ADMOB = "com.google.android.gms.ads.MobileAds"
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
         private const val maxInaccurateTimeItems = 2
 
@@ -216,5 +219,9 @@ class UiTools {
             }
             return units[unit].format(nominalSize)
         }
+
+        fun InitializationStatus.isReady(): Boolean = if (adapterStatusMap.containsKey(ADMOB))
+            adapterStatusMap[ADMOB]?.initializationState == AdapterStatus.State.READY
+        else false
     }
 }

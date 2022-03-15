@@ -51,6 +51,15 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Tüm slaytları indir</string>
     <string name="downloadThis">Yalnızca bu slaydı indir</string>
+    <string-array name="bytes">
+        <item>%d Б</item>
+        <item>%d КБ</item>
+        <item>%d МБ</item>
+        <item>%d ГБ</item>
+        <item>%d ТБ</item>
+    </string-array>
+    <string name="maximum">Maksimum: %s</string>
+    <string name="unlimited">Sınırsız</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -121,6 +130,8 @@
     <string name="aSettings">Bu Hesabın Ayarları</string>
     <string name="stDlPath">Ana indirme klasörü</string>
     <string name="stBranching">İndirilen dosyaları dallara ayırın</string>
+    <string name="stCache">Önbelleğe alma (geçerli boyut: %s)</string>
+    <string name="stClearCache">Önbelleği Temizle</string>
     <string name="stUserData">Kullanıcı bilgisi</string>
     <string name="stResetData">Tüm kullanıcı verilerimi sıfırla</string>
     <string name="stResetDataSure">Buna takipçi olmayanlar listesi, favori hesaplar listesi, indirme sırası ve dışa aktarma sırası dahildir. Ancak hesabınızdan çıkış yapmayacaksınız. Devam etmek?</string>

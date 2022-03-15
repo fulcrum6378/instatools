@@ -11,14 +11,18 @@ import androidx.core.view.iterator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     abstract var inflater: LayoutInflater
+    private lateinit var guestAdBanner: AdView
 
     private fun refresher(): SwipeRefreshLayout = root.findViewById(R.id.refresher)
     private fun empty() = root.findViewById<TextView>(R.id.empty)
@@ -33,6 +37,10 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         refresher().isEnabled = false
         jumper().vis(false)
         rv().vis(false)
+
+        guestAdBanner = UiTools.adaptiveBanner(c, "ca-app-pub-9457309151954418/5535427358")
+        root.addView(guestAdBanner, UiTools.adaptiveBannerLp())
+        guestAdBanner.loadAd(AdRequest.Builder().build())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

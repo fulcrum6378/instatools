@@ -164,7 +164,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
         doClearHistory = true
 
-        if (isAdsSdkInitialized && adBanner == null) {
+        if (areAdsReady() && adBanner == null) {
             adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/6652379544")
             b.root.addView(adBanner, 1, UiTools.adaptiveBannerLp())
             adBanner!!.loadAd(AdRequest.Builder().build())

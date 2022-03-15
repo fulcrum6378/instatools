@@ -41,6 +41,7 @@ import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.inaccurateTime
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -151,6 +152,8 @@ class MassFollower : ServiceOwnerActivity() {
     }
 
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+        super.onInitializationComplete(adsInitStatus)
+        if (!adsInitStatus.isReady()) return
         adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/5087388141")
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
