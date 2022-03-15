@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
 import ir.mahdiparastesh.instatools.json.Profile
+import java.util.concurrent.CopyOnWriteArrayList
 
 class Model : ViewModel() {
     var acc: Account? = null
@@ -28,6 +30,7 @@ class Model : ViewModel() {
     // Viewer
     var vwUser: Profile.User? = null
     var vwTagged: MediaWrapperApi? = null
+    var vwReels: CopyOnWriteArrayList<Media>? = null
     var vwCurrentPage = MutableLiveData(1)
 
     // Favourites
@@ -46,6 +49,7 @@ class Model : ViewModel() {
         queueds = null
         vwUser = null
         vwTagged = null
+        vwReels = null
         fav = null
         fwb.value = null
     }

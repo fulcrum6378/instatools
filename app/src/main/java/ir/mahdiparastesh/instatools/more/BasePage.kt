@@ -36,6 +36,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     abstract class PageCompanion : Alive()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        com.active.value = true
         super.onViewCreated(view, savedInstanceState)
 
         com.handler = object : Handler(Looper.getMainLooper()) {

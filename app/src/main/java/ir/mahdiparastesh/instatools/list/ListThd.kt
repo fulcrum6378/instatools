@@ -42,7 +42,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
     )
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!.items, i, idealW)
+        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!.items, i, idealW, h = h)
     }
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
@@ -50,6 +50,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
     override fun onViewDetachedFromWindow(h: ViewHolder) {
         super.onViewDetachedFromWindow(h)
         Glide.with(c.c).clear(h.b.msgIv)
+        h.b.msgIv.setImageDrawable(null)
     }
 
     companion object {
@@ -66,7 +67,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
         @SuppressLint("CheckResult", "SetTextI18n")
         fun ListThdBinding.onBind(
             c: Context, list: List<Dm>, i: Int, idealW: Float = Versioned.BEST,
-            downloaded: HashMap<String, Downloadable>? = null
+            downloaded: HashMap<String, Downloadable>? = null, h: ViewHolder? = null
         ): ListThdBinding {
             val dm = list.getOrNull(i) ?: return this
             body.vis(dm.action_log == null)
@@ -155,6 +156,8 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 //else -> b.msgTv.text = dm.item_type
             }
             msgIvRl.vis(media != null)
+            Glide.with(c).clear(msgIv)
+            msgIv.setImageDrawable(null)
             media?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
                 var data: ByteArray? = null
@@ -172,12 +175,13 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 }
                 Glide.with(c).load(
                     carousel_media?.getOrNull(0)?.nearest(idealW) ?: nearest(idealW)
-                ).diskCacheStrategy(DiskCacheStrategy.ALL).into(
+                ).diskCacheStrategy(DiskCacheStrategy.RESOURCE).into(
                     object : CustomTarget<Drawable>() {
                         override fun onLoadCleared(placeholder: Drawable?) {}
                         override fun onResourceReady(
                             res: Drawable, trans: Transition<in Drawable>?
                         ) {
+                            if (h != null && h.layoutPosition != i) return
                             msgLoading.pauseAnimation()
                             msgLoading.vis(false)
                             msgIv.layoutParams = msgIv.layoutParams.apply {

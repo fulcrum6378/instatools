@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Message
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -11,7 +12,6 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.R
@@ -66,16 +66,6 @@ class PageTag : BasePageViewer() {
         super.onViewCreated(view, savedInstanceState)
 
         // List
-        b.rv.layoutManager = object : GridLayoutManager(c, 3) {
-            override fun onLayoutChildren(
-                rv: RecyclerView.Recycler?, state: RecyclerView.State?
-            ) {
-                try {
-                    super.onLayoutChildren(rv, state)
-                } catch (e: IndexOutOfBoundsException) {
-                }
-            }
-        }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && thread?.active != true &&
@@ -84,6 +74,20 @@ class PageTag : BasePageViewer() {
             }
         })
         fetch()
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.vtDownload -> {
+                if (tracker != null && c.m.vwUser?.edges() != null)
+                    Saver(tracker!!.selection).start()
+                tracker?.clearSelection()
+            }
+            R.id.vtSelectAll -> if (c.m.vwUser?.edges() != null)
+                tracker?.setItemsSelected(c.m.vwUser!!.edges()!!.map { it.node.id }, true)
+            R.id.vtDeselectAll -> tracker?.clearSelection()
+        }
+        return super.onMenuItemClick(item)
     }
 
     fun fetch() {
@@ -129,8 +133,9 @@ class PageTag : BasePageViewer() {
                 interrupt()
                 return; }
             Api<MediaWrapperApi>(
-                c, Api.Type.TAGGED.url.format(c.m.vwUser!!.id, c.m.vwTagged?.next_max_id ?: ""),
-                MediaWrapperApi::class, handler, onError = { interrupt() }
+                c, Api.Type.TAGGED.url.format(
+                    c.m.vwUser?.id ?: "", c.m.vwTagged?.next_max_id ?: ""
+                ), MediaWrapperApi::class, handler, onError = { interrupt() }
             ) { wrapper ->
                 if (c.m.vwTagged == null) {
                     c.m.vwTagged = wrapper
@@ -149,17 +154,16 @@ class PageTag : BasePageViewer() {
     }
 
     inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
-        // TODO: CUSTOMISE IT
         override fun handle() {
-            val svd = list.getOrNull(0)
-            if (svd == null) {
+            val edg = list.getOrNull(0)
+            if (edg == null) {
                 Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return
             }
-            c.m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
+            c.m.vwTagged?.items?.find { it.pk == edg }?.let { edge ->
                 c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
+                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.code))
                 )
             }
             ended()

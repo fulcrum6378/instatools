@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
 import ir.mahdiparastesh.instatools.more.Versioned
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("SpellCheckingInspection")
 class Media(
@@ -82,7 +83,7 @@ class Media(
 
     class MediaWrapperApi(
         //var auto_load_more_enabled: Boolean,
-        var items: ArrayList<Media>?,
+        var items: CopyOnWriteArrayList<Media>?,
         var more_available: Boolean,
         //var new_photos: Array<Any?>?,
         var next_max_id: String?,

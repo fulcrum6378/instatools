@@ -14,7 +14,6 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable.INFINITE
@@ -38,6 +37,7 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -128,18 +128,9 @@ class PageSvd : BasePageMain(), Selective {
                 ) thread = FetchSome().also { it.start() }
             }
         })
-        b.rv.layoutManager = object : GridLayoutManager(c, 3) {
+        b.rv.layoutManager = object : SafeGridManager(c, 3) {
             override fun canScrollVertically(): Boolean =
                 super.canScrollVertically() && selectionGuide == null
-
-            override fun onLayoutChildren(
-                rv: RecyclerView.Recycler?, state: RecyclerView.State?
-            ) {
-                try {
-                    super.onLayoutChildren(rv, state)
-                } catch (e: IndexOutOfBoundsException) {
-                }
-            }
         }
 
         if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())

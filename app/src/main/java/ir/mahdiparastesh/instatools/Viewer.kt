@@ -38,9 +38,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
-// STORY -> Story
-// HIGHLIGHTS -> Highlights
-
 class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     var user: String? = null
@@ -80,6 +77,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 when (msg.what) {
                     HANDLE_FETCHED -> {
                         b.refresher.isRefreshing = false
+                        page1?.fetch()
                         page2?.showProfile()
                         page3?.fetch()
                     }

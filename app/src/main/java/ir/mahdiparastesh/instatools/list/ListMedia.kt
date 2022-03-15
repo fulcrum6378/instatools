@@ -4,15 +4,16 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.view.Expandable
+import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
         where C : BaseActivity, F : BasePage<C> {
 
-    abstract val media: ArrayList<Media>?
+    abstract val media: CopyOnWriteArrayList<Media>?
 
     override fun flexible(i: Int): FlexiblePost? {
         val med = media?.getOrNull(i) ?: return null
-        return object : FlexiblePost(med.id, med.thumb()) {
+        return object : FlexiblePost(med.pk, med.thumb()) {
             override fun typeDrw() = when {
                 med.carousel_media != null -> typeStack
                 med.video_versions != null -> typeVideo

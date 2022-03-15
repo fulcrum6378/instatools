@@ -13,7 +13,6 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
@@ -105,16 +104,6 @@ class PageVwr : BasePageViewer() {
         b.nsv.viewTreeObserver.addOnScrollChangedListener {
             updateShadow()
             b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
-        }
-        b.rv.layoutManager = object : GridLayoutManager(c, 3) {
-            override fun onLayoutChildren(
-                rv: RecyclerView.Recycler?, state: RecyclerView.State?
-            ) {
-                try {
-                    super.onLayoutChildren(rv, state)
-                } catch (e: IndexOutOfBoundsException) {
-                }
-            }
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -275,13 +264,13 @@ class PageVwr : BasePageViewer() {
 
     inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
         override fun handle() {
-            val svd = list.getOrNull(0)
-            if (svd == null) {
+            val edg = list.getOrNull(0)
+            if (edg == null) {
                 Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return
             }
-            c.m.vwUser?.edges()?.find { it.node.id == svd }?.let { edge ->
+            c.m.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
                 c.dao.addQueued(
                     Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
                 )

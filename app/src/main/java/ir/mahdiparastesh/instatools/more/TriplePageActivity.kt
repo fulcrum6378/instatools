@@ -43,6 +43,11 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         else {
             pager!!.adapter = PageAdapter(this)
             pager.setCurrentItem(currentPage.value!!, false)
+            pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(i: Int) {
+                    currentPage.value = i
+                }
+            })
         }
         currentPage.observe(this) {
             pages()[it].updateShadow()
