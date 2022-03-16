@@ -21,23 +21,28 @@
         tools:ignore="UnusedAttribute">
 
         <ImageView
+            android:id="@+id/download"
+            style="@style/expandableButton"
+            android:src="@drawable/download"
+            android:visibility="gone" />
+
+        <ImageView
             android:id="@+id/downloadThis"
             style="@style/expandableButton"
-            android:padding="9dp"
             android:src="@drawable/download_one"
-            android:tooltipText="@string/downloadThis" />
+            android:tooltipText="@string/downloadThis"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/downloadAll"
             style="@style/expandableButton"
-            android:padding="9dp"
             android:src="@drawable/download_all"
-            android:tooltipText="@string/downloadAll" />
+            android:tooltipText="@string/downloadAll"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/viewInInsta"
             style="@style/expandableButton"
-            android:padding="9dp"
             android:src="@drawable/instagram"
             android:tooltipText="@string/viewInInsta" />
     </LinearLayout>

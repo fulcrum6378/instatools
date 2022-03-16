@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -28,11 +29,15 @@ import ir.mahdiparastesh.instatools.json.Rest.InboxPage
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.more.BasePageMain
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +49,11 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
     private var guidingDmNotSeen = false
+    val expandable: Expandable by lazy {
+        Expandable(
+            c, b.expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CT)
+        ) { updateShadow() }
+    }
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
@@ -76,7 +86,13 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
                 )
             )
-        }
+        },
+        Expandable.HANDLE_EXPANDABLE_ERROR to {
+            try {
+                Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
+            } catch (ignored: IllegalArgumentException) {
+            }
+        },
     )
 
     companion object : PageCompanion()
@@ -152,6 +168,11 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             }.show().stylise(c)
     }
 
+    override fun updateShadow() {
+        if (bInitialised)
+            c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0 && !expandable.zoomed)
+    }
+
     override fun updateJumper() {
         if (c.m.dmThread == null) super.updateJumper()
         else if (shouldShowJumper.value == true) shouldShowJumper.value = false
@@ -203,6 +224,9 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
     override fun goBack(): Boolean {
         if (c.m.dmThread != null) {
+            if (expandable.zoomed) {
+                jumper().vis(true)
+                expandable.collapse(); return true; }
             c.m.dmThread = null
             onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
             return true

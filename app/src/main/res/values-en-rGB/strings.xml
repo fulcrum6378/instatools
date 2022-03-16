@@ -91,6 +91,8 @@
     <string name="newUnfNtfChannel">New Unfollowers</string>
     <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
+    <string name="dmNotSeen">You Are Invisible!</string>
+    <string name="dmNotSeenDesc">The messages you view in this app will NOT be marked as seen!</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
@@ -113,6 +115,10 @@
     <string name="followAllSure">Are you sure you want to follow all of these accounts? (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)</string>
     <string name="alsoRequestPv">Also send request to the private accounts.</string>
     <string name="mfLimit">Limit their number to:</string>
+    <string name="vwStoryReel">Main Stories</string>
+    <string name="vwReelDesc">Contains %d videos</string>
+    <string name="vwNoReels">This profile has no stories!</string>
+    <string name="vwNoTagged">This profile has no tagged posts!</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Mass Follower</string>
@@ -121,6 +127,8 @@
     <string name="mfGuide3">1. Open a profile in InstaTools,\n\n2. Tap on the number of their followers or following,\n\n3. Select \"Follow All\"&#8230;</string>
     <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
     <string name="mfClear">Clear the queue</string>
+    <string name="mfExport">Export the queue</string>
+    <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
     <string name="mfPayForIt">In order to unlock this feature, choose one of the following methods:</string>
     <string name="mfUnlockTimes">Unlock for %d times</string>
 
@@ -156,5 +164,5 @@
 
     <!-- Follower -->
     <string name="followerChannelDesc">Follow a large number of accounts slowly&#8230;</string>
-    <string name="followerTitle">Following Furtively&#8230;</string>
+    <string name="followerTitle">Following furtively&#8230;</string>
 </resources>

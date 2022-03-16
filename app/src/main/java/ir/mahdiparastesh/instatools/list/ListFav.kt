@@ -9,9 +9,6 @@ import ir.mahdiparastesh.instatools.Favourites
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListFavBinding
-import ir.mahdiparastesh.instatools.view.Act
-import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListFav(val c: Favourites) : RecyclerView.Adapter<ListFav.ViewHolder>() {
@@ -34,10 +31,7 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<ListFav.ViewHolder>() {
         h.b.user.text = fav.user
         h.b.root.setOnClickListener {
             val u = c.m.fav?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            MaterialMenu(c, it, R.menu.fav_more, Act().apply {
-                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
-                this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
-            }).show()
+            Viewer.comeHere(c, u.user)
         }
         h.b.unFav.setOnClickListener {
             val f = c.m.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }

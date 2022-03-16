@@ -37,6 +37,7 @@ class Expandable(
     private val b: ExpandableBinding,
     private val handler: Handler?,
     private val colorBg: Int = c.color(R.color.defBG),
+    private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
     var node: Profile.Post? = null
     var media: Media? = null
@@ -52,6 +53,20 @@ class Expandable(
     }
 
     init {
+        b.download.setOnClickListener {
+            media?.apply {
+                CoroutineScope(Dispatchers.IO).launch {
+                    c.dao.addQueued(
+                        Queued(
+                            Persistent.now(), code, taken_at.xFromSeconds(),
+                            user.pk, user.username, pk, nearest(Versioned.BEST),
+                            thumb(), media_type.toInt().toByte()
+                        )
+                    )
+                    withContext(Dispatchers.Main) { Downloads.initService(c) }
+                }
+            }
+        }
         b.downloadThis.setOnClickListener {
             if (media == null) return@setOnClickListener
             val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
@@ -104,14 +119,18 @@ class Expandable(
         if (media == null) return
         b.slider.adapter = ListCar(c, media!!)
         b.indicator.setViewPager2(b.slider)
-        b.indicator.vis()
         b.buttons.vis()
-        b.downloadAll.vis(media?.carousel_media != null)
+        val isSlider = media?.carousel_media != null
+        b.indicator.vis(isSlider)
+        b.downloadAll.vis(isSlider)
+        b.downloadThis.vis(isSlider)
+        b.download.vis(!isSlider)
     }
 
     fun expand() {
         if (thumb == null || (node == null && media == null) || zoomed) return
         zoomed = true
+        onZoomChanged(zoomed)
         currentAnimator?.cancel()
         if (media == null) Api<Media.MediaWrapperApi>(
             c, Api.Type.POST_ITEM.url.format(node!!.shortcode), Media.MediaWrapperApi::class,
@@ -205,6 +224,7 @@ class Expandable(
                     b.slider.adapter = null
                     currentAnimator = null
                     zoomed = false
+                    onZoomChanged(zoomed)
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
@@ -213,6 +233,7 @@ class Expandable(
                     b.root.vish(false)
                     currentAnimator = null
                     zoomed = false
+                    onZoomChanged(zoomed)
                 }
             })
             start()

@@ -52,6 +52,7 @@
 
     <!-- Viewer -->
     <dimen name="vwHighlightCover">58dp</dimen>
+    <dimen name="vwReelHeight">250dp</dimen>
 
     <!-- MassFollower -->
     <dimen name="mfPadV">15dp</dimen>

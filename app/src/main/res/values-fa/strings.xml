@@ -97,6 +97,8 @@
     <string name="newUnfNtfChannel">آنفالورهای جدید</string>
     <string name="newUnfNtfChannelDesc">بعضی ها شما را آنفالو کرده اند!</string>
     <string name="newUnfNtfText">%d شخص جدید شما را آنفالو کردند!</string>
+    <string name="dmNotSeen">شما مخفی هستید!</string>
+    <string name="dmNotSeenDesc">پیام های دایرکتی که شما در این اپلیکیشن می خوانید، بعنوان «خوانده شده» تیک نخواهند خورد!</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>
@@ -119,6 +121,10 @@
     <string name="followAllSure">آیا مطمئن هستید که می خواهید تمام این افراد را فالو کنید؟ (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)</string>
     <string name="alsoRequestPv">همچنین به اکانت های خصوصی درخواست بفرست.</string>
     <string name="mfLimit">محدودیت تعداد اکانت ها:</string>
+    <string name="vwStoryReel">استوری های اصلی</string>
+    <string name="vwReelDesc">دارای %d ویدیو</string>
+    <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
+    <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">دنبال کردن دسته جمعی</string>
@@ -127,6 +133,8 @@
     <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
     <string name="mfSeekTitle">%1$s برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
     <string name="mfClear">پاک کردن لیست</string>
+    <string name="mfExport">استخراج لیست</string>
+    <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
     <string name="mfPayForIt">برای فعالسازی این قابلیت یکی از روش های زیر را انتخاب کنید:</string>
     <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
 

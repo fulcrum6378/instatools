@@ -96,6 +96,8 @@
     <string name="newUnfNtfChannel">Новые отписавшиеся</string>
     <string name="newUnfNtfChannelDesc">Некоторые люди просто отписались от вас!</string>
     <string name="newUnfNtfText">%d новых людей отписались от вас!</string>
+    <string name="dmNotSeen">Вы невидимы!</string>
+    <string name="dmNotSeenDesc">Сообщения, которые вы просматриваете в этом приложении, НЕ будут помечены как просмотренные!</string>
 
     <!-- Downloads -->
     <string name="downloads">Загрузки</string>
@@ -118,6 +120,10 @@
     <string name="followAllSure">Вы уверены, что хотите подписаться на все эти аккаунты? (За ними будут следить медленно и один за другим, чтобы Instagram не стал чувствительным!)</string>
     <string name="alsoRequestPv">Также отправьте запрос в личные кабинеты.</string>
     <string name="mfLimit">Ограничьте их количество до:</string>
+    <string name="vwStoryReel">Основные истории</string>
+    <string name="vwReelDesc">Содержит %d видео</string>
+    <string name="vwNoReels">В этом профиле нет историй!</string>
+    <string name="vwNoTagged">В этом профиле нет отмеченных сообщений!</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Массовый Последователь</string>
@@ -126,6 +132,8 @@
     <string name="mfGuide3">1. Откройте профиль в InstaTools,\n\n2. Нажмите на количество их подписчиков или подписчиков,\n\n3. Выберите «Следить за всеми»&#8230;</string>
     <string name="mfSeekTitle">Для %1$s элементов потребуется %2$d минуты.\nЗадержка между каждым последующим действием:</string>
     <string name="mfClear">Очистить очередь</string>
+    <string name="mfExport">Экспорт очереди</string>
+    <string name="mfExportSubject">Массовая очередь подписчиков (%d предметов)</string>
     <string name="mfPayForIt">Чтобы разблокировать эту функцию, выберите один из следующих способов:</string>
     <string name="mfUnlockTimes">Разблокировать %d раз</string>
 

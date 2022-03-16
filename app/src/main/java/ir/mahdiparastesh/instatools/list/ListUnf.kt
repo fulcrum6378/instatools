@@ -66,11 +66,6 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
 
     override fun getItemCount() = c.m.unfollowers.value?.size ?: 0
 
-    override fun onViewDetachedFromWindow(h: ViewHolder) {
-        super.onViewDetachedFromWindow(h)
-        Glide.with(c.c).clear(h.b.photo)
-    }
-
     private fun unfollow(unf: Friend) {
         Api<Rest>(
             c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, PageUnf.handler,

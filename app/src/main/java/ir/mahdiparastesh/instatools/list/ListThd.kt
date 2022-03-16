@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
@@ -42,16 +43,16 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
     )
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!.items, i, idealW, h = h)
+        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!.items, i, idealW, f, h)
     }
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
 
-    override fun onViewDetachedFromWindow(h: ViewHolder) {
+    /*override fun onViewDetachedFromWindow(h: ViewHolder) {
         super.onViewDetachedFromWindow(h)
         Glide.with(c.c).clear(h.b.msgIv)
         h.b.msgIv.setImageDrawable(null)
-    }
+    }*/
 
     companion object {
         fun ListThdBinding.onCreate(
@@ -60,14 +61,15 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
             date.typeface = fontLight
             msgTv.typeface = fontRegular
             time.typeface = fontLight
-            if (isExporting) msgIvRl.removeView(msgLoading)
+            if (isExporting) msgIvCl.removeView(msgLoading)
             return this
         }
 
         @SuppressLint("CheckResult", "SetTextI18n")
         fun ListThdBinding.onBind(
             c: Context, list: List<Dm>, i: Int, idealW: Float = Versioned.BEST,
-            downloaded: HashMap<String, Downloadable>? = null, h: ViewHolder? = null
+            f: PageBox? = null, h: ViewHolder? = null,
+            downloaded: HashMap<String, Downloadable>? = null,
         ): ListThdBinding {
             val dm = list.getOrNull(i) ?: return this
             body.vis(dm.action_log == null)
@@ -155,7 +157,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
                 //else -> b.msgTv.text = dm.item_type
             }
-            msgIvRl.vis(media != null)
+            msgIvCl.vis(media != null)
             Glide.with(c).clear(msgIv)
             msgIv.setImageDrawable(null)
             media?.apply {
@@ -191,6 +193,17 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                             msgIv.setImageDrawable(res)
                         }
                     })
+            }
+            if (downloaded == null) mediaClick.setOnClickListener {
+                if (f?.expandable == null) return@setOnClickListener
+                f.expandable.media = media
+                f.expandable.thumb = root
+                try {
+                    f.expandable.expand()
+                    f.jumper().vis(false)
+                } catch (e: Exception) {
+                    if (BuildConfig.DEBUG) throw e
+                }
             }
             msgTv.vis(msgTv.text.isNotBlank())
 

@@ -3,19 +3,18 @@ package ir.mahdiparastesh.instatools.more
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.contains
 import androidx.core.view.iterator
+import androidx.media2.common.SessionPlayer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.airbnb.lottie.LottieAnimationView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
+import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -23,11 +22,10 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     abstract var inflater: LayoutInflater
     private lateinit var guestAdBanner: AdView
+    var ftDetached = false
 
     private fun refresher(): SwipeRefreshLayout = root.findViewById(R.id.refresher)
-    private fun empty() = root.findViewById<TextView>(R.id.empty)
-    private fun error() = root.findViewById<ImageView>(R.id.error)
-    private fun loading() = root.findViewById<LottieAnimationView>(R.id.loading)
+    open fun expanded(): ExpandableBinding? = null
 
     protected open fun guestMode(parent: ConstraintLayout, theme: BaseActivity.Theme) {
         val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
@@ -47,33 +45,25 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         refresher().setOnRefreshListener(this)
         super.onViewCreated(view, savedInstanceState)
 
-        error().setOnClickListener {
+        error()?.setOnClickListener {
             refresher().isRefreshing = true
             onRefresh()
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        ftDetached = false
+    }
+
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         refresher().isRefreshing = false
         super.onLoaded(isEmpty, asGuest)
-        if (loading() != null && root.contains(loading())) {
-            loading().animation?.cancel()
-            root.removeView(loading())
-        }
-        error().vis(false)
-        empty().vis(isEmpty)
-        if (isEmpty) empty().typeface = c.fontRegular
     }
 
     override fun onFailed(message: String) {
         refresher().isRefreshing = false
         super.onFailed(message)
-        if (loading() != null && root.contains(loading())) {
-            loading().animation?.cancel()
-            root.removeView(loading())
-        }
-        if (rv().adapter == null) error().vis()
-        empty().vis(false)
     }
 
     override fun onRecyclerViewScrolled() {
@@ -83,5 +73,11 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (expanded()?.slider?.adapter as ListCar?)?.players
+            ?.forEach { if (it?.playerState == SessionPlayer.PLAYER_STATE_PLAYING) it.pause() }
     }
 }

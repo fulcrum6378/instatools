@@ -34,4 +34,8 @@
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/loading"
         style="@style/simpleLoading" />
+
+    <include
+        android:id="@+id/expanded"
+        layout="@layout/expandable" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,8 +53,8 @@
             app:layout_constraintStart_toStartOf="@id/area"
             app:layout_constraintTop_toTopOf="@id/area">
 
-            <RelativeLayout
-                android:id="@+id/msgIvRl"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/msgIvCl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -64,6 +64,7 @@
 
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/msgLoading"
+                    style="@style/parentConstraint"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:padding="12dp"
@@ -76,8 +77,20 @@
                     android:adjustViewBounds="true"
                     android:paddingBottom="10dp"
                     android:scaleType="centerCrop"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="ContentDescription" />
-            </RelativeLayout>
+
+                <View
+                    android:id="@+id/mediaClick"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/button"
+                    app:layout_constraintBottom_toBottomOf="@id/msgIv"
+                    app:layout_constraintLeft_toLeftOf="@id/msgIv"
+                    app:layout_constraintRight_toRightOf="@id/msgIv"
+                    app:layout_constraintTop_toTopOf="@id/msgIv" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/msgIvHint"
@@ -89,7 +102,7 @@
                 android:textSize="@dimen/dmHintFont"
                 android:textStyle="italic"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/msgIvRl" />
+                app:layout_constraintTop_toBottomOf="@id/msgIvCl" />
 
             <TextView
                 android:id="@+id/msgTv"

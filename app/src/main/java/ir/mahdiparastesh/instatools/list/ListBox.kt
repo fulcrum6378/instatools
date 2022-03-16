@@ -75,9 +75,4 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         super.onViewAttachedToWindow(h)
         h.b.more.setImageResource(R.drawable.more_vert)
     }
-
-    override fun onViewDetachedFromWindow(h: ViewHolder) {
-        super.onViewDetachedFromWindow(h)
-        Glide.with(c.c).clear(h.b.photo)
-    }
 }

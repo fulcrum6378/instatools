@@ -91,6 +91,8 @@
     <string name="newUnfNtfChannel">Yeni takip etmeyenler</string>
     <string name="newUnfNtfChannelDesc">Bazı insanlar sizi takibi bıraktı!</string>
     <string name="newUnfNtfText">%d yeni kişi seni takibi bıraktı!</string>
+    <string name="dmNotSeen">Sen Görünmezsin!</string>
+    <string name="dmNotSeenDesc">Bu uygulamada görüntülediğiniz mesajlar görüldüğü gibi işaretlenmeyecek!</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>
@@ -113,6 +115,10 @@
     <string name="followAllSure">Tüm bu hesapları takip etmek istediğinizden emin misiniz? (Instagram hassaslaşmasın diye yavaş yavaş ve tek tek takip edilecekler!)</string>
     <string name="alsoRequestPv">Ayrıca özel hesaplara istek gönderin.</string>
     <string name="mfLimit">Sayılarını şu şekilde sınırlayın:</string>
+    <string name="vwStoryReel">Ana Hikayeler</string>
+    <string name="vwReelDesc">%d video içerir</string>
+    <string name="vwNoReels">Bu profilin hikayesi yok!</string>
+    <string name="vwNoTagged">Bu profilde etiketlenmiş gönderi yok!</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Kitle Takipçisi</string>
@@ -121,6 +127,8 @@
     <string name="mfGuide3">1. InstaTools\'ta bir profil açın,\n\n2. Takipçilerinin veya takip edenlerin sayısına dokunun,\n\n3. "Tümünü İzle"yi seçin&#8230;</string>
     <string name="mfSeekTitle">%2$d adet için %1$s sürecektir.\nHer takip eylemi arasındaki gecikme:</string>
     <string name="mfClear">Kuyruğu temizle</string>
+    <string name="mfExport">Sırayı dışa aktar</string>
+    <string name="mfExportSubject">Toplu Takipçi Kuyruğu (%d öğe)</string>
     <string name="mfPayForIt">Bu özelliğin kilidini açmak için aşağıdaki yöntemlerden birini seçin:</string>
     <string name="mfUnlockTimes">%d kez kilidini aç</string>
 

@@ -1,0 +1,168 @@
+<resources>
+    <string name="app_name">InstaTools</string>
+
+    <!-- #GLOBAL -->
+    <string name="guest">Convidado</string>
+    <string name="navOpen">Abrir</string>
+    <string name="navClose">Fechar</string>
+    <string name="search">Procurar</string>
+    <string name="switchAccount">Mudar de conta</string>
+    <string name="signOut">Sair</string>
+    <string name="download">Download</string>
+    <string name="remove">Remover</string>
+    <string name="openLink">Link aberto</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+    <string name="no">Não</string>
+    <string name="yes">Sim</string>
+    <string name="unsave">Não salvar</string>
+    <string name="export">Exportar</string>
+    <string name="exportPdf">Exportar para PDF</string>
+    <string name="exportHtml">Exportar para HTML</string>
+    <string name="exportOptions">Opções de exportação</string>
+    <string name="backgroundTasks">Tarefas em segundo plano</string>
+    <string name="unknownError">Desculpe, ocorreu um erro desconhecido: %s</string>
+    <string name="unknownMyError">Desculpe, ocorreu um erro desconhecido!</string>
+    <string name="loadFailed">Falha ao carregar!</string>
+    <string name="selectAll">Selecionar Tudo</string>
+    <string name="deselectAll">Desmarcar Todos</string>
+    <string name="viewProfile">Ver Perfil</string>
+    <string name="viewHere">Veja Aqui</string>
+    <string name="viewInInsta">Ver no Instagram</string>
+    <string name="addToFav">Adicionar aos favoritos</string>
+    <string name="removeFav">Remova dos favoritos</string>
+    <string name="start">Começar</string>
+    <string name="stop">Pare</string>
+    <string name="openDmInInsta">Abrir bate-papo no Instagram</string>
+    <string name="pageNotExist">Esta página não existe!</string>
+    <string name="sContinue">Continuar</string>
+    <string name="rateUs">Avalie este Aplicativo</string>
+    <string name="watchAnAd">Assistir a um Anúncio</string>
+    <string name="failedToLoadAd">Falha ao carregar anúncio: %s</string>
+    <string name="failedToShowAd">Falha ao exibir o anúncio: %s</string>
+    <string-array name="inaccurateTime">
+        <item>%d mese</item>
+        <item>%d semanas</item>
+        <item>%d dias</item>
+        <item>%d horas</item>
+        <item>%d minutos</item>
+        <item>%d segundos</item>
+    </string-array>
+    <string name="inaccurateTimeSep">,&#160;</string>
+    <string name="downloadAll">Baixe todos os slides</string>
+    <string name="downloadThis">Baixe apenas este slide</string>
+    <string-array name="bytes">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
+    <string name="maximum">Máximo: %s</string>
+    <string name="unlimited">Ilimitada</string>
+
+    <!-- Login -->
+    <string name="addAccount">Adicionar Conta</string>
+    <string name="guestShortDesc">Entrar sem autenticação</string>
+    <string name="guestSure">Infelizmente, o Instagram não permite que você veja as pessoas em seu site com tanta frequência sem fazer login. Isso forçará você a entrar ou se inscrever para fazer isso. (Você pode verificar esse fato abrindo o Instagram no modo \"Incógnito\" do seu navegador.) Portanto, não há garantia de que você não precisará fazer login logo após entrar no modo Convidado.</string>
+    <string name="needAuthentication">Você precisa fazer o login para continuar&#8230;</string>
+
+    <!-- Main -->
+    <string name="unfollowers">Não Seguidores</string>
+    <string name="saved">Salvou</string>
+    <string name="direct">@string/export</string>
+    <string name="guestDesc">Você está usando este aplicativo no modo visitante.\nPortanto, você não pode usar esse recurso!</string>
+    <string name="signOutSure">Tem certeza de que deseja sair da sua conta do Instagram?</string>
+    <string name="mtSearch">Insira um nome de perfil ou link&#8230;</string>
+    <string name="boxUntil">Até %s</string>
+    <string name="unfollow">Deixar de Seguir</string>
+    <string name="unfollowPV">Esta conta é privada. Tem certeza de que deseja deixar de segui-los?</string>
+    <string name="unfCouldNot">Não foi possível deixar de seguir este usuário!</string>
+    <string name="terminateBgTasks">Algumas tarefas estão sendo executadas em segundo plano. Tem certeza de que deseja encerrar todos eles?</string>
+    <string name="unsaveOnly">Não Salvar Somente</string>
+    <string name="downloadOnly">Somente Download</string>
+    <string name="unsaveDownload">Cancelar Salvar e Baixar</string>
+    <string name="alsoDeleteData">Excluir também meus dados e configurações de usuário</string>
+    <string name="toExit">Toque duas vezes para sair&#8230;</string>
+    <string name="unfEmpty">Você não tem seguidores!</string>
+    <string name="svdEmpty">Você não tem postagens salvas!</string>
+    <string name="boxEmpty">Você não tem mensagens!</string>
+    <string name="unfollowedAt">Deixar de ser seguido em %s</string>
+    <string name="newUnfNtfChannel">Novos Não-Seguidores</string>
+    <string name="newUnfNtfChannelDesc">Algumas pessoas simplesmente deixaram de te seguir!</string>
+    <string name="newUnfNtfText">%d novas pessoas deixaram de te seguir!</string>
+    <string name="dmNotSeen">Você é invisível!</string>
+    <string name="dmNotSeenDesc">As mensagens que você visualizar neste aplicativo NÃO serão marcadas como vistas!</string>
+
+    <!-- Downloads -->
+    <string name="downloads">Transferências</string>
+    <string name="dwShare">@string/download</string>
+    <string name="pasteLink">Cole um link&#8230;</string>
+    <string name="downloadsHelp1">1. Abra o Instagram,\n2. Escolha uma postagem ou história,\n3. Compartilhe-o neste aplicativo;</string>
+    <string name="downloadsHelp2">para que seja baixado imediatamente!</string>
+
+    <!-- Favourites -->
+    <string name="favourites">Favoritos</string>
+    <string name="favEmpty">Abra um perfil no InstaTools e toque no ícone \"coração\" no canto superior direito para adicioná-lo a esta lista.</string>
+
+    <!-- Viewer -->
+    <string name="vwTitle">Visualizador de Perfil</string>
+    <string name="vwShare">Ver perfil</string>
+    <string name="vwFollowers">Seguidores</string>
+    <string name="vwFollowing">Seguindo</string>
+    <string name="vwPrivate">Esta conta é privada!</string>
+    <string name="followAll">Siga Todos</string>
+    <string name="followAllSure">Tem certeza de que deseja seguir todas essas contas? (Eles serão seguidos lentamente e um a um para que o Instagram não fique sensível!)</string>
+    <string name="alsoRequestPv">Também envie solicitação para as contas privadas.</string>
+    <string name="mfLimit">Limite seu número a:</string>
+    <string name="vwStoryReel">Histórias Principais</string>
+    <string name="vwReelDesc">Contém %d vídeos</string>
+    <string name="vwNoReels">Este perfil não tem histórias!</string>
+    <string name="vwNoTagged">Este perfil não tem postagens marcadas!</string>
+
+    <!-- Mass Follower -->
+    <string name="massFollower">Seguidor em Massa</string>
+    <string name="mfGuide1">O Instagram não permitirá que você siga um grande número de pessoas com tanta frequência. Ele pode bloquear sua conta ou desconectá-lo de sua sessão.</string>
+    <string name="mfGuide2">Mas usando esta ferramenta, você pode seguir várias pessoas lentamente e uma a uma, para que o Instagram não suspeite que é um robô ou um spammer.</string>
+    <string name="mfGuide3">1. Abra um perfil no InstaTools,\n\n2. Toque no número de seus seguidores ou seguidores,\n\n3. Selecione \"Seguir Todos\"&#8230;</string>
+    <string name="mfSeekTitle">Levará %1$s para %2$d itens.\nAtraso entre cada ação de acompanhamento:</string>
+    <string name="mfClear">Limpar a fila</string>
+    <string name="mfExport">Exportar a fila</string>
+    <string name="mfExportSubject">Fila de seguidores em massa (%d itens)</string>
+    <string name="mfPayForIt">Para desbloquear esse recurso, escolha um dos seguintes métodos:</string>
+    <string name="mfUnlockTimes">Desbloqueie por %d vezes</string>
+
+    <!-- Settings -->
+    <string name="settings">Configurações</string>
+    <string name="gSettings">Configurações Globais</string>
+    <string name="aSettings">Configurações Locais</string>
+    <string name="stDlPath">Pasta principal de download</string>
+    <string name="stBranching">Divida os arquivos baixados em ramificações</string>
+    <string name="stCache">Cache (tamanho atual: %s)</string>
+    <string name="stClearCache">Limpar Cache</string>
+    <string name="stUserData">Dados do Usuário</string>
+    <string name="stResetData">Redefinir todos os meus dados de usuário</string>
+    <string name="stResetDataSure">Isso inclui a lista de não seguidores, a lista de contas favoritas, a fila de download e a fila de exportação. Mas você não será desconectado da sua conta. Continuar?</string>
+    <string name="stResetSettings">Redefinir minhas configurações</string>
+    <string name="stResetSettingsSure">Tem certeza? (você NÃO sairá da sua conta)</string>
+    <string name="stAutoDeleteEmptyDirs">Excluir pastas vazias automaticamente</string>
+    <string name="stHelp">Ajuda</string>
+    <string name="stHelpMessage">As configurações desta conta herdam as Configurações Globais, sempre que você deixou uma configuração desta conta (Configurações Locais) vazia.</string>
+
+
+    <!-- Queuer -->
+    <string name="queuerChannel">Fila de Download</string>
+    <string name="queuerChannelDesc">Baixa a mídia enfileirada</string>
+    <string name="queuerTitle">Baixando&#8230;</string>
+    <string name="queuerStop">Parar</string>
+
+    <!-- Exporter -->
+    <string name="exporterChannel">Exportador</string>
+    <string name="exporterChannelDesc">Exporta as mensagens diretas</string>
+    <string name="exporterTitle">Exportador&#8230;</string>
+    <string name="exporterStop">Abortar</string>
+
+    <!-- Follower -->
+    <string name="followerChannelDesc">Siga um grande número de contas lentamente&#8230;</string>
+    <string name="followerTitle">Seguindo furtivamente&#8230;</string>
+</resources>

@@ -9,11 +9,26 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layoutManager="ir.mahdiparastesh.instatools.view.SafeGridManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:spanCount="3" />
 
     <ImageView
         android:id="@+id/jumper"
         style="@style/jumper" />
+
+    <TextView
+        android:id="@+id/empty"
+        style="@style/emptyList"
+        android:text="@string/vwNoTagged" />
+
+    <ImageView
+        android:id="@+id/error"
+        style="@style/simpleError" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading"
+        style="@style/simpleLoading" />
 </androidx.constraintlayout.widget.ConstraintLayout>

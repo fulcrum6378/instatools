@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
+import android.animation.ObjectAnimator
+
 @Suppress("SpellCheckingInspection")
 open class Rest {
     lateinit var status: String
@@ -67,7 +69,8 @@ open class Rest {
         fun visName() = full_name.ifBlank { username }
     }
 
-    class Follow( // Both following and followers
+    class Follow(
+        // Both following and followers
         val next_max_id: String? = null,
         val users: Array<User>,
         //val big_list: Boolean,
@@ -100,7 +103,7 @@ open class Rest {
         var broadcast: Array<Any?>? = null
     }
 
-    class Story(val reel: StoryReel) : DynamicReelsList()
+    class Story(val reel: StoryReel?) : DynamicReelsList()
 
     interface TrayWrapper<T> where T : Reel {
         val tray: Array<T>
@@ -126,7 +129,9 @@ open class Rest {
         //val latest_reel_media: Double,
         //val reel_type: String,
         //val seen: Double,
-        val user: User
+        val user: User,
+        @Transient var opened: Boolean,
+        @Transient var anSlide: ObjectAnimator? = null
     )
 
     class StoryReel(
@@ -139,7 +144,7 @@ open class Rest {
         //val media_ids: Array<String>,
         //val prefetch_count: Float,
         user: User
-    ) : Reel(items, user)
+    ) : Reel(items, user, true)
 
     class HighlightReel(
         val cover_media: HighlightCover?, // uncertain "?"
@@ -155,7 +160,7 @@ open class Rest {
         //val seen_ranked_position: Double,
         val title: String,
         user: User
-    ) : Reel(items, user)
+    ) : Reel(items, user, false)
 
     class HighlightCover(val cropped_image_version: Media.Candidate, val crop_rect: Any?)
 

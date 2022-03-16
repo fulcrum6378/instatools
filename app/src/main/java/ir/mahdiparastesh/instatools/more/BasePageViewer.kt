@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -16,11 +18,20 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
 
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        error()?.setOnClickListener {
+            c.b.refresher.isRefreshing = true
+        }
+    }
+
     open fun avoidRefresh(): Boolean =
         rv().canScrollVertically(-1) || tracker?.hasSelection() == true
 
     override fun updateShadow() {
-        if (bInitialised) c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
+        if (bInitialised) c.b.tbShadow.vish(
+            rv().computeVerticalScrollOffset() > 0 && !c.expandable.zoomed
+        )
     }
 
     fun reset() {

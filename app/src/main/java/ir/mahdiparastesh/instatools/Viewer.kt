@@ -44,7 +44,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     private var dbFav: Favourite? = null
     private var thread: Initial? = null
     val expandable: Expandable by lazy {
-        Expandable(this, b.expanded, handler, color(if (!night()) R.color.defBG else R.color.CS))
+        Expandable(
+            this, b.expanded, handler, color(if (!night()) R.color.defBG else R.color.CS)
+        ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
 
     override val menuRes = R.menu.viewer_tlb

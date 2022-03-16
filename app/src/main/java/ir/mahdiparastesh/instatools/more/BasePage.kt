@@ -8,14 +8,18 @@ import android.os.Message
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.contains
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 abstract class BasePage<C> : Fragment(), BackStackOwner,
     Toolbar.OnMenuItemClickListener where C : BaseActivity {
@@ -31,6 +35,9 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
 
     abstract val bInitialised: Boolean
     open fun rv(): RecyclerView = root.findViewById(R.id.rv)
+    open fun empty(): TextView? = root.findViewById(R.id.empty)
+    open fun error(): ImageView? = root.findViewById(R.id.error)
+    open fun loading(): LottieAnimationView? = root.findViewById(R.id.loading)
     open fun jumper(): ImageView = root.findViewById(R.id.jumper)
 
     abstract class PageCompanion : Alive()
@@ -62,6 +69,13 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     }
 
     open fun onLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
+        if (loading() != null && root.contains(loading()!!)) {
+            loading()?.animation?.cancel()
+            root.removeView(loading())
+        }
+        error()?.vis(false)
+        empty()?.vis(isEmpty)
+        if (isEmpty) empty()?.typeface = c.fontRegular
     }
 
     open fun onFailed(message: String) {
@@ -70,6 +84,12 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
         } catch (ignored: IllegalArgumentException) {
             // No suitable parent found from the given view. Please provide a valid view.
         }
+        if (loading() != null && root.contains(loading()!!)) {
+            loading()?.animation?.cancel()
+            root.removeView(loading())
+        }
+        if (rv().adapter == null) error()?.vis()
+        empty()?.vis(false)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true

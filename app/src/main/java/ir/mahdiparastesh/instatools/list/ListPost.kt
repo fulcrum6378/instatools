@@ -84,11 +84,6 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
         }
     }
 
-    override fun onViewDetachedFromWindow(h: ViewHolder) {
-        super.onViewDetachedFromWindow(h)
-        Glide.with(c.c).clear(h.b.thumbnail)
-    }
-
     abstract fun Expandable.settings(pos: Int)
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {

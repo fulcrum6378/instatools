@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.media2.common.SessionPlayer
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
@@ -27,11 +26,11 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
@@ -41,6 +40,7 @@ import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 @SuppressLint("NotifyDataSetChanged")
 class PageSvd : BasePageMain(), Selective {
@@ -53,6 +53,7 @@ class PageSvd : BasePageMain(), Selective {
     override lateinit var inflater: LayoutInflater
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
+    override fun expanded(): ExpandableBinding = b.expanded
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
@@ -137,6 +138,11 @@ class PageSvd : BasePageMain(), Selective {
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (bInitialised && b.rv.adapter != null && ftDetached) buildSelection()
+    }
+
     override fun onRefresh() {
         if (thread?.active == true) return
         c.m.saved = null
@@ -169,11 +175,6 @@ class PageSvd : BasePageMain(), Selective {
         }
 
         if (tracker == null) buildSelection()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (bInitialised && b.rv.adapter != null) buildSelection()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -212,10 +213,10 @@ class PageSvd : BasePageMain(), Selective {
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
-    override fun onPause() {
-        super.onPause()
-        (b.expanded.slider.adapter as ListCar?)?.players
-            ?.forEach { if (it?.playerState == SessionPlayer.PLAYER_STATE_PLAYING) it.pause() }
+    override fun updateShadow() {
+        if (bInitialised) c.b.tbShadow.vish(
+            rv().computeVerticalScrollOffset() > 0 && (b.rv.adapter as ListSvd?)?.expandable?.zoomed != true
+        )
     }
 
     override fun goBack(): Boolean {

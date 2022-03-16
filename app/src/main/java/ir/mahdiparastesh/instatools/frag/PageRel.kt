@@ -84,7 +84,7 @@ class PageRel : BasePageViewer() {
             Api<Story>(
                 c, Api.Type.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class, handler,
                 onError = { interrupt() }) { story ->
-                c.m.vwReels?.add(story.reel)
+                if (!story.reel?.items.isNullOrEmpty()) c.m.vwReels?.add(story.reel)
                 storyFetched = true
                 interrupt()
             }

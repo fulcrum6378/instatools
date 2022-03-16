@@ -91,6 +91,8 @@
     <string name="newUnfNtfChannel">Nuevos no seguidores</string>
     <string name="newUnfNtfChannelDesc">Algunos personas simplemente no te siguieron!</string>
     <string name="newUnfNtfText">¡%d nuevos personas te han dejado!</string>
+    <string name="dmNotSeen">¡Eres invisible!</string>
+    <string name="dmNotSeenDesc">¡Los mensajes que ve en esta aplicación NO se marcarán como vistos!</string>
 
     <!-- Downloads -->
     <string name="downloads">Descargas</string>
@@ -113,6 +115,10 @@
     <string name="followAllSure">¿Seguro que quieres seguir todas estas cuentas? (¡Serán seguidos lentamente y uno por uno para que Instagram no se vuelva sensible!)</string>
     <string name="alsoRequestPv">También envíe solicitud a las cuentas privadas.</string>
     <string name="mfLimit">Limite su número a:</string>
+    <string name="vwStoryReel">Historias Principales</string>
+    <string name="vwReelDesc">Contiene %d vídeos</string>
+    <string name="vwNoReels">¡Este perfil no tiene historias!</string>
+    <string name="vwNoTagged">¡Este perfil no tiene publicaciones etiquetadas!</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Seguidor Masivo</string>
@@ -121,6 +127,8 @@
     <string name="mfGuide3">1. Abra un perfil en InstaTools,\n\n2. Toque el número de sus seguidores o siguiendo,\n\n3. Seleccione \"Seguir a todos\"&#8230;</string>
     <string name="mfSeekTitle">Tomará %1$s minutos para %2$d artículos.\nRetraso entre cada acción de seguimiento:</string>
     <string name="mfClear">Borrar la cola</string>
+    <string name="mfExport">Exportar la cola</string>
+    <string name="mfExportSubject">Cola masiva de seguidores (%d artículos)</string>
     <string name="mfPayForIt">Para desbloquear esta característica, elija uno de los siguientes métodos:</string>
     <string name="mfUnlockTimes">Desbloquear por %d veces</string>
 

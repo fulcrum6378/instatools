@@ -14,6 +14,8 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
@@ -22,14 +24,13 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
-import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.more.BaseSaver
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
     private var thread: FetchSome? = null
+    private lateinit var adBanner: AdView
 
     override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
@@ -73,6 +74,16 @@ class PageTag : BasePageViewer() {
                 ) thread = FetchSome().also { it.start() }
             }
         })
+
+        // Banner Ad
+        if (BaseActivity.areAdsReady()) {
+            adBanner = UiTools.adaptiveBanner(c, "ca-app-pub-9457309151954418/2447612478")
+            b.root.addView(adBanner, UiTools.adaptiveBannerLp())
+            adBanner.loadAd(AdRequest.Builder().build())
+            b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
+                .apply { bottomToTop = R.id.adBanner }
+        }
+
         fetch()
     }
 
