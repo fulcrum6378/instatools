@@ -97,6 +97,8 @@
     <string name="newUnfNtfChannel">New Unfollowers</string>
     <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
+    <string name="dmNotSeen">You Are Invisible!</string>
+    <string name="dmNotSeenDesc">The messages you view in this app will NOT be marked as seen!</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
@@ -120,6 +122,8 @@
     <string name="followAllSure">Are you sure you want to follow all of these accounts? (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)</string>
     <string name="alsoRequestPv">Also send request to the private accounts.</string>
     <string name="mfLimit">Limit their number to:</string>
+    <string name="vwStoryReel">Stories {%d items}</string>
+    <string name="vwHighlightReel">%1$d. %2$s {%3$d items}</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Mass Follower</string>
@@ -130,6 +134,8 @@
     <string name="mfClear">Clear the queue</string>
     <string name="mfPayForIt">In order to unlock this feature, choose one of the following methods:</string>
     <string name="mfUnlockTimes">Unlock for %d times</string>
+    <string name="mfExport">Export the queue</string>
+    <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

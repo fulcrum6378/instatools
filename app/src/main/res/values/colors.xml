@@ -35,6 +35,9 @@
     <color name="dmFromMe">@color/dmFromMeLight</color>
     <color name="navHeaderLL">#99FFFFFF</color>
 
+    <!-- Viewer -->
+    <color name="sepLine">#EEE</color>
+
     <!-- Settings -->
     <color name="stPath">#EFEFEF</color>
 </resources>

@@ -7,6 +7,9 @@
         android:title="@string/start"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/mfExport"
+        android:title="@string/mfExport" />
+    <item
         android:id="@+id/mftClear"
         android:title="@string/mfClear" />
 </menu>

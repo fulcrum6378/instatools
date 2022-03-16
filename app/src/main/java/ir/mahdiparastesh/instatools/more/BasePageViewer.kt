@@ -16,6 +16,9 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
 
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 
+    open fun avoidRefresh(): Boolean =
+        rv().canScrollVertically(-1) || tracker?.hasSelection() == true
+
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
     }

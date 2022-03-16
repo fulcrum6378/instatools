@@ -8,10 +8,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="ir.mahdiparastesh.instatools.view.SafeGridManager"
-        app:spanCount="3" />
+        style="@style/rv"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <ImageView
         android:id="@+id/jumper"

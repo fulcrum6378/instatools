@@ -177,6 +177,15 @@ class MassFollower : ServiceOwnerActivity() {
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this)
             }
+            R.id.mfExport -> if (!m.fwb.value.isNullOrEmpty())
+                startActivity(Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        getString(R.string.mfExportSubject, m.fwb.value?.size ?: 0)
+                    )
+                    putExtra(Intent.EXTRA_TEXT, m.fwb.value?.joinToString("\n") { it.user })
+                })
             R.id.mftClear -> if (!m.fwb.value.isNullOrEmpty())
                 CoroutineScope(Dispatchers.IO).launch {
                     dao.deleteFollowables()

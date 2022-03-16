@@ -13,6 +13,7 @@
     <dimen name="jumperSize">38dp</dimen>
     <dimen name="jumperPad">8.5dp</dimen>
     <dimen name="jumperBottom">27dp</dimen>
+    <dimen name="jumperListPad">72dp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>
@@ -48,6 +49,9 @@
 
     <!-- Favourites -->
     <dimen name="favEmpty">17sp</dimen>
+
+    <!-- Viewer -->
+    <dimen name="vwHighlightCover">58dp</dimen>
 
     <!-- MassFollower -->
     <dimen name="mfPadV">15dp</dimen>

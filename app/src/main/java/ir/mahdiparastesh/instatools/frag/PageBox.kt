@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.databinding.DmNotSeenBinding
 import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
@@ -41,6 +43,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private var boxThread: FetchOfInbox? = null
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
+    private var guidingDmNotSeen = false
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater
@@ -133,6 +136,20 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             else b.rv.adapter?.notifyDataSetChanged()
         }
         updateJumper()
+
+        // DM won't be Seen Guide
+        if (!isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false) && !guidingDmNotSeen)
+            AlertDialog.Builder(c).apply {
+                guidingDmNotSeen = true
+                val bn = DmNotSeenBinding.inflate(inflater)
+                bn.desc.typeface = c.fontRegular
+                setTitle(R.string.dmNotSeen)
+                setView(bn.root)
+                setPositiveButton(R.string.ok) { _, _ ->
+                    guidingDmNotSeen = false
+                    c.gsp.edit().putBoolean(Settings.spLearntDmNotSeen, true).apply()
+                }
+            }.show().stylise(c)
     }
 
     override fun updateJumper() {

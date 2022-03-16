@@ -167,7 +167,7 @@ class Downloads : ServiceOwnerActivity() {
 
         // Swipe to Delete Guide
         if (isSwipeDeleteInflated == null) return
-        if (!gsp.getBoolean(Settings.spLearntSwipeDelete, Settings.defSpLearntSwipeDelete)) when {
+        if (!gsp.getBoolean(Settings.spLearntSwipeDelete, false)) when {
             isSwipeDeleteInflated == false && hasContent -> {
                 b.guideSwipeDeleteStub.setOnInflateListener { _, inflated ->
                     bd = GuideSwipeDeleteBinding.bind(inflated)

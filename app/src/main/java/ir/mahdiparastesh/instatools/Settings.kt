@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.StatFs
 import android.util.Log
@@ -67,10 +68,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         // Mere-Global Hidden Preferences
         const val spDownloadCount = "download_count" // def: 0L
-        const val spLearntSelection = "learnt_selection"
-        const val defSpLearntSelection = false
-        const val spLearntSwipeDelete = "learnt_swipe_delete"
-        const val defSpLearntSwipeDelete = false
+        const val spLearntSelection = "learnt_selection" // def: false
+        const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
+        const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false
         const val spRatedUs = "rated_us"
 
 
@@ -138,7 +138,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         arrayOf(
             b.stBranching, b.stAutoDeleteEmptyDirs, b.stClearCache, b.stResetData, b.stResetSettings
         ).forEach { it.typeface = fontRegular }
-        b.sv.viewTreeObserver.addOnScrollChangedListener {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            b.sv.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+                b.tbShadow.vish(scrollY > 0)
+            }
+        else b.sv.viewTreeObserver.addOnScrollChangedListener {
             b.tbShadow.vish(b.sv.scrollY > 0)
         }
 

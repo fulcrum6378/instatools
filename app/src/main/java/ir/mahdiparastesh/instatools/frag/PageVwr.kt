@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.os.Message
 import android.view.LayoutInflater
@@ -101,7 +102,12 @@ class PageVwr : BasePageViewer() {
         super.onViewCreated(view, savedInstanceState)
 
         // List
-        b.nsv.viewTreeObserver.addOnScrollChangedListener {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            b.nsv.setOnScrollChangeListener { v, _, _, _, _ ->
+                updateShadow()
+                b.rv.isNestedScrollingEnabled = !v.canScrollVertically(1)
+            }
+        else b.nsv.viewTreeObserver.addOnScrollChangedListener {
             updateShadow()
             b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
         }
@@ -219,6 +225,9 @@ class PageVwr : BasePageViewer() {
             }
         }).show()
     }
+
+    override fun avoidRefresh(): Boolean =
+        b.nsv.canScrollVertically(-1) || tracker?.hasSelection() == true
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(b.nsv.scrollY > 0)

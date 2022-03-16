@@ -154,7 +154,7 @@ class PageSvd : BasePageMain(), Selective {
         else b.rv.adapter?.notifyDataSetChanged() // created only once
 
         // Selection Guide
-        if (!isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, Settings.defSpLearntSelection)
+        if (!isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, false)
             && selectionGuide == null
         ) selectionGuide = LottieAnimationView(c).apply {
             layoutParams = ConstraintLayout.LayoutParams(

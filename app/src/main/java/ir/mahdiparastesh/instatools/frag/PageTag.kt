@@ -91,7 +91,8 @@ class PageTag : BasePageViewer() {
     }
 
     fun fetch() {
-        if (com.active.value != true) return
+        if (com.active.value != true || thread?.active == true) return
+        c.m.vwTagged = null
         thread = FetchSome().also { it.start() }
     }
 
@@ -112,8 +113,8 @@ class PageTag : BasePageViewer() {
     }
 
     override fun onRecyclerViewScrolled() {
+        super.onRecyclerViewScrolled()
         updateShadow()
-        updateJumper()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

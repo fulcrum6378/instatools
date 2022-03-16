@@ -53,7 +53,7 @@
         <item name="android:orientation">vertical</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingBottom">@dimen/jumperListPad</item>
     </style>
 
     <style name="shimmer">

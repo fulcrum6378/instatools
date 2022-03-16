@@ -78,7 +78,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
 
     override fun onRecyclerViewScrolled() {
         super.onRecyclerViewScrolled()
-        updateJumper()
+        updateShadow()
     }
 
     override fun updateShadow() {

@@ -142,7 +142,7 @@ open class Rest {
     ) : Reel(items, user)
 
     class HighlightReel(
-        //val cover_media: HighlightCover?, // uncertain "?"
+        val cover_media: HighlightCover?, // uncertain "?"
         //val created_at: Double,
         val id: String, // starts with "highlight:"
         //val is_converted_to_clips: Boolean,
@@ -157,7 +157,7 @@ open class Rest {
         user: User
     ) : Reel(items, user)
 
-    //class HighlightCover(val cropped_image_version: Media.Candidate, val crop_rect: Any?)
+    class HighlightCover(val cropped_image_version: Media.Candidate, val crop_rect: Any?)
 
     class Search(
         //val places: Array<HashMap<String, *>>,

@@ -101,9 +101,13 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             }
         }
 
+        b.toolbar.setNavigationOnClickListener { onBackPressed() }
         b.refresher.setOnRefreshListener {
             reset()
             if (thread?.active != true) thread = Initial().also { it.start() }
+        }
+        b.refresher.setOnChildScrollUpCallback { _, _ ->
+            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer).avoidRefresh()
         }
 
         load(true)

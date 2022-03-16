@@ -11,6 +11,7 @@ import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.Highlights
 import ir.mahdiparastesh.instatools.json.Rest.Story
 import ir.mahdiparastesh.instatools.list.ListRel
@@ -50,8 +51,8 @@ class PageRel : BasePageViewer() {
     }
 
     fun fetch() {
-        if (com.active.value != true) return
-        //thread = FetchAll().also { it.start() }
+        if (com.active.value != true || thread?.active == true) return
+        thread = FetchAll().also { it.start() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -66,8 +67,8 @@ class PageRel : BasePageViewer() {
     }
 
     override fun onRecyclerViewScrolled() {
+        super.onRecyclerViewScrolled()
         updateShadow()
-        updateJumper()
     }
 
     inner class FetchAll : BaseThread() {
@@ -83,23 +84,22 @@ class PageRel : BasePageViewer() {
             Api<Story>(
                 c, Api.Type.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class, handler,
                 onError = { interrupt() }) { story ->
-                /*throw Exception(Gson().toJson(story))
-                c.m.vwReels?.addAll(story.reel.items)
+                c.m.vwReels?.add(story.reel)
                 storyFetched = true
-                interrupt()*/
+                interrupt()
             }
             Api<Highlights>(
                 c, Api.Type.HIGHLIGHTS.url.format(c.m.vwUser?.id ?: ""), Highlights::class,
                 handler, onError = { interrupt() }) { highlights ->
-                /*throw Exception(Gson().toJson(highlights))
-                highlights.tray.forEach { c.m.vwReels?.addAll(it.items) }
+                c.m.vwReels?.addAll(highlights.tray)
                 highlightsFetched = true
-                interrupt()*/
+                interrupt()
             }
         }
 
         override fun interrupt() {
             if (storyFetched && highlightsFetched) {
+                c.m.vwReels?.sortByDescending { it is Rest.StoryReel }
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 super.interrupt()
             }
