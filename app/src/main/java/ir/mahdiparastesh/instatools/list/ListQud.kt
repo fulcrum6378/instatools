@@ -53,6 +53,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
         // Clicks
         h.b.root.setOnClickListener {
             c.m.queueds?.getOrNull(h.layoutPosition)?.let {
+                if (it.link.isBlank()) return@let
                 try {
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(it.link))

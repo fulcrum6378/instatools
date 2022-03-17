@@ -125,7 +125,7 @@ open class Rest {
         //val can_reply: Boolean,
         //val can_reshare: Boolean,
         //val is_cta_sticker_available: Any?,
-        val items: Array<Media>,
+        var items: Array<Media>?,
         //val latest_reel_media: Double,
         //val reel_type: String,
         //val seen: Double,
@@ -152,7 +152,7 @@ open class Rest {
         val id: String, // starts with "highlight:"
         //val is_converted_to_clips: Boolean,
         //val is_pinned_highlight: Boolean,
-        items: Array<Media>,
+        items: Array<Media>?,
         val media_count: Float,
         val media_ids: Array<String>?,
         //val prefetch_count: Double,

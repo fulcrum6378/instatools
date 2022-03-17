@@ -7,6 +7,7 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListRliBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.Reel
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
@@ -29,6 +30,8 @@ class ListRli(private val c: Viewer, private val f: PageRel, private val reel: (
         h.b.click.setOnClickListener {
             c.expandable.media =
                 reel()?.items?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            if (reel() is Rest.HighlightReel) c.expandable.media?.mahdi_reel_id =
+                (reel() as Rest.HighlightReel?)?.id
             c.expandable.thumb = h.b.root
             try {
                 c.expandable.expand()

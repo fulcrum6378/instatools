@@ -48,7 +48,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private var boxThread: FetchOfInbox? = null
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
-    private var guidingDmNotSeen = false
+    private var guideDmNotSeenShowing = false
     val expandable: Expandable by lazy {
         Expandable(
             c, b.expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CT)
@@ -154,18 +154,19 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         updateJumper()
 
         // DM won't be Seen Guide
-        if (!isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false) && !guidingDmNotSeen)
-            AlertDialog.Builder(c).apply {
-                guidingDmNotSeen = true
-                val bn = DmNotSeenBinding.inflate(inflater)
-                bn.desc.typeface = c.fontRegular
-                setTitle(R.string.dmNotSeen)
-                setView(bn.root)
-                setPositiveButton(R.string.ok) { _, _ ->
-                    guidingDmNotSeen = false
-                    c.gsp.edit().putBoolean(Settings.spLearntDmNotSeen, true).apply()
-                }
-            }.show().stylise(c)
+        if (!asGuest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
+            && !guideDmNotSeenShowing
+        ) AlertDialog.Builder(c).apply {
+            guideDmNotSeenShowing = true
+            val bn = DmNotSeenBinding.inflate(inflater)
+            bn.desc.typeface = c.fontRegular
+            setTitle(R.string.dmNotSeen)
+            setView(bn.root)
+            setPositiveButton(R.string.ok) { _, _ ->
+                guideDmNotSeenShowing = false
+                c.gsp.edit().putBoolean(Settings.spLearntDmNotSeen, true).apply()
+            }
+        }.show().stylise(c)
     }
 
     override fun updateShadow() {

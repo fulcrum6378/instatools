@@ -20,7 +20,7 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import java.util.concurrent.CopyOnWriteArrayList
 
 class PageRel : BasePageViewer() {
-    private lateinit var b: PageRelBinding
+    lateinit var b: PageRelBinding
     private var thread: FetchAll? = null
 
     override val com: PageCompanion = Companion
@@ -47,12 +47,15 @@ class PageRel : BasePageViewer() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fetch()
+        load()
     }
 
-    fun fetch() {
-        if (com.active.value != true || thread?.active == true) return
-        thread = FetchAll().also { it.start() }
+    fun load() {
+        if (com.active.value != true) return
+        if (c.m.vwReels != null)
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+        else if (thread?.active != true)
+            thread = FetchAll().also { it.start() }
     }
 
     @SuppressLint("NotifyDataSetChanged")

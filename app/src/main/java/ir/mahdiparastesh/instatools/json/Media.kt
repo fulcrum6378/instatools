@@ -3,9 +3,12 @@ package ir.mahdiparastesh.instatools.json
 import ir.mahdiparastesh.instatools.more.Versioned
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Suppress("SpellCheckingInspection")
+@Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class Media(
+    //val can_reply: Boolean?,
+    //val can_reshare: Boolean?,
     //val can_see_insights_as_brand: Boolean,
+    //val can_send_custom_emojis: Boolean?,
     //val can_view_more_preview_comments: Boolean,
     //val can_viewer_reshare: Boolean,
     //val can_viewer_save: Boolean,
@@ -14,15 +17,16 @@ class Media(
     val carousel_media: Array<CarouselMedia>?,
     //val carousel_media_count: Double?,
     //val client_cache_key: String,
-    val code: String,
+    val code: String?, // dm uploaded media are nullable
     //val comment_count: Double,
     //val comment_inform_treatment: Map<String, *>,
     //val comment_likes_enabled: Boolean,
     //val comment_threading_enabled: Boolean,
     //val comments: Array<Any>,
     //val commerciality_status: String,
-    //val deleted_reason: Double,
-    //val device_timestamp: Double,
+    //val deleted_reason: Float, // 0 => not deleted
+    //val device_timestamp: Double, // dm uploaded media are 0.0
+    val expiring_at: Double?, // where highlighted stories differ from normal one by nullability but not in DMs
     //val facepile_top_likers: Array<Any>,
     //val featured_products_cta: Any?,
     //val filter_type: Float,
@@ -54,14 +58,19 @@ class Media(
     //val original_media_has_visual_reply_media: Boolean,
     original_width: Float?,
     //val photo_of_you: Boolean,
-    val pk: String,
+    val pk: String?, // uploaded dm media have no pk but have id
     //val preview_comments: Array<Any>,
-    //val product_type: String,
+    val product_type: String?,
     //val profile_grid_control_enabled: Boolean,
+    //val reel_mentions: Array<Map<String, *>?>?,
     //val sharing_friction_info: Map<String, *>,
-    val taken_at: Double,
+    //val show_one_tap_fb_share_tooltip: Boolean?,
+    //val story_feed_media: Array<Map<String, *>?>?,
+    //val story_static_models: Array<Any?>?,
+    //val supports_reel_reactions: Boolean?,
+    val taken_at: Double, // dm uploaded media are 0.0
     val thumbnails: Thumbnails?,
-    val title: String,
+    val title: String?, // dm uploaded media are nullable
     //val top_likers: Array<Any>,
     val user: Rest.User,
     //val video_codec: String?,
@@ -71,6 +80,9 @@ class Media(
     //val video_subtitles_uri: String?,
     video_versions: Array<VideoVersion>?,
     //val view_count: Double,
+
+    var mahdi_reel_type: String? = null,
+    var mahdi_reel_id: String? = null
 ) : Versioned(
     image_versions2, original_height, original_width, video_versions
 ) {

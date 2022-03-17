@@ -28,7 +28,7 @@ import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageTag : BasePageViewer() {
-    private lateinit var b: PageTagBinding
+    lateinit var b: PageTagBinding
     private var thread: FetchSome? = null
     private lateinit var adBanner: AdView
 
@@ -84,7 +84,7 @@ class PageTag : BasePageViewer() {
                 .apply { bottomToTop = R.id.adBanner }
         }
 
-        fetch()
+        load()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -101,10 +101,14 @@ class PageTag : BasePageViewer() {
         return super.onMenuItemClick(item)
     }
 
-    fun fetch() {
-        if (com.active.value != true || thread?.active == true) return
-        c.m.vwTagged = null
-        thread = FetchSome().also { it.start() }
+    fun load() {
+        if (com.active.value != true) return
+        if (c.m.vwTagged != null)
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+        else if (thread?.active != true) {
+            c.m.vwTagged = null
+            thread = FetchSome().also { it.start() }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

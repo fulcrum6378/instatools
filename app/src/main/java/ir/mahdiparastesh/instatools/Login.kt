@@ -226,6 +226,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                         // tap on the pretty "Instagram" title in the header, then you go to
                         // another page, e.g. sign up page, then you come back to the same
                         // "instagram.com" page, then you repeat this act once more.
+                    } catch (e: NullPointerException) {
+                        // Because of an unknown reason!!
                     }
                     improperLoading = 0
                 }
@@ -234,7 +236,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        @Throws(JsonSyntaxException::class, NumberFormatException::class)
+        @Throws(JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class)
         private fun collect(html: String) {
             val profile = Gson().fromJson(
                 StringEscapeUtils.unescapeJava(html)

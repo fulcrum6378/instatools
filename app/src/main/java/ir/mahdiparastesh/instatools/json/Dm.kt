@@ -155,8 +155,8 @@ class Dm(
         //val is_reel_persisted: Boolean?,
         val media: Media?,
         //val reason: Double?,
-        //val reel_id: String?,
-        //val reel_type: String?,
+        val reel_id: String?,
+        val reel_type: String?,
         //val story_share_type: String?,
         val text: String,
     ) : PlaceHolder()

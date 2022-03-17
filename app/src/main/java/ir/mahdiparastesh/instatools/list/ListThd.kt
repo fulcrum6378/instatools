@@ -48,12 +48,6 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
 
-    /*override fun onViewDetachedFromWindow(h: ViewHolder) {
-        super.onViewDetachedFromWindow(h)
-        Glide.with(c.c).clear(h.b.msgIv)
-        h.b.msgIv.setImageDrawable(null)
-    }*/
-
     companion object {
         fun ListThdBinding.onCreate(
             fontRegular: Typeface, fontLight: Typeface, isExporting: Boolean = false
@@ -141,12 +135,15 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                     if (dm.reel_share.message != null)
                         msgIvHint.apply { text = dm.reel_share.message; vis() }
                     msgTv.text = dm.reel_share.text
+                    //media?.mahdi_reel_type = dm.reel_share.reel_type
                 }
                 dm.story_share != null -> {
                     media = dm.story_share.media
                     if (dm.story_share.message != null)
                         msgIvHint.apply { text = dm.story_share.message; vis() }
                     msgTv.text = dm.story_share.text
+                    media?.mahdi_reel_type = dm.story_share.reel_type
+                    media?.mahdi_reel_id = dm.story_share.reel_id
                 }
                 dm.text != null -> msgTv.text = dm.text
                 dm.video_call_event != null ->
@@ -177,7 +174,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 }
                 Glide.with(c).load(
                     carousel_media?.getOrNull(0)?.nearest(idealW) ?: nearest(idealW)
-                ).diskCacheStrategy(DiskCacheStrategy.RESOURCE).into(
+                ).diskCacheStrategy(DiskCacheStrategy.ALL).into(
                     object : CustomTarget<Drawable>() {
                         override fun onLoadCleared(placeholder: Drawable?) {}
                         override fun onResourceReady(

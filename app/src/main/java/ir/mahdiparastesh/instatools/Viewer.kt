@@ -79,9 +79,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 when (msg.what) {
                     HANDLE_FETCHED -> {
                         b.refresher.isRefreshing = false
-                        page1?.fetch()
+                        page1?.load()
                         page2?.showProfile()
-                        page3?.fetch()
+                        page3?.load()
                     }
                     HANDLE_ABORTED -> {
                         b.refresher.isRefreshing = false
@@ -133,10 +133,14 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         if (!onCreation) {
             load()
             b.toolbar.title = user
+            if (page1?.bInitialised == true)
+                page1?.b?.rv?.adapter = null
             if (page2?.bInitialised == true) {
                 page2?.b?.proPicIv?.setImageDrawable(null)
                 page2?.b?.privateAcc?.vis(false)
             }
+            if (page3?.bInitialised == true)
+                page3?.b?.rv?.adapter = null
         }
         return true
     }
@@ -171,7 +175,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     private fun load(firstLoad: Boolean = false) {
         if (m.vwUser != null) {
-            handler?.obtainMessage(HANDLE_FETCHED, true)?.sendToTarget()
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             return; }
         reset(firstLoad)
         CoroutineScope(Dispatchers.IO).launch {
@@ -213,7 +217,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
                     interrupt(); return@Api
                 }
-                handler?.obtainMessage(HANDLE_FETCHED, true)?.sendToTarget()
+                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 interrupt()
             }
         }

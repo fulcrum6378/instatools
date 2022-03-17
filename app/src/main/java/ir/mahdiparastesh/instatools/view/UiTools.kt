@@ -14,6 +14,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Html
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
@@ -40,6 +41,9 @@ class UiTools {
     companion object {
         const val PROFILE = "https://www.instagram.com/%s/"
         const val POST_LINK = "https://www.instagram.com/p/%s/"
+        const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s"
+        const val HIGHLIGHT_LINK = "https://www.instagram.com/stories/highlights/%s/" // inexact
+        const val IG_OPENABLE = "https://www.instagram.com/"
         const val INSTA_PACKAGE = "com.instagram.android"
         private const val ADMOB = "com.google.android.gms.ads.MobileAds"
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
@@ -132,15 +136,30 @@ class UiTools {
         ).apply { bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID }
 
         fun AlertDialog.stylise(c: BaseActivity): AlertDialog {
-            // If you move this function to BaseActivity, Fragments won't be able to provide "c".
-            // "ownerActivity" is always null though, even after calling Builder.show().
-            window?.findViewById<TextView>(R.id.alertTitle)
-                ?.apply { typeface = c.fontBold }
-            window?.findViewById<TextView>(android.R.id.message)
-                ?.apply { typeface = c.fontRegular }
-            getButton(AlertDialog.BUTTON_POSITIVE)?.apply { typeface = c.fontRegular }
-            getButton(AlertDialog.BUTTON_NEGATIVE)?.apply { typeface = c.fontRegular }
-            getButton(AlertDialog.BUTTON_NEUTRAL)?.apply { typeface = c.fontRegular }
+            // Don't move this function to BaseActivity
+            val ca = TypedValue().apply {
+                c.theme.resolveAttribute(R.attr.colorAccent, this, true)
+            }.data
+            window?.findViewById<TextView>(R.id.alertTitle)?.apply {
+                typeface = c.fontBold
+                setTextColor(ca)
+            }
+            window?.findViewById<TextView>(android.R.id.message)?.apply {
+                typeface = c.fontRegular
+                //setTextColor(ca)
+            }
+            getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                typeface = c.fontRegular
+                setTextColor(ca)
+            }
+            getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                typeface = c.fontRegular
+                setTextColor(ca)
+            }
+            getButton(AlertDialog.BUTTON_NEUTRAL)?.apply {
+                typeface = c.fontRegular
+                setTextColor(ca)
+            }
             return this
         }
 

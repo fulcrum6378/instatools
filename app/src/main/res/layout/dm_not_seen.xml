@@ -10,9 +10,10 @@
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/anime"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="200sp"
         android:adjustViewBounds="true"
         app:lottie_autoPlay="true"
+        app:lottie_colorFilter="?attr/colorAccent"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/invisibility"
         app:lottie_speed="0.7" />

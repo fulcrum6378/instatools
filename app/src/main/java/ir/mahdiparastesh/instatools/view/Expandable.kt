@@ -58,8 +58,9 @@ class Expandable(
                 CoroutineScope(Dispatchers.IO).launch {
                     c.dao.addQueued(
                         Queued(
-                            Persistent.now(), code, taken_at.xFromSeconds(),
-                            user.pk, user.username, pk, nearest(Versioned.BEST),
+                            Persistent.now(), link() ?: "",
+                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
+                            user.pk, user.username, pk ?: id, nearest(Versioned.BEST),
                             thumb(), media_type.toInt().toByte()
                         )
                     )
@@ -75,9 +76,9 @@ class Expandable(
                 CoroutineScope(Dispatchers.IO).launch {
                     c.dao.addQueued(
                         Queued(
-                            Persistent.now(), code, taken_at.xFromSeconds(),
-                            user.pk, user.username,
-                            car.pk, car.nearest(Versioned.BEST),
+                            Persistent.now(), link() ?: "",
+                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
+                            user.pk, user.username, car.pk, car.nearest(Versioned.BEST),
                             thumb(car), car.media_type.toInt().toByte()
                         )
                     )
@@ -92,9 +93,9 @@ class Expandable(
                 CoroutineScope(Dispatchers.IO).launch {
                     for (car in cars) c.dao.addQueued(
                         Queued(
-                            Persistent.now(), code, taken_at.xFromSeconds(),
-                            user.pk, user.username,
-                            car.pk, car.nearest(Versioned.BEST),
+                            Persistent.now(), link() ?: "",
+                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
+                            user.pk, user.username, car.pk, car.nearest(Versioned.BEST),
                             thumb(car), car.media_type.toInt().toByte()
                         )
                     )
@@ -103,14 +104,18 @@ class Expandable(
             }
         }
         b.viewInInsta.setOnClickListener {
-            if (media == null) return@setOnClickListener
-            try {
-                c.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.POST_LINK.format(media!!.code)))
-                        .setPackage(UiTools.INSTA_PACKAGE)
-                    //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            } catch (e: ActivityNotFoundException) {
+            link()?.let {
+                try {
+                    c.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
+                            if (it.startsWith(UiTools.IG_OPENABLE) &&
+                                !it.startsWith("https://www.instagram.com/stories/highlights/")
+                            ) setPackage(UiTools.INSTA_PACKAGE)
+                            else addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                    )
+                } catch (e: ActivityNotFoundException) {
+                }
             }
         }
     }
@@ -125,6 +130,19 @@ class Expandable(
         b.downloadAll.vis(isSlider)
         b.downloadThis.vis(isSlider)
         b.download.vis(!isSlider)
+    }
+
+    fun link() = media?.let {
+        return@let when (it.product_type) {
+            "feed" -> UiTools.POST_LINK.format(it.code)
+            "story" ->
+                if (it.mahdi_reel_type == "highlight_reel" || it.expiring_at == null)
+                    UiTools.HIGHLIGHT_LINK.format((it.mahdi_reel_id ?: it.id).substringAfter(":"))
+                // Instagram cannot open such an above link
+                else UiTools.STORY_LINK.format(it.user.username, it.pk)
+            null -> it.nearest(Versioned.BEST)
+            else -> null
+        }
     }
 
     fun expand() {
