@@ -74,7 +74,7 @@ open class Rest {
         val next_max_id: String? = null,
         val users: Array<User>,
         //val big_list: Boolean,
-        //val page_size: Double,// TODO !?!
+        //val page_size: Double,
     ) : Rest()
 
     //class Friendships(val friendship_statuses: Map<String, Friendship>) : Rest()

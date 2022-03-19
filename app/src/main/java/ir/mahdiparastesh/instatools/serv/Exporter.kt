@@ -151,7 +151,9 @@ class Exporter : ForegroundService() {
         if (exp?.threadData?.items == null) {
             end(exp); return; }
         when (exp?.type) {
-            (0).toByte() -> object : PdfExporter(c, Uri.parse(Api.encode(exp!!.uri))) {
+            (0).toByte() -> {
+            }
+            (1).toByte() -> object : PdfExporter(c, Uri.parse(Api.encode(exp!!.uri))) {
                 override val list: List<Dm> = exp!!.threadData!!.items
 
                 override fun progress(percent: Float, succeeded: Boolean) {
@@ -169,7 +171,8 @@ class Exporter : ForegroundService() {
                         true
                     ).onBind(c, list, i, downloaded = media).root
             }.start()
-            // (1).toByte() ->
+            (2).toByte() -> {
+            }
             else -> end(exp)
         }
     }
@@ -183,9 +186,10 @@ class Exporter : ForegroundService() {
     }
 
     @Suppress("unused")
-    enum class Method(val id: Byte, val mime: String, val ext: String) {
-        PDF(0, "application/pdf", "pdf"),
-        HTML(1, "text/html", "html")
+    enum class Method(val id: Byte, val mime: String, val ext: String, val openTree: Boolean) {
+        HTML(0, "text/html", "html", true),
+        PDF(1, "application/pdf", "pdf", false),
+        TXT(2, "text/plain", "txt", false),
     }
 
     class Downloadable(val url: String, var data: ByteArray?)

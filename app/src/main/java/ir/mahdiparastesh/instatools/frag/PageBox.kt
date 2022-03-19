@@ -185,9 +185,9 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         thread: Dm.DmThread,
         selection: Array<String>? = null
     ) {
+        val bi = ExportOptionsBinding.inflate(inflater, null, false)
         AlertDialog.Builder(c).apply {
             setTitle(R.string.exportOptions)
-            val bi = ExportOptionsBinding.inflate(inflater, null, false)
             setView(bi.root)
             setNegativeButton(R.string.cancel, null)
             setPositiveButton(R.string.export) { _, _ ->
@@ -197,11 +197,13 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     thread.thread_id, selection?.joinToString(","), method.id, opt.toJson(),
                     threadData = thread
                 )
-                c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = method.mime
-                    putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
-                })
+                if (!method.openTree)
+                    c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = method.mime
+                        putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
+                    })
+                else c.exportLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
                 activityResulted = false
                 c.loadInterstitial("ca-app-pub-9457309151954418/8317918650") {
                     !c.showingAd && activityResulted

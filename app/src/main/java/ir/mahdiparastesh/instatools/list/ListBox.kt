@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.list
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -51,9 +52,17 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         h.b.more.setOnClickListener {
             thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(c, it, R.menu.box_more, Act().apply {
+                this[R.id.bmHtml] = {
+                    thd.users.getOrNull(0)
+                        ?.let { uu -> f.expOptions(Exporter.Method.HTML, uu.username, thd) }
+                }
                 this[R.id.bmPdf] = {
                     thd.users.getOrNull(0)
                         ?.let { uu -> f.expOptions(Exporter.Method.PDF, uu.username, thd) }
+                }
+                this[R.id.bmTxt] = {
+                    thd.users.getOrNull(0)
+                        ?.let { uu -> f.expOptions(Exporter.Method.TXT, uu.username, thd) }
                 }
                 this[R.id.bmOpenDmInInsta] = {
                     UiTools.openDm(c, thd.thread_id)
@@ -64,6 +73,10 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             }, c.colorAc.value).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
+                if (!BuildConfig.DEBUG) {
+                    menu.findItem(R.id.bmHtml).isVisible = false
+                    menu.findItem(R.id.bmTxt).isVisible = false
+                }
             }.show()
         }
         h.b.sep.vis(i < itemCount - 1)

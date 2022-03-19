@@ -135,11 +135,13 @@ class Expandable(
     fun link() = media?.let {
         return@let when (it.product_type) {
             "feed" -> UiTools.POST_LINK.format(it.code)
-            "story" ->
-                if (it.mahdi_reel_type == "highlight_reel" || it.expiring_at == null)
+            "story" -> when {
+                it.mahdi_reel_type == "highlight_reel" || it.expiring_at == null ->
                     UiTools.HIGHLIGHT_LINK.format((it.mahdi_reel_id ?: it.id).substringAfter(":"))
                 // Instagram cannot open such an above link
-                else UiTools.STORY_LINK.format(it.user.username, it.pk)
+                it.mahdi_reel_type == "user_reel" -> it.nearest(Versioned.BEST) // archived story
+                else -> UiTools.STORY_LINK.format(it.user.username, it.pk)
+            }
             null -> it.nearest(Versioned.BEST)
             else -> null
         }

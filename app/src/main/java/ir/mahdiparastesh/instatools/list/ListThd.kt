@@ -118,6 +118,10 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
             when {
                 dm.action_log != null ->
                     msgIvHint.apply { text = dm.action_log.description; vis() }
+                dm.animated_media != null -> Glide.with(c)
+                    .load(dm.animated_media.images.fixed_height.webp) // TODO: CAN OPEN WEBP ?!?!
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(msgIv)
                 dm.clip != null -> media = dm.clip.clip
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
@@ -125,17 +129,24 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                         msgIvHint.apply { text = dm.felix_share.message; vis() }
                     msgTv.text = dm.felix_share.text
                 }
+                dm.like != null -> msgTv.text = dm.like
                 dm.link != null -> msgTv.anchor(dm.link.text, dm.link.link_context.link_url)
+                dm.live_viewer_invite != null ->
+                    msgIvHint.apply { text = dm.live_viewer_invite.cta_button_name; vis() }
                 dm.media != null -> media = dm.media
                 dm.media_share != null -> media = dm.media_share
+                dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
                 dm.profile != null ->
                     msgTv.anchor("@${dm.profile.username}", PROFILE.format(dm.profile.username))
+                dm.raven_media != null -> {
+                    TODO()
+                }
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
                     if (dm.reel_share.message != null)
                         msgIvHint.apply { text = dm.reel_share.message; vis() }
                     msgTv.text = dm.reel_share.text
-                    //media?.mahdi_reel_type = dm.reel_share.reel_type
+                    media?.mahdi_reel_type = dm.reel_share.reel_type
                 }
                 dm.story_share != null -> {
                     media = dm.story_share.media
@@ -151,8 +162,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.voice_media != null -> {
                     msgIvHint.apply { text = "Voice"; vis() }
                 }
-                dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
-                //else -> b.msgTv.text = dm.item_type
+                else -> if (BuildConfig.DEBUG) throw Exception("NEW DM TYPE: ${dm.item_id}")
             }
             msgIvCl.vis(media != null)
             Glide.with(c).clear(msgIv)

@@ -19,21 +19,29 @@ class Dm(
     // Item Types
     val action_log: ActionLog?,
     val animated_media: AnimatedMedia?,
-    val clip: ClipShare?,
-    val felix_share: FelixShare?,
-    val like: String?,
+    val clip: ClipShare?, // shared some kinda video post
+    val felix_share: FelixShare?, // shared some kinda video post
+    val like: String?, // Amin and Maryam's love: "❤️", not shown anymore though without VPN
     val link: Link?,
-    val live_viewer_invite: Any?,
-    val media: Media?,
-    val media_share: Media?,
+    val live_viewer_invite: LiveViewerInvite?,
+    val media: Media?, // uploaded a picture or video
+    val media_share: Media?, // shared a picture or some kinda video post (+ tagged you in a post)
     val placeholder: PlaceHolder?,
     val profile: Rest.User?,
-    val raven_media: Any?,
-    val reel_share: ReelShare?,
-    val story_share: StoryShare?,
-    val text: String?,
-    val video_call_event: VideoCallEvent?,
+    val raven_media: RavenMedia?, // captured and uploaded by the blue button or direct story
+    val reel_share: ReelShare?, // the user's own reel which was story once and now is in the archive
+    val story_share: StoryShare?, // shared a normal or highlighted story story
+    val text: String?, // no different if is a saved reply
+    val video_call_event: VideoCallEvent?, // plus audio call
     val voice_media: Voice?,
+
+    // 1. Clip: is a short video which appears in DM as a rectangle and has a video icon in top right
+    // plus user profile picture and name at the bottom,
+    // clip will not appear in a profile's "Videos" section
+    // 2. Felix: is a long videos which appears in DM as a rectangle and has no icons except user
+    // profile picture and name at the bottom, this video will appear in their profile's "Videos".
+    // 3. Found in {media_share}: There is also some other kind of short video post which appears
+    // in DM this time as a SQUARE and also appears in "Videos" section.
 ) {
     class Inbox(
         //val blended_inbox_enabled: Boolean,
@@ -46,7 +54,7 @@ class Dm(
         //val unseen_count_ts: Double,
     )
 
-    /*class ContinuumCursor(// each are either Double or String
+    /*class ContinuumCursor( // each are either Double or String
         val cursor_timestamp_seconds: Any,
         val cursor_relevancy_score: Any,
         val cursor_thread_v2_id: Any,
@@ -130,7 +138,24 @@ class Dm(
     )
 
     class AnimatedMedia(
-        val images: Any?
+        //val id: String,
+        val images: AnimatedMediaImages,
+        //val is_random: Boolean,
+        //val is_sticker: Boolean, // if chosen from the left list "GIPHY Stickers" not right "GIPHY"
+        //val user: Rest.User,
+    )
+
+    class AnimatedMediaImages(val fixed_height: AnimatedMediaImage)
+
+    class AnimatedMediaImage(
+        val height: String,
+        val mp4: String,
+        val mp4_size: String,
+        val size: String,
+        val url: String,
+        val webp: String,
+        val webp_size: String,
+        val width: String,
     )
 
     class Link(
@@ -158,7 +183,7 @@ class Dm(
         val reel_id: String?,
         val reel_type: String?,
         //val story_share_type: String?,
-        val text: String,
+        val text: String, // the person's message
     ) : PlaceHolder()
 
     class ReelShare(
@@ -166,9 +191,9 @@ class Dm(
         val media: Media?,
         //val reaction_info: ReactionInfo?,
         //val reel_owner_id: Double,
-        //val reel_type: String,
-        val text: String,
-        val type: String,
+        val reel_type: String,
+        val text: String, // the person's message
+        //val type: String, // e.g.: "reply"
     ) : PlaceHolder()
 
     class Reactions(
@@ -191,16 +216,17 @@ class Dm(
     )
 
     class Voice(
-        val is_shh_mode: Boolean,
-        val replay_expiring_at_us: Any?,
-        val seen_count: Float,
-        val seen_user_ids: Array<Any>,
-        val view_mode: String,
+        //val is_shh_mode: Boolean,
+        val media: VoiceMedia,
+        //val replay_expiring_at_us: Any?,
+        //val seen_count: Float,
+        //val seen_user_ids: Array<Any>,
+        //val view_mode: String,
     )
 
     class VoiceMedia(
         val audio: Audio,
-        val id: String,
+        //val id: String,
         //val media_type: Float,
         //val organic_tracking_token: String,
         //val product_type: String,
@@ -220,24 +246,75 @@ class Dm(
     ) : AudioSrc()
 
     class VideoCallEvent(
-        val action: String,
+        val action: String, // e.g.: "video_call_started" or "video_call_ended"; the same for audio calls
         val call_duration: Double,
         val call_start_time: Double,
         val call_end_time: Double,
         val description: String,
-        val did_join: Boolean,
+        // e.g.: "fulcrum1378 started a video chat" then "You missed a video chat"
+        // e.g.: "You started an audio call" then "Audio call ended"
+        val did_join: Boolean?,
         //val encoded_server_data_info: String,
         //val feature_set_str: String,
         //val text_attributes: Array<Any>,
-        //val thread_has_audio_only_call: Boolean,
+        //val thread_has_audio_only_call: Boolean, // where audio calls and video calls differ
         //val thread_has_drop_in: Boolean,
         //val vc_id: String,
     )
 
     @Suppress("PropertyName")
     open class PlaceHolder {
-        var is_linked: Boolean? = null
-        var title: String? = null
-        var message: String? = null
+        //var is_linked: Boolean? = null // e.g.: false
+        var title: String? = null // e.g.: "Post unavailable"
+        var message: String? = null // e.g.: "This post is unavailable because it was deleted."
     }
+
+    class RavenMedia(
+        //val url_expire_at_secs: Double?,
+        //val playback_duration_secs: Float?,
+        //val creative_config: Any?,
+        //val story_app_attribution: Any?,
+        //val create_mode_attribution: Any?,
+        //val id: String?,
+        //val media_type: Float, // always 1: photo
+        val original_height: Float?,
+        val original_width: Float?,
+        //val user: Rest.User?,
+        //val organic_tracking_token: String,
+        val image_versions2: Media.ImageVersions2?,
+        //val media_id: String?,
+    )
+
+    class LiveViewerInvite(
+        //val broadcast: LiveBroadcast?,
+        val cta_button_name: String, // e.g.: "Watch Live Video" then "Content Not Available"
+        //val text: String, // e.g.: ""
+    ) : PlaceHolder()
+
+    /*class LiveBroadcast(
+        //val id: String,
+        //val dash_playback_url: String, // an *.mpd file!!
+        //val dash_abr_playback_url: String, // an *.mpd file!!
+        //val broadcast_status: String, // e.g.: "interrupted"
+        //val viewer_count: Float,
+        //val internal_only: Boolean,
+        val cover_frame_url: String, // thumbnail
+        val cobroadcasters: Array<Any>,
+        //val is_player_live_trace_enabled: Float,
+        //val is_gaming_content: Boolean,
+        //val is_live_comment_mention_enabled: Boolean,
+        //val is_live_comment_replies_enabled: Boolean,
+        //val is_viewer_comment_allowed: Boolean,
+        //val broadcast_owner: Rest.User,
+        //val published_time: Double,
+        //val hide_from_feed_unit: Boolean,
+        //val video_duration: Double,
+        //val media_id: String,
+        //val live_post_id: String,
+        val broadcast_message: String,
+        //val organic_tracking_token: String,
+        val dimensions: Map<String, Float>, // "width" and "height"
+        //val broadcast_experiments: Map<String, Any?>, // much data
+        val visibility: Float,
+    )*/
 }

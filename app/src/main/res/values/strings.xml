@@ -23,8 +23,9 @@
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
     <string name="export">Export</string>
-    <string name="exportPdf">Export to PDF</string>
     <string name="exportHtml">Export to HTML</string>
+    <string name="exportPdf">Export to PDF</string>
+    <string name="exportTxt">Export to TXT</string>
     <string name="exportOptions">Export Options</string>
     <string name="backgroundTasks">Background Tasks</string>
     <string name="unknownError">Sorry, an unknown error occurred: %s</string>
