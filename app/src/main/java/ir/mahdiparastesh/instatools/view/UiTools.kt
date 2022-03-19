@@ -242,5 +242,12 @@ class UiTools {
         fun InitializationStatus.isReady(): Boolean = if (adapterStatusMap.containsKey(ADMOB))
             adapterStatusMap[ADMOB]?.initializationState == AdapterStatus.State.READY
         else false
+
+        fun fileDateTime(time: Long): String {
+            val cal = Calendar.getInstance().apply { timeInMillis = time }
+            return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
+                    "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
+                    "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
+        }
     }
 }

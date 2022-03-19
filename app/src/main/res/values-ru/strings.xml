@@ -24,7 +24,7 @@
     <string name="export">Экспорт</string>
     <string name="exportPdf">Экспорт в PDF</string>
     <string name="exportHtml">Экспорт в HTML</string>
-    <string name="exportOptions">Параметры экспорта</string>
+    <string name="exportOptions">Параметры экспорта (%s)</string>
     <string name="backgroundTasks">Фоновые задачи</string>
     <string name="unknownError">Извините, произошла неизвестная ошибка: %s</string>
     <string name="unknownMyError">Извините, произошла неизвестная ошибка!</string>

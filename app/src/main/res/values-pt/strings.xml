@@ -19,7 +19,7 @@
     <string name="export">Exportar</string>
     <string name="exportPdf">Exportar para PDF</string>
     <string name="exportHtml">Exportar para HTML</string>
-    <string name="exportOptions">Opções de exportação</string>
+    <string name="exportOptions">Opções de exportação (%s)</string>
     <string name="backgroundTasks">Tarefas em segundo plano</string>
     <string name="unknownError">Desculpe, ocorreu um erro desconhecido: %s</string>
     <string name="unknownMyError">Desculpe, ocorreu um erro desconhecido!</string>

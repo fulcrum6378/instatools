@@ -25,7 +25,7 @@
     <string name="export">استخراج</string>
     <string name="exportPdf">استخراج در پی دی اف</string>
     <string name="exportHtml">استخراج در اچ تی ام ال</string>
-    <string name="exportOptions">گزینه های استخراج</string>
+    <string name="exportOptions">گزینه های استخراج (%s)</string>
     <string name="backgroundTasks">کار های پشت صحنه</string>
     <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
     <string name="unknownMyError">متاسفانه خطایی ناشناخته رخ داد!</string>

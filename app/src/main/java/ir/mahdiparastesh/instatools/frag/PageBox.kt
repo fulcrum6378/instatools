@@ -8,12 +8,17 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.RadioGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -35,6 +40,7 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -186,13 +192,65 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         selection: Array<String>? = null
     ) {
         val bi = ExportOptionsBinding.inflate(inflater, null, false)
+        bi.ll.forEach { ch ->
+            when (ch) {
+                is MaterialCheckBox -> ch.typeface = c.fontRegular
+                is RadioGroup -> ch.forEach { (it as MaterialRadioButton).typeface = c.fontRegular }
+            }
+        }
+        val opt = c.sp?.getString(Settings.spExpOptions, null)
+            ?.let { Exportable.Options.parse(it) } ?: Exportable.Options()
+        bi.incImage.isChecked = opt.img()
+        if (opt.img()) bi.quaImage.check(Exportable.Options.quaImage[opt.image])
+        bi.incVideo.isChecked = opt.vid()
+        if (opt.vid()) bi.quaVideo.check(Exportable.Options.quaVideo[opt.video])
+        bi.incVoice.isChecked = opt.voi()
+        // TODO: MAX SLIDES
+
+        if (!method.img) {
+            bi.incImage.isChecked = false
+            bi.incImage.isEnabled = false
+            bi.quaImage.forEach { it.isEnabled = false }
+            bi.quaImage.clearCheck()
+        } else bi.incImage.setOnCheckedChangeListener(object :
+            CompoundButton.OnCheckedChangeListener {
+            var wasCheckedItem = bi.quaImage.checkedRadioButtonId
+            override fun onCheckedChanged(v: CompoundButton, isChecked: Boolean) {
+                if (isChecked) bi.quaImage.check(wasCheckedItem) else {
+                    wasCheckedItem = bi.quaImage.checkedRadioButtonId
+                    bi.quaImage.clearCheck()
+                }
+            }
+        })
+        if (!method.vid) {
+            bi.incVideo.isChecked = false
+            bi.incVideo.isEnabled = false
+            bi.quaVideo.forEach { it.isEnabled = false }
+            bi.quaVideo.clearCheck()
+            bi.incVoice.isChecked = false
+            bi.incVoice.isEnabled = false
+        } else bi.incVideo.setOnCheckedChangeListener(object :
+            CompoundButton.OnCheckedChangeListener {
+            var wasCheckedItem = bi.quaVideo.checkedRadioButtonId
+            override fun onCheckedChanged(v: CompoundButton, isChecked: Boolean) {
+                if (isChecked) bi.quaVideo.check(wasCheckedItem) else {
+                    wasCheckedItem = bi.quaVideo.checkedRadioButtonId
+                    bi.quaVideo.clearCheck()
+                }
+            }
+        })
+
         AlertDialog.Builder(c).apply {
-            setTitle(R.string.exportOptions)
+            setTitle(c.getString(R.string.exportOptions, method.ext.uppercase()))
             setView(bi.root)
             setNegativeButton(R.string.cancel, null)
             setPositiveButton(R.string.export) { _, _ ->
-                val opt = Exportable.Options()
-                //c.sp?.edit()?.let {}
+                opt.image = if (bi.incImage.isChecked)
+                    Exportable.Options.quaImage.indexOf(bi.quaImage.checkedRadioButtonId) else -1
+                opt.video = if (bi.incVideo.isChecked)
+                    Exportable.Options.quaVideo.indexOf(bi.quaVideo.checkedRadioButtonId) else -1
+                opt.voice = if (bi.incVoice.isChecked) 0 else -1
+                c.sp?.edit()?.putString(Settings.spExpOptions, opt.toJson())?.apply()
                 exportable = Exportable(
                     thread.thread_id, selection?.joinToString(","), method.id, opt.toJson(),
                     threadData = thread
@@ -201,7 +259,10 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = method.mime
-                        putExtra(Intent.EXTRA_TITLE, "Exported $userName.${method.ext}")
+                        putExtra(
+                            Intent.EXTRA_TITLE,
+                            "Exported ${userName}_${UiTools.fileDateTime(Persistent.now())}.${method.ext}"
+                        )
                     })
                 else c.exportLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
                 activityResulted = false

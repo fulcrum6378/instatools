@@ -19,7 +19,7 @@
     <string name="export">İhracat</string>
     <string name="exportPdf">PDF\'ye aktar</string>
     <string name="exportHtml">HTML\'ye aktar</string>
-    <string name="exportOptions">Dışa Aktarma Seçenekleri</string>
+    <string name="exportOptions">Dışa Aktarma Seçenekleri (%s)</string>
     <string name="backgroundTasks">Arkaplan işlemleri</string>
     <string name="unknownError">Üzgünüz, bilinmeyen bir hata oluştu: %s</string>
     <string name="unknownMyError">Üzgünüz, bilinmeyen bir hata oluştu!</string>

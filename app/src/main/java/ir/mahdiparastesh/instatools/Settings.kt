@@ -65,6 +65,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val defSpFollowerDelay = 60 * 1000L
         const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
         const val spUnfLastChecked = "unf_last_checked" // def: 0L
+        const val spExpOptions = "export_options"
 
         // Mere-Global Hidden Preferences
         const val spDownloadCount = "download_count" // def: 0L

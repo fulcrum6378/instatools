@@ -139,7 +139,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.profile != null ->
                     msgTv.anchor("@${dm.profile.username}", PROFILE.format(dm.profile.username))
                 dm.raven_media != null -> {
-                    TODO()
+                    // TODO
                 }
                 dm.reel_share != null -> {
                     media = dm.reel_share.media

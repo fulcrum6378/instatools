@@ -2,8 +2,7 @@ package ir.mahdiparastesh.instatools.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
-import java.util.*
+import ir.mahdiparastesh.instatools.view.UiTools
 
 @Entity
 class Queued(
@@ -21,12 +20,7 @@ class Queued(
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
-    fun fName(ext: String): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = date!! }
-        return "${userName}_${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
-                "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
-                "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}_$itemId.$ext"
-    }
+    fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date!!)}_$itemId.$ext"
 
     companion object {
         fun find(it: Queued, inList: List<Queued>?): Int? {

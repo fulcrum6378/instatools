@@ -4,9 +4,73 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingStart="22sp"
+        android:paddingTop="10dp"
+        android:paddingEnd="22sp"
+        android:paddingBottom="5dp">
 
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/incImage"
+            style="@style/expOptCheck"
+            android:text="@string/expOptImage" />
+
+        <RadioGroup
+            android:id="@+id/quaImage"
+            style="@style/expOptRadioGroup">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaImage0"
+                style="@style/expOptRadio"
+                android:text="@string/expOptLow" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaImage1"
+                style="@style/expOptRadio"
+                android:text="@string/expOptMed" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaImage2"
+                style="@style/expOptRadio"
+                android:text="@string/expOptHig" />
+        </RadioGroup>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/incVideo"
+            style="@style/expOptCheck"
+            android:text="@string/expOptVideo" />
+
+        <RadioGroup
+            android:id="@+id/quaVideo"
+            style="@style/expOptRadioGroup">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaVideo3"
+                style="@style/expOptRadio"
+                android:text="@string/expOptThm" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaVideo0"
+                style="@style/expOptRadio"
+                android:text="@string/expOptLow" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaVideo1"
+                style="@style/expOptRadio"
+                android:text="@string/expOptMed" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/quaVideo2"
+                style="@style/expOptRadio"
+                android:text="@string/expOptHig" />
+        </RadioGroup>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/incVoice"
+            style="@style/expOptCheck"
+            android:text="@string/expOptVoice" />
     </LinearLayout>
 </ScrollView>

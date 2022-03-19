@@ -80,6 +80,7 @@ class Exporter : ForegroundService() {
     private fun handle() {
         CoroutineScope(Dispatchers.IO).launch {
             exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
+            exp?.opt = Exportable.Options.parse(exp?.options)
             withContext(Dispatchers.Main) {
                 if (exp == null)
                     this@Exporter.finish(false)
@@ -101,14 +102,34 @@ class Exporter : ForegroundService() {
     private fun fetchMedia() {
         if (exp?.threadData?.items == null) {
             end(exp); return; }
+        if (exp?.opt?.img() == false && exp?.opt?.vid() == false && exp?.opt?.voi() == false) {
+            export(); return; }
         media = hashMapOf()
+        val img = exp?.opt?.img() == true
+        val vid = exp?.opt?.vid() == true
         for (dm in exp!!.threadData!!.items) (when {
-            dm.clip != null -> dm.clip.clip
-            dm.felix_share != null -> dm.felix_share.video
-            dm.media != null -> dm.media
-            dm.media_share != null -> dm.media_share
-            dm.reel_share != null -> dm.reel_share.media
-            dm.story_share != null -> dm.story_share.media
+            vid && dm.clip != null -> dm.clip.clip
+            vid && dm.felix_share != null -> dm.felix_share.video
+            dm.media != null -> when (dm.media.media_type) {
+                1f -> if (img) dm.media else null
+                2f -> if (vid) dm.media else null
+                else -> null
+            }
+            dm.media_share != null -> when (dm.media_share.media_type) {
+                1f -> if (img) dm.media_share else null
+                2f -> if (vid) dm.media_share else null
+                else -> null
+            }
+            dm.reel_share != null -> when (dm.reel_share.media?.media_type) {
+                1f -> if (img) dm.reel_share.media else null
+                2f -> if (vid) dm.reel_share.media else null
+                else -> null
+            }
+            dm.story_share != null -> when (dm.story_share.media?.media_type) {
+                1f -> if (img) dm.story_share.media else null
+                2f -> if (vid) dm.story_share.media else null
+                else -> null
+            }
             else -> null
         })?.apply {
             if (carousel_media == null && image_versions2 == null) return@apply
@@ -186,10 +207,13 @@ class Exporter : ForegroundService() {
     }
 
     @Suppress("unused")
-    enum class Method(val id: Byte, val mime: String, val ext: String, val openTree: Boolean) {
-        HTML(0, "text/html", "html", true),
-        PDF(1, "application/pdf", "pdf", false),
-        TXT(2, "text/plain", "txt", false),
+    enum class Method(
+        val id: Byte, val mime: String, val ext: String, val openTree: Boolean,
+        val img: Boolean, val vid: Boolean,
+    ) {
+        HTML(0, "text/html", "html", true, true, true),
+        PDF(1, "application/pdf", "pdf", false, true, false),
+        TXT(2, "text/plain", "txt", false, false, false),
     }
 
     class Downloadable(val url: String, var data: ByteArray?)
