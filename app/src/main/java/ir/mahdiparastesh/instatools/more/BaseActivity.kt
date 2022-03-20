@@ -162,22 +162,28 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         }
     }
 
+    open fun styliseToolbar() {
+        val ca = colorAc.value ?: TypedValue().apply {
+            theme.resolveAttribute(R.attr.colorAccent, this, true)
+        }.data
+        val cf = PorterDuffColorFilter(ca, PorterDuff.Mode.SRC_IN)
+        toolbar.navigationIcon?.colorFilter = cf
+        if (!night() && this is Main) {
+            tbTitle?.setTextColor(ca)
+            toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
+        }
+        toolbar.overflowIcon?.colorFilter = cf
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (menuRes != null) toolbar.inflateMenu(menuRes!!)
-        if (!night()) colorAc.value ?: TypedValue().apply {
-            theme.resolveAttribute(R.attr.colorPrimary, this, true)
-            val cf = PorterDuffColorFilter(data, PorterDuff.Mode.SRC_IN)
-            toolbar.menu.forEach { item ->
-                item.icon?.colorFilter = cf
-                item.stylise(this@BaseActivity)
-            }
-            if (this@BaseActivity !is Main) {
-                toolbar.navigationIcon?.colorFilter = cf
-                tbTitle?.setTextColor(data)
-            }
-            toolbar.overflowIcon?.colorFilter = cf
-        }
+        styliseToolbar()
         toolbar.setOnMenuItemClickListener(this)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        toolbar.menu.forEach { it.stylise(this, -1) }
         return true
     }
 
@@ -229,8 +235,10 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         super.onDestroy()
     }
 
+    fun wrapTheme(which: Theme): ContextThemeWrapper = ContextThemeWrapper(c, which.res)
+
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
-        inf.cloneInContext(ContextThemeWrapper(c, which.res))
+        inf.cloneInContext(wrapTheme(which))
 
     fun color(@ColorRes res: Int) = ContextCompat.getColor(c, res)
 

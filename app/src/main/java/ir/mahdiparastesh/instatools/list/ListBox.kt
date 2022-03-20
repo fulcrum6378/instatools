@@ -9,6 +9,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -51,26 +52,29 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         }
         h.b.more.setOnClickListener {
             thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            MaterialMenu(c, it, R.menu.box_more, Act().apply {
-                this[R.id.bmHtml] = {
-                    thd.users.getOrNull(0)
-                        ?.let { uu -> f.expOptions(Exporter.Method.HTML, uu.username, thd) }
-                }
-                this[R.id.bmPdf] = {
-                    thd.users.getOrNull(0)
-                        ?.let { uu -> f.expOptions(Exporter.Method.PDF, uu.username, thd) }
-                }
-                this[R.id.bmTxt] = {
-                    thd.users.getOrNull(0)
-                        ?.let { uu -> f.expOptions(Exporter.Method.TXT, uu.username, thd) }
-                }
-                this[R.id.bmOpenDmInInsta] = {
-                    UiTools.openDm(c, thd.thread_id)
-                }
-                this[R.id.bmView] = {
-                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
-                }
-            }, c.colorAc.value).apply {
+            MaterialMenu(
+                c.wrapTheme(BaseActivity.Theme.TERTIARY), c.fontRegular, it, R.menu.box_more,
+                Act().apply {
+                    this[R.id.bmHtml] = {
+                        thd.users.getOrNull(0)
+                            ?.let { uu -> f.expOptions(Exporter.Method.HTML, uu.username, thd) }
+                    }
+                    this[R.id.bmPdf] = {
+                        thd.users.getOrNull(0)
+                            ?.let { uu -> f.expOptions(Exporter.Method.PDF, uu.username, thd) }
+                    }
+                    this[R.id.bmTxt] = {
+                        thd.users.getOrNull(0)
+                            ?.let { uu -> f.expOptions(Exporter.Method.TXT, uu.username, thd) }
+                    }
+                    this[R.id.bmOpenDmInInsta] = {
+                        UiTools.openDm(c, thd.thread_id)
+                    }
+                    this[R.id.bmView] = {
+                        thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
+                    }
+                }, c.colorAc.value
+            ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
                 if (!BuildConfig.DEBUG) {

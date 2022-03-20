@@ -4,12 +4,14 @@
         <item name="colorPrimary">@color/defCA</item>
         <item name="colorPrimaryDark">?attr/colorPrimary</item>
         <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
@@ -50,5 +52,21 @@
 
     <style name="Theme.InstaTools.Toolbar.Main" parent="Theme.InstaTools.Toolbar">
         <item name="android:textSize">@dimen/tbTitleMain</item>
+    </style>
+
+    <style name="Theme.InstaTools.OverflowMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
+    <style name="Theme.InstaTools.OverflowMenu.Primary" parent="Theme.InstaTools.OverflowMenu">
+        <item name="android:textColor">@color/CP</item>
+    </style>
+
+    <style name="Theme.InstaTools.OverflowMenu.Secondary" parent="Theme.InstaTools.OverflowMenu">
+        <item name="android:textColor">@color/CS</item>
+    </style>
+
+    <style name="Theme.InstaTools.OverflowMenu.Tertiary" parent="Theme.InstaTools.OverflowMenu">
+        <item name="android:textColor">@color/CT</item>
     </style>
 </resources>

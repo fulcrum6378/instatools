@@ -10,5 +10,38 @@
         <item name="android:statusBarColor">?attr/backgroundColor</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+        <item name="android:itemBackground">@drawable/menu_item_secondary_night</item>
+    </style>
+
+    <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
+        <item name="colorPrimary">@color/CP</item>
+        <item name="colorPrimaryWeak">@color/CPW</item>
+        <item name="android:itemBackground">@drawable/menu_item</item>
+    </style>
+
+    <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
+        <item name="colorPrimary">@color/CS</item>
+        <item name="colorPrimaryWeak">@color/CSW</item>
+    </style>
+
+    <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
+        <item name="colorPrimary">@color/CT</item>
+        <item name="colorPrimaryWeak">@color/CTW</item>
+        <item name="android:itemBackground">@drawable/menu_item</item>
+        <item name="defCA">@color/defCA</item>
+        <item name="dmFromMe">@color/dmFromMe</item>
+    </style>
+
+
+    <style name="Theme.InstaTools.OverflowMenu.Primary" parent="Theme.InstaTools.OverflowMenu">
+        <item name="android:textColor">@color/defCA</item>
+    </style>
+
+    <style name="Theme.InstaTools.OverflowMenu.Secondary" parent="Theme.InstaTools.OverflowMenu">
+        <item name="android:textColor">@color/defCA</item>
+    </style>
+
+    <style name="Theme.InstaTools.OverflowMenu.Tertiary" parent="Theme.InstaTools.OverflowMenu">
+        <item name="android:textColor">@color/defCA</item>
     </style>
 </resources>

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="CP">#705000</color><!--#FFD453-->
+    <color name="CP">#705000</color>
+    <!--<color name="CPL">#FFD453</color>-->
     <color name="CPW">#44FFD453</color>
-    <color name="CS">#8B006D</color><!--#C938A9-->
+    <color name="CS">#8B006D</color>
+    <!--<color name="CSL">#C938A9</color>-->
     <color name="CSW">#44C938A9</color>
-    <color name="CT">#002680</color><!--#406AC9-->
+    <color name="CT">#002680</color>
+    <!--<color name="CTL">#406AC9</color>-->
     <color name="CTW">#44406AC9</color>
+
     <color name="tp">#00000000</color>
     <color name="shadow">#55000000</color>
-
     <color name="defBG">#FFF</color>
     <color name="defCALight">#262626</color>
     <color name="defCA">@color/defCALight</color>

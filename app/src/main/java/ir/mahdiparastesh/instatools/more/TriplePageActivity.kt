@@ -2,14 +2,13 @@ package ir.mahdiparastesh.instatools.more
 
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import kotlin.reflect.KClass
 
 abstract class TriplePageActivity<A, B, C> : BaseActivity()
@@ -109,10 +108,8 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                 page1!!, page2!!, page3!!
             )[currentPage.value!!] else this
         )
-        if (night()) {
-            toolbar.overflowIcon?.colorFilter = pdcf(R.color.defCA)
-            toolbar.menu.forEach { item -> item.stylise(this) }
-        }
+        if (this is Main) styliseToolbar()
+        Delay(100) { onPrepareOptionsMenu(null) }
         return true
     }
 

@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.frag.PageUnf.Companion.MAX_UNFOLLOW_AD
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -46,10 +47,13 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
 
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            MaterialMenu(c, it, R.menu.unf_more, Act().apply {
-                this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
-                this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
-            }, c.colorAc.value).show()
+            MaterialMenu(
+                c.wrapTheme(BaseActivity.Theme.PRIMARY), c.fontRegular, it, R.menu.unf_more,
+                Act().apply {
+                    this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
+                    this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
+                }, c.colorAc.value
+            ).show()
         }
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener

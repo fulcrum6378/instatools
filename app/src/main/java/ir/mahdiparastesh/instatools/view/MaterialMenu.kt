@@ -1,10 +1,11 @@
 package ir.mahdiparastesh.instatools.view
 
+import android.graphics.Typeface
 import android.text.SpannableString
 import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.forEach
 import ir.mahdiparastesh.instatools.R
@@ -13,8 +14,12 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 typealias Act = HashMap<Int, (item: MenuItem) -> Unit>
 
 class MaterialMenu(
-    val c: BaseActivity, v: View, res: Int, actions: Act, private val ca: Int? = null
-) : PopupMenu(ContextThemeWrapper(c, c.theme), v) {
+    val c: ContextThemeWrapper, private val font: Typeface, v: View, res: Int, actions: Act,
+    private val ca: Int? = null
+) : PopupMenu(androidx.appcompat.view.ContextThemeWrapper(c, c.theme), v) {
+    constructor(c: BaseActivity, v: View, res: Int, actions: Act, ca: Int? = null) :
+            this(c, c.fontRegular, v, res, actions, ca)
+
     init {
         setOnMenuItemClickListener {
             if (it.itemId in actions) {
@@ -26,24 +31,29 @@ class MaterialMenu(
     }
 
     override fun show() {
-        menu.forEach { it.stylise(c, ca) }
+        menu.forEach { it.stylise(c, font, ca) }
         super.show()
     }
 
     companion object {
-        fun MenuItem.stylise(c: BaseActivity, ca: Int? = null, size: Int = R.dimen.menuFont) {
+        fun MenuItem.stylise(
+            c: ContextThemeWrapper, font: Typeface, ca: Int? = null, size: Int = R.dimen.menuFont
+        ) {
             if (title == null) return
             title = SpannableString(title).apply {
                 setSpan(
                     CustomTypefaceSpan(
-                        c.fontRegular, c.resources.getDimension(size),
-                        // DON'T USE c.dimen(), apparently it'll turn to DIP automatically!
-                        ca ?: TypedValue().apply {
+                        font, c.resources.getDimension(size),
+                        if (ca == -1) null else ca ?: TypedValue().apply {
                             c.theme.resolveAttribute(R.attr.colorAccent, this, true)
                         }.data
                     ), 0, length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
                 )
             }
+        }
+
+        fun MenuItem.stylise(c: BaseActivity, ca: Int? = null, size: Int = R.dimen.menuFont) {
+            stylise(c, c.fontRegular, ca, size)
         }
     }
 }

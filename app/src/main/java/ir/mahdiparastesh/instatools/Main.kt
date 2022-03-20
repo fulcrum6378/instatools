@@ -52,7 +52,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     val colorBG = MutableLiveData<Int?>(null)
-    val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
     val exportLauncher = launcher { page3?.onActivityResult(it) }
 
     var searchInput: SearchView.SearchAutoComplete? = null
@@ -74,6 +73,12 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     companion object : ActivityCompanion() {
         var guest = false
+        val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+        val overflowThemes = arrayOf(
+            R.style.Theme_InstaTools_OverflowMenu_Primary,
+            R.style.Theme_InstaTools_OverflowMenu_Secondary,
+            R.style.Theme_InstaTools_OverflowMenu_Tertiary
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,8 +105,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 window.decorView.setBackgroundColor(it)
                 window.statusBarColor = it
                 window.navigationBarColor = it
+                styliseToolbar()
+                onPrepareOptionsMenu(null)
                 b.nav.setBackgroundColor(it)
-                b.toolbar.menu.forEach { item -> item.stylise(this@Main) }
                 b.searchRes.setBackgroundColor(it)
                 b.bnv.setBackgroundColor(it)
                 if (page2?.bInitialised == true)
@@ -111,20 +117,14 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         } else {
             colorAc.observe(this) {
                 if (it == null) return@observe
-                val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
-                b.toolbar.navigationIcon?.colorFilter = cf
-                b.toolbar.overflowIcon?.colorFilter = cf
-                b.toolbar.menu.forEach { item ->
-                    item.icon?.colorFilter = cf
-                    item.stylise(this@Main, it)
-                }
-                tbTitle?.setTextColor(it)
+                styliseToolbar()
                 searchInput?.setTextColor(it)
                 searchInput?.setHintTextColor(weaken(it))
-                searchClose?.colorFilter = cf
+                searchClose?.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
             }
             colorAc.value = ca[m.currentPage.value!!]
         }
+        b.toolbar.popupTheme = overflowThemes[m.currentPage.value!!]
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it ->
             it.setTextColor(ca[i / 2])
             it.typeface = fontLight
@@ -292,6 +292,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
         sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.apply()
+        b.toolbar.popupTheme = overflowThemes[i]
 
         anTheme?.cancel()
         val col = if (night()) bg else ca
@@ -317,7 +318,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override fun selective(bb: Boolean): Boolean {
         if (!super.selective(bb)) return false
         b.bnv.menu.forEach { it.isEnabled = !bb }
-        if (!night()) colorAc.value = colorAc.value
         toggleNav.isDrawerIndicatorEnabled = !bb
         return true
     }
