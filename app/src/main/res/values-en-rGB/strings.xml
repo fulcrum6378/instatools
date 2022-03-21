@@ -17,8 +17,9 @@
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
     <string name="export">Export</string>
-    <string name="exportPdf">Export to PDF</string>
     <string name="exportHtml">Export to HTML</string>
+    <string name="exportPdf">Export to PDF</string>
+    <string name="exportTxt">Export to TXT</string>
     <string name="exportOptions">Export Options (%s)</string>
     <string name="backgroundTasks">Background Tasks</string>
     <string name="unknownError">Sorry, an unknown error occurred: %s</string>
@@ -93,6 +94,13 @@
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
     <string name="dmNotSeen">You Are Invisible!</string>
     <string name="dmNotSeenDesc">The messages you view in this app will NOT be marked as seen!</string>
+    <string name="expOptImage">Include pictures</string>
+    <string name="expOptVideo">Include videos</string>
+    <string name="expOptVoice">Include voice messages</string>
+    <string name="expOptLow">Low quality</string>
+    <string name="expOptMed">Medium quality</string>
+    <string name="expOptHig">High quality</string>
+    <string name="expOptThm">Only a thumbnail (first frame)</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>

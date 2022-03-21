@@ -12,6 +12,7 @@ open class BaseThread : Thread() {
     }
 
     override fun interrupt() {
+        if (!active) return
         active = false
         super.interrupt()
     }

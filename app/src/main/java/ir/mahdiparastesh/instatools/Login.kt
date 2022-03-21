@@ -73,13 +73,15 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.refresher.setOnRefreshListener { b.web.reload() }
 
         when {
-            intent.getBooleanExtra(EXTRA_NEED_AUTH, false) -> { // if (accounts.size <= 1)
+            intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L).apply {
                 cameHereToAuth = true
                 Snackbar.make(b.root, R.string.needAuthentication, Snackbar.LENGTH_LONG).show()
-                gonnaAdd = true
-                browse()
+                val signedOutFrom = if (this != -1L) accounts.find { it.id == this } else null
+                if (signedOutFrom == null || accounts.size <= 1) {
+                    gonnaAdd = true
+                    browse()
+                } else selectAccount(signedOutFrom)
             }
-            //m.acc != null -> selectAccount(m.acc!!)
             else -> {
                 welcome()
                 if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
@@ -236,7 +238,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        @Throws(JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class)
+        @Throws(
+            JsonSyntaxException::class,
+            NumberFormatException::class,
+            NullPointerException::class
+        )
         private fun collect(html: String) {
             val profile = Gson().fromJson(
                 StringEscapeUtils.unescapeJava(html)

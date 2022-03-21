@@ -17,8 +17,9 @@
     <string name="yes">Sim</string>
     <string name="unsave">Não salvar</string>
     <string name="export">Exportar</string>
-    <string name="exportPdf">Exportar para PDF</string>
     <string name="exportHtml">Exportar para HTML</string>
+    <string name="exportPdf">Exportar para PDF</string>
+    <string name="exportTxt">Exportar para TXT</string>
     <string name="exportOptions">Opções de exportação (%s)</string>
     <string name="backgroundTasks">Tarefas em segundo plano</string>
     <string name="unknownError">Desculpe, ocorreu um erro desconhecido: %s</string>
@@ -93,6 +94,13 @@
     <string name="newUnfNtfText">%d novas pessoas deixaram de te seguir!</string>
     <string name="dmNotSeen">Você é invisível!</string>
     <string name="dmNotSeenDesc">As mensagens que você visualizar neste aplicativo NÃO serão marcadas como vistas!</string>
+    <string name="expOptImage">Incluir fotos</string>
+    <string name="expOptVideo">Incluir vídeos</string>
+    <string name="expOptVoice">Incluir mensagens de voz</string>
+    <string name="expOptLow">Baixa qualidade</string>
+    <string name="expOptMed">Qualidade média</string>
+    <string name="expOptHig">Alta qualidade</string>
+    <string name="expOptThm">Apenas uma miniatura (primeiro quadro)</string>
 
     <!-- Downloads -->
     <string name="downloads">Transferências</string>

@@ -89,7 +89,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         guest = m.acc!!.id == -1L
-        toolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
+        initToolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
         createPages()
 
         // Bottom Navigation Bar
@@ -330,6 +330,15 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         }
         Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
         switchAcc()
+    }
+
+    override fun switchAcc() {
+        page1?.thread?.interrupt()
+        page2?.thread?.interrupt()
+        page2?.saver?.interrupt()
+        page3?.boxThread?.interrupt()
+        page3?.thdThread?.interrupt()
+        super.switchAcc()
     }
 
     private var exiting = false

@@ -65,7 +65,7 @@ class MassFollower : ServiceOwnerActivity() {
         super.onCreate(savedInstanceState)
         b = MassFollowerBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.massFollower)
+        initToolbar(b.toolbar, R.string.massFollower)
 
         handler = object : Handler(Looper.getMainLooper()) {
             @Suppress("UNCHECKED_CAST")

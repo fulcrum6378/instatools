@@ -52,7 +52,7 @@ import kotlinx.coroutines.withContext
 
 class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
-    private var boxThread: FetchOfInbox? = null
+    var boxThread: FetchOfInbox? = null
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
@@ -307,6 +307,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 c, Api.Type.INBOX.url.format(c.m.dmInbox?.oldest_cursor ?: ""),
                 InboxPage::class, handler, onError = { interrupt() }
             ) { page ->
+                if (!active) return@Api
                 if (c.m.dmInbox == null) c.m.dmInbox = page.inbox
                 else {
                     c.m.dmInbox?.threads?.addAll(page.inbox.threads)
@@ -330,6 +331,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class,
                 handler, onError = { interrupt() }
             ) { inbox ->
+                if (!active) return@Api
                 if (inbox.status == "ok")
                     handler?.obtainMessage(HANDLE_FETCHED, inbox.thread)?.sendToTarget()
                 interrupt()

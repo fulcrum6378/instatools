@@ -45,7 +45,8 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 @SuppressLint("NotifyDataSetChanged")
 class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
-    private var thread: FetchSome? = null
+    var thread: FetchSome? = null
+    var saver: Saver? = null
     private var selectionBadge: BadgeDrawable? = null
     private var selectionGuide: LottieAnimationView? = null
 
@@ -180,21 +181,21 @@ class PageSvd : BasePageMain(), Selective {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mtUnsaveDownload -> {
-                if (tracker != null && c.m.saved != null) Saver(
+                if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
                     tracker!!.selection, unsave = true, download = true
-                ).start()
+                ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtDownload -> {
-                if (tracker != null && c.m.saved != null) Saver(
+                if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
                     tracker!!.selection, unsave = false, download = true
-                ).start()
+                ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtUnsave -> {
-                if (tracker != null && c.m.saved != null) Saver(
+                if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
                     tracker!!.selection, unsave = true, download = false
-                ).start()
+                ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtSelectAll -> if (c.m.saved != null)
@@ -282,6 +283,7 @@ class PageSvd : BasePageMain(), Selective {
                 c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class,
                 handler, onError = { interrupt() }
             ) { profile ->
+                if (!active) return@Api
                 val edgeList = profile.graphql?.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
@@ -295,6 +297,7 @@ class PageSvd : BasePageMain(), Selective {
                     c.m.saved?.page_info?.end_cursor ?: ""
                 ), Profile.GraphQlResponse::class, handler, onError = { interrupt() }
             ) { res ->
+                if (!active) return@Api
                 val edgeList = res.data.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
@@ -304,6 +307,7 @@ class PageSvd : BasePageMain(), Selective {
         }
 
         private fun done(add: Profile.EdgeList? = null) {
+            if (!active) return
             if (add != null) c.m.saved?.apply {
                 page_info = add.page_info
                 count = add.count
@@ -336,9 +340,12 @@ class PageSvd : BasePageMain(), Selective {
             if (post == null) {
                 ended(); return; }
 
-            if (download) c.dao.addQueued(
-                Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(post.shortcode))
-            )
+            if (download) try {
+                c.dao.addQueued(
+                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(post.shortcode))
+                )
+            } catch (e: IllegalStateException) { // DB is closed
+            }
             if (unsave) Api<Rest>(
                 c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
                 method = Request.Method.POST, onError = { ended() }

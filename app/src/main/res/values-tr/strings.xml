@@ -17,8 +17,9 @@
     <string name="yes">Evet</string>
     <string name="unsave">Kaydetmeyi iptal et</string>
     <string name="export">İhracat</string>
-    <string name="exportPdf">PDF\'ye aktar</string>
     <string name="exportHtml">HTML\'ye aktar</string>
+    <string name="exportPdf">PDF\'ye aktar</string>
+    <string name="exportTxt">TXT\'ye aktar</string>
     <string name="exportOptions">Dışa Aktarma Seçenekleri (%s)</string>
     <string name="backgroundTasks">Arkaplan işlemleri</string>
     <string name="unknownError">Üzgünüz, bilinmeyen bir hata oluştu: %s</string>
@@ -93,6 +94,13 @@
     <string name="newUnfNtfText">%d yeni kişi seni takibi bıraktı!</string>
     <string name="dmNotSeen">Sen Görünmezsin!</string>
     <string name="dmNotSeenDesc">Bu uygulamada görüntülediğiniz mesajlar görüldüğü gibi işaretlenmeyecek!</string>
+    <string name="expOptImage">Resimleri dahil et</string>
+    <string name="expOptVideo">Videoları dahil et</string>
+    <string name="expOptVoice">Sesli mesajları dahil et</string>
+    <string name="expOptLow">Düşük kalite</string>
+    <string name="expOptMed">Orta kalite</string>
+    <string name="expOptHig">Yüksek kalite</string>
+    <string name="expOptThm">Yalnızca küçük resim (ilk kare)</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>

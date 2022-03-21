@@ -1,9 +1,9 @@
 package ir.mahdiparastesh.instatools.serv
 
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.util.Log
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -29,7 +29,6 @@ import kotlinx.coroutines.withContext
 
 class Exporter : ForegroundService() {
     private var exp: Exportable? = null
-    private var media = hashMapOf<String, Downloadable>()
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -60,7 +59,7 @@ class Exporter : ForegroundService() {
                             exp?.threadData?.items?.addAll(dmThd.items)
                             exp?.threadData?.has_older = dmThd.has_older
                         }
-                        fetchData()
+                        exp?.fetchData()
                     }
                     Api.HANDLE_ERROR -> finish(false)
                 }
@@ -72,34 +71,34 @@ class Exporter : ForegroundService() {
     private fun handle() {
         CoroutineScope(Dispatchers.IO).launch {
             exp = dao.exportables().sortedBy { it.addedAt }.getOrNull(0)
-            exp?.opt = Exportable.Options.parse(exp?.options)
             withContext(Dispatchers.Main) {
-                if (exp == null)
-                    this@Exporter.finish(false)
-                else fetchData()
+                if (exp == null) this@Exporter.finish(false)
+                else {
+                    exp?.opt = Exportable.Options.parse(exp?.options)
+                    exp?.fetchData()
+                }
             }
         }
     }
 
-    private fun fetchData() {
-        if (exp == null) return
-        exp!!.threadData?.items?.sortBy { it.timestamp }
-        if (exp!!.threadData?.has_older == false) {
+    private fun Exportable.fetchData() {
+        threadData?.items?.sortBy { it.timestamp }
+        if (threadData?.has_older == false) {
             fetchMedia(); return; }
         FetchOfThread(
-            this, exp!!.thread, exp!!.threadData?.items?.getOrNull(0)?.item_id ?: "", handler
+            this@Exporter, thread, threadData?.items?.getOrNull(0)?.item_id ?: "", handler
         ).start()
     }
 
-    private fun fetchMedia() {
-        if (exp?.threadData?.items == null) {
-            end(exp); return; }
-        if (exp?.opt?.img() == false && exp?.opt?.vid() == false && exp?.opt?.voi() == false) {
-            exp?.export(); return; }
+    private fun Exportable.fetchMedia() {
+        if (threadData?.items == null) {
+            end(this); return; }
+        if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
+            export(); return; }
         media = hashMapOf()
-        val img = exp?.opt?.img() == true
-        val vid = exp?.opt?.vid() == true
-        for (dm in exp!!.threadData!!.items) (when {
+        val img = opt?.img() == true
+        val vid = opt?.vid() == true
+        for (dm in threadData!!.items) (when {
             vid && dm.clip != null -> dm.clip.clip
             vid && dm.felix_share != null -> dm.felix_share.video
             dm.media != null -> when (dm.media.media_type) {
@@ -133,10 +132,10 @@ class Exporter : ForegroundService() {
         fetchMedium()
     }
 
-    private fun fetchMedium() {
+    private fun Exportable.fetchMedium() {
         val dl = media.entries.filter { it.value.data == null }.getOrNull(0)
         if (dl == null) {
-            exp?.export(); return; }
+            export(); return; }
         Volley.newRequestQueue(c).add(
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
                 media[dl.key] = media[dl.key]!!.apply { data = byteArrayOf() }
@@ -163,21 +162,23 @@ class Exporter : ForegroundService() {
     private fun Exportable.export() {
         if (threadData?.items == null) {
             end(this); return; }
-        val myUri = Uri.parse(Api.encode(uri))
+        Log.println(Log.ASSERT, "KOS", "$type")
         when (type) {
-            (0).toByte() -> object : HtmlExporter(c, threadData!!.items, media, myUri) {
+            0 -> object : HtmlExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
-                }
-            }
-            (1).toByte() -> object : PdfExporter(c, threadData!!.items, media, myUri) {
-                override fun progress(percent: Float, succeeded: Boolean) {
-                    if (percent == 100f) end(exp)
+                    if (percent == 100f) end(this@export)
                 }
             }.start()
-            (2).toByte() -> object : TxtExporter(c, threadData!!.items, media, myUri) {
+            1 -> object : PdfExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
+                    if (percent == 100f) end(this@export)
                 }
-            }
+            }.start()
+            2 -> object : TxtExporter(this@Exporter, this@export) {
+                override fun progress(percent: Float, succeeded: Boolean) {
+                    if (percent == 100f) end(this@export)
+                }
+            }.start()
             else -> end(this)
         }
     }
@@ -192,8 +193,8 @@ class Exporter : ForegroundService() {
 
     @Suppress("unused")
     enum class Method(
-        val id: Byte, val mime: String, val ext: String, val openTree: Boolean,
-        val img: Boolean, val vid: Boolean,
+        val id: Int, val mime: String, val ext: String, val openTree: Boolean, val img: Boolean,
+        val vid: Boolean,
     ) {
         HTML(0, "text/html", "html", true, true, true),
         PDF(1, "application/pdf", "pdf", false, true, false),

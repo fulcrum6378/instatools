@@ -50,7 +50,7 @@ class Downloads : ServiceOwnerActivity() {
         super.onCreate(savedInstanceState)
         b = DownloadsBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.downloads)
+        initToolbar(b.toolbar, R.string.downloads)
 
         handler = object : Handler(Looper.getMainLooper()) {
             @SuppressLint("NotifyDataSetChanged")

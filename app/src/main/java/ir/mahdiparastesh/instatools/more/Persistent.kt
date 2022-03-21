@@ -62,9 +62,8 @@ interface Persistent {
     fun needAuthentication() {
         if (Login.cameHereToAuth) return
         m.accountSwitched()
-        // val signedOut = m.acc?.id != -1L
         if (this is BaseActivity)
-            goTo(Login::class, true) { putExtra(Login.EXTRA_NEED_AUTH, true) }
+            goTo(Login::class, true) { putExtra(Login.EXTRA_NEED_AUTH, m.acc?.id ?: -1L) }
         else {
             c.startActivity(Intent(c, Login::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

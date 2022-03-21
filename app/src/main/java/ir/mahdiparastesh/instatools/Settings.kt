@@ -125,7 +125,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         intent.extras?.getBoolean(EXTRA_IS_GLOBAL)?.let { globalMode = it }
         b = SettingsBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(
+        initToolbar(
             b.toolbar, R.string.settings,
             changeTitleTo = getString(if (globalMode) R.string.gSettings else R.string.aSettings)
         )

@@ -145,7 +145,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     var tbTitle: TextView? = null
     lateinit var toolbar: Toolbar
-    fun toolbar(tb: Toolbar, title: Int, font: Typeface = fontBold, changeTitleTo: String? = null) {
+    fun initToolbar(
+        tb: Toolbar, title: Int, font: Typeface = fontBold, changeTitleTo: String? = null
+    ) {
         toolbar = tb
         setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
@@ -176,6 +178,10 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (!::toolbar.isInitialized) {
+            Delay(1000L) { onCreateOptionsMenu(menu) }
+            return false; }
+        super.onCreateOptionsMenu(menu)
         if (menuRes != null) toolbar.inflateMenu(menuRes!!)
         styliseToolbar()
         toolbar.setOnMenuItemClickListener(this)
@@ -183,6 +189,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (!::toolbar.isInitialized) {
+            Delay(3000L) { onPrepareOptionsMenu(menu) }
+            return false; }
         toolbar.menu.forEach { it.stylise(this, -1) }
         return true
     }
@@ -226,6 +235,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     override fun onPause() {
         super.onPause()
         notFirstResume = true
+    }
+
+    override fun switchAcc() {
+        db.close()
+        super.switchAcc()
     }
 
     override fun onDestroy() {

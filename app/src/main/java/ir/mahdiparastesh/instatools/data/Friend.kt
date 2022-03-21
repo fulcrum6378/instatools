@@ -50,6 +50,7 @@ class Friend(
                     if (index != null) thread.newFriends[index] = this
                     else thread.newFriends.add(this)
                 }
+            } catch (e: IllegalStateException) { // DB is closed.
             }
         }
 

@@ -23,8 +23,9 @@
     <string name="yes">آره</string>
     <string name="unsave">Unsave</string>
     <string name="export">استخراج</string>
-    <string name="exportPdf">استخراج در پی دی اف</string>
     <string name="exportHtml">استخراج در اچ تی ام ال</string>
+    <string name="exportPdf">استخراج در پی دی اف</string>
+    <string name="exportTxt">استخراج در فایل تکست</string>
     <string name="exportOptions">گزینه های استخراج (%s)</string>
     <string name="backgroundTasks">کار های پشت صحنه</string>
     <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
@@ -99,6 +100,13 @@
     <string name="newUnfNtfText">%d شخص جدید شما را آنفالو کردند!</string>
     <string name="dmNotSeen">شما مخفی هستید!</string>
     <string name="dmNotSeenDesc">پیام های دایرکتی که شما در این اپلیکیشن می خوانید، بعنوان «خوانده شده» تیک نخواهند خورد!</string>
+    <string name="expOptImage">استخراج تصاویر</string>
+    <string name="expOptVideo">استخراج ویدئوها</string>
+    <string name="expOptVoice">استخراج وویس ها</string>
+    <string name="expOptLow">کیفیت پایین</string>
+    <string name="expOptMed">کیفیت متوسط</string>
+    <string name="expOptHig">کیفیت بالا</string>
+    <string name="expOptThm">فقط یک عکس پیش نمایش (اولین فریم)</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>

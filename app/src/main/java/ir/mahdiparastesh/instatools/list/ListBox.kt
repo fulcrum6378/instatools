@@ -43,11 +43,12 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         h.b.last.text =
             c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at.xFromMicroseconds()))
         h.b.root.setOnClickListener {
-            c.m.dmThread = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition)
-            if (c.m.dmThread == null) return@setOnClickListener
+            c.m.dmThread =
+                c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
-                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, PageBox.handler
+                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.firstOrNull()?.item_id ?: "",
+                PageBox.handler
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {
@@ -77,10 +78,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
-                if (!BuildConfig.DEBUG) {
-                    menu.findItem(R.id.bmHtml).isVisible = false
-                    menu.findItem(R.id.bmTxt).isVisible = false
-                }
+                if (!BuildConfig.DEBUG) menu.findItem(R.id.bmHtml).isVisible = false
             }.show()
         }
         h.b.sep.vis(i < itemCount - 1)

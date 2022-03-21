@@ -14,29 +14,26 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.get
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
-import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BaseExporter
-import ir.mahdiparastesh.instatools.serv.Exporter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.FileOutputStream
 
-abstract class PdfExporter(
-    c: Context, list: List<Dm>, media: HashMap<String, Exporter.Downloadable>, uri: Uri
-) : BaseExporter(c, list, media, uri) {
+abstract class PdfExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
 
     @SuppressLint("InflateParams")
     override fun run() {
+        if (exp.threadData == null) return
         val document = PdfDocument()
         var page = 0
         var mess = 0
 
-        while (mess < list.size) document.startPage(
+        while (mess < exp.threadData!!.items.size) document.startPage(
             PdfDocument.PageInfo.Builder(size.width, size.height, page).create()
         ).apply {
             canvas.scale(1f, 1f)
@@ -45,25 +42,23 @@ abstract class PdfExporter(
             percent(mess)
             page++
         }
-        CoroutineScope(Dispatchers.IO).launch {
-            runCatching {
-                c.contentResolver.openFileDescriptor(uri, "w")?.use {
-                    FileOutputStream(it.fileDescriptor).use { fos -> document.writeTo(fos) }
-                }
-            }.onSuccess {
-                progress(100f, true)
-                document.close()
-            }.onFailure {
-                progress(100f, false)
-                document.close()
+        runCatching {
+            c.c.contentResolver.openFileDescriptor(Uri.parse(Api.encode(exp.uri)), "w")?.use {
+                FileOutputStream(it.fileDescriptor).use { fos -> document.writeTo(fos) }
             }
+        }.onSuccess {
+            progress(100f, true)
+            document.close()
+        }.onFailure {
+            progress(100f, false)
+            document.close()
         }
     }
 
     private var cutAt = 0
     private fun insert(canvas: Canvas, mess: Int): Int {
         var iMess = mess
-        LinearLayout(c).apply {
+        LinearLayout(c.c).apply {
             orientation = LinearLayout.VERTICAL
             do {
                 addView(createView(context, this, iMess).apply {
@@ -83,7 +78,7 @@ abstract class PdfExporter(
                     break
                 }
                 iMess++
-            } while ((measuredHeight - cutAt) < size.height && iMess < list.size)
+            } while ((measuredHeight - cutAt) < size.height && iMess < exp.threadData!!.items.size)
             layout(0, 0, canvas.width, canvas.height)
             draw(canvas)
         }
@@ -99,10 +94,13 @@ abstract class PdfExporter(
             Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
             Typeface.createFromAsset(c.assets, c.getString(R.string.font_light)),
             true
-        ).onBind(c, list, i, downloaded = media).root
+        ).onBind(c, exp.threadData!!.items, i, downloaded = exp.media).root
 
     private fun percent(mess: Int) {
-        progress(if (mess == 0) 0f else ((100f / list.size.toFloat()) * mess.toFloat()), false)
+        progress(
+            if (mess == 0) 0f else ((100f / exp.threadData!!.items.size.toFloat()) * mess.toFloat()),
+            false
+        )
     }
 
     companion object {

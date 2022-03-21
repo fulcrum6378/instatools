@@ -7,16 +7,18 @@ import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.serv.Exporter
 
 @Entity
 class Exportable(
     var thread: String,
     var selection: String? = null,
-    var type: Byte,
+    var type: Int,
     var options: String,
     var uri: String? = null,
     @Ignore @Transient var threadData: Dm.DmThread? = null,
-    @Ignore @Transient var opt: Options? = null
+    @Ignore @Transient var opt: Options? = null,
+    @Ignore @Transient var media: HashMap<String, Exporter.Downloadable> = hashMapOf()
 ) {
     @PrimaryKey
     var addedAt: Long = Persistent.now()

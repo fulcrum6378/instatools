@@ -31,7 +31,7 @@ import kotlinx.coroutines.runBlocking
 @Suppress("UNCHECKED_CAST")
 class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
-    private var thread: Inquiry? = null
+    var thread: Inquiry? = null
     var counter = 0
 
     override val com: PageCompanion = Companion
@@ -136,14 +136,15 @@ class PageUnf : BasePageMain() {
         }
 
         private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
-            if (!active) return
+            if (!active || c.m.acc == null) return
             Api<Rest.Follow>(
                 c, (if (theFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
-                    .format(c.m.acc!!.id, next_max_id), Rest.Follow::class,
+                    .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
                 handler, onError = { interrupt() }
             ) { flw ->
-                Thread {
-                    flw.users.forEach { u ->
+                if (c.m.acc != null) Thread {
+                    for (u in flw.users) {
+                        if (!c.db.isOpen) return@Thread
                         Friend.add(
                             c.dao, this, Friend(
                                 u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
@@ -159,6 +160,7 @@ class PageUnf : BasePageMain() {
         }
 
         private fun ended() {
+            if (!active || c.m.acc == null) return
             runBlocking {
                 oldFriends.filter { it.id !in newFriends.map { f -> f.id } }
                     .forEach { c.dao.deleteFriend(it) }
@@ -167,6 +169,7 @@ class PageUnf : BasePageMain() {
                         c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
                 }
             }
+            if (!active || c.m.acc == null) return
             val newUnf = newFriends.filter {
                 it.unfollowedMeAt != null
                         && it.unfollowedMeAt!! > c.sp?.getLong(Settings.spNotifiedUnfTill, 0L) ?: 0L
@@ -181,6 +184,7 @@ class PageUnf : BasePageMain() {
 
         @SuppressLint("UnspecifiedImmutableFlag")
         private fun gotNewOnes(num: Int) {
+            if (!active || c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .createNotificationChannel(NotificationChannel(

@@ -14,7 +14,7 @@ class Dm(
     val timestamp: Double,
     //val tq_seq_id: Double,
     //val uq_seq_id: Double,
-    //val user_id: Double,
+    val user_id: Double,
 
     // Item Types
     val action_log: ActionLog?,
@@ -172,7 +172,7 @@ class Dm(
         //val link_image_url: String,
     )
 
-    class ClipShare(val clip: Media)
+    class ClipShare(val clip: Media) // TODO: NO TEXT?
 
     class FelixShare(val video: Media, val text: String) : PlaceHolder()
 
@@ -288,7 +288,7 @@ class Dm(
     class LiveViewerInvite(
         //val broadcast: LiveBroadcast?,
         val cta_button_name: String, // e.g.: "Watch Live Video" then "Content Not Available"
-        //val text: String, // e.g.: ""
+        val text: String, // e.g.: ""
     ) : PlaceHolder()
 
     /*class LiveBroadcast(

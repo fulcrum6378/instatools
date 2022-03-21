@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.media.MediaPlayer
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -132,8 +131,10 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 }
                 dm.like != null -> msgTv.text = dm.like
                 dm.link != null -> msgTv.anchor(dm.link.text, dm.link.link_context.link_url)
-                dm.live_viewer_invite != null ->
+                dm.live_viewer_invite != null -> {
                     msgIvHint.apply { text = dm.live_viewer_invite.cta_button_name; vis() }
+                    msgTv.text = dm.live_viewer_invite.text
+                }
                 dm.media != null -> media = dm.media
                 dm.media_share != null -> media = dm.media_share
                 dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }

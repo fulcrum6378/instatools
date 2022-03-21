@@ -35,7 +35,7 @@ class Favourites : BaseActivity() {
         super.onCreate(savedInstanceState)
         b = FavouritesBinding.inflate(layoutInflater)
         setContentView(b.root)
-        toolbar(b.toolbar, R.string.favourites)
+        initToolbar(b.toolbar, R.string.favourites)
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -102,6 +102,7 @@ class Favourites : BaseActivity() {
 
     class FavLoader(private val c: BaseActivity) : Thread() {
         override fun run() {
+            c.dao.deleteExportables()
             runBlocking { c.m.fav = ArrayList(c.dao.favourites()) }
             handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }

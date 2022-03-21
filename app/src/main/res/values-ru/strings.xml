@@ -22,8 +22,9 @@
     <string name="yes">да</string>
     <string name="unsave">Удалить</string>
     <string name="export">Экспорт</string>
-    <string name="exportPdf">Экспорт в PDF</string>
     <string name="exportHtml">Экспорт в HTML</string>
+    <string name="exportPdf">Экспорт в PDF</string>
+    <string name="exportTxt">Экспорт в TXT</string>
     <string name="exportOptions">Параметры экспорта (%s)</string>
     <string name="backgroundTasks">Фоновые задачи</string>
     <string name="unknownError">Извините, произошла неизвестная ошибка: %s</string>
@@ -98,6 +99,13 @@
     <string name="newUnfNtfText">%d новых людей отписались от вас!</string>
     <string name="dmNotSeen">Вы невидимы!</string>
     <string name="dmNotSeenDesc">Сообщения, которые вы просматриваете в этом приложении, НЕ будут помечены как просмотренные!</string>
+    <string name="expOptImage">Включить изображения</string>
+    <string name="expOptVideo">Включить видео</string>
+    <string name="expOptVoice">Включить голосовые сообщения</string>
+    <string name="expOptLow">Низкое качество</string>
+    <string name="expOptMed">Среднее качество</string>
+    <string name="expOptHig">Высокое качество</string>
+    <string name="expOptThm">Только миниатюра (первый кадр)</string>
 
     <!-- Downloads -->
     <string name="downloads">Загрузки</string>
