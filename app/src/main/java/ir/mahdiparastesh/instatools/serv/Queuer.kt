@@ -172,6 +172,7 @@ class Queuer : ForegroundService() {
                     }
                 }
             }
+            // including "instagram.com/tv/" and "instagram.com/reel/"
             else -> Api<Media.MediaWrapperApi>(
                 this, cur.link.substringBefore("?") + "?__a=1",
                 Media.MediaWrapperApi::class, handler
@@ -196,7 +197,7 @@ class Queuer : ForegroundService() {
                                 cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
                                 med.user.pk, med.user.username,
                                 car.pk, car.nearest(Versioned.BEST),
-                                med.thumb(car), car.media_type.toInt().toByte()
+                                car.thumb(), car.media_type.toInt().toByte()
                             )
                         )
                     med.image_versions2 != null -> cur.qud!!.apply {

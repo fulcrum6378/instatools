@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -60,6 +61,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             c, b.expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CT)
         ) { updateShadow() }
     }
+    var voicePlayer: MediaPlayer? = null
 
     override val com: PageCompanion = Companion
     override lateinit var inflater: LayoutInflater

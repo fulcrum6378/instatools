@@ -3,25 +3,36 @@ package ir.mahdiparastesh.instatools.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.util.Size
+import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.get
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.databinding.ListThdBinding
+import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
+import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BaseExporter
+import ir.mahdiparastesh.instatools.serv.Exporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 
-abstract class PdfExporter(val c: Context, val uri: Uri) : Thread() {
-    abstract val list: List<*>
+abstract class PdfExporter(
+    c: Context, list: List<Dm>, media: HashMap<String, Exporter.Downloadable>, uri: Uri
+) : BaseExporter(c, list, media, uri) {
 
     @SuppressLint("InflateParams")
     override fun run() {
         val document = PdfDocument()
-
         var page = 0
         var mess = 0
 
@@ -79,13 +90,20 @@ abstract class PdfExporter(val c: Context, val uri: Uri) : Thread() {
         return iMess
     }
 
+    private fun createView(c: Context, parent: ViewGroup, i: Int): View =
+        ListThdBinding.inflate(
+            LayoutInflater.from(c).cloneInContext(
+                ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
+            ), parent, false
+        ).onCreate(
+            Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
+            Typeface.createFromAsset(c.assets, c.getString(R.string.font_light)),
+            true
+        ).onBind(c, list, i, downloaded = media).root
+
     private fun percent(mess: Int) {
         progress(if (mess == 0) 0f else ((100f / list.size.toFloat()) * mess.toFloat()), false)
     }
-
-    abstract fun progress(percent: Float, succeeded: Boolean)
-
-    abstract fun createView(c: Context, parent: ViewGroup, i: Int): View
 
     companion object {
         val size = Size(1190, 1680)

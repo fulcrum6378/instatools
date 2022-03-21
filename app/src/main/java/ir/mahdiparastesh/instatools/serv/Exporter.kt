@@ -1,15 +1,9 @@
 package ir.mahdiparastesh.instatools.serv
 
-import android.content.Context
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -19,17 +13,15 @@ import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
-import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.view.HtmlExporter
 import ir.mahdiparastesh.instatools.view.PdfExporter
+import ir.mahdiparastesh.instatools.view.TxtExporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -103,7 +95,7 @@ class Exporter : ForegroundService() {
         if (exp?.threadData?.items == null) {
             end(exp); return; }
         if (exp?.opt?.img() == false && exp?.opt?.vid() == false && exp?.opt?.voi() == false) {
-            export(); return; }
+            exp?.export(); return; }
         media = hashMapOf()
         val img = exp?.opt?.img() == true
         val vid = exp?.opt?.vid() == true
@@ -144,7 +136,7 @@ class Exporter : ForegroundService() {
     private fun fetchMedium() {
         val dl = media.entries.filter { it.value.data == null }.getOrNull(0)
         if (dl == null) {
-            export(); return; }
+            exp?.export(); return; }
         Volley.newRequestQueue(c).add(
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
                 media[dl.key] = media[dl.key]!!.apply { data = byteArrayOf() }
@@ -168,33 +160,25 @@ class Exporter : ForegroundService() {
             })
     }
 
-    private fun export() {
-        if (exp?.threadData?.items == null) {
-            end(exp); return; }
-        when (exp?.type) {
-            (0).toByte() -> {
+    private fun Exportable.export() {
+        if (threadData?.items == null) {
+            end(this); return; }
+        val myUri = Uri.parse(Api.encode(uri))
+        when (type) {
+            (0).toByte() -> object : HtmlExporter(c, threadData!!.items, media, myUri) {
+                override fun progress(percent: Float, succeeded: Boolean) {
+                }
             }
-            (1).toByte() -> object : PdfExporter(c, Uri.parse(Api.encode(exp!!.uri))) {
-                override val list: List<Dm> = exp!!.threadData!!.items
-
+            (1).toByte() -> object : PdfExporter(c, threadData!!.items, media, myUri) {
                 override fun progress(percent: Float, succeeded: Boolean) {
                     if (percent == 100f) end(exp)
                 }
-
-                override fun createView(c: Context, parent: ViewGroup, i: Int): View =
-                    ListThdBinding.inflate(
-                        LayoutInflater.from(c).cloneInContext(
-                            ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
-                        ), parent, false
-                    ).onCreate(
-                        Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
-                        Typeface.createFromAsset(c.assets, c.getString(R.string.font_light)),
-                        true
-                    ).onBind(c, list, i, downloaded = media).root
             }.start()
-            (2).toByte() -> {
+            (2).toByte() -> object : TxtExporter(c, threadData!!.items, media, myUri) {
+                override fun progress(percent: Float, succeeded: Boolean) {
+                }
             }
-            else -> end(exp)
+            else -> end(this)
         }
     }
 

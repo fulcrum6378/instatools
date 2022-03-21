@@ -203,6 +203,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 expandable.collapse(); return; }
         }
         m.vwUser = null
+        m.vwReels = null
+        m.vwTagged = null
+        m.vwCurrentPage.value = 1
         super.onBackPressed()
     }
 

@@ -69,7 +69,7 @@ class Media(
     //val story_static_models: Array<Any?>?,
     //val supports_reel_reactions: Boolean?,
     val taken_at: Double, // dm uploaded media are 0.0
-    val thumbnails: Thumbnails?,
+    //val thumbnails: Thumbnails?,
     val title: String?, // dm uploaded media are nullable
     //val top_likers: Array<Any>,
     val user: Rest.User,
@@ -86,13 +86,6 @@ class Media(
 ) : Versioned(
     image_versions2, original_height, original_width, video_versions
 ) {
-    fun thumb() = thumbnails?.sprite_urls?.getOrNull(0)
-        ?: carousel_media?.getOrNull(0)?.nearest(WORST)
-        ?: nearest(WORST)
-
-    fun thumb(car: CarouselMedia) =
-        thumbnails?.sprite_urls?.getOrNull(0) ?: car.nearest(WORST)
-
     class MediaWrapperApi(
         //var auto_load_more_enabled: Boolean,
         var items: CopyOnWriteArrayList<Media>?,
@@ -104,7 +97,7 @@ class Media(
         //var total_count: Float
     ) // "TAGGED" contains "status", but "POST_ITEM" doesn't.
 
-    class Thumbnails(
+    /*class Thumbnails(
         //val video_length: Float,
         //val thumbnail_width: Float,
         //val thumbnail_height: Float,
@@ -117,7 +110,7 @@ class Media(
         //val sprite_height: Float,
         //val rendered_width: Float,
         //val file_size_kb: Float,
-    )
+    )*/
 
     class CarouselMedia(
         //val can_see_insights_as_brand: Boolean,

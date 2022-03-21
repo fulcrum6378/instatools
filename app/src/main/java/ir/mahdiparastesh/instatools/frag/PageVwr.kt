@@ -114,7 +114,7 @@ class PageVwr : BasePageViewer() {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && thread?.active != true &&
-                    c.m.vwUser?.hasMore() != false
+                    c.m.vwUser?.hasMore() == true
                 ) thread = FetchSome().also { it.start() }
             }
         })
@@ -263,7 +263,8 @@ class PageVwr : BasePageViewer() {
                     page_info = add.page_info
                     count = add.count
                     val lastBefore = edges.size
-                    edges.addAll(add.edges)
+                    val ids = edges.map { it.node.id }
+                    edges.addAll(add.edges.filter { it.node.id !in ids })
                     handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)
                         ?.sendToTarget()
                 }

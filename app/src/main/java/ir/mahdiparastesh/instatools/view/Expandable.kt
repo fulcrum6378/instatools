@@ -79,7 +79,7 @@ class Expandable(
                             Persistent.now(), link() ?: "",
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
                             user.pk, user.username, car.pk, car.nearest(Versioned.BEST),
-                            thumb(car), car.media_type.toInt().toByte()
+                            car.thumb(), car.media_type.toInt().toByte()
                         )
                     )
                     withContext(Dispatchers.Main) { Downloads.initService(c) }
@@ -96,7 +96,7 @@ class Expandable(
                             Persistent.now(), link() ?: "",
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
                             user.pk, user.username, car.pk, car.nearest(Versioned.BEST),
-                            thumb(car), car.media_type.toInt().toByte()
+                            car.thumb(), car.media_type.toInt().toByte()
                         )
                     )
                     withContext(Dispatchers.Main) { Downloads.initService(c) }

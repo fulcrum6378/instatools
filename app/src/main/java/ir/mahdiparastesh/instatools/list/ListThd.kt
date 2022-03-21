@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.media.MediaPlayer
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -159,9 +160,11 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.text != null -> msgTv.text = dm.text
                 dm.video_call_event != null ->
                     msgIvHint.apply { text = dm.video_call_event.description; vis() }
-                dm.voice_media != null -> {
-                    msgIvHint.apply { text = "Voice"; vis() }
-                }
+                dm.voice_media != null ->
+                    if (f == null) msgIvHint.apply { text = "Voice"; vis() }
+                    else {
+                        //f.voicePlayer = MediaPlayer.create()
+                    }
                 else -> if (BuildConfig.DEBUG) throw Exception("NEW DM TYPE: ${dm.item_id}")
             }
             msgIvCl.vis(media != null)

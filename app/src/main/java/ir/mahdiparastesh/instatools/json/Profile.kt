@@ -52,7 +52,7 @@ class Profile(
         //val has_guides: Boolean?,
         //val has_requested_viewer: Boolean?,
         //val hide_like_and_view_counts: Boolean?,
-        val highlight_reel_count: Double?,
+        //val highlight_reel_count: Double?,
         val id: String, // The same as Rest.User.pk
         //val is_business_account: Boolean?,
         //val is_embeds_disabled: Boolean?,
@@ -81,7 +81,7 @@ class Profile(
         fun edges() = edge_owner_to_timeline_media?.edges
 
         fun hasMore(): Boolean =
-            edge_owner_to_timeline_media?.edges?.size != edge_owner_to_timeline_media?.count?.toInt()
+            edge_owner_to_timeline_media?.let { it.edges.size < it.count.toInt() } ?: false
     }
 
     open class EdgeFollow(val count: Double) {

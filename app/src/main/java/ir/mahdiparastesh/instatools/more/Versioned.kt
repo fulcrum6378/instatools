@@ -80,4 +80,8 @@ abstract class Versioned(
         return list.find { it.width == minW && it.height == minH }?.url
             ?: list.getOrNull(0)?.url
     }
+
+    fun thumb() = //(this as Media).thumbnails?.sprite_urls?.getOrNull(0)
+        (this as Media).carousel_media?.getOrNull(0)?.nearest(WORST, true)
+            ?: nearest(WORST, true)
 }
