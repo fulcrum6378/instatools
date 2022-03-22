@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.serv
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.util.Log
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
@@ -98,36 +97,46 @@ class Exporter : ForegroundService() {
         media = hashMapOf()
         val img = opt?.img() == true
         val vid = opt?.vid() == true
-        for (dm in threadData!!.items) (when {
-            vid && dm.clip != null -> dm.clip.clip
-            vid && dm.felix_share != null -> dm.felix_share.video
-            dm.media != null -> when (dm.media.media_type) {
-                1f -> if (img) dm.media else null
-                2f -> if (vid) dm.media else null
+        for (dm in threadData!!.items) {
+            if (vid && dm.animated_media != null) {
+                media[dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url)
+                continue; }
+            if (opt?.voice == 0 && dm.voice_media != null) {
+                media[dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src)
+                continue; }
+            if (opt?.img() == true || opt?.vid() == true) (when {
+                vid && dm.clip != null -> dm.clip.clip
+                vid && dm.felix_share != null -> dm.felix_share.video
+                dm.media != null -> when (dm.media.media_type) {
+                    1f -> if (img) dm.media else null
+                    2f -> if (vid) dm.media else null
+                    else -> null
+                }
+                dm.media_share != null -> when (dm.media_share.media_type) {
+                    1f -> if (img) dm.media_share else null
+                    2f -> if (vid) dm.media_share else null
+                    else -> null
+                }
+                img && dm.raven_media != null -> dm.raven_media
+                dm.reel_share != null -> when (dm.reel_share.media?.media_type) {
+                    1f -> if (img) dm.reel_share.media else null
+                    2f -> if (vid) dm.reel_share.media else null
+                    else -> null
+                }
+                dm.story_share != null -> when (dm.story_share.media?.media_type) {
+                    1f -> if (img) dm.story_share.media else null
+                    2f -> if (vid) dm.story_share.media else null
+                    else -> null
+                }
                 else -> null
+            })?.apply {
+                if (carousel_media == null && image_versions2 == null) return@apply
+                val qua = (if (vid) opt!!.video else opt!!.image).toFloat()
+                val url = if (carousel_media != null) carousel_media!!.getOrNull(0)
+                    ?.nearest(qua, justImage = !vid)
+                else nearest(qua, justImage = !vid) ?: return@apply
+                media[dm.item_id] = Downloadable(url!!)
             }
-            dm.media_share != null -> when (dm.media_share.media_type) {
-                1f -> if (img) dm.media_share else null
-                2f -> if (vid) dm.media_share else null
-                else -> null
-            }
-            dm.reel_share != null -> when (dm.reel_share.media?.media_type) {
-                1f -> if (img) dm.reel_share.media else null
-                2f -> if (vid) dm.reel_share.media else null
-                else -> null
-            }
-            dm.story_share != null -> when (dm.story_share.media?.media_type) {
-                1f -> if (img) dm.story_share.media else null
-                2f -> if (vid) dm.story_share.media else null
-                else -> null
-            }
-            else -> null
-        })?.apply {
-            if (carousel_media == null && image_versions2 == null) return@apply
-            val url =
-                if (carousel_media != null) carousel_media.getOrNull(0)?.nearest(justImage = true)
-                else nearest(justImage = true) ?: return@apply
-            media[dm.item_id] = Downloadable(url!!, null)
         }
         fetchMedium()
     }
@@ -162,7 +171,6 @@ class Exporter : ForegroundService() {
     private fun Exportable.export() {
         if (threadData?.items == null) {
             end(this); return; }
-        Log.println(Log.ASSERT, "KOS", "$type")
         when (type) {
             0 -> object : HtmlExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
@@ -201,5 +209,5 @@ class Exporter : ForegroundService() {
         TXT(2, "text/plain", "txt", false, false, false),
     }
 
-    class Downloadable(val url: String, var data: ByteArray?)
+    class Downloadable(val url: String, var data: ByteArray? = null)
 }

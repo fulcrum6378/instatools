@@ -262,7 +262,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     fun pdcf(@ColorRes res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
 
-    fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, path)
+    fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, "fonts/$path")
 
     // Only for TextView.textSize
     fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density

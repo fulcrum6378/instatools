@@ -1,6 +1,10 @@
 package ir.mahdiparastesh.instatools.json
 
-@Suppress("PropertyName", "SpellCheckingInspection")
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.view.UiTools
+
+@Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class Dm(
     //val client_context: String,
     val hide_in_thread: Float,
@@ -125,11 +129,10 @@ class Dm(
         //val viewer_id: Double,
         //val visual_thread: Any?,
     ) {
-        fun firstUser(): Rest.User? = users.getOrNull(0)
+        fun title() = if (!is_group) users.getOrNull(0)?.visName() else thread_title
+
+        fun exported() = "Exported ${title()}_${UiTools.fileDateTime(Persistent.now())}"
     }
-
-    class DmList(val items: Array<Dm>)
-
 
     class ActionLog(
         val bold: Array<Any>,
@@ -149,11 +152,11 @@ class Dm(
 
     class AnimatedMediaImage(
         val height: String,
-        val mp4: String,
+        val mp4: String, // .MP4
         val mp4_size: String,
         val size: String,
-        val url: String,
-        val webp: String,
+        val url: String, // .GIF
+        val webp: String, // .WEBP
         val webp_size: String,
         val width: String,
     )
@@ -277,13 +280,13 @@ class Dm(
         //val create_mode_attribution: Any?,
         //val id: String?,
         //val media_type: Float, // always 1: photo
-        val original_height: Float?,
-        val original_width: Float?,
+        original_height: Float?,
+        original_width: Float?,
         //val user: Rest.User?,
         //val organic_tracking_token: String,
-        val image_versions2: Media.ImageVersions2?,
+        image_versions2: Media.ImageVersions2?,
         //val media_id: String?,
-    )
+    ) : Versioned(image_versions2, original_height, original_width, null, null)
 
     class LiveViewerInvite(
         //val broadcast: LiveBroadcast?,

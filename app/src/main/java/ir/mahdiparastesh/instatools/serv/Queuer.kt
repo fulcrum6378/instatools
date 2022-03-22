@@ -183,7 +183,7 @@ class Queuer : ForegroundService() {
                 var found = true
                 val addOns = arrayListOf<Queued>()
                 when {
-                    med.carousel_media != null -> for (car in med.carousel_media)
+                    med.carousel_media != null -> for (car in med.carousel_media!!)
                         if (cur.qud!!.url == null) cur.qud!!.apply {
                             date = med.taken_at.xFromSeconds()
                             userId = med.user.pk

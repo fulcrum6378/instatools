@@ -15,7 +15,8 @@ abstract class TxtExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp
     private var ink = StringBuilder()
 
     override fun run() {
-        if (exp.threadData == null) return
+        if (exp.threadData == null) {
+            progress(100f, false); return; }
         progress(0f, false)
         for (dm in exp.threadData!!.items) {
             val cal = dm.timestamp.xFromMicroseconds().calendar()

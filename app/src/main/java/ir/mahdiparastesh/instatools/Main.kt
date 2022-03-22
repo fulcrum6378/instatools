@@ -42,6 +42,8 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlin.reflect.KClass
 
+// adb connect 192.168.1.20:
+
 @Suppress("MemberVisibilityCanBePrivate")
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {

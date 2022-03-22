@@ -25,7 +25,7 @@ abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
                     ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
                     ?: return false
                 return if (med.carousel_media != null)
-                    med.carousel_media.all { it.pk in theirs }
+                    med.carousel_media!!.all { it.pk in theirs }
                 else med.pk in theirs
             }
         }

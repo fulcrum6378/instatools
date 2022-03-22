@@ -14,7 +14,7 @@ class Media(
     //val can_viewer_save: Boolean,
     //val caption: Caption,
     //val caption_is_edited: Boolean,
-    val carousel_media: Array<CarouselMedia>?,
+    carousel_media: Array<CarouselMedia>?,
     //val carousel_media_count: Double?,
     //val client_cache_key: String,
     val code: String?, // dm uploaded media are nullable
@@ -83,9 +83,8 @@ class Media(
 
     var mahdi_reel_type: String? = null,
     var mahdi_reel_id: String? = null
-) : Versioned(
-    image_versions2, original_height, original_width, video_versions
-) {
+) : Versioned(image_versions2, original_height, original_width, video_versions, carousel_media) {
+
     class MediaWrapperApi(
         //var auto_load_more_enabled: Boolean,
         var items: CopyOnWriteArrayList<Media>?,
@@ -131,9 +130,7 @@ class Media(
         //val video_subtitles_confidence: Double?,
         //val video_subtitles_uri: String?,
         video_versions: Array<VideoVersion>?,
-    ) : Versioned(
-        image_versions2, original_height, original_width, video_versions
-    )
+    ) : Versioned(image_versions2, original_height, original_width, video_versions, null)
 
     class ImageVersions2(
         val candidates: Array<Candidate>,

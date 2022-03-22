@@ -41,7 +41,6 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -187,12 +186,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         else if (shouldShowJumper.value == true) shouldShowJumper.value = false
     }
 
-    fun expOptions(
-        method: Exporter.Method,
-        userName: String,
-        thread: Dm.DmThread,
-        selection: Array<String>? = null
-    ) {
+    fun expOptions(method: Exporter.Method, thread: Dm.DmThread) {
+        // selection: Array<String>? = null
         val bi = ExportOptionsBinding.inflate(inflater, null, false)
         bi.ll.forEach { ch ->
             when (ch) {
@@ -253,18 +248,13 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     Exportable.Options.quaVideo.indexOf(bi.quaVideo.checkedRadioButtonId) else -1
                 opt.voice = if (bi.incVoice.isChecked) 0 else -1
                 c.sp?.edit()?.putString(Settings.spExpOptions, opt.toJson())?.apply()
-                exportable = Exportable(
-                    thread.thread_id, selection?.joinToString(","), method.id, opt.toJson(),
-                    threadData = thread
-                )
+                exportable =
+                    Exportable(thread.thread_id, null, method.id, opt.toJson(), threadData = thread)
                 if (!method.openTree)
                     c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = method.mime
-                        putExtra(
-                            Intent.EXTRA_TITLE,
-                            "Exported ${userName}_${UiTools.fileDateTime(Persistent.now())}.${method.ext}"
-                        )
+                        putExtra(Intent.EXTRA_TITLE, "${thread.exported()}.${method.ext}")
                     })
                 else c.exportLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
                 activityResulted = false

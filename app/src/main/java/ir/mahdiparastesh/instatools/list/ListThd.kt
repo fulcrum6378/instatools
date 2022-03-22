@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -13,8 +12,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -25,6 +22,7 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
+import ir.mahdiparastesh.instatools.view.FastCustomGlide
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.anchor
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
@@ -114,14 +112,12 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
             // Message
             msgTv.anchor(null, null)
             msgIvHint.vis(false)
-            var media: Media? = null
+            var media: Versioned? = null
             when {
                 dm.action_log != null ->
                     msgIvHint.apply { text = dm.action_log.description; vis() }
-                dm.animated_media != null -> Glide.with(c)
-                    .load(dm.animated_media.images.fixed_height.webp) // TODO: CAN OPEN WEBP ?!?!
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(msgIv)
+                dm.animated_media != null ->
+                    msgIvHint.apply { text = "Sent a sticker"; vis() }
                 dm.clip != null -> media = dm.clip.clip
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
@@ -140,9 +136,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
                 dm.profile != null ->
                     msgTv.anchor("@${dm.profile.username}", PROFILE.format(dm.profile.username))
-                dm.raven_media != null -> {
-                    // TODO
-                }
+                dm.raven_media != null -> media = dm.raven_media
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
                     if (dm.reel_share.message != null)
@@ -162,7 +156,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 dm.video_call_event != null ->
                     msgIvHint.apply { text = dm.video_call_event.description; vis() }
                 dm.voice_media != null ->
-                    if (f == null) msgIvHint.apply { text = "Voice"; vis() }
+                    if (f == null) msgIvHint.apply { text = "Sent a voice message"; vis() }
                     else {
                         //f.voicePlayer = MediaPlayer.create()
                     }
@@ -189,24 +183,19 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
                 Glide.with(c).load(
                     carousel_media?.getOrNull(0)?.nearest(idealW) ?: nearest(idealW)
                 ).diskCacheStrategy(DiskCacheStrategy.ALL).into(
-                    object : CustomTarget<Drawable>() {
-                        override fun onLoadCleared(placeholder: Drawable?) {}
-                        override fun onResourceReady(
-                            res: Drawable, trans: Transition<in Drawable>?
-                        ) {
-                            if (h != null && h.layoutPosition != i) return
-                            msgLoading.pauseAnimation()
-                            msgLoading.vis(false)
-                            msgIv.layoutParams = msgIv.layoutParams.apply {
-                                width = WRAP_CONTENT
-                                height = WRAP_CONTENT
-                            }
-                            msgIv.setImageDrawable(res)
+                    FastCustomGlide {
+                        if (h != null && h.layoutPosition != i) return@FastCustomGlide
+                        msgLoading.pauseAnimation()
+                        msgLoading.vis(false)
+                        msgIv.layoutParams = msgIv.layoutParams.apply {
+                            width = WRAP_CONTENT
+                            height = WRAP_CONTENT
                         }
+                        msgIv.setImageDrawable(it)
                     })
             }
             if (downloaded == null) mediaClick.setOnClickListener {
-                if (f?.expandable == null) return@setOnClickListener
+                if (f?.expandable == null || media !is Media) return@setOnClickListener
                 f.expandable.media = media
                 f.expandable.thumb = root
                 try {

@@ -32,13 +32,9 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
         val firstUser = thd.users.getOrNull(0)
         if (firstUser == null && !thd.is_group) return
         // thd.users MAY HAVE BEEN EMPTY AND CAUSED THOSE 34-TIME CRASHES
-        if (!thd.is_group) {
-            Glide.with(c.c).load(firstUser!!.profile_pic_url).into(h.b.photo)
-            h.b.name.text = firstUser.visName()
-        } else {
-            h.b.photo.setImageResource(R.drawable.switch_account)
-            h.b.name.text = thd.thread_title
-        }
+        if (!thd.is_group) Glide.with(c.c).load(firstUser!!.profile_pic_url).into(h.b.photo)
+        else h.b.photo.setImageResource(R.drawable.switch_account)
+        h.b.name.text = thd.title()
 
         h.b.last.text =
             c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at.xFromMicroseconds()))
@@ -56,21 +52,10 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             MaterialMenu(
                 c.wrapTheme(BaseActivity.Theme.TERTIARY), c.fontRegular, it, R.menu.box_more,
                 Act().apply {
-                    this[R.id.bmHtml] = {
-                        thd.users.getOrNull(0)
-                            ?.let { uu -> f.expOptions(Exporter.Method.HTML, uu.username, thd) }
-                    }
-                    this[R.id.bmPdf] = {
-                        thd.users.getOrNull(0)
-                            ?.let { uu -> f.expOptions(Exporter.Method.PDF, uu.username, thd) }
-                    }
-                    this[R.id.bmTxt] = {
-                        thd.users.getOrNull(0)
-                            ?.let { uu -> f.expOptions(Exporter.Method.TXT, uu.username, thd) }
-                    }
-                    this[R.id.bmOpenDmInInsta] = {
-                        UiTools.openDm(c, thd.thread_id)
-                    }
+                    this[R.id.bmHtml] = { f.expOptions(Exporter.Method.HTML, thd) }
+                    this[R.id.bmPdf] = { f.expOptions(Exporter.Method.PDF, thd) }
+                    this[R.id.bmTxt] = { f.expOptions(Exporter.Method.TXT, thd) }
+                    this[R.id.bmOpenDmInInsta] = { UiTools.openDm(c, thd.thread_id) }
                     this[R.id.bmView] = {
                         thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
                     }

@@ -28,7 +28,8 @@ abstract class PdfExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp
 
     @SuppressLint("InflateParams")
     override fun run() {
-        if (exp.threadData == null) return
+        if (exp.threadData == null) {
+            progress(100f, false); return; }
         val document = PdfDocument()
         var page = 0
         var mess = 0

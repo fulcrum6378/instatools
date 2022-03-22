@@ -21,7 +21,7 @@ class ListCar(val c: BaseActivity, private val med: Media) :
     val players: ArrayList<MediaPlayer?>
 
     init {
-        if (med.carousel_media != null) for (slide in med.carousel_media) slides.add(
+        if (med.carousel_media != null) for (slide in med.carousel_media!!) slides.add(
             Slide(
                 slide.nearest(Versioned.BEST),
                 MediaType.values().find { it.inDb == (slide.media_type).toInt().toByte() }!!

@@ -8,11 +8,13 @@ abstract class Versioned(
     val image_versions2: Media.ImageVersions2?,
     val original_height: Float?,
     val original_width: Float?,
-    val video_versions: Array<Media.VideoVersion>?
+    val video_versions: Array<Media.VideoVersion>?,
+    var carousel_media: Array<Media.CarouselMedia>?
 ) {
     companion object {
-        const val BEST = 0f
-        const val WORST = -1f
+        const val WORST = 0f
+        const val MEDIUM = -1f
+        const val BEST = -2f
         // Any positive number except these represents an ideal width,
         // Any negative number except these represents an ideal height.
     }
@@ -28,6 +30,7 @@ abstract class Versioned(
 
     private fun funChooser(list: Array<Media.Candidate>, ideal: Float): String? = when (ideal) {
         BEST -> bestOfList(list)
+        MEDIUM -> mediumOfList(list)
         WORST -> worstOfList(list)
         else -> nearestOfList(list, ideal)
     }
@@ -69,6 +72,10 @@ abstract class Versioned(
         return list.find { it.width == nW && it.height == nH }?.url
             ?: list.getOrNull(0)?.url
     }
+
+    private fun mediumOfList(list: Array<Media.Candidate>): String? =
+        list.getOrNull(if (list.size <= 1) 0 else list.size / 2)?.url
+
 
     private fun worstOfList(list: Array<Media.Candidate>): String? {
         var minW = 1000f
