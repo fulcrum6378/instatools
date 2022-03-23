@@ -179,8 +179,11 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             return; }
         reset(firstLoad)
         CoroutineScope(Dispatchers.IO).launch {
-            dbFav = dao.favouriteByUser(user!!).getOrNull(0)
-            withContext(Dispatchers.Main) { fixTbMenu() }
+            try {
+                dbFav = dao.favouriteByUser(user!!).getOrNull(0)
+                withContext(Dispatchers.Main) { fixTbMenu() }
+            } catch (e: NullPointerException) {
+            }
         }
         if (thread?.active != true) thread = Initial().also { it.start() }
     }

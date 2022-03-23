@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.serv
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
@@ -11,6 +12,7 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
@@ -18,6 +20,7 @@ import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.HtmlExporter
 import ir.mahdiparastesh.instatools.view.PdfExporter
 import ir.mahdiparastesh.instatools.view.TxtExporter
@@ -43,6 +46,9 @@ class Exporter : ForegroundService() {
         )
 
         const val MEDIA_DELAY = 200L
+
+        fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+                c.sPreference(Settings.spStorage) != null
     }
 
     override fun onCreate() {
@@ -99,10 +105,10 @@ class Exporter : ForegroundService() {
         val vid = opt?.vid() == true
         for (dm in threadData!!.items) {
             if (vid && dm.animated_media != null) {
-                media[dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url)
+                media!![dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 4)
                 continue; }
             if (opt?.voice == 0 && dm.voice_media != null) {
-                media[dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src)
+                media!![dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 3)
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip
@@ -135,19 +141,20 @@ class Exporter : ForegroundService() {
                 val url = if (carousel_media != null) carousel_media!!.getOrNull(0)
                     ?.nearest(qua, justImage = !vid)
                 else nearest(qua, justImage = !vid) ?: return@apply
-                media[dm.item_id] = Downloadable(url!!)
+                media!![dm.item_id] =
+                    Downloadable(url!!, if (vid && video_versions != null) 1 else 0)
             }
         }
         fetchMedium()
     }
 
     private fun Exportable.fetchMedium() {
-        val dl = media.entries.filter { it.value.data == null }.getOrNull(0)
+        val dl = media!!.entries.filter { it.value.data == null }.getOrNull(0)
         if (dl == null) {
             export(); return; }
         Volley.newRequestQueue(c).add(
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
-                media[dl.key] = media[dl.key]!!.apply { data = byteArrayOf() }
+                media!![dl.key] = media!![dl.key]!!.apply { data = byteArrayOf() }
                 Delay(MEDIA_DELAY) { fetchMedium() }
             }) {
                 override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
@@ -156,7 +163,7 @@ class Exporter : ForegroundService() {
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
 
                 override fun deliverResponse(response: ByteArray) {
-                    media[dl.key] = media[dl.key]!!.apply { data = response }
+                    media!![dl.key] = media!![dl.key]!!.apply { data = response }
                     Delay(MEDIA_DELAY) { fetchMedium() }
                 }
             }.apply {
@@ -201,13 +208,14 @@ class Exporter : ForegroundService() {
 
     @Suppress("unused")
     enum class Method(
-        val id: Int, val mime: String, val ext: String, val openTree: Boolean, val img: Boolean,
+        val id: Int, val mime: String, val ext: String, val asTree: Boolean, val img: Boolean,
         val vid: Boolean,
     ) {
-        HTML(0, "text/html", "html", true, true, true),
+        HTML(0, "vnd.android.document/directory", "html", true, true, true),
         PDF(1, "application/pdf", "pdf", false, true, false),
         TXT(2, "text/plain", "txt", false, false, false),
     }
 
-    class Downloadable(val url: String, var data: ByteArray? = null)
+    class Downloadable(val url: String, val type: Short, var data: ByteArray? = null)
+    // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
 }

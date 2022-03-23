@@ -147,7 +147,7 @@ class PageUnf : BasePageMain() {
                         if (!c.db.isOpen) return@Thread
                         Friend.add(
                             c.dao, this, Friend(
-                                u.pk, u.username, u.full_name, u.profile_pic_url, u.is_private,
+                                u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
                                 theFollowers, !theFollowers
                             ), theFollowers
                         )

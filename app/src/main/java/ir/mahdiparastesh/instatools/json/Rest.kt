@@ -20,7 +20,7 @@ open class Rest {
         //val following_count: Float?,
         //val following_tag_count: Float?,
         val friendship_status: Friendship?, // INFO appears to lack this
-        val full_name: String,
+        val full_name: String?, // rarely nullable
         //val has_anonymous_profile_picture: Boolean?,
         //val has_guides: Boolean?,
         //val has_highlight_reels: Boolean?,
@@ -66,7 +66,7 @@ open class Rest {
         //val wa_addressable: Any?,// Double or Boolean
         //val wa_eligibility: Double?
     ) {
-        fun visName() = full_name.ifBlank { username }
+        fun visName() = full_name?.ifBlank { username } ?: username
     }
 
     class Follow(

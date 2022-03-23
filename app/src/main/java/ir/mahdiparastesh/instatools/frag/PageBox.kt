@@ -213,7 +213,11 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             CompoundButton.OnCheckedChangeListener {
             var wasCheckedItem = bi.quaImage.checkedRadioButtonId
             override fun onCheckedChanged(v: CompoundButton, isChecked: Boolean) {
-                if (isChecked) bi.quaImage.check(wasCheckedItem) else {
+                if (isChecked) {
+                    if (wasCheckedItem == -1) wasCheckedItem =
+                        Exportable.Options.quaImage[Exportable.Options.DEF_IMAGE]
+                    bi.quaImage.check(wasCheckedItem)
+                } else {
                     wasCheckedItem = bi.quaImage.checkedRadioButtonId
                     bi.quaImage.clearCheck()
                 }
@@ -230,7 +234,11 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             CompoundButton.OnCheckedChangeListener {
             var wasCheckedItem = bi.quaVideo.checkedRadioButtonId
             override fun onCheckedChanged(v: CompoundButton, isChecked: Boolean) {
-                if (isChecked) bi.quaVideo.check(wasCheckedItem) else {
+                if (isChecked) {
+                    if (wasCheckedItem == -1) wasCheckedItem =
+                        Exportable.Options.quaVideo[Exportable.Options.DEF_VIDEO]
+                    bi.quaVideo.check(wasCheckedItem)
+                } else {
                     wasCheckedItem = bi.quaVideo.checkedRadioButtonId
                     bi.quaVideo.clearCheck()
                 }
@@ -250,13 +258,18 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 c.sp?.edit()?.putString(Settings.spExpOptions, opt.toJson())?.apply()
                 exportable =
                     Exportable(thread.thread_id, null, method.id, opt.toJson(), threadData = thread)
-                if (!method.openTree)
+
+                if (!method.asTree || Exporter.canCreateDirSelf(c))
                     c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = method.mime
-                        putExtra(Intent.EXTRA_TITLE, "${thread.exported()}.${method.ext}")
+                        putExtra(
+                            Intent.EXTRA_TITLE,
+                            "${thread.exported()}${if (!method.asTree) "." + method.ext else ""}"
+                        )
                     })
                 else c.exportLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
+
                 activityResulted = false
                 c.loadInterstitial("ca-app-pub-9457309151954418/8317918650") {
                     !c.showingAd && activityResulted
