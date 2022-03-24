@@ -53,11 +53,11 @@
     <string name="downloadAll">Tüm slaytları indir</string>
     <string name="downloadThis">Yalnızca bu slaydı indir</string>
     <string-array name="bytes">
-        <item>%d Б</item>
-        <item>%d КБ</item>
-        <item>%d МБ</item>
-        <item>%d ГБ</item>
-        <item>%d ТБ</item>
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
     </string-array>
     <string name="maximum">Maksimum: %s</string>
     <string name="unlimited">Sınırsız</string>

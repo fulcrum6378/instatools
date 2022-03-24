@@ -58,11 +58,11 @@
     <string name="downloadAll">Скачать все слайды</string>
     <string name="downloadThis">Скачать только этот слайд</string>
     <string-array name="bytes">
-        <item>%d B</item>
-        <item>%d KB</item>
-        <item>%d MB</item>
-        <item>%d GB</item>
-        <item>%d TB</item>
+        <item>%d Б</item>
+        <item>%d КБ</item>
+        <item>%d МБ</item>
+        <item>%d ГБ</item>
+        <item>%d ТБ</item>
     </string-array>
     <string name="maximum">Максимум: %s</string>
     <string name="unlimited">Неограниченный</string>

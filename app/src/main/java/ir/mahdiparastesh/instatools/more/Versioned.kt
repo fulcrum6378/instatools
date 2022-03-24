@@ -89,6 +89,6 @@ abstract class Versioned(
     }
 
     fun thumb() = //(this as Media).thumbnails?.sprite_urls?.getOrNull(0)
-        (this as Media).carousel_media?.getOrNull(0)?.nearest(WORST, true)
+        (if (this is Media) carousel_media?.getOrNull(0)?.nearest(WORST, true) else null)
             ?: nearest(WORST, true)
 }
