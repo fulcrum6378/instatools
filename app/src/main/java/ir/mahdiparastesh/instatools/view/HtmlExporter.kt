@@ -15,30 +15,34 @@ import ir.mahdiparastesh.instatools.serv.Exporter
 import kotlinx.coroutines.runBlocking
 import java.io.FileOutputStream
 
-@Suppress("MemberVisibilityCanBePrivate")
 abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
-    lateinit var folder: DocumentFile
-    val dwnFolder by lazy {
+    private lateinit var folder: DocumentFile
+    private val dwnFolder by lazy {
         DocumentFile.fromTreeUri(c.c, Uri.parse(c.sPreference(Settings.spStorage)))!!
     }
-    val tmpDir by lazy { dwnFolder.createDirectory(TEMP_DIR)!! }
-    val canCreateDirSelf = Exporter.canCreateDirSelf(c)
-    val subFolders = Array<DocumentFile?>(3) { null }
-    val containers = arrayListOf<List<String>>()
-    var divisions: ArrayList<String>? = null
-    var limit = 0
-    var needJquery = false
+    private val tmpDir by lazy {
+        dwnFolder.findFile(TEMP_DIR) ?: dwnFolder.createDirectory(TEMP_DIR)!!
+    }
+    private val canCreateDirSelf = Exporter.canCreateDirSelf(c)
+    private val subFolders = Array<DocumentFile?>(3) { null }
+    private val containers = arrayListOf<List<String>>()
+    private var divisions: ArrayList<String>? = null
+    private var limit = 0
 
-    val subFolderNames = arrayOf("image", "video", "audio")
-    val fileTypes = arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "mp4")
+    private val subFolderNames = arrayOf("image", "video", "audio")
+    private val fileTypes =
+        arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a")
     val maximum = 500
-    val divInd = "  "
-    val divDial = "<p class=\"dial\">%s</p>"
-    val divHint = "<p class=\"hint\">%s</p>"
-    val divHintAndDial = divHint.format("%1\$s") + "\n$divInd" + divDial.format("%2\$s")
-    val divLink = divDial.format("<a href=\"%1\$s\">%2\$s</a>")
-    val divGif = "<img src=\"%s\" class=\"gif\">"
-    val divImg = "<img src=\"./${subFolderNames[0]}/%s.jpg\" class=\"media\">"
+    private val divInd = "  "
+    private val divDial = "<p class=\"dial\">%s</p>"
+    private val divHint = "<p class=\"hint\">%s</p>"
+    private val divLink = divDial.format("<a href=\"%1\$s\">%2\$s</a>")
+    private val divGif = "<img src=\"%s\" class=\"gif\">"
+    private val divImg = "<img src=\"./${subFolderNames[0]}/%s.jpg\" class=\"media\">"
+
+    private fun hintAndDial(hint: String?, dial: String?) =
+        (if (!hint.isNullOrBlank()) (divHint.format(hint) + "\n$divInd") else "") +
+                (if (!dial.isNullOrBlank()) divDial.format(dial) else "")
 
     companion object {
         const val TEMP_DIR = ".export_temp"
@@ -98,12 +102,12 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                 }
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
-                    divDial.format(dm.felix_share.text)
+                    dm.felix_share.text?.let { divDial.format(it) } ?: ""
                 }
                 dm.like != null -> divDial.format(dm.like)
                 dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text)
                 dm.live_viewer_invite != null ->
-                    divHintAndDial.format(
+                    hintAndDial(
                         dm.live_viewer_invite.cta_button_name,
                         dm.live_viewer_invite.text
                     )
@@ -126,11 +130,11 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                 }
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
-                    divHintAndDial.format(dm.reel_share.message, dm.reel_share.text)
+                    hintAndDial(dm.reel_share.message, dm.reel_share.text)
                 }
                 dm.story_share != null -> {
                     media = dm.story_share.media
-                    divHintAndDial.format(dm.story_share.message, dm.story_share.text)
+                    hintAndDial(dm.story_share.message, dm.story_share.text)
                 }
                 dm.text != null -> divDial.format(dm.text)
                 dm.video_call_event != null ->
@@ -138,7 +142,8 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                 dm.voice_media != null -> {
                     limit += 4
                     "<audio controls>\n" +
-                            "$divInd  <source src=\"./${subFolderNames[2]}/${dm.item_id}.mp4\" type=\"audio/mp4\">\n" +
+                            "$divInd  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
+                            " type=\"audio/mp4\">\n" +
                             "$divInd</audio>"
                 }
                 else -> ""
@@ -161,7 +166,7 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                         limit += 2
                         divImg.format(dm.item_id) // placeholder icon
                     }
-                } + "\n$divInd"
+                } + (if (nonMedia.isNotBlank()) "\n$divInd" else "")
             )
             div.append(nonMedia)
             if (nonMedia.isNotBlank()) limit++
@@ -181,7 +186,7 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
 
         containers.forEachIndexed { i, divisions ->
             val html = StringBuilder()
-            html.append(
+            html.append( // MAKE JQUERY BE DOWNLOADED FROM WEB EACH TIME THE USER OPENS HTML
                 """<!DOCTYPE HTML>
 <html dir="${if (c.c.resources.getBoolean(R.bool.dirRtl)) "rtl" else "ltr"}">
 <head>
@@ -191,12 +196,14 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
   <title>${exp.threadData!!.exported()}</title>
 </head>
+
 <body>
 """
             )
             for (div in divisions) {
                 html.append(div)
             }
+            // TODO: ADD A VERY SIMPLE PAGING ABILITY
             html.append(
                 """</body>
 </html>"""
@@ -211,6 +218,13 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                     }
                 }
                 DocumentsContract.moveDocument(c.c.contentResolver, tmp.uri, tmpDir.uri, folder.uri)
+            } else {
+                val file = folder.createFile("text/html", "${i + 1}.html")!!
+                c.c.contentResolver.openFileDescriptor(file.uri, "w")?.use { des ->
+                    FileOutputStream(des.fileDescriptor).use { fos ->
+                        fos.write(html.toString().encodeToByteArray())
+                    }
+                }
             }
         }
 

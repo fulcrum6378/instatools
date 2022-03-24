@@ -177,7 +177,7 @@ class Dm(
 
     class ClipShare(val clip: Media) // TODO: NO TEXT?
 
-    class FelixShare(val video: Media, val text: String) : PlaceHolder()
+    class FelixShare(val video: Media, val text: String?) : PlaceHolder()
 
     class StoryShare(
         //val is_reel_persisted: Boolean?,

@@ -105,10 +105,10 @@ class Exporter : ForegroundService() {
         val vid = opt?.vid() == true
         for (dm in threadData!!.items) {
             if (vid && dm.animated_media != null) {
-                media!![dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 4)
+                media!![dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 3)
                 continue; }
             if (opt?.voice == 0 && dm.voice_media != null) {
-                media!![dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 3)
+                media!![dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 2)
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip
@@ -137,7 +137,7 @@ class Exporter : ForegroundService() {
                 else -> null
             })?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
-                val qua = (if (vid) opt!!.video else opt!!.image).toFloat()
+                val qua = -(if (vid) opt!!.video else opt!!.image).toFloat()
                 val url = if (carousel_media != null) carousel_media!!.getOrNull(0)
                     ?.nearest(qua, justImage = !vid)
                 else nearest(qua, justImage = !vid) ?: return@apply

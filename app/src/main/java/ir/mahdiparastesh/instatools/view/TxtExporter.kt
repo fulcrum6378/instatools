@@ -60,5 +60,5 @@ abstract class TxtExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp
         progress(100f, true)
     }
 
-    private fun String.shareText() = if (!isBlank()) ": $this" else ""
+    private fun String?.shareText() = if (!isNullOrBlank()) ": $this" else ""
 }

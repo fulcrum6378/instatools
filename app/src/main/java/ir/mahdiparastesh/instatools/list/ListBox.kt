@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.list
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -63,7 +62,6 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
-                if (!BuildConfig.DEBUG) menu.findItem(R.id.bmHtml).isVisible = false
             }.show()
         }
         h.b.sep.vis(i < itemCount - 1)
