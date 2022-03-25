@@ -215,7 +215,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         // Ads
-        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/9910778917")
+        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmSettings)
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
     }

@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">InstaTools</string>
-
     <!-- #GLOBAL -->
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>

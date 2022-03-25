@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">InstaTools</string>
-
     <!-- #FONTS -->
     <string name="font_logo" translatable="false">pacifico.ttf</string>
     <string name="font_bold" translatable="false">titillium_web_bold.ttf</string>

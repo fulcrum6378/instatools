@@ -1,6 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
-    <string name="app_name">InstaTools</string>
-
     <!-- #GLOBAL -->
     <string name="guest">Misafir</string>
     <string name="navOpen">Açık</string>

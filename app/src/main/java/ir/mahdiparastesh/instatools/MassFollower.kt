@@ -154,7 +154,7 @@ class MassFollower : ServiceOwnerActivity() {
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady()) return
-        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/5087388141")
+        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmMassFollower)
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
         b.panel.layoutParams = (b.panel.layoutParams as ConstraintLayout.LayoutParams)
@@ -307,7 +307,7 @@ class MassFollower : ServiceOwnerActivity() {
         ) {
             loadingAd = true
             RewardedAd.load(
-                c, "ca-app-pub-9457309151954418/3824726608",
+                c, c.getString(R.string.rewardMfwStarter),
                 AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
                     override fun onAdLoaded(rewardedAd: RewardedAd) {
                         loadingAd = false

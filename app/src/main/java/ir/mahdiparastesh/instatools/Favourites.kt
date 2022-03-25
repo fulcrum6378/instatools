@@ -69,7 +69,7 @@ class Favourites : BaseActivity() {
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady()) return
-        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/5374757205")
+        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmFavourites)
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
         b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)

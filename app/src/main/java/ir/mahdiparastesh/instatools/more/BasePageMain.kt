@@ -36,7 +36,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         jumper().vis(false)
         rv().vis(false)
 
-        guestAdBanner = UiTools.adaptiveBanner(c, "ca-app-pub-9457309151954418/5535427358")
+        guestAdBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmGuest)
         root.addView(guestAdBanner, UiTools.adaptiveBannerLp())
         guestAdBanner.loadAd(AdRequest.Builder().build())
     }

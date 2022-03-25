@@ -85,7 +85,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             else -> {
                 welcome()
                 if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
-                    loadInterstitial("ca-app-pub-9457309151954418/9218833137", true)
+                    loadInterstitial(R.string.interAccSwitched, true)
             }
         }
     }
@@ -167,7 +167,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         doClearHistory = true
 
         if (areAdsReady() && adBanner == null) {
-            adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/6652379544")
+            adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmWebView)
             b.root.addView(adBanner, 1, UiTools.adaptiveBannerLp())
             adBanner!!.loadAd(AdRequest.Builder().build())
             b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)

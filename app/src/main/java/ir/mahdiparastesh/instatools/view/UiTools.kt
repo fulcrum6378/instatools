@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -123,12 +124,12 @@ class UiTools {
 
         fun Double.xFromSeconds() = toLong() * 1000L
 
-        fun adaptiveBanner(c: BaseActivity, unitId: String) = AdView(c).apply {
+        fun adaptiveBanner(c: BaseActivity, @StringRes unitId: Int) = AdView(c).apply {
             id = R.id.adBanner
             adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 c, (c.dm.widthPixels / c.dm.density).toInt()
             )
-            adUnitId = unitId
+            adUnitId = c.getString(unitId)
         }
 
         fun adaptiveBannerLp() = ConstraintLayout.LayoutParams(

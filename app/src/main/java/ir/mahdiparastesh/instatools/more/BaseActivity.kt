@@ -199,7 +199,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     override fun onMenuItemClick(item: MenuItem): Boolean = true
 
     @MainThread
-    fun loadInterstitial(adUnitId: String, autoPlay: () -> Boolean) {
+    fun loadInterstitial(@StringRes adUnitId: Int, autoPlay: () -> Boolean) {
         if (adsInitStatus?.isReady() != true) {
             if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
                 loadInterstitial(adUnitId)
@@ -209,7 +209,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         if (interstitialAd != null || loadingAd) return
         loadingAd = true
         InterstitialAd.load(
-            c, adUnitId, AdRequest.Builder().build(), object : InterstitialAdLoadCallback() {
+            c, getString(adUnitId), AdRequest.Builder().build(),
+            object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     loadingAd = false
                 }
@@ -222,7 +223,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             })
     }
 
-    fun loadInterstitial(adUnitId: String, autoPlay: Boolean = false) {
+    fun loadInterstitial(@StringRes adUnitId: Int, autoPlay: Boolean = false) {
         loadInterstitial(adUnitId) { autoPlay }
     }
 

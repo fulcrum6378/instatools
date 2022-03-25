@@ -11,22 +11,49 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionCode 38
-        versionName '11.5.5'
+        versionName '11.6'
     }
 
     signingConfigs {
-        release {
+        aleph {
             storeFile file('D:\\Experimental\\mahdiparastesh.jks')
             keyAlias 'instatools'
             storePassword "${System.getenv("JERK")}"
             keyPassword "${System.getenv("JERK")}"
         }
+        beth {
+            storeFile file('D:\\Experimental\\mahdiparastesh.jks')
+            keyAlias 'instatools_beth'
+            storePassword "${System.getenv("JERK")}"
+            keyPassword "${System.getenv("JERK")}"
+            // In Google Play: alias(Deployment Key)=>instatools, signing-key-alias=>instatools_beth
+        }
+    }
+
+    flavorDimensions('release')
+    productFlavors {
+        all {
+            dimension = 'release'
+        }
+        iran {
+            versionCode 38
+        }
+        play {
+            applicationIdSuffix '.beth'
+            versionCode 2
+        }
+    }
+    sourceSets.iran {
+        res.srcDirs = ['src/main/res', 'src/main/res_iran']
+    }
+    sourceSets.play {
+        res.srcDirs = ['src/main/res', 'src/main/res_play']
     }
 
     buildTypes {
         all {
-            signingConfig signingConfigs.release
+            productFlavors.iran.signingConfig signingConfigs.aleph
+            productFlavors.play.signingConfig signingConfigs.beth
         }
         debug {
             debuggable true
@@ -49,11 +76,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
     buildFeatures {
         viewBinding true
     }

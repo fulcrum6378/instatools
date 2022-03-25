@@ -93,9 +93,7 @@ class PageSvd : BasePageMain(), Selective {
                 if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
             }
         },
-        HANDLE_SHOW_AD to {
-            c.loadInterstitial("ca-app-pub-9457309151954418/6541958088", true)
-        },
+        HANDLE_SHOW_AD to { c.loadInterstitial(R.string.interUnsaving, true) },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") }
     )
     override var tracker: SelectionTracker<String>? = null
@@ -246,7 +244,10 @@ class PageSvd : BasePageMain(), Selective {
     @SuppressLint("UnsafeOptInUsageError")
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
         override fun onItemStateChanged(key: String, selected: Boolean) {
+            if (c.tbTitle == null) return
             BadgeUtils.detachBadgeDrawable(selectionBadge, c.tbTitle!!)
+            if (c.tbTitle?.parent == null) return
+            // to avoid NullPointerException in BadgeDrawable.updateAnchorParentToNotClip
             BadgeUtils.attachBadgeDrawable(
                 BadgeDrawable.create(
                     ContextThemeWrapper(c, R.style.Theme_MaterialComponents_DayNight)

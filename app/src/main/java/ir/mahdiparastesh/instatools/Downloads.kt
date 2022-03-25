@@ -64,7 +64,7 @@ class Downloads : ServiceOwnerActivity() {
                     }
                     HANDLE_DELETED -> {
                         if (m.queueds?.size in 1..5)
-                            loadInterstitial("ca-app-pub-9457309151954418/4215022118") {
+                            loadInterstitial(R.string.interDownloaded) {
                                 m.queueds?.filter { !it.failed }.isNullOrEmpty()
                             }
                         find(msg)?.let {
@@ -133,7 +133,7 @@ class Downloads : ServiceOwnerActivity() {
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady()) return
-        adBanner = UiTools.adaptiveBanner(this, "ca-app-pub-9457309151954418/4315014912")
+        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDownloads)
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
         adBanner.loadAd(AdRequest.Builder().build())
         b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)

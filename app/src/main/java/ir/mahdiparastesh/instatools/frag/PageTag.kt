@@ -77,7 +77,7 @@ class PageTag : BasePageViewer() {
 
         // Banner Ad
         if (BaseActivity.areAdsReady()) {
-            adBanner = UiTools.adaptiveBanner(c, "ca-app-pub-9457309151954418/2447612478")
+            adBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmPageTag)
             b.root.addView(adBanner, UiTools.adaptiveBannerLp())
             adBanner.loadAd(AdRequest.Builder().build())
             b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)

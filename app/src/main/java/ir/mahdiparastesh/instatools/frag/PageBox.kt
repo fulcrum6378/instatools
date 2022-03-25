@@ -271,9 +271,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 else c.exportLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
 
                 activityResulted = false
-                c.loadInterstitial("ca-app-pub-9457309151954418/8317918650") {
-                    !c.showingAd && activityResulted
-                }
+                c.loadInterstitial(R.string.interExporting) { !c.showingAd && activityResulted }
             }
         }.show().stylise(c)
     }

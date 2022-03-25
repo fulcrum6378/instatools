@@ -80,7 +80,7 @@ class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUn
                 return@Api; }
             f.counter++
             if (f.counter >= MAX_UNFOLLOW_AD) {
-                c.loadInterstitial("ca-app-pub-9457309151954418/9545936506", true)
+                c.loadInterstitial(R.string.interUnfMany, true)
                 f.counter = 0
             }
             Thread {
