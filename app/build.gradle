@@ -1,5 +1,3 @@
-import com.android.builder.core.BuilderConstants
-
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -69,12 +67,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    android.variantFilter { variant ->
-        def build = variant.buildType.name
-        if (build == BuilderConstants.DEBUG) { /* || build == BuilderConstants.RELEASE*/
-            variant.setIgnore(true)
-        }
-    }
+    android.variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
