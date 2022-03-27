@@ -1,3 +1,5 @@
+import com.android.builder.core.BuilderConstants
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -30,17 +32,17 @@ android {
         }
     }
 
-    flavorDimensions('release')
+    flavorDimensions('flaDim1')
     productFlavors {
-        all {
-            dimension = 'release'
-        }
+        all { dimension 'flaDim1' }
         iran {
             versionCode 38
+            signingConfig signingConfigs.aleph
         }
         play {
             applicationIdSuffix '.beth'
             versionCode 2
+            signingConfig signingConfigs.beth
         }
     }
     sourceSets.iran {
@@ -51,11 +53,7 @@ android {
     }
 
     buildTypes {
-        all {
-            productFlavors.iran.signingConfig signingConfigs.aleph
-            productFlavors.play.signingConfig signingConfigs.beth
-        }
-        debug {
+        debuggee {
             debuggable true
             minifyEnabled false
         }
@@ -71,17 +69,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    android.variantFilter { variant ->
+        def build = variant.buildType.name
+        if (build == BuilderConstants.DEBUG) { /* || build == BuilderConstants.RELEASE*/
+            variant.setIgnore(true)
+        }
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-    buildFeatures {
-        viewBinding true
-    }
+    kotlinOptions { jvmTarget = '1.8' }
+    buildFeatures { viewBinding true }
 }
 
 dependencies {
