@@ -224,9 +224,7 @@ class MassFollower : ServiceOwnerActivity() {
     fun countPermissions() {
         BadgeUtils.detachBadgeDrawable(controllerBadge, b.toolbar, R.id.mftControl)
         BadgeUtils.attachBadgeDrawable(
-            BadgeDrawable.create(
-                ContextThemeWrapper(c, R.style.Theme_MaterialComponents_DayNight)
-            ).apply {
+            BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
                 number = m.acc?.mfrw ?: 0
                 backgroundColor = if (!night()) color(R.color.CP) else color(R.color.defCA)
                 badgeTextColor = if (!night()) color(R.color.defBG) else color(R.color.CP)

@@ -11,7 +11,6 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
@@ -40,6 +39,7 @@ import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -152,9 +152,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
-            if (getTitle is TextView &&
-                getTitle.text.toString() == resources.getString(title)
-            ) tbTitle = getTitle
+            if (getTitle is TextView && getTitle.text.toString() == getString(title))
+                tbTitle = getTitle
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         tbTitle?.bolden(this, font)
@@ -165,9 +164,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     }
 
     open fun styliseToolbar() {
-        val ca = colorAc.value ?: TypedValue().apply {
-            theme.resolveAttribute(R.attr.colorAccent, this, true)
-        }.data
+        val ca = colorAc.value ?: themeColor()
         val cf = PorterDuffColorFilter(ca, PorterDuff.Mode.SRC_IN)
         toolbar.navigationIcon?.colorFilter = cf
         if (!night() && this is Main) {

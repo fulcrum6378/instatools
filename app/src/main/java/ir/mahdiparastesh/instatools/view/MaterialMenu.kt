@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.view
 
 import android.graphics.Typeface
 import android.text.SpannableString
-import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
@@ -10,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.forEach
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
 
 typealias Act = HashMap<Int, (item: MenuItem) -> Unit>
 
@@ -44,9 +44,7 @@ class MaterialMenu(
                 setSpan(
                     CustomTypefaceSpan(
                         font, c.resources.getDimension(size),
-                        if (ca == -1) null else ca ?: TypedValue().apply {
-                            c.theme.resolveAttribute(R.attr.colorAccent, this, true)
-                        }.data
+                        if (ca == -1) null else ca ?: c.themeColor()
                     ), 0, length, SpannableString.SPAN_INCLUSIVE_INCLUSIVE
                 )
             }

@@ -38,6 +38,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.Selective
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -249,9 +250,7 @@ class PageSvd : BasePageMain(), Selective {
             if (c.tbTitle?.parent == null) return
             // to avoid NullPointerException in BadgeDrawable.updateAnchorParentToNotClip
             BadgeUtils.attachBadgeDrawable(
-                BadgeDrawable.create(
-                    ContextThemeWrapper(c, R.style.Theme_MaterialComponents_DayNight)
-                ).apply {
+                BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
                     number = tracker?.selection?.size() ?: 0
                     backgroundColor = c.ca[1]
                     badgeTextColor = if (!c.night()) c.bg[1] else c.color(R.color.defBG)

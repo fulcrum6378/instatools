@@ -15,10 +15,13 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Html
 import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.TextView
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
@@ -49,6 +52,7 @@ class UiTools {
         private const val ADMOB = "com.google.android.gms.ads.MobileAds"
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
         private const val maxInaccurateTimeItems = 2
+        val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
 
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
             val list = ArrayList<AppCompatTextView>()
@@ -138,10 +142,8 @@ class UiTools {
 
         fun AlertDialog.stylise(c: BaseActivity): AlertDialog {
             // Don't move this function to BaseActivity
-            val ca = TypedValue().apply {
-                c.theme.resolveAttribute(R.attr.colorAccent, this, true)
-            }.data
-            window?.findViewById<TextView>(R.id.alertTitle)?.apply {
+            val ca = c.themeColor()
+            window?.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.apply {
                 typeface = c.fontBold
                 setTextColor(ca)
             }
@@ -250,5 +252,11 @@ class UiTools {
                     "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
                     "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
         }
+
+        @ColorInt
+        fun ContextThemeWrapper.themeColor(@AttrRes attr: Int = android.R.attr.colorAccent) =
+            TypedValue().apply {
+                theme.resolveAttribute(attr, this, true)
+            }.data
     }
 }

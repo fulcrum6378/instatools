@@ -3,23 +3,18 @@ package ir.mahdiparastesh.instatools.list
 import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.util.TypedValue
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.MassFollower
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListFwbBinding
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
 import kotlinx.coroutines.runBlocking
 
 class ListFwb(val c: MassFollower) : RecyclerView.Adapter<ListFwb.ViewHolder>() {
-    private val bg = TypedValue().apply {
-        c.theme.resolveAttribute(R.attr.backgroundColor, this, true)
-    }.data
-    private val ca = TypedValue().apply {
-        c.theme.resolveAttribute(R.attr.colorAccent, this, true)
-    }.data
+    private val bg = c.themeColor(android.R.attr.windowBackground)
+    private val ca = c.themeColor(android.R.attr.colorAccent)
     private val bgCf = PorterDuffColorFilter(bg, PorterDuff.Mode.SRC_IN)
 
     class ViewHolder(val b: ListFwbBinding) : RecyclerView.ViewHolder(b.root)

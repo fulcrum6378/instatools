@@ -95,7 +95,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 .apply { if (exists()) delete() }
         }
 
-        fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() }
+        fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
 
         fun Context.clearCache() {
             cacheDir.deleteRecursively()
@@ -112,7 +112,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         } ?: defSpCacheLimit
 
         fun Persistent.clearCacheIfNecessary() {
-            gsp.getLong(spCacheLimit, defaultCacheLimit(c))
+            if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
+                c.clearCache()
         }
 
         fun Long.toMBs() = (this / MB).toInt()
@@ -260,8 +261,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     }
 
     override fun onActivityResult(result: ActivityResult) {
-        if (result.data?.data == null) return
-        val uri = result.data!!.data!!
+        val uri = result.data?.data ?: return
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         prf.edit().putString(spStorage, uri.toString()).apply()

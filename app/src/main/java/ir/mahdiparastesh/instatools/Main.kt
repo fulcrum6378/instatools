@@ -42,7 +42,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlin.reflect.KClass
 
-// adb connect 192.168.1.20:
+// adb connect adb-R58MA6P17YD-MEhKF8._adb-tls-connect._tcp
 
 @Suppress("MemberVisibilityCanBePrivate")
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
