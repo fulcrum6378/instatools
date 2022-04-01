@@ -46,7 +46,7 @@ class PageUnf : BasePageMain() {
                     val favIds = (c.m.fav ?: listOf()).map { it.id }
                     for (f in 0 until size) this[f].inFav = this[f].id in favIds
                     sortBy { it.user }
-                    sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
+                    sortBy { it.unfollowedMeAt?.toInt() ?: 0 }
                     sortBy { it.inFav }
                 }
                 if (isNullOrEmpty() && msg.arg1 == 1 &&
@@ -77,7 +77,7 @@ class PageUnf : BasePageMain() {
     companion object : PageCompanion() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
-        const val MAX_UNFOLLOW_AD = 15
+        const val MAX_UNFOLLOW_AD = 10
 
         val CH_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
         const val CH_NEW_ITEMS_ID = 368

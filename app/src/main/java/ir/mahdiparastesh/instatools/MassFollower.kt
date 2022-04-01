@@ -346,10 +346,8 @@ class MassFollower : ServiceOwnerActivity() {
     }
 
     class RewardAdCallback(
-        private val c: Context,
-        private val onResult: (success: Boolean) -> Unit
-    ) :
-        FullScreenContentCallback() {
+        private val c: Context, private val onResult: (success: Boolean) -> Unit
+    ) : FullScreenContentCallback() {
         override fun onAdShowedFullScreenContent() {
             onResult(true)
         }

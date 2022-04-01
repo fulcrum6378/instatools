@@ -61,11 +61,11 @@ class Api<JSON>(
                 }
                 response.contains("Content unavailable &bull; Instagram") ->
                     gotError(this)
-                else -> invalidResponse(response, e)
-            } else invalidResponse(response, e)
+                else -> gotError(this)
+            } else gotError(this)
             null
         } catch (e: Exception) {
-            invalidResponse(response, e)
+            gotError(this)
             null
         }
         try {
@@ -74,12 +74,6 @@ class Api<JSON>(
             if (BuildConfig.DEBUG) throw e
             else gotError(this)
         }
-    }
-
-    private fun invalidResponse(response: String, e: Exception? = null) {
-        if (BuildConfig.DEBUG)
-            throw Exception("ERROR: ${e?.message}\nParsing into ${clazz.java.name} from: $response")
-        else gotError(this)
     }
 
     var nwRes: NetworkResponse? = null

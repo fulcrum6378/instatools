@@ -157,9 +157,12 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         tbTitle?.bolden(this, font)
-        if (this !is Main) supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
+        if (this !is Main) {
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                setDisplayShowHomeEnabled(true)
+            }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
         }
     }
 

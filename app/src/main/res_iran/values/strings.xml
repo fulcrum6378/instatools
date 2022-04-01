@@ -1,20 +1,3 @@
 <resources>
-    <string name="app_name">InstaTools</string>
-    <string name="app_ad_id" translatable="false">ca-app-pub-9457309151954418~5798988563</string>
-
-    <string name="bnrBtmDownloads" translatable="false">ca-app-pub-9457309151954418/4315014912</string>
-    <string name="bnrBtmFavourites" translatable="false">ca-app-pub-9457309151954418/5374757205</string>
-    <string name="bnrBtmGuest" translatable="false">ca-app-pub-9457309151954418/5535427358</string>
-    <string name="bnrBtmMassFollower" translatable="false">ca-app-pub-9457309151954418/5087388141</string>
-    <string name="bnrBtmPageTag" translatable="false">ca-app-pub-9457309151954418/2447612478</string>
-    <string name="bnrBtmSettings" translatable="false">ca-app-pub-9457309151954418/9910778917</string>
-    <string name="bnrBtmWebView" translatable="false">ca-app-pub-9457309151954418/6652379544</string>
-
-    <string name="interDownloaded" translatable="false">ca-app-pub-9457309151954418/4215022118</string>
-    <string name="interAccSwitched" translatable="false">ca-app-pub-9457309151954418/9218833137</string>
-    <string name="interExporting" translatable="false">ca-app-pub-9457309151954418/8317918650</string>
-    <string name="interUnfMany" translatable="false">ca-app-pub-9457309151954418/9545936506</string>
-    <string name="interUnsaving" translatable="false">ca-app-pub-9457309151954418/6541958088</string>
-
-    <string name="rewardMfwStarter" translatable="false">ca-app-pub-9457309151954418/3824726608</string>
+    <string name="app_name">Instagram Downloader</string>
 </resources>
