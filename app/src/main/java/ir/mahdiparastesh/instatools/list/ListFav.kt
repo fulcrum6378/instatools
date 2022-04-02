@@ -9,22 +9,24 @@ import ir.mahdiparastesh.instatools.Favourites
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListFavBinding
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
-class ListFav(val c: Favourites) : RecyclerView.Adapter<ListFav.ViewHolder>() {
-    class ViewHolder(val b: ListFavBinding) : RecyclerView.ViewHolder(b.root)
+class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBinding>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListFavBinding> {
         val b = ListFavBinding.inflate(c.layoutInflater, parent, false)
         b.name.typeface = c.fontRegular
         b.user.typeface = c.fontRegular
         b.name.textDirection =
             if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR else TextView.TEXT_DIRECTION_RTL
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListFavBinding>, i: Int) {
         val fav = c.m.fav?.getOrNull(i) ?: return
         Glide.with(c.c).load(fav.photo).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${fav.name}"

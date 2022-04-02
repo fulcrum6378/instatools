@@ -11,22 +11,25 @@ import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 
-class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBox.ViewHolder>() {
-    class ViewHolder(val b: ListBoxBinding) : RecyclerView.ViewHolder(b.root)
+class ListBox(val c: Main, private val f: PageBox) :
+    RecyclerView.Adapter<AnyViewHolder<ListBoxBinding>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListBoxBinding> {
         val b = ListBoxBinding.inflate(f.inflater, parent, false)
         b.name.typeface = c.fontRegular
         b.last.typeface = c.fontRegular
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListBoxBinding>, i: Int) {
         var thd = c.m.dmInbox?.threads?.getOrNull(i) ?: return
         val firstUser = thd.users.getOrNull(0)
         if (firstUser == null && !thd.is_group) return
@@ -69,7 +72,7 @@ class ListBox(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListBo
 
     override fun getItemCount() = c.m.dmInbox?.threads?.size ?: 0
 
-    override fun onViewAttachedToWindow(h: ViewHolder) {
+    override fun onViewAttachedToWindow(h: AnyViewHolder<ListBoxBinding>) {
         super.onViewAttachedToWindow(h)
         h.b.more.setImageResource(R.drawable.more_vert)
     }

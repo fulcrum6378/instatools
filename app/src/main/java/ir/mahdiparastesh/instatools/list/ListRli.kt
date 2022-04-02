@@ -9,18 +9,20 @@ import ir.mahdiparastesh.instatools.databinding.ListRliBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.Reel
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListRli(private val c: Viewer, private val f: PageRel, private val reel: () -> Reel?) :
-    RecyclerView.Adapter<ListRli.ViewHolder>() {
-    class ViewHolder(val b: ListRliBinding) : RecyclerView.ViewHolder(b.root)
+    RecyclerView.Adapter<AnyViewHolder<ListRliBinding>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListRliBinding> {
         val b = ListRliBinding.inflate(c.layoutInflater, parent, false)
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListRliBinding>, i: Int) {
         val item = reel()?.items?.getOrNull(i) ?: return
 
         Glide.with(c.c)

@@ -13,10 +13,11 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Queuer.MediaType
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListCar(val c: BaseActivity, private val med: Media) :
-    RecyclerView.Adapter<ListCar.ViewHolder>() {
+    RecyclerView.Adapter<AnyViewHolder<ListCarBinding>>() {
     private val slides = arrayListOf<Slide>()
     val players: ArrayList<MediaPlayer?>
 
@@ -35,14 +36,14 @@ class ListCar(val c: BaseActivity, private val med: Media) :
         players = ArrayList(arrayOfNulls<MediaPlayer?>(slides.size).toMutableList())
     }
 
-    class ViewHolder(val b: ListCarBinding) : RecyclerView.ViewHolder(b.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListCarBinding> {
         val b = ListCarBinding.inflate(c.layoutInflater, parent, false)
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListCarBinding>, i: Int) {
         h.b.image.vis(false)
         h.b.video.vis(false)
         h.b.image.setImageDrawable(null)

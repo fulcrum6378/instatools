@@ -18,25 +18,28 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
-class ListUnf(val c: Main, private val f: PageUnf) : RecyclerView.Adapter<ListUnf.ViewHolder>() {
-    class ViewHolder(val b: ListUnfBinding) : RecyclerView.ViewHolder(b.root)
+class ListUnf(val c: Main, private val f: PageUnf) :
+    RecyclerView.Adapter<AnyViewHolder<ListUnfBinding>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListUnfBinding> {
         val b = ListUnfBinding.inflate(f.inflater, parent, false)
         b.name.typeface = c.fontRegular
         b.user.typeface = c.fontRegular
         b.name.textDirection =
             if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR else TextView.TEXT_DIRECTION_RTL
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListUnfBinding>, i: Int) {
         val unf = c.m.unfollowers.value?.getOrNull(i) ?: return
         Glide.with(c.c).load(unf.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${unf.name}"

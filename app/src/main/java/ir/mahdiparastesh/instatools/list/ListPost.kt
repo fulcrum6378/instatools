@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -32,7 +33,7 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
     abstract val expandable: Expandable
     abstract val expanded: ExpandableBinding
 
-    inner class ViewHolder(val b: ListPostBinding) : RecyclerView.ViewHolder(b.root) {
+    inner class ViewHolder(b: ListPostBinding) : AnyViewHolder<ListPostBinding>(b) {
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
             object : ItemDetailsLookup.ItemDetails<String>() {
                 override fun getPosition(): Int = layoutPosition

@@ -17,23 +17,24 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
 import ir.mahdiparastesh.instatools.json.Rest.StoryReel
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListRel(private val c: Viewer, private val f: PageRel) :
-    RecyclerView.Adapter<ListRel.ViewHolder>() {
+    RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
     private val begHigh: Int by lazy { if (c.m.vwReels?.any { it is StoryReel } == true) 0 else 1 }
 
-    class ViewHolder(val b: ListRelBinding) : RecyclerView.ViewHolder(b.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListRelBinding> {
         val b = ListRelBinding.inflate(c.layoutInflater, parent, false)
         b.title.typeface = c.fontBold
         b.desc.typeface = c.fontLight
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
         val rel = c.m.vwReels?.getOrNull(i) ?: return
 
         h.b.title.text =

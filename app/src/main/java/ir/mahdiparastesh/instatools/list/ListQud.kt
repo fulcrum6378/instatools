@@ -12,6 +12,7 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
 import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
@@ -19,18 +20,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
-    class ViewHolder(val b: ListQudBinding) : RecyclerView.ViewHolder(b.root)
+class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBinding>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListQudBinding> {
         val b = ListQudBinding.inflate(c.layoutInflater, parent, false)
         b.user.typeface = c.fontRegular
         b.date.typeface = c.fontRegular
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
         val qud = c.m.queueds?.getOrNull(i) ?: return
 
         // Main
@@ -83,11 +85,11 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<ListQud.ViewHolder>() {
 
     override fun getItemCount() = c.m.queueds?.size ?: 0
 
-    override fun onViewAttachedToWindow(h: ViewHolder) {
+    override fun onViewAttachedToWindow(h: AnyViewHolder<ListQudBinding>) {
         h.b.status.resumeAnimation()
     }
 
-    override fun onViewDetachedFromWindow(h: ViewHolder) {
+    override fun onViewDetachedFromWindow(h: AnyViewHolder<ListQudBinding>) {
         h.b.status.pauseAnimation()
     }
 }

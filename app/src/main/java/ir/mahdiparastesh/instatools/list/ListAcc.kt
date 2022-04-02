@@ -15,21 +15,23 @@ import ir.mahdiparastesh.instatools.databinding.ListAccBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
-class ListAcc(val c: Login) : RecyclerView.Adapter<ListAcc.ViewHolder>() {
-    class ViewHolder(val b: ListAccBinding) : RecyclerView.ViewHolder(b.root)
+class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListAccBinding> {
         val b = ListAccBinding.inflate(c.layoutInflater, parent, false)
         b.name.typeface = c.fontRegular
         b.user.typeface = c.fontRegular
-        return ViewHolder(b)
+        return AnyViewHolder(b)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListAccBinding>, i: Int) {
         val guest = c.accounts[i].id < 0L
         Glide.with(c.c).load(if (!guest) c.accounts[i].pict else R.mipmap.launcher)
             .into(h.b.photo)

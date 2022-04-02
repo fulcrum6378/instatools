@@ -22,6 +22,7 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.FastCustomGlide
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.anchor
@@ -31,16 +32,17 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.util.*
 
-class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListThd.ViewHolder>() {
+class ListThd(val c: Main, private val f: PageBox) :
+    RecyclerView.Adapter<AnyViewHolder<ListThdBinding>>() {
     private val idealW = (c.dm.widthPixels.toFloat() * 0.8f) * c.dm.density
 
-    class ViewHolder(val b: ListThdBinding) : RecyclerView.ViewHolder(b.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListThdBinding> = AnyViewHolder(
         ListThdBinding.inflate(f.inflater, parent, false).onCreate(c.fontRegular, c.fontLight)
     )
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListThdBinding>, i: Int) {
         if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!.items, i, idealW, f, h)
     }
 
@@ -60,7 +62,7 @@ class ListThd(val c: Main, private val f: PageBox) : RecyclerView.Adapter<ListTh
         @SuppressLint("CheckResult", "SetTextI18n")
         fun ListThdBinding.onBind(
             c: Context, list: List<Dm>, i: Int, idealW: Float = Versioned.BEST,
-            f: PageBox? = null, h: ViewHolder? = null,
+            f: PageBox? = null, h: AnyViewHolder<ListThdBinding>? = null,
             downloaded: HashMap<String, Downloadable>? = null,
         ): ListThdBinding {
             val dm = list.getOrNull(i) ?: return this
