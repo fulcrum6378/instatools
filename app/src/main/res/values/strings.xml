@@ -144,6 +144,7 @@
     <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
     <string name="mfPayForIt">In order to unlock this feature, choose one of the following methods:</string>
     <string name="mfUnlockTimes">Unlock for %d times</string>
+    <string name="mfDetectedSpam">Unfortunately Instagram has detected you as a spammer; please increase the delay time and try again later!</string>
     <string name="mfTroubleshoot">Not Working?</string>
     <string-array name="mfTroubleshoot">
         <item>Disable battery optimization for this app</item>

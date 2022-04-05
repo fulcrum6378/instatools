@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '12.0'
+        versionName '12.1.5'
     }
 
     signingConfigs {

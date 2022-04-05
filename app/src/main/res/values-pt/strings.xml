@@ -137,6 +137,7 @@
     <string name="mfExportSubject">Fila de seguidores em massa (%d itens)</string>
     <string name="mfPayForIt">Para desbloquear esse recurso, escolha um dos seguintes métodos:</string>
     <string name="mfUnlockTimes">Desbloqueie por %d vezes</string>
+    <string name="mfDetectedSpam">Infelizmente o Instagram detectou você como um spammer; por favor, aumente o tempo de atraso e tente novamente mais tarde!</string>
     <string name="mfTroubleshoot">Não está funcionando?</string>
     <string-array name="mfTroubleshoot">
         <item>Desative a otimização da bateria para este aplicativo</item>

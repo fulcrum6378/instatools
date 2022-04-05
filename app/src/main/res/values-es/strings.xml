@@ -137,6 +137,7 @@
     <string name="mfExportSubject">Cola masiva de seguidores (%d artículos)</string>
     <string name="mfPayForIt">Para desbloquear esta característica, elija uno de los siguientes métodos:</string>
     <string name="mfUnlockTimes">Desbloquear por %d veces</string>
+    <string name="mfDetectedSpam">Desafortunadamente, Instagram te ha detectado como un spammer; ¡Aumenta el tiempo de demora e inténtalo de nuevo más tarde!</string>
     <string name="mfTroubleshoot">¿No funciona?</string>
     <string-array name="mfTroubleshoot">
         <item>Deshabilitar la optimización de la batería para esta aplicación</item>

@@ -5,7 +5,7 @@
 
     <!-- Mass Follower -->
     <integer name="mfMin">5</integer>
-    <integer name="mfMaxNominal">595</integer><!--actually 600-->
+    <integer name="mfMaxNominal">295</integer><!--actually 300-->
 
     <!-- Settings -->
     <integer name="stCacheMin">5</integer>

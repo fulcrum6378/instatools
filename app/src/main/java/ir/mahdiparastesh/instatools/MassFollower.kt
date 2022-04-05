@@ -86,6 +86,11 @@ class MassFollower : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemRangeChanged(it, m.fwb.value!!.size)
                     }
                     HANDLE_REWARD_CONSUMED -> countPermissions()
+                    HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower).apply {
+                        setTitle(R.string.massFollower)
+                        setMessage(R.string.mfDetectedSpam)
+                        setNeutralButton(R.string.ok, null)
+                    }.show().stylise(this@MassFollower)
                 }
                 updateIfEmpty(m.fwb.value.isNullOrEmpty())
                 updateShadow()
@@ -255,6 +260,7 @@ class MassFollower : ServiceOwnerActivity() {
 
     companion object : ActivityCompanion() {
         const val HANDLE_REWARD_CONSUMED = 5
+        const val HANDLE_DETECTED_AS_SPAMMER = 6
         private val UNLOCK_TIMES = arrayOf(50, 5)
         private var mRewardedAd: RewardedAd? = null
         private var loadingAd = false

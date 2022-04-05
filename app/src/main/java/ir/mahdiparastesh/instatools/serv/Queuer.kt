@@ -36,6 +36,7 @@ class Queuer : ForegroundService() {
     private var handlingLinks = arrayListOf<Link>()
     private var handlingLink = false
     private var download: BaseThread? = null
+    private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -247,7 +248,7 @@ class Queuer : ForegroundService() {
     inner class Download : BaseThread() {
         override fun run() {
             val queue = ArrayList(dao.readyQueueds().sortedBy { it.addedAt })
-            if (queue.isNullOrEmpty()) {
+            if (queue.isEmpty()) {
                 if (!handlingLink) this@Queuer.finish(false)
                 else interrupt()
                 return; }
@@ -315,7 +316,6 @@ class Queuer : ForegroundService() {
     }
 
     private fun save(q: Queued, ba: ByteArray) {
-        val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
         var branch: DocumentFile?
         val shouldBranch = bPreference(Settings.spBranching, Settings.defSpBranching)
         if (shouldBranch) {

@@ -142,6 +142,7 @@
     <string name="mfExportSubject">Массовая очередь подписчиков (%d предметов)</string>
     <string name="mfPayForIt">Чтобы разблокировать эту функцию, выберите один из следующих способов:</string>
     <string name="mfUnlockTimes">Разблокировать %d раз</string>
+    <string name="mfDetectedSpam">К сожалению, Instagram определил вас как спамера; Пожалуйста, увеличьте время задержки и повторите попытку позже!</string>
     <string name="mfTroubleshoot">Не работает?</string>
     <string-array name="mfTroubleshoot">
         <item>Отключить оптимизацию батареи для этого приложения</item>

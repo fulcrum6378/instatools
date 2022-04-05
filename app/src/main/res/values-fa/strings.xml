@@ -143,6 +143,7 @@
     <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
     <string name="mfPayForIt">برای فعالسازی این قابلیت یکی از روش های زیر را انتخاب کنید:</string>
     <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
+    <string name="mfDetectedSpam">متاسفانه اینستاگرام «موقتا» شما را به عنوان «اسپمر» شناسایی کرده است! لطفا مدت تاخیر بین هر فالو را زیاد کرده و بعدا دوباره سرویس را روشن نمایید.</string>
     <string name="mfTroubleshoot">کار نمیکنه؟</string>
     <string-array name="mfTroubleshoot">
         <item>بهینه سازی باتری برای این اپ را غیرفعال کنید</item>

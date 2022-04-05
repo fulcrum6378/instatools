@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.*
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
-import ir.mahdiparastesh.instatools.BuildConfig
+import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -138,16 +138,22 @@ class Follower : ForegroundService() {
             0 to { followed() },
             Api.HANDLE_ERROR to {
                 if ((it.obj as NetworkResponse?)?.statusCode == 200) followed() else {
+                    val doFollow = try {
+                        (it.obj as NetworkResponse?)?.data?.let { ba ->
+                            Gson().fromJson(String(ba), Rest.DoFollow::class.java)
+                        }
+                    } catch (e: Exception) {
+                        null
+                    }
                     errorCount++
-                    if (errorCount > 5) {
-                        if (toBeEnqueued.isEmpty() && enqueuer?.active != true)
-                            this@Follower.finish(false)
-                        interrupt()
-                        if (BuildConfig.DEBUG) throw Exception(
-                            (it.obj as NetworkResponse?)?.statusCode.toString() + " : " + String(
-                                (it.obj as NetworkResponse?)?.data ?: "null".encodeToByteArray()
-                            )
-                        )
+                    if (doFollow?.spam == true || errorCount > 5) {
+                        if (doFollow?.spam == true) MassFollower.handler
+                            ?.obtainMessage(MassFollower.HANDLE_DETECTED_AS_SPAMMER)
+                            ?.sendToTarget()
+                        end()
+                    } else {
+                        sleep(DELAY)
+                        follow()
                     }
                 }
             }
@@ -166,9 +172,7 @@ class Follower : ForegroundService() {
         private fun follow(): Boolean {
             fwb = dao.aFollowable().getOrNull(0)
             if (fwb == null || !Follower.active.value!!) {
-                if (toBeEnqueued.isEmpty() && enqueuer?.active != true) this@Follower.finish(false)
-                interrupt()
-                return false; }
+                end(); return false; }
             Api<Rest.DoFollow>(
                 this@Follower, Api.Type.FOLLOW.url.format(fwb!!.id), Rest.DoFollow::class,
                 handler, method = Request.Method.POST
@@ -185,6 +189,12 @@ class Follower : ForegroundService() {
             }
             sleep(DELAY)
             follow()
+        }
+
+        private fun end() {
+            if (toBeEnqueued.isEmpty() && enqueuer?.active != true)
+                this@Follower.finish(false)
+            interrupt()
         }
     }
 

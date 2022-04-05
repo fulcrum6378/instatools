@@ -176,5 +176,13 @@ open class Rest {
 
     class Signing(val login_nonce: String?) : Rest()
 
-    class DoFollow(val result: String) : Rest()
+    class DoFollow(
+        val result: String?,
+        //val message: String?, // e.g.: "feedback_required"
+        val spam: Boolean?,
+        //val feedback_title: String?, // e.g.: "Try again later"
+        //val feedback_message: String?, // e.g.: "We restrict certain activity to protect our community."
+        //val feedback_url: String?,
+        //val feedback_action: String?, // e.g.: "report_problem"
+    ) : Rest()
 }
