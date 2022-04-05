@@ -12,4 +12,7 @@
     <item
         android:id="@+id/mftClear"
         android:title="@string/mfClear" />
+    <item
+        android:id="@+id/mfTroubleshoot"
+        android:title="@string/mfTroubleshoot" />
 </menu>

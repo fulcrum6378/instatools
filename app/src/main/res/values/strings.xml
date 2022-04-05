@@ -144,6 +144,11 @@
     <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
     <string name="mfPayForIt">In order to unlock this feature, choose one of the following methods:</string>
     <string name="mfUnlockTimes">Unlock for %d times</string>
+    <string name="mfTroubleshoot">Not Working?</string>
+    <string-array name="mfTroubleshoot">
+        <item>Disable battery optimization for this app</item>
+        <item>Allow background data usage</item>
+    </string-array>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

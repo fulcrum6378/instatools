@@ -137,6 +137,11 @@
     <string name="mfExportSubject">Cola masiva de seguidores (%d artículos)</string>
     <string name="mfPayForIt">Para desbloquear esta característica, elija uno de los siguientes métodos:</string>
     <string name="mfUnlockTimes">Desbloquear por %d veces</string>
+    <string name="mfTroubleshoot">¿No funciona?</string>
+    <string-array name="mfTroubleshoot">
+        <item>Deshabilitar la optimización de la batería para esta aplicación</item>
+        <item>Permitir el uso de datos en segundo plano</item>
+    </string-array>
 
     <!-- Settings -->
     <string name="settings">Ajustes</string>

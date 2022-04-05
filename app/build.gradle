@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '11.8'
+        versionName '12.0'
     }
 
     signingConfigs {
@@ -39,7 +39,7 @@ android {
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 3
+            versionCode 4
             signingConfig signingConfigs.beth
             // Use BETH for Google Play; Use ALEPH for Galaxy Store
         }
@@ -105,5 +105,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
     implementation 'com.google.android.play:core:1.10.3'
 
-    implementation 'ir.mahdiparastesh:chipslayoutmanager:0.4.0@aar'
+    implementation 'com.github.fulcrum1378:ChipsLayoutManager:5140e08'
 }

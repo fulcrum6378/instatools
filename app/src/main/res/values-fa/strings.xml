@@ -143,6 +143,11 @@
     <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
     <string name="mfPayForIt">برای فعالسازی این قابلیت یکی از روش های زیر را انتخاب کنید:</string>
     <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
+    <string name="mfTroubleshoot">کار نمیکنه؟</string>
+    <string-array name="mfTroubleshoot">
+        <item>بهینه سازی باتری برای این اپ را غیرفعال کنید</item>
+        <item>مصرف داده پشت صحنه را فعال کنید</item>
+    </string-array>
 
     <!-- Settings -->
     <string name="settings">تنظیمات</string>

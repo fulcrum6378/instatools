@@ -137,6 +137,11 @@
     <string name="mfExportSubject">Toplu Takipçi Kuyruğu (%d öğe)</string>
     <string name="mfPayForIt">Bu özelliğin kilidini açmak için aşağıdaki yöntemlerden birini seçin:</string>
     <string name="mfUnlockTimes">%d kez kilidini aç</string>
+    <string name="mfTroubleshoot">Çalışmıyor?</string>
+    <string-array name="mfTroubleshoot">
+        <item>Bu uygulama için pil optimizasyonunu devre dışı bırakın</item>
+        <item>Arka planda veri kullanımına izin ver</item>
+    </string-array>
 
     <!-- Settings -->
     <string name="settings">Ayarlar</string>

@@ -24,12 +24,13 @@ class Dm(
     val action_log: ActionLog?,
     val animated_media: AnimatedMedia?,
     val clip: ClipShare?, // shared some kinda video post
+    val direct_media_share: DirectMediaShare?, // tagged you in a post (item_type == "media_share")
     val felix_share: FelixShare?, // shared some kinda video post
     val like: String?, // Amin and Maryam's love: "❤️", not shown anymore though without VPN
     val link: Link?,
     val live_viewer_invite: LiveViewerInvite?,
     val media: Media?, // uploaded a picture or video
-    val media_share: Media?, // shared a picture or some kinda video post (+ tagged you in a post)
+    val media_share: Media?, // shared a picture or some kinda video post
     val placeholder: PlaceHolder?,
     val profile: Rest.User?,
     val raven_media: RavenMedia?, // captured and uploaded by the blue button or direct story
@@ -320,4 +321,11 @@ class Dm(
         //val broadcast_experiments: Map<String, Any?>, // much data
         val visibility: Float,
     )*/
+
+    class DirectMediaShare(
+        val text: String,
+        val media_share_type: String,// e.g.: "tag"
+        val tagged_user_id: Double,
+        val media: Media,
+    )
 }

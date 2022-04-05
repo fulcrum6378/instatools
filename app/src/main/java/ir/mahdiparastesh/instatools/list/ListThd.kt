@@ -121,6 +121,10 @@ class ListThd(val c: Main, private val f: PageBox) :
                 dm.animated_media != null ->
                     msgIvHint.apply { text = "Sent a sticker"; vis() }
                 dm.clip != null -> media = dm.clip.clip
+                dm.direct_media_share != null -> {
+                    media = dm.direct_media_share.media
+                    msgTv.text = dm.direct_media_share.text
+                }
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
                     if (dm.felix_share.message != null)

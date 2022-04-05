@@ -1,12 +1,11 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.net.Uri
+import android.os.*
 import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
@@ -167,6 +166,8 @@ class MassFollower : ServiceOwnerActivity() {
         val ret = super.onCreateOptionsMenu(menu)
         Follower.active.observe(this) { updateControlButton(it) }
         countPermissions()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            b.toolbar.menu.findItem(R.id.mfTroubleshoot).isVisible = false
         return ret
     }
 
@@ -191,6 +192,25 @@ class MassFollower : ServiceOwnerActivity() {
                     dao.deleteFollowables()
                     withContext(Dispatchers.Main) { m.fwb.value = arrayListOf() }
                 }
+            R.id.mfTroubleshoot -> AlertDialog.Builder(this@MassFollower).apply {
+                setTitle(R.string.mfTroubleshoot)
+                // mfTroubleshootMsg: Make sure the following conditions are applied to this app:
+                val arr = resources.getStringArray(R.array.mfTroubleshoot).toMutableList()
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) arr.removeAt(1)
+                setItems(arr.toTypedArray()) { _, i ->
+                    when (i) {
+                        0 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                            !(getSystemService(Context.POWER_SERVICE) as PowerManager)
+                                .isIgnoringBatteryOptimizations(packageName)
+                        ) appSettings(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                        // https://developer.android.com/training/monitoring-device-state/doze-standby.html
+                        1 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                            appSettings(android.provider.Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS) {
+                                data = Uri.parse("package:$packageName")
+                            }
+                    }
+                }
+            }.show().stylise(this@MassFollower)
         }
         return super.onMenuItemClick(item)
     }
@@ -342,6 +362,13 @@ class MassFollower : ServiceOwnerActivity() {
                 action = ForegroundService.ACTION_START
                 if (enq != null) putExtra(Follower.EXTRA_ENQUEUE, enq)
             })
+        }
+
+        fun BaseActivity.appSettings(action: String, onIntent: (Intent.() -> Unit)? = null) {
+            try {
+                startActivity(Intent(action).apply { onIntent?.let { it() } })
+            } catch (e: ActivityNotFoundException) {
+            }
         }
     }
 

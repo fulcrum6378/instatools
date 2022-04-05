@@ -301,7 +301,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             showingAd = true
         }
 
-        override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
             showingAd = false
             interstitialAd = null
         }
