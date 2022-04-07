@@ -24,8 +24,7 @@
     <TextView
         android:id="@+id/empty"
         style="@style/emptyList"
-        android:text="@string/boxEmpty"
-        app:drawableTopCompat="@drawable/done_box" />
+        android:text="@string/boxEmpty" />
 
     <ImageView
         android:id="@+id/error"

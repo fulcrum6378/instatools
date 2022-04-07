@@ -63,9 +63,10 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     var voicePlayer: MediaPlayer? = null
 
     override val com: PageCompanion = Companion
-    override lateinit var inflater: LayoutInflater
+    override val theme: BaseActivity.Theme = BaseActivity.Theme.TERTIARY
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
+    override val emptyIcon: Int = R.drawable.done_box
     override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
@@ -104,17 +105,12 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
     companion object : PageCompanion()
 
-    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        inflater = c.themeInflater(BaseActivity.Theme.TERTIARY, inf)
-        b = PageBoxBinding.inflate(inflater, parent, false)
-        if (Main.guest) {
-            guestMode(b.root, BaseActivity.Theme.TERTIARY); return b.root; }
-        return b.root
-    }
+    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
+        PageBoxBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (Main.guest) return
         super.onViewCreated(view, savedInstanceState)
+        if (Main.guest) return
 
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback c.m.dmThread != null

@@ -255,13 +255,13 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(wrapTheme(which))
 
-    fun color(@ColorRes res: Int) = ContextCompat.getColor(c, res)
+    fun color(@ColorRes res: Int) = ContextCompat.getColor(this, res)
 
     fun drawable(@DrawableRes res: Int, @ColorRes cf: Int? = null) =
-        ContextCompat.getDrawable(c, res)?.apply { cf?.let { colorFilter = pdcf(it) } }
+        ContextCompat.getDrawable(this, res)?.apply { cf?.let { colorFilter = pdcf(it) } }
 
     fun pdcf(@ColorRes res: Int) =
-        PorterDuffColorFilter(ContextCompat.getColor(c, res), PorterDuff.Mode.SRC_IN)
+        PorterDuffColorFilter(ContextCompat.getColor(this, res), PorterDuff.Mode.SRC_IN)
 
     fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, "fonts/$path")
 

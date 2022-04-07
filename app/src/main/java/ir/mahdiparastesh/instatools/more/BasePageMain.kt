@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.iterator
 import androidx.media2.common.SessionPlayer
 import androidx.recyclerview.widget.RecyclerView
@@ -20,14 +21,16 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
-    abstract var inflater: LayoutInflater
+    val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
     private lateinit var guestAdBanner: AdView
     var ftDetached = false
 
+    abstract val theme: BaseActivity.Theme
+    abstract val emptyIcon: Int
     private fun refresher(): SwipeRefreshLayout = root.findViewById(R.id.refresher)
     open fun expanded(): ExpandableBinding? = null
 
-    protected open fun guestMode(parent: ConstraintLayout, theme: BaseActivity.Theme) {
+    protected open fun guestMode(parent: ConstraintLayout) {
         val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
         gb.root.typeface = c.fontRegular
         onLoaded(false, asGuest = true)
@@ -44,7 +47,15 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         refresher().setOnRefreshListener(this)
         super.onViewCreated(view, savedInstanceState)
+        if (Main.guest) {
+            guestMode(view as ConstraintLayout); return; }
 
+        empty()?.setCompoundDrawablesWithIntrinsicBounds(
+            null,
+            ContextCompat.getDrawable(c.wrapTheme(theme), R.drawable.done_svd),
+            null,
+            null
+        )
         error()?.setOnClickListener {
             refresher().isRefreshing = true
             onRefresh()

@@ -35,9 +35,10 @@ class PageUnf : BasePageMain() {
     var counter = 0
 
     override val com: PageCompanion = Companion
-    override lateinit var inflater: LayoutInflater
+    override val theme: BaseActivity.Theme = BaseActivity.Theme.PRIMARY
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
+    override val emptyIcon: Int = R.drawable.done_unf
     override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_LOADED to { msg ->
@@ -83,17 +84,12 @@ class PageUnf : BasePageMain() {
         const val CH_NEW_ITEMS_ID = 368
     }
 
-    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        inflater = c.themeInflater(BaseActivity.Theme.PRIMARY, inf)
-        b = PageUnfBinding.inflate(inflater, parent, false)
-        if (Main.guest) {
-            guestMode(b.root, BaseActivity.Theme.PRIMARY); return b.root; }
-        return b.root
-    }
+    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
+        PageUnfBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (Main.guest) return
         super.onViewCreated(view, savedInstanceState)
+        if (Main.guest) return
 
         NotificationManagerCompat.from(c).cancel(CH_NEW_ITEMS_ID)
         if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
@@ -171,8 +167,9 @@ class PageUnf : BasePageMain() {
             }
             if (!active || c.m.acc == null) return
             val newUnf = newFriends.filter {
-                it.unfollowedMeAt != null
-                        && it.unfollowedMeAt!! > c.sp?.getLong(Settings.spNotifiedUnfTill, 0L) ?: 0L
+                (it.unfollowedMeAt != null
+                        && it.unfollowedMeAt!! > (c.sp?.getLong(Settings.spNotifiedUnfTill, 0L)
+                    ?: 0L))
             }
             if (newUnf.isNotEmpty()) {
                 gotNewOnes(newUnf.size)

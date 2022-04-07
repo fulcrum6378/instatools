@@ -24,8 +24,7 @@
     <TextView
         android:id="@+id/empty"
         style="@style/emptyList"
-        android:text="@string/unfEmpty"
-        app:drawableTopCompat="@drawable/done_unf" />
+        android:text="@string/unfEmpty" />
 
     <ImageView
         android:id="@+id/error"
