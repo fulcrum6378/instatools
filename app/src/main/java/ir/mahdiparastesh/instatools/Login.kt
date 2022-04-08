@@ -17,7 +17,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
@@ -75,7 +74,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         when {
             intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L).apply {
                 cameHereToAuth = true
-                Snackbar.make(b.root, R.string.needAuthentication, Snackbar.LENGTH_LONG).show()
+                AlertDialog.Builder(this@Login).apply {
+                    setTitle(R.string.guest)
+                    setMessage(R.string.needAuthentication)
+                    setNeutralButton(R.string.ok, null)
+                }.show().stylise(this@Login)
                 val signedOutFrom = if (this != -1L) accounts.find { it.id == this } else null
                 if (signedOutFrom == null || accounts.size <= 1) {
                     gonnaAdd = true

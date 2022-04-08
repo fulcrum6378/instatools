@@ -59,12 +59,13 @@
     </string-array>
     <string name="maximum">Máximo: %s</string>
     <string name="unlimited">Ilimitada</string>
+    <string name="addShortcut">Adicionar atalho</string>
 
     <!-- Login -->
     <string name="addAccount">Adicionar Conta</string>
     <string name="guestShortDesc">Entrar sem autenticação</string>
     <string name="guestSure">Infelizmente, o Instagram não permite que você veja as pessoas em seu site com tanta frequência sem fazer login. Isso forçará você a entrar ou se inscrever para fazer isso. (Você pode verificar esse fato abrindo o Instagram no modo \"Incógnito\" do seu navegador.) Portanto, não há garantia de que você não precisará fazer login logo após entrar no modo Convidado.</string>
-    <string name="needAuthentication">Você precisa fazer o login para continuar&#8230;</string>
+    <string name="needAuthentication">O Instagram não nos deixa entrar. Você precisa fazer o login para continuar&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">Não Seguidores</string>

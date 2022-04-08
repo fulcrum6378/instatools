@@ -59,12 +59,13 @@
     </string-array>
     <string name="maximum">Maximum: %s</string>
     <string name="unlimited">Unlimited</string>
+    <string name="addShortcut">Add shortcut</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
     <string name="guestShortDesc">Login without authentication</string>
     <string name="guestSure">Unfortunately Instagram won\'t let you view people in its website so frequently without signing in. It\'ll force you sign in or sign up to do that. (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.) So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.</string>
-    <string name="needAuthentication">You need to login to continue&#8230;</string>
+    <string name="needAuthentication">Instagram doesn\'t let us in. You need to login to continue&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">Unfollowers</string>

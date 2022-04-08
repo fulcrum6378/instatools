@@ -64,12 +64,13 @@
     </string-array>
     <string name="maximum">Максимум: %s</string>
     <string name="unlimited">Неограниченный</string>
+    <string name="addShortcut">Добавьте ярлык</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
     <string name="guestShortDesc">Войти без авторизации</string>
     <string name="guestSure">Извините, но Instagram не позволит вам так часто просматривать людей на своем веб-сайте без входа в систему. Для этого вам придется войти или зарегистрироваться. (Вы можете проверить этот факт, открыв Instagram в режиме «Инкогнито» вашего браузера.) Таким образом, нет никакой гарантии, что вам не нужно будет входить в систему вскоре после входа в гостевой режим.</string>
-    <string name="needAuthentication">Вам необходимо авторизоваться, чтобы продолжить&#8230;</string>
+    <string name="needAuthentication">Инстаграм нас не пускает. Вам необходимо авторизоваться, чтобы продолжить&#8230;</string>
 
     <!-- Main -->
     <string name="unfollowers">Отписаться</string>
