@@ -11,4 +11,9 @@
         android:icon="@drawable/non_favourite"
         android:title="@string/addToFav"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtShortcut"
+        android:icon="@drawable/shortcut"
+        android:title="@string/addShortcut"
+        app:showAsAction="ifRoom" />
 </menu>

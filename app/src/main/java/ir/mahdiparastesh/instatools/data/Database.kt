@@ -85,6 +85,9 @@ abstract class Database : RoomDatabase() {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addFavourite(item: Favourite)
 
+        @Update
+        fun updateFavourite(item: Favourite)
+
         @Delete
         fun deleteFavourite(item: Favourite)
 

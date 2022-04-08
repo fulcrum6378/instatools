@@ -176,6 +176,23 @@ class PageVwr : BasePageViewer() {
         b.followersNum.text = c.m.vwUser!!.edge_followed_by.toString()
         b.followingNum.text = c.m.vwUser!!.edge_follow.toString()
         handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+
+        if (c.m.vwUser != null) c.dbFav?.apply {
+            var changed = false
+            if (user != c.m.vwUser!!.username) {
+                user = c.m.vwUser!!.username
+                changed = true
+            }
+            if (name != c.m.vwUser!!.full_name) {
+                name = c.m.vwUser!!.full_name
+                changed = true
+            }
+            if (photo != c.m.vwUser!!.profile_pic_url_hd) {
+                photo = c.m.vwUser!!.profile_pic_url_hd
+                changed = true
+            }
+            if (changed) Thread { c.dao.updateFavourite(this) }.start()
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

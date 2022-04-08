@@ -211,17 +211,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         else -> super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        colorAc.value?.let {
-            val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
-            searchInput?.setTextColor(it)
-            searchInput?.setHintTextColor(weaken(it))
-            searchClose?.colorFilter = cf
-            toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
-        }
-
-        (b.toolbar.menu.findItem(R.id.mtSearch).actionView as SearchView).apply {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        super.onPrepareOptionsMenu(menu)
+        (b.toolbar.menu.findItem(R.id.mtSearch)?.actionView as SearchView?)?.apply {
             searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
             // useless: search_button, search_go_btn, search_mag_icon
             searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
@@ -269,8 +261,14 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     return true
                 }
             })
+            colorAc.value?.also {
+                val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
+                searchInput?.setTextColor(it)
+                searchInput?.setHintTextColor(weaken(it))
+                searchClose?.colorFilter = cf
+            }
         }
-        b.toolbar.menu.findItem(R.id.mtSearch).setOnActionExpandListener(object :
+        b.toolbar.menu.findItem(R.id.mtSearch)?.setOnActionExpandListener(object :
             MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
                 b.searchRes.vis()
@@ -328,7 +326,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             Settings.deleteDb(m.acc!!.id.toString())
             Settings.deleteSp(this@Main)
         }
-        Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc!!.id } })
+        Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc?.id } })
         switchAcc()
     }
 

@@ -62,7 +62,7 @@ interface Persistent {
     fun needAuthentication() {
         if (Login.cameHereToAuth) return
         m.accountSwitched()
-        if (this is BaseActivity)
+        if (this is BaseActivity && this !is Login)
             goTo(Login::class, true) { putExtra(Login.EXTRA_NEED_AUTH, m.acc?.id ?: -1L) }
         else {
             c.startActivity(Intent(c, Login::class.java).apply {

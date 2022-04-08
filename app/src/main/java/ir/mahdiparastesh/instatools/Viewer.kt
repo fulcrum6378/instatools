@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.instatools
 
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,6 +11,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.media2.common.SessionPlayer
 import com.android.volley.NetworkResponse
@@ -41,7 +46,7 @@ import kotlin.reflect.KClass
 class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     var user: String? = null
-    private var dbFav: Favourite? = null
+    var dbFav: Favourite? = null
     private var thread: Initial? = null
     val expandable: Expandable by lazy {
         Expandable(
@@ -162,6 +167,17 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     dbFav = null
                 }
                 withContext(Dispatchers.Main) { fixTbMenu() }
+            }
+            R.id.vtShortcut -> m.vwUser?.also {
+                ShortcutManagerCompat.requestPinShortcut(
+                    c, ShortcutInfoCompat.Builder(c, it.username).setIntent(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.PROFILE.format(user)))
+                            .setPackage(UiTools.INSTA_PACKAGE)
+                    ).setIcon(
+                        IconCompat.createWithBitmap((page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap)
+                    ).setShortLabel(it.full_name)
+                        .build(), null
+                )
             }
         }
         return super.onMenuItemClick(item)

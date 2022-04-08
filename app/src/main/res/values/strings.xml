@@ -65,6 +65,7 @@
     </string-array>
     <string name="maximum">Maximum: %s</string>
     <string name="unlimited">Unlimited</string>
+    <string name="addShortcut">Add shortcut</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
