@@ -72,7 +72,7 @@ class Profile(
     ) {
         fun photo() = profile_pic_url_hd ?: profile_pic_url
 
-        fun favourite(): Favourite = Favourite(id, username, full_name, photo(), pv())
+        fun favourite(): Favourite = Favourite(id, username, full_name, profile_pic_url, pv())
 
         fun pv() = is_private == true
 

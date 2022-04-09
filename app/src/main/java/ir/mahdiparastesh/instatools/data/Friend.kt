@@ -21,6 +21,8 @@ class Friend(
     @Suppress("unused")
     constructor() : this("", "", "", "", false, false, false)
 
+    fun toFavourite() = Favourite(id, user, name, pict, priv)
+
     companion object {
         @AvoidUiThread
         fun add(
@@ -58,6 +60,18 @@ class Friend(
             if (inList == null) return null
             for (i in inList.indices) if (inList[i].id == it.id) return i
             return null
+        }
+
+        fun find(id: String, inList: List<Friend>?): Int? {
+            if (inList == null) return null
+            for (i in inList.indices) if (inList[i].id == id) return i
+            return null
+        }
+
+        fun ArrayList<Friend>.specialSort() {
+            sortBy { it.user }
+            sortBy { it.unfollowedMeAt?.toInt() ?: 0 }
+            sortBy { it.inFav }
         }
     }
 

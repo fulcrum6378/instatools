@@ -16,7 +16,6 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.frag.PageUnf.Companion.MAX_UNFOLLOW_AD
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -46,17 +45,32 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.user.text = if (unf.unfollowedMeAt != null) c.getString(
             R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
         ) else unf.user
-        h.b.root.alpha = if (unf.inFav) FAV_ALPHA else 1f
+        // Presumably after invoking "notifyItemMoved()" the alpha value of the root is animated;
+        // so if you change it statically here, your changes won't survive the animation.
+        arrayOf(h.b.photo, h.b.name, h.b.user, h.b.unfollow)
+            .forEach { it.alpha = if (unf.inFav) FAV_ALPHA else 1f }
 
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c.wrapTheme(BaseActivity.Theme.PRIMARY), c.fontRegular, it, R.menu.unf_more,
-                Act().apply {
+                c.wrapTheme(f.theme), c.fontRegular, it, R.menu.unf_more, Act().apply {
                     this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
                     this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
+                    this[R.id.umToFav] = {
+                        Thread {
+                            val fav = u.toFavourite()
+                            if (!u.inFav) c.dao.addFavourite(fav)
+                            else c.dao.deleteFavouriteById(u.id)
+                            PageUnf.handler?.obtainMessage(
+                                PageUnf.HANDLE_FAV_CHANGED, if (!u.inFav) fav else u.id
+                            )?.sendToTarget()
+                        }.start()
+                    }
                 }, c.colorAc.value
-            ).show()
+            ).apply {
+                menu.findItem(R.id.umToFav)
+                    .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)
+            }.show()
         }
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener

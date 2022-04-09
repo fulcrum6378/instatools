@@ -91,6 +91,9 @@ abstract class Database : RoomDatabase() {
         @Delete
         fun deleteFavourite(item: Favourite)
 
+        @Query("DELETE FROM Favourite WHERE id = :id")
+        fun deleteFavouriteById(id: String)
+
 
         @Query("SELECT * FROM Followable")
         fun followables(): List<Followable>

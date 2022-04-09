@@ -6,9 +6,7 @@ import com.bumptech.glide.request.transition.Transition
 
 class FastCustomGlide(private val onLoaded: (drw: Drawable) -> Unit) : CustomTarget<Drawable>() {
     override fun onLoadCleared(placeholder: Drawable?) {}
-    override fun onResourceReady(
-        res: Drawable, trans: Transition<in Drawable>?
-    ) {
+    override fun onResourceReady(res: Drawable, trans: Transition<in Drawable>?) {
         onLoaded(res)
     }
 }

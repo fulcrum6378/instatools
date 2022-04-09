@@ -8,7 +8,6 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -52,8 +51,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.more.setOnClickListener {
             thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c.wrapTheme(BaseActivity.Theme.TERTIARY), c.fontRegular, it, R.menu.box_more,
-                Act().apply {
+                c.wrapTheme(f.theme), c.fontRegular, it, R.menu.box_more, Act().apply {
                     this[R.id.bmHtml] = { f.expOptions(Exporter.Method.HTML, thd) }
                     this[R.id.bmPdf] = { f.expOptions(Exporter.Method.PDF, thd) }
                     this[R.id.bmTxt] = { f.expOptions(Exporter.Method.TXT, thd) }

@@ -6,4 +6,7 @@
     <item
         android:id="@+id/umViewInInsta"
         android:title="@string/viewInInsta" />
+    <item
+        android:id="@+id/umToFav"
+        android:title="@string/addToFav" />
 </menu>

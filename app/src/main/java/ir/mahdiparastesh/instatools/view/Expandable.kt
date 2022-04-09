@@ -11,6 +11,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import ir.mahdiparastesh.instatools.Downloads
@@ -133,8 +134,9 @@ class Expandable(
     }
 
     fun link() = media?.let {
+        Log.println(Log.ASSERT, "KIR", "product_type: ${it.product_type} : ${it.code}")
         return@let when (it.product_type) {
-            "feed" -> UiTools.POST_LINK.format(it.code)
+            "feed", "carousel_container" -> UiTools.POST_LINK.format(it.code)
             "story" -> when {
                 it.mahdi_reel_type == "highlight_reel" || it.expiring_at == null ->
                     UiTools.HIGHLIGHT_LINK.format((it.mahdi_reel_id ?: it.id).substringAfter(":"))
@@ -142,6 +144,8 @@ class Expandable(
                 it.mahdi_reel_type == "user_reel" -> it.nearest(Versioned.BEST) // archived story
                 else -> UiTools.STORY_LINK.format(it.user.username, it.pk)
             }
+            "clips" -> UiTools.REEL_LINK.format(it.code)
+            "igtv" -> UiTools.IGTV_LINK.format(it.code)
             null -> it.nearest(Versioned.BEST)
             else -> null
         }

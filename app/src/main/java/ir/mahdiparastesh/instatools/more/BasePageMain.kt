@@ -51,10 +51,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
             guestMode(view as ConstraintLayout); return; }
 
         empty()?.setCompoundDrawablesWithIntrinsicBounds(
-            null,
-            ContextCompat.getDrawable(c.wrapTheme(theme), R.drawable.done_svd),
-            null,
-            null
+            null, ContextCompat.getDrawable(c.wrapTheme(theme), emptyIcon), null, null
         )
         error()?.setOnClickListener {
             refresher().isRefreshing = true

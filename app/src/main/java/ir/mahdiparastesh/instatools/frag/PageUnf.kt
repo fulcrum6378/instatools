@@ -20,7 +20,9 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Friend
+import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
@@ -46,9 +48,7 @@ class PageUnf : BasePageMain() {
                 c.m.unfollowers.value = ArrayList(this).apply {
                     val favIds = (c.m.fav ?: listOf()).map { it.id }
                     for (f in 0 until size) this[f].inFav = this[f].id in favIds
-                    sortBy { it.user }
-                    sortBy { it.unfollowedMeAt?.toInt() ?: 0 }
-                    sortBy { it.inFav }
+                    specialSort()
                 }
                 if (isNullOrEmpty() && msg.arg1 == 1 &&
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
@@ -72,12 +72,40 @@ class PageUnf : BasePageMain() {
         },
         HANDLE_COULD_NOT to {
             Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
+        },
+        HANDLE_FAV_CHANGED to { msg ->
+            var id: String? = null
+            var favNow = false
+            if (msg.obj is Favourite) (msg.obj as Favourite).also {
+                c.m.fav?.add(it)
+                id = it.id
+                favNow = true
+            }
+            if (msg.obj is String) (msg.obj as String).also {
+                c.m.fav?.removeAll { f -> f.id == it }
+                id = it
+            }
+            Friend.find(id!!, c.m.unfollowers.value)?.also { before ->
+                c.m.unfollowers.value?.getOrNull(before)?.inFav = favNow
+                c.m.unfollowers.value?.specialSort()
+                Friend.find(id!!, c.m.unfollowers.value)?.also { after ->
+                    b.rv.adapter?.notifyItemMoved(before, after)
+                    when {
+                        before > after -> b.rv.adapter
+                            ?.notifyItemRangeChanged(after, (before - after) + 1)
+                        after > before -> b.rv.adapter
+                            ?.notifyItemRangeChanged(before, (after - before) + 1)
+                        else -> b.rv.adapter?.notifyItemChanged(after)
+                    }
+                }
+            }
         }
     )
 
     companion object : PageCompanion() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
+        const val HANDLE_FAV_CHANGED = 4
         const val MAX_UNFOLLOW_AD = 10
 
         val CH_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
