@@ -30,6 +30,7 @@ abstract class TxtExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp
                     dm.action_log != null -> "<${dm.action_log.description}>"
                     dm.animated_media != null -> "<sent a GIPHY>"
                     dm.clip != null -> "<shared a clip>"
+                    dm.direct_media_share != null -> "<tagged you in a post>"
                     dm.felix_share != null -> "<shared a long video>${dm.felix_share.text.shareText()}"
                     dm.like != null -> dm.like
                     dm.link != null -> dm.link.text

@@ -18,7 +18,7 @@ class Exportable(
     var uri: String? = null,
     @Ignore @Transient var threadData: Dm.DmThread? = null,
     @Ignore @Transient var opt: Options? = null,
-    @Ignore @Transient var media: HashMap<String, Exporter.Downloadable>? = hashMapOf()
+    @Ignore @Transient var media: HashMap<String, Exporter.Downloadable> = hashMapOf()
 ) {
     @PrimaryKey
     var addedAt: Long = Persistent.now()

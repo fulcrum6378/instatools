@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '12.5'
+        versionName '12.8'
     }
 
     signingConfigs {
@@ -34,7 +34,7 @@ android {
     productFlavors {
         all { dimension 'flaDim1' }
         iran {
-            versionCode 40 // 38
+            versionCode 41 // 38
             signingConfig signingConfigs.aleph
         }
         play {

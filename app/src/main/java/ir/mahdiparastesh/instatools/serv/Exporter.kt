@@ -46,6 +46,7 @@ class Exporter : ForegroundService() {
         )
 
         const val MEDIA_DELAY = 200L
+        const val USER_PROFILE_IMG = "user_%s"
 
         fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
                 c.sPreference(Settings.spStorage) != null
@@ -98,17 +99,19 @@ class Exporter : ForegroundService() {
     private fun Exportable.fetchMedia() {
         if (threadData?.items == null) {
             end(this); return; }
-        if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
-            export(); return; }
         media = hashMapOf()
+        for (user in threadData!!.users)
+            media[USER_PROFILE_IMG.format(user.pk)] = Downloadable(user.profile_pic_url, 0)
+        if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
+            fetchMedium(); return; }
         val img = opt?.img() == true
         val vid = opt?.vid() == true
         for (dm in threadData!!.items) {
             if (vid && dm.animated_media != null) {
-                media!![dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 3)
+                media[dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 3)
                 continue; }
             if (opt?.voice == 0 && dm.voice_media != null) {
-                media!![dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 2)
+                media[dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 2)
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip
@@ -141,7 +144,7 @@ class Exporter : ForegroundService() {
                 val url = if (carousel_media != null) carousel_media!!.getOrNull(0)
                     ?.nearest(qua, justImage = !vid)
                 else nearest(qua, justImage = !vid) ?: return@apply
-                media!![dm.item_id] =
+                media[dm.item_id] =
                     Downloadable(url!!, if (vid && video_versions != null) 1 else 0)
             }
         }
@@ -149,12 +152,12 @@ class Exporter : ForegroundService() {
     }
 
     private fun Exportable.fetchMedium() {
-        val dl = media!!.entries.filter { it.value.data == null }.getOrNull(0)
+        val dl = media.entries.filter { it.value.data == null }.getOrNull(0)
         if (dl == null) {
             export(); return; }
         Volley.newRequestQueue(c).add(
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
-                media!![dl.key] = media!![dl.key]!!.apply { data = byteArrayOf() }
+                media[dl.key] = media[dl.key]!!.apply { data = byteArrayOf() }
                 Delay(MEDIA_DELAY) { fetchMedium() }
             }) {
                 override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
@@ -163,7 +166,7 @@ class Exporter : ForegroundService() {
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
 
                 override fun deliverResponse(response: ByteArray) {
-                    media!![dl.key] = media!![dl.key]!!.apply { data = response }
+                    media[dl.key] = media[dl.key]!!.apply { data = response }
                     Delay(MEDIA_DELAY) { fetchMedium() }
                 }
             }.apply {

@@ -68,6 +68,21 @@ class ListThd(val c: Main, private val f: PageBox) :
             val dm = list.getOrNull(i) ?: return this
             body.vis(dm.action_log == null)
 
+            // Date
+            val cal = dm.timestamp.xFromMicroseconds().calendar()
+            var showDate = true
+            if (i > 0) {
+                val prev = list[i - 1].timestamp.xFromMicroseconds().calendar()
+                if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
+                    cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
+                    cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
+                ) showDate = false
+            }
+            date.vis(showDate)
+            if (showDate) date.text =
+                "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}.${z(cal[Calendar.DAY_OF_MONTH])}"
+            if (dm.action_log != null) return this
+
             // Layout
             area.layoutParams = (area.layoutParams as ConstraintLayout.LayoutParams).apply {
                 horizontalBias = if (dm.is_sent_by_viewer) 1f else 0f
@@ -97,27 +112,11 @@ class ListThd(val c: Main, private val f: PageBox) :
                 if (dm.is_sent_by_viewer) TextView.TEXT_ALIGNMENT_VIEW_END
                 else TextView.TEXT_ALIGNMENT_VIEW_START
 
-            // Date
-            val cal = dm.timestamp.xFromMicroseconds().calendar()
-            var showDate = true
-            if (i > 0) {
-                val prev = list[i - 1].timestamp.xFromMicroseconds().calendar()
-                if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
-                    cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
-                    cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
-                ) showDate = false
-            }
-            date.vis(showDate)
-            if (showDate) date.text =
-                "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}.${z(cal[Calendar.DAY_OF_MONTH])}"
-
             // Message
             msgTv.anchor(null, null)
             msgIvHint.vis(false)
             var media: Versioned? = null
             when {
-                dm.action_log != null ->
-                    msgIvHint.apply { text = dm.action_log.description; vis() }
                 dm.animated_media != null ->
                     msgIvHint.apply { text = "Sent a sticker"; vis() }
                 dm.clip != null -> media = dm.clip.clip

@@ -66,6 +66,8 @@
     <string name="maximum">Maximum: %s</string>
     <string name="unlimited">Unlimited</string>
     <string name="addShortcut">Add shortcut</string>
+    <string name="next">Next</string>
+    <string name="prev">Previous</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
