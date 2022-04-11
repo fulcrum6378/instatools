@@ -65,6 +65,8 @@
     <string name="maximum">Максимум: %s</string>
     <string name="unlimited">Неограниченный</string>
     <string name="addShortcut">Добавьте ярлык</string>
+    <string name="next">Следующий</string>
+    <string name="prev">Предыдущий</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -128,7 +130,7 @@
     <string name="alsoRequestPv">Также отправьте запрос в личные кабинеты.</string>
     <string name="mfLimit">Ограничьте их количество до:</string>
     <string name="vwStoryReel">Основные истории</string>
-    <string name="vwReelDesc">Содержит %d видео</string>
+    <string name="vwReelDesc">Содержит %d предметов</string>
     <string name="vwNoReels">В этом профиле нет историй!</string>
     <string name="vwNoTagged">В этом профиле нет отмеченных сообщений!</string>
 

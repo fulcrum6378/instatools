@@ -89,7 +89,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         guest = m.acc!!.id == -1L
-        initToolbar(b.toolbar, R.string.app_name, font = font(getString(R.string.font_logo)))
+        initToolbar(b.toolbar, R.string.app_name, font = font(R.string.font_logo))
         createPages()
 
         // Bottom Navigation Bar

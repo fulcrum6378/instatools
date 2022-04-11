@@ -140,12 +140,13 @@ class Exporter : ForegroundService() {
                 else -> null
             })?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
-                val qua = -(if (vid) opt!!.video else opt!!.image).toFloat()
-                val url = if (carousel_media != null) carousel_media!!.getOrNull(0)
-                    ?.nearest(qua, justImage = !vid)
-                else nearest(qua, justImage = !vid) ?: return@apply
+                val theVer = carousel_media?.getOrNull(0) ?: this
+                val url = theVer.nearest(
+                    -(if (theVer.video_versions != null) opt!!.video else opt!!.image).toFloat(),
+                    justImage = opt?.actVid() != true
+                ) ?: return@apply
                 media[dm.item_id] =
-                    Downloadable(url!!, if (vid && video_versions != null) 1 else 0)
+                    Downloadable(url, if (opt?.actVid() == true && video_versions != null) 1 else 0)
             }
         }
         fetchMedium()

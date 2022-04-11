@@ -60,6 +60,8 @@
     <string name="maximum">Maksimum: %s</string>
     <string name="unlimited">Sınırsız</string>
     <string name="addShortcut">Kısayol ekle</string>
+    <string name="next">Sonraki</string>
+    <string name="prev">Öncesi</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -123,7 +125,7 @@
     <string name="alsoRequestPv">Ayrıca özel hesaplara istek gönderin.</string>
     <string name="mfLimit">Sayılarını şu şekilde sınırlayın:</string>
     <string name="vwStoryReel">Ana Hikayeler</string>
-    <string name="vwReelDesc">%d video içerir</string>
+    <string name="vwReelDesc">%d öğe içerir</string>
     <string name="vwNoReels">Bu profilin hikayesi yok!</string>
     <string name="vwNoTagged">Bu profilde etiketlenmiş gönderi yok!</string>
 

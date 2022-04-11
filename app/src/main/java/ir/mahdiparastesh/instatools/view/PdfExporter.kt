@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.view
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.util.Size
@@ -20,6 +19,7 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.font
 import ir.mahdiparastesh.instatools.more.BaseExporter
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.io.FileOutputStream
@@ -92,9 +92,7 @@ abstract class PdfExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp
                 ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
             ), parent, false
         ).onCreate(
-            Typeface.createFromAsset(c.assets, c.getString(R.string.font_regular)),
-            Typeface.createFromAsset(c.assets, c.getString(R.string.font_light)),
-            true
+            c.font(R.string.font_regular), c.font(R.string.font_light), true
         ).onBind(c, exp.threadData!!.items, i, downloaded = exp.media).root
 
     private fun percent(mess: Int) {

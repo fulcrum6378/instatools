@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.documentfile.provider.DocumentFile
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
@@ -38,15 +39,17 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
     private val fileTypes =
         arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a")
     val maximum = 200
-    private val divInd = "      "
+    private val div1Ind = "      "
+    private val div2Ind = "$div1Ind  "
     private val divDial = "<p class=\"dial\">%s</p>"
     private val divHint = "<p class=\"hint\">%s</p>"
-    private val divLink = divDial.format("\n$divInd  <a href=\"%1\$s\">%2\$s</a>\n$divInd")
+    private val divLink = divDial.format("\n$div2Ind  <a href=\"%1\$s\">%2\$s</a>\n$div2Ind")
     private val divGif = "<img src=\"%s\" class=\"gif\">"
     private val divImg = "<img src=\"./${subFolderNames[0]}/%s.jpg\" class=\"media\">"
 
     private fun hintAndDial(hint: String?, dial: String?) =
-        (if (!hint.isNullOrBlank()) (divHint.format(hint) + "\n$divInd") else "") +
+        (if (!hint.isNullOrBlank()) divHint.format(hint) else "") +
+                (if (!hint.isNullOrBlank() && !dial.isNullOrBlank()) "\n$div2Ind" else "") +
                 (if (!dial.isNullOrBlank()) divDial.format(dial) else "")
 
     companion object {
@@ -96,6 +99,9 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
             val dm = exp.threadData!!.items[i]
             if (divisions == null) divisions = arrayListOf()
             val div = StringBuilder()
+            var showPro =
+                divisions.isNullOrEmpty() || exp.threadData!!.items[i - 1].is_sent_by_viewer
+                        || exp.threadData!!.items[i - 1].action_log != null
 
             // Date
             val cal = dm.timestamp.xFromMicroseconds().calendar()
@@ -107,11 +113,14 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                     cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
                 ) showDate = false
             }
-            if (showDate) div.append(
-                "  <p class=\"date text-center${if (!divisions.isNullOrEmpty()) " mt-5" else ""} " +
-                        "mb-2\">${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
-                        "${z(cal[Calendar.DAY_OF_MONTH])}</p>\n"
-            )
+            if (showDate) {
+                div.append(
+                    "    <p class=\"date text-center${if (!divisions.isNullOrEmpty()) " mt-5" else ""} " +
+                            "mb-2\">${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
+                            "${z(cal[Calendar.DAY_OF_MONTH])}</p>\n"
+                )
+                showPro = true
+            }
             if (dm.action_log != null) continue
 
             // Media
@@ -135,11 +144,9 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                 }
                 dm.like != null -> divDial.format(dm.like)
                 dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text)
-                dm.live_viewer_invite != null ->
-                    hintAndDial(
-                        dm.live_viewer_invite.cta_button_name,
-                        dm.live_viewer_invite.text
-                    )
+                dm.live_viewer_invite != null -> hintAndDial(
+                    dm.live_viewer_invite.cta_button_name, dm.live_viewer_invite.text
+                )
                 dm.media != null -> {
                     media = dm.media
                     ""
@@ -170,40 +177,44 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                 dm.voice_media != null -> if (exp.opt?.voi() == true) {
                     limit += 4
                     "<audio controls>\n" +
-                            "$divInd  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
+                            "$div2Ind  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
                             " type=\"audio/mp4\">\n" +
-                            "$divInd</audio>"
+                            "$div2Ind</audio>"
                 } else divHint.format("Voice message omitted!")
                 else -> ""
             }
             div.append( // "flex-direction" is direction-relative.
-                "  <div class=\"dm\" style=\"flex-direction: " +
-                        "row${if (dm.is_sent_by_viewer) "-reverse" else ""}; \">\n"
+                "    <div class=\"dm\" style=\"flex-direction: " +
+                        "row${if (dm.is_sent_by_viewer) "-reverse" else ""};\">\n"
             )
             if (!dm.is_sent_by_viewer) {
-                val showPro =
-                    divisions.isNullOrEmpty() || exp.threadData!!.items[i - 1].is_sent_by_viewer
+                val userId = dm.user_id.toLong().toString()
+                var hRef = "#"
+                var imgTitle = ""
+                exp.threadData?.users?.find { it.pk == userId }?.apply {
+                    hRef = UiTools.PROFILE.format(username)
+                    imgTitle = " title=\"$full_name\""
+                }
                 div.append(
-                    "    <img ${
-                        if (showPro) "src=\"./${subFolderNames[0]}/${
-                            Exporter.USER_PROFILE_IMG.format(dm.user_id.toLong().toString())
-                        }.jpg\" " else ""
-                    }class=\"profile${if (!showPro) " repeated" else ""}\">\n"
+                    "$div1Ind<a href=\"$hRef\">\n$div1Ind  <img ${
+                        if (showPro) "src=\"./${subFolderNames[0]}/" +
+                                "${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" " else ""
+                    }class=\"profile${if (!showPro) " repeated" else ""}\"$imgTitle>\n$div1Ind</a>\n"
                 )
             }
             div.append(
-                "    <div class=\"d-inline-flex p-2 border rounded-3 mt-1 px-3 btn disabled " +
+                "$div1Ind<div class=\"d-inline-flex p-2 border rounded-3 mt-1 px-3 btn disabled " +
                         (if (dm.is_sent_by_viewer) "btn-light" else "btn-outline-dark") +
-                        "${if (media != null) " card" else ""}\">\n$divInd"
+                        "${if (media != null) " card" else ""}\">\n$div2Ind"
             )
             if (media != null) div.append(
                 when {
-                    media.video_versions != null && exp.opt?.video in 0..2 -> {
+                    media.video_versions != null && exp.opt?.actVid() == true -> {
                         limit += 6
-                        "<video width=\"500\" height=\"500\" controls>\n" +
-                                "$divInd  <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
+                        "<video width=\"500\" height=\"500\" controls class=\"media\">\n" +
+                                "$div2Ind  <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
                                 " type=\"video/mp4\">\n" +
-                                "$divInd</video>"
+                                "$div2Ind</video>"
                     }
                     (media.video_versions != null && exp.opt?.video == 3) ||
                             (media.video_versions == null && exp.opt?.img() == true) -> {
@@ -213,21 +224,21 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                     else -> divHint.format(
                         "${if (media.video_versions != null) "Video" else "Image"} file omitted!"
                     )
-                } + (if (nonMedia.isNotBlank()) "\n$divInd" else "")
+                } + (if (nonMedia.isNotBlank()) "\n$div2Ind" else "")
             )
             limit += 1
             div.append(nonMedia)
             if (nonMedia.isNotBlank()) limit++
             if (dm.reactions != null) {
-                div.append("\n$divInd<p class=\"reactions\">")
+                div.append("\n$div2Ind<p class=\"reactions\">")
                 for (r in dm.reactions.emojis) div.append(r.emoji)
                 div.append("</p>")
             }
             div.append(
-                "\n    </div>\n    " +
+                "\n$div1Ind</div>\n$div1Ind" +
                         "<p class=\"time\">${z(cal[Calendar.HOUR_OF_DAY])}:" +
-                        "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}</p>\n  " +
-                        "</div>\n"
+                        "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}</p>\n" +
+                        "    </div>\n"
             )
             divisions!!.add(div.toString())
             if (limit >= maximum) {
@@ -243,15 +254,16 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
         }
 
         @Suppress("SpellCheckingInspection")
+        val bootstrapCss =
+            if (dirRtl) "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css\"" +
+                    "      integrity=\"sha384-+qdLaIRZfNu4cVPK/PxJJEy0B0f3Ugv8i482AKY7gwXwhaCroABd086ybrVKTa0q\"" +
+                    "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
+            else "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\"\n" +
+                    "      integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\"\n" +
+                    "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
+        @Suppress("SpellCheckingInspection")
         containers.forEachIndexed { page, divisions ->
             val html = StringBuilder()
-            val bootstrapCss =
-                if (dirRtl) "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css\"" +
-                        "      integrity=\"sha384-+qdLaIRZfNu4cVPK/PxJJEy0B0f3Ugv8i482AKY7gwXwhaCroABd086ybrVKTa0q\"" +
-                        "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
-                else "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\"\n" +
-                        "      integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\"\n" +
-                        "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
             html.append(
                 """<!DOCTYPE HTML>
 <html dir="${if (dirRtl) "rtl" else "ltr"}">
@@ -290,13 +302,14 @@ body { background: #FCFCFC; }
 .dm .btn-light { text-align: right; }
 .dm .btn-outline-dark { text-align: left; }
 .hint { opacity: .7; font-style: italic; }
-.media { width: 480px; }
+.media { width: 100%; max-width: 480px; }
 .reactions { width: 0; height: 0; overflow: visible; align-self: flex-end; z-index: 1; }
+#copyright { opacity: .3; font-size: 14px; padding: 12px 17px; }
   </style>
 </head>
 
 <body>
-  <main class="container border my-4 rounded pt-3 pb-4">
+  <main class="container border mt-4 mb-3 rounded pt-3 pb-4">
 """ // .dm .btn-light +{ display: flex !important; flex-direction: row-reverse; flex-wrap: wrap; }
             )
             for (div in divisions) html.append(div)
@@ -307,7 +320,8 @@ body { background: #FCFCFC; }
           <a class="page-link" href="./$page.html" target="_self"${
                     if (page == 0) " tabindex=\"-1\"" else ""
                 }>${c.c.resources.getString(R.string.prev)}</a>
-        </li>"""
+        </li>
+"""
             )
             var pMin = 0
             var pMax = containers.size - 1
@@ -331,6 +345,10 @@ body { background: #FCFCFC; }
       </ul>
     </nav>
   </main>
+  <p id="copyright">
+    Created by <a href="https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}">InstaTools</a>
+    app from <a href="https://mahdiparastesh.ir/">Mahdi Parastesh</a>
+  </p>
 </body>
 </html>"""
             )

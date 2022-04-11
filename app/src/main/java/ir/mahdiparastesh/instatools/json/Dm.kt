@@ -176,7 +176,9 @@ class Dm(
         //val link_image_url: String,
     )
 
-    class ClipShare(val clip: Media) // TODO: NO TEXT?
+    class ClipShare(val clip: Media)
+    // Since Clip is some kind of a post you cannot react to it the way you do in a story; and
+    // even if you share it to someone else with a message, that'll be considered a separate "text".
 
     class FelixShare(val video: Media, val text: String?) : PlaceHolder()
 

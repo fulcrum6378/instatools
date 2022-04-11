@@ -132,7 +132,7 @@
     <string name="alsoRequestPv">Also send request to the private accounts.</string>
     <string name="mfLimit">Limit their number to:</string>
     <string name="vwStoryReel">Main Stories</string>
-    <string name="vwReelDesc">Contains %d videos</string><!--TODO: "videos" to "items"-->
+    <string name="vwReelDesc">Contains %d items</string>
     <string name="vwNoReels">This profile has no stories!</string>
     <string name="vwNoTagged">This profile has no tagged posts!</string>
 

@@ -60,6 +60,8 @@
     <string name="maximum">Máxima: %s</string>
     <string name="unlimited">Ilimitado</string>
     <string name="addShortcut">Añadir atajo</string>
+    <string name="next">Próximo</string>
+    <string name="prev">Previo</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -123,7 +125,7 @@
     <string name="alsoRequestPv">También envíe solicitud a las cuentas privadas.</string>
     <string name="mfLimit">Limite su número a:</string>
     <string name="vwStoryReel">Historias Principales</string>
-    <string name="vwReelDesc">Contiene %d vídeos</string>
+    <string name="vwReelDesc">Contiene %d artículos</string>
     <string name="vwNoReels">¡Este perfil no tiene historias!</string>
     <string name="vwNoTagged">¡Este perfil no tiene publicaciones etiquetadas!</string>
 

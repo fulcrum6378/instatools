@@ -35,6 +35,7 @@ class Exportable(
         fun img() = image > -1
         fun vid() = video > -1
         fun voi() = voice > -1
+        fun actVid() = video in 0..2
 
         fun toJson(): String = Gson().toJson(this)
 

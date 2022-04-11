@@ -66,6 +66,8 @@
     <string name="maximum">حداکثر: %s</string>
     <string name="unlimited">بی نهایت</string>
     <string name="addShortcut">اضافه کردن میانبر</string>
+    <string name="next">بعدی</string>
+    <string name="prev">قبلی</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -129,7 +131,7 @@
     <string name="alsoRequestPv">همچنین به اکانت های خصوصی درخواست بفرست.</string>
     <string name="mfLimit">محدودیت تعداد اکانت ها:</string>
     <string name="vwStoryReel">استوری های اصلی</string>
-    <string name="vwReelDesc">دارای %d ویدیو</string>
+    <string name="vwReelDesc">دارای %d آیتم</string>
     <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
     <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
 

@@ -49,9 +49,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
-    val fontBold: Typeface by lazy { font(getString(R.string.font_bold)) }
-    val fontRegular: Typeface by lazy { font(getString(R.string.font_regular)) }
-    val fontLight: Typeface by lazy { font(getString(R.string.font_light)) }
+    val fontBold: Typeface by lazy { font(R.string.font_bold) }
+    val fontRegular: Typeface by lazy { font(R.string.font_regular) }
+    val fontLight: Typeface by lazy { font(R.string.font_light) }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val shallBolden by lazy { c.resources.getBoolean(R.bool.shallBolden) }
     val colorAc = MutableLiveData<Int?>(null)
@@ -80,6 +80,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
         fun Context.night(): Boolean = resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        fun Context.font(@StringRes fileName: Int): Typeface =
+            Typeface.createFromAsset(assets, "fonts/${resources.getString(fileName)}")
 
         fun areAdsReady() = adsInitStatus?.isReady() == true
     }
@@ -262,8 +265,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     fun pdcf(@ColorRes res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(this, res), PorterDuff.Mode.SRC_IN)
-
-    fun font(path: String): Typeface = Typeface.createFromAsset(c.assets, "fonts/$path")
 
     // Only for TextView.textSize
     fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density
