@@ -115,6 +115,11 @@ class Exporter : ForegroundService() {
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip
+                dm.direct_media_share != null -> when (dm.direct_media_share.media.media_type) {
+                    1f -> if (img) dm.direct_media_share.media else null
+                    2f -> if (vid) dm.direct_media_share.media else null
+                    else -> null
+                }
                 vid && dm.felix_share != null -> dm.felix_share.video
                 dm.media != null -> when (dm.media.media_type) {
                     1f -> if (img) dm.media else null

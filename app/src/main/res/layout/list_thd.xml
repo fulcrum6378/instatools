@@ -112,6 +112,12 @@
                 android:textColor="?attr/colorAccent"
                 android:textSize="@dimen/dmFont"
                 app:layout_constraintTop_toBottomOf="@id/msgIvHint" />
+
+            <!--<androidx.media2.widget.MediaControlView
+                android:id="@+id/voicePlayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:enableControlView="true" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout

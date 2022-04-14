@@ -11,7 +11,6 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import ir.mahdiparastesh.instatools.Downloads
@@ -134,7 +133,6 @@ class Expandable(
     }
 
     fun link() = media?.let {
-        Log.println(Log.ASSERT, "KIR", "product_type: ${it.product_type} : ${it.code}")
         return@let when (it.product_type) {
             "feed", "carousel_container" -> UiTools.POST_LINK.format(it.code)
             "story" -> when {

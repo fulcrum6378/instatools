@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
+import android.net.Uri
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.media.AudioAttributesCompat
+import androidx.media2.common.MediaMetadata
+import androidx.media2.common.UriMediaItem
+import androidx.media2.player.MediaPlayer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -115,10 +120,11 @@ class ListThd(val c: Main, private val f: PageBox) :
             // Message
             msgTv.anchor(null, null)
             msgIvHint.vis(false)
+            f?.voicePlayer?.close()
             var media: Versioned? = null
             when {
                 dm.animated_media != null ->
-                    msgIvHint.apply { text = "Sent a sticker"; vis() }
+                    msgIvHint.apply { text = "Sent a sticker"; vis() } // TODO
                 dm.clip != null -> media = dm.clip.clip
                 dm.direct_media_share != null -> {
                     media = dm.direct_media_share.media
@@ -161,11 +167,25 @@ class ListThd(val c: Main, private val f: PageBox) :
                 dm.video_call_event != null ->
                     msgIvHint.apply { text = dm.video_call_event.description; vis() }
                 dm.voice_media != null ->
-                    if (f == null) msgIvHint.apply { text = "Sent a voice message"; vis() }
-                    else {
-                        //f.voicePlayer = MediaPlayer.create()
-                    }
-                else -> if (BuildConfig.DEBUG) throw Exception("NEW DM TYPE: ${dm.item_id}")
+                    if (f == null) msgIvHint.apply { text = "Voice message omitted!"; vis() }
+                    /*else f.voicePlayer = MediaPlayer(c).apply {
+                        setAudioAttributes(
+                            AudioAttributesCompat.Builder()
+                                .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+                                .build()
+                        )
+                        setMediaItem(
+                            UriMediaItem.Builder(Uri.parse(dm.voice_media.media.audio.audio_src))
+                                .setMetadata(
+                                    MediaMetadata.Builder()
+                                        .putString(MediaMetadata.METADATA_KEY_TITLE, "MY VOICE")
+                                        .build()
+                                ).build()
+                        )
+                    }.also { voicePlayer.setPlayer(it) }*/
+                else ->
+                    if (BuildConfig.DEBUG) throw Exception("NEW DM TYPE \"${dm.item_type}\" with id: ${dm.item_id}")
+                    else msgIvHint.apply { text = "Unknown DM type \"${dm.item_type}\"!!"; vis() }
             }
             msgIvCl.vis(media != null)
             Glide.with(c).clear(msgIv)

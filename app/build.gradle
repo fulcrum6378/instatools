@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '12.9'
+        versionName '12.9.1'
     }
 
     signingConfigs {
@@ -34,12 +34,12 @@ android {
     productFlavors {
         all { dimension 'flaDim1' }
         iran {
-            versionCode 41 // 38
+            versionCode 42 // 38
             signingConfig signingConfigs.aleph
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 6
+            versionCode 8
             signingConfig signingConfigs.beth
             // Use BETH for Google Play; Use ALEPH for Galaxy Store
         }
@@ -101,7 +101,7 @@ dependencies {
     implementation "androidx.media2:media2-widget:$media2_version"
     implementation "androidx.media2:media2-player:$media2_version"
     implementation 'com.tbuonomo:dotsindicator:4.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt'
     implementation 'com.google.android.play:core:1.10.3'
 
     implementation 'com.github.fulcrum1378:ChipsLayoutManager:5140e08'

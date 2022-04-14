@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StatFs
-import android.util.Log
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.SeekBar
@@ -164,7 +163,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         // Caching
         cacheLimit = gsp.getLong(spCacheLimit, defaultCacheLimit(c))
-        Log.println(Log.ASSERT, "KOS", cacheLimit.toString())
         b.stCacheLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return
