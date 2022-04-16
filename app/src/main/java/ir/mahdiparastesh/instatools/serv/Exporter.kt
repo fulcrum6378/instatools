@@ -17,10 +17,7 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.HtmlExporter
 import ir.mahdiparastesh.instatools.view.PdfExporter
 import ir.mahdiparastesh.instatools.view.TxtExporter
@@ -106,8 +103,9 @@ class Exporter : ForegroundService() {
             fetchMedium(); return; }
         val img = opt?.img() == true
         val vid = opt?.vid() == true
+        val actVid = opt?.actVid() == true
         for (dm in threadData!!.items) {
-            if (vid && dm.animated_media != null) {
+            if (actVid && dm.animated_media != null) {
                 media[dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 3)
                 continue; }
             if (opt?.voice == 0 && dm.voice_media != null) {
@@ -118,6 +116,13 @@ class Exporter : ForegroundService() {
                 dm.direct_media_share != null -> when (dm.direct_media_share.media.media_type) {
                     1f -> if (img) dm.direct_media_share.media else null
                     2f -> if (vid) dm.direct_media_share.media else null
+                    8f -> dm.direct_media_share.media.carousel_media?.let {
+                        when (it.getOrNull(0)?.media_type) {
+                            1f -> if (img) it[0] else null
+                            2f -> if (vid) it[0] else null
+                            else -> null
+                        }
+                    }
                     else -> null
                 }
                 vid && dm.felix_share != null -> dm.felix_share.video
@@ -129,6 +134,13 @@ class Exporter : ForegroundService() {
                 dm.media_share != null -> when (dm.media_share.media_type) {
                     1f -> if (img) dm.media_share else null
                     2f -> if (vid) dm.media_share else null
+                    8f -> dm.media_share.carousel_media?.let {
+                        when (it.getOrNull(0)?.media_type) {
+                            1f -> if (img) it[0] else null
+                            2f -> if (vid) it[0] else null
+                            else -> null
+                        }
+                    }
                     else -> null
                 }
                 img && dm.raven_media != null -> dm.raven_media
@@ -147,8 +159,11 @@ class Exporter : ForegroundService() {
                 if (carousel_media == null && image_versions2 == null) return@apply
                 val theVer = carousel_media?.getOrNull(0) ?: this
                 val url = theVer.nearest(
-                    -(if (theVer.video_versions != null) opt!!.video else opt!!.image).toFloat(),
-                    justImage = opt?.actVid() != true
+                    when {
+                        theVer.video_versions != null && opt!!.video == 3 -> Versioned.MEDIUM
+                        theVer.video_versions != null -> -opt!!.video
+                        else -> -opt!!.image
+                    }.toFloat(), justImage = opt?.actVid() != true
                 ) ?: return@apply
                 media[dm.item_id] =
                     Downloadable(url, if (opt?.actVid() == true && video_versions != null) 1 else 0)

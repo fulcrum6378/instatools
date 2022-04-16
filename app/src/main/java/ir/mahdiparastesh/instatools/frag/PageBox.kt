@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.media2.player.MediaPlayer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -55,6 +56,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     var thdThread: FetchOfThread? = null
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
+    private var boxScroll: Int? = null
     val expandable: Expandable by lazy {
         Expandable(
             c, b.expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CT)
@@ -121,6 +123,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     if (!b.rv.canScrollVertically(1) &&
                         boxThread?.active != true && c.m.dmInbox?.has_older != false
                     ) boxThread = FetchOfInbox().also { it.start() }
+                    boxScroll = (b.rv.layoutManager as LinearLayoutManager)
+                        .findFirstCompletelyVisibleItemPosition()
                 } else {
                     if (thdThread?.active != true &&
                         c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
@@ -146,9 +150,11 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
         if (c.m.dmThread == null) {
+            val prevScrollPos = boxScroll
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
                 b.rv.adapter = ListBox(c, this)
             else b.rv.adapter?.notifyDataSetChanged()
+            prevScrollPos?.also { b.rv.scrollToPosition(it) }
         } else {
             if (b.rv.adapter == null || b.rv.adapter !is ListThd)
                 b.rv.adapter = ListThd(c, this)
@@ -221,11 +227,15 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         })
         if (!method.vid) {
             bi.incVideo.isChecked = false
-            bi.incVideo.isEnabled = false
+            if (!method.img) bi.incVideo.isEnabled = false
             bi.quaVideo.forEach { it.isEnabled = false }
             bi.quaVideo.clearCheck()
             bi.incVoice.isChecked = false
             bi.incVoice.isEnabled = false
+            if (method.img) bi.incVideo.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) bi.quaVideo.check(Exportable.Options.quaVideo[3])
+                else bi.quaVideo.clearCheck()
+            }
         } else bi.incVideo.setOnCheckedChangeListener(object :
             CompoundButton.OnCheckedChangeListener {
             var wasCheckedItem = bi.quaVideo.checkedRadioButtonId

@@ -56,21 +56,16 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 c.wrapTheme(f.theme), c.fontRegular, it, R.menu.unf_more, Act().apply {
                     this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
                     this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
-                    this[R.id.umToFav] = {
-                        Thread {
-                            val fav = u.toFavourite()
-                            if (!u.inFav) c.dao.addFavourite(fav)
-                            else c.dao.deleteFavouriteById(u.id)
-                            PageUnf.handler?.obtainMessage(
-                                PageUnf.HANDLE_FAV_CHANGED, if (!u.inFav) fav else u.id
-                            )?.sendToTarget()
-                        }.start()
-                    }
+                    this[R.id.umToFav] = { toggleFav(u) }
                 }, c.colorAc.value
             ).apply {
                 menu.findItem(R.id.umToFav)
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)
             }.show()
+        }
+        h.b.root.setOnLongClickListener {
+            c.m.unfollowers.value?.getOrNull(h.layoutPosition)?.also { u -> toggleFav(u) }
+            true
         }
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
@@ -110,7 +105,19 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             if (index > 0) f.b.rv.adapter?.notifyItemChanged(index - 1)
             f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)
             c.m.unfollowers.value = c.m.unfollowers.value
+            if (c.m.unfollowers.value.isNullOrEmpty()) f.emptied(true)
         }
+    }
+
+    private fun toggleFav(u: Friend) {
+        Thread {
+            val fav = u.toFavourite()
+            if (!u.inFav) c.dao.addFavourite(fav)
+            else c.dao.deleteFavouriteById(u.id)
+            PageUnf.handler?.obtainMessage(
+                PageUnf.HANDLE_FAV_CHANGED, if (!u.inFav) fav else u.id
+            )?.sendToTarget()
+        }.start()
     }
 
     companion object {

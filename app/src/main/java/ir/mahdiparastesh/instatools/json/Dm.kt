@@ -7,7 +7,7 @@ import ir.mahdiparastesh.instatools.view.UiTools
 @Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class Dm(
     //val client_context: String,
-    val hide_in_thread: Float,
+    //val hide_in_thread: Float,
     val is_sent_by_viewer: Boolean,
     //val is_shh_mode: Boolean,
     val item_id: String,
@@ -136,9 +136,9 @@ class Dm(
     }
 
     class ActionLog(
-        val bold: Array<Any>,
+        //val bold: Array<Any>,
         val description: String,
-        val is_reaction_log: Boolean,
+        //val is_reaction_log: Boolean,
     )
 
     class AnimatedMedia(
@@ -157,8 +157,8 @@ class Dm(
         val mp4_size: String,
         val size: String,
         val url: String, // .GIF
-        val webp: String, // .WEBP
-        val webp_size: String,
+        //val webp: String, // .WEBP
+        //val webp_size: String,
         val width: String,
     )
 
@@ -216,10 +216,10 @@ class Dm(
         //val super_react_type: String,
     )
 
-    class ReactionInfo(
+    /*class ReactionInfo(
         val emoji: String,
         val intensity: Any?
-    )
+    )*/
 
     class Voice(
         //val is_shh_mode: Boolean,

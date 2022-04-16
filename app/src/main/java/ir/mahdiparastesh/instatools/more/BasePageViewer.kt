@@ -6,6 +6,7 @@ import android.view.View
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.shake
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
@@ -60,6 +61,7 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
             c.b.toolbar.inflateMenu(if (status) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
             c.fixTbMenu()
             c.shake()
+            if (this@BasePageViewer is PageVwr) rv().isNestedScrollingEnabled = status
         }
     }
 }

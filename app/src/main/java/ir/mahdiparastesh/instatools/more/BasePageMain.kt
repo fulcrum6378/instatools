@@ -1,10 +1,11 @@
 package ir.mahdiparastesh.instatools.more
 
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.iterator
 import androidx.media2.common.SessionPlayer
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 
@@ -50,9 +52,8 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         if (Main.guest) {
             guestMode(view as ConstraintLayout); return; }
 
-        empty()?.setCompoundDrawablesWithIntrinsicBounds(
-            null, ContextCompat.getDrawable(c.wrapTheme(theme), emptyIcon), null, null
-        )
+        empty()?.compoundDrawables?.getOrNull(1)?.colorFilter =
+            PorterDuffColorFilter(c.wrapTheme(theme).themeColor(), PorterDuff.Mode.SRC_IN)
         error()?.setOnClickListener {
             refresher().isRefreshing = true
             onRefresh()

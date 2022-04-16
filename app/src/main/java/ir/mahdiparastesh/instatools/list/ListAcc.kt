@@ -32,25 +32,30 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
     }
 
     override fun onBindViewHolder(h: AnyViewHolder<ListAccBinding>, i: Int) {
-        val guest = c.accounts[i].id < 0L
-        Glide.with(c.c).load(if (!guest) c.accounts[i].pict else R.mipmap.launcher)
+        // Apparently even the most static kinds of list adapters need to be null-safe.
+        val acc = c.accounts.getOrNull(i) ?: return
+        val guest = acc.id < 0L
+
+        Glide.with(c.c).load(if (!guest) acc.pict else R.mipmap.launcher)
             .into(h.b.photo)
-        if (!guest) h.b.name.text = c.accounts[i].name
+        if (!guest) h.b.name.text = acc.name
         else h.b.name.setText(R.string.guest)
-        if (!guest) h.b.user.text = c.accounts[i].user
+        if (!guest) h.b.user.text = acc.user
         else h.b.user.setText(R.string.guestShortDesc)
-        h.b.name.vis(guest || c.accounts[i].name != "")
+        h.b.name.vis(guest || acc.name != "")
         h.b.root.setOnClickListener {
-            c.selectAccount(c.accounts[h.layoutPosition])
+            c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
         }
 
         // Clicks
         h.b.more.vis(!guest)
         h.b.more.setOnClickListener(if (!guest) View.OnClickListener {
-            more(it, c.accounts[h.layoutPosition], h.layoutPosition)
+            val a = c.accounts.getOrNull(h.layoutPosition) ?: return@OnClickListener
+            more(it, a, h.layoutPosition)
         } else null)
         h.b.root.setOnLongClickListener(if (!guest) View.OnLongClickListener {
-            more(it, c.accounts[h.layoutPosition], h.layoutPosition)
+            val a = c.accounts.getOrNull(h.layoutPosition) ?: return@OnLongClickListener true
+            more(it, a, h.layoutPosition)
         } else null)
 
         h.b.sep.vis(i < itemCount - 1)

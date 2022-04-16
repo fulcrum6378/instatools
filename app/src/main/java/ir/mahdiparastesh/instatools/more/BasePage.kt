@@ -74,8 +74,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
             root.removeView(loading())
         }
         error()?.vis(false)
-        empty()?.vis(isEmpty)
-        if (isEmpty) empty()?.typeface = c.fontRegular
+        emptied(isEmpty)
     }
 
     open fun onFailed(message: String) {
@@ -89,7 +88,12 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
             root.removeView(loading())
         }
         if (rv().adapter == null) error()?.vis()
-        empty()?.vis(false)
+        emptied(false)
+    }
+
+    open fun emptied(isEmpty: Boolean) {
+        empty()?.vis(isEmpty)
+        if (isEmpty) empty()?.typeface = c.fontRegular
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true

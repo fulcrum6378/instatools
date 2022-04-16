@@ -40,10 +40,8 @@ class PageRel : BasePageViewer() {
 
     companion object : PageCompanion()
 
-    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View {
-        b = PageRelBinding.inflate(inf, parent, false)
-        return b.root
-    }
+    override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
+        PageRelBinding.inflate(inf, parent, false).let { b = it; it.root }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

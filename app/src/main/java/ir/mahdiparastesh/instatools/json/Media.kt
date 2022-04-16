@@ -49,7 +49,7 @@ class Media(
     //val like_count: Double,
     //val max_num_visible_preview_comments: Float,
     //val media_cropping_info: Map<String, Any?>,
-    val media_type: Float,
+    val media_type: Float,// 1=>image, 2=>video, 8=>slider
     //val music_metadata: MusicMetadata?,
     //val nearly_complete_copyright_match: Boolean,
     //val number_of_qualities: Float,

@@ -195,7 +195,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         if (!::toolbar.isInitialized) {
             Delay(3000L) { onPrepareOptionsMenu(menu) }
             return false; }
-        toolbar.menu.forEach { it.stylise(this, -1) }
+        toolbar.menu.forEach { it.stylise(this, colorAc.value ?: -1) }
         return true
     }
 

@@ -218,21 +218,20 @@ class PageUnf : BasePageMain() {
                     ).apply {
                         description = c.resources.getString(R.string.newUnfNtfChannelDesc)
                     })
-            with(NotificationManagerCompat.from(c)) {
-                notify(CH_NEW_ITEMS_ID, NotificationCompat.Builder(c, CH_NEW_ITEMS).apply {
+            NotificationManagerCompat.from(c.c)
+                .notify(CH_NEW_ITEMS_ID, NotificationCompat.Builder(c.c, CH_NEW_ITEMS).apply {
                     setSmallIcon(R.mipmap.launcher_round)
                     setContentTitle(getString(R.string.newUnfNtfChannel))
                     setContentText(getString(R.string.newUnfNtfText, num))
                     priority = NotificationCompat.PRIORITY_HIGH
                     setContentIntent(
                         PendingIntent.getActivity(
-                            c, 0, Intent(c, Main::class.java)
+                            c.c, 0, Intent(c.c, Main::class.java)
                                 .apply { putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, 0) },
-                            PendingIntent.FLAG_CANCEL_CURRENT
+                            PendingIntent.FLAG_UPDATE_CURRENT
                         )
                     )
                 }.build())
-            }
             c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.apply()
         }
     }
