@@ -104,7 +104,7 @@ class Expandable(
             }
         }
         b.viewInInsta.setOnClickListener {
-            link()?.let {
+            media?.link()?.let {
                 try {
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
@@ -130,23 +130,6 @@ class Expandable(
         b.downloadAll.vis(isSlider)
         b.downloadThis.vis(isSlider)
         b.download.vis(!isSlider)
-    }
-
-    fun link() = media?.let {
-        return@let when (it.product_type) {
-            "feed", "carousel_container" -> UiTools.POST_LINK.format(it.code)
-            "story" -> when {
-                it.mahdi_reel_type == "highlight_reel" || it.expiring_at == null ->
-                    UiTools.HIGHLIGHT_LINK.format((it.mahdi_reel_id ?: it.id).substringAfter(":"))
-                // Instagram cannot open such an above link
-                it.mahdi_reel_type == "user_reel" -> it.nearest(Versioned.BEST) // archived story
-                else -> UiTools.STORY_LINK.format(it.user.username, it.pk)
-            }
-            "clips" -> UiTools.REEL_LINK.format(it.code)
-            "igtv" -> UiTools.IGTV_LINK.format(it.code)
-            null -> it.nearest(Versioned.BEST)
-            else -> null
-        }
     }
 
     fun expand() {

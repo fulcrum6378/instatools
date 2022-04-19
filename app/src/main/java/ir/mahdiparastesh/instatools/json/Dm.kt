@@ -274,6 +274,8 @@ class Dm(
         var title: String? = null // e.g.: "Post unavailable"
         var message: String? = null // e.g.: "This post is unavailable because it was deleted."
     }
+    // When someone shares a profile, if the viewer has blocked that profile, the Placeholder is
+    // shown instead of the Rest.User; indicating no reference to that profile's username or id!
 
     class RavenMedia(
         //val url_expire_at_secs: Double?,

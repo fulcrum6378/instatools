@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.view
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.system.ErrnoException
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
@@ -18,6 +19,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import kotlinx.coroutines.runBlocking
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 
 abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
@@ -82,8 +84,16 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
             if (dwn.value.data == null) continue
             subFolders[t]!!.createFile(ft.first, "${dwn.key}.${ft.second}")!!.apply {
                 c.c.contentResolver.openFileDescriptor(uri, "w")?.use { des ->
-                    FileOutputStream(des.fileDescriptor).use { fos ->
-                        fos.write(dwn.value.data)
+                    try {
+                        FileOutputStream(des.fileDescriptor).use { fos ->
+                            fos.write(dwn.value.data)
+                        }
+                    } catch (e: IOException) {
+                        return@use
+                    } catch (e: ErrnoException) {
+                        return@use
+                    } catch (e: SecurityException) {
+                        return@use
                     }
                 }
             }

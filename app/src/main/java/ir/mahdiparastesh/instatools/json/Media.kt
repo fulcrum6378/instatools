@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
 import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.view.UiTools
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
@@ -84,6 +85,27 @@ class Media(
     var mahdi_reel_type: String? = null,
     var mahdi_reel_id: String? = null
 ) : Versioned(image_versions2, original_height, original_width, video_versions, carousel_media) {
+
+    fun link() = when (product_type) {
+        "feed", "carousel_container" -> UiTools.POST_LINK.format(code)
+        "story" -> when {
+            mahdi_reel_type == "highlight_reel" || expiring_at == null ->
+                UiTools.HIGHLIGHT_LINK.format((mahdi_reel_id ?: id).substringAfter(":"))
+            // Instagram cannot open such an above link
+            mahdi_reel_type == "user_reel" -> nearest(BEST) // archived story
+            else -> UiTools.STORY_LINK.format(user.username, pk)
+        }
+        "clips" -> UiTools.REEL_LINK.format(code)
+        "igtv" -> UiTools.IGTV_LINK.format(code)
+        null -> nearest(BEST)
+        else -> null
+    }
+    // https://stackoverflow.com/questions/50885069/does-the-number-of-methods-in-a-java-object-
+    // ..affect-how-heavy-it-is/50885116#50885116
+    // In Java, more methods doesn't not mean "takes more memory", nor does it, in itself,
+    // influence how long it takes to construct the object, so it's not a concern for the
+    // heaviness of an object in Java.
+
 
     class MediaWrapperApi(
         //var auto_load_more_enabled: Boolean,

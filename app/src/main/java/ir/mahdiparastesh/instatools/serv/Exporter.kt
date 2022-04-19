@@ -160,7 +160,7 @@ class Exporter : ForegroundService() {
                 val theVer = carousel_media?.getOrNull(0) ?: this
                 val url = theVer.nearest(
                     when {
-                        theVer.video_versions != null && opt!!.video == 3 -> Versioned.MEDIUM
+                        theVer.video_versions != null && opt!!.video == 3 -> Versioned.WORST
                         theVer.video_versions != null -> -opt!!.video
                         else -> -opt!!.image
                     }.toFloat(), justImage = opt?.actVid() != true
