@@ -34,12 +34,12 @@ android {
     productFlavors {
         all { dimension 'flaDim1' }
         iran {
-            versionCode 42 // 38
+            versionCode 43 // 38
             signingConfig signingConfigs.aleph
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 9
+            versionCode 10
             signingConfig signingConfigs.beth
             // Use BETH for Google Play; Use ALEPH for Galaxy Store
         }

@@ -100,8 +100,10 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
         }
         exp.media.clear()
         if (canCreateDirSelf) subFolders.forEach {
-            if (it != null)
+            if (it != null) try {
                 DocumentsContract.moveDocument(c.c.contentResolver, it.uri, tmpDir.uri, folder.uri)
+            } catch(e: SecurityException) {
+            }
         }
 
         progress(0f, false)
