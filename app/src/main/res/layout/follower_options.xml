@@ -41,6 +41,8 @@
             android:layout_weight="0.5"
             android:importantForAutofill="no"
             android:inputType="number"
+            android:maxLength="4"
+            android:maxLines="1"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:textColor="@color/defCA"

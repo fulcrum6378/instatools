@@ -219,10 +219,10 @@ class PageVwr : BasePageViewer() {
                 bo.alsoRequestPv.typeface = c.fontRegular
                 bo.limitTv.typeface = c.fontRegular
                 bo.limit.typeface = c.fontBold
-                bo.limit.setText(
-                    ((if (isItFollowers) c.m.vwUser?.edge_followed_by?.count
-                    else c.m.vwUser?.edge_follow?.count) ?: 0.0).toInt().toString()
-                )
+                var flwLimit = ((if (isItFollowers) c.m.vwUser?.edge_followed_by?.count
+                else c.m.vwUser?.edge_follow?.count) ?: 0.0).toInt()
+                if (flwLimit > MassFollower.FOLLOW_LIMIT) flwLimit = MassFollower.FOLLOW_LIMIT
+                bo.limit.setText(flwLimit.toString())
                 AlertDialog.Builder(c).apply {
                     setTitle(R.string.followAll)
                     setMessage(c.getString(R.string.followAllSure))

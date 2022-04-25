@@ -102,7 +102,7 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
         if (canCreateDirSelf) subFolders.forEach {
             if (it != null) try {
                 DocumentsContract.moveDocument(c.c.contentResolver, it.uri, tmpDir.uri, folder.uri)
-            } catch(e: SecurityException) {
+            } catch (e: SecurityException) {
             }
         }
 
@@ -186,13 +186,19 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
                 dm.text != null -> divDial.format(dm.text)
                 dm.video_call_event != null ->
                     divHint.format(dm.video_call_event.description)
-                dm.voice_media != null -> if (exp.opt?.voi() == true) {
-                    limit += 4
-                    "<audio controls>\n" +
-                            "$div2Ind  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
-                            " type=\"audio/mp4\">\n" +
-                            "$div2Ind</audio>"
-                } else divHint.format("Voice message omitted!")
+                dm.voice_media != null ->
+                    when {
+                        exp.opt?.voi() == true && dm.voice_media.media != null -> {
+                            limit += 4
+                            "<audio controls>\n" +
+                                    "$div2Ind  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
+                                    " type=\"audio/mp4\">\n" +
+                                    "$div2Ind</audio>"
+                        }
+                        dm.voice_media.media == null ->
+                            divHint.format("Sent a voice message.")
+                        else -> divHint.format("Voice message omitted!")
+                    }
                 else -> ""
             }
             div.append( // "flex-direction" is direction-relative.

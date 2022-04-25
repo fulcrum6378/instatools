@@ -71,7 +71,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     // With getters and setters, you'll avoid NullPointerException;
     // Because "this" is apparently null at the time of instantiation,
     // So you cannot invoke "applicationContext" on it!
-    override lateinit var c: Context
+    override val c: Context get() = applicationContext
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null
@@ -91,7 +91,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onCreate() {
         super.onCreate()
         com.active.value = true
-        c = applicationContext
         m = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
         sp = initSp(m.acc)

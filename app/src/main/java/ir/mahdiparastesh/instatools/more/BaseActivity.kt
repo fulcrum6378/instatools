@@ -42,10 +42,9 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
 import kotlin.reflect.KClass
 
-@Suppress("MemberVisibilityCanBePrivate")
 abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener,
     Toolbar.OnMenuItemClickListener {
-    val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    private val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
     val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
@@ -58,11 +57,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     var interstitialAd: InterstitialAd? = null
     var loadingAd = false
     var showingAd = false
-    var retryForAd = 0
+    private var retryForAd = 0
 
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
-    override lateinit var c: Context
+    override val c: Context get() = applicationContext
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null
@@ -92,7 +91,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         resolvedIntent = null
         notFirstResume = false
         super.onCreate(savedInstanceState)
-        c = applicationContext
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
         if (this !is Login && m.acc == null)
@@ -131,7 +129,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         else onInitializationComplete(adsInitStatus!!)
     }
 
-    fun initAdmob() {
+    private fun initAdmob() {
         retryForAd = 0
         MobileAds.initialize(c, this)
     }

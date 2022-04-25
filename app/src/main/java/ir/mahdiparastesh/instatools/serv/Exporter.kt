@@ -108,8 +108,9 @@ class Exporter : ForegroundService() {
             if (actVid && dm.animated_media != null) {
                 media[dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 3)
                 continue; }
-            if (opt?.voice == 0 && dm.voice_media != null) {
-                media[dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 2)
+            if (dm.voice_media != null) {
+                if (opt?.voice == 0 && dm.voice_media.media != null)
+                    media[dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 2)
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip

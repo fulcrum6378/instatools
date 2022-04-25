@@ -223,7 +223,8 @@ class Dm(
 
     class Voice(
         //val is_shh_mode: Boolean,
-        val media: VoiceMedia,
+        val media: VoiceMedia?,
+        //val media_type: Float?,
         //val replay_expiring_at_us: Any?,
         //val seen_count: Float,
         //val seen_user_ids: Array<Any>,
