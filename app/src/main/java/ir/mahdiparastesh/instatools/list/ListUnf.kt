@@ -63,10 +63,10 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)
             }.show()
         }
-        h.b.root.setOnLongClickListener {
+        /*h.b.root.setOnLongClickListener {
             c.m.unfollowers.value?.getOrNull(h.layoutPosition)?.also { u -> toggleFav(u) }
             true
-        }
+        }*/ // confused with unfollowing
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             if (!u.priv) unfollow(u)

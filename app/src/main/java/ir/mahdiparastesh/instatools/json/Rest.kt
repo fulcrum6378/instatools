@@ -19,8 +19,8 @@ open class Rest {
         //val follower_count: Float?,
         //val following_count: Float?,
         //val following_tag_count: Float?,
-        val friendship_status: Friendship?, // INFO appears to lack this
-        val full_name: String?, // rarely nullable
+        //val friendship_status: Friendship?, // INFO lacks this
+        val full_name: String?, // INFO lacks this
         //val has_anonymous_profile_picture: Boolean?,
         //val has_guides: Boolean?,
         //val has_highlight_reels: Boolean?,
@@ -79,7 +79,7 @@ open class Rest {
 
     //class Friendships(val friendship_statuses: Map<String, Friendship>) : Rest()
 
-    class Friendship(
+    /*class Friendship(
         val following: Boolean,
         //val incoming_request: Boolean,
         //val is_bestie: Boolean,
@@ -87,7 +87,7 @@ open class Rest {
         //val is_private: Boolean,
         //val is_restricted: Boolean,
         //val outgoing_request: Boolean,
-    )
+    )*/
 
     class InboxPage(
         //val has_pending_top_requests: Boolean,
@@ -100,7 +100,7 @@ open class Rest {
     class InboxThread(val thread: Dm.DmThread) : Rest()
 
     open class DynamicReelsList : Rest() {
-        var broadcast: Array<Any?>? = null
+        //var broadcast: Array<Any?>? = null
     }
 
     class Story(val reel: StoryReel?) : DynamicReelsList()
@@ -111,7 +111,7 @@ open class Rest {
 
     class Highlights(
         override val tray: Array<HighlightReel>,
-        val show_empty_state: Boolean,
+        //val show_empty_state: Boolean,
     ) : Rest(), TrayWrapper<HighlightReel>
 
     class Reels<R>(
@@ -154,7 +154,7 @@ open class Rest {
         //val is_pinned_highlight: Boolean,
         items: Array<Media>?,
         val media_count: Float,
-        val media_ids: Array<String>?,
+        //val media_ids: Array<String>?,
         //val prefetch_count: Double,
         //val ranked_position: Double,
         //val seen_ranked_position: Double,
@@ -162,7 +162,7 @@ open class Rest {
         user: User
     ) : Reel(items, user, false)
 
-    class HighlightCover(val cropped_image_version: Media.Candidate, val crop_rect: Any?)
+    class HighlightCover(val cropped_image_version: Media.Candidate/*, val crop_rect: Any?*/)
 
     class Search(
         //val places: Array<HashMap<String, *>>,
@@ -174,10 +174,10 @@ open class Rest {
 
     class ItemUser(val position: Float, val user: User)
 
-    class Signing(val login_nonce: String?) : Rest()
+    class Signing/*(val login_nonce: String?)*/ : Rest()
 
     class DoFollow(
-        val result: String?,
+        //val result: String?,
         //val message: String?, // e.g.: "feedback_required"
         val spam: Boolean?,
         //val feedback_title: String?, // e.g.: "Try again later"

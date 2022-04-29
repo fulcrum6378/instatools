@@ -15,6 +15,8 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
+import androidx.core.view.forEachIndexed
+import androidx.core.view.get
 import androidx.media2.player.MediaPlayer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,6 +44,7 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.areEnabled
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -209,7 +212,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         if (!method.img) {
             bi.incImage.isChecked = false
             bi.incImage.isEnabled = false
-            bi.quaImage.forEach { it.isEnabled = false }
+            bi.quaImage.areEnabled(false)
             bi.quaImage.clearCheck()
         } else bi.incImage.setOnCheckedChangeListener(object :
             CompoundButton.OnCheckedChangeListener {
@@ -223,19 +226,28 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     wasCheckedItem = bi.quaImage.checkedRadioButtonId
                     bi.quaImage.clearCheck()
                 }
+                bi.quaImage.areEnabled(isChecked)
             }
         })
         if (!method.vid) {
             bi.incVideo.isChecked = false
-            if (!method.img) bi.incVideo.isEnabled = false
-            bi.quaVideo.forEach { it.isEnabled = false }
             bi.quaVideo.clearCheck()
+            if (!method.img) {
+                bi.incVideo.isEnabled = false
+                bi.quaVideo.areEnabled(false)
+            } else {
+                bi.quaVideo.forEachIndexed { i, v ->
+                    if (i != 0) v.isEnabled = false
+                    else (v as MaterialRadioButton).isChecked = bi.incVideo.isChecked
+                }
+                bi.incVideo.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) bi.quaVideo.check(Exportable.Options.quaVideo[3])
+                    else bi.quaVideo.clearCheck()
+                    bi.quaVideo[0].isEnabled = isChecked
+                }
+            }
             bi.incVoice.isChecked = false
             bi.incVoice.isEnabled = false
-            if (method.img) bi.incVideo.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) bi.quaVideo.check(Exportable.Options.quaVideo[3])
-                else bi.quaVideo.clearCheck()
-            }
         } else bi.incVideo.setOnCheckedChangeListener(object :
             CompoundButton.OnCheckedChangeListener {
             var wasCheckedItem = bi.quaVideo.checkedRadioButtonId
@@ -248,6 +260,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     wasCheckedItem = bi.quaVideo.checkedRadioButtonId
                     bi.quaVideo.clearCheck()
                 }
+                bi.quaVideo.areEnabled(isChecked)
             }
         })
 

@@ -19,6 +19,7 @@ import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -38,8 +39,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
+import kotlin.math.abs
 
 class UiTools {
     companion object {
@@ -260,5 +263,18 @@ class UiTools {
             TypedValue().apply {
                 theme.resolveAttribute(attr, this, true)
             }.data
+
+        fun RadioGroup.areEnabled(bb: Boolean) = forEach { it.isEnabled = bb }
+
+        fun Profile.Post.thumb(nearest: Double = 0.0): String {
+            if (thumbnail_resources == null) return thumbnail_src
+            var selected: Profile.Src? = null
+            for (src in thumbnail_resources)
+                if (selected == null)
+                    selected = src
+                else if (abs(selected.config_width - nearest) < abs(src.config_width - nearest))
+                    selected = src
+            return selected?.src ?: thumbnail_src
+        }
     }
 }

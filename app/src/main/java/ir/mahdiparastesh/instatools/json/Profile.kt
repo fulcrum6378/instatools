@@ -118,7 +118,7 @@ class Profile(
         //val edge_media_to_caption: EdgesCaption,
         //val edge_media_to_comment: Map<String, *>,
         //val edge_media_to_tagged_user: EdgeTaggedUsers,
-        //val edge_sidecar_to_children: EdgeSlides?,
+        val edge_sidecar_to_children: EdgeSlides?,
         //val fact_check_information: Any?,
         //val fact_check_overall_rating: Any?,
         //val felix_profile_grid_crop: Any?,
@@ -135,8 +135,8 @@ class Profile(
         //val sharing_friction_info: Map<String, *>,
         val shortcode: String,
         //val taken_at_timestamp: Double,
-        //val thumbnail_resources: Array<Src>,
-        val thumbnail_src: String,
+        val thumbnail_resources: Array<Src>?, // nullable in SAVED but not SAVED_FIRST
+        val thumbnail_src: String, // biggest thumbnail
         //val tracking_token: String,
         //val video_url: String,
         //val video_view_count: Double,
@@ -150,13 +150,13 @@ class Profile(
 
     //class Caption(val text: String)
 
-    //class Src(val src: String, val config_width: Double, val config_height: Double)
+    class Src(val src: String, val config_width: Double/*, val config_height: Double*/)
 
-    //class EdgeSlides(val edges: Array<EdgeSlide>)
+    class EdgeSlides(val edges: Array<EdgeSlide>)
 
-    //class EdgeSlide(val node: Slide)
+    class EdgeSlide(val node: Slide)
 
-    /*class Slide(
+    class Slide(
         //val __typename: String,
         val id: String,
         //val gating_info: Any?,
@@ -168,5 +168,5 @@ class Profile(
         //val dimensions: Map<String, Double>?,
         //val display_url: String, // USE THIS
         //val display_resources: Array<Src>
-    )*/
+    )
 }

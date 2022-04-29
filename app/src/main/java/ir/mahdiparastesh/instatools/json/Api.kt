@@ -107,7 +107,7 @@ class Api<JSON>(
         SAVED(
             "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
-        ),
+        ),// This method brings posts with large thumbnails and no other candidates
         SAVE("https://www.instagram.com/web/save/%s/save/"),
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
