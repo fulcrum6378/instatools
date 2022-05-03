@@ -70,7 +70,7 @@ class Friend(
 
         fun ArrayList<Friend>.specialSort() {
             sortBy { it.user }
-            sortByDescending { it.unfollowedMeAt?.toInt() ?: 0 }
+            sortBy { it.unfollowedMeAt?.toInt() ?: 0 }
             sortBy { it.inFav }
         }
     }

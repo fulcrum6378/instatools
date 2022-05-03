@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.system.exitProcess
 
 interface Persistent {
@@ -49,7 +50,7 @@ interface Persistent {
         if (!isPathAccessible(c, path)) return
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(path)) ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            val newSet = mutableSetOf<String>()
+            val newSet = CopyOnWriteArraySet<String>()
             stem.walk().forEach { if (it.isFile && it.name != null) newSet.add(it.name!!) }
             withContext(Dispatchers.Main) {
                 m.files.value = newSet

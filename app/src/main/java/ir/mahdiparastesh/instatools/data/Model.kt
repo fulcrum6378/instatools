@@ -9,10 +9,11 @@ import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest.Reel
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 class Model : ViewModel() {
     var acc: Account? = null
-    val files = MutableLiveData<MutableSet<String>?>(null)
+    val files = MutableLiveData<CopyOnWriteArraySet<String>?>(null)
 
     // Login
     var loginLoaded = false

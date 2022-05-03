@@ -119,15 +119,20 @@ class PageUnf : BasePageMain() {
         super.onViewCreated(view, savedInstanceState)
         if (Main.guest) return
 
-        NotificationManagerCompat.from(c).cancel(CH_NEW_ITEMS_ID)
         if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
         else load(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        removeNtf()
     }
 
     override fun onRefresh() {
         if (thread?.active == true) return
         b.rv.adapter = null
         thread = Inquiry().also { it.start() }
+        removeNtf()
     }
 
     private fun load(initial: Boolean) {
@@ -142,6 +147,10 @@ class PageUnf : BasePageMain() {
         super.onLoaded(isEmpty, asGuest)
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
+    }
+
+    private fun removeNtf() {
+        NotificationManagerCompat.from(c).cancel(CH_NEW_ITEMS_ID)
     }
 
 

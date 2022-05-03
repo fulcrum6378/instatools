@@ -162,7 +162,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.extras?.getInt(EXTRA_TURN_TO_PAGE)?.let {
-            turnToPage(it)
+            if (::b.isInitialized) turnToPage(it)
             if (it == 0) NotificationManagerCompat.from(c).cancel(PageUnf.CH_NEW_ITEMS_ID)
         }
     }
