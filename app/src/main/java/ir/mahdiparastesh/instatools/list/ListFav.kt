@@ -41,12 +41,15 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
             Thread {
                 if (f.tempDeleted) c.dao.deleteFavourite(f) else c.dao.addFavourite(f)
             }.start()
-            h.b.unFav.setImageResource(
-                if (f.tempDeleted) R.drawable.non_favourite else R.drawable.favourite
-            )
+            h.b.updateIcon(f.tempDeleted)
         }
+        h.b.updateIcon(fav.tempDeleted)
         h.b.sep.vis(i < itemCount - 1)
     }
 
     override fun getItemCount() = c.m.fav?.size ?: 0
+
+    private fun ListFavBinding.updateIcon(tempDeleted: Boolean) {
+        unFav.setImageResource(if (tempDeleted) R.drawable.non_favourite else R.drawable.favourite)
+    }
 }

@@ -3,11 +3,11 @@ package ir.mahdiparastesh.instatools.more
 import ir.mahdiparastesh.instatools.json.Media
 import kotlin.math.abs
 
-@Suppress("MemberVisibilityCanBePrivate", "UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST")
 abstract class Versioned(
     val image_versions2: Media.ImageVersions2?,
-    val original_height: Float?,
-    val original_width: Float?,
+    private val original_height: Float?,
+    private val original_width: Float?,
     val video_versions: Array<Media.VideoVersion>?,
     var carousel_media: Array<Media.CarouselMedia>?
 ) {
@@ -51,7 +51,7 @@ abstract class Versioned(
         return ret
     }
 
-    fun nearestOfList(list: Array<Media.Candidate>, ideal: Float): String? {
+    private fun nearestOfList(list: Array<Media.Candidate>, ideal: Float): String? {
         if (original_width == null || original_height == null) return null
         var nW = original_width
         var nH = original_height

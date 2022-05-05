@@ -162,7 +162,7 @@
     <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
     <string name="stAutoDeleteEmptyDirs">Automatically delete empty folders</string>
     <string name="stHelp">Help</string>
-    <string name="stHelpMessage">The Settings of This Account inherit the Global Settings, wherever you have left a setting of this account empty.</string>
+    <string name="stHelpMessage">The Settings of This Account inherit the Global Settings, wherever you have leave a setting of this account empty.</string>
 
 
     <!-- Queuer -->

@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -85,9 +86,12 @@ class Favourites : BaseActivity() {
         FavLoader(this).start()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun adapt() {
-        if (m.fav!!.isNotEmpty()) b.rv.adapter = ListFav(this@Favourites)
-        else {
+        if (m.fav!!.isNotEmpty()) {
+            if (b.rv.adapter == null) b.rv.adapter = ListFav(this@Favourites)
+            else b.rv.adapter?.notifyDataSetChanged()
+        } else {
             b.rv.vis(false)
             b.empty.vis(true)
         }

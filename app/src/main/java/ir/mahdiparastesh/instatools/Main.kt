@@ -43,20 +43,19 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlin.reflect.KClass
 
-@Suppress("MemberVisibilityCanBePrivate")
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
-    lateinit var toggleNav: ActionBarDrawerToggle
-    lateinit var bh: MainNavHeaderBinding
-    var anTheme: ValueAnimator? = null
+    private lateinit var toggleNav: ActionBarDrawerToggle
+    private lateinit var bh: MainNavHeaderBinding
+    private var anTheme: ValueAnimator? = null
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
-    val colorBG = MutableLiveData<Int?>(null)
+    private val colorBG = MutableLiveData<Int?>(null)
     val exportLauncher = launcher { page3?.onActivityResult(it) }
 
     var searchInput: SearchView.SearchAutoComplete? = null
-    var searchClose: ImageView? = null
+    private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
     var searcher: Api<Rest.Search>? = null
     var searchErrored = false

@@ -25,7 +25,7 @@ import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -185,7 +185,7 @@ class Downloads : ServiceOwnerActivity() {
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             val uri = c.sPreference(Settings.spStorage)
-            if (uri == null || !Persistent.isPathAccessible(c.c, uri)) {
+            if (uri == null || !c.c.isPathAccessible(uri)) {
                 c.goTo(Settings::class) {
                     putExtra(Settings.EXTRA_GIVE_LINK_BACK, link)
                     putExtra(Settings.EXTRA_IS_GLOBAL, true)

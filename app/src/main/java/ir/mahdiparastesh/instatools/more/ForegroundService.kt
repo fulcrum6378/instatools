@@ -23,15 +23,14 @@ import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.serv.Queuer
 import kotlin.reflect.KClass
 
-@Suppress("MemberVisibilityCanBePrivate")
 @SuppressLint("UnspecifiedImmutableFlag")
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
-    val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
-    val db: Database by dbLazy
+    private val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    private val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
     lateinit var handling: HandlerThread
-    protected var wakeLock: PowerManager.WakeLock? = null
+    private var wakeLock: PowerManager.WakeLock? = null
 
     abstract val com: ForegroundServiceCompanion
     abstract val requiresHandling: Boolean

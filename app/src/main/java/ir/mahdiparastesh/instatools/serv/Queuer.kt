@@ -37,6 +37,7 @@ class Queuer : ForegroundService() {
     private var handlingLink = false
     private var download: BaseThread? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
+    private val aliases = HashMap<String, String>()
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -65,6 +66,8 @@ class Queuer : ForegroundService() {
     override fun onCreate() {
         super.onCreate()
         dest = sPreference(Settings.spStorage)
+        Settings.loadAliases(c, gsp).forEach { (k, v) -> aliases[k] = v }
+        sp?.let { sp -> Settings.loadAliases(c, sp).forEach { (k, v) -> aliases[k] = v } }
         if (m.acc == null || dest == null) {
             finish(false); return; }
         notification(Companion, Downloads::class)
@@ -316,13 +319,13 @@ class Queuer : ForegroundService() {
     }
 
     private fun save(q: Queued, ba: ByteArray) {
-        var branch: DocumentFile?
-        val shouldBranch = bPreference(Settings.spBranching, Settings.defSpBranching)
-        if (shouldBranch) {
-            branch = stem.findFile(q.userName!!)
-            if (branch == null) branch = stem.createDirectory(q.userName!!)
-        } else branch = stem
-        if (branch == null) return
+        val branch: DocumentFile = when {
+            q.userName in aliases ->
+                DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
+            bPreference(Settings.spBranching, Settings.defSpBranching) ->
+                stem.findFile(q.userName!!) ?: stem.createDirectory(q.userName!!)
+            else -> stem
+        } ?: return
         val type = MediaType.values().find { it.inDb == q.mediaType }!!
         val fName = q.fName(type.ext)
         var leaf = branch.findFile(fName)

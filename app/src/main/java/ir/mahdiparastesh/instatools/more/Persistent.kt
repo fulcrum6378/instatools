@@ -47,7 +47,7 @@ interface Persistent {
     @MainThread
     fun checkFiles(@MainThread onEnd: () -> Unit = {}) {
         val path = sPreference(Settings.spStorage) ?: return
-        if (!isPathAccessible(c, path)) return
+        if (!c.isPathAccessible(path)) return
         val stem = DocumentFile.fromTreeUri(c, Uri.parse(path)) ?: return
         CoroutineScope(Dispatchers.IO).launch {
             val newSet = CopyOnWriteArraySet<String>()
@@ -86,13 +86,13 @@ interface Persistent {
     companion object {
         fun now() = Calendar.getInstance().timeInMillis
 
-        fun isPathAccessible(c: Context, path: String): Boolean {
-            val uri = Uri.parse(path)
-            return c.checkUriPermission(
+        fun Context.isPathAccessible(uri: Uri): Boolean =
+            checkUriPermission(
                 uri, myPid(), myUid(), Intent.FLAG_GRANT_READ_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED && c.checkUriPermission(
+            ) == PackageManager.PERMISSION_GRANTED && checkUriPermission(
                 uri, myPid(), myUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             ) == PackageManager.PERMISSION_GRANTED
-        }
+
+        fun Context.isPathAccessible(path: String) = isPathAccessible(Uri.parse(path))
     }
 }

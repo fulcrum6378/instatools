@@ -17,7 +17,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/adBanner"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        tools:ignore="NotSibling,UnknownId">
+        tools:ignore="UnknownId">
 
         <LinearLayout
             android:id="@+id/ll"
@@ -54,6 +54,27 @@
                     android:checked="true"
                     android:text="@string/stAutoDeleteEmptyDirs"
                     android:textColor="?attr/colorAccent" />
+            </LinearLayout>
+
+            <View style="@style/stSep" />
+
+            <LinearLayout style="@style/stItem">
+
+                <TextView
+                    style="@style/stItemName"
+                    android:text="@string/stAliasing" />
+
+                <ir.mahdiparastesh.instatools.view.FlatListView
+                    android:id="@+id/stAliases"
+                    style="@style/stSubItem"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp" />
+
+                <TextView
+                    android:id="@+id/stAddAlias"
+                    style="@style/stButton"
+                    android:text="@string/stAddAlias" />
             </LinearLayout>
 
             <View style="@style/stSep" />

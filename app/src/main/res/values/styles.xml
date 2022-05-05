@@ -207,6 +207,16 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="dialogViewGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+    </style>
+
 
     <!-- Main -->
     <style name="expOptItem">
@@ -335,6 +345,15 @@
         <item name="android:paddingBottom">12dp</item>
         <item name="android:background">@drawable/st_button</item>
         <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="stField" parent="stSubItem">
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="stSpinner" parent="stSubItem">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <style name="stSep" parent="sep">
