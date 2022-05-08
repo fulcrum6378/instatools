@@ -28,6 +28,9 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Suppress("UNCHECKED_CAST")
@@ -175,11 +178,11 @@ class PageUnf : BasePageMain() {
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
                 handler, onError = { interrupt() }
             ) { flw ->
-                if (c.m.acc != null) Thread {
+                if (c.m.acc != null) CoroutineScope(Dispatchers.IO).launch {
                     for (u in flw.users) {
-                        if (!c.db.isOpen) return@Thread
+                        if (!c.db.isOpen) return@launch
                         Friend.add(
-                            c.dao, this, Friend(
+                            c.dao, this@Inquiry, Friend(
                                 u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
                                 theFollowers, !theFollowers
                             ), theFollowers
@@ -188,7 +191,7 @@ class PageUnf : BasePageMain() {
                     if (flw.next_max_id == null) {
                         if (theFollowers) allFollow(theFollowers = false) else ended()
                     } else allFollow(flw.next_max_id, theFollowers)
-                }.start()
+                }
             }
         }
 

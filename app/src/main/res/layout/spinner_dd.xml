@@ -8,5 +8,5 @@
     android:paddingEnd="17dp"
     android:paddingBottom="15dp"
     android:textColor="?attr/colorAccent"
-    android:textSize="@dimen/menuFont"
+    android:textSize="@dimen/stPathFont"
     tools:viewBindingIgnore="true" />

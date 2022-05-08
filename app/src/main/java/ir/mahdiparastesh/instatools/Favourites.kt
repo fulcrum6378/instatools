@@ -107,7 +107,10 @@ class Favourites : BaseActivity() {
     class FavLoader(private val c: BaseActivity) : Thread() {
         override fun run() {
             c.dao.deleteExportables()
-            runBlocking { c.m.fav = ArrayList(c.dao.favourites()) }
+            runBlocking {
+                c.m.fav = ArrayList(c.dao.favourites())
+                c.m.fav?.sortBy { it.user }
+            }
             handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }
     }

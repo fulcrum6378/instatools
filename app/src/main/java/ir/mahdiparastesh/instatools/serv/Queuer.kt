@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
@@ -334,7 +335,7 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
-        m.files.value?.add(fName)
+        m.files?.add(fName)
         gsp.edit().putLong(
             Settings.spDownloadCount, gsp.getLong(Settings.spDownloadCount, 0L) + 1L
         ).apply()
@@ -357,6 +358,7 @@ class Queuer : ForegroundService() {
                 for (branch in stem.listFiles())
                     if (branch.isDirectory && branch.listFiles().isEmpty())
                         branch.delete()
+                StorageCache.saveStorageCache(this@Queuer)
             }.onSuccess {
                 super.destroy()
             }.onFailure {

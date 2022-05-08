@@ -101,8 +101,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             super.onBackPressed()
             finish()
             return; }
-
-        if (m.files.value == null) checkFiles()
     }
 
     override fun onNewIntent(intent: Intent) {

@@ -21,7 +21,7 @@ abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
             }
 
             override fun isStored(): Boolean {
-                val theirs = c.m.files.value?.filter { it.startsWith("${med.user.username}_") }
+                val theirs = c.m.files?.filter { it.startsWith("${med.user.username}_") }
                     ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
                     ?: return false
                 return if (med.carousel_media != null)

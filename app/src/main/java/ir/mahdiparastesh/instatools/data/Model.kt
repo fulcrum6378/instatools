@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 
 class Model : ViewModel() {
     var acc: Account? = null
-    val files = MutableLiveData<CopyOnWriteArraySet<String>?>(null)
+    var files: CopyOnWriteArraySet<String>? = null
 
     // Login
     var loginLoaded = false

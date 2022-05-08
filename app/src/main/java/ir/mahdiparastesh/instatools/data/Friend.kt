@@ -24,8 +24,8 @@ class Friend(
     fun toFavourite() = Favourite(id, user, name, pict, priv)
 
     companion object {
-        @AvoidUiThread
-        fun add(
+        @Suppress("RedundantSuspendModifier")
+        suspend fun add(
             dao: Database.DAO, thread: PageUnf.Inquiry, newer: Friend, inFollowersList: Boolean
         ) {
             try {
@@ -74,6 +74,4 @@ class Friend(
             sortBy { it.inFav }
         }
     }
-
-    annotation class AvoidUiThread
 }

@@ -8,18 +8,10 @@ import android.net.Uri
 import android.os.Process
 import android.os.Process.myPid
 import android.os.Process.myUid
-import androidx.annotation.MainThread
-import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Login
-import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Model
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
-import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.system.exitProcess
 
 interface Persistent {
@@ -43,21 +35,6 @@ interface Persistent {
 
     fun bPreference(key: String, def: Boolean): Boolean = sp?.getBoolean(key, def) ?: def
     // Unavoidably gsp was left unused for good!
-
-    @MainThread
-    fun checkFiles(@MainThread onEnd: () -> Unit = {}) {
-        val path = sPreference(Settings.spStorage) ?: return
-        if (!c.isPathAccessible(path)) return
-        val stem = DocumentFile.fromTreeUri(c, Uri.parse(path)) ?: return
-        CoroutineScope(Dispatchers.IO).launch {
-            val newSet = CopyOnWriteArraySet<String>()
-            stem.walk().forEach { if (it.isFile && it.name != null) newSet.add(it.name!!) }
-            withContext(Dispatchers.Main) {
-                m.files.value = newSet
-                onEnd()
-            }
-        }
-    }
 
 
     fun needAuthentication() {

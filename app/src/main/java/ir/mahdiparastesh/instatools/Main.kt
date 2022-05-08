@@ -24,6 +24,7 @@ import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
@@ -155,6 +156,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
 
         // Miscellaneous
+        if (m.files == null) StorageCache.load(this)
         Favourites.FavLoader(this).start()
     }
 

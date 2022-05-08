@@ -24,11 +24,14 @@ class Account(
     }
 
     companion object {
-        fun load(c: Context): ArrayList<Account> = if (Secured(c).exists()) {
-            val data: ByteArray
-            FileInputStream(Secured(c)).use { data = it.readBytes() }
-            ArrayList(Gson().fromJson(String(data), Array<Account>::class.java).toList())
-        } else arrayListOf()
+        fun load(c: Context): ArrayList<Account> {
+            val secured = Secured(c)
+            return if (secured.exists()) {
+                val data: ByteArray
+                FileInputStream(secured).use { data = it.readBytes() }
+                ArrayList(Gson().fromJson(String(data), Array<Account>::class.java).toList())
+            } else arrayListOf()
+        }
 
         fun selected(
             c: Persistent, list: List<Account> = load(c.c), guestIfNotExists: Boolean = true

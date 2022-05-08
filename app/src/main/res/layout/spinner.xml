@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingEnd="15sp"
     android:textColor="?attr/colorAccent"
-    android:textSize="@dimen/menuFont"
+    android:textSize="@dimen/stPathFont"
     android:textStyle="bold"
+    tools:ignore="RtlSymmetry"
     tools:viewBindingIgnore="true" />
