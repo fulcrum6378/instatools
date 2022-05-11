@@ -62,6 +62,7 @@
     <string name="addShortcut">Adicionar atalho</string>
     <string name="next">Próximo</string>
     <string name="prev">Anterior</string>
+    <string name="save">Salve</string>
 
     <!-- Login -->
     <string name="addAccount">Adicionar Conta</string>
@@ -153,6 +154,11 @@
     <string name="aSettings">Configurações Locais</string>
     <string name="stDlPath">Pasta principal de download</string>
     <string name="stBranching">Divida os arquivos baixados em ramificações</string>
+    <string name="addFolder">Adicionar pasta</string>
+    <string name="stAliasing">Atribuir pastas específicas para perfis</string>
+    <string name="stAddAlias">Adicionar nova exceção</string>
+    <string name="stAliasingDesc">Qualquer arquivo baixado deste perfil será salvo nesta pasta.</string>
+    <string name="stAliasProfile">Digite o nome de usuário do perfil</string>
     <string name="stCache">Cache (tamanho atual: %s)</string>
     <string name="stClearCache">Limpar Cache</string>
     <string name="stUserData">Dados do Usuário</string>

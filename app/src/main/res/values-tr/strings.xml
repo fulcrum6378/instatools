@@ -62,6 +62,7 @@
     <string name="addShortcut">Kısayol ekle</string>
     <string name="next">Sonraki</string>
     <string name="prev">Öncesi</string>
+    <string name="save">Kaydetmek</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -153,6 +154,11 @@
     <string name="aSettings">Bu Hesabın Ayarları</string>
     <string name="stDlPath">Ana indirme klasörü</string>
     <string name="stBranching">İndirilen dosyaları dallara ayırın</string>
+    <string name="addFolder">Klasörü eklemek</string>
+    <string name="stAliasing">Profiller için belirli klasörler atayın</string>
+    <string name="stAddAlias">Yeni istisna ekle</string>
+    <string name="stAliasingDesc">Bu profilden indirilen herhangi bir dosya bu klasöre kaydedilecektir.</string>
+    <string name="stAliasProfile">Profil kullanıcı adını girin</string>
     <string name="stCache">Önbelleğe alma (geçerli boyut: %s)</string>
     <string name="stClearCache">Önbelleği Temizle</string>
     <string name="stUserData">Kullanıcı bilgisi</string>

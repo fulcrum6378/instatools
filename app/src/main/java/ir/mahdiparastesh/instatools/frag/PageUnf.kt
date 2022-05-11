@@ -28,10 +28,7 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 @Suppress("UNCHECKED_CAST")
 class PageUnf : BasePageMain() {
@@ -195,15 +192,13 @@ class PageUnf : BasePageMain() {
             }
         }
 
-        private fun ended() {
+        private suspend fun ended() {
             if (!active || c.m.acc == null) return
-            runBlocking {
-                oldFriends.filter { it.id !in newFriends.map { f -> f.id } }
-                    .forEach { c.dao.deleteFriend(it) }
-                newFriends.forEach { newer ->
-                    if (oldFriends.find { it.id == newer.id }?.follows == true && !newer.follows)
-                        c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
-                }
+            oldFriends.filter { it.id !in newFriends.map { f -> f.id } }
+                .forEach { c.dao.deleteFriend(it) }
+            newFriends.forEach { newer ->
+                if (oldFriends.find { it.id == newer.id }?.follows == true && !newer.follows)
+                    c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
             }
             if (!active || c.m.acc == null) return
             val newUnf = newFriends.filter {
@@ -212,14 +207,14 @@ class PageUnf : BasePageMain() {
                     ?: 0L))
             }
             if (newUnf.isNotEmpty()) {
-                gotNewOnes(newUnf.size)
+                withContext(Dispatchers.Main) { gotNewOnes(newUnf.size) }
                 // HIGHLIGHT THEM IF YOU WANT
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
         }
 
-        @SuppressLint("UnspecifiedImmutableFlag")
+        @SuppressLint("InlinedApi")
         private fun gotNewOnes(num: Int) {
             if (!active || c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -240,7 +235,7 @@ class PageUnf : BasePageMain() {
                         PendingIntent.getActivity(
                             c.c, 0, Intent(c.c, Main::class.java)
                                 .apply { putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, 0) },
-                            PendingIntent.FLAG_UPDATE_CURRENT
+                            ForegroundService.ntfMutability(PendingIntent.FLAG_IMMUTABLE)
                         )
                     )
                 }.build())

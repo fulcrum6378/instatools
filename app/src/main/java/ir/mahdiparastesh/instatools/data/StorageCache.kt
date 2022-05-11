@@ -31,9 +31,8 @@ class StorageCache {
                 }.onSuccess {
                     if (data == null) {
                         checkStorage(c); return@onSuccess; }
-                    c.m.files = CopyOnWriteArraySet(
-                        Gson().fromJson<Set<String>>(String(data!!), Set::class.java)
-                    )
+                    c.m.files = Gson().fromJson<Set<String>>(String(data!!), Set::class.java)
+                        ?.let { CopyOnWriteArraySet(it) }
                     loading = false
                 }.onFailure { withContext(Dispatchers.Main) { checkStorage(c) } }
             } else checkStorage(c)

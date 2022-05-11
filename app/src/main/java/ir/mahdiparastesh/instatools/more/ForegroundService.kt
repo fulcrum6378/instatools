@@ -23,7 +23,6 @@ import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.serv.Queuer
 import kotlin.reflect.KClass
 
-@SuppressLint("UnspecifiedImmutableFlag")
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private var mViewModelStore = ViewModelStore()
     private val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
@@ -49,6 +48,11 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                 c.stopService(Intent(c, service.java).apply { action = ACTION_STOP })
             }
         }
+
+        fun ntfMutability(@SuppressLint("InlinedApi") flag: Int = PendingIntent.FLAG_MUTABLE) =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                flag or PendingIntent.FLAG_UPDATE_CURRENT
+            else flag
     }
 
     abstract class ForegroundServiceCompanion(val CH_ID: Int, private val klass: KClass<*>) :
@@ -62,8 +66,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         abstract val ntfActions: Array<Pair<String, Int>>
 
         open fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
-            c, 0, Intent(c, klass.java).apply { action = code },
-            PendingIntent.FLAG_CANCEL_CURRENT
+            c, 0, Intent(c, klass.java).apply { action = code }, ntfMutability()
         )
     }
 
@@ -124,7 +127,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                     c, 0, Intent(c, openActivity.java).apply {
                         if (turnToPage != null)
                             putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, turnToPage)
-                    }, PendingIntent.FLAG_UPDATE_CURRENT
+                    }, ntfMutability()
                 )
             )
             for (a in com.ntfActions)

@@ -67,6 +67,7 @@
     <string name="addShortcut">Добавьте ярлык</string>
     <string name="next">Следующий</string>
     <string name="prev">Предыдущий</string>
+    <string name="save">Сохранять</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -158,6 +159,11 @@
     <string name="aSettings">Локальные настройки</string>
     <string name="stDlPath">Основная папка загрузки</string>
     <string name="stBranching">Разделите загруженные файлы на ветки</string>
+    <string name="addFolder">Добавить папку</string>
+    <string name="stAliasing">Назначение конкретных папок для профилей</string>
+    <string name="stAddAlias">Добавить новое исключение</string>
+    <string name="stAliasingDesc">Любой файл, загруженный из этого профиля, будет сохранен в этой папке.</string>
+    <string name="stAliasProfile">Введите имя пользователя профиля</string>
     <string name="stCache">Кэширование (текущий размер: %s)</string>
     <string name="stClearCache">Очистить кэш</string>
     <string name="stUserData">Данные пользователя</string>

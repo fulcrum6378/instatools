@@ -379,7 +379,12 @@ body { background: #FCFCFC; }
                         }
                     }
                 }
-                DocumentsContract.moveDocument(c.c.contentResolver, tmp.uri, tmpDir.uri, folder.uri)
+                try {
+                    DocumentsContract.moveDocument(
+                        c.c.contentResolver, tmp.uri, tmpDir.uri, folder.uri
+                    )
+                } catch (e: SecurityException) {
+                }
             } else {
                 val file = folder.createFile("text/html", "${page + 1}.html")!!
                 c.c.contentResolver.openFileDescriptor(file.uri, "w")?.use { des ->

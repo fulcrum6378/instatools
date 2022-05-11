@@ -62,6 +62,7 @@
     <string name="addShortcut">Add shortcut</string>
     <string name="next">Next</string>
     <string name="prev">Previous</string>
+    <string name="save">Save</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -153,6 +154,11 @@
     <string name="aSettings">Settings of This Account</string>
     <string name="stDlPath">Main download folder</string>
     <string name="stBranching">Divide downloaded files into branches</string>
+    <string name="stAliasing">Assign specific folders for profiles</string>
+    <string name="stAddAlias">Add new exception</string>
+    <string name="stAliasingDesc">Any file downloaded from this profile will be saved into this folder.</string>
+    <string name="stAliasProfile">Enter profile user-name</string>
+    <string name="addFolder">Add Folder</string>
     <string name="stCache">Caching (current size: %s)</string>
     <string name="stClearCache">Clear Cache</string>
     <string name="stUserData">User Data</string>

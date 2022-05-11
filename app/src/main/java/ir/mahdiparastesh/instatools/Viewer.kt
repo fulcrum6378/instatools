@@ -170,13 +170,16 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             }
             R.id.vtShortcut -> m.vwUser?.also {
                 ShortcutManagerCompat.requestPinShortcut(
-                    c, ShortcutInfoCompat.Builder(c, it.username).setIntent(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.PROFILE.format(user)))
-                            .setPackage(UiTools.INSTA_PACKAGE)
-                    ).setIcon(
-                        IconCompat.createWithBitmap((page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap)
-                    ).setShortLabel(it.full_name)
-                        .build(), null
+                    c, ShortcutInfoCompat.Builder(c, it.username).apply {
+                        setIntent(
+                            Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.PROFILE.format(user)))
+                                .setPackage(UiTools.INSTA_PACKAGE)
+                        )
+                        val bmp = (page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap
+                        if (bmp != null) setIcon(IconCompat.createWithBitmap(bmp))
+                        // TODO: else unknown person icon
+                        setShortLabel(it.full_name.ifBlank { it.username })
+                    }.build(), null
                 )
             }
         }

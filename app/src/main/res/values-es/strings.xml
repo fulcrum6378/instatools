@@ -62,6 +62,7 @@
     <string name="addShortcut">Añadir atajo</string>
     <string name="next">Próximo</string>
     <string name="prev">Previo</string>
+    <string name="save">Guardar</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -153,6 +154,11 @@
     <string name="aSettings">Ajustes Locales</string>
     <string name="stDlPath">Carpeta de descarga principal</string>
     <string name="stBranching">Divide los archivos descargados en ramas</string>
+    <string name="stAliasing">Asigne carpetas específicas para perfiles</string>
+    <string name="stAddAlias">Agregar nueva excepción</string>
+    <string name="stAliasingDesc">Cualquier archivo descargado de este perfil se guardará en esta carpeta.</string>
+    <string name="stAliasProfile">Ingrese el nombre de usuario del perfil</string>
+    <string name="addFolder">Agregar carpeta</string>
     <string name="stCache">Almacenamiento en caché (tamaño actual: %s)</string>
     <string name="stClearCache">Limpiar cache</string>
     <string name="stUserData">Datos del usuario</string>

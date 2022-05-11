@@ -70,6 +70,7 @@
     <string name="addShortcut">اضافه کردن میانبر</string>
     <string name="next">بعدی</string>
     <string name="prev">قبلی</string>
+    <string name="save">ذخیره</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -161,6 +162,11 @@
     <string name="aSettings">تنظیمات این اکانت</string>
     <string name="stDlPath">پوشه اصلی دانلود</string>
     <string name="stBranching">شاخه شاخه کردن دانلودها</string>
+    <string name="addFolder">افزودن فولدر</string>
+    <string name="stAliasing">تعیین فولدر های مخصوص برای پروفایل ها</string>
+    <string name="stAddAlias">افزودن استثناء</string>
+    <string name="stAliasingDesc">هر چیزی که از این پروفایل دانلود شود، درون این فولدر ذخیره خواهد شد.</string>
+    <string name="stAliasProfile">آیدی یک پروفایل را وارد کنید</string>
     <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
     <string name="stClearCache">پاک کردن حافظه پنهان</string>
     <string name="stUserData">اطلاعات من</string>
