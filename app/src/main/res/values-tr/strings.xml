@@ -182,6 +182,9 @@
     <string name="exporterChannelDesc">Doğrudan mesajları dışa aktarır</string>
     <string name="exporterTitle">Dışa aktarılıyor&#8230;</string>
     <string name="exporterStop">Iptal</string>
+    <string name="exporterFetchTexts">%s\'un sohbetindeki metinler getiriliyor&#8230;</string>
+    <string name="exporterFetchMedia">%s\'un sohbetindeki medya getiriliyor&#8230;</string>
+    <string name="exporterWriting">%s\'un sohbeti depoya yazılıyor&#8230;</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Çok sayıda hesabı yavaş yavaş takip edin&#8230;</string>

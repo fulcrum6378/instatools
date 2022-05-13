@@ -8,6 +8,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
+import java.io.File
 
 @Entity
 class Exportable(
@@ -18,7 +19,8 @@ class Exportable(
     var uri: String? = null,
     @Ignore @Transient var threadData: Dm.DmThread? = null,
     @Ignore @Transient var opt: Options? = null,
-    @Ignore @Transient var media: HashMap<String, Exporter.Downloadable> = hashMapOf()
+    @Ignore @Transient var media: HashMap<String, Exporter.Downloadable> = hashMapOf(),
+    @Ignore @Transient var cacheDir: File? = null,
 ) {
     @PrimaryKey
     var addedAt: Long = Persistent.now()

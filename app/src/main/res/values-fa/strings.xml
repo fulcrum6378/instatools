@@ -23,8 +23,8 @@
     <string name="yes">آره</string>
     <string name="unsave">Unsave</string>
     <string name="export">استخراج</string>
-    <string name="exportHtml">استخراج در اچ تی ام ال</string>
-    <string name="exportPdf">استخراج در پی دی اف</string>
+    <string name="exportHtml">استخراج برای مرورگر (HTML)</string>
+    <string name="exportPdf">استخراج در PDF</string>
     <string name="exportTxt">استخراج در فایل تکست</string>
     <string name="exportOptions">گزینه های استخراج (%s)</string>
     <string name="backgroundTasks">کار های پشت صحنه</string>
@@ -190,6 +190,9 @@
     <string name="exporterChannelDesc">دایرکت ها را برایتان استخراج می کند</string>
     <string name="exporterTitle">در حال استخراج&#8230;</string>
     <string name="exporterStop">ایست</string>
+    <string name="exporterFetchTexts">درحال دریافت متن های چت %s&#8230;</string>
+    <string name="exporterFetchMedia">درحال دریافت صداو تصاویر در چت %s&#8230;</string>
+    <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">فالو کردن دسته جمعی&#8230;</string>

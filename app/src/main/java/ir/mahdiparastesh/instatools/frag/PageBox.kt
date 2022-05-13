@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -24,6 +25,7 @@ import com.android.volley.NetworkResponse
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -282,6 +284,9 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = method.mime
+                        //if (method.asTree) "com.android.externalstorage.documents"
+                        // exclude "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2"
+                        // I didn't find an easy way to exclude the non-compatible hosts.
                         putExtra(
                             Intent.EXTRA_TITLE,
                             "${thread.exported()}${if (!method.asTree) "." + method.ext else ""}"
@@ -343,17 +348,18 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
     class FetchOfThread(
         val c: Persistent, private val threadId: String, private val oldestId: String,
-        val handler: Handler?
+        val handler: Handler?, private val limit: Int = 20
     ) : BaseThread() {
         override fun run() {
             super.run()
             Api<Rest.InboxThread>(
-                c, Api.Type.DIRECT.url.format(threadId, oldestId), Rest.InboxThread::class,
+                c, Api.Type.DIRECT.url.format(threadId, oldestId, limit), Rest.InboxThread::class,
                 handler, onError = { interrupt() }
             ) { inbox ->
                 if (!active) return@Api
                 if (inbox.status == "ok")
                     handler?.obtainMessage(HANDLE_FETCHED, inbox.thread)?.sendToTarget()
+                else if (BuildConfig.DEBUG) throw Exception(inbox.status)
                 interrupt()
             }
         }

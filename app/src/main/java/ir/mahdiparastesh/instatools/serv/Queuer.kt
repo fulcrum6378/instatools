@@ -71,7 +71,7 @@ class Queuer : ForegroundService() {
         sp?.let { sp -> Settings.loadAliases(c, sp).forEach { (k, v) -> aliases[k] = v } }
         if (m.acc == null || dest == null) {
             finish(false); return; }
-        notification(Companion, Downloads::class)
+        initialNotification(Companion, Downloads::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {

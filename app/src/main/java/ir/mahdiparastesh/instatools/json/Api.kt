@@ -112,8 +112,9 @@ class Api<JSON>(
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
         INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s"),
-        //persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]&limit=10
+        DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),
+        //persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
+        // Avoiding "limit" argument will default to 20, but can be more than that.
 
         SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
 

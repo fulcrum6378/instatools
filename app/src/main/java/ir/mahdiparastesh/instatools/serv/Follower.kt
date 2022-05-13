@@ -56,7 +56,7 @@ class Follower : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
-        notification(Follower, MassFollower::class)
+        initialNotification(Follower, MassFollower::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {

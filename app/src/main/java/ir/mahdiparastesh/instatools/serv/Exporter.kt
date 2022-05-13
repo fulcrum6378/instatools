@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.serv
 
+import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +11,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -17,7 +19,10 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.view.HtmlExporter
 import ir.mahdiparastesh.instatools.view.PdfExporter
 import ir.mahdiparastesh.instatools.view.TxtExporter
@@ -25,9 +30,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 class Exporter : ForegroundService() {
     private var exp: Exportable? = null
+    private val cache: File by lazy { Cache(c) }
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -42,8 +50,8 @@ class Exporter : ForegroundService() {
             ACTION_STOP to R.string.exporterStop
         )
 
-        const val MEDIA_DELAY = 200L
         const val USER_PROFILE_IMG = "user_%s"
+        val fileTypes = arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a")
 
         fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
                 c.sPreference(Settings.spStorage) != null
@@ -51,20 +59,33 @@ class Exporter : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
-        notification(Companion, Main::class, 2)
+        initialNotification(Companion, Main::class, 2)
+        if (!cache.exists()) cache.mkdir()
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     BasePage.HANDLE_FETCHED -> {
                         val dmThd = msg.obj as Dm.DmThread
-                        if (exp?.threadData == null) exp?.threadData = dmThd
-                        else {
+                        if (exp?.threadData == null) {
+                            exp?.threadData = dmThd
+                            ntfText = c.getString(R.string.exporterFetchTexts, dmThd.title())
+                            updateNotification(null)
+                            // Inbox API has no reference to number of items in a thread.
+                            exp?.fetchData()
+                        } else if (dmThd.items.isNotEmpty()) {
                             exp?.threadData?.items?.addAll(dmThd.items)
-                            exp?.threadData?.has_older = dmThd.has_older
+                            exp?.fetchData()
+                        } else CoroutineScope(Dispatchers.IO).launch {
+                            exp?.fetchMedia()
                         }
-                        exp?.fetchData()
                     }
-                    Api.HANDLE_ERROR -> finish(false)
+                    Api.HANDLE_ERROR -> {
+                        if (BuildConfig.DEBUG) {
+                            val res = msg.obj as NetworkResponse
+                            throw Exception("${res.statusCode} : ${String(res.data)}")
+                        }
+                        finish(false)
+                    }
                 }
             }
         }
@@ -86,31 +107,42 @@ class Exporter : ForegroundService() {
 
     private fun Exportable.fetchData() {
         threadData?.items?.sortBy { it.timestamp }
-        if (threadData?.has_older == false) {
-            fetchMedia(); return; }
         FetchOfThread(
-            this@Exporter, thread, threadData?.items?.getOrNull(0)?.item_id ?: "", handler
+            this@Exporter, thread, threadData?.items?.firstOrNull()?.item_id ?: "",
+            handler, 75
         ).start()
     }
 
-    private fun Exportable.fetchMedia() {
+    private suspend fun Exportable.fetchMedia() {
         if (threadData?.items == null) {
             end(this); return; }
         media = hashMapOf()
-        for (user in threadData!!.users)
-            media[USER_PROFILE_IMG.format(user.pk)] = Downloadable(user.profile_pic_url, 0)
         if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
             fetchMedium(); return; }
+
+        threadData?.title()?.also { ntfText = c.getString(R.string.exporterFetchMedia, it) }
+        threadData?.thread_id?.also {
+            cacheDir = File(Cache(c), it)
+            if (!cacheDir!!.exists()) cacheDir!!.mkdir()
+        }
+        for (user in threadData!!.users) {
+            val key = USER_PROFILE_IMG.format(user.pk)
+            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key)
+        }
         val img = opt?.img() == true
         val vid = opt?.vid() == true
         val actVid = opt?.actVid() == true
         for (dm in threadData!!.items) {
             if (actVid && dm.animated_media != null) {
-                media[dm.item_id] = Downloadable(dm.animated_media.images.fixed_height.url, 3)
+                media[dm.item_id] = Downloadable(
+                    dm.animated_media.images.fixed_height.url, 3, cacheDir!!, dm.item_id
+                )
                 continue; }
             if (dm.voice_media != null) {
                 if (opt?.voice == 0 && dm.voice_media.media != null)
-                    media[dm.item_id] = Downloadable(dm.voice_media.media.audio.audio_src, 2)
+                    media[dm.item_id] = Downloadable(
+                        dm.voice_media.media.audio.audio_src, 2, cacheDir!!, dm.item_id
+                    )
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip
@@ -166,21 +198,34 @@ class Exporter : ForegroundService() {
                         else -> -opt!!.image
                     }.toFloat(), justImage = opt?.actVid() != true
                 ) ?: return@apply
-                media[dm.item_id] =
-                    Downloadable(url, if (opt?.actVid() == true && video_versions != null) 1 else 0)
+                media[dm.item_id] = Downloadable(
+                    url, if (opt?.actVid() == true && video_versions != null) 1 else 0,
+                    cacheDir!!, dm.item_id
+                )
             }
         }
         fetchMedium()
     }
 
-    private fun Exportable.fetchMedium() {
-        val dl = media.entries.filter { it.value.data == null }.getOrNull(0)
+    private suspend fun Exportable.fetchMedium() {
+        val queueSize: Int
+        val dl: MutableMap.MutableEntry<String, Downloadable>?
+        media.entries.filter { !it.value.cache.exists() }.also {
+            queueSize = it.size
+            dl = it.getOrNull(0)
+        }
         if (dl == null) {
+            withContext(Dispatchers.Main) {
+                threadData?.title()?.also { ntfText = c.getString(R.string.exporterWriting, it) }
+                updateNotification(null)
+            }
             export(); return; }
+        updateNotification(media.entries.size - queueSize to media.entries.size)
         Volley.newRequestQueue(c).add(
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
-                media[dl.key] = media[dl.key]!!.apply { data = byteArrayOf() }
-                Delay(MEDIA_DELAY) { fetchMedium() }
+                CoroutineScope(Dispatchers.IO).launch {
+                    media[dl.key]!!.write(byteArrayOf()) { fetchMedium() }
+                }
             }) {
                 override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
 
@@ -188,8 +233,9 @@ class Exporter : ForegroundService() {
                     Response.success(response.data, HttpHeaderParser.parseCacheHeaders(response))
 
                 override fun deliverResponse(response: ByteArray) {
-                    media[dl.key] = media[dl.key]!!.apply { data = response }
-                    Delay(MEDIA_DELAY) { fetchMedium() }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        media[dl.key]!!.write(response) { fetchMedium() }
+                    }
                 }
             }.apply {
                 setShouldCache(false)
@@ -225,13 +271,13 @@ class Exporter : ForegroundService() {
 
     private fun end(oldExp: Exportable?) {
         if (oldExp == null) return
+        // Don't update notification here; it'll create another after onDestroy
         CoroutineScope(Dispatchers.IO).launch {
             dao.deleteExportable(oldExp)
             withContext(Dispatchers.Main) { handle() }
         }
     }
 
-    @Suppress("unused")
     enum class Method(
         val id: Int, val mime: String, val ext: String, val asTree: Boolean, val img: Boolean,
         val vid: Boolean,
@@ -241,6 +287,18 @@ class Exporter : ForegroundService() {
         TXT(2, "text/plain", "txt", false, false, false),
     }
 
-    class Downloadable(val url: String, val type: Short, var data: ByteArray? = null)
-    // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
+    inner class Downloadable(val url: String, val type: Short, folder: File, dmId: String) {
+        // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
+        val cache = File(folder, fileName(dmId))
+
+        fun fileName(dmId: String) = "${dmId}.${fileTypes[type.toInt()].second}"
+
+        @Suppress("BlockingMethodInNonBlockingContext")
+        suspend fun write(ba: ByteArray, then: suspend () -> Unit) {
+            FileOutputStream(cache).use { fos -> fos.write(ba) }
+            then()
+        }
+    }
+
+    class Cache(c: Context) : File(c.cacheDir, "exporter")
 }

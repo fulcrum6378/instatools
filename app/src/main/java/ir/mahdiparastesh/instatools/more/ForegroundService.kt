@@ -13,6 +13,7 @@ import android.os.HandlerThread
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -106,9 +107,17 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             }
     }
 
-    open fun notification(
-        com: ForegroundServiceCompanion, openActivity: KClass<*>, turnToPage: Int? = null
+    private lateinit var ntfCom: ForegroundServiceCompanion
+    private lateinit var ntfAct: KClass<*>
+    private var ntfPage: Int? = null
+    protected var ntfText: String? = null
+    open fun initialNotification(
+        com: ForegroundServiceCompanion, openActivity: KClass<*>, turnToPage: Int? = null,
+        progress: Pair<Int, Int>? = null
     ) {
+        ntfCom = com
+        ntfAct = openActivity
+        ntfPage = turnToPage
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(
@@ -116,24 +125,32 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                         com.channel, c.resources.getString(com.chName),
                         NotificationManager.IMPORTANCE_LOW
                     ).apply { description = c.resources.getString(com.chDesc) })
-        startForeground(com.CH_ID, NotificationCompat.Builder(c, com.channel).apply {
-            setSmallIcon(com.ntfSmallIcon)
-            setContentTitle(c.resources.getString(com.ntfTitle))
+        startForeground(com.CH_ID, notification(progress))
+    }
+
+    open fun updateNotification(progress: Pair<Int, Int>?) {
+        NotificationManagerCompat.from(c).notify(ntfCom.CH_ID, notification(progress))
+    }
+
+    open fun notification(progress: Pair<Int, Int>?) =
+        NotificationCompat.Builder(c, ntfCom.channel).apply {
+            setSmallIcon(ntfCom.ntfSmallIcon)
+            setContentTitle(c.resources.getString(ntfCom.ntfTitle))
+            setContentText(ntfText)
             setOngoing(true)
-            setProgress(0, 0, true)
+            setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
             priority = NotificationCompat.PRIORITY_LOW
             setContentIntent(
                 PendingIntent.getActivity(
-                    c, 0, Intent(c, openActivity.java).apply {
-                        if (turnToPage != null)
-                            putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, turnToPage)
+                    c, 0, Intent(c, ntfAct.java).apply {
+                        if (ntfPage != null)
+                            putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, ntfPage)
                     }, ntfMutability()
                 )
             )
-            for (a in com.ntfActions)
-                addAction(0, c.resources.getString(a.second), com.pi(c, a.first))
-        }.build())
-    }
+            for (a in ntfCom.ntfActions)
+                addAction(0, c.resources.getString(a.second), ntfCom.pi(c, a.first))
+        }.build()
 
     open fun onCancel() {
         finish(true)

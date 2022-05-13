@@ -182,6 +182,9 @@
     <string name="exporterChannelDesc">Exporta los mensajes directos</string>
     <string name="exporterTitle">Exportador&#8230;</string>
     <string name="exporterStop">Abortar</string>
+    <string name="exporterFetchTexts">Obteniendo textos en el chat de %s&#8230;</string>
+    <string name="exporterFetchMedia">Obteniendo contenido multimedia en el chat de %s&#8230;</string>
+    <string name="exporterWriting">Escribiendo el chat de %s en el almacenamiento&#8230;</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Sigue un gran número de cuentas lentamente&#8230;</string>

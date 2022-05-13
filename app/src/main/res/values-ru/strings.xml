@@ -187,6 +187,9 @@
     <string name="exporterChannelDesc">Экспортирует прямые сообщения</string>
     <string name="exporterTitle">Экспорт&#8230;</string>
     <string name="exporterStop">Прервать</string>
+    <string name="exporterFetchTexts">Получение сообщений в чате %s&#8230;</string>
+    <string name="exporterFetchMedia">Получение медиафайлов в чате %s&#8230;</string>
+    <string name="exporterWriting">Запись чата %s в хранилище&#8230;</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Подписывайтесь на большое количество аккаунтов медленно&#8230;</string>

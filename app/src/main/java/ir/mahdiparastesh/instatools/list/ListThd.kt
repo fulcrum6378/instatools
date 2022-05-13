@@ -35,6 +35,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
+import java.io.FileInputStream
 import java.util.*
 
 class ListThd(val c: Main, private val f: PageBox) :
@@ -192,12 +193,14 @@ class ListThd(val c: Main, private val f: PageBox) :
             msgIv.setImageDrawable(null)
             media?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
-                var data: ByteArray? = null
-                if (downloaded != null)
-                    data = downloaded.getOrDefault(dm.item_id, null)?.data
-                if (data != null && data.isNotEmpty()) {
-                    msgIv.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
-                    return@apply; }
+                downloaded?.getOrDefault(dm.item_id, null)?.cache?.also {
+                    FileInputStream(it).use { fis ->
+                        val data = fis.readBytes()
+                        if (data.isNotEmpty()) {
+                            msgIv.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
+                            return@apply; }
+                    }
+                } // TODO SUCKS
                 if (downloaded != null) return@apply
 
                 msgLoading.apply {

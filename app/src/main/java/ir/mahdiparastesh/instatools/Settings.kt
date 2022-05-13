@@ -31,6 +31,7 @@ import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
+import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.SpinnerAdapter
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.showBytes
@@ -122,6 +123,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         } ?: defSpCacheLimit
 
         fun Persistent.clearCacheIfNecessary() {
+            if (Exporter.active.value == true) return
             if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
                 c.clearCache()
         }

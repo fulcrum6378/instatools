@@ -182,6 +182,9 @@
     <string name="exporterChannelDesc">Exporta as mensagens diretas</string>
     <string name="exporterTitle">Exportador&#8230;</string>
     <string name="exporterStop">Abortar</string>
+    <string name="exporterFetchTexts">Buscando textos no bate-papo de %s&#8230;</string>
+    <string name="exporterFetchMedia">Buscando mídia no bate-papo de %s&#8230;</string>
+    <string name="exporterWriting">Gravando o bate-papo de %s no depósito&#8230;</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Siga um grande número de contas lentamente&#8230;</string>

@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.view
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.system.ErrnoException
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
@@ -18,8 +17,8 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import kotlinx.coroutines.runBlocking
+import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 
 abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
@@ -38,8 +37,6 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
     private var limit = 0
 
     private val subFolderNames = arrayOf("image", "video", "audio")
-    private val fileTypes =
-        arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a")
     val maximum = 200
     private val div1Ind = "      "
     private val div2Ind = "$div1Ind  "
@@ -75,35 +72,45 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
             }
         if (canCreateDirSelf) tmpDir.listFiles().forEach { it.delete() }
 
+        // You cannot manage files in internal storage using DocumentsContract!
         for (dwn in exp.media.entries) {
             val t = dwn.value.type.toInt()
             if (t == 3) continue
             if (subFolders[t] == null) subFolders[t] =
                 (if (canCreateDirSelf) tmpDir else folder).createDirectory(subFolderNames[t])!!
-            val ft = fileTypes[t]
-            if (dwn.value.data == null) continue
-            subFolders[t]!!.createFile(ft.first, "${dwn.key}.${ft.second}")!!.apply {
+            val ft = Exporter.fileTypes[t]
+            if (!dwn.value.cache.exists()) continue
+            subFolders[t]!!.createFile(ft.first, dwn.value.fileName(dwn.key))!!.apply {
                 c.c.contentResolver.openFileDescriptor(uri, "w")?.use { des ->
-                    try {
-                        FileOutputStream(des.fileDescriptor).use { fos ->
-                            fos.write(dwn.value.data)
+                    //try {
+                    FileOutputStream(des.fileDescriptor).use { fos ->
+                        FileInputStream(dwn.value.cache).use { fis ->
+                            fos.write(fis.readBytes())
                         }
-                    } catch (e: IOException) {
+                    }
+                    /*} catch (e: IOException) {
                         return@use
                     } catch (e: ErrnoException) {
                         return@use
                     } catch (e: SecurityException) {
                         return@use
-                    }
+                    }*/
                 }
             }
         }
         exp.media.clear()
         if (canCreateDirSelf) subFolders.forEach {
-            if (it != null) try {
+            if (it != null) //try {
                 DocumentsContract.moveDocument(c.c.contentResolver, it.uri, tmpDir.uri, folder.uri)
-            } catch (e: SecurityException) {
-            }
+            //} catch (e: SecurityException) {
+            // "The authority com.android.providers.downloads.documents does not match the one of the contentProvider: com.android.externalstorage.documents"
+            // If the user selects "Downloads" folder, up in the menu of folder selector,
+            // the authority of the uri will be "com.android.providers.downloads.documents",
+            // but if they select the same "Downloads" from "Internal Storage", then the
+            // authority shall be "com.android.externalstorage.documents"
+            //} catch (e: IllegalStateException) {
+                // Failed to move to /storage/86D1-D995/Exported محمد حسن امینی_20220513_103154/image
+            //}
         }
 
         progress(0f, false)
@@ -384,6 +391,7 @@ body { background: #FCFCFC; }
                         c.c.contentResolver, tmp.uri, tmpDir.uri, folder.uri
                     )
                 } catch (e: SecurityException) {
+                    // TODO
                 }
             } else {
                 val file = folder.createFile("text/html", "${page + 1}.html")!!
