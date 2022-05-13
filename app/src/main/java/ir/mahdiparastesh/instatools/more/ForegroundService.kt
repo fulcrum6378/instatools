@@ -136,7 +136,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         NotificationCompat.Builder(c, ntfCom.channel).apply {
             setSmallIcon(ntfCom.ntfSmallIcon)
             setContentTitle(c.resources.getString(ntfCom.ntfTitle))
-            setContentText(ntfText)
+            setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
             priority = NotificationCompat.PRIORITY_LOW
@@ -151,6 +151,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             for (a in ntfCom.ntfActions)
                 addAction(0, c.resources.getString(a.second), ntfCom.pi(c, a.first))
         }.build()
+
+    protected fun eventNotification() {
+        TODO()
+    }
 
     open fun onCancel() {
         finish(true)

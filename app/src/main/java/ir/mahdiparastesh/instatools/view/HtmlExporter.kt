@@ -54,6 +54,7 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
     companion object {
         const val TEMP_DIR = ".export_temp"
         const val MAX_PAGINATION = 3
+        const val TEST_FILE = ".test"
     }
 
     @SuppressLint("NewApi")
@@ -82,35 +83,38 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
             if (!dwn.value.cache.exists()) continue
             subFolders[t]!!.createFile(ft.first, dwn.value.fileName(dwn.key))!!.apply {
                 c.c.contentResolver.openFileDescriptor(uri, "w")?.use { des ->
-                    //try {
                     FileOutputStream(des.fileDescriptor).use { fos ->
                         FileInputStream(dwn.value.cache).use { fis ->
                             fos.write(fis.readBytes())
                         }
                     }
-                    /*} catch (e: IOException) {
-                        return@use
-                    } catch (e: ErrnoException) {
-                        return@use
-                    } catch (e: SecurityException) {
-                        return@use
-                    }*/
                 }
             }
         }
         exp.media.clear()
-        if (canCreateDirSelf) subFolders.forEach {
-            if (it != null) //try {
-                DocumentsContract.moveDocument(c.c.contentResolver, it.uri, tmpDir.uri, folder.uri)
-            //} catch (e: SecurityException) {
-            // "The authority com.android.providers.downloads.documents does not match the one of the contentProvider: com.android.externalstorage.documents"
-            // If the user selects "Downloads" folder, up in the menu of folder selector,
-            // the authority of the uri will be "com.android.providers.downloads.documents",
-            // but if they select the same "Downloads" from "Internal Storage", then the
-            // authority shall be "com.android.externalstorage.documents"
-            //} catch (e: IllegalStateException) {
-                // Failed to move to /storage/86D1-D995/Exported محمد حسن امینی_20220513_103154/image
-            //}
+        var rescueFolder: DocumentFile? = null
+        if (canCreateDirSelf) {
+            tmpDir.createFile("text/plain", TEST_FILE)?.also {
+                try {
+                    DocumentsContract.moveDocument(
+                        c.c.contentResolver, it.uri, tmpDir.uri, folder.uri
+                    )
+                    // Uri authorities must be the same in order for this code to work;
+                    // otherwise it'll throw SecurityException.
+                } catch (e: Exception) {
+                    // IllegalStateException when moving from Internal Storage to SD Card!!
+                    val folderName = folder.name ?: exp.threadData!!.exported()
+                    rescueFolder = DocumentFile.fromTreeUri(
+                        c.c, Uri.parse(c.sPreference(Settings.spStorage))
+                    )?.createDirectory(folderName)
+                }
+                it.delete()
+            }
+            subFolders.forEach {
+                if (it != null) DocumentsContract.moveDocument(
+                    c.c.contentResolver, it.uri, tmpDir.uri, rescueFolder?.uri ?: folder.uri
+                )
+            }
         }
 
         progress(0f, false)
@@ -386,13 +390,9 @@ body { background: #FCFCFC; }
                         }
                     }
                 }
-                try {
-                    DocumentsContract.moveDocument(
-                        c.c.contentResolver, tmp.uri, tmpDir.uri, folder.uri
-                    )
-                } catch (e: SecurityException) {
-                    // TODO
-                }
+                DocumentsContract.moveDocument(
+                    c.c.contentResolver, tmp.uri, tmpDir.uri, rescueFolder?.uri ?: folder.uri
+                )
             } else {
                 val file = folder.createFile("text/html", "${page + 1}.html")!!
                 c.c.contentResolver.openFileDescriptor(file.uri, "w")?.use { des ->
@@ -401,6 +401,10 @@ body { background: #FCFCFC; }
                     }
                 }
             }
+        }
+
+        if (rescueFolder != null) {
+            // TODO: notification with "Open Folder" button
         }
 
         progress(100f, true)

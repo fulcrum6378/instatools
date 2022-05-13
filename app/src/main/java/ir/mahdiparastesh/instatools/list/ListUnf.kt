@@ -84,8 +84,15 @@ class ListUnf(val c: Main, private val f: PageUnf) :
 
     private fun unfollow(unf: Friend) {
         Api<Rest>(
-            c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, PageUnf.handler,
-            method = Request.Method.POST
+            c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, null,
+            method = Request.Method.POST, onError = { res ->
+                if (res?.statusCode == 429) AlertDialog.Builder(c).apply {
+                    setTitle(R.string.unfollow)
+                    setMessage(R.string.unfollowedSoMany)
+                    setNeutralButton(R.string.ok, null)
+                }.show().stylise(c)
+                else PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
+            }
         ) {
             if (it.status != "ok") {
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()

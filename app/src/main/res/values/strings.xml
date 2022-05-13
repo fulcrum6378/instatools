@@ -111,6 +111,8 @@
     <string name="expOptMed">Medium quality</string>
     <string name="expOptHig">High quality</string>
     <string name="expOptThm">Only a thumbnail (first frame)</string>
+    <string name="unsupportedExportUriAuth">Sorry, but this kind of folder is not supported for this export type! Although you can export into this very folder in the other file types.</string>
+    <string name="unfollowedSoMany">Sorry but Instagram won\'t allow you to unfollow a large number of people so frequently in order to combat spam. Please try again about half an hour later&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>

@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
+import androidx.documentfile.provider.DocumentFile
 import androidx.media2.player.MediaPlayer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -284,15 +285,16 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     c.exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = method.mime
-                        //if (method.asTree) "com.android.externalstorage.documents"
-                        // exclude "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2"
-                        // I didn't find an easy way to exclude the non-compatible hosts.
                         putExtra(
                             Intent.EXTRA_TITLE,
                             "${thread.exported()}${if (!method.asTree) "." + method.ext else ""}"
                         )
+                        if (method.asTree) dirFileProblem = true
                     })
                 else c.exportLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
+                // I didn't find an easy way to exclude the non-compatible hosts.
+                // In Linux/Unix, you cannot transform a directory to a file!
+                // Google Drive, Dropbox and AnyDesk understand Android directory mime type is a folder.
 
                 activityResulted = false
                 c.loadInterstitial(R.string.interExporting) { !c.showingAd && activityResulted }
@@ -301,9 +303,21 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     }
 
     private var activityResulted = false
+    private var dirFileProblem = false
     override fun onActivityResult(result: ActivityResult) {
-        if (result.data?.data == null || exportable == null) {
+        if (result.data?.data == null || exportable == null) { // "action" and "type" are null!
             exportable = null; return; }
+        if (dirFileProblem && result.data!!.data!!.authority !=
+            Uri.parse(c.sPreference(Settings.spStorage)).authority
+        ) {
+            AlertDialog.Builder(c).apply {
+                setTitle(R.string.exportHtml)
+                setMessage(R.string.unsupportedExportUriAuth)
+                setNeutralButton(R.string.ok, null)
+            }.show().stylise(c)
+            DocumentFile.fromSingleUri(c.c, result.data!!.data!!)?.delete()
+            // This won't work in DropBox! But works in Google Drive and AnyDesk :)
+            return; }
         exportable!!.uri = result.data!!.data!!.toString()
         CoroutineScope(Dispatchers.IO).launch {
             c.dao.addExportable(exportable!!)
@@ -311,7 +325,13 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         }
         c.showInterstitial()
         activityResulted = true
+        dirFileProblem = false
     }
+    // Downloads:     "content://com.android.providers.downloads.documents/document/"
+    // Internal & SD: "content://com.android.externalstorage.documents/document/"
+    // Google Drive:  "content://com.google.android.apps.docs.storage/document/"
+    // Dropbox:       "content://com.dropbox.product.android.dbapp.document_provider.documents/document/"
+    // AnyDesk Dls:   "content://com.anydesk.anydeskandroid.documents.downloads/document/"
 
     override fun goBack(): Boolean {
         if (c.m.dmThread != null) {

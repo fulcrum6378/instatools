@@ -44,11 +44,8 @@
             android:name=".Downloads"
             android:exported="true"
             android:launchMode="singleTask"
+            android:parentActivityName=".Main"
             android:theme="@style/Theme.InstaTools.Secondary">
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Main" />
 
             <intent-filter android:label="@string/dwShare">
                 <action android:name="android.intent.action.SEND" />
@@ -84,33 +81,21 @@
         <activity
             android:name=".Favourites"
             android:exported="false"
-            android:theme="@style/Theme.InstaTools.Primary">
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Main" />
-        </activity>
+            android:parentActivityName=".Main"
+            android:theme="@style/Theme.InstaTools.Primary" />
 
         <activity
             android:name=".MassFollower"
             android:exported="false"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.InstaTools.Primary">
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Main" />
-        </activity>
+            android:parentActivityName=".Main"
+            android:theme="@style/Theme.InstaTools.Primary" />
 
         <activity
             android:name=".Settings"
             android:exported="false"
-            android:theme="@style/Theme.InstaTools.Tertiary">
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Main" />
-        </activity>
+            android:parentActivityName=".Main"
+            android:theme="@style/Theme.InstaTools.Tertiary" />
 
         <service
             android:name=".serv.Queuer"

@@ -50,6 +50,7 @@ class Exporter : ForegroundService() {
             ACTION_STOP to R.string.exporterStop
         )
 
+        const val DIR_MIME = "vnd.android.document/directory"
         const val USER_PROFILE_IMG = "user_%s"
         val fileTypes = arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a")
 
@@ -282,7 +283,7 @@ class Exporter : ForegroundService() {
         val id: Int, val mime: String, val ext: String, val asTree: Boolean, val img: Boolean,
         val vid: Boolean,
     ) {
-        HTML(0, "vnd.android.document/directory", "html", true, true, true),
+        HTML(0, DIR_MIME, "html", true, true, true),
         PDF(1, "application/pdf", "pdf", false, true, false),
         TXT(2, "text/plain", "txt", false, false, false),
     }
