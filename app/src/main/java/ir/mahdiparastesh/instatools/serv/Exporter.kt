@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
@@ -326,19 +327,19 @@ class Exporter : ForegroundService() {
 
     enum class Method(
         val id: Int, val mime: String, val ext: String, val asTree: Boolean, val img: Boolean,
-        val vid: Boolean,
+        val vid: Boolean, @StringRes val desc: Int
     ) {
-        HTML(0, DIR_MIME, "html", true, true, true),
-        PDF(1, "application/pdf", "pdf", false, true, false),
-        TXT(2, "text/plain", "txt", false, false, false),
+        HTML(0, DIR_MIME, "html", true, true, true, R.string.exportHtmlDesc),
+        PDF(1, "application/pdf", "pdf", false, true, false, R.string.exportPdfDesc),
+        TXT(2, "text/plain", "txt", false, false, false, R.string.exportTxtDesc),
     }
 
     inner class Downloadable(
-        val url: String, val type: Short, folder: File, dmId: String, private val quality: Int
+        val url: String, val type: Short, folder: File, dmId: String, quality: Int
     ) { // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
-        val cache = File(folder, fileName(dmId))
+        val cache = File(folder, "${dmId}_$quality.${fileTypes[type.toInt()].second}")
 
-        fun fileName(dmId: String) = "${dmId}_$quality.${fileTypes[type.toInt()].second}"
+        fun fileName(dmId: String) = "${dmId}.${fileTypes[type.toInt()].second}"
 
         @Suppress("BlockingMethodInNonBlockingContext")
         suspend fun write(ba: ByteArray, then: suspend () -> Unit) {

@@ -41,7 +41,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.reflect.KClass
 
 class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
@@ -57,10 +56,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = m.vwCurrentPage
-    override val aKlass: KClass<PageRel> = PageRel::class
-    override val bKlass: KClass<PageVwr> = PageVwr::class
-    override val cKlass: KClass<PageTag> = PageTag::class
-    override val mode: TripleMode = TripleMode.VIEW_PAGER
+    override val aKlass = PageRel::class
+    override val bKlass = PageVwr::class
+    override val cKlass = PageTag::class
+    override val mode = TripleMode.VIEW_PAGER
     override fun defPage(): Int = 1
 
     companion object : ActivityCompanion() {

@@ -19,6 +19,7 @@
     <color name="saved">@color/defCA</color>
     <color name="direct">@color/defCA</color>
     <color name="dmFromMe">#11FFFFFF</color>
+    <color name="expOptSep">@color/sepLine</color>
 
     <!-- Viewer -->
     <color name="sepLine">#22FFFFFF</color>

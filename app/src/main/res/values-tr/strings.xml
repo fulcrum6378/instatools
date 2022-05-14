@@ -14,11 +14,6 @@
     <string name="no">Hayır</string>
     <string name="yes">Evet</string>
     <string name="unsave">Kaydetmeyi iptal et</string>
-    <string name="export">İhracat</string>
-    <string name="exportHtml">HTML\'ye aktar</string>
-    <string name="exportPdf">PDF\'ye aktar</string>
-    <string name="exportTxt">TXT\'ye aktar</string>
-    <string name="exportOptions">Dışa Aktarma Seçenekleri (%s)</string>
     <string name="backgroundTasks">Arkaplan işlemleri</string>
     <string name="unknownError">Üzgünüz, bilinmeyen bir hata oluştu: %s</string>
     <string name="unknownMyError">Üzgünüz, bilinmeyen bir hata oluştu!</string>
@@ -79,23 +74,35 @@
     <string name="guestDesc">Bu uygulamayı misafir modunda kullanıyorsunuz.\nYani bu özelliği kullanamazsınız!</string>
     <string name="signOutSure">Instagram hesabınızdan çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="mtSearch">Bir profil adı veya bağlantı girin&#8230;</string>
-    <string name="boxUntil">%s\'e kadar</string>
+    <string name="terminateBgTasks">Bazı görevler arka planda çalışıyor. Hepsini sonlandırmak istediğinizden emin misiniz?</string>
+    <string name="alsoDeleteData">Ayrıca kullanıcı verilerimi ve ayarlarımı sil</string>
+    <string name="toExit">Çıkmak için iki kez dokunun&#8230;</string>
+
+    <!-- PageUnf -->
     <string name="unfollow">Takibi bırak</string>
     <string name="unfollowPV">Bu hesap özeldir. Onları takip etmeyi bırakmak istediğinizden emin misiniz?</string>
     <string name="unfCouldNot">Bu kullanıcının takibi bırakılamadı!</string>
-    <string name="terminateBgTasks">Bazı görevler arka planda çalışıyor. Hepsini sonlandırmak istediğinizden emin misiniz?</string>
-    <string name="unsaveOnly">Yalnızca Kaydetmeyi Kaldır</string>
-    <string name="downloadOnly">Yalnızca İndir</string>
-    <string name="unsaveDownload">Kaydet ve İndir</string>
-    <string name="alsoDeleteData">Ayrıca kullanıcı verilerimi ve ayarlarımı sil</string>
-    <string name="toExit">Çıkmak için iki kez dokunun&#8230;</string>
     <string name="unfEmpty">Takipçiniz yok!</string>
-    <string name="svdEmpty">Kaydedilmiş yayınınız yok!</string>
-    <string name="boxEmpty">Mesajınız yok!</string>
     <string name="unfollowedAt">%s\'de takip edilmedi</string>
     <string name="newUnfNtfChannel">Yeni takip etmeyenler</string>
     <string name="newUnfNtfChannelDesc">Bazı insanlar sizi takibi bıraktı!</string>
     <string name="newUnfNtfText">%d yeni kişi seni takibi bıraktı!</string>
+    <string name="unfollowedSoMany">Ne yazık ki Instagram, spam ile mücadele etmek için çok sayıda insanı takibi bırakmanıza izin vermiyor. Lütfen yaklaşık yarım saat sonra tekrar deneyin&#8230;</string>
+
+    <!-- PageSvd -->
+    <string name="unsaveOnly">Yalnızca Kaydetmeyi Kaldır</string>
+    <string name="downloadOnly">Yalnızca İndir</string>
+    <string name="unsaveDownload">Kaydet ve İndir</string>
+    <string name="svdEmpty">Kaydedilmiş yayınınız yok!</string>
+
+    <!-- PageBox -->
+    <string name="boxUntil">%s\'e kadar</string>
+    <string name="exportHtml">HTML\'ye aktar</string>
+    <string name="exportPdf">PDF\'ye aktar</string>
+    <string name="exportTxt">TXT\'ye aktar</string>
+    <string name="exportOptions">Dışa Aktarma Seçenekleri (%s)</string>
+    <string name="export">İhracat</string>
+    <string name="boxEmpty">Mesajınız yok!</string>
     <string name="dmNotSeen">Sen Görünmezsin!</string>
     <string name="dmNotSeenDesc">Bu uygulamada görüntülediğiniz mesajlar görüldüğü gibi işaretlenmeyecek!</string>
     <string name="expOptImage">Resimleri dahil et</string>
@@ -106,7 +113,9 @@
     <string name="expOptHig">Yüksek kalite</string>
     <string name="expOptThm">Yalnızca küçük resim (ilk kare)</string>
     <string name="unsupportedExportUriAuth">Üzgünüz, ancak bu tür klasörler bu dışa aktarma türü için desteklenmiyor! Diğer dosya türlerinde bu klasöre dışa aktarabilirsiniz.</string>
-    <string name="unfollowedSoMany">Ne yazık ki Instagram, spam ile mücadele etmek için çok sayıda insanı takibi bırakmanıza izin vermiyor. Lütfen yaklaşık yarım saat sonra tekrar deneyin&#8230;</string>
+    <string name="exportHtmlDesc">Dikkat: Bir HTML dosyası yalnızca bir PC veya macOS kullanılarak düzgün bir şekilde görüntülenebilir!</string>
+    <string name="exportPdfDesc">Bir PDF dosyası ses ve video içeremez.</string>
+    <string name="exportTxtDesc">Düz metin dosyası herhangi bir ortam türü içeremez.</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>

@@ -22,11 +22,6 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
-    <string name="export">Export</string>
-    <string name="exportHtml">Export to HTML</string>
-    <string name="exportPdf">Export to PDF</string>
-    <string name="exportTxt">Export to TXT</string>
-    <string name="exportOptions">Export Options (%s)</string>
     <string name="backgroundTasks">Background Tasks</string>
     <string name="unknownError">Sorry, an unknown error occurred: %s</string>
     <string name="unknownMyError">Sorry, an unknown error occurred!</string>
@@ -87,23 +82,35 @@
     <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Enter a profile name or link&#8230;</string>
-    <string name="boxUntil">Until %s</string>
+    <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
+    <string name="alsoDeleteData">Also delete my user data and settings</string>
+    <string name="toExit">Double tap to exit&#8230;</string>
+
+    <!-- PageUnf -->
     <string name="unfollow">Unfollow</string>
     <string name="unfollowPV">This account is private. Are you sure you want to unfollow them?</string>
     <string name="unfCouldNot">Could not unfollow this user!</string>
-    <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
-    <string name="unsaveOnly">Unsave Only</string>
-    <string name="downloadOnly">Download Only</string>
-    <string name="unsaveDownload">Unsave &amp; Download</string>
-    <string name="alsoDeleteData">Also delete my user data and settings</string>
-    <string name="toExit">Double tap to exit&#8230;</string>
     <string name="unfEmpty">You have no unfollowers!</string>
-    <string name="svdEmpty">You have no saved posts!</string>
-    <string name="boxEmpty">You have no messages!</string>
     <string name="unfollowedAt">Unfollowed at %s</string>
     <string name="newUnfNtfChannel">New unfollowers</string>
     <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
+    <string name="unfollowedSoMany">Unfortunately Instagram won\'t allow you to unfollow a large number of people so frequently in order to combat spam. Please try again about half an hour later&#8230;</string>
+
+    <!-- PageSvd -->
+    <string name="unsaveOnly">Unsave Only</string>
+    <string name="downloadOnly">Download Only</string>
+    <string name="unsaveDownload">Unsave &amp; Download</string>
+    <string name="svdEmpty">You have no saved posts!</string>
+
+    <!-- PageBox -->
+    <string name="boxUntil">Until %s</string>
+    <string name="exportHtml">Export to HTML</string>
+    <string name="exportPdf">Export to PDF</string>
+    <string name="exportTxt">Export to TXT</string>
+    <string name="exportOptions">Export Options (%s)</string>
+    <string name="export">Export</string>
+    <string name="boxEmpty">You have no messages!</string>
     <string name="dmNotSeen">You Are Invisible!</string>
     <string name="dmNotSeenDesc">The messages you view in this app will NOT be marked as seen!</string>
     <string name="expOptImage">Include pictures</string>
@@ -114,7 +121,9 @@
     <string name="expOptHig">High quality</string>
     <string name="expOptThm">Only a thumbnail (first frame)</string>
     <string name="unsupportedExportUriAuth">Sorry, but this kind of folder is not supported for this export type! Although you can export into this very folder in the other file types.</string>
-    <string name="unfollowedSoMany">Unfortunately Instagram won\'t allow you to unfollow a large number of people so frequently in order to combat spam. Please try again about half an hour later&#8230;</string>
+    <string name="exportHtmlDesc">Caution: an HTML file can only be viewed properly using a PC or macOS!</string>
+    <string name="exportPdfDesc">A PDF file cannot contain audio and video.</string>
+    <string name="exportTxtDesc">A plain text file cannot contain any kind of media.</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>

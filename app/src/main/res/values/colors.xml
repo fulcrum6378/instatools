@@ -37,6 +37,7 @@
     <color name="dmFromMeLight">#08000000</color>
     <color name="dmFromMe">@color/dmFromMeLight</color>
     <color name="navHeaderLL">#99FFFFFF</color>
+    <color name="expOptSep">@color/CTW</color>
 
     <!-- Viewer -->
     <color name="sepLine">#EEE</color>

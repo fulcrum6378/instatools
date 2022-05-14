@@ -19,11 +19,6 @@
     <string name="no">Нет</string>
     <string name="yes">да</string>
     <string name="unsave">Удалить</string>
-    <string name="export">Экспорт</string>
-    <string name="exportHtml">Экспорт в HTML</string>
-    <string name="exportPdf">Экспорт в PDF</string>
-    <string name="exportTxt">Экспорт в TXT</string>
-    <string name="exportOptions">Параметры экспорта (%s)</string>
     <string name="backgroundTasks">Фоновые задачи</string>
     <string name="unknownError">Извините, произошла неизвестная ошибка: %s</string>
     <string name="unknownMyError">Извините, произошла неизвестная ошибка!</string>
@@ -84,23 +79,35 @@
     <string name="guestDesc">Вы используете это приложение в гостевом режиме.\nТаким образом, вы не можете использовать эту функцию!</string>
     <string name="signOutSure">Вы уверены, что хотите выйти из своей учетной записи Instagram?</string>
     <string name="mtSearch">Введите имя профиля или ссылку&#8230;</string>
-    <string name="boxUntil">До %s</string>
+    <string name="terminateBgTasks">Некоторые задачи выполняются в фоновом режиме. Вы уверены, что хотите уничтожить их всех?</string>
+    <string name="alsoDeleteData">Также удалить мои пользовательские данные и настройки</string>
+    <string name="toExit">Нажмите дважды, чтобы выйти&#8230;</string>
+
+    <!-- PageUnf -->
     <string name="unfollow">Отписаться</string>
     <string name="unfollowPV">Этот аккаунт является частным. Вы уверены, что хотите отписаться от них?</string>
     <string name="unfCouldNot">Не удалось отписаться от этого пользователя!</string>
-    <string name="terminateBgTasks">Некоторые задачи выполняются в фоновом режиме. Вы уверены, что хотите уничтожить их всех?</string>
-    <string name="unsaveOnly">Только отменить сохранение</string>
-    <string name="downloadOnly">Только скачать</string>
-    <string name="unsaveDownload">Удалить и загрузить</string>
-    <string name="alsoDeleteData">Также удалить мои пользовательские данные и настройки</string>
-    <string name="toExit">Нажмите дважды, чтобы выйти&#8230;</string>
     <string name="unfEmpty">У вас нет отписавшихся!</string>
-    <string name="svdEmpty">У вас нет сохраненных сообщений!</string>
-    <string name="boxEmpty">У вас нет сообщений!</string>
     <string name="unfollowedAt">Отписался на %s</string>
     <string name="newUnfNtfChannel">Новые отписавшиеся</string>
     <string name="newUnfNtfChannelDesc">Некоторые люди просто отписались от вас!</string>
     <string name="newUnfNtfText">%d новых людей отписались от вас!</string>
+    <string name="unfollowedSoMany">К сожалению, Instagram не позволит вам так часто отписываться от большого количества людей в целях борьбы со спамом. Повторите попытку примерно через полчаса&#8230;</string>
+
+    <!-- PageSvd -->
+    <string name="unsaveOnly">Только отменить сохранение</string>
+    <string name="downloadOnly">Только скачать</string>
+    <string name="unsaveDownload">Удалить и загрузить</string>
+    <string name="svdEmpty">У вас нет сохраненных сообщений!</string>
+
+    <!-- PageBox -->
+    <string name="boxUntil">До %s</string>
+    <string name="exportHtml">Экспорт в HTML</string>
+    <string name="exportPdf">Экспорт в PDF</string>
+    <string name="exportTxt">Экспорт в TXT</string>
+    <string name="exportOptions">Параметры экспорта (%s)</string>
+    <string name="export">Экспорт</string>
+    <string name="boxEmpty">У вас нет сообщений!</string>
     <string name="dmNotSeen">Вы невидимы!</string>
     <string name="dmNotSeenDesc">Сообщения, которые вы просматриваете в этом приложении, НЕ будут помечены как просмотренные!</string>
     <string name="expOptImage">Включить изображения</string>
@@ -111,7 +118,9 @@
     <string name="expOptHig">Высокое качество</string>
     <string name="expOptThm">Только миниатюра (первый кадр)</string>
     <string name="unsupportedExportUriAuth">Извините, но такая папка не поддерживается для этого типа экспорта! Хотя можно экспортировать в эту самую папку и в другие типы файлов.</string>
-    <string name="unfollowedSoMany">К сожалению, Instagram не позволит вам так часто отписываться от большого количества людей в целях борьбы со спамом. Повторите попытку примерно через полчаса&#8230;</string>
+    <string name="exportHtmlDesc">Внимание: HTML-файл можно правильно просмотреть только на ПК или macOS!</string>
+    <string name="exportPdfDesc">Файл PDF не может содержать аудио и видео.</string>
+    <string name="exportTxtDesc">Простой текстовый файл не может содержать какие-либо носители.</string>
 
     <!-- Downloads -->
     <string name="downloads">Загрузки</string>

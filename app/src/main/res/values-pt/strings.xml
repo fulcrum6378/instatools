@@ -14,11 +14,6 @@
     <string name="no">Não</string>
     <string name="yes">Sim</string>
     <string name="unsave">Não salvar</string>
-    <string name="export">Exportar</string>
-    <string name="exportHtml">Exportar para HTML</string>
-    <string name="exportPdf">Exportar para PDF</string>
-    <string name="exportTxt">Exportar para TXT</string>
-    <string name="exportOptions">Opções de exportação (%s)</string>
     <string name="backgroundTasks">Tarefas em segundo plano</string>
     <string name="unknownError">Desculpe, ocorreu um erro desconhecido: %s</string>
     <string name="unknownMyError">Desculpe, ocorreu um erro desconhecido!</string>
@@ -79,23 +74,35 @@
     <string name="guestDesc">Você está usando este aplicativo no modo visitante.\nPortanto, você não pode usar esse recurso!</string>
     <string name="signOutSure">Tem certeza de que deseja sair da sua conta do Instagram?</string>
     <string name="mtSearch">Insira um nome de perfil ou link&#8230;</string>
-    <string name="boxUntil">Até %s</string>
+    <string name="terminateBgTasks">Algumas tarefas estão sendo executadas em segundo plano. Tem certeza de que deseja encerrar todos eles?</string>
+    <string name="alsoDeleteData">Excluir também meus dados e configurações de usuário</string>
+    <string name="toExit">Toque duas vezes para sair&#8230;</string>
+
+    <!-- PageUnf -->
     <string name="unfollow">Deixar de Seguir</string>
     <string name="unfollowPV">Esta conta é privada. Tem certeza de que deseja deixar de segui-los?</string>
     <string name="unfCouldNot">Não foi possível deixar de seguir este usuário!</string>
-    <string name="terminateBgTasks">Algumas tarefas estão sendo executadas em segundo plano. Tem certeza de que deseja encerrar todos eles?</string>
-    <string name="unsaveOnly">Não Salvar Somente</string>
-    <string name="downloadOnly">Somente Download</string>
-    <string name="unsaveDownload">Cancelar Salvar e Baixar</string>
-    <string name="alsoDeleteData">Excluir também meus dados e configurações de usuário</string>
-    <string name="toExit">Toque duas vezes para sair&#8230;</string>
     <string name="unfEmpty">Você não tem seguidores!</string>
-    <string name="svdEmpty">Você não tem postagens salvas!</string>
-    <string name="boxEmpty">Você não tem mensagens!</string>
     <string name="unfollowedAt">Deixar de ser seguido em %s</string>
     <string name="newUnfNtfChannel">Novos Não-Seguidores</string>
     <string name="newUnfNtfChannelDesc">Algumas pessoas simplesmente deixaram de te seguir!</string>
     <string name="newUnfNtfText">%d novas pessoas deixaram de te seguir!</string>
+    <string name="unfollowedSoMany">Infelizmente o Instagram não permitirá que você deixe de seguir um grande número de pessoas com tanta frequência para combater o spam. Tente novamente cerca de meia hora depois&#8230;</string>
+
+    <!-- PageSvd -->
+    <string name="unsaveOnly">Não Salvar Somente</string>
+    <string name="downloadOnly">Somente Download</string>
+    <string name="unsaveDownload">Cancelar Salvar e Baixar</string>
+    <string name="svdEmpty">Você não tem postagens salvas!</string>
+
+    <!-- PageBox -->
+    <string name="boxUntil">Até %s</string>
+    <string name="exportHtml">Exportar para HTML</string>
+    <string name="exportPdf">Exportar para PDF</string>
+    <string name="exportTxt">Exportar para TXT</string>
+    <string name="exportOptions">Opções de exportação (%s)</string>
+    <string name="export">Exportar</string>
+    <string name="boxEmpty">Você não tem mensagens!</string>
     <string name="dmNotSeen">Você é invisível!</string>
     <string name="dmNotSeenDesc">As mensagens que você visualizar neste aplicativo NÃO serão marcadas como vistas!</string>
     <string name="expOptImage">Incluir fotos</string>
@@ -106,7 +113,9 @@
     <string name="expOptHig">Alta qualidade</string>
     <string name="expOptThm">Apenas uma miniatura (primeiro quadro)</string>
     <string name="unsupportedExportUriAuth">Desculpe, mas este tipo de pasta não é compatível com este tipo de exportação! Embora você possa exportar para esta mesma pasta nos outros tipos de arquivo.</string>
-    <string name="unfollowedSoMany">Infelizmente o Instagram não permitirá que você deixe de seguir um grande número de pessoas com tanta frequência para combater o spam. Tente novamente cerca de meia hora depois&#8230;</string>
+    <string name="exportHtmlDesc">Atenção: um arquivo HTML só pode ser visualizado corretamente usando um PC ou macOS!</string>
+    <string name="exportPdfDesc">Um arquivo PDF não pode conter áudio e vídeo.</string>
+    <string name="exportTxtDesc">Um arquivo de texto simples não pode conter nenhum tipo de mídia.</string>
 
     <!-- Downloads -->
     <string name="downloads">Transferências</string>

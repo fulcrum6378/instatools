@@ -267,7 +267,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     fun goTo(
         activity: KClass<*>,
-        finish: Boolean = false,
+        finish: Boolean = false, // USE THIS CAREFULLY
         onIntent: (Intent.() -> Unit)? = null
     ): Boolean {
         startActivity(

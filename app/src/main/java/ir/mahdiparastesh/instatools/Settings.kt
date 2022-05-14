@@ -375,7 +375,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 if (giveLinkBack != null) {
                     Downloads.initService(this, giveLinkBack)
                     giveLinkBack = null
-                    goTo(Downloads::class, true)
+                    onBackPressed()
+                    goTo(Downloads::class)
+                    // If you call finish() here, Downloads will be loaded without a background
+                    // corruptly over the previous Activity in an ugly way.
                 }
             }
             1 -> {

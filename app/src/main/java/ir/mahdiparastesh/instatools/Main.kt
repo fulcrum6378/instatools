@@ -44,7 +44,6 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
-import kotlin.reflect.KClass
 
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
@@ -66,10 +65,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = m.currentPage
-    override val aKlass: KClass<PageUnf> = PageUnf::class
-    override val bKlass: KClass<PageSvd> = PageSvd::class
-    override val cKlass: KClass<PageBox> = PageBox::class
-    override val mode: TripleMode = TripleMode.FRAGMENT_MANAGER
+    override val aKlass = PageUnf::class
+    override val bKlass = PageSvd::class
+    override val cKlass = PageBox::class
+    override val mode = TripleMode.FRAGMENT_MANAGER
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
         ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
         ?: Settings.defSpMainPage

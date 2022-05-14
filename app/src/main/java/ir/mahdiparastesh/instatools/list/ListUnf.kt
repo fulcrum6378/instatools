@@ -63,10 +63,6 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)
             }.show()
         }
-        /*h.b.root.setOnLongClickListener {
-            c.m.unfollowers.value?.getOrNull(h.layoutPosition)?.also { u -> toggleFav(u) }
-            true
-        }*/ // confused with unfollowing
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             if (!u.priv) unfollow(u)
@@ -86,12 +82,19 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         Api<Rest>(
             c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, null,
             method = Request.Method.POST, onError = { res ->
-                if (res?.statusCode == 429) AlertDialog.Builder(c).apply {
-                    setTitle(R.string.unfollow)
-                    setMessage(R.string.unfollowedSoMany)
-                    setNeutralButton(R.string.ok, null)
-                }.show().stylise(c)
-                else PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
+                if (res?.statusCode == 429) {
+                    var showing429 = true
+                    c.loadInterstitial(R.string.interUnfMany) { !showing429 }
+                    AlertDialog.Builder(c).apply {
+                        setTitle(R.string.unfollow)
+                        setMessage(R.string.unfollowedSoMany)
+                        setNeutralButton(R.string.ok, null)
+                        setOnDismissListener {
+                            showing429 = false
+                            c.showInterstitial()
+                        }
+                    }.show().stylise(c)
+                } else PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
             }
         ) {
             if (it.status != "ok") {

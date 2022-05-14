@@ -266,6 +266,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 bi.quaVideo.areEnabled(isChecked)
             }
         })
+        bi.desc.setText(method.desc)
+        bi.desc.typeface = c.fontLight
 
         AlertDialog.Builder(c).apply {
             setTitle(c.getString(R.string.exportOptions, method.ext.uppercase()))
