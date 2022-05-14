@@ -4,14 +4,14 @@ import android.net.Uri
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.more.BaseExporter
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.io.FileOutputStream
 import java.util.*
 
-abstract class TxtExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
+abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
     private var ink = StringBuilder()
 
     override fun run() {

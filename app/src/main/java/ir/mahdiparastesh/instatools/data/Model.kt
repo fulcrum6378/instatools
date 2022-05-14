@@ -15,9 +15,6 @@ class Model : ViewModel() {
     var acc: Account? = null
     var files: CopyOnWriteArraySet<String>? = null
 
-    // Login
-    var loginLoaded = false
-
     // Main
     var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
     var saved: Profile.EdgeList? = null
@@ -42,7 +39,6 @@ class Model : ViewModel() {
 
 
     fun accountSwitched() {
-        loginLoaded = false
         unfollowers.value = null
         saved = null
         dmInbox = null

@@ -10,7 +10,6 @@ import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.more.BaseExporter
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
@@ -21,7 +20,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
 
-abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
+abstract class HtmlExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
     private lateinit var folder: DocumentFile
     private val dwnFolder by lazy {
         DocumentFile.fromTreeUri(c.c, Uri.parse(c.sPreference(Settings.spStorage)))!!
@@ -35,6 +34,7 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
     private var divisions: ArrayList<String>? = null // temporarily a page's contents
     private val dirRtl = c.c.resources.getBoolean(R.bool.dirRtl)
     private var limit = 0
+    protected var rescueFolder: DocumentFile? = null
 
     private val subFolderNames = arrayOf("image", "video", "audio")
     val maximum = 200
@@ -92,7 +92,6 @@ abstract class HtmlExporter(c: Persistent, exp: Exportable) : BaseExporter(c, ex
             }
         }
         exp.media.clear()
-        var rescueFolder: DocumentFile? = null
         if (canCreateDirSelf) {
             tmpDir.createFile("text/plain", TEST_FILE)?.also {
                 try {
@@ -401,10 +400,6 @@ body { background: #FCFCFC; }
                     }
                 }
             }
-        }
-
-        if (rescueFolder != null) {
-            // TODO: notification with "Open Folder" button
         }
 
         progress(100f, true)

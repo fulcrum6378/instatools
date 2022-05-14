@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '14.9'
+        versionName '15.2'
     }
 
     signingConfigs {
@@ -65,6 +65,7 @@ android {
         }
     }
     android.variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }
+    // android.variantFilter { if (buildType.name in arrayOf("androidTest")) ignore = true }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

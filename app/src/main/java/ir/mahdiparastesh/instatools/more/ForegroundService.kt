@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -17,11 +16,13 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
@@ -56,18 +57,16 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             else flag
     }
 
-    abstract class ForegroundServiceCompanion(val CH_ID: Int, private val klass: KClass<*>) :
-        Alive() {
-        val pack: String = klass.java.`package`!!.name
-        abstract val channel: String
-        abstract val chName: Int
-        abstract val chDesc: Int
-        abstract val ntfSmallIcon: Int
+    abstract class ForegroundServiceCompanion : Alive() {
+        abstract val klass: Class<*>
+        abstract val channel: Notify.Channel
+        open val ntfSmallIcon: Int = R.drawable.notification
+        abstract val ntfId: Int
         abstract val ntfTitle: Int
         abstract val ntfActions: Array<Pair<String, Int>>
 
         open fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
-            c, 0, Intent(c, klass.java).apply { action = code }, ntfMutability()
+            c, 0, Intent(c, klass).apply { action = code }, ntfMutability()
         )
     }
 
@@ -98,10 +97,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         gsp = initGsp()
         sp = initSp(m.acc)
 
-        if (requiresHandling) handling = HandlerThread(com.pack).also { it.start() }
+        if (requiresHandling) handling = HandlerThread(com.klass.name).also { it.start() }
         if (waveLockTimeout != null) wakeLock =
             (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
-                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${com.pack}::lock").apply {
+                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${com.klass.name}::lock").apply {
                     acquire(waveLockTimeout!! * 60000L)
                 }
             }
@@ -119,23 +118,21 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfAct = openActivity
         ntfPage = turnToPage
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(
-                    NotificationChannel(
-                        com.channel, c.resources.getString(com.chName),
-                        NotificationManager.IMPORTANCE_LOW
-                    ).apply { description = c.resources.getString(com.chDesc) })
-        startForeground(com.CH_ID, notification(progress))
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+                createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
+                createNotificationChannel(com.channel.create(c))
+            }
+        startForeground(com.ntfId, notification(progress))
     }
 
     open fun updateNotification(progress: Pair<Int, Int>?) {
-        NotificationManagerCompat.from(c).notify(ntfCom.CH_ID, notification(progress))
+        NotificationManagerCompat.from(c).notify(ntfCom.ntfId, notification(progress))
     }
 
     open fun notification(progress: Pair<Int, Int>?) =
-        NotificationCompat.Builder(c, ntfCom.channel).apply {
+        NotificationCompat.Builder(c, ntfCom.channel.id).apply {
             setSmallIcon(ntfCom.ntfSmallIcon)
-            setContentTitle(c.resources.getString(ntfCom.ntfTitle))
+            setContentTitle(getString(ntfCom.ntfTitle))
             setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
@@ -149,11 +146,19 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                 )
             )
             for (a in ntfCom.ntfActions)
-                addAction(0, c.resources.getString(a.second), ntfCom.pi(c, a.first))
+                addAction(0, getString(a.second), ntfCom.pi(c, a.first))
         }.build()
 
-    protected fun eventNotification() {
-        TODO()
+    protected fun eventNotification(id: Int, func: NotificationCompat.Builder.() -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                .createNotificationChannel(Notify.Channel.RESULT.create(c))
+        NotificationManagerCompat.from(c).notify(
+            id, NotificationCompat.Builder(c, Notify.Channel.RESULT.id).apply {
+                setSmallIcon(R.drawable.notification)
+                func()
+            }.build()
+        )
     }
 
     open fun onCancel() {

@@ -63,6 +63,8 @@
     <string name="next">Sonraki</string>
     <string name="prev">Öncesi</string>
     <string name="save">Kaydetmek</string>
+    <string name="tryAgain">Tekrar deneyin</string>
+    <string name="openFolder">Klasörde Aç</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -103,6 +105,8 @@
     <string name="expOptMed">Orta kalite</string>
     <string name="expOptHig">Yüksek kalite</string>
     <string name="expOptThm">Yalnızca küçük resim (ilk kare)</string>
+    <string name="unsupportedExportUriAuth">Üzgünüz, ancak bu tür klasörler bu dışa aktarma türü için desteklenmiyor! Diğer dosya türlerinde bu klasöre dışa aktarabilirsiniz.</string>
+    <string name="unfollowedSoMany">Ne yazık ki Instagram, spam ile mücadele etmek için çok sayıda insanı takibi bırakmanıza izin vermiyor. Lütfen yaklaşık yarım saat sonra tekrar deneyin&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>
@@ -182,11 +186,21 @@
     <string name="exporterChannelDesc">Doğrudan mesajları dışa aktarır</string>
     <string name="exporterTitle">Dışa aktarılıyor&#8230;</string>
     <string name="exporterStop">Iptal</string>
-    <string name="exporterFetchTexts">%s\'un sohbetindeki metinler getiriliyor&#8230;</string>
+    <string name="exporterFetchTexts">%2$s\'un sohbetinde %1$d mesaj alındı&#8230;</string>
     <string name="exporterFetchMedia">%s\'un sohbetindeki medya getiriliyor&#8230;</string>
     <string name="exporterWriting">%s\'un sohbeti depoya yazılıyor&#8230;</string>
+    <string name="exporterDone">%s\'un sohbetinin dışa aktarılması tamamlandı.</string>
+    <string name="exporterFailed">Dışa aktarma başarısız oldu!</string>
+    <string name="exporterFailed429">Ne yazık ki Instagram, spam ile mücadele etmek için çok fazla olduğu ve çok sık yapıldığı için bu istekleri engelledi. Lütfen birkaç saat sonra tekrar deneyin&#8230;</string>
+    <string name="exporterFailedUnk">Bilinmeyen bir hata oluştu: %s</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Çok sayıda hesabı yavaş yavaş takip edin&#8230;</string>
     <string name="followerTitle">Gizlice Takip Etmek&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">İlerleyen Görevler</string>
+    <string name="servicesChannelGroupDesc">İndirme ve dışa aktarma gibi uzun süredir devam eden görevler.</string>
+    <string name="taskResultChannel">Görev Sonuçları</string>
+    <string name="taskResultChannelDesc">İndirme, dışa aktarma ve toplu takip gibi uzun süredir devam eden bir görevden kaynaklanan her şeyi bildirir.</string>
 </resources>

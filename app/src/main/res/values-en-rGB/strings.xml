@@ -63,6 +63,8 @@
     <string name="next">Next</string>
     <string name="prev">Previous</string>
     <string name="save">Save</string>
+    <string name="tryAgain">Try Again</string>
+    <string name="openFolder">Open in Folder</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -91,7 +93,7 @@
     <string name="svdEmpty">You have no saved posts!</string>
     <string name="boxEmpty">You have no messages!</string>
     <string name="unfollowedAt">Unfollowed at %s</string>
-    <string name="newUnfNtfChannel">New Unfollowers</string>
+    <string name="newUnfNtfChannel">New unfollowers</string>
     <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
     <string name="dmNotSeen">You Are Invisible!</string>
@@ -103,6 +105,8 @@
     <string name="expOptMed">Medium quality</string>
     <string name="expOptHig">High quality</string>
     <string name="expOptThm">Only a thumbnail (first frame)</string>
+    <string name="unsupportedExportUriAuth">Sorry, but this kind of folder is not supported for this export type! Although you can export into this very folder in the other file types.</string>
+    <string name="unfollowedSoMany">Unfortunately Instagram won\'t allow you to unfollow a large number of people so frequently in order to combat spam. Please try again about half an hour later&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
@@ -172,7 +176,7 @@
 
 
     <!-- Queuer -->
-    <string name="queuerChannel">Download Queue</string>
+    <string name="queuerChannel">Download queue</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
     <string name="queuerStop">Halt</string>
@@ -182,11 +186,21 @@
     <string name="exporterChannelDesc">Exports the direct messages</string>
     <string name="exporterTitle">Exporting&#8230;</string>
     <string name="exporterStop">Abort</string>
-    <string name="exporterFetchTexts">Fetching texts in %s\'s chat&#8230;</string>
+    <string name="exporterFetchTexts">Fetched %1$d messages in %2$s\'s chat&#8230;</string>
     <string name="exporterFetchMedia">Fetching media in %s\'s chat&#8230;</string>
     <string name="exporterWriting">Writing %s\'s chat into the storage&#8230;</string>
+    <string name="exporterDone">Exporting %s\'s chat finished.</string>
+    <string name="exporterFailed">Export failed!</string>
+    <string name="exporterFailed429">Unfortunately Instagram blocked these requests because they were too many and were done so frequently, in order to combat spam. Please try again a few hours later&#8230;</string>
+    <string name="exporterFailedUnk">An unknown error occurred: %s</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Follow a large number of accounts slowly&#8230;</string>
     <string name="followerTitle">Following furtively&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">Progressing Tasks</string>
+    <string name="servicesChannelGroupDesc">Long-running tasks like downloading and exporting.</string>
+    <string name="taskResultChannel">Task Results</string>
+    <string name="taskResultChannelDesc">Notifies anything resulted from a long-running task, like downloading, exporting and mass following.</string>
 </resources>

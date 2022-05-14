@@ -63,6 +63,8 @@
     <string name="next">Próximo</string>
     <string name="prev">Anterior</string>
     <string name="save">Salve</string>
+    <string name="tryAgain">Tente novamente</string>
+    <string name="openFolder">Abrir na pasta</string>
 
     <!-- Login -->
     <string name="addAccount">Adicionar Conta</string>
@@ -103,6 +105,8 @@
     <string name="expOptMed">Qualidade média</string>
     <string name="expOptHig">Alta qualidade</string>
     <string name="expOptThm">Apenas uma miniatura (primeiro quadro)</string>
+    <string name="unsupportedExportUriAuth">Desculpe, mas este tipo de pasta não é compatível com este tipo de exportação! Embora você possa exportar para esta mesma pasta nos outros tipos de arquivo.</string>
+    <string name="unfollowedSoMany">Infelizmente o Instagram não permitirá que você deixe de seguir um grande número de pessoas com tanta frequência para combater o spam. Tente novamente cerca de meia hora depois&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">Transferências</string>
@@ -182,11 +186,21 @@
     <string name="exporterChannelDesc">Exporta as mensagens diretas</string>
     <string name="exporterTitle">Exportador&#8230;</string>
     <string name="exporterStop">Abortar</string>
-    <string name="exporterFetchTexts">Buscando textos no bate-papo de %s&#8230;</string>
+    <string name="exporterFetchTexts">Busquei %1$d mensagens no chat do %2$s&#8230;</string>
     <string name="exporterFetchMedia">Buscando mídia no bate-papo de %s&#8230;</string>
     <string name="exporterWriting">Gravando o bate-papo de %s no depósito&#8230;</string>
+    <string name="exporterDone">A exportação do bate-papo de %s foi concluída.</string>
+    <string name="exporterFailed">Falha na exportação!</string>
+    <string name="exporterFailed429">Infelizmente o Instagram bloqueou esses pedidos porque eram muitos e eram feitos com tanta frequência, para combater o spam. Tente novamente algumas horas depois&#8230;</string>
+    <string name="exporterFailedUnk">Ocorreu um erro desconhecido: %s</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Siga um grande número de contas lentamente&#8230;</string>
     <string name="followerTitle">Seguindo furtivamente&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">Tarefas em andamento</string>
+    <string name="servicesChannelGroupDesc">Tarefas de longa duração, como download e exportação.</string>
+    <string name="taskResultChannel">Resultados da tarefa</string>
+    <string name="taskResultChannelDesc">Notifica qualquer coisa resultante de uma tarefa de longa duração, como download, exportação e acompanhamento em massa.</string>
 </resources>

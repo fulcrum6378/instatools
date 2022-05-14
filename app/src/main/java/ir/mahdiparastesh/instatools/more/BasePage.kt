@@ -25,7 +25,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     Toolbar.OnMenuItemClickListener where C : BaseActivity {
 
     @Suppress("UNCHECKED_CAST")
-    protected val c: C by lazy { activity as C }
+    protected val c: C get() = activity as C
 
     abstract val com: PageCompanion
     abstract val root: ConstraintLayout

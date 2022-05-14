@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.LongThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
+import ir.mahdiparastesh.instatools.view.Notify
 import kotlinx.coroutines.runBlocking
 
 class Follower : ForegroundService() {
@@ -28,12 +29,11 @@ class Follower : ForegroundService() {
     override val com: ForegroundServiceCompanion get() = Companion
     override val waveLockTimeout = 60
 
-    companion object : ForegroundServiceCompanion(77, Follower::class) {
-        override val channel: String = "$pack.FOLLOWING"
-        override val chName: Int = R.string.followerChannel
-        override val chDesc: Int = R.string.followerChannelDesc
-        override val ntfSmallIcon: Int = R.mipmap.launcher_round
-        override val ntfTitle: Int = R.string.followerTitle
+    companion object : ForegroundServiceCompanion() {
+        override val klass = Follower::class.java
+        override val channel = Notify.Channel.FOLLOWER
+        override val ntfId = Notify.ID_FOLLOWER
+        override val ntfTitle = R.string.followerTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.followerStop
         )

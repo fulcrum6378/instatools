@@ -68,6 +68,8 @@
     <string name="next">Следующий</string>
     <string name="prev">Предыдущий</string>
     <string name="save">Сохранять</string>
+    <string name="tryAgain">Попробуйте еще раз</string>
+    <string name="openFolder">Открыть в папке</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -108,6 +110,8 @@
     <string name="expOptMed">Среднее качество</string>
     <string name="expOptHig">Высокое качество</string>
     <string name="expOptThm">Только миниатюра (первый кадр)</string>
+    <string name="unsupportedExportUriAuth">Извините, но такая папка не поддерживается для этого типа экспорта! Хотя можно экспортировать в эту самую папку и в другие типы файлов.</string>
+    <string name="unfollowedSoMany">К сожалению, Instagram не позволит вам так часто отписываться от большого количества людей в целях борьбы со спамом. Повторите попытку примерно через полчаса&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">Загрузки</string>
@@ -187,11 +191,21 @@
     <string name="exporterChannelDesc">Экспортирует прямые сообщения</string>
     <string name="exporterTitle">Экспорт&#8230;</string>
     <string name="exporterStop">Прервать</string>
-    <string name="exporterFetchTexts">Получение сообщений в чате %s&#8230;</string>
+    <string name="exporterFetchTexts">Получено %1$d сообщений в чате %2$s&#8230;</string>
     <string name="exporterFetchMedia">Получение медиафайлов в чате %s&#8230;</string>
     <string name="exporterWriting">Запись чата %s в хранилище&#8230;</string>
+    <string name="exporterDone">Экспорт чата %s завершен.</string>
+    <string name="exporterFailed">Экспорт не выполнен!</string>
+    <string name="exporterFailed429">К сожалению, Instagram заблокировал эти запросы, потому что их было слишком много и они поступали так часто, чтобы бороться со спамом. Повторите попытку через несколько часов&#8230;</string>
+    <string name="exporterFailedUnk">Произошла неизвестная ошибка: %s</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Подписывайтесь на большое количество аккаунтов медленно&#8230;</string>
     <string name="followerTitle">Следом украдкой&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">Выполнение задач</string>
+    <string name="servicesChannelGroupDesc">Длительные задачи, такие как загрузка и экспорт.</string>
+    <string name="taskResultChannel">Результаты задачи</string>
+    <string name="taskResultChannelDesc">Уведомляет обо всем, что является результатом длительной задачи, такой как загрузка, экспорт и массовое отслеживание.</string>
 </resources>

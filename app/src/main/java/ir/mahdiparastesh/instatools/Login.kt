@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Process.killProcess
 import android.os.Process.myPid
-import android.transition.AutoTransition
-import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewStub
 import android.webkit.CookieManager
@@ -14,7 +12,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.gson.Gson
@@ -93,7 +90,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
-    private val logoDestBias = 0.15f
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
@@ -107,19 +103,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             browse()
         }
         bw.addAccTv.typeface = fontRegular
-
-        // Animate
-        if (!m.loginLoaded) Delay(300) {
-            val cs = ConstraintSet()
-            cs.clone(bw.root)
-            TransitionManager.beginDelayedTransition(bw.root, AutoTransition().setDuration(900))
-            cs.setVerticalBias(bw.logo.id, logoDestBias)
-            cs.applyTo(bw.root)
-            m.loginLoaded = true
-        } else bw.logo.layoutParams =
-            (bw.logo.layoutParams as ConstraintLayout.LayoutParams).apply {
-                verticalBias = logoDestBias
-            }
     }
 
     private fun welcome() {

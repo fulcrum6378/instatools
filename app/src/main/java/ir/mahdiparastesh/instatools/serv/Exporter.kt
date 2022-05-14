@@ -1,17 +1,21 @@
 package ir.mahdiparastesh.instatools.serv
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.core.app.NotificationCompat
+import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -24,6 +28,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.view.HtmlExporter
+import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.PdfExporter
 import ir.mahdiparastesh.instatools.view.TxtExporter
 import kotlinx.coroutines.CoroutineScope
@@ -40,12 +45,11 @@ class Exporter : ForegroundService() {
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
 
-    companion object : ForegroundServiceCompanion(103, Exporter::class) {
-        override val channel: String = "$pack.EXPORTING"
-        override val chName: Int = R.string.exporterChannel
-        override val chDesc: Int = R.string.exporterChannelDesc
-        override val ntfSmallIcon: Int = R.mipmap.launcher_round
-        override val ntfTitle: Int = R.string.exporterTitle
+    companion object : ForegroundServiceCompanion() {
+        override val klass = Exporter::class.java
+        override val channel = Notify.Channel.EXPORTER
+        override val ntfId = Notify.ID_EXPORTER
+        override val ntfTitle = R.string.exporterTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.exporterStop
         )
@@ -69,7 +73,11 @@ class Exporter : ForegroundService() {
                         val dmThd = msg.obj as Dm.DmThread
                         if (exp?.threadData == null) {
                             exp?.threadData = dmThd
-                            ntfText = c.getString(R.string.exporterFetchTexts, dmThd.title())
+                            ntfText = c.getString(
+                                R.string.exporterFetchTexts,
+                                exp?.threadData?.items?.size ?: 0,
+                                dmThd.title()
+                            )
                             updateNotification(null)
                             // Inbox API has no reference to number of items in a thread.
                             exp?.fetchData()
@@ -81,9 +89,24 @@ class Exporter : ForegroundService() {
                         }
                     }
                     Api.HANDLE_ERROR -> {
-                        if (BuildConfig.DEBUG) {
-                            val res = msg.obj as NetworkResponse
-                            throw Exception("${res.statusCode} : ${String(res.data)}")
+                        when (val code = (msg.obj as NetworkResponse?)?.statusCode) {
+                            429 -> eventNotification(Notify.ID_EXPORTER_429) {
+                                setContentTitle(getString(R.string.exporterFailed))
+                                setStyle(
+                                    NotificationCompat.BigTextStyle()
+                                        .bigText(getString(R.string.exporterFailed429))
+                                )
+                                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
+                            }
+                            else -> eventNotification(Notify.ID_EXPORTER_UNK_FETCH_ERROR) {
+                                setContentTitle(getString(R.string.exporterFailed))
+                                setStyle(
+                                    NotificationCompat.BigTextStyle().bigText(
+                                        getString(R.string.exporterFailedUnk, code.toString())
+                                    )
+                                )
+                                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
+                            }
                         }
                         finish(false)
                     }
@@ -253,7 +276,7 @@ class Exporter : ForegroundService() {
         when (type) {
             0 -> object : HtmlExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
-                    if (percent == 100f) end(this@export)
+                    if (percent == 100f) end(this@export, rescueFolder?.uri)
                 }
             }.start()
             1 -> object : PdfExporter(this@Exporter, this@export) {
@@ -270,12 +293,35 @@ class Exporter : ForegroundService() {
         }
     }
 
-    private fun end(oldExp: Exportable?) {
+    private fun end(oldExp: Exportable?, alternativeFolder: Uri? = null) {
         if (oldExp == null) return
         // Don't update notification here; it'll create another after onDestroy
         CoroutineScope(Dispatchers.IO).launch {
             dao.deleteExportable(oldExp)
-            withContext(Dispatchers.Main) { handle() }
+            withContext(Dispatchers.Main) {
+                handle()
+                eventNotification(Notify.ID_EXPORTER_DONE) {
+                    setContentTitle(
+                        getString(R.string.exporterDone, oldExp.threadData?.title() ?: "")
+                    )
+                    addAction(
+                        0, getString(R.string.openFolder), PendingIntent.getActivity(
+                            c, 0, Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(alternativeFolder
+                                    ?: (if (oldExp.method().asTree) oldExp.uri?.let {
+                                        Uri.parse(
+                                            it
+                                        )
+                                    }
+                                    else oldExp.uri
+                                        ?.let { DocumentFile.fromSingleUri(c, Uri.parse(it)) }
+                                        ?.parentFile?.uri), DIR_MIME)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }, ntfMutability()
+                        )
+                    )
+                }
+            }
         }
     }
 

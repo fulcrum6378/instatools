@@ -21,10 +21,10 @@ import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.font
 import ir.mahdiparastesh.instatools.more.BaseExporter
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.serv.Exporter
 import java.io.FileOutputStream
 
-abstract class PdfExporter(c: Persistent, exp: Exportable) : BaseExporter(c, exp) {
+abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
 
     @SuppressLint("InflateParams")
     override fun run() {

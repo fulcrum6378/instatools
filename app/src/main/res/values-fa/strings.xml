@@ -71,6 +71,8 @@
     <string name="next">بعدی</string>
     <string name="prev">قبلی</string>
     <string name="save">ذخیره</string>
+    <string name="tryAgain">تلاش دوباره</string>
+    <string name="openFolder">بازکردن در فولدر</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -111,6 +113,8 @@
     <string name="expOptMed">کیفیت متوسط</string>
     <string name="expOptHig">کیفیت بالا</string>
     <string name="expOptThm">فقط یک عکس پیش نمایش (اولین فریم)</string>
+    <string name="unsupportedExportUriAuth">با عرض پوزش برای استخراج این نوع فایل، از این نوع محل ذخیره پشتیبانی نمی شود! با این حال می توانید در قالب های دیگر در این محل ذخیره کنید.</string>
+    <string name="unfollowedSoMany">متاسفانه اینستاگرام برای مبارزه با اسپم، اجازه نمی دهد کسی پشت سرهم پروفایل های زیادی را آنفالو کند. لطفا حدود نیم ساعت دیگر دوباره امتحان کنید&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>
@@ -190,11 +194,21 @@
     <string name="exporterChannelDesc">دایرکت ها را برایتان استخراج می کند</string>
     <string name="exporterTitle">در حال استخراج&#8230;</string>
     <string name="exporterStop">ایست</string>
-    <string name="exporterFetchTexts">درحال دریافت متن های چت %s&#8230;</string>
+    <string name="exporterFetchTexts">%1$d پیام از چت %2$s دریافت شد&#8230;</string>
     <string name="exporterFetchMedia">درحال دریافت صداو تصاویر در چت %s&#8230;</string>
     <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>
+    <string name="exporterDone">استخراج چت %s به اتمام رسید.</string>
+    <string name="exporterFailed">استخراج ناتمام ماند!</string>
+    <string name="exporterFailed429">متاسفانه اینستاگرام برای مبارزه با اسپم، اجازه نمی دهد درخواست های زیاد مشابه به یکباره به سرورهایش ارسال شود. لطفا چند ساعت دیگر مجددا تلاش کنید&#8230;</string>
+    <string name="exporterFailedUnk">خطای ناشناسی رخ داد: %s</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">فالو کردن دسته جمعی&#8230;</string>
     <string name="followerTitle">در حال یواشکی فالو کردن&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">کارهای طولانی</string>
+    <string name="servicesChannelGroupDesc">عملیات های طولانی مانند دانلود و استخراج.</string>
+    <string name="taskResultChannel">نتایج عملیات</string>
+    <string name="taskResultChannelDesc">هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.</string>
 </resources>

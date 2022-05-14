@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,18 +44,17 @@ class Queuer : ForegroundService() {
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
 
-    companion object : ForegroundServiceCompanion(262, Queuer::class) {
-        override val channel: String = "$pack.DOWNLOADING"
-        override val chName: Int = R.string.queuerChannel
-        override val chDesc: Int = R.string.queuerChannelDesc
-        override val ntfSmallIcon: Int = R.mipmap.launcher_round
-        override val ntfTitle: Int = R.string.queuerTitle
+    companion object : ForegroundServiceCompanion() {
+        override val klass = Queuer::class.java
+        override val channel = Notify.Channel.QUEUER
+        override val ntfId = Notify.ID_QUEUER
+        override val ntfTitle = R.string.queuerTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.queuerStop
         )
 
         const val HANDLE_LINK = 0
-        val EXTRA_LINK = "$pack.EXTRA_LINK"
+        const val EXTRA_LINK = "link"
     }
 
     override fun resolveIntent(intent: Intent) {

@@ -2,9 +2,12 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -14,7 +17,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
@@ -158,13 +160,19 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Miscellaneous
         if (m.files == null) StorageCache.load(this)
         Favourites.FavLoader(this).start()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+                deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.EXPORTING")
+                deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.FOLLOWING")
+                deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.DOWNLOADING")
+                deleteNotificationChannel("ir.mahdiparastesh.instatools.frag.NEW_ITEMS")
+            }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.extras?.getInt(EXTRA_TURN_TO_PAGE)?.let {
             if (::b.isInitialized) turnToPage(it)
-            if (it == 0) NotificationManagerCompat.from(c).cancel(PageUnf.CH_NEW_ITEMS_ID)
         }
     }
 

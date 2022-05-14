@@ -63,6 +63,8 @@
     <string name="next">Próximo</string>
     <string name="prev">Previo</string>
     <string name="save">Guardar</string>
+    <string name="tryAgain">Intentar otra vez</string>
+    <string name="openFolder">Abrir en carpeta</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -103,6 +105,8 @@
     <string name="expOptMed">Calidad media</string>
     <string name="expOptHig">Alta calidad</string>
     <string name="expOptThm">Solo una miniatura (primer fotograma)</string>
+    <string name="unsupportedExportUriAuth">Lo sentimos, pero este tipo de carpeta no es compatible con este tipo de exportación. Aunque puede exportar a esta misma carpeta en los otros tipos de archivos.</string>
+    <string name="unfollowedSoMany">Lamentablemente, Instagram no te permitirá dejar de seguir a un gran número de personas con tanta frecuencia para combatir el spam. Vuelva a intentarlo media hora más tarde&#8230;</string>
 
     <!-- Downloads -->
     <string name="downloads">Descargas</string>
@@ -182,11 +186,21 @@
     <string name="exporterChannelDesc">Exporta los mensajes directos</string>
     <string name="exporterTitle">Exportador&#8230;</string>
     <string name="exporterStop">Abortar</string>
-    <string name="exporterFetchTexts">Obteniendo textos en el chat de %s&#8230;</string>
+    <string name="exporterFetchTexts">Obtuve %1$d mensajes en el chat de %2$s&#8230;</string>
     <string name="exporterFetchMedia">Obteniendo contenido multimedia en el chat de %s&#8230;</string>
     <string name="exporterWriting">Escribiendo el chat de %s en el almacenamiento&#8230;</string>
+    <string name="exporterDone">Exportación del chat de %s finalizada.</string>
+    <string name="exporterFailed">¡Exportación fallida!</string>
+    <string name="exporterFailed429">Desafortunadamente, Instagram bloqueó estas solicitudes porque eran demasiadas y se hacían con mucha frecuencia para combatir el spam. Vuelva a intentarlo unas horas más tarde&#8230;</string>
+    <string name="exporterFailedUnk">Un error desconocido ocurrió: %s</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Sigue un gran número de cuentas lentamente&#8230;</string>
     <string name="followerTitle">Siguiendo Furtivamente&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">Tareas progresivas</string>
+    <string name="servicesChannelGroupDesc">Tareas de larga duración como descargar y exportar.</string>
+    <string name="taskResultChannel">Resultados de la tarea</string>
+    <string name="taskResultChannelDesc">Notifica cualquier resultado de una tarea de larga duración, como la descarga, la exportación y el seguimiento masivo.</string>
 </resources>

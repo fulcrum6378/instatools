@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -28,9 +27,9 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.view.Notify
 import kotlinx.coroutines.*
 
-@Suppress("UNCHECKED_CAST")
 class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     var thread: Inquiry? = null
@@ -42,6 +41,8 @@ class PageUnf : BasePageMain() {
     override val root: ConstraintLayout get() = b.root
     override val emptyIcon: Int = R.drawable.done_unf
     override val selectiveMenuRes: Int? = null
+
+    @Suppress("UNCHECKED_CAST")
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_LOADED to { msg ->
             (msg.obj as List<Friend>).apply {
@@ -107,9 +108,6 @@ class PageUnf : BasePageMain() {
         const val HANDLE_COULD_NOT = 3
         const val HANDLE_FAV_CHANGED = 4
         const val MAX_UNFOLLOW_AD = 10
-
-        val CH_NEW_ITEMS = "${PageUnf::class.java.`package`!!.name}.NEW_ITEMS"
-        const val CH_NEW_ITEMS_ID = 368
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -123,16 +121,10 @@ class PageUnf : BasePageMain() {
         else load(true)
     }
 
-    override fun onResume() {
-        super.onResume()
-        removeNtf()
-    }
-
     override fun onRefresh() {
         if (thread?.active == true) return
         b.rv.adapter = null
         thread = Inquiry().also { it.start() }
-        removeNtf()
     }
 
     private fun load(initial: Boolean) {
@@ -147,10 +139,6 @@ class PageUnf : BasePageMain() {
         super.onLoaded(isEmpty, asGuest)
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
-    }
-
-    private fun removeNtf() {
-        NotificationManagerCompat.from(c).cancel(CH_NEW_ITEMS_ID)
     }
 
 
@@ -219,15 +207,12 @@ class PageUnf : BasePageMain() {
             if (!active || c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                    .createNotificationChannel(NotificationChannel(
-                        CH_NEW_ITEMS, c.getString(R.string.newUnfNtfChannel),
-                        NotificationManager.IMPORTANCE_HIGH
-                    ).apply {
-                        description = c.resources.getString(R.string.newUnfNtfChannelDesc)
-                    })
-            NotificationManagerCompat.from(c.c)
-                .notify(CH_NEW_ITEMS_ID, NotificationCompat.Builder(c.c, CH_NEW_ITEMS).apply {
-                    setSmallIcon(R.mipmap.launcher_round)
+                    .createNotificationChannel(Notify.Channel.UNF_NEW_ITEMS.create(c.c))
+            NotificationManagerCompat.from(c.c).notify(
+                Notify.ID_UNF_NEW_ITEMS, NotificationCompat.Builder(
+                    c.c, Notify.Channel.UNF_NEW_ITEMS.id
+                ).apply {
+                    setSmallIcon(R.drawable.notification)
                     setContentTitle(getString(R.string.newUnfNtfChannel))
                     setContentText(getString(R.string.newUnfNtfText, num))
                     priority = NotificationCompat.PRIORITY_HIGH
@@ -238,7 +223,9 @@ class PageUnf : BasePageMain() {
                             ForegroundService.ntfMutability(PendingIntent.FLAG_IMMUTABLE)
                         )
                     )
-                }.build())
+                    setAutoCancel(true)
+                }.build()
+            )
             c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.apply()
         }
     }

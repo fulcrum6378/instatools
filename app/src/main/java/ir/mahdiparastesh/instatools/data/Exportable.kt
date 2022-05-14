@@ -28,6 +28,13 @@ class Exportable(
     @Suppress("unused")
     constructor() : this("", "", 0, "")
 
+    fun method(): Exporter.Method = when (type) {
+        0 -> Exporter.Method.HTML
+        1 -> Exporter.Method.PDF
+        2 -> Exporter.Method.TXT
+        else -> throw IllegalArgumentException()
+    }
+
     class Options(
         var image: Int = DEF_IMAGE, // -1=>NO; 0=>Low; 1=>Med; 2=>High
         var video: Int = DEF_VIDEO, // -1=>NO; 0=>Low; 1=>Med; 2=>High; 3=>Thumb
