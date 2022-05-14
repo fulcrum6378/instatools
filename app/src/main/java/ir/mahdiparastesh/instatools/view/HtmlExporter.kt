@@ -1,43 +1,25 @@
 package ir.mahdiparastesh.instatools.view
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.provider.DocumentsContract
-import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.more.BaseExporter
+import ir.mahdiparastesh.instatools.more.MultiExporter
 import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import kotlinx.coroutines.runBlocking
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
 
-abstract class HtmlExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
-    private lateinit var folder: DocumentFile
-    private val dwnFolder by lazy {
-        DocumentFile.fromTreeUri(c.c, Uri.parse(c.sPreference(Settings.spStorage)))!!
-    }
-    private val tmpDir by lazy {
-        dwnFolder.findFile(TEMP_DIR) ?: dwnFolder.createDirectory(TEMP_DIR)!!
-    }
-    private val canCreateDirSelf = Exporter.canCreateDirSelf(c)
-    private val subFolders = Array<DocumentFile?>(3) { null }
+abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp) {
     private val containers = arrayListOf<List<String>>()
     private var divisions: ArrayList<String>? = null // temporarily a page's contents
     private val dirRtl = c.c.resources.getBoolean(R.bool.dirRtl)
     private var limit = 0
-    protected var rescueFolder: DocumentFile? = null
-
-    private val subFolderNames = arrayOf("image", "video", "audio")
-    val maximum = 200
     private val div1Ind = "      "
     private val div2Ind = "$div1Ind  "
     private val divDial = "<p class=\"dial\">%s</p>"
@@ -52,69 +34,15 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp)
                 (if (!dial.isNullOrBlank()) divDial.format(dial) else "")
 
     companion object {
-        const val TEMP_DIR = ".export_temp"
         const val MAX_PAGINATION = 3
-        const val TEST_FILE = ".test"
+        const val MAX_PER_PAGE = 200
     }
 
     @SuppressLint("NewApi")
     override fun run() {
         if (exp.threadData == null) {
             progress(0f, false); return; }
-
-        val myUri = Uri.parse(Api.encode(exp.uri))
-        (if (canCreateDirSelf) DocumentFile.fromSingleUri(c.c, myUri)
-        else DocumentFile.fromTreeUri(c.c, myUri)?.createDirectory(exp.threadData!!.exported()))
-            .apply {
-                if (this == null) {
-                    progress(0f, false)
-                    return@run
-                } else folder = this
-            }
-        if (canCreateDirSelf) tmpDir.listFiles().forEach { it.delete() }
-
-        // You cannot manage files in internal storage using DocumentsContract!
-        for (dwn in exp.media.entries) {
-            val t = dwn.value.type.toInt()
-            if (t == 3) continue
-            if (subFolders[t] == null) subFolders[t] =
-                (if (canCreateDirSelf) tmpDir else folder).createDirectory(subFolderNames[t])!!
-            val ft = Exporter.fileTypes[t]
-            if (!dwn.value.cache.exists()) continue
-            subFolders[t]!!.createFile(ft.first, dwn.value.fileName(dwn.key))!!.apply {
-                c.c.contentResolver.openFileDescriptor(uri, "w")?.use { des ->
-                    FileOutputStream(des.fileDescriptor).use { fos ->
-                        FileInputStream(dwn.value.cache).use { fis ->
-                            fos.write(fis.readBytes())
-                        }
-                    }
-                }
-            }
-        }
-        exp.media.clear()
-        if (canCreateDirSelf) {
-            tmpDir.createFile("text/plain", TEST_FILE)?.also {
-                try {
-                    DocumentsContract.moveDocument(
-                        c.c.contentResolver, it.uri, tmpDir.uri, folder.uri
-                    )
-                    // Uri authorities must be the same in order for this code to work;
-                    // otherwise it'll throw SecurityException.
-                } catch (e: Exception) {
-                    // IllegalStateException when moving from Internal Storage to SD Card!!
-                    val folderName = folder.name ?: exp.threadData!!.exported()
-                    rescueFolder = DocumentFile.fromTreeUri(
-                        c.c, Uri.parse(c.sPreference(Settings.spStorage))
-                    )?.createDirectory(folderName)
-                }
-                it.delete()
-            }
-            subFolders.forEach {
-                if (it != null) DocumentsContract.moveDocument(
-                    c.c.contentResolver, it.uri, tmpDir.uri, rescueFolder?.uri ?: folder.uri
-                )
-            }
-        }
+        super.run()
 
         progress(0f, false)
         for (i in exp.threadData!!.items.indices) {
@@ -269,7 +197,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp)
                         "    </div>\n"
             )
             divisions!!.add(div.toString())
-            if (limit >= maximum) {
+            if (limit >= MAX_PER_PAGE) {
                 containers.add(divisions!!.toList())
                 divisions = null
                 limit = 0

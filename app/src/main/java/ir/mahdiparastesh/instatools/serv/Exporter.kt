@@ -151,7 +151,7 @@ class Exporter : ForegroundService() {
         }
         for (user in threadData!!.users) {
             val key = USER_PROFILE_IMG.format(user.pk)
-            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key)
+            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key, 0)
         }
         val img = opt?.img() == true
         val vid = opt?.vid() == true
@@ -159,13 +159,13 @@ class Exporter : ForegroundService() {
         for (dm in threadData!!.items) {
             if (actVid && dm.animated_media != null) {
                 media[dm.item_id] = Downloadable(
-                    dm.animated_media.images.fixed_height.url, 3, cacheDir!!, dm.item_id
+                    dm.animated_media.images.fixed_height.url, 3, cacheDir!!, dm.item_id, -2
                 )
                 continue; }
             if (dm.voice_media != null) {
                 if (opt?.voice == 0 && dm.voice_media.media != null)
                     media[dm.item_id] = Downloadable(
-                        dm.voice_media.media.audio.audio_src, 2, cacheDir!!, dm.item_id
+                        dm.voice_media.media.audio.audio_src, 2, cacheDir!!, dm.item_id, -2
                     )
                 continue; }
             if (opt?.img() == true || opt?.vid() == true) (when {
@@ -215,16 +215,15 @@ class Exporter : ForegroundService() {
             })?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
                 val theVer = carousel_media?.getOrNull(0) ?: this
-                val url = theVer.nearest(
-                    when {
-                        theVer.video_versions != null && opt!!.video == 3 -> Versioned.WORST
-                        theVer.video_versions != null -> -opt!!.video
-                        else -> -opt!!.image
-                    }.toFloat(), justImage = opt?.actVid() != true
-                ) ?: return@apply
+                val quality = when {
+                    theVer.video_versions != null && opt!!.video == 3 -> Versioned.WORST
+                    theVer.video_versions != null -> -opt!!.video.toFloat()
+                    else -> -opt!!.image.toFloat()
+                }
+                val url = theVer.nearest(quality, justImage = opt?.actVid() != true) ?: return@apply
                 media[dm.item_id] = Downloadable(
                     url, if (opt?.actVid() == true && video_versions != null) 1 else 0,
-                    cacheDir!!, dm.item_id
+                    cacheDir!!, dm.item_id, quality.toInt()
                 )
             }
         }
@@ -334,11 +333,12 @@ class Exporter : ForegroundService() {
         TXT(2, "text/plain", "txt", false, false, false),
     }
 
-    inner class Downloadable(val url: String, val type: Short, folder: File, dmId: String) {
-        // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
+    inner class Downloadable(
+        val url: String, val type: Short, folder: File, dmId: String, private val quality: Int
+    ) { // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
         val cache = File(folder, fileName(dmId))
 
-        fun fileName(dmId: String) = "${dmId}.${fileTypes[type.toInt()].second}"
+        fun fileName(dmId: String) = "${dmId}_$quality.${fileTypes[type.toInt()].second}"
 
         @Suppress("BlockingMethodInNonBlockingContext")
         suspend fun write(ba: ByteArray, then: suspend () -> Unit) {
