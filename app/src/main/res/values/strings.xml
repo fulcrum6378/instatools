@@ -205,7 +205,7 @@
     <string name="exporterTitle">Exporting&#8230;</string>
     <string name="exporterStop">Abort</string>
     <string name="exporterFetchTexts">Fetched %1$d messages in %2$s\'s chat&#8230;</string>
-    <string name="exporterFetchMedia">Fetching media in %s\'s chat&#8230;</string>
+    <string name="exporterFetchMedia">Fetching %1$d of %2$d media in %3$s\'s chat&#8230;</string>
     <string name="exporterWriting">Writing %s\'s chat into the storage&#8230;</string>
     <string name="exporterDone">Exporting %s\'s chat finished.</string>
     <string name="exporterFailed">Export failed!</string>

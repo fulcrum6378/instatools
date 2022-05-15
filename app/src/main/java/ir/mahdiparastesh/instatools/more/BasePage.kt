@@ -25,7 +25,8 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     Toolbar.OnMenuItemClickListener where C : BaseActivity {
 
     @Suppress("UNCHECKED_CAST")
-    protected val c: C get() = activity as C
+    protected val c: C by lazy { activity as C }
+    // If you use "get()", it'll throw NullPointerException in picture-in-picture!
 
     abstract val com: PageCompanion
     abstract val root: ConstraintLayout

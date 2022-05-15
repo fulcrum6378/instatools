@@ -179,6 +179,11 @@ class Downloads : ServiceOwnerActivity() {
         } else isSwipeDeleteInflated = null
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (isTaskRoot) goTo(Main::class)
+    }
+
     companion object : ActivityCompanion() {
         const val SHOW_AD = 5
 

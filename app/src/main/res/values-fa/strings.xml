@@ -204,7 +204,7 @@
     <string name="exporterTitle">در حال استخراج&#8230;</string>
     <string name="exporterStop">ایست</string>
     <string name="exporterFetchTexts">%1$d پیام از چت %2$s دریافت شد&#8230;</string>
-    <string name="exporterFetchMedia">درحال دریافت صداو تصاویر در چت %s&#8230;</string>
+    <string name="exporterFetchMedia">درحال دریافت صدا و تصاویر %1$d از %2$d در چت %3$s&#8230;</string>
     <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>
     <string name="exporterDone">استخراج چت %s به اتمام رسید.</string>
     <string name="exporterFailed">استخراج ناتمام ماند!</string>

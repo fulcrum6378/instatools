@@ -40,6 +40,7 @@ class Queuer : ForegroundService() {
     private var download: BaseThread? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
+    private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -269,7 +270,7 @@ class Queuer : ForegroundService() {
                     interrupt(); return; }
             }
 
-            Volley.newRequestQueue(c).add(
+            reqQueue.add(
                 object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
                     queue[q].failed = true
                     Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, queue[q])

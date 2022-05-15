@@ -201,7 +201,7 @@
     <string name="exporterTitle">Экспорт&#8230;</string>
     <string name="exporterStop">Прервать</string>
     <string name="exporterFetchTexts">Получено %1$d сообщений в чате %2$s&#8230;</string>
-    <string name="exporterFetchMedia">Получение медиафайлов в чате %s&#8230;</string>
+    <string name="exporterFetchMedia">Получение %1$d из %2$d медиафайлов в чате %3$s&#8230;</string>
     <string name="exporterWriting">Запись чата %s в хранилище&#8230;</string>
     <string name="exporterDone">Экспорт чата %s завершен.</string>
     <string name="exporterFailed">Экспорт не выполнен!</string>

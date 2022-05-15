@@ -11,10 +11,7 @@ import android.os.Message
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
-import com.android.volley.DefaultRetryPolicy
-import com.android.volley.NetworkResponse
-import com.android.volley.Request
-import com.android.volley.Response
+import com.android.volley.*
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
@@ -42,6 +39,7 @@ import java.io.FileOutputStream
 class Exporter : ForegroundService() {
     private var exp: Exportable? = null
     private val cache: File by lazy { Cache(c) }
+    private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -57,7 +55,9 @@ class Exporter : ForegroundService() {
 
         const val DIR_MIME = "vnd.android.document/directory"
         const val USER_PROFILE_IMG = "user_%s"
-        val fileTypes = arrayOf("image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a")
+        val fileTypes = arrayOf(
+            "image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a", "image/gif" to "gif"
+        )
 
         fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
                 c.sPreference(Settings.spStorage) != null
@@ -72,8 +72,11 @@ class Exporter : ForegroundService() {
                 when (msg.what) {
                     BasePage.HANDLE_FETCHED -> {
                         val dmThd = msg.obj as Dm.DmThread
-                        if (exp?.threadData == null) {
-                            exp?.threadData = dmThd
+                        if (exp?.threadData == null || dmThd.items.isNotEmpty()) {
+                            if (exp?.threadData == null)
+                                exp?.threadData = dmThd
+                            else if (dmThd.items.isNotEmpty())
+                                exp?.threadData?.items?.addAll(dmThd.items)
                             ntfText = c.getString(
                                 R.string.exporterFetchTexts,
                                 exp?.threadData?.items?.size ?: 0,
@@ -81,9 +84,6 @@ class Exporter : ForegroundService() {
                             )
                             updateNotification(null)
                             // Inbox API has no reference to number of items in a thread.
-                            exp?.fetchData()
-                        } else if (dmThd.items.isNotEmpty()) {
-                            exp?.threadData?.items?.addAll(dmThd.items)
                             exp?.fetchData()
                         } else CoroutineScope(Dispatchers.IO).launch {
                             exp?.fetchMedia()
@@ -145,7 +145,6 @@ class Exporter : ForegroundService() {
         if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
             fetchMedium(); return; }
 
-        threadData?.title()?.also { ntfText = c.getString(R.string.exporterFetchMedia, it) }
         threadData?.thread_id?.also {
             cacheDir = File(Cache(c), it)
             if (!cacheDir!!.exists()) cacheDir!!.mkdir()
@@ -159,9 +158,9 @@ class Exporter : ForegroundService() {
         val actVid = opt?.actVid() == true
         for (dm in threadData!!.items) {
             if (actVid && dm.animated_media != null) {
-                media[dm.item_id] = Downloadable(
+                /*media[dm.item_id] = Downloadable(
                     dm.animated_media.images.fixed_height.url, 3, cacheDir!!, dm.item_id, -2
-                )
+                )*/// HTML gets them dynamically, PDF cannot show them properly, and TXT...
                 continue; }
             if (dm.voice_media != null) {
                 if (opt?.voice == 0 && dm.voice_media.media != null)
@@ -244,8 +243,13 @@ class Exporter : ForegroundService() {
                 updateNotification(null)
             }
             export(); return; }
-        updateNotification(media.entries.size - queueSize to media.entries.size)
-        Volley.newRequestQueue(c).add(
+        val iDone = media.entries.size - queueSize
+        val iAll = media.entries.size
+        threadData?.title()?.also {
+            ntfText = c.getString(R.string.exporterFetchMedia, iDone, iAll, it)
+        }
+        updateNotification(iDone to iAll)
+        reqQueue.add( // java.lang.OutOfMemoryError: pthread_create (1040KB stack) failed: Try again
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
                 CoroutineScope(Dispatchers.IO).launch {
                     media[dl.key]!!.write(byteArrayOf()) { fetchMedium() }

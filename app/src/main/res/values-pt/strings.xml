@@ -196,7 +196,7 @@
     <string name="exporterTitle">Exportador&#8230;</string>
     <string name="exporterStop">Abortar</string>
     <string name="exporterFetchTexts">Busquei %1$d mensagens no chat do %2$s&#8230;</string>
-    <string name="exporterFetchMedia">Buscando mídia no bate-papo de %s&#8230;</string>
+    <string name="exporterFetchMedia">Buscando %1$d de %2$d mídias no bate-papo de %3$s&#8230;</string>
     <string name="exporterWriting">Gravando o bate-papo de %s no depósito&#8230;</string>
     <string name="exporterDone">A exportação do bate-papo de %s foi concluída.</string>
     <string name="exporterFailed">Falha na exportação!</string>

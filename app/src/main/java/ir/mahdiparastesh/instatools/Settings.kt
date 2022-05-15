@@ -220,6 +220,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             b.stCache.vis(false)
             b.stSepCache.vis(false)
         } else b.stClearCache.setOnClickListener {
+            if (Exporter.active.value == true) {
+                // TODO: AlertDialog
+                return@setOnClickListener
+            }
             clearCache()
             updateCacheSize()
         }

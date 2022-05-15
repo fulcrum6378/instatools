@@ -196,7 +196,7 @@
     <string name="exporterTitle">Dışa aktarılıyor&#8230;</string>
     <string name="exporterStop">Iptal</string>
     <string name="exporterFetchTexts">%2$s\'un sohbetinde %1$d mesaj alındı&#8230;</string>
-    <string name="exporterFetchMedia">%s\'un sohbetindeki medya getiriliyor&#8230;</string>
+    <string name="exporterFetchMedia">%3$s\'un sohbetindeki %2$d medyadan %1$d\'u getiriliyor&#8230;</string>
     <string name="exporterWriting">%s\'un sohbeti depoya yazılıyor&#8230;</string>
     <string name="exporterDone">%s\'un sohbetinin dışa aktarılması tamamlandı.</string>
     <string name="exporterFailed">Dışa aktarma başarısız oldu!</string>
