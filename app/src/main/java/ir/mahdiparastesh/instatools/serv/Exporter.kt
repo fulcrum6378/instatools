@@ -11,7 +11,10 @@ import android.os.Message
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
-import com.android.volley.*
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.NetworkResponse
+import com.android.volley.Request
+import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
@@ -245,11 +248,11 @@ class Exporter : ForegroundService() {
             export(); return; }
         val iDone = media.entries.size - queueSize
         val iAll = media.entries.size
-        threadData?.title()?.also {
-            ntfText = c.getString(R.string.exporterFetchMedia, iDone, iAll, it)
+        threadData?.title()?.also { title ->
+            ntfText = c.getString(R.string.exporterFetchMedia, iDone + 1, iAll, title)
         }
         updateNotification(iDone to iAll)
-        reqQueue.add( // java.lang.OutOfMemoryError: pthread_create (1040KB stack) failed: Try again
+        reqQueue.add(
             object : Request<ByteArray>(Method.GET, dl.value.url, Response.ErrorListener {
                 CoroutineScope(Dispatchers.IO).launch {
                     media[dl.key]!!.write(byteArrayOf()) { fetchMedium() }
