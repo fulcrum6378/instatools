@@ -46,6 +46,12 @@ class PageRel : BasePageViewer() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         load()
+
+        // Error
+        b.error.setOnClickListener {
+            c.b.refresher.isRefreshing = true
+            thread = FetchAll().also { it.start() }
+        }
     }
 
     fun load() {
@@ -62,6 +68,12 @@ class PageRel : BasePageViewer() {
         if (b.rv.adapter == null) b.rv.adapter = ListRel(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) buildSelection()
+        c.b.refresher.isRefreshing = false
+    }
+
+    override fun onFailed(message: String) {
+        super.onFailed(message)
+        c.b.refresher.isRefreshing = false
     }
 
     override fun buildSelection() {

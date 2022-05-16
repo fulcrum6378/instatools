@@ -174,6 +174,7 @@
     <string name="addFolder">Agregar carpeta</string>
     <string name="stCache">Almacenamiento en caché (tamaño actual: %s)</string>
     <string name="stClearCache">Limpiar cache</string>
+    <string name="stClearCacheWaitExporter">¡Espere hasta que finalice la exportación!</string>
     <string name="stUserData">Datos del usuario</string>
     <string name="stResetData">Restablecer todos mis datos de usuario</string>
     <string name="stResetDataSure">Esto incluye la lista de no seguidores, la lista de cuentas favoritas, la cola de descarga y la cola de exportación. Pero no se cerrará la sesión de su cuenta. ¿Continuar?</string>
@@ -182,19 +183,18 @@
     <string name="stAutoDeleteEmptyDirs">Eliminar carpetas vacías automáticamente</string>
     <string name="stHelp">Ayuda</string>
     <string name="stHelpMessage">Ajustes Locales (la configuración de esta cuenta) hereda Ajustes Globales, siempre que haya dejado una configuración de esta cuenta vacía.</string>
+    <string name="stAlsoRevokePerm">También revocar el permiso de la carpeta seleccionada. (esto cancela cualquier otra excepción relacionada con esta carpeta)</string>
 
 
     <!-- Queuer -->
     <string name="queuerChannel">Cola de Descarga</string>
     <string name="queuerChannelDesc">Descarga los medios en cola</string>
     <string name="queuerTitle">Descargando&#8230;</string>
-    <string name="queuerStop">Detener</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Exportador</string>
     <string name="exporterChannelDesc">Exporta los mensajes directos</string>
     <string name="exporterTitle">Exportador&#8230;</string>
-    <string name="exporterStop">Abortar</string>
     <string name="exporterFetchTexts">Obtuve %1$d mensajes en el chat de %2$s&#8230;</string>
     <string name="exporterFetchMedia">Obteniendo %1$d de %2$d medios en el chat de %3$s&#8230;</string>
     <string name="exporterWriting">Escribiendo el chat de %s en el almacenamiento&#8230;</string>

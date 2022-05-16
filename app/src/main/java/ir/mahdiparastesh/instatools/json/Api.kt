@@ -82,10 +82,10 @@ class Api<JSON>(
         return Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
     }
 
-    @Suppress("unused")
     enum class Type(val url: String) {
         PROFILE("https://www.instagram.com/%s/?__a=1"),
-        INFO("https://i.instagram.com/api/v1/users/%s/info/"),
+
+        //INFO("https://i.instagram.com/api/v1/users/%s/info/"),
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
@@ -99,7 +99,8 @@ class Api<JSON>(
 
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
-        FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
+
+        //FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
         FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
         UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
 
@@ -108,7 +109,8 @@ class Api<JSON>(
             "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),// This method brings posts with large thumbnails and no other candidates
-        SAVE("https://www.instagram.com/web/save/%s/save/"),
+
+        //SAVE("https://www.instagram.com/web/save/%s/save/"),
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
         INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
@@ -178,14 +180,14 @@ class Api<JSON>(
                 this["content-type"] = "application/x-www-form-urlencoded"
                 this["sec-fetch-site"] = "same-origin"
                 this["x-requested-with"] = "XMLHttpRequest"
-                if (cookies.contains("csrftoken="))
-                    this["x-csrftoken"] = cookies
-                        .substringAfter("csrftoken=")
-                        .substringBefore(";")
                 if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
             } else { // Cookie "rur" is different between POST_ITEM and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
             }
+            if (cookies.contains("csrftoken="))
+                this["x-csrftoken"] = cookies
+                    .substringAfter("csrftoken=")
+                    .substringBefore(";")
             this["x-asbd-id"] = "198387" // MIGHT BE THE SAME FOR DIFFERENT ACCOUNTS
             // For ^, load "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/5bb0ab377d4d.js"
             // Substring after "e.ASBD_ID='", substring before "'"

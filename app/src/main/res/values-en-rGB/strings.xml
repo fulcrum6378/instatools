@@ -174,6 +174,7 @@
     <string name="addFolder">Add Folder</string>
     <string name="stCache">Caching (current size: %s)</string>
     <string name="stClearCache">Clear Cache</string>
+    <string name="stClearCacheWaitExporter">Please wait until exporting finishes!</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
     <string name="stResetDataSure">This includes the unfollowers list, the favourite accounts list, the download queue and the export queue. But you won\'t be signed out of your account. Proceed?</string>
@@ -182,19 +183,18 @@
     <string name="stAutoDeleteEmptyDirs">Automatically delete empty folders</string>
     <string name="stHelp">Help</string>
     <string name="stHelpMessage">The Settings of This Account inherit the Global Settings, wherever you have leave a setting of this account empty.</string>
+    <string name="stAlsoRevokePerm">Also revoke permission from the selected folder. (this cancels any other exception related to this folder)</string>
 
 
     <!-- Queuer -->
     <string name="queuerChannel">Download queue</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
-    <string name="queuerStop">Halt</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Exporter</string>
     <string name="exporterChannelDesc">Exports the direct messages</string>
     <string name="exporterTitle">Exporting&#8230;</string>
-    <string name="exporterStop">Abort</string>
     <string name="exporterFetchTexts">Fetched %1$d messages in %2$s\'s chat&#8230;</string>
     <string name="exporterFetchMedia">Fetching %1$d of %2$d media in %3$s\'s chat&#8230;</string>
     <string name="exporterWriting">Writing %s\'s chat into the storage&#8230;</string>

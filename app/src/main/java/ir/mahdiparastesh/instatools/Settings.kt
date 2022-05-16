@@ -10,10 +10,7 @@ import android.os.StatFs
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
@@ -23,6 +20,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
@@ -38,6 +36,9 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
@@ -108,8 +109,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
 
+        private var clearingCache = false
         fun Context.clearCache() {
-            cacheDir.deleteRecursively()
+            clearingCache = true
+            CoroutineScope(Dispatchers.IO)
+                .launch { cacheDir.deleteRecursively() }
+                .invokeOnCompletion { clearingCache = false }
         }
 
         fun defaultCacheLimit(c: Context): Long = c.getExternalFilesDir(null)?.let {
@@ -221,7 +226,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             b.stSepCache.vis(false)
         } else b.stClearCache.setOnClickListener {
             if (Exporter.active.value == true) {
-                // TODO: AlertDialog
+                Toast.makeText(c, R.string.stClearCacheWaitExporter, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             clearCache()
@@ -353,9 +358,28 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             }
             setNegativeButton(R.string.cancel, null)
             setNeutralButton(R.string.remove) { _, _ ->
-                aliases?.remove(u)
-                saveAliases(prf, aliases)
-                showAliases()
+                val br = AlsoRevokePermBinding.inflate(layoutInflater)
+                br.root.typeface = fontRegular
+                AlertDialog.Builder(this@Settings).apply {
+                    setTitle(R.string.remove)
+                    setView(br.root)
+                    setPositiveButton(R.string.sContinue) { _, _ ->
+                        val uri = u?.let { aliases?.getOrElse(it) { null } }?.let { Uri.parse(it) }
+                        aliases?.remove(u)
+                        saveAliases(prf, aliases)
+                        if (br.root.isChecked && uri != null) {
+                            contentResolver.releasePersistableUriPermission(
+                                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
+                            contentResolver.releasePersistableUriPermission(
+                                uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            )
+                            aliases = loadAliases(c, prf)
+                        }
+                        showAliases()
+                    }
+                    setNegativeButton(R.string.cancel, null)
+                }.show().stylise(this@Settings)
             }
             setOnDismissListener { bfa = null }
         }.show().stylise(this)

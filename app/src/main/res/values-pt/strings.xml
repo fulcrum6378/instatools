@@ -174,6 +174,7 @@
     <string name="stAliasProfile">Digite o nome de usuário do perfil</string>
     <string name="stCache">Cache (tamanho atual: %s)</string>
     <string name="stClearCache">Limpar Cache</string>
+    <string name="stClearCacheWaitExporter">Aguarde até que a exportação termine!</string>
     <string name="stUserData">Dados do Usuário</string>
     <string name="stResetData">Redefinir todos os meus dados de usuário</string>
     <string name="stResetDataSure">Isso inclui a lista de não seguidores, a lista de contas favoritas, a fila de download e a fila de exportação. Mas você não será desconectado da sua conta. Continuar?</string>
@@ -182,19 +183,18 @@
     <string name="stAutoDeleteEmptyDirs">Excluir pastas vazias automaticamente</string>
     <string name="stHelp">Ajuda</string>
     <string name="stHelpMessage">As configurações desta conta herdam as Configurações Globais, sempre que você deixou uma configuração desta conta (Configurações Locais) vazia.</string>
+    <string name="stAlsoRevokePerm">Também revogue a permissão da pasta selecionada. (isso cancela qualquer outra exceção relacionada a esta pasta)</string>
 
 
     <!-- Queuer -->
     <string name="queuerChannel">Fila de Download</string>
     <string name="queuerChannelDesc">Baixa a mídia enfileirada</string>
     <string name="queuerTitle">Baixando&#8230;</string>
-    <string name="queuerStop">Parar</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Exportador</string>
     <string name="exporterChannelDesc">Exporta as mensagens diretas</string>
     <string name="exporterTitle">Exportador&#8230;</string>
-    <string name="exporterStop">Abortar</string>
     <string name="exporterFetchTexts">Busquei %1$d mensagens no chat do %2$s&#8230;</string>
     <string name="exporterFetchMedia">Buscando %1$d de %2$d mídias no bate-papo de %3$s&#8230;</string>
     <string name="exporterWriting">Gravando o bate-papo de %s no depósito&#8230;</string>

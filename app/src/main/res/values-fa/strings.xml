@@ -34,7 +34,7 @@
     <string name="addToFav">اضافه به مورد علاقه</string>
     <string name="removeFav">حذف از مورد علاقه</string>
     <string name="start">شروع</string>
-    <string name="stop">ایست</string>
+    <string name="stop">توقف</string>
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
     <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
     <string name="sContinue">ادامه</string>
@@ -182,6 +182,7 @@
     <string name="stAliasProfile">آیدی یک پروفایل را وارد کنید</string>
     <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
     <string name="stClearCache">پاک کردن حافظه پنهان</string>
+    <string name="stClearCacheWaitExporter">لطفا صبر کنید تا استخراج تمام شود!</string>
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
     <string name="stResetDataSure">حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد، ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟</string>
@@ -190,19 +191,18 @@
     <string name="stAutoDeleteEmptyDirs">حذف خودکار فولدر های خالی</string>
     <string name="stHelp">راهنما</string>
     <string name="stHelpMessage">«تنظیمات این اکانت» از «تنظیمات همه اکانت ها» ارث می برد؛ یعنی شما هر تنظیمی را که در «تنظیمات این اکانت» خالی بگذارید، اپلیکیشن در آن مورد بخصوص از «تنظیمات همه اکانت ها» تبعیت می کند.</string>
+    <string name="stAlsoRevokePerm">همچنین مجوز دسترسی به این فولدر را لغو کن. (این کار، تمام استثناهای دیگر که به این فولدر مربوط هستند را نیز حذف میکند)</string>
 
 
     <!-- Queuer -->
     <string name="queuerChannel">صف دانلود</string>
     <string name="queuerChannelDesc">اعلان های دانلود</string>
     <string name="queuerTitle">در حال دانلود&#8230;</string>
-    <string name="queuerStop">ایست</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">استخراجگر</string>
     <string name="exporterChannelDesc">دایرکت ها را برایتان استخراج می کند</string>
     <string name="exporterTitle">در حال استخراج&#8230;</string>
-    <string name="exporterStop">ایست</string>
     <string name="exporterFetchTexts">%1$d پیام از چت %2$s دریافت شد&#8230;</string>
     <string name="exporterFetchMedia">درحال دریافت صدا و تصاویر %1$d از %2$d در چت %3$s&#8230;</string>
     <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>

@@ -52,6 +52,9 @@
 
     <!-- Viewer -->
     <dimen name="vwHighlightCover">58dp</dimen>
+    <dimen name="vwPagerSize">50dp</dimen>
+    <dimen name="vwPagerPad">9dp</dimen>
+    <dimen name="vwPagerMargin">7dp</dimen>
     <dimen name="vwReelWidth">140dp</dimen>
     <dimen name="vwReelHeight">250dp</dimen><!-- /= 1.7765625 => WIDTH -->
 

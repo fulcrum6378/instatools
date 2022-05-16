@@ -51,7 +51,7 @@ class Queuer : ForegroundService() {
         override val ntfId = Notify.ID_QUEUER
         override val ntfTitle = R.string.queuerTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-            ACTION_STOP to R.string.queuerStop
+            ACTION_STOP to R.string.stop
         )
 
         const val HANDLE_LINK = 0

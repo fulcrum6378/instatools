@@ -53,7 +53,7 @@ class Exporter : ForegroundService() {
         override val ntfId = Notify.ID_EXPORTER
         override val ntfTitle = R.string.exporterTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-            ACTION_STOP to R.string.exporterStop
+            ACTION_STOP to R.string.stop
         )
 
         const val DIR_MIME = "vnd.android.document/directory"

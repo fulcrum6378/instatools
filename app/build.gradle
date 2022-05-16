@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '15.6'
+        versionName '15.8'
     }
 
     signingConfigs {
@@ -34,12 +34,12 @@ android {
     productFlavors {
         all { dimension 'flaDim1' }
         iran {
-            versionCode 47 // 38
+            versionCode 48 // 38
             signingConfig signingConfigs.aleph
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 14
+            versionCode 15
             signingConfig signingConfigs.beth
             // Use BETH for Google Play; Use ALEPH for Galaxy Store
         }

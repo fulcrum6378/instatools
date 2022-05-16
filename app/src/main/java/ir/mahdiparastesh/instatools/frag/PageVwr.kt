@@ -148,6 +148,10 @@ class PageVwr : BasePageViewer() {
         b.followers.setOnClickListener { flwClick(true, it) }
         b.following.setOnClickListener { flwClick(false, it) }
         showProfile()
+
+        // Pagination
+        b.toPageRel.setOnClickListener { c.b.pager.setCurrentItem(0, true) }
+        b.toPageTag.setOnClickListener { c.b.pager.setCurrentItem(2, true) }
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

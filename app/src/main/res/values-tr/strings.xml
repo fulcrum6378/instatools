@@ -174,6 +174,7 @@
     <string name="stAliasProfile">Profil kullanıcı adını girin</string>
     <string name="stCache">Önbelleğe alma (geçerli boyut: %s)</string>
     <string name="stClearCache">Önbelleği Temizle</string>
+    <string name="stClearCacheWaitExporter">Lütfen dışa aktarma işlemi bitene kadar bekleyin!</string>
     <string name="stUserData">Kullanıcı bilgisi</string>
     <string name="stResetData">Tüm kullanıcı verilerimi sıfırla</string>
     <string name="stResetDataSure">Buna takipçi olmayanlar listesi, favori hesaplar listesi, indirme sırası ve dışa aktarma sırası dahildir. Ancak hesabınızdan çıkış yapmayacaksınız. Devam etmek?</string>
@@ -182,19 +183,18 @@
     <string name="stAutoDeleteEmptyDirs">Boş klasörleri otomatik olarak sil</string>
     <string name="stHelp">Kılavuz</string>
     <string name="stHelpMessage">Bu hesabın bir ayarını boş bıraktığınız her yerde, Bu Hesabın Ayarları Genel Ayarları devralır.</string>
+    <string name="stAlsoRevokePerm">Ayrıca seçilen klasörden izni iptal edin. (bu, bu klasörle ilgili diğer istisnaları iptal eder)</string>
 
 
     <!-- Queuer -->
     <string name="queuerChannel">İndirme Sırası</string>
     <string name="queuerChannelDesc">Kuyruğa alınan medyayı indirir</string>
     <string name="queuerTitle">İndiriliyor&#8230;</string>
-    <string name="queuerStop">Dur</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">İhracatçı</string>
     <string name="exporterChannelDesc">Doğrudan mesajları dışa aktarır</string>
     <string name="exporterTitle">Dışa aktarılıyor&#8230;</string>
-    <string name="exporterStop">Iptal</string>
     <string name="exporterFetchTexts">%2$s\'un sohbetinde %1$d mesaj alındı&#8230;</string>
     <string name="exporterFetchMedia">%3$s\'un sohbetindeki %2$d medyadan %1$d\'u getiriliyor&#8230;</string>
     <string name="exporterWriting">%s\'un sohbeti depoya yazılıyor&#8230;</string>

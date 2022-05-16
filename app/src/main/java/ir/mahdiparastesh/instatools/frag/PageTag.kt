@@ -73,6 +73,12 @@ class PageTag : BasePageViewer() {
             }
         })
 
+        // Error
+        b.error.setOnClickListener {
+            c.b.refresher.isRefreshing = true
+            thread = FetchSome().also { it.start() }
+        }
+
         // Banner Ad
         if (BaseActivity.areAdsReady()) {
             adBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmPageTag)
@@ -115,6 +121,12 @@ class PageTag : BasePageViewer() {
         if (b.rv.adapter == null) b.rv.adapter = ListTag(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) buildSelection()
+        c.b.refresher.isRefreshing = false
+    }
+
+    override fun onFailed(message: String) {
+        super.onFailed(message)
+        c.b.refresher.isRefreshing = false
     }
 
     override fun buildSelection() {

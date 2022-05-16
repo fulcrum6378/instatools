@@ -108,6 +108,18 @@
     </androidx.core.widget.NestedScrollView>
 
     <ImageView
+        android:id="@+id/toPageRel"
+        style="@style/vwPager"
+        android:src="@drawable/metered_video"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/toPageTag"
+        style="@style/vwPager"
+        android:src="@drawable/tagged"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
         android:id="@+id/jumper"
         style="@style/jumper" />
 </androidx.constraintlayout.widget.ConstraintLayout>

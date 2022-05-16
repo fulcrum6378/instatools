@@ -179,6 +179,7 @@
     <string name="stAliasProfile">Введите имя пользователя профиля</string>
     <string name="stCache">Кэширование (текущий размер: %s)</string>
     <string name="stClearCache">Очистить кэш</string>
+    <string name="stClearCacheWaitExporter">Пожалуйста, дождитесь завершения экспорта!</string>
     <string name="stUserData">Данные пользователя</string>
     <string name="stResetData">Сбросить все мои пользовательские данные</string>
     <string name="stResetDataSure">Сюда входят список отписавшихся, список избранных учетных записей, очередь загрузки и очередь экспорта. Но вы не выйдете из своей учетной записи. Продолжить?</string>
@@ -187,19 +188,18 @@
     <string name="stAutoDeleteEmptyDirs">Автоматически удалять пустые папки</string>
     <string name="stHelp">Руководство</string>
     <string name="stHelpMessage">Настройки этой учетной записи наследуют глобальные настройки, если вы оставили настройку этой учетной записи пустой.</string>
+    <string name="stAlsoRevokePerm">Также отозвать разрешение для выбранной папки. (это отменяет любое другое исключение, связанное с этой папкой)</string>
 
 
     <!-- Queuer -->
     <string name="queuerChannel">Очередь загрузки</string>
     <string name="queuerChannelDesc">Загружает носитель из очереди</string>
     <string name="queuerTitle">Загрузка&#8230;</string>
-    <string name="queuerStop">Стой!</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Экспортер</string>
     <string name="exporterChannelDesc">Экспортирует прямые сообщения</string>
     <string name="exporterTitle">Экспорт&#8230;</string>
-    <string name="exporterStop">Прервать</string>
     <string name="exporterFetchTexts">Получено %1$d сообщений в чате %2$s&#8230;</string>
     <string name="exporterFetchMedia">Получение %1$d из %2$d медиафайлов в чате %3$s&#8230;</string>
     <string name="exporterWriting">Запись чата %s в хранилище&#8230;</string>
