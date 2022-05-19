@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.android.volley.NetworkResponse
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.json.Api
@@ -112,7 +113,15 @@ class PageRel : BasePageViewer() {
 
         override fun interrupt() {
             if (storyFetched && highlightsFetched) {
-                c.m.vwReels?.sortByDescending { it is Rest.StoryReel }
+                try {
+                    c.m.vwReels?.sortByDescending { it is Rest.StoryReel }
+                } catch (e: java.lang.UnsupportedOperationException) {
+                    // by CollectionsKt__MutableCollectionsJVMKt.sortWith()
+                    // by Collections.sort()
+                    // by CopyOnWriteArrayList$COWIterator.set() extended from ListIterator.set()
+                    // if the set operation is not supported by this list iterator
+                    if (BuildConfig.DEBUG) throw e // TODO analyse this
+                }
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 super.interrupt()
             }

@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -175,8 +176,11 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                                 .setPackage(UiTools.INSTA_PACKAGE)
                         )
                         val bmp = (page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap
-                        if (bmp != null) setIcon(IconCompat.createWithBitmap(bmp))
-                        // TODO: else unknown person icon
+                        if (bmp != null) setIcon(
+                            IconCompat.createWithBitmap(
+                                Bitmap.createScaledBitmap(bmp, 128, 128, true)
+                            )
+                        ) // TODO: else unknown person icon
                         setShortLabel(it.full_name.ifBlank { it.username })
                     }.build(), null
                 )

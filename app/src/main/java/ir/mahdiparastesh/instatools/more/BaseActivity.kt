@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.more
 
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -19,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -268,12 +268,15 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     fun goTo(
         activity: KClass<*>,
         finish: Boolean = false, // USE THIS CAREFULLY
+        animate: Boolean = false,
         onIntent: (Intent.() -> Unit)? = null
     ): Boolean {
-        startActivity(
-            Intent(this, activity.java).apply { onIntent?.let { it() } },
-            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-        )
+        val intent = Intent(this, activity.java)
+        onIntent?.also { intent.it() }
+        if (animate) startActivity(
+            intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle()
+            // this animation is the cause of occasional ugly activity-on-activity accidents!
+        ) else startActivity(intent)
         if (finish) Delay(1000) { finish() }
         // The phone's home screen may appear if there are no active activities at the moment.
         return true

@@ -33,26 +33,25 @@ class StorageCache {
                         checkStorage(c); return@onSuccess; }
                     c.m.files = Gson().fromJson<Set<String>>(String(data!!), Set::class.java)
                         ?.let { CopyOnWriteArraySet(it) }
-                    loading = false
+                    if (c.m.files != null) loading = false
+                    else withContext(Dispatchers.Main) { checkStorage(c) }
                 }.onFailure { withContext(Dispatchers.Main) { checkStorage(c) } }
-            } else checkStorage(c)
+            } else CoroutineScope(Dispatchers.IO).launch { checkStorage(c) }
         }
 
-        @MainThread
-        private fun checkStorage(c: Persistent) {
+        private suspend fun checkStorage(c: Persistent) {
             c.m.files = CopyOnWriteArraySet()
             val paths = c.c.contentResolver.persistedUriPermissions
                 .map { DocumentFile.fromTreeUri(c.c, it.uri) }
-            if (paths.isNotEmpty()) CoroutineScope(Dispatchers.IO).launch {
+            if (paths.isNotEmpty()) {
                 for (path in paths) path?.walk()?.forEach {
                     if (it.isFile && it.name != null &&
                         (it.name!!.endsWith(".jpg") || it.name!!.endsWith(".mp4"))
                     ) c.m.files?.add(it.name!!)
                 }
-            }.invokeOnCompletion {
-                CoroutineScope(Dispatchers.IO).launch { saveStorageCache(c) }
-                loading = false
-            } else loading = false
+                saveStorageCache(c)
+            }
+            loading = false
         }
 
         @Suppress("RedundantSuspendModifier")

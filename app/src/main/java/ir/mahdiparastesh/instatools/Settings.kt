@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
@@ -403,8 +404,15 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 if (giveLinkBack != null) {
                     Downloads.initService(this, giveLinkBack)
                     giveLinkBack = null
-                    onBackPressed()
-                    goTo(Downloads::class)
+                    try {
+                        onBackPressed()
+                    } catch (e: java.lang.IllegalStateException) {
+                        // by androidx.fragment.app.FragmentManager.ensureExecReady()
+                        // which has multiple throwing conditions.
+                        // All the 7 crashes occurred with Android 9 on five Galaxy models.
+                        if (BuildConfig.DEBUG) throw e // TODO analyse this
+                    }
+                    goTo(Downloads::class, animate = false)
                     // If you call finish() here, Downloads will be loaded without a background
                     // corruptly over the previous Activity in an ugly way.
                 }
@@ -414,5 +422,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 bfa?.folders?.setSelection(uriFolders!!.indexOfFirst { it.toString() == uri.toString() })
             }
         }
+        m.files = null
+        CoroutineScope(Dispatchers.IO).launch { StorageCache.saveStorageCache(this@Settings) }
     }
 }

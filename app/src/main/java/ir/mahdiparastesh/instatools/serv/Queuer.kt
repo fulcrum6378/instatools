@@ -331,6 +331,8 @@ class Queuer : ForegroundService() {
         val type = MediaType.values().find { it.inDb == q.mediaType }!!
         val fName = q.fName(type.ext)
         var leaf = branch.findFile(fName)
+        // Never check existence from StorageCache because the file might be deleted anytime and
+        // the user might want to re-download it!
         if (leaf != null) return
         leaf = branch.createFile(type.mime, fName) ?: return
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->

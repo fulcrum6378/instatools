@@ -64,7 +64,7 @@ class Expandable(
                             thumb(), media_type.toInt().toByte()
                         )
                     )
-                    withContext(Dispatchers.Main) { Downloads.initService(c) }
+                    initQueuer()
                 }
             }
         }
@@ -82,7 +82,7 @@ class Expandable(
                             car.thumb(), car.media_type.toInt().toByte()
                         )
                     )
-                    withContext(Dispatchers.Main) { Downloads.initService(c) }
+                    initQueuer()
                 }
             }
         }
@@ -99,7 +99,7 @@ class Expandable(
                             car.thumb(), car.media_type.toInt().toByte()
                         )
                     )
-                    withContext(Dispatchers.Main) { Downloads.initService(c) }
+                    initQueuer()
                 }
             }
         }
@@ -243,5 +243,9 @@ class Expandable(
             })
             start()
         }
+    }
+
+    private suspend fun initQueuer() {
+        withContext(Dispatchers.Main) { Downloads.initService(c, "") }
     }
 }

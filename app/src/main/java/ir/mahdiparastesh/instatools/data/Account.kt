@@ -29,7 +29,9 @@ class Account(
             return if (secured.exists()) {
                 val data: ByteArray
                 FileInputStream(secured).use { data = it.readBytes() }
-                ArrayList(Gson().fromJson(String(data), Array<Account>::class.java).toList())
+                Gson().fromJson(String(data), Array<Account>::class.java)
+                    ?.let { ArrayList(it.toList()) }
+                    ?: arrayListOf()
             } else arrayListOf()
         }
 

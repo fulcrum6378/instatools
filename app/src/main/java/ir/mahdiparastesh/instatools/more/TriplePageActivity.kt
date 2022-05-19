@@ -86,7 +86,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
 
     protected var lastPage: Int = 0
     protected open fun turnToPage(i: Int): Boolean {
-        if (i == currentPage.value) return false
+        if (i == currentPage.value || currentPage.value == null) return false
         lastPage = currentPage.value!!
         currentPage.value = i
         transFrag(lastPage, currentPage.value!!)
