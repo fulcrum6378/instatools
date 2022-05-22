@@ -9,7 +9,6 @@ import ir.mahdiparastesh.instatools.more.walk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -24,20 +23,21 @@ class StorageCache {
             if (loading) return
             loading = true
             val stored = Stored(c.c)
-            if (stored.exists()) CoroutineScope(Dispatchers.IO).launch {
-                var data: ByteArray? = null
-                runCatching {
-                    FileInputStream(stored).use { data = it.readBytes() }
-                }.onSuccess {
-                    if (data == null) {
-                        checkStorage(c); return@onSuccess; }
-                    c.m.files = Gson().fromJson<Set<String>>(String(data!!), Set::class.java)
-                        ?.let { CopyOnWriteArraySet(it) }
-                    if (c.m.files != null) loading = false
-                    else withContext(Dispatchers.Main) { checkStorage(c) }
-                }.onFailure { withContext(Dispatchers.Main) { checkStorage(c) } }
-            } else CoroutineScope(Dispatchers.IO).launch { checkStorage(c) }
+            CoroutineScope(Dispatchers.IO).launch {
+                if (stored.exists()) {
+                    runCatching {
+                        FileInputStream(stored).use { return@use it.readBytes() }
+                    }.onSuccess { data ->
+                        c.m.files = Gson().fromJson<Set<String>>(String(data), Set::class.java)
+                            ?.let { CopyOnWriteArraySet(it) }
+                        if (c.m.files != null) loading = false
+                        else checkStorage(c)
+                    }.onFailure { checkStorage(c) }
+                } else checkStorage(c)
+            }
         }
+        // CoroutineScope(Dispatchers.Main).launch { StorageCache.checkStorage(this@Main) }
+        // This terrible algorithm blocked UI for more than a minute.
 
         private suspend fun checkStorage(c: Persistent) {
             c.m.files = CopyOnWriteArraySet()

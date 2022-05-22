@@ -37,10 +37,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.android.play.core.review.testing.FakeReviewManager
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.MassFollower.Companion.rewardAccountForFollower
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.*
 import kotlin.math.abs
 
@@ -275,6 +281,30 @@ class UiTools {
                 else if (abs(selected.config_width - nearest) < abs(src.config_width - nearest))
                     selected = src
             return selected?.src ?: thumbnail_src
+        }
+
+        fun hasReviewedApp(c: Persistent) = c.gsp.getBoolean(Settings.spRatedUs, false)
+
+        fun reviewApp(
+            c: BaseActivity,
+            onReqSuccess: () -> Unit = {},
+            onReqComplete: () -> Unit = {},
+            onDone: () -> Unit = {}
+        ) {
+            val reviewManager =
+                if (!BuildConfig.DEBUG) ReviewManagerFactory.create(c)
+                else FakeReviewManager(c)
+            reviewManager.requestReviewFlow().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onReqSuccess()
+                    reviewManager.launchReviewFlow(c, task.result).addOnCompleteListener {
+                        onDone()
+                        c.rewardAccountForFollower()
+                        c.gsp.edit().putBoolean(Settings.spRatedUs, true).apply()
+                    }
+                } else if (BuildConfig.DEBUG) task.exception?.let { throw it }
+                onReqComplete()
+            }
         }
     }
 }

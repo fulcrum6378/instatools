@@ -159,13 +159,20 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Miscellaneous
         if (m.files == null) StorageCache.load(this)
         Favourites.FavLoader(this).start()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
-                deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.EXPORTING")
-                deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.FOLLOWING")
-                deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.DOWNLOADING")
-                deleteNotificationChannel("ir.mahdiparastesh.instatools.frag.NEW_ITEMS")
-            }
+        if (gsp.getInt(
+                Settings.spUsedVersion,
+                BuildConfig.VERSION_CODE
+            ) != BuildConfig.VERSION_CODE
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+                    deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.EXPORTING")
+                    deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.FOLLOWING")
+                    deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.DOWNLOADING")
+                    deleteNotificationChannel("ir.mahdiparastesh.instatools.frag.NEW_ITEMS")
+                }
+            gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

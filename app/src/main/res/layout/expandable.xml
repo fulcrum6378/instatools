@@ -2,12 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/expanded"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="invisible"
     tools:ignore="ContentDescription,MissingConstraints">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/slider"
-        style="@style/expandedSlider" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/buttons"
@@ -49,5 +52,18 @@
 
     <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
         android:id="@+id/indicator"
-        style="@style/expandedIndicator" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"
+        app:dotsColor="?attr/colorAccent"
+        app:dotsCornerRadius="6dp"
+        app:dotsSize="12dp"
+        app:dotsSpacing="3dp"
+        app:dotsWidthFactor="2.5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progressMode="true"
+        app:selectedDotColor="?attr/colorAccent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

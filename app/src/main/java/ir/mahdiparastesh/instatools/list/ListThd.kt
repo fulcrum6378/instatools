@@ -192,7 +192,6 @@ class ListThd(val c: Main, private val f: PageBox) :
             Glide.with(c).clear(msgIv)
             msgIv.setImageDrawable(null)
             media?.apply {
-                if (carousel_media == null && image_versions2 == null) return@apply
                 downloaded?.getOrDefault(dm.item_id, null)?.cache?.also {
                     FileInputStream(it).use { fis ->
                         val data = fis.readBytes()
@@ -201,7 +200,7 @@ class ListThd(val c: Main, private val f: PageBox) :
                             return@apply; }
                     }
                 } // TODO SUCKS
-                if (downloaded != null) return@apply
+                if (downloaded != null || (carousel_media == null && image_versions2 == null)) return@apply
 
                 msgLoading.apply {
                     setAnimation(if (!c.night()) R.raw.pending_tertiary else R.raw.pending)

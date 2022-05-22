@@ -26,8 +26,6 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
-import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.review.testing.FakeReviewManager
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
@@ -290,23 +288,13 @@ class MassFollower : ServiceOwnerActivity() {
                 setView(bp.root)
             }.show().apply {
                 stylise(c)
-                if (c.gsp.getBoolean(Settings.spRatedUs, false))
+                if (UiTools.hasReviewedApp(c))
                     bp.root.removeView(bp.rateUs)
                 else bp.rateUs.setOnClickListener {
                     bp.loading(true)
-                    val reviewManager =
-                        if (!BuildConfig.DEBUG) ReviewManagerFactory.create(c)
-                        else FakeReviewManager(c)
-                    reviewManager.requestReviewFlow().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            this@apply.cancel()
-                            reviewManager.launchReviewFlow(c, task.result).addOnCompleteListener {
-                                c.rewardAccount(UNLOCK_TIMES[0])
-                                c.gsp.edit().putBoolean(Settings.spRatedUs, true).apply()
-                            }
-                        } else if (BuildConfig.DEBUG) task.exception?.let { throw it }
-                        bp.loading(false)
-                    }
+                    UiTools.reviewApp(
+                        c, { this@apply.cancel() }, { bp.loading(false) }
+                    ) { c.rewardAccountForFollower() }
                 }
                 bp.watchAnAd.setOnClickListener {
                     bp.loading(true)
@@ -339,7 +327,7 @@ class MassFollower : ServiceOwnerActivity() {
                         mRewardedAd = rewardedAd
                         mRewardedAd?.fullScreenContentCallback = RewardAdCallback(c, onResult)
                         mRewardedAd?.show(c) {
-                            c.rewardAccount(it.amount)
+                            c.rewardAccountForFollower(it.amount)
                             actuallyInitService(c, enq)
                             onStart()
                         }
@@ -357,7 +345,7 @@ class MassFollower : ServiceOwnerActivity() {
                 })
         }
 
-        private fun BaseActivity.rewardAccount(times: Int) {
+        fun BaseActivity.rewardAccountForFollower(times: Int = UNLOCK_TIMES[0]) {
             m.acc!!.mfrw += times
             m.acc!!.saveMe(c)
             if (this is MassFollower) countPermissions()

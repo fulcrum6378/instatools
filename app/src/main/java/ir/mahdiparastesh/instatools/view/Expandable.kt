@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Handler
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import androidx.annotation.ColorInt
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Queued
@@ -36,7 +37,7 @@ class Expandable(
     private val c: BaseActivity,
     private val b: ExpandableBinding,
     private val handler: Handler?,
-    private val colorBg: Int = c.color(R.color.defBG),
+    @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
     var node: Profile.Post? = null
@@ -190,7 +191,7 @@ class Expandable(
                     ObjectAnimator.ofArgb(
                         b.slider, "backgroundColor", c.color(R.color.tp), colorBg
                     )
-                )
+                ) // IT WORKS BITCH
             }
             duration = zoomDur
             interpolator = DecelerateInterpolator()

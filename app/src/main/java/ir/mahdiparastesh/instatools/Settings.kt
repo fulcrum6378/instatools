@@ -85,7 +85,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
         const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false
-        const val spRatedUs = "rated_us"
+        const val spRatedUs = "rated_us" // def: false
+        const val spUsedVersion = "used_version"
 
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
