@@ -68,8 +68,10 @@ class Queuer : ForegroundService() {
     override fun onCreate() {
         super.onCreate()
         dest = sPreference(Settings.spStorage)
-        Settings.loadAliases(c, gsp).forEach { (k, v) -> aliases[k] = v }
-        sp?.let { sp -> Settings.loadAliases(c, sp).forEach { (k, v) -> aliases[k] = v } }
+        CoroutineScope(Dispatchers.IO).launch {
+            Settings.loadAliases(c, gsp).forEach { (k, v) -> aliases[k] = v }
+            sp?.let { sp -> Settings.loadAliases(c, sp).forEach { (k, v) -> aliases[k] = v } }
+        }
         if (m.acc == null || dest == null) {
             finish(false); return; }
         initialNotification(Companion, Downloads::class)

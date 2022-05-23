@@ -40,6 +40,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
@@ -95,7 +96,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         val allSps = arrayOf(spStorage, spBranching, spMainPage, spAutoDeleteEmptyDirs)
         var recreateMain = false
 
-        fun deleteDb(id: String) {
+        @Suppress("RedundantSuspendModifier")
+        suspend fun deleteDb(id: String) {
             arrayOf(
                 DbFile(id, DbFile.Triple.MAIN),
                 DbFile(id, DbFile.Triple.SHARED_MEMORY),
@@ -103,13 +105,14 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             ).forEach { f -> if (f.exists()) f.delete() }
         }
 
-        @Suppress("unused")
-        fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
+        @Suppress("unused", "RedundantSuspendModifier")
+        suspend fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
             File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }
         }
 
-        fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
+        @Suppress("RedundantSuspendModifier")
+        suspend fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
 
         private var clearingCache = false
         fun Context.clearCache() {
@@ -129,7 +132,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             return ret
         } ?: defSpCacheLimit
 
-        fun Persistent.clearCacheIfNecessary() {
+        suspend fun Persistent.clearCacheIfNecessary() {
             if (Exporter.active.value == true) return
             if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
                 c.clearCache()
@@ -139,7 +142,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun Int.toBytes() = this * MB
 
-        fun loadAliases(c: Context, sp: SharedPreferences): HashMap<String, String> {
+        @Suppress("RedundantSuspendModifier")
+        suspend fun loadAliases(c: Context, sp: SharedPreferences): HashMap<String, String> {
             val map = sp.getString(spAliases, null)
                 ?.let { Gson().fromJson<HashMap<String, String>>(it, HashMap::class.java) }
                 ?: hashMapOf()
@@ -205,8 +209,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         // Alias Paths
-        aliases = loadAliases(c, prf)
-        showAliases()
+        CoroutineScope(Dispatchers.IO).launch {
+            aliases = loadAliases(c, prf)
+            withContext(Dispatchers.Main) { showAliases() }
+        }
         b.stAddAlias.setOnClickListener { editAlias(null) }
 
         // Caching
@@ -244,7 +250,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    deleteDb(m.acc!!.id.toString())
+                    CoroutineScope(Dispatchers.IO).launch { deleteDb(m.acc!!.id.toString()) }
                     recreateMain = true
                 }
             }.show().stylise(this)
@@ -299,7 +305,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     }
 
     private fun updateCacheSize() {
-        b.stCaching.text = getString(R.string.stCache, c.showBytes(c.cacheSize()))
+        CoroutineScope(Dispatchers.IO).launch {
+            val cacheSize = getString(R.string.stCache, c.showBytes(c.cacheSize()))
+            withContext(Dispatchers.Main) { b.stCaching.text = cacheSize }
+        }
     }
 
     private fun updateCacheLimit(updateSb: Boolean = false) {
@@ -376,9 +385,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                             contentResolver.releasePersistableUriPermission(
                                 uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                             )
-                            aliases = loadAliases(c, prf)
-                        }
-                        showAliases()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                aliases = loadAliases(c, prf)
+                                withContext(Dispatchers.Main) { showAliases() }
+                            }
+                        } else showAliases()
                     }
                     setNegativeButton(R.string.cancel, null)
                 }.show().stylise(this@Settings)

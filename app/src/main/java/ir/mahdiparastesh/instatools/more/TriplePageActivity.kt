@@ -35,12 +35,20 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
 
     open fun createPages(pager: ViewPager2? = null) {
         currentPage.value = defPage()
-        if (page1 == null) page1 = aKlass.java.newInstance()
-        if (page2 == null) page2 = bKlass.java.newInstance()
-        if (page3 == null) page3 = cKlass.java.newInstance()
-        if (mode == TripleMode.FRAGMENT_MANAGER) loadPages()
-        else {
-            pager!!.adapter = PageAdapter(this)
+        createCurrentPage()
+        if (pager == null) {
+            val pages = pages()
+            for (i in pages.indices) if (pages[i] != null) transFrag().apply {
+                if (pages[i]!!.isAdded) remove(pages[i]!!)
+                add(R.id.frame, pages[i]!!)
+                if (i != currentPage.value) {
+                    detach(pages[i]!!)
+                    (pages[i] as BasePageMain).ftDetached = true
+                }
+                commit()
+            }
+        } else {
+            pager.adapter = PageAdapter(this)
             pager.setCurrentItem(currentPage.value!!, false)
             pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(i: Int) {
@@ -48,10 +56,31 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                 }
             })
         }
-        currentPage.observe(this) {
-            pages()[it].updateShadow()
-            pages()[it].updateJumper()
+        Delay(100) {
+            currentPage.observe(this) {
+                pages()[it]?.updateShadow()
+                pages()[it]?.updateJumper()
+            }
         }
+    }
+
+    private fun createCurrentPage(): Boolean {
+        var created = false
+        when (currentPage.value!!) {
+            0 -> if (page1 == null) {
+                page1 = aKlass.java.newInstance()
+                created = true
+            }
+            1 -> if (page2 == null) {
+                page2 = bKlass.java.newInstance()
+                created = true
+            }
+            2 -> if (page3 == null) {
+                page3 = cKlass.java.newInstance()
+                created = true
+            }
+        }
+        return created
     }
 
     private fun transFrag(from: Int? = null, to: Int? = null) =
@@ -70,29 +99,20 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             )
         }
 
-    protected fun pages() = arrayOf(page1!!, page2!!, page3!!)
-
-    private fun loadPages() = pages().forEachIndexed { i, it ->
-        transFrag().apply {
-            if (it.isAdded) remove(it)
-            add(R.id.frame, it)
-            if (i != currentPage.value) {
-                detach(it)
-                (it as BasePageMain).ftDetached = true
-            }
-            commit()
-        }
-    }
+    protected fun pages(): Array<BasePage<*>?> = arrayOf(page1, page2, page3)
 
     protected var lastPage: Int = 0
     protected open fun turnToPage(i: Int): Boolean {
         if (i == currentPage.value || currentPage.value == null) return false
         lastPage = currentPage.value!!
         currentPage.value = i
-        transFrag(lastPage, currentPage.value!!)
-            .detach(pages()[lastPage])
-            .attach(pages()[currentPage.value!!])
-            .commit()
+        val createdCur = createCurrentPage()
+        transFrag(lastPage, currentPage.value!!).apply {
+            detach(pages()[lastPage]!!)
+            if (createdCur) add(R.id.frame, pages()[currentPage.value!!]!!)
+            else attach(pages()[currentPage.value!!]!!)
+            commit()
+        }
         (pages()[lastPage] as BasePageMain).ftDetached = true
         return true
     }
@@ -102,7 +122,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         if (isSelective == bb) return false
         isSelective = bb
         toolbar.menu.clear()
-        toolbar.inflateMenu(if (bb) pages()[currentPage.value!!].selectiveMenuRes!! else menuRes!!)
+        toolbar.inflateMenu(if (bb) pages()[currentPage.value!!]!!.selectiveMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(
             if (isSelective) arrayOf<Toolbar.OnMenuItemClickListener>(
                 page1!!, page2!!, page3!!
@@ -113,7 +133,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         return true
     }
 
-    protected fun pageGoBack() = pages()[currentPage.value!!].goBack()
+    protected fun pageGoBack() = pages()[currentPage.value!!]?.goBack() ?: false
 
     override fun onDestroy() {
         page1 = null
@@ -145,11 +165,10 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
 
     private inner class PageAdapter(c: TriplePageActivity<*, *, *>) : FragmentStateAdapter(c) {
         override fun getItemCount(): Int = 3
-
         override fun createFragment(i: Int): Fragment = when (i) {
-            0 -> page1!!
-            1 -> page2!!
-            2 -> page3!!
+            0 -> aKlass.java.newInstance().also { page1 = it }
+            1 -> bKlass.java.newInstance().also { page2 = it }
+            2 -> cKlass.java.newInstance().also { page3 = it }
             else -> throw IllegalArgumentException("Page $i?!?")
         }
     }

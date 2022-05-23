@@ -27,6 +27,10 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import kotlin.system.exitProcess
 
@@ -59,35 +63,45 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
         m.accountSwitched()
-        accounts = Account.load(c)
-        if (accounts.find { it.id == -1L } == null)
-            Account(-1L, "", "").apply { accounts.add(this) }
 
         // WebView
         b.web.settings.javaScriptEnabled = true
         b.web.webViewClient = myClient
         b.refresher.setOnRefreshListener { b.web.reload() }
 
-        when {
-            intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L).apply {
-                cameHereToAuth = true
-                AlertDialog.Builder(this@Login).apply {
-                    setTitle(R.string.guest)
-                    setMessage(R.string.needAuthentication)
-                    setNeutralButton(R.string.ok, null)
-                }.show().stylise(this@Login)
-                val signedOutFrom = if (this != -1L) accounts.find { it.id == this } else null
-                if (signedOutFrom == null || accounts.size <= 1) {
-                    gonnaAdd = true
-                    browse()
-                } else selectAccount(signedOutFrom)
-            }
-            else -> {
-                welcome()
-                if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
-                    loadInterstitial(R.string.interAccSwitched, true)
+        // Accounts
+        CoroutineScope(Dispatchers.IO).launch {
+            accounts = Account.load(c)
+            if (accounts.find { it.id == -1L } == null)
+                Account(-1L, "", "").apply { accounts.add(this) }
+            withContext(Dispatchers.Main) {
+                when {
+                    intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
+                        .apply {
+                            cameHereToAuth = true
+                            AlertDialog.Builder(this@Login).apply {
+                                setTitle(R.string.guest)
+                                setMessage(R.string.needAuthentication)
+                                setNeutralButton(R.string.ok, null)
+                            }.show().stylise(this@Login)
+                            val signedOutFrom =
+                                if (this != -1L) accounts.find { it.id == this } else null
+                            if (signedOutFrom == null || accounts.size <= 1) {
+                                gonnaAdd = true
+                                browse()
+                            } else selectAccount(signedOutFrom)
+                        }
+                    else -> {
+                        welcome()
+                        if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
+                            loadInterstitial(R.string.interAccSwitched, true)
+                    }
+                }
             }
         }
+    }
+
+    override fun onAccountSet() {
     }
 
     override fun onInflate(stub: ViewStub, v: View) {
@@ -128,7 +142,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             acc.cook != null -> browse(acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }
-                Account.save(c, accounts)
+                CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 welcome()
             }
         }
@@ -176,7 +190,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 id = "-1"
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
                     cookieManager.getCookie(host)
-                Account.save(c, accounts)
+                CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 gsp.edit().putString(spAccount, id).apply()
                 goTo(Main::class, true); return; }
             if (doClearHistory) {
@@ -251,7 +265,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
                 accounts.removeAll { it.id == id }
                 accounts.add(this)
-                Account.save(c, accounts)
+                CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
             }
             gsp.edit().putString(spAccount, id).apply()
             goTo(Main::class, true)

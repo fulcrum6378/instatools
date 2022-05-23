@@ -4,6 +4,9 @@ import android.content.Context
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Login.Companion.spAccount
 import ir.mahdiparastesh.instatools.more.Persistent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -20,34 +23,42 @@ class Account(
     // keep in mind to update the fields whose data need to persist after another Login
 ) {
     fun saveMe(c: Context) {
-        save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
+        CoroutineScope(Dispatchers.IO).launch {
+            save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
+        }
     }
 
     companion object {
-        fun load(c: Context): ArrayList<Account> {
+        @Suppress("RedundantSuspendModifier")
+        suspend fun load(c: Context): ArrayList<Account> {
             val secured = Secured(c)
             return if (secured.exists()) {
-                val data: ByteArray
-                FileInputStream(secured).use { data = it.readBytes() }
-                Gson().fromJson(String(data), Array<Account>::class.java)
+                var data: ByteArray? = null
+                runCatching {
+                    FileInputStream(secured).use { it.readBytes() }
+                }.onSuccess { data = it }
+                data?.let { Gson().fromJson(String(it), Array<Account>::class.java) }
                     ?.let { ArrayList(it.toList()) }
                     ?: arrayListOf()
             } else arrayListOf()
         }
 
-        fun selected(
-            c: Persistent, list: List<Account> = load(c.c), guestIfNotExists: Boolean = true
-        ): Account? = list.find {
+        suspend fun selected(
+            c: Persistent, list: List<Account>? = null, guestIfNotExists: Boolean = true
+        ): Account? = (list ?: load(c.c)).find {
             it.id == c.gsp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")
                 ?.toLongOrNull()
         }
 
-        fun save(c: Context, accounts: List<Account>) {
-            FileOutputStream(Secured(c)).use { fos ->
-                fos.write(
-                    Gson().toJson(accounts.filter { it.cook != null || it.id == -1L })
-                        .encodeToByteArray()
-                )
+        @Suppress("RedundantSuspendModifier")
+        suspend fun save(c: Context, accounts: List<Account>) {
+            runCatching {
+                FileOutputStream(Secured(c)).use { fos ->
+                    fos.write(
+                        Gson().toJson(accounts.filter { it.cook != null || it.id == -1L })
+                            .encodeToByteArray()
+                    )
+                }
             }
         }
 

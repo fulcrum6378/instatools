@@ -123,6 +123,7 @@
     <string name="pasteLink">Cole um link&#8230;</string>
     <string name="downloadsHelp1">1. Abra o Instagram,\n2. Escolha uma postagem ou história,\n3. Compartilhe-o neste aplicativo;</string>
     <string name="downloadsHelp2">para que seja baixado imediatamente!</string>
+    <string name="nonInstagramUrl">Desculpe, mas este aplicativo baixa apenas conteúdo do Instagram!</string>
 
     <!-- Favourites -->
     <string name="favourites">Favoritos</string>

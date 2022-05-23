@@ -10,6 +10,7 @@ import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.MainThread
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -30,6 +31,7 @@ import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -110,8 +112,16 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-            if (it in handledLinks) return@let
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
+            if (it in handledLinks) return@also
+            if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith("https://instagram.com/")) {
+                AlertDialog.Builder(this).apply {
+                    setTitle(R.string.downloads)
+                    setMessage(R.string.nonInstagramUrl)
+                    setNeutralButton(R.string.ok, null)
+                }.show().stylise(this)
+                return@also
+            }
             initService(this, it)
             handledLinks.add(it)
         }

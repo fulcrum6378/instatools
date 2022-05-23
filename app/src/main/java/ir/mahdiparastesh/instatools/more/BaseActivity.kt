@@ -40,6 +40,10 @@ import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
 abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener,
@@ -93,14 +97,29 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         super.onCreate(savedInstanceState)
         m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
         gsp = initGsp()
-        if (this !is Login && m.acc == null)
-            m.acc = Account.selected(this, guestIfNotExists = this !is Main)
-        sp = initSp(m.acc)
+        if ((gsp.contains(Login.spAccount) || this !is Main) && this !is Login) {
+            if (m.acc == null) CoroutineScope(Dispatchers.IO).launch {
+                m.acc = Account.selected(
+                    this@BaseActivity, guestIfNotExists = this@BaseActivity !is Main
+                )
+                withContext(Dispatchers.Main) { onAccountSet() }
+            } else onAccountSet()
+        } else onAccountSet()
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
             super.onBackPressed()
             finish()
             return; }
+    }
+
+    var isAccountSet = false
+    open fun onAccountSet() {
+        sp = initSp(m.acc)
+        isAccountSet = true
+    }
+
+    open fun onBuildUiBasedOnAccount() {
+        uiBuildBasedOnAccount = true
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -114,10 +133,12 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         return true // shall pass
     }
 
+    protected var uiBuildBasedOnAccount = false
     override fun setContentView(root: View?) {
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
+        onBuildUiBasedOnAccount()
     }
 
     override fun onStart() {

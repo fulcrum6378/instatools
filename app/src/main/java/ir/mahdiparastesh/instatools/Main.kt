@@ -44,6 +44,10 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
@@ -85,48 +89,37 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (m.acc == null) {
-            goTo(Login::class, true)
-            return; }
+        if (!gsp.contains(Login.spAccount)) {
+            goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        guest = m.acc!!.id == -1L
         initToolbar(b.toolbar, R.string.app_name, font = font(R.string.font_logo))
-        createPages()
 
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
-        b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
 
         // Theming
-        if (night()) {
-            colorBG.observe(this) {
-                if (it == null) return@observe
-                window.decorView.setBackgroundColor(it)
-                window.statusBarColor = it
-                window.navigationBarColor = it
-                styliseToolbar()
-                onPrepareOptionsMenu(null)
-                b.nav.setBackgroundColor(it)
-                b.searchRes.setBackgroundColor(it)
-                b.bnv.setBackgroundColor(it)
-                if (page2?.bInitialised == true)
-                    page2?.b?.expanded?.root?.setBackgroundColor(it)
-            }
-            colorBG.value = bg[m.currentPage.value!!]
-        } else {
-            colorAc.observe(this) {
-                if (it == null) return@observe
-                styliseToolbar()
-                searchInput?.setTextColor(it)
-                searchInput?.setHintTextColor(weaken(it))
-                searchClose?.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
-            }
-            colorAc.value = ca[m.currentPage.value!!]
+        if (night()) colorBG.observe(this) {
+            if (it == null) return@observe
+            window.decorView.setBackgroundColor(it)
+            window.statusBarColor = it
+            window.navigationBarColor = it
+            styliseToolbar()
+            onPrepareOptionsMenu(null)
+            b.nav.setBackgroundColor(it)
+            b.searchRes.setBackgroundColor(it)
+            b.bnv.setBackgroundColor(it)
+            if (page2?.bInitialised == true)
+                page2?.b?.expanded?.root?.setBackgroundColor(it)
+        } else colorAc.observe(this) {
+            if (it == null) return@observe
+            styliseToolbar()
+            searchInput?.setTextColor(it)
+            searchInput?.setHintTextColor(weaken(it))
+            searchClose?.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
-        b.toolbar.popupTheme = overflowThemes[m.currentPage.value!!]
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it ->
             it.setTextColor(ca[i / 2])
             it.typeface = fontLight
@@ -140,29 +133,13 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             isDrawerIndicatorEnabled = true
             syncState()
         }
-        bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
-        if (m.acc!!.id != -1L) {
-            Glide.with(c).load(m.acc!!.pict).into(bh.pict)
-            bh.user.text = m.acc!!.user
-            bh.user.typeface = fontLight
-            if (!m.acc!!.name.isNullOrBlank()) {
-                bh.name.text = m.acc!!.name
-                bh.name.typeface = fontRegular
-            } else bh.name.vis(false)
-            bh.ll.setOnClickListener { UiTools.openProfile(this, m.acc!!.user!!) }
-        } else bh.root.vis(false)
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
 
         // Miscellaneous
-        if (m.files == null) StorageCache.load(this)
-        Favourites.FavLoader(this).start()
-        if (gsp.getInt(
-                Settings.spUsedVersion,
-                BuildConfig.VERSION_CODE
-            ) != BuildConfig.VERSION_CODE
+        if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
         ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
@@ -173,6 +150,46 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 }
             gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
         }
+    }
+
+    override fun onAccountSet() {
+        if (m.acc == null) {
+            goTo(Login::class, true)
+            return; }
+        super.onAccountSet()
+        guest = m.acc!!.id == -1L
+        onBuildUiBasedOnAccount()
+    }
+
+    override fun onBuildUiBasedOnAccount() {
+        if (!isAccountSet || !::b.isInitialized || uiBuildBasedOnAccount) return
+        super.onBuildUiBasedOnAccount()
+        createPages()
+
+        // Bottom Navigation Bar
+        b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
+
+        // Theming
+        if (night()) colorBG.value = bg[m.currentPage.value!!]
+        else colorAc.value = ca[m.currentPage.value!!]
+        b.toolbar.popupTheme = overflowThemes[m.currentPage.value!!]
+
+        // Navigation
+        bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
+        if (!guest) {
+            Glide.with(c).load(m.acc!!.pict).into(bh.pict)
+            bh.user.text = m.acc!!.user
+            bh.user.typeface = fontLight
+            if (!m.acc!!.name.isNullOrBlank()) {
+                bh.name.text = m.acc!!.name
+                bh.name.typeface = fontRegular
+            } else bh.name.vis(false)
+            bh.ll.setOnClickListener { UiTools.openProfile(this, m.acc!!.user!!) }
+        } else bh.root.vis(false)
+
+        // Miscellaneous
+        if (m.files == null) StorageCache.load(this)
+        Favourites.FavLoader(this).start()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -341,12 +358,14 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
-        if (bd) {
-            Settings.deleteDb(m.acc!!.id.toString())
-            Settings.deleteSp(this@Main)
+        CoroutineScope(Dispatchers.IO).launch {
+            if (bd) {
+                Settings.deleteDb(m.acc!!.id.toString())
+                Settings.deleteSp(this@Main)
+            }
+            Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc?.id } })
+            withContext(Dispatchers.Main) { switchAcc() }
         }
-        Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc?.id } })
-        switchAcc()
     }
 
     override fun switchAcc() {
@@ -369,7 +388,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             exiting = true
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
-            clearCacheIfNecessary()
+            CoroutineScope(Dispatchers.IO).launch { clearCacheIfNecessary() }
             return; }
         super.onBackPressed() // Do NOT kill the process
     }

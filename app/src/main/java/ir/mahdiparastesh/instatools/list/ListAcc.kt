@@ -19,6 +19,9 @@ import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>() {
 
@@ -89,14 +92,16 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
     }
 
     private fun signOut(acc: Account, i: Int, bd: Boolean) {
-        if (bd) {
-            Settings.deleteDb(acc.id.toString())
-            Settings.deleteSp(c, acc)
+        CoroutineScope(Dispatchers.IO).launch {
+            if (bd) {
+                Settings.deleteDb(acc.id.toString())
+                Settings.deleteSp(c, acc)
+            }
+            c.accounts.removeAll { it.id == acc.id }
+            Account.save(c, c.accounts)
+            if (c.gsp.getString(Login.spAccount, null) == acc.id.toString())
+                c.gsp.edit().remove(Login.spAccount).apply()
         }
-        c.accounts.removeAll { it.id == acc.id }
-        Account.save(c, c.accounts)
-        if (c.gsp.getString(Login.spAccount, null) == acc.id.toString())
-            c.gsp.edit().remove(Login.spAccount).apply()
         notifyItemRemoved(i)
         notifyItemRangeChanged(i, c.accounts.size)
         if (i > 0) notifyItemChanged(i - 1)
