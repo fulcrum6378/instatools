@@ -38,7 +38,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.review.testing.FakeReviewManager
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.MassFollower.Companion.rewardAccountForFollower
 import ir.mahdiparastesh.instatools.json.Profile
@@ -289,9 +288,7 @@ class UiTools {
             onReqComplete: () -> Unit = {},
             onDone: () -> Unit = {}
         ) {
-            val reviewManager =
-                if (!BuildConfig.DEBUG) ReviewManagerFactory.create(c)
-                else FakeReviewManager(c)
+            val reviewManager = ReviewManagerFactory.create(c) // FakeReviewManager(c)
             reviewManager.requestReviewFlow().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     onReqSuccess()

@@ -111,6 +111,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)
 
+        //bw.logo.setOnClickListener { UiTools.reviewApp(this, 0) }
+
         // Add Account
         bw.addAccount.setOnClickListener {
             gonnaAdd = true
