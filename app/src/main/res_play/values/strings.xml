@@ -2,6 +2,7 @@
     <string name="app_ad_id" translatable="false">ca-app-pub-9457309151954418~9437215161</string>
 
     <string name="bnrBtmDownloads" translatable="false">ca-app-pub-9457309151954418/6741633595</string>
+    <string name="bnrBtmDrawer" translatable="false">ca-app-pub-9457309151954418/5748922996</string>
     <string name="bnrBtmFavourites" translatable="false">ca-app-pub-9457309151954418/5791777330</string>
     <string name="bnrBtmGuest" translatable="false">ca-app-pub-9457309151954418/6558936236</string>
     <string name="bnrBtmMassFollower" translatable="false">ca-app-pub-9457309151954418/6721715622</string>

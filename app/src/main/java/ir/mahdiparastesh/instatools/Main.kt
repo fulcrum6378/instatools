@@ -9,8 +9,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -22,6 +22,9 @@ import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
@@ -42,6 +45,7 @@ import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +63,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
     val exportLauncher = launcher { page3?.onActivityResult(it) }
+    private lateinit var adBanner: AdView
+    private var adBannerLoaded = false
 
     var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
@@ -126,9 +132,17 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         }
 
         // Navigation
-        toggleNav = ActionBarDrawerToggle(
+        toggleNav = object : ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
-        ).apply {
+        ) {
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                if (::adBanner.isInitialized && !adBannerLoaded) {
+                    adBanner.loadAd(AdRequest.Builder().build())
+                    adBannerLoaded = true
+                }
+            }
+        }.apply {
             b.root.addDrawerListener(this)
             isDrawerIndicatorEnabled = true
             syncState()
@@ -204,6 +218,15 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (Settings.recreateMain) {
             Settings.recreateMain = false
             recreate(); return; }
+    }
+
+    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+        super.onInitializationComplete(adsInitStatus)
+        if (!adsInitStatus.isReady()) return
+        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDrawer)
+        b.nav.addView(adBanner, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { gravity = Gravity.BOTTOM })
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {

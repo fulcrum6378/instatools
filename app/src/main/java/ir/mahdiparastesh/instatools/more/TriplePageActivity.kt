@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.os.Bundle
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
@@ -122,12 +121,9 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         if (isSelective == bb) return false
         isSelective = bb
         toolbar.menu.clear()
-        toolbar.inflateMenu(if (bb) pages()[currentPage.value!!]!!.selectiveMenuRes!! else menuRes!!)
-        toolbar.setOnMenuItemClickListener(
-            if (isSelective) arrayOf<Toolbar.OnMenuItemClickListener>(
-                page1!!, page2!!, page3!!
-            )[currentPage.value!!] else this
-        )
+        val page = pages()[currentPage.value!!]!!
+        toolbar.inflateMenu(if (bb) page.selectiveMenuRes!! else menuRes!!)
+        toolbar.setOnMenuItemClickListener(if (isSelective) page else this)
         if (this is Main) styliseToolbar()
         Delay(100) { onPrepareOptionsMenu(null) }
         return true

@@ -311,15 +311,15 @@ class Exporter : ForegroundService() {
                     setContentTitle(
                         getString(R.string.exporterDone, oldExp.threadData?.title() ?: "")
                     )
+                    if (alternativeFolder != null) setStyle(
+                        NotificationCompat.BigTextStyle().bigText(getString(R.string.exportRescued))
+                    )
                     addAction(
                         0, getString(R.string.openFolder), PendingIntent.getActivity(
                             c, 0, Intent(Intent.ACTION_VIEW).apply {
                                 setDataAndType(alternativeFolder
-                                    ?: (if (oldExp.method().asTree) oldExp.uri?.let {
-                                        Uri.parse(
-                                            it
-                                        )
-                                    }
+                                    ?: (if (oldExp.method().asTree) oldExp.uri
+                                        ?.let { Uri.parse(it) }
                                     else oldExp.uri
                                         ?.let { DocumentFile.fromSingleUri(c, Uri.parse(it)) }
                                         ?.parentFile?.uri), DIR_MIME)
