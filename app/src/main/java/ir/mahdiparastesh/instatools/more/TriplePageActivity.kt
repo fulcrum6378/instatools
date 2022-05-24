@@ -132,6 +132,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     protected fun pageGoBack() = pages()[currentPage.value!!]?.goBack() ?: false
 
     override fun onDestroy() {
+        // don't call transFrag().remove() here: Can not perform this action after onSaveInstanceState!
         page1 = null
         page2 = null
         page3 = null

@@ -226,6 +226,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (expandable.zoomed) {
                 expandable.collapse(); return; }
         }
+        if (b.pager.currentItem != 1) {
+            b.pager.setCurrentItem(1, true); return; }
         m.vwUser = null
         m.vwReels = null
         m.vwTagged = null

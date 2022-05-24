@@ -188,7 +188,17 @@ class PageUnf : BasePageMain() {
                 if (oldFriends.find { it.id == newer.id }?.follows == true && !newer.follows)
                     c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
             }
+            c.m.fav?.forEach { fav ->
+                newFriends.find { fav.id == it.id }?.also { friend ->
+                    fav.user = friend.user
+                    fav.name = friend.name
+                    fav.photo = friend.pict
+                    fav.isPrivate = friend.priv
+                    c.dao.updateFavourite(fav)
+                }
+            }
             if (!active || c.m.acc == null) return
+            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             val newUnf = newFriends.filter {
                 (it.unfollowedMeAt != null
                         && it.unfollowedMeAt!! > (c.sp?.getLong(Settings.spNotifiedUnfTill, 0L)
@@ -198,7 +208,6 @@ class PageUnf : BasePageMain() {
                 withContext(Dispatchers.Main) { gotNewOnes(newUnf.size) }
                 // HIGHLIGHT THEM IF YOU WANT
             }
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             interrupt()
         }
 
