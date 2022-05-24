@@ -16,7 +16,8 @@ class Friend(
     var follows: Boolean,
     var followed: Boolean,
     var unfollowedMeAt: Long? = null,
-    @Ignore @Transient var inFav: Boolean = false
+    @Ignore @Transient var inFav: Boolean = false,
+    @Ignore @Transient var unfollowed: Boolean = false,
 ) {
     @Suppress("unused")
     constructor() : this("", "", "", "", false, false, false)

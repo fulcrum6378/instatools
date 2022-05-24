@@ -39,11 +39,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.review.testing.FakeReviewManager
-import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.MassFollower.Companion.rewardAccountForFollower
-import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -287,6 +284,7 @@ class UiTools {
 
         fun reviewApp(
             c: BaseActivity,
+            reward: Int = MassFollower.RATE_US_UNINTENTIONALLY_UNLOCK_TIMES,
             onReqSuccess: () -> Unit = {},
             onReqComplete: () -> Unit = {},
             onDone: () -> Unit = {}
@@ -299,7 +297,7 @@ class UiTools {
                     onReqSuccess()
                     reviewManager.launchReviewFlow(c, task.result).addOnCompleteListener {
                         onDone()
-                        c.rewardAccountForFollower()
+                        c.rewardAccountForFollower(reward)
                         c.gsp.edit().putBoolean(Settings.spRatedUs, true).apply()
                     }
                 } else if (BuildConfig.DEBUG) task.exception?.let { throw it }

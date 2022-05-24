@@ -104,7 +104,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
-        m.unfollowers.observe(this) { bnvBadge(0, it?.size) }
+        m.unfollowers.observe(this) { bnvBadge(0, it?.filter { u -> !u.unfollowed }?.size) }
 
         // Theming
         if (night()) colorBG.observe(this) {
@@ -222,7 +222,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
-        if (!adsInitStatus.isReady()) return
+        if (!adsInitStatus.isReady() || !::b.isInitialized) return
         adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDrawer)
         b.nav.addView(adBanner, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT

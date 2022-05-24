@@ -9,17 +9,20 @@
     <ImageView
         android:id="@+id/logo"
         style="@style/parentConstraint"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/app_name"
+        android:maxHeight="200dp"
         android:src="@drawable/logo"
-        app:layout_constraintVertical_bias="0.15" />
+        app:layout_constraintHeight_percent="@fraction/welLogoHeight"
+        app:layout_constraintVertical_bias="@fraction/welLogoVBias" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/accounts"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="@dimen/welAccountsMarTop"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/addAccount"

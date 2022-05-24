@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.bumptech.glide.Glide
@@ -40,15 +41,29 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: AnyViewHolder<ListUnfBinding>, i: Int) {
         val unf = c.m.unfollowers.value?.getOrNull(i) ?: return
+
+        h.b.photo.vis(!unf.unfollowed)
+        h.b.name.vis(!unf.unfollowed)
+        h.b.unfollow.vis(!unf.unfollowed)
+        h.b.user.layoutParams = (h.b.user.layoutParams as ConstraintLayout.LayoutParams)
+            .apply { width = if (unf.unfollowed) ViewGroup.LayoutParams.MATCH_PARENT else 0 }
+        h.b.user.textAlignment =
+            if (unf.unfollowed) TextView.TEXT_ALIGNMENT_CENTER
+            else TextView.TEXT_ALIGNMENT_VIEW_START
+        // Presumably after invoking "notifyItemMoved()" the alpha value of the root is animated;
+        // so if you change it statically here, your changes won't survive the animation.
+        val alpha = when {
+            unf.unfollowed -> OFF_ALPHA
+            unf.inFav -> OFF_ALPHA
+            else -> 1f
+        }
+        arrayOf(h.b.photo, h.b.name, h.b.user, h.b.unfollow).forEach { it.alpha = alpha }
+
         Glide.with(c.c).load(unf.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${unf.name}"
         h.b.user.text = if (unf.unfollowedMeAt != null) c.getString(
             R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
         ) else unf.user
-        // Presumably after invoking "notifyItemMoved()" the alpha value of the root is animated;
-        // so if you change it statically here, your changes won't survive the animation.
-        arrayOf(h.b.photo, h.b.name, h.b.user, h.b.unfollow)
-            .forEach { it.alpha = if (unf.inFav) FAV_ALPHA else 1f }
 
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
@@ -59,8 +74,9 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                     this[R.id.umToFav] = { toggleFav(u) }
                 }, c.colorAc.value
             ).apply {
-                menu.findItem(R.id.umToFav)
+                if (!u.unfollowed) menu.findItem(R.id.umToFav)
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)
+                else menu.removeItem(R.id.umToFav)
             }.show()
         }
         h.b.unfollow.setOnClickListener {
@@ -110,10 +126,12 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 else c.dao.deleteFriend(unf)
             }.start()
             val index = c.m.unfollowers.value!!.indexOf(unf)
-            c.m.unfollowers.value!!.remove(unf)
+            c.m.unfollowers.value!![index].unfollowed = true
+            f.b.rv.adapter?.notifyItemChanged(index)
+            /*c.m.unfollowers.value!!.remove(unf)
             f.b.rv.adapter?.notifyItemRemoved(index)
             if (index > 0) f.b.rv.adapter?.notifyItemChanged(index - 1)
-            f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)
+            f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)*/
             c.m.unfollowers.value = c.m.unfollowers.value
             if (c.m.unfollowers.value.isNullOrEmpty()) f.emptied(true)
         }
@@ -131,6 +149,6 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     }
 
     companion object {
-        const val FAV_ALPHA = 0.5f
+        const val OFF_ALPHA = 0.5f
     }
 }

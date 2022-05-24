@@ -15,6 +15,9 @@
     <dimen name="jumperBottom">27dp</dimen>
     <dimen name="jumperListPad">72dp</dimen>
 
+    <!-- Login -->
+    <dimen name="welAccountsMarTop">50dp</dimen>
+
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>
     <dimen name="bnv">66dp</dimen>

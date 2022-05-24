@@ -116,6 +116,7 @@
     <string name="exportHtmlDesc">Dikkat: Bir HTML dosyası yalnızca bir PC veya macOS kullanılarak düzgün bir şekilde görüntülenebilir!</string>
     <string name="exportPdfDesc">Bir PDF dosyası ses ve video içeremez.</string>
     <string name="exportTxtDesc">Düz metin dosyası herhangi bir ortam türü içeremez.</string>
+    <string name="exportRescued">Dışa aktarılan dosyalar belirttiğiniz hedef klasöre aktarılamadı! Bu yüzden onları aşağıdaki düğmeyi kullanarak açılabilen alternatif bir hedefe taşıdık.</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>

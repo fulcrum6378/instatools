@@ -116,6 +116,7 @@
     <string name="exportHtmlDesc">Atenção: um arquivo HTML só pode ser visualizado corretamente usando um PC ou macOS!</string>
     <string name="exportPdfDesc">Um arquivo PDF não pode conter áudio e vídeo.</string>
     <string name="exportTxtDesc">Um arquivo de texto simples não pode conter nenhum tipo de mídia.</string>
+    <string name="exportRescued">Os arquivos exportados não puderam ser transferidos para a pasta de destino que você especificou! Então os movemos em um destino alternativo que pode ser aberto usando o botão abaixo.</string>
 
     <!-- Downloads -->
     <string name="downloads">Transferências</string>

@@ -260,6 +260,7 @@ class MassFollower : ServiceOwnerActivity() {
         const val HANDLE_REWARD_CONSUMED = 5
         const val HANDLE_DETECTED_AS_SPAMMER = 6
         const val FOLLOW_LIMIT = 9999 // edit EditText's maxLength whenever you edit this.
+        const val RATE_US_UNINTENTIONALLY_UNLOCK_TIMES = 10
         private val UNLOCK_TIMES = arrayOf(50, 5)
         private var mRewardedAd: RewardedAd? = null
         private var loadingAd = false
@@ -293,8 +294,8 @@ class MassFollower : ServiceOwnerActivity() {
                 else bp.rateUs.setOnClickListener {
                     bp.loading(true)
                     UiTools.reviewApp(
-                        c, { this@apply.cancel() }, { bp.loading(false) }
-                    ) { c.rewardAccountForFollower() }
+                        c, UNLOCK_TIMES[0], { this@apply.cancel() }, { bp.loading(false) }
+                    )
                 }
                 bp.watchAnAd.setOnClickListener {
                     bp.loading(true)
@@ -345,7 +346,7 @@ class MassFollower : ServiceOwnerActivity() {
                 })
         }
 
-        fun BaseActivity.rewardAccountForFollower(times: Int = UNLOCK_TIMES[0]) {
+        fun BaseActivity.rewardAccountForFollower(times: Int) {
             m.acc!!.mfrw += times
             m.acc!!.saveMe(c)
             if (this is MassFollower) countPermissions()
