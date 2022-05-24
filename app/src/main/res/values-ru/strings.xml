@@ -99,6 +99,7 @@
     <string name="downloadOnly">Только скачать</string>
     <string name="unsaveDownload">Удалить и загрузить</string>
     <string name="svdEmpty">У вас нет сохраненных сообщений!</string>
+    <string name="reallyHasNoMore">Вы сохранили еще %d сообщений; но они явно удалены, заблокированы или скрыты каким-либо образом!</string>
 
     <!-- PageBox -->
     <string name="boxUntil">До %s</string>

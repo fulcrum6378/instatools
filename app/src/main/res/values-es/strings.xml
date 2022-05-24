@@ -94,6 +94,7 @@
     <string name="downloadOnly">Descargar solo</string>
     <string name="unsaveDownload">No guardar &amp; descargar</string>
     <string name="svdEmpty">¡No tienes publicaciones guardadas!</string>
+    <string name="reallyHasNoMore">Tienes %d publicaciones más guardadas; ¡pero aparentemente están eliminados, bloqueados u ocultos de alguna manera!</string>
 
     <!-- PageBox -->
     <string name="boxUntil">Hasta %s</string>

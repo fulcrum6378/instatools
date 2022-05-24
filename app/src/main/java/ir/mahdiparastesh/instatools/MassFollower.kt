@@ -347,8 +347,10 @@ class MassFollower : ServiceOwnerActivity() {
         }
 
         fun BaseActivity.rewardAccountForFollower(times: Int) {
-            m.acc!!.mfrw += times
-            m.acc!!.saveMe(c)
+            m.acc?.apply {
+                mfrw += times
+                saveMe(c)
+            }
             if (this is MassFollower) countPermissions()
         }
 

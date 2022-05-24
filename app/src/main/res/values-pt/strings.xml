@@ -94,6 +94,7 @@
     <string name="downloadOnly">Somente Download</string>
     <string name="unsaveDownload">Cancelar Salvar e Baixar</string>
     <string name="svdEmpty">Você não tem postagens salvas!</string>
+    <string name="reallyHasNoMore">Você teve mais %d postagens salvas; mas eles aparentemente são excluídos, bloqueados ou ocultos de alguma forma!</string>
 
     <!-- PageBox -->
     <string name="boxUntil">Até %s</string>

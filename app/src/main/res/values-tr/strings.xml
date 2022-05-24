@@ -94,6 +94,7 @@
     <string name="downloadOnly">Yalnızca İndir</string>
     <string name="unsaveDownload">Kaydet ve İndir</string>
     <string name="svdEmpty">Kaydedilmiş yayınınız yok!</string>
+    <string name="reallyHasNoMore">Kaydedilen %d gönderi daha var; ama görünüşe göre silinmiş, engellenmiş veya herhangi bir şekilde gizlenmişler!</string>
 
     <!-- PageBox -->
     <string name="boxUntil">%s\'e kadar</string>

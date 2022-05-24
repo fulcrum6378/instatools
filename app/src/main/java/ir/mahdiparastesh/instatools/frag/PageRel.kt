@@ -127,21 +127,4 @@ class PageRel : BasePageViewer() {
             }
         }
     }
-
-    /*inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
-        override fun handle() {
-            val rel = list.getOrNull(0)
-            if (rel == null) {
-                Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
-                interrupt()
-                return
-            }
-            c.m.vwUser?.edges()?.find { it.node.id == rel }?.let { edge ->
-                c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
-                )
-            }
-            ended()
-        }
-    }*/
 }

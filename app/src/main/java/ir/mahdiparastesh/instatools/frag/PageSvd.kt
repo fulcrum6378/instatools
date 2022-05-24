@@ -50,6 +50,7 @@ class PageSvd : BasePageMain(), Selective {
     var saver: Saver? = null
     private var selectionBadge: BadgeDrawable? = null
     private var selectionGuide: LottieAnimationView? = null
+    private var reallyHasMore = true
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.SECONDARY
@@ -99,6 +100,15 @@ class PageSvd : BasePageMain(), Selective {
         HANDLE_INIT_QUEUER to {
             Downloads.initService(c, "")
             if (!UiTools.hasReviewedApp(c)) UiTools.reviewApp(c)
+        },
+        HANDLE_REALLY_NO_MORE to {
+            val number = c.m.saved?.hiddenItems()
+            if (number != null && number > 0) try {
+                Snackbar.make(
+                    b.root, c.getString(R.string.reallyHasNoMore, number), Snackbar.LENGTH_LONG
+                ).show()
+            } catch (ignored: IllegalArgumentException) {
+            }
         }
     )
     override var tracker: SelectionTracker<String>? = null
@@ -108,6 +118,7 @@ class PageSvd : BasePageMain(), Selective {
         const val HANDLE_UNSAVE_DONE = 10
         const val HANDLE_INIT_QUEUER = 11
         const val HANDLE_SHOW_AD = 12
+        const val HANDLE_REALLY_NO_MORE = 13
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -123,7 +134,7 @@ class PageSvd : BasePageMain(), Selective {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1) &&
+                if (!b.rv.canScrollVertically(1) && reallyHasMore &&
                     thread?.active != true && c.m.saved?.page_info?.has_next_page != false
                 ) thread = FetchSome().also { it.start() }
             }
@@ -148,6 +159,7 @@ class PageSvd : BasePageMain(), Selective {
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
         tracker?.clearSelection()
+        reallyHasMore = true
         thread = FetchSome().also { it.start() }
     }
 
@@ -300,6 +312,10 @@ class PageSvd : BasePageMain(), Selective {
                 val edgeList = res.data.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
+                    interrupt(); return@Api; }
+                if (edgeList.edges.isEmpty()) {
+                    reallyHasMore = false
+                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
                     interrupt(); return@Api; }
                 done(edgeList)
             }

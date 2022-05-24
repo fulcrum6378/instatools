@@ -102,6 +102,7 @@
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="svdEmpty">You have no saved posts!</string>
+    <string name="reallyHasNoMore">You have had %d more posts saved; but they\'re apparently deleted, blocked or hidden in any way!</string>
 
     <!-- PageBox -->
     <string name="boxUntil">Until %s</string>
