@@ -201,7 +201,7 @@
     <string name="exporterFetchTexts">%2$s\'un sohbetinde %1$d mesaj alındı&#8230;</string>
     <string name="exporterFetchMedia">%3$s\'un sohbetindeki %2$d medyadan %1$d\'u getiriliyor&#8230;</string>
     <string name="exporterWriting">%s\'un sohbeti depoya yazılıyor&#8230;</string>
-    <string name="exporterDone">%s\'un sohbetinin dışa aktarılması tamamlandı.</string>
+    <string name="exporterDone">%s\'un sohbeti dışa aktarıldı.</string>
     <string name="exporterFailed">Dışa aktarma başarısız oldu!</string>
     <string name="exporterFailed429">Ne yazık ki Instagram, spam ile mücadele etmek için çok fazla olduğu ve çok sık yapıldığı için bu istekleri engelledi. Lütfen birkaç saat sonra tekrar deneyin&#8230;</string>
     <string name="exporterFailedUnk">Bilinmeyen bir hata oluştu: %s</string>

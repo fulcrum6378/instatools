@@ -28,7 +28,7 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             ink.append(
                 when {
                     dm.action_log != null -> "<${dm.action_log.description}>"
-                    dm.animated_media != null -> "<sent a GIPHY>"
+                    dm.animated_media != null -> "<sent a gif>"
                     dm.clip != null -> "<shared a clip>"
                     dm.direct_media_share != null -> "<tagged you in a post>"
                     dm.felix_share != null -> "<shared a long video>${dm.felix_share.text.shareText()}"
@@ -42,7 +42,8 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                         "<shared a ${if (dm.media_share.media_type == 1f) "picture" else "video"}>"
                     dm.placeholder != null -> "<${dm.placeholder.message}>"
                     dm.profile != null -> "@${dm.profile.username}"
-                    dm.raven_media != null -> "<captured a photo>"
+                    dm.raven_media != null ->
+                        "<captured a ${if (dm.raven_media.media_type == 1f) "photo" else "video"}>"
                     dm.reel_share != null -> "<shared a reel>${dm.reel_share.text.shareText()}"
                     dm.story_share != null -> "<shared a story>${dm.story_share.text.shareText()}"
                     dm.text != null -> dm.text

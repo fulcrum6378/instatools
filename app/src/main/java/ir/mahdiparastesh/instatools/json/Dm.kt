@@ -285,7 +285,7 @@ class Dm(
         //val story_app_attribution: Any?,
         //val create_mode_attribution: Any?,
         //val id: String?,
-        //val media_type: Float, // always 1: photo
+        val media_type: Float,
         original_height: Float?,
         original_width: Float?,
         //val user: Rest.User?,

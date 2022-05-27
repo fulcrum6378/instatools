@@ -113,7 +113,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (thread?.active != true) thread = Initial().also { it.start() }
         }
         b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer).avoidRefresh()
+            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)?.avoidRefresh() ?: false
         }
 
         load(true)
@@ -210,7 +210,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     }
 
     private fun reset(firstLoad: Boolean = false) {
-        if (!firstLoad) pages().forEach { (it as BasePageViewer).reset() }
+        if (!firstLoad) pages().forEach { (it as BasePageViewer?)?.reset() }
         if (expandable.zoomed) expandable.collapse()
     }
 

@@ -201,7 +201,7 @@
     <string name="exporterFetchTexts">Obtuve %1$d mensajes en el chat de %2$s&#8230;</string>
     <string name="exporterFetchMedia">Obteniendo %1$d de %2$d medios en el chat de %3$s&#8230;</string>
     <string name="exporterWriting">Escribiendo el chat de %s en el almacenamiento&#8230;</string>
-    <string name="exporterDone">Exportación del chat de %s finalizada.</string>
+    <string name="exporterDone">Chat de %s exportado.</string>
     <string name="exporterFailed">¡Exportación fallida!</string>
     <string name="exporterFailed429">Desafortunadamente, Instagram bloqueó estas solicitudes porque eran demasiadas y se hacían con mucha frecuencia para combatir el spam. Vuelva a intentarlo unas horas más tarde&#8230;</string>
     <string name="exporterFailedUnk">Un error desconocido ocurrió: %s</string>

@@ -201,7 +201,7 @@
     <string name="exporterFetchTexts">Fetched %1$d messages in %2$s\'s chat&#8230;</string>
     <string name="exporterFetchMedia">Fetching %1$d of %2$d media in %3$s\'s chat&#8230;</string>
     <string name="exporterWriting">Writing %s\'s chat into the storage&#8230;</string>
-    <string name="exporterDone">Exporting %s\'s chat finished.</string>
+    <string name="exporterDone">Exported %s\'s chat.</string>
     <string name="exporterFailed">Export failed!</string>
     <string name="exporterFailed429">Unfortunately Instagram blocked these requests because they were too many and were done so frequently, in order to combat spam. Please try again a few hours later&#8230;</string>
     <string name="exporterFailedUnk">An unknown error occurred: %s</string>

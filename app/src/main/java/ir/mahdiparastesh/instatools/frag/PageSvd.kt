@@ -105,7 +105,7 @@ class PageSvd : BasePageMain(), Selective {
             val number = c.m.saved?.hiddenItems()
             if (number != null && number > 0) try {
                 Snackbar.make(
-                    b.root, c.getString(R.string.reallyHasNoMore, number), Snackbar.LENGTH_LONG
+                    b.root, c.getString(R.string.reallyHasNoMore, number), 10000
                 ).show()
             } catch (ignored: IllegalArgumentException) {
             }

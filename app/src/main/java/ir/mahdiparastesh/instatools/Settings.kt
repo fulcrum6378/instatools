@@ -379,12 +379,17 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         aliases?.remove(u)
                         saveAliases(prf, aliases)
                         if (br.root.isChecked && uri != null) {
-                            contentResolver.releasePersistableUriPermission(
-                                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            )
-                            contentResolver.releasePersistableUriPermission(
-                                uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                            )
+                            CoroutineScope(Dispatchers.IO).launch {
+                                StorageCache.folderRemoved(this@Settings, uri)
+                                withContext(Dispatchers.Main) {
+                                    contentResolver.releasePersistableUriPermission(
+                                        uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    )
+                                    contentResolver.releasePersistableUriPermission(
+                                        uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                                    )
+                                }
+                            }
                             CoroutineScope(Dispatchers.IO).launch {
                                 aliases = loadAliases(c, prf)
                                 withContext(Dispatchers.Main) { showAliases() }
@@ -432,6 +437,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             1 -> {
                 bfa?.listPaths()
                 bfa?.folders?.setSelection(uriFolders!!.indexOfFirst { it.toString() == uri.toString() })
+                CoroutineScope(Dispatchers.IO).launch {
+                    StorageCache.folderAdded(this@Settings, uri)
+                }
             }
         }
         m.files = null

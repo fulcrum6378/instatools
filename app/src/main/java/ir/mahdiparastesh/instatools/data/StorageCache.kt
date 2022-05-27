@@ -1,9 +1,11 @@
 package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
 import com.google.gson.Gson
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.walk
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +17,7 @@ import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArraySet
 
 class StorageCache {
+    @Suppress("RedundantSuspendModifier")
     companion object {
         private var loading = false
 
@@ -44,17 +47,29 @@ class StorageCache {
             val paths = c.c.contentResolver.persistedUriPermissions
                 .map { DocumentFile.fromTreeUri(c.c, it.uri) }
             if (paths.isNotEmpty()) {
-                for (path in paths) path?.walk()?.forEach {
-                    if (it.isFile && it.name != null &&
-                        (it.name!!.endsWith(".jpg") || it.name!!.endsWith(".mp4"))
-                    ) c.m.files?.add(it.name!!)
-                }
+                val mainPath = c.sPreference(Settings.spStorage)
+                for (path in paths) if (path != null) (if (path.uri.toString() != mainPath) path.listFiles()
+                    .toList() else path.walk().toList())
+                    .filterMedia().also { c.m.files?.addAll(it) }
                 saveStorageCache(c)
             }
             loading = false
         }
 
-        @Suppress("RedundantSuspendModifier")
+        suspend fun folderAdded(c: Persistent, uri: Uri) {
+            if (c.m.files == null) return
+            DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
+                ?.also { c.m.files?.addAll(it) }
+            saveStorageCache(c)
+        }
+
+        suspend fun folderRemoved(c: Persistent, uri: Uri) {
+            if (c.m.files == null) return
+            DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
+                ?.forEach { c.m.files?.remove(it) }
+            saveStorageCache(c)
+        }
+
         suspend fun saveStorageCache(c: Persistent) {
             runCatching {
                 FileOutputStream(Stored(c.c)).use {
@@ -62,6 +77,11 @@ class StorageCache {
                 }
             }
         }
+
+        private fun List<DocumentFile>.filterMedia() = filter {
+            it.isFile && it.name != null &&
+                    (it.name!!.endsWith(".jpg") || it.name!!.endsWith(".mp4"))
+        }.map { it.name!! }.toSet()
     }
 
     class Stored(c: Context) : File(c.cacheDir, "storage.json")
