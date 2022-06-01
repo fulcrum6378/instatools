@@ -33,6 +33,7 @@ import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -301,7 +302,7 @@ class PageVwr : BasePageViewer() {
             }
             c.m.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
                 c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Endpoint.MEDIA_ITEM.url.format(edge.node.id))
+                    Queued(Persistent.now(), UiTools.POST_LINK.format(edge.node.shortcode))
                 )
             }
             ended()

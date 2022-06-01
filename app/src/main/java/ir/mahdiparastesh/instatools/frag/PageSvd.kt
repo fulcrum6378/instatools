@@ -376,9 +376,7 @@ class PageSvd : BasePageMain(), Selective {
                 ended(); return; }
 
             if (download) try {
-                c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Endpoint.MEDIA_ITEM.url.format(post.id))
-                )
+                c.dao.addQueued(Queued(Persistent.now(), UiTools.POST_LINK.format(post.shortcode)))
             } catch (e: IllegalStateException) { // DB is closed
             }
             if (unsave) Api<Rest>(

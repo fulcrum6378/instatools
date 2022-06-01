@@ -109,8 +109,9 @@ class Queuer : ForegroundService() {
                 ?.sendToTarget()
         }.start()
 
+        @Suppress("SpellCheckingInspection")
         when {
-            cur.link.contains("/stor/") -> {
+            cur.link.contains("stor") -> {
                 Api<Media.MediaWrapperApi>(
                     this, Api.Endpoint.MEDIA_ITEM.url.format(
                         if (cur.link.contains("/stories/"))

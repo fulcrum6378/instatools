@@ -83,7 +83,8 @@ class Media(
     //val view_count: Double,
 
     var mahdi_reel_type: String? = null,
-    var mahdi_reel_id: String? = null
+    var mahdi_reel_id: String? = null,
+    var mahdi_reel_user_name: String? = null,
 ) : Versioned(image_versions2, original_height, original_width, video_versions, carousel_media) {
 
     fun link() = when (product_type) {

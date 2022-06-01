@@ -191,9 +191,7 @@ class PageTag : BasePageViewer() {
                 return
             }
             c.m.vwTagged?.items?.find { it.pk == edg }?.let { edge ->
-                c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Endpoint.MEDIA_ITEM.url.format(edge.id))
-                )
+                c.dao.addQueued(Queued(Persistent.now(), UiTools.POST_LINK.format(edge.code)))
             }
             ended()
         }

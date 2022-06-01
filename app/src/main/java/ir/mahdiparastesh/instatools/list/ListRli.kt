@@ -32,8 +32,11 @@ class ListRli(private val c: Viewer, private val f: PageRel, private val reel: (
         h.b.click.setOnClickListener {
             c.expandable.media =
                 reel()?.items?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            if (reel() is Rest.HighlightReel) c.expandable.media?.mahdi_reel_id =
-                (reel() as Rest.HighlightReel?)?.id
+            if (reel() is Rest.HighlightReel) {
+                val rel = reel() as Rest.HighlightReel?
+                c.expandable.media?.mahdi_reel_id = rel?.id
+                c.expandable.media?.mahdi_reel_user_name = rel?.user?.username
+            }
             c.expandable.thumb = h.b.root
             try {
                 c.expandable.expand()
