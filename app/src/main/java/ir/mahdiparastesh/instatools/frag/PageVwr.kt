@@ -268,7 +268,7 @@ class PageVwr : BasePageViewer() {
                 interrupt()
                 return; }
             Api<Profile.GraphQlResponse>(
-                c, Api.Type.POSTS.url.format(
+                c, Api.Endpoint.POSTS.url.format(
                     // I was gonna give the "id" (Thread.getId()) of Java thread to this API... XD
                     c.m.vwUser!!.id, c.m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
                     c.m.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
@@ -301,7 +301,7 @@ class PageVwr : BasePageViewer() {
             }
             c.m.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
                 c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.node.shortcode))
+                    Queued(Persistent.now(), Api.Endpoint.MEDIA_ITEM.url.format(edge.node.id))
                 )
             }
             ended()

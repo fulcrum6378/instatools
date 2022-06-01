@@ -159,7 +159,7 @@ class PageUnf : BasePageMain() {
         private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
             if (!active || c.m.acc == null) return
             Api<Rest.Follow>(
-                c, (if (theFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
+                c, (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
                 handler, onError = { interrupt() }
             ) { flw ->

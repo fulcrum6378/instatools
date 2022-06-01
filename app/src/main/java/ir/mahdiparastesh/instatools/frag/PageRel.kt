@@ -96,14 +96,14 @@ class PageRel : BasePageViewer() {
                 return; }
             c.m.vwReels = CopyOnWriteArrayList()
             Api<Story>(
-                c, Api.Type.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class, handler,
+                c, Api.Endpoint.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class, handler,
                 onError = { interrupt() }) { story ->
                 if (!story.reel?.items.isNullOrEmpty()) c.m.vwReels?.add(story.reel)
                 storyFetched = true
                 interrupt()
             }
             Api<Highlights>(
-                c, Api.Type.HIGHLIGHTS.url.format(c.m.vwUser?.id ?: ""), Highlights::class,
+                c, Api.Endpoint.HIGHLIGHTS.url.format(c.m.vwUser?.id ?: ""), Highlights::class,
                 handler, onError = { interrupt() }) { highlights ->
                 c.m.vwReels?.addAll(highlights.tray)
                 highlightsFetched = true

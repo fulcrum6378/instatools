@@ -82,8 +82,9 @@ class Api<JSON>(
         return Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
     }
 
-    enum class Type(val url: String) {
-        PROFILE("https://www.instagram.com/%s/?__a=1"),
+    enum class Endpoint(val url: String) {
+        PROFILE("https://i.instagram.com/api/v1/users/web_profile_info/?username=%s"),
+        MEDIA_ITEM("https://i.instagram.com/api/v1/media/%s/info/"),
 
         //INFO("https://i.instagram.com/api/v1/users/%s/info/"),
         POSTS(
@@ -91,7 +92,6 @@ class Api<JSON>(
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
         TAGGED("https://i.instagram.com/api/v1/usertags/%1\$s/feed/?count=12&max_id=%2\$s"),
-        POST_ITEM("https://www.instagram.com/p/%s/?__a=1"),
         STORY("https://i.instagram.com/api/v1/feed/user/%s/story/"),
         HIGHLIGHTS("https://i.instagram.com/api/v1/highlights/%s/highlights_tray/"),
         REEL_ITEM("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
@@ -104,7 +104,6 @@ class Api<JSON>(
         FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
         UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
 
-        SAVED_FIRST("https://www.instagram.com/%s/saved/?__a=1"),
         SAVED(
             "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
@@ -120,7 +119,7 @@ class Api<JSON>(
 
         SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
 
-        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// POST_ITEM
+        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// MEDIA_ITEM
     }
 
     companion object {
@@ -181,7 +180,7 @@ class Api<JSON>(
                 this["sec-fetch-site"] = "same-origin"
                 this["x-requested-with"] = "XMLHttpRequest"
                 if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
-            } else { // Cookie "rur" is different between POST_ITEM and GET but the same between themselves
+            } else { // Cookie "rur" is different between MEDIA_ITEM and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
             }
             if (cookies.contains("csrftoken="))

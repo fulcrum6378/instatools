@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,6 +17,7 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import androidx.core.view.iterator
+import androidx.documentfile.provider.DocumentFile
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.gson.Gson
@@ -147,14 +149,19 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             val map = sp.getString(spAliases, null)
                 ?.let { Gson().fromJson<HashMap<String, String>>(it, HashMap::class.java) }
                 ?: hashMapOf()
-            var anyRemoved = false
+            val removal = arrayListOf<String>()
             map.forEach { (k, v) ->
-                if (!c.isPathAccessible(v)) {
-                    map.remove(k)
-                    anyRemoved = true
+                val ex = DocumentFile.fromTreeUri(c, Uri.parse(v))?.exists()
+                val ax = c.isPathAccessible(v)
+                if (!ax || ex != true) {
+                    if (ex != true && ax) Uri.parse(v).release(c.contentResolver)
+                    removal.add(k)
                 }
             }
-            if (anyRemoved) saveAliases(sp, map)
+            if (removal.isNotEmpty()) {
+                for (k in removal) map.remove(k)
+                saveAliases(sp, map)
+            }
             return map
         }
 
@@ -164,6 +171,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         fun Uri.folderName() = path.toString().split("/").last()
+
+        fun Uri.release(cr: ContentResolver) {
+            cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -381,14 +393,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         if (br.root.isChecked && uri != null) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 StorageCache.folderRemoved(this@Settings, uri)
-                                withContext(Dispatchers.Main) {
-                                    contentResolver.releasePersistableUriPermission(
-                                        uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                    )
-                                    contentResolver.releasePersistableUriPermission(
-                                        uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                                    )
-                                }
+                                uri.release(contentResolver)
                             }
                             CoroutineScope(Dispatchers.IO).launch {
                                 aliases = loadAliases(c, prf)

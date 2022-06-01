@@ -139,7 +139,7 @@ class Expandable(
         onZoomChanged(zoomed)
         currentAnimator?.cancel()
         if (media == null) Api<Media.MediaWrapperApi>(
-            c, Api.Type.POST_ITEM.url.format(node!!.shortcode), Media.MediaWrapperApi::class,
+            c, Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.MediaWrapperApi::class,
             handler, cache = true
         ) { wrapper ->
             media = wrapper.items?.getOrNull(0)

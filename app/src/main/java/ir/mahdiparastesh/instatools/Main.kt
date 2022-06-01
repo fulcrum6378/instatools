@@ -258,7 +258,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     Api<Rest.Signing>(
-                        this@Main, Api.Type.SIGN_OUT.url, Rest.Signing::class, null,
+                        this@Main, Api.Endpoint.SIGN_OUT.url, Rest.Signing::class, null,
                         method = Request.Method.POST,
                         body = "one_tap_app_login=1&user_id=${m.acc!!.id}",
                         onError = { signOut(bd.root.isChecked) }
@@ -306,7 +306,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     b.searchStatus.vis()
                     searcher?.cancel()
                     searcher = Api(
-                        this@Main, Api.Type.SEARCH.url.format(newText), Rest.Search::class,
+                        this@Main, Api.Endpoint.SEARCH.url.format(newText), Rest.Search::class,
                         null, cache = true, onError = {
                             searchErrored = true
                             b.searchStatus.setAnimation(R.raw.failed)

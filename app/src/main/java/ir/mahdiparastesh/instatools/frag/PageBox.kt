@@ -351,7 +351,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         override fun run() {
             super.run()
             Api<InboxPage>(
-                c, Api.Type.INBOX.url.format(c.m.dmInbox?.oldest_cursor ?: ""),
+                c, Api.Endpoint.INBOX.url.format(c.m.dmInbox?.oldest_cursor ?: ""),
                 InboxPage::class, handler, onError = { interrupt() }
             ) { page ->
                 if (!active) return@Api
@@ -375,7 +375,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         override fun run() {
             super.run()
             Api<Rest.InboxThread>(
-                c, Api.Type.DIRECT.url.format(threadId, oldestId, limit), Rest.InboxThread::class,
+                c, Api.Endpoint.DIRECT.url.format(threadId, oldestId, limit), Rest.InboxThread::class,
                 handler, onError = { interrupt() }
             ) { inbox ->
                 if (!active) return@Api

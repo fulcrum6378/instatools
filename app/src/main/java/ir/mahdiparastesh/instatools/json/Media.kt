@@ -116,7 +116,7 @@ class Media(
         //var num_results: Float,
         //var requires_review: Boolean
         //var total_count: Float
-    ) // "TAGGED" contains "status", but "POST_ITEM" doesn't.
+    ) // "TAGGED" contains "status", but "MEDIA_ITEM" doesn't.
 
     /*class Thumbnails(
         //val video_length: Float,

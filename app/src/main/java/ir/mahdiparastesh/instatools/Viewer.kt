@@ -237,11 +237,11 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     inner class Initial : BaseThread() {
         override fun run() {
-            Api<Profile>(
-                this@Viewer, Api.Type.PROFILE.url.format(user), Profile::class,
+            Api<Profile.GraphQlResponse>(
+                this@Viewer, Api.Endpoint.PROFILE.url.format(user), Profile.GraphQlResponse::class,
                 handler, onError = { interrupt() }
-            ) { profile ->
-                m.vwUser = profile.graphql?.user
+            ) { graphql ->
+                m.vwUser = graphql.data.user
                 if (m.vwUser == null) {
                     Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
                     interrupt(); return@Api

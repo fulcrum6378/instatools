@@ -137,8 +137,10 @@ class UiTools {
 
         fun adaptiveBanner(c: BaseActivity, @StringRes unitId: Int) = AdView(c).apply {
             id = R.id.adBanner
-            adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-                c, (c.dm.widthPixels / c.dm.density).toInt()
+            setAdSize(
+                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                    c, (c.dm.widthPixels / c.dm.density).toInt()
+                )
             )
             adUnitId = c.getString(unitId)
         }

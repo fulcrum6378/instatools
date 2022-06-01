@@ -101,7 +101,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
         (c.m.vwReels?.getOrNull(i) as HighlightReel?)?.apply {
             if (items != null) return@loadHlItems
             Api<Rest.Reels<HighlightReel>>(
-                c, Api.Type.REEL_ITEM.url.format(id), Rest.Reels::class, PageRel.handler,
+                c, Api.Endpoint.REEL_ITEM.url.format(id), Rest.Reels::class, PageRel.handler,
                 cache = true, typeToken = object : TypeToken<Rest.Reels<HighlightReel>>() {}.type,
             ) { reels ->
                 items = reels.reels.getOrDefault(id, null)?.items

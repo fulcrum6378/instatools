@@ -96,7 +96,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
 
     private fun unfollow(unf: Friend) {
         Api<Rest>(
-            c, Api.Type.UNFOLLOW.url.format(unf.id), Rest::class, null,
+            c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest::class, null,
             method = Request.Method.POST, onError = { res ->
                 if (res?.statusCode == 429) {
                     var showing429 = true

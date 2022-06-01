@@ -119,7 +119,7 @@ class Follower : ForegroundService() {
         private fun allFollow(next_max_id: String = "") {
             Api<Rest.Follow>(
                 this@Follower,
-                (if (toBeEnqueued[0].isItFollowers) Api.Type.FOLLOWERS else Api.Type.FOLLOWING).url
+                (if (toBeEnqueued[0].isItFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
                     .format(toBeEnqueued[0].id, next_max_id), Rest.Follow::class, handler
             ) { flw -> handler?.obtainMessage(0, flw)?.sendToTarget() }
         }
@@ -174,7 +174,7 @@ class Follower : ForegroundService() {
             if (fwb == null || !Follower.active.value!!) {
                 end(); return false; }
             Api<Rest.DoFollow>(
-                this@Follower, Api.Type.FOLLOW.url.format(fwb!!.id), Rest.DoFollow::class,
+                this@Follower, Api.Endpoint.FOLLOW.url.format(fwb!!.id), Rest.DoFollow::class,
                 handler, method = Request.Method.POST
             ) { handler?.obtainMessage(0, fwb)?.sendToTarget() }
             return true

@@ -12,8 +12,8 @@ import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -23,8 +23,6 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Profile
-import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
@@ -112,103 +110,19 @@ class Queuer : ForegroundService() {
         }.start()
 
         when {
-            cur.link.contains("?story_media_id=") -> { // HIGHLIGHT REEL
-                val target = cur.link.substringAfter("?story_media_id=").substringBefore("&")
-                Api<Rest>(
-                    this, cur.link, Rest::class, // will certainly error, but will be caught
-                    null, cache = true, onError = { res ->
-                        if (res == null) {
-                            handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                        val hId = String(res.data)
-                            .substringAfter("https://www.instagram.com/stories/highlights/")
-                            .substringBefore("/")
-                        Api<Rest.Reels<Rest.HighlightReel>>(
-                            this, Api.Type.REEL_ITEM.url.format("highlight%3A$hId"),
-                            Rest.Reels::class, handler, cache = true,
-                            typeToken = object : TypeToken<Rest.Reels<Rest.HighlightReel>>() {}.type
-                        ) { reels ->
-                            var reel: Rest.HighlightReel? = reels.reels_media.getOrNull(0)
-                            if (reel == null) reel = reels.reels["highlights:$hId"]
-                            val med = reel?.items?.find { it.id == target }
-                            if (reel == null || med == null) {
-                                handler?.obtainMessage(Api.HANDLE_ERROR)
-                                    ?.sendToTarget(); return@Api; }
-                            cur.qud!!.apply {
-                                date = med.taken_at.xFromSeconds()
-                                userId = reel.user.pk
-                                userName = reel.user.username
-                                itemId = med.pk
-                                url = med.nearest(Versioned.BEST)
-                                thumb = med.thumb()
-                                mediaType = med.media_type.toInt().toByte()
-                            }
-                            handleQueued(cur.qud!!, null)
-                        }
-                    }
-                ) { /* IMPOSSIBLE */ }
-            }
-            cur.link.contains("/stories/") -> {
-                val storyId = cur.link.substringAfterLast("/").substringBefore("?")
-                Api<Profile.GraphQl>(
-                    this, cur.link.substringBefore("?") + "?__a=1",
-                    Profile.GraphQl::class, handler, cache = true
-                ) { graphQl ->
-                    val user = graphQl.user
-                    if (user == null) {
+            cur.link.contains("/stor/") -> {
+                Api<Media.MediaWrapperApi>(
+                    this, Api.Endpoint.MEDIA_ITEM.url.format(
+                        if (cur.link.contains("/stories/"))
+                            cur.link.substringAfterLast("/").substringBefore("?")
+                        else cur.link.substringAfter("story_media_id=")
+                            .substringBefore("&")
+                    ), Media.MediaWrapperApi::class, handler, cache = true
+                ) { media ->
+                    val med = media.items?.firstOrNull()
+                    if (med == null) {
                         handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                    Api<Rest.Reels<Rest.StoryReel>>(
-                        this, Api.Type.REEL_ITEM.url.format(user.id), Rest.Reels::class,
-                        handler, cache = true,
-                        typeToken = object : TypeToken<Rest.Reels<Rest.StoryReel>>() {}.type
-                    ) { reels ->
-                        var med: Media? =
-                            reels.reels_media.getOrNull(0)?.items?.find { it.pk == storyId }
-                        if (med == null) med =
-                            reels.reels[user.id]?.items?.find { it.pk == storyId }
-                        if (med == null) {
-                            handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                        cur.qud!!.apply {
-                            date = med.taken_at.xFromSeconds()
-                            userId = user.id
-                            userName = user.username
-                            itemId = med.pk
-                            url = med.nearest(Versioned.BEST)
-                            thumb = med.thumb()
-                            mediaType = med.media_type.toInt().toByte()
-                        }
-                        handleQueued(cur.qud!!, null)
-                    }
-                }
-            }
-            // including "instagram.com/tv/" and "instagram.com/reel/"
-            else -> Api<Media.MediaWrapperApi>(
-                this, cur.link.substringBefore("?") + "?__a=1",
-                Media.MediaWrapperApi::class, handler
-            ) { wrapper ->
-                val med = wrapper.items?.getOrNull(0)
-                if (med == null) {
-                    handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                var found = true
-                val addOns = arrayListOf<Queued>()
-                when {
-                    med.carousel_media != null -> for (car in med.carousel_media!!)
-                        if (cur.qud!!.url == null) cur.qud!!.apply {
-                            date = med.taken_at.xFromSeconds()
-                            userId = med.user.pk
-                            userName = med.user.username
-                            itemId = car.pk
-                            url = car.nearest(Versioned.BEST)
-                            thumb = med.thumb()
-                            mediaType = car.media_type.toInt().toByte()
-                        } else addOns.add(
-                            Queued(
-                                cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
-                                med.user.pk, med.user.username,
-                                car.pk, car.nearest(Versioned.BEST),
-                                car.thumb(), car.media_type.toInt().toByte()
-                            )
-                        )
-                    med.image_versions2 != null -> cur.qud!!.apply {
+                    cur.qud!!.apply {
                         date = med.taken_at.xFromSeconds()
                         userId = med.user.pk
                         userName = med.user.username
@@ -217,16 +131,68 @@ class Queuer : ForegroundService() {
                         thumb = med.thumb()
                         mediaType = med.media_type.toInt().toByte()
                     }
-                    else -> {
-                        found = false
-                        Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
+                    handleQueued(cur.qud!!, null)
+                }
+            }
+            // including "instagram.com/tv/" and "instagram.com/reel/"
+            else -> {
+                reqQueue.add(
+                    object : StringRequest(cur.link, { html ->
+                        Api<Media.MediaWrapperApi>(
+                            this, Api.Endpoint.MEDIA_ITEM.url.format(
+                                html.substringAfter("content=\"instagram://media?id=")
+                                    .substringBefore("\"")
+                            ), Media.MediaWrapperApi::class, handler
+                        ) { wrapper ->
+                            val med = wrapper.items?.getOrNull(0)
+                            if (med == null) {
+                                handler?.obtainMessage(Api.HANDLE_ERROR)
+                                    ?.sendToTarget(); return@Api; }
+                            var found = true
+                            val addOns = arrayListOf<Queued>()
+                            when {
+                                med.carousel_media != null -> for (car in med.carousel_media!!)
+                                    if (cur.qud!!.url == null) cur.qud!!.apply {
+                                        date = med.taken_at.xFromSeconds()
+                                        userId = med.user.pk
+                                        userName = med.user.username
+                                        itemId = car.pk
+                                        url = car.nearest(Versioned.BEST)
+                                        thumb = med.thumb()
+                                        mediaType = car.media_type.toInt().toByte()
+                                    } else addOns.add(
+                                        Queued(
+                                            cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
+                                            med.user.pk, med.user.username,
+                                            car.pk, car.nearest(Versioned.BEST),
+                                            car.thumb(), car.media_type.toInt().toByte()
+                                        )
+                                    )
+                                med.image_versions2 != null -> cur.qud!!.apply {
+                                    date = med.taken_at.xFromSeconds()
+                                    userId = med.user.pk
+                                    userName = med.user.username
+                                    itemId = med.pk
+                                    url = med.nearest(Versioned.BEST)
+                                    thumb = med.thumb()
+                                    mediaType = med.media_type.toInt().toByte()
+                                }
+                                else -> {
+                                    found = false
+                                    Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                            if (found) handleQueued(cur.qud!!, addOns)
+                            else {
+                                linkHandled()
+                                if (download?.active != true) finish(false)
+                            }
+                        }
+                    }, { Api.gotError(handler, null, it) }) {
+                        override fun getHeaders(): Map<String, String> =
+                            Api.Headers(m.acc!!, false)
                     }
-                }
-                if (found) handleQueued(cur.qud!!, addOns)
-                else {
-                    linkHandled()
-                    if (download?.active != true) finish(false)
-                }
+                )
             }
         }
     }
@@ -324,7 +290,8 @@ class Queuer : ForegroundService() {
 
     private fun save(q: Queued, ba: ByteArray) {
         val branch: DocumentFile = when {
-            q.userName in aliases ->
+            q.userName in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
+                ?.exists() == true ->
                 DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
             bPreference(Settings.spBranching, Settings.defSpBranching) ->
                 stem.findFile(q.userName!!) ?: stem.createDirectory(q.userName!!)

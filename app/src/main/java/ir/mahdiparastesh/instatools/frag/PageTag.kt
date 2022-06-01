@@ -159,7 +159,7 @@ class PageTag : BasePageViewer() {
                 interrupt()
                 return; }
             Api<MediaWrapperApi>(
-                c, Api.Type.TAGGED.url.format(
+                c, Api.Endpoint.TAGGED.url.format(
                     c.m.vwUser?.id ?: "", c.m.vwTagged?.next_max_id ?: ""
                 ), MediaWrapperApi::class, handler, onError = { interrupt() }
             ) { wrapper ->
@@ -192,7 +192,7 @@ class PageTag : BasePageViewer() {
             }
             c.m.vwTagged?.items?.find { it.pk == edg }?.let { edge ->
                 c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(edge.code))
+                    Queued(Persistent.now(), Api.Endpoint.MEDIA_ITEM.url.format(edge.id))
                 )
             }
             ended()

@@ -59,6 +59,8 @@ class PageSvd : BasePageMain(), Selective {
     override val emptyIcon: Int = R.drawable.done_svd
     override fun expanded(): ExpandableBinding = b.expanded
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
+
+    @Suppress("UNCHECKED_CAST")
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
@@ -109,6 +111,15 @@ class PageSvd : BasePageMain(), Selective {
                 ).show()
             } catch (ignored: IllegalArgumentException) {
             }
+        },
+        HANDLE_UPDATE_PROFILE to { msg ->
+            val list = msg.obj as List<String>
+            c.m.acc?.apply {
+                user = list[0]
+                name = list[1]
+                pict = list[2]
+                saveMe(c.c)
+            }
         }
     )
     override var tracker: SelectionTracker<String>? = null
@@ -119,6 +130,7 @@ class PageSvd : BasePageMain(), Selective {
         const val HANDLE_INIT_QUEUER = 11
         const val HANDLE_SHOW_AD = 12
         const val HANDLE_REALLY_NO_MORE = 13
+        const val HANDLE_UPDATE_PROFILE = 14
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -290,19 +302,27 @@ class PageSvd : BasePageMain(), Selective {
         override fun run() {
             if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
             super.run()
-            if (c.m.saved == null) Api<Profile>(
-                c, Api.Type.SAVED_FIRST.url.format(c.m.acc!!.user), Profile::class,
+            if (c.m.saved == null) Api<Profile.GraphQlResponse>(
+                c, Api.Endpoint.PROFILE.url.format(c.m.acc!!.user), Profile.GraphQlResponse::class,
                 handler, onError = { interrupt() }
-            ) { profile ->
+            ) { graphql ->
                 if (!active) return@Api
-                val edgeList = profile.graphql?.user?.edge_saved_media
+                val edgeList = graphql.data.user?.edge_saved_media
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
                 c.m.saved = edgeList
+                graphql.data.user.also { u ->
+                    if (c.m.acc!!.user != u.username || c.m.acc!!.name != u.full_name ||
+                        c.m.acc!!.pict != (u.profile_pic_url_hd ?: u.profile_pic_url)
+                    ) handler?.obtainMessage(
+                        HANDLE_UPDATE_PROFILE,
+                        listOf(u.username, u.full_name, u.profile_pic_url_hd ?: u.profile_pic_url)
+                    )?.sendToTarget()
+                }
                 done(null)
             } else Api<Profile.GraphQlResponse>(
-                c, Api.Type.SAVED.url.format(
+                c, Api.Endpoint.SAVED.url.format(
                     c.m.acc!!.id,
                     c.m.saved!!.edges.size,
                     c.m.saved?.page_info?.end_cursor ?: ""
@@ -357,12 +377,12 @@ class PageSvd : BasePageMain(), Selective {
 
             if (download) try {
                 c.dao.addQueued(
-                    Queued(Persistent.now(), Api.Type.POST_ITEM.url.format(post.shortcode))
+                    Queued(Persistent.now(), Api.Endpoint.MEDIA_ITEM.url.format(post.id))
                 )
             } catch (e: IllegalStateException) { // DB is closed
             }
             if (unsave) Api<Rest>(
-                c, Api.Type.UNSAVE.url.format(post.id), Rest::class, null,
+                c, Api.Endpoint.UNSAVE.url.format(post.id), Rest::class, null,
                 method = Request.Method.POST, onError = { ended() }
             ) { rest ->
                 if (rest.status == "ok")
