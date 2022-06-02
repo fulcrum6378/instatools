@@ -253,15 +253,13 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
             val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
             if (configWrapper != null) {
-                //throw Exception(configWrapper.substring(0, 20))
                 @Suppress("UNCHECKED_CAST")
                 val config = Gson().fromJson(
                     StringEscapeUtils.unescapeJava(configWrapper),
                     ConfigWrapper::class.java
                 ).define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(
-                    config["raw"] as String,
-                    ConfigWrapper.RawSharedData::class.java
+                    config["raw"] as String, ConfigWrapper.RawSharedData::class.java
                 )
                 id = cookieManager.getCookie(host)
                     .substringAfter("ds_user_id=")

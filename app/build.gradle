@@ -11,7 +11,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 31
-        versionName '17.0'
+        versionName '17.1.5'
     }
 
     signingConfigs {
@@ -81,7 +81,7 @@ dependencies {
     def media2_version = '1.2.1'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation "androidx.room:room-runtime:$room_version"
@@ -90,7 +90,7 @@ dependencies {
     kapt "com.github.bumptech.glide:compiler:$glide_version"
     implementation 'androidx.activity:activity-ktx:1.4.0' // Only for ActivityResultLauncher
     implementation 'org.apache.commons:commons-text:1.9' // StringEscapeUtils
-    implementation 'com.airbnb.android:lottie:5.0.3'
+    implementation 'com.airbnb.android:lottie:5.2.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
