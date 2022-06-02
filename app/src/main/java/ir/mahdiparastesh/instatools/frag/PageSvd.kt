@@ -29,7 +29,7 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
@@ -302,8 +302,8 @@ class PageSvd : BasePageMain(), Selective {
         override fun run() {
             if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
             super.run()
-            if (c.m.saved == null) Api<Profile.GraphQlResponse>(
-                c, Api.Endpoint.PROFILE.url.format(c.m.acc!!.user), Profile.GraphQlResponse::class,
+            if (c.m.saved == null) Api<GraphQl>(
+                c, Api.Endpoint.PROFILE.url.format(c.m.acc!!.user), GraphQl::class,
                 handler, onError = { interrupt() }
             ) { graphql ->
                 if (!active) return@Api
@@ -321,12 +321,12 @@ class PageSvd : BasePageMain(), Selective {
                     )?.sendToTarget()
                 }
                 done(null)
-            } else Api<Profile.GraphQlResponse>(
+            } else Api<GraphQl>(
                 c, Api.Endpoint.SAVED.url.format(
                     c.m.acc!!.id,
                     c.m.saved!!.edges.size,
                     c.m.saved?.page_info?.end_cursor ?: ""
-                ), Profile.GraphQlResponse::class, handler, onError = { interrupt() }
+                ), GraphQl::class, handler, onError = { interrupt() }
             ) { res ->
                 if (!active) return@Api
                 val edgeList = res.data.user?.edge_saved_media
@@ -341,7 +341,7 @@ class PageSvd : BasePageMain(), Selective {
             }
         }
 
-        private fun done(add: Profile.EdgeList? = null) {
+        private fun done(add: GraphQl.EdgeList? = null) {
             if (!active) return
             if (add != null) c.m.saved?.apply {
                 page_info = add.page_info

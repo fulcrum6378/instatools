@@ -5,20 +5,21 @@ import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
-class Profile(
-    //val always_show_message_button_to_pro_account: Boolean,
-    val graphql: GraphQl?,
-    //val logging_page_id: String,
-    //val profile_pic_edit_sync_props: Map<String, *>,
-    //val seo_category_infos: Array<Array<String>>,
-    //val show_follow_dialog: Boolean,
-    //val show_suggested_profiles: Boolean,
-    //val show_view_shop: Boolean,
-    //val toast_content_on_load: Any?,
-) {
-    class GraphQlResponse(val data: GraphQl) : Rest()
+class GraphQl(val data: GraphQlData) : Rest() {
 
-    class GraphQl(val user: User?)
+    class GraphQlData(val user: User?)
+
+    /*class Profile(
+        //val always_show_message_button_to_pro_account: Boolean,
+        //val graphql: GraphQlData?,
+        //val logging_page_id: String,
+        //val profile_pic_edit_sync_props: Map<String, *>,
+        //val seo_category_infos: Array<Array<String>>,
+        //val show_follow_dialog: Boolean,
+        //val show_suggested_profiles: Boolean,
+        //val show_view_shop: Boolean,
+        //val toast_content_on_load: Any?,
+    )*/
 
     class User(
         //val biography: String?,

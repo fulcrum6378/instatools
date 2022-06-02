@@ -7,13 +7,13 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ListSvd(c: Main, f: PageSvd) : ListEdge<Main, PageSvd>(c, f) {
-    override val edges: CopyOnWriteArrayList<Profile.EdgePost>? get() = c.m.saved?.edges
+    override val edges: CopyOnWriteArrayList<GraphQl.EdgePost>? get() = c.m.saved?.edges
     override val inflater: LayoutInflater by lazy { f.inflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
     override val handler: Handler? get() = PageSvd.handler

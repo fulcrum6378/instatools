@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.view.Expandable
@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 abstract class ListEdge<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
         where C : BaseActivity, F : BasePage<C> {
 
-    abstract val edges: CopyOnWriteArrayList<Profile.EdgePost>?
+    abstract val edges: CopyOnWriteArrayList<GraphQl.EdgePost>?
 
     override fun flexible(i: Int): FlexiblePost? {
         val node = edges?.getOrNull(i)?.node ?: return null

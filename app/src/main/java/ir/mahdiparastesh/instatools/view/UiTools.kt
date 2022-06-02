@@ -40,7 +40,7 @@ import com.google.android.material.internal.BaselineLayout
 import com.google.android.play.core.review.ReviewManagerFactory
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.MassFollower.Companion.rewardAccountForFollower
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.*
@@ -270,9 +270,9 @@ class UiTools {
 
         fun RadioGroup.areEnabled(bb: Boolean) = forEach { it.isEnabled = bb }
 
-        fun Profile.Post.thumb(nearest: Double = 0.0): String {
+        fun GraphQl.Post.thumb(nearest: Double = 0.0): String {
             if (thumbnail_resources == null) return thumbnail_src
-            var selected: Profile.Src? = null
+            var selected: GraphQl.Src? = null
             for (src in thumbnail_resources)
                 if (selected == null)
                     selected = src

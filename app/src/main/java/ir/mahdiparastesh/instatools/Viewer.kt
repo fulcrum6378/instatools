@@ -26,7 +26,7 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
@@ -113,7 +113,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (thread?.active != true) thread = Initial().also { it.start() }
         }
         b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)?.avoidRefresh() ?: false
+            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)?.avoidRefresh()
+                ?: false
         }
 
         load(true)
@@ -237,8 +238,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     inner class Initial : BaseThread() {
         override fun run() {
-            Api<Profile.GraphQlResponse>(
-                this@Viewer, Api.Endpoint.PROFILE.url.format(user), Profile.GraphQlResponse::class,
+            Api<GraphQl>(
+                this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
                 handler, onError = { interrupt() }
             ) { graphql ->
                 m.vwUser = graphql.data.user

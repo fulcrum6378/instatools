@@ -19,7 +19,7 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
@@ -49,8 +49,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"
         const val spAccount = "account"
-        const val preConfig = "<script type=\"text/javascript\">window._sharedData = "
-        const val posConfig = ";</script>"
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val EXTRA_SHOW_AD = "show_ad"
         var cameHereToAuth = false
@@ -217,9 +215,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     } catch (e: JsonSyntaxException) {
                         // This has happened for some users with an unknown cause
                         // Also the page may have failed to load properly.
-                        Delay { b.web.reload() }
-                        if (improperLoading < 3) improperLoading++
-                        else if (BuildConfig.DEBUG) throw e
+                        if (BuildConfig.DEBUG) throw e else {
+                            Delay { b.web.reload() }
+                            if (improperLoading < 3) improperLoading++
+                        }
                     } catch (e: IllegalStateException) {
                         // The page may have failed to load properly.
                         Delay { b.web.reload() }
@@ -240,34 +239,51 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
+        val preScheduledApplyEach = "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
+
         @Throws(
-            JsonSyntaxException::class,
-            NumberFormatException::class,
-            NullPointerException::class
+            JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class
         )
         private fun collect(html: String) {
-            val profile = Gson().fromJson(
-                StringEscapeUtils.unescapeJava(html)
-                    .substringAfter(preConfig)
-                    .substringBefore(posConfig),
-                HostPage::class.java
-            )
-            val u = profile.config?.viewer ?: return
-            id = cookieManager.getCookie(host)
-                .substringAfter("ds_user_id=")
-                .substringBefore(";").toLong().toString()
-            m.acc = Account(
-                id.toLong(), u.username, u.full_name,
-                u.profile_pic_url_hd ?: u.profile_pic_url,
-                cookieManager.getCookie(host), profile.rollout_hash,
-                Persistent.now()
-            ).apply {
-                accounts.find { it.id == id }?.let {
-                    mfrw = it.mfrw
+            var read = html
+            val scheduledApplyEach = arrayListOf<String>()
+            while (read.contains(preScheduledApplyEach)) {
+                read = read.substringAfter(preScheduledApplyEach)
+                scheduledApplyEach.add(read.substringBefore(");});});"))
+            }
+            val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
+            if (configWrapper != null) {
+                //throw Exception(configWrapper.substring(0, 20))
+                @Suppress("UNCHECKED_CAST")
+                val config = Gson().fromJson(
+                    StringEscapeUtils.unescapeJava(configWrapper),
+                    ConfigWrapper::class.java
+                ).define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
+                val raw = Gson().fromJson(
+                    config["raw"] as String,
+                    ConfigWrapper.RawSharedData::class.java
+                )
+                id = cookieManager.getCookie(host)
+                    .substringAfter("ds_user_id=")
+                    .substringBefore(";").toLong().toString()
+                val u = raw.config.viewer
+                m.acc = Account(
+                    id.toLong(), u.username, u.full_name,
+                    u.profile_pic_url_hd ?: u.profile_pic_url, cookieManager.getCookie(host),
+                    config.getOrElse("rollout_hash") { raw.rollout_hash } as String,
+                    Persistent.now()
+                ).apply {
+                    accounts.find { it.id == id }
+                        ?.also { mfrw = it.mfrw }
+                    accounts.removeAll { it.id == id }
+                    accounts.add(this)
+                    CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 }
-                accounts.removeAll { it.id == id }
-                accounts.add(this)
-                CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
+            } else {
+                if (BuildConfig.DEBUG) throw Exception("Shared data not found!") else {
+                    Delay { b.web.reload() }
+                    if (improperLoading < 3) improperLoading++
+                }
             }
             gsp.edit().putString(spAccount, id).apply()
             goTo(Main::class, true)
@@ -287,7 +303,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         exitProcess(0)
     }
 
-    data class HostPage(val config: PageConfig?, val rollout_hash: String?)
+    class ConfigWrapper(val define: Array<Array<Any>>) {
 
-    data class PageConfig(val viewer: Profile.User?)
+        data class RawSharedData(val config: PageConfig, val rollout_hash: String?)
+
+        data class PageConfig(val viewer: GraphQl.User)
+    }
 }

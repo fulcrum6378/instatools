@@ -20,7 +20,7 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -40,7 +40,7 @@ class Expandable(
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
-    var node: Profile.Post? = null
+    var node: GraphQl.Post? = null
     var media: Media? = null
     var thumb: View? = null
     var zoomed = false

@@ -24,7 +24,7 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.FollowerOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Profile
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
@@ -268,12 +268,12 @@ class PageVwr : BasePageViewer() {
             if (c.m.vwUser == null) {
                 interrupt()
                 return; }
-            Api<Profile.GraphQlResponse>(
+            Api<GraphQl>(
                 c, Api.Endpoint.POSTS.url.format(
                     // I was gonna give the "id" (Thread.getId()) of Java thread to this API... XD
                     c.m.vwUser!!.id, c.m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
                     c.m.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
-                ), Profile.GraphQlResponse::class, handler, onError = { interrupt() }
+                ), GraphQl::class, handler, onError = { interrupt() }
             ) { res ->
                 val add = res.data.user?.edge_owner_to_timeline_media
                 if (add == null) {

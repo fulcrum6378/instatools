@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
-import ir.mahdiparastesh.instatools.json.Profile
 import ir.mahdiparastesh.instatools.json.Rest.Reel
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
@@ -17,7 +17,7 @@ class Model : ViewModel() {
 
     // Main
     var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
-    var saved: Profile.EdgeList? = null
+    var saved: GraphQl.EdgeList? = null
     var dmInbox: Dm.Inbox? = null
     var dmThread: Dm.DmThread? = null
     val currentPage = MutableLiveData(Settings.defSpMainPage)
@@ -26,7 +26,7 @@ class Model : ViewModel() {
     var queueds: ArrayList<Queued>? = null
 
     // Viewer
-    var vwUser: Profile.User? = null
+    var vwUser: GraphQl.User? = null
     var vwTagged: MediaWrapperApi? = null
     var vwReels: CopyOnWriteArrayList<Reel>? = null
     var vwCurrentPage = MutableLiveData(1)
