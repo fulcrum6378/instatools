@@ -39,7 +39,7 @@ android {
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 20
+            versionCode 21
             signingConfig signingConfigs.beth
             // Use BETH for Google Play; Use ALEPH for Galaxy Store
         }

@@ -57,7 +57,7 @@
     <!-- Login -->
     <string name="addAccount">Ajouter un compte</string>
     <string name="guestShortDesc">Entrez sans authentification</string>
-    <string name="guestSure">Malheureusement, Instagram ne vous permettra pas de voir les gens sur son site Web si souvent sans vous connecter. Cela vous obligera à vous connecter ou à vous inscrire pour le faire. (Vous pouvez vérifier ce fait en ouvrant Instagram dans le mode "Incognito" de votre navigateur.) Il n'y a donc aucune garantie que vous n'aurez pas besoin de vous connecter peu de temps après être entré en mode Invité.</string>
+    <string name="guestSure">Malheureusement, Instagram ne vous permettra pas de voir les gens sur son site Web si souvent sans vous connecter. Cela vous obligera à vous connecter ou à vous inscrire pour le faire. (Vous pouvez vérifier ce fait en ouvrant Instagram dans le mode "Incognito" de votre navigateur.) Il n\'y a donc aucune garantie que vous n\'aurez pas besoin de vous connecter peu de temps après être entré en mode Invité.</string>
     <string name="needAuthentication">Instagram ne nous laisse pas entrer. Vous devez vous connecter pour continuer&#8230;</string>
 
     <!-- Main -->
@@ -122,7 +122,7 @@
 
     <!-- Favourites -->
     <string name="favourites">Favoris</string>
-    <string name="favEmpty">Ouvrez un profil dans InstaTools et appuyez sur l\'icône "cœur" en haut à droite pour les ajouter à cette liste.</string>
+    <string name="favEmpty">Ouvrez un profil dans InstaTools et appuyez sur l\'icône \"cœur\" en haut à droite pour les ajouter à cette liste.</string>
 
     <!-- Viewer -->
     <string name="vwTitle">Visualiseur de profil</string>
@@ -136,13 +136,13 @@
     <string name="mfLimit">Limitez leur nombre à :</string>
     <string name="vwStoryReel">Histoires principales</string>
     <string name="vwReelDesc">Contient %d éléments</string>
-    <string name="vwNoReels">Ce profil n\'a pas d'histoires !</string>
+    <string name="vwNoReels">Ce profil n\'a pas d\'histoires !</string>
     <string name="vwNoTagged">Ce profil n\'a pas de messages tagués !</string>
 
     <!-- Mass Follower -->
     <string name="massFollower">Adepte de Masse</string>
     <string name="mfGuide1">Instagram ne vous permettra pas de suivre un grand nombre de personnes aussi fréquemment. Il peut bloquer votre compte ou vous déconnecter de votre session.</string>
-    <string name="mfGuide2">Mais en utilisant cet outil, vous pouvez suivre de nombreuses personnes lentement et une par une, afin qu\'Instagram ne soupçonne pas qu'il s'agit d'un robot ou d'un spammeur.</string>
+    <string name="mfGuide2">Mais en utilisant cet outil, vous pouvez suivre de nombreuses personnes lentement et une par une, afin qu\'Instagram ne soupçonne pas qu\'il s\'agit d\'un robot ou d\'un spammeur.</string>
     <string name="mfGuide3">1. Ouvrez un profil dans InstaTools,\n\n2. Appuyez sur le nombre de leurs abonnés ou suivant,\n\n3. Sélectionnez \"Suivre tout\"&#8230;</string>
     <string name="mfSeekTitle">Cela prendra %1$s pour %2$d éléments.\nDélai entre chaque action suivante :</string>
     <string name="mfClear">Effacer la file d\'attente</string>
@@ -154,7 +154,7 @@
     <string name="mfTroubleshoot">Ca ne fonctionne pas?</string>
     <string-array name="mfTroubleshoot">
         <item>Désactiver l\'optimisation de la batterie pour cette application</item>
-        <item>Autoriser l'utilisation des données en arrière-plan</item>
+        <item>Autoriser l\'utilisation des données en arrière-plan</item>
     </string-array>
 
     <!-- Settings -->
@@ -173,7 +173,7 @@
     <string name="stClearCacheWaitExporter">Veuillez patienter jusqu\'à la fin de l\'exportation !</string>
     <string name="stUserData">Données d\'utilisateur</string>
     <string name="stResetData">Réinitialiser toutes mes données utilisateur</string>
-    <string name="stResetDataSure">Cela inclut la liste des désabonnés, la liste des comptes favoris, la file d\'attente de téléchargement et la file d\'attente d'exportation. Mais vous ne serez pas déconnecté de votre compte. Procéder?</string>
+    <string name="stResetDataSure">Cela inclut la liste des désabonnés, la liste des comptes favoris, la file d\'attente de téléchargement et la file d\'attente d\'exportation. Mais vous ne serez pas déconnecté de votre compte. Procéder?</string>
     <string name="stResetSettings">Réinitialiser mes paramètres</string>
     <string name="stResetSettingsSure">Êtes-vous sûr? (vous ne serez PAS déconnecté de votre compte)</string>
     <string name="stAutoDeleteEmptyDirs">Supprimer automatiquement les dossiers vides</string>
