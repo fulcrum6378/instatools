@@ -45,13 +45,6 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
-    <string-array name="bytes">
-        <item>%d B</item>
-        <item>%d KB</item>
-        <item>%d MB</item>
-        <item>%d GB</item>
-        <item>%d TB</item>
-    </string-array>
     <string name="maximum">Maximum: %s</string>
     <string name="unlimited">Unlimited</string>
     <string name="addShortcut">Add shortcut</string>

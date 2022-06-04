@@ -17,7 +17,7 @@
     <string name="download">Download</string>
     <string name="remove">Remove</string>
     <string name="openLink">Open Link</string>
-    <string name="ok">OK</string>
+    <string name="ok">OK</string><!--DO NOT DELETE-->
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
@@ -53,7 +53,7 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
-    <string-array name="bytes">
+    <string-array name="bytes" translatable="false">
         <item>%d B</item>
         <item>%d KB</item>
         <item>%d MB</item>
