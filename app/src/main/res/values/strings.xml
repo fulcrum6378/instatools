@@ -125,7 +125,6 @@
     <string name="exportHtmlDesc">Caution: an HTML file can only be viewed properly using a PC or macOS!</string>
     <string name="exportPdfDesc">A PDF file cannot contain audio and video.</string>
     <string name="exportTxtDesc">A plain text file cannot contain any kind of media.</string>
-    <string name="exportRescued">The exported files were unable to be transferred to the destination folder which you specified! So we moved them in an alternative destination which can be opened using the button below.</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
@@ -214,6 +213,7 @@
     <string name="exporterFailed">Export failed!</string>
     <string name="exporterFailed429">Unfortunately Instagram blocked these requests because they were too many and were done so frequently, in order to combat spam. Please try again a few hours later&#8230;</string>
     <string name="exporterFailedUnk">An unknown error occurred: %s</string>
+    <string name="exportRescued">The exported files were unable to be transferred to the destination folder which you specified! So we moved them into an alternative destination which can be opened using the button below.</string>
 
     <!-- Follower -->
     <string name="followerChannel" translatable="false">@string/massFollower</string>

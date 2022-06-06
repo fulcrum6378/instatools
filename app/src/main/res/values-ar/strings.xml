@@ -13,8 +13,8 @@
     <string name="navClose">غلق</string>
     <string name="search">بحث</string>
     <string name="switchAccount">تبديل الحساب</string>
-    <string name="signOut">خروج</string>
-    <string name="download">الخروج من الحساب</string>
+    <string name="signOut">الخروج من الحساب</string>
+    <string name="download">تحميل</string>
     <string name="remove">إزالة</string>
     <string name="openLink">افتح الرابط</string>
     <string name="ok">نعم</string>
@@ -125,7 +125,6 @@
     <string name="exportHtmlDesc">تحذير: لا يمكن عرض ملف HTML بشكل صحيح إلا باستخدام جهاز كمبيوتر شخصي أو macOS!</string>
     <string name="exportPdfDesc">لا يمكن أن يحتوي ملف PDF على صوت وفيديو.</string>
     <string name="exportTxtDesc">لا يمكن أن يحتوي ملف النص العادي على أي نوع من الوسائط.</string>
-    <string name="exportRescued">تعذر نقل الملفات التي تم تصديرها إلى مجلد الوجهة الذي حددته! لذلك قمنا بنقلهم إلى وجهة بديلة يمكن فتحها باستخدام الزر أدناه.</string>
 
     <!-- Downloads -->
     <string name="downloads">تحميلات</string>
@@ -213,6 +212,7 @@
     <string name="exporterFailed">فشل التصدير!</string>
     <string name="exporterFailed429">للأسف ، حظر انستغرام هذه الطلبات لأنها كانت كثيرة جدًا ويتم إجراؤها كثيرًا ، من أجل مكافحة البريد العشوائي. يرجى المحاولة مرة أخرى بعد بضع ساعات &#8230;</string>
     <string name="exporterFailedUnk">حدث خطأ غير معروف: %s</string>
+    <string name="exportRescued">تعذر نقل الملفات التي تم تصديرها إلى مجلد الوجهة الذي حددته! لذلك قمنا بنقلهم إلى وجهة بديلة يمكن فتحها باستخدام الزر أدناه.</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">اتبع عددًا كبيرًا من الحسابات ببطء&#8230;</string>

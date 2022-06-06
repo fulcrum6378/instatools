@@ -110,7 +110,6 @@
     <string name="exportHtmlDesc">Atenção: um arquivo HTML só pode ser visualizado corretamente usando um PC ou macOS!</string>
     <string name="exportPdfDesc">Um arquivo PDF não pode conter áudio e vídeo.</string>
     <string name="exportTxtDesc">Um arquivo de texto simples não pode conter nenhum tipo de mídia.</string>
-    <string name="exportRescued">Os arquivos exportados não puderam ser transferidos para a pasta de destino que você especificou! Então os movemos em um destino alternativo que pode ser aberto usando o botão abaixo.</string>
 
     <!-- Downloads -->
     <string name="downloads">Transferências</string>
@@ -198,6 +197,7 @@
     <string name="exporterFailed">Falha na exportação!</string>
     <string name="exporterFailed429">Infelizmente o Instagram bloqueou esses pedidos porque eram muitos e eram feitos com tanta frequência, para combater o spam. Tente novamente algumas horas depois&#8230;</string>
     <string name="exporterFailedUnk">Ocorreu um erro desconhecido: %s</string>
+    <string name="exportRescued">Os arquivos exportados não puderam ser transferidos para a pasta de destino que você especificou! Então os movemos em um destino alternativo que pode ser aberto usando o botão abaixo.</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Siga um grande número de contas lentamente&#8230;</string>

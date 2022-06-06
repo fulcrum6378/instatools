@@ -110,7 +110,6 @@
     <string name="exportHtmlDesc">Dikkat: Bir HTML dosyası yalnızca bir PC veya macOS kullanılarak düzgün bir şekilde görüntülenebilir!</string>
     <string name="exportPdfDesc">Bir PDF dosyası ses ve video içeremez.</string>
     <string name="exportTxtDesc">Düz metin dosyası herhangi bir ortam türü içeremez.</string>
-    <string name="exportRescued">Dışa aktarılan dosyalar belirttiğiniz hedef klasöre aktarılamadı! Bu yüzden onları aşağıdaki düğmeyi kullanarak açılabilen alternatif bir hedefe taşıdık.</string>
 
     <!-- Downloads -->
     <string name="downloads">İndirilenler</string>
@@ -198,6 +197,7 @@
     <string name="exporterFailed">Dışa aktarma başarısız oldu!</string>
     <string name="exporterFailed429">Ne yazık ki Instagram, spam ile mücadele etmek için çok fazla olduğu ve çok sık yapıldığı için bu istekleri engelledi. Lütfen birkaç saat sonra tekrar deneyin&#8230;</string>
     <string name="exporterFailedUnk">Bilinmeyen bir hata oluştu: %s</string>
+    <string name="exportRescued">Dışa aktarılan dosyalar belirttiğiniz hedef klasöre aktarılamadı! Bu yüzden onları aşağıdaki düğmeyi kullanarak açılabilen alternatif bir hedefe taşıdık.</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Çok sayıda hesabı yavaş yavaş takip edin&#8230;</string>

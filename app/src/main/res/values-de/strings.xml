@@ -110,7 +110,6 @@
     <string name="exportHtmlDesc">Achtung: Eine HTML-Datei kann nur mit einem PC oder macOS richtig angezeigt werden!</string>
     <string name="exportPdfDesc">Eine PDF-Datei kann kein Audio und Video enthalten.</string>
     <string name="exportTxtDesc">Eine reine Textdatei kann keine Medien enthalten.</string>
-    <string name="exportRescued">Die exportierten Dateien konnten nicht in den von Ihnen angegebenen Zielordner übertragen werden! Also haben wir sie an einen alternativen Ort verschoben, der über die Schaltfläche unten geöffnet werden kann.</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
@@ -160,7 +159,7 @@
     <!-- Settings -->
     <string name="settings">Einstellungen</string>
     <string name="gSettings">Globale Einstellungen</string>
-    <string name="aSettings">Einstellungen dieses Kontos</string>
+    <string name="aSettings">Lokale Einstellungen</string>
     <string name="stDlPath">Haupt-Download-Ordner</string>
     <string name="stBranching">Unterteilen Sie heruntergeladene Dateien in Zweige</string>
     <string name="stAliasing">Weisen Sie Profilen bestimmte Ordner zu</string>
@@ -198,6 +197,7 @@
     <string name="exporterFailed">Export fehlgeschlagen!</string>
     <string name="exporterFailed429">Leider blockierte Instagram diese Anfragen, weil sie zu viele waren und so häufig gestellt wurden, um Spam zu bekämpfen. Bitte versuchen Sie es ein paar Stunden später noch einmal&#8230;</string>
     <string name="exporterFailedUnk">Ein unbekannter Fehler ist aufgetreten: %s</string>
+    <string name="exportRescued">Die exportierten Dateien konnten nicht in den von Ihnen angegebenen Zielordner übertragen werden! Also haben wir sie an einen alternativen Ort verschoben, der über die Schaltfläche unten geöffnet werden kann.</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">Folgen Sie einer großen Anzahl von Konten langsam&#8230;</string>

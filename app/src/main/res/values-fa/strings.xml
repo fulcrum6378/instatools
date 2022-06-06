@@ -125,7 +125,6 @@
     <string name="exportHtmlDesc">توجه: یک فایل HTML را فقط با کامپیوتر میتوانید بدرستی مشاهده نمایید!</string>
     <string name="exportPdfDesc">یک فایل PDF نمی تواند صدا و فیلم در خود جای بدهد.</string>
     <string name="exportTxtDesc">یک فایل TXT فقط می تواند متن را در خود جای دهد.</string>
-    <string name="exportRescued">مقصدری که برای استخراج انتخاب کرده بودید در دسترس نبود برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>
@@ -213,6 +212,7 @@
     <string name="exporterFailed">استخراج ناتمام ماند!</string>
     <string name="exporterFailed429">متاسفانه اینستاگرام برای مبارزه با اسپم، اجازه نمی دهد درخواست های زیاد مشابه به یکباره به سرورهایش ارسال شود. لطفا چند ساعت دیگر مجددا تلاش کنید&#8230;</string>
     <string name="exporterFailedUnk">خطای ناشناسی رخ داد: %s</string>
+    <string name="exportRescued">مقصدری که برای استخراج انتخاب کرده بودید در دسترس نبود برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.</string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">فالو کردن دسته جمعی&#8230;</string>
