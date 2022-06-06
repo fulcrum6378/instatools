@@ -1,0 +1,211 @@
+<resources>
+    <!-- #GLOBAL -->
+    <string name="guest">Gast</string>
+    <string name="navOpen">Öffne</string>
+    <string name="navClose">Schließe</string>
+    <string name="search">Suche</string>
+    <string name="switchAccount">Benutzer wechseln</string>
+    <string name="signOut">Austragen</string>
+    <string name="download">Download</string>
+    <string name="remove">Entfernen</string>
+    <string name="openLink">Verbindung öffnen</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Absagen</string>
+    <string name="no">Nein</string>
+    <string name="yes">Ja</string>
+    <string name="unsave">Aus gespeichert entfernen</string>
+    <string name="backgroundTasks">Hintergrundaufgaben</string>
+    <string name="unknownError">Entschuldigung, ein unbekannter Fehler ist aufgetreten: %s</string>
+    <string name="unknownMyError">Entschuldigung, ein unbekannter Fehler ist aufgetreten!</string>
+    <string name="loadFailed">Laden fehlgeschlagen!</string>
+    <string name="selectAll">Wählen Sie Alle</string>
+    <string name="deselectAll">Alle abwählen</string>
+    <string name="viewProfile">Profil anzeigen</string>
+    <string name="viewHere">Hier ansehen</string>
+    <string name="viewInInsta">Auf Instagram ansehen</string>
+    <string name="addToFav">Zu Favoriten hinzufügen</string>
+    <string name="removeFav">Von den Favoriten entfernen</string>
+    <string name="start">Anfang</string>
+    <string name="stop">Halt</string>
+    <string name="openDmInInsta">Öffnen Sie den Chat in Instagram</string>
+    <string name="pageNotExist">Diese Seite existiert nicht!</string>
+    <string name="sContinue">Fortsetzen</string>
+    <string name="rateUs">Bewerte diese App</string>
+    <string name="watchAnAd">Sehen Sie sich eine Anzeige an</string>
+    <string name="failedToLoadAd">Laden der Anzeige fehlgeschlagen: %s</string>
+    <string name="failedToShowAd">Anzeige konnte nicht angezeigt werden: %s</string>
+    <string-array name="inaccurateTime">
+        <item>%d Monate</item>
+        <item>%d Wochen</item>
+        <item>%d Tage</item>
+        <item>%d Stunden</item>
+        <item>%d Minuten</item>
+        <item>%d Sekunden</item>
+    </string-array>
+    <string name="inaccurateTimeSep">,&#160;</string>
+    <string name="downloadAll">Laden Sie alle Folien herunter</string>
+    <string name="downloadThis">Laden Sie nur diese Folie herunter</string>
+    <string name="maximum">Maximal: %s</string>
+    <string name="unlimited">Unbegrenzt</string>
+    <string name="addShortcut">Verknüpfung hinzufügen</string>
+    <string name="next">Nächste</string>
+    <string name="prev">Vorherige</string>
+    <string name="save">Speichern</string>
+    <string name="tryAgain">Versuch es noch einmal</string>
+    <string name="openFolder">In Ordner öffnen</string>
+
+    <!-- Login -->
+    <string name="addAccount">Konto hinzufügen</string>
+    <string name="guestShortDesc">Geben Sie ohne Authentifizierung ein</string>
+    <string name="guestSure">Leider lässt Instagram Sie nicht so oft auf seiner Website sehen, ohne sich anzumelden. Es zwingt Sie, sich anzumelden oder sich anzumelden, um dies zu tun. (Sie können dies überprüfen, indem Sie Instagram im „Inkognito“-Modus Ihres Browsers öffnen.) Es gibt also keine Garantie dafür, dass Sie sich nicht bald nach dem Aufrufen des Gastmodus anmelden müssen.</string>
+    <string name="needAuthentication">Instagram lässt uns nicht rein. Du musst dich anmelden, um fortzufahren&#8230;</string>
+
+    <!-- Main -->
+    <string name="unfollowers">Unfollower</string>
+    <string name="saved">Gespeicherte</string>
+    <string name="direct">@string/export</string>
+    <string name="guestDesc">Sie verwenden diese App im Gastmodus.\nSie können diese Funktion also nicht verwenden!</string>
+    <string name="signOutSure">Möchten Sie sich wirklich von Ihrem Instagram-Konto abmelden?</string>
+    <string name="mtSearch">Geben Sie einen Profilnamen oder Link ein&#8230;</string>
+    <string name="terminateBgTasks">Einige Aufgaben laufen im Hintergrund. Sind Sie sicher, dass Sie alle beenden möchten?</string>
+    <string name="alsoDeleteData">Löschen Sie auch meine Benutzerdaten und Einstellungen</string>
+    <string name="toExit">Zum Beenden doppeltippen&#8230;</string>
+
+    <!-- PageUnf -->
+    <string name="unfollow">Entfolgen</string>
+    <string name="unfollowPV">Dieses Konto ist privat. Sind Sie sicher, dass Sie ihnen nicht mehr folgen möchten?</string>
+    <string name="unfCouldNot">Konnte diesem Benutzer nicht entfolgen!</string>
+    <string name="unfEmpty">Du hast keine Unfollower!</string>
+    <string name="unfollowedAt">Unfollowed am %s</string>
+    <string name="newUnfNtfChannel">Neue Unfollower</string>
+    <string name="newUnfNtfChannelDesc">Einige Leute haben dir gerade nicht mehr gefolgt!</string>
+    <string name="newUnfNtfText">%d neue Leute haben dir nicht mehr gefolgt!</string>
+    <string name="unfollowedSoMany">Leider erlaubt Instagram Ihnen nicht, einer großen Anzahl von Personen so häufig zu entfolgen, um Spam zu bekämpfen. Bitte versuchen Sie es etwa eine halbe Stunde später noch einmal&#8230;</string>
+
+    <!-- PageSvd -->
+    <string name="unsaveOnly">Nur nicht speichern</string>
+    <string name="downloadOnly">Nur herunterladen</string>
+    <string name="unsaveDownload">Nicht speichern und herunterladen</string>
+    <string name="svdEmpty">Sie haben keine gespeicherten Beiträge!</string>
+    <string name="reallyHasNoMore">Sie haben %d weitere Beiträge gespeichert; aber sie sind anscheinend gelöscht, blockiert oder in irgendeiner Weise versteckt!</string>
+
+    <!-- PageBox -->
+    <string name="boxUntil">Bis um %s</string>
+    <string name="exportHtml">Nach HTML exportieren</string>
+    <string name="exportPdf">Als PDF exportieren</string>
+    <string name="exportTxt">Nach TXT exportieren</string>
+    <string name="exportOptions">Exportoptionen (%s)</string>
+    <string name="export">Export</string>
+    <string name="boxEmpty">Du hast keine Nachrichten!</string>
+    <string name="dmNotSeen">Du bist unsichtbar!</string>
+    <string name="dmNotSeenDesc">Die Nachrichten, die Sie in dieser App anzeigen, werden NICHT als gesehen markiert!</string>
+    <string name="expOptImage">Fügen Sie Bilder hinzu</string>
+    <string name="expOptVideo">Videos einbinden</string>
+    <string name="expOptVoice">Sprachnachrichten einschließen</string>
+    <string name="expOptLow">Geringe Qualität</string>
+    <string name="expOptMed">Mittlere Qualität</string>
+    <string name="expOptHig">Hohe Qualität</string>
+    <string name="expOptThm">Nur ein Vorschaubild (erster Frame)</string>
+    <string name="unsupportedExportUriAuth">Entschuldigung, aber diese Art von Ordner wird für diesen Exporttyp nicht unterstützt! Obwohl Sie in genau diesen Ordner in die anderen Dateitypen exportieren können.</string>
+    <string name="exportHtmlDesc">Achtung: Eine HTML-Datei kann nur mit einem PC oder macOS richtig angezeigt werden!</string>
+    <string name="exportPdfDesc">Eine PDF-Datei kann kein Audio und Video enthalten.</string>
+    <string name="exportTxtDesc">Eine reine Textdatei kann keine Medien enthalten.</string>
+    <string name="exportRescued">Die exportierten Dateien konnten nicht in den von Ihnen angegebenen Zielordner übertragen werden! Also haben wir sie an einen alternativen Ort verschoben, der über die Schaltfläche unten geöffnet werden kann.</string>
+
+    <!-- Downloads -->
+    <string name="downloads">Downloads</string>
+    <string name="dwShare">@string/download</string>
+    <string name="pasteLink">Link einfügen&#8230;</string>
+    <string name="downloadsHelp1">1. Öffnen Sie Instagram,\n2. Wählen Sie einen Beitrag oder eine Geschichte aus,\n3. Teilen Sie es in dieser App;</string>
+    <string name="downloadsHelp2">damit es sofort heruntergeladen wird!</string>
+    <string name="nonInstagramUrl">Tut mir leid, aber diese App lädt nur Instagram-Inhalte herunter!</string>
+
+    <!-- Favourites -->
+    <string name="favourites">Favoriten</string>
+    <string name="favEmpty">Öffnen Sie ein Profil in InstaTools und tippen Sie oben rechts auf das „Herz“-Symbol, um es dieser Liste hinzuzufügen.</string>
+
+    <!-- Viewer -->
+    <string name="vwTitle">Profilbetrachter</string>
+    <string name="vwShare">Profil anzeigen</string>
+    <string name="vwFollowers">Follower</string>
+    <string name="vwFollowing">Gefolgt</string>
+    <string name="vwPrivate">Dieses Konto ist privat!</string>
+    <string name="followAll">Allen Folgen</string>
+    <string name="followAllSure">Sind Sie sicher, dass Sie allen diesen Konten folgen möchten? (Sie werden langsam und einer nach dem anderen verfolgt, damit Instagram nicht empfindlich wird!)</string>
+    <string name="alsoRequestPv">Senden Sie auch Anfragen an die Privatkonten.</string>
+    <string name="mfLimit">Begrenzen Sie ihre Anzahl auf:</string>
+    <string name="vwStoryReel">Hauptgeschichten</string>
+    <string name="vwReelDesc">Enthält %d Artikel</string>
+    <string name="vwNoReels">Dieses Profil hat keine Geschichten!</string>
+    <string name="vwNoTagged">Dieses Profil hat keine markierten Beiträge!</string>
+
+    <!-- Mass Follower -->
+    <string name="massFollower">Massenfolgen</string>
+    <string name="mfGuide1">Mit Instagram können Sie einer großen Anzahl von Personen nicht so häufig folgen. Es kann Ihr Konto blockieren oder Sie von Ihrer Sitzung abmelden.</string>
+    <string name="mfGuide2">Aber mit diesem Tool können Sie zahlreichen Personen langsam und einer nach dem anderen folgen, sodass Instagram nicht vermutet, dass es sich um einen Roboter oder einen Spammer handelt.</string>
+    <string name="mfGuide3">1. Öffnen Sie ein Profil in InstaTools,\n\n2. Tippen Sie auf die Anzahl ihrer Follower oder Follower,\n\n3. Wählen Sie „Allen folgen“&#8230;</string>
+    <string name="mfSeekTitle">Es dauert %1$s für %2$d Artikel.\nVerzögerung zwischen jeder Folgeaktion:</string>
+    <string name="mfClear">Löschen Sie die Warteschlange</string>
+    <string name="mfExport">Exportieren Sie die Warteschlange</string>
+    <string name="mfExportSubject">Massenfolgen-Warteschlange (%d Artikel)</string>
+    <string name="mfPayForIt">Um diese Funktion freizuschalten, wählen Sie eine der folgenden Methoden:</string>
+    <string name="mfUnlockTimes">%d Mal freischalten</string>
+    <string name="mfDetectedSpam">Leider hat Instagram Sie als Spammer erkannt; Bitte erhöhen Sie die Verzögerungszeit und versuchen Sie es später erneut!</string>
+    <string name="mfTroubleshoot">Funktioniert nicht?</string>
+    <string-array name="mfTroubleshoot">
+        <item>Akkuoptimierung für diese App deaktivieren</item>
+        <item>Datennutzung im Hintergrund zulassen</item>
+    </string-array>
+
+    <!-- Settings -->
+    <string name="settings">Einstellungen</string>
+    <string name="gSettings">Globale Einstellungen</string>
+    <string name="aSettings">Einstellungen dieses Kontos</string>
+    <string name="stDlPath">Haupt-Download-Ordner</string>
+    <string name="stBranching">Unterteilen Sie heruntergeladene Dateien in Zweige</string>
+    <string name="stAliasing">Weisen Sie Profilen bestimmte Ordner zu</string>
+    <string name="stAddAlias">Neue Ausnahme hinzufügen</string>
+    <string name="stAliasingDesc">Alle von diesem Profil heruntergeladenen Dateien werden in diesem Ordner gespeichert.</string>
+    <string name="stAliasProfile">Geben Sie den Benutzernamen des Profils ein</string>
+    <string name="addFolder">Ordner hinzufügen</string>
+    <string name="stCache">Caching (aktuelle Größe: %s)</string>
+    <string name="stClearCache">Cache leeren</string>
+    <string name="stClearCacheWaitExporter">Bitte warten Sie, bis der Export abgeschlossen ist!</string>
+    <string name="stUserData">Benutzerdaten</string>
+    <string name="stResetData">Alle meine Benutzerdaten zurücksetzen</string>
+    <string name="stResetDataSure">Dazu gehören die Unfollower-Liste, die Liste der bevorzugten Konten, die Download-Warteschlange und die Export-Warteschlange. Sie werden jedoch nicht von Ihrem Konto abgemeldet. Fortfahren?</string>
+    <string name="stResetSettings">Meine Einstellungen zurücksetzen</string>
+    <string name="stResetSettingsSure">Bist du dir sicher? (Sie werden NICHT von Ihrem Konto abgemeldet)</string>
+    <string name="stAutoDeleteEmptyDirs">Leere Ordner automatisch löschen</string>
+    <string name="stHelp">Hilfe</string>
+    <string name="stHelpMessage">Die Einstellungen dieses Kontos erben die globalen Einstellungen, wenn Sie eine Einstellung dieses Kontos leer lassen.</string>
+    <string name="stAlsoRevokePerm">Widerrufen Sie auch die Berechtigung für den ausgewählten Ordner. (Dies hebt alle anderen Ausnahmen auf, die sich auf diesen Ordner beziehen.)</string>
+
+
+    <!-- Queuer -->
+    <string name="queuerChannel">Warteschlange herunterladen</string>
+    <string name="queuerChannelDesc">Lädt die Medien in der Warteschlange herunter</string>
+    <string name="queuerTitle">Wird heruntergeladen&#8230;</string>
+
+    <!-- Exporter -->
+    <string name="exporterChannel">Exporteur</string>
+    <string name="exporterChannelDesc">Exportiert die Direktnachrichten</string>
+    <string name="exporterTitle">Exportieren&#8230;</string>
+    <string name="exporterFetchTexts">%1$d Nachrichten im Chat von %2$s abgerufen&#8230;</string>
+    <string name="exporterFetchMedia">Abrufen von %1$d von %2$d Medien im Chat von %3$s&#8230;</string>
+    <string name="exporterWriting">Schreiben des Chats von %s in den Speicher&#8230;</string>
+    <string name="exporterDone">Der Chat von %s wurde exportiert.</string>
+    <string name="exporterFailed">Export fehlgeschlagen!</string>
+    <string name="exporterFailed429">Leider blockierte Instagram diese Anfragen, weil sie zu viele waren und so häufig gestellt wurden, um Spam zu bekämpfen. Bitte versuchen Sie es ein paar Stunden später noch einmal&#8230;</string>
+    <string name="exporterFailedUnk">Ein unbekannter Fehler ist aufgetreten: %s</string>
+
+    <!-- Follower -->
+    <string name="followerChannelDesc">Folgen Sie einer großen Anzahl von Konten langsam&#8230;</string>
+    <string name="followerTitle">Verstohlen folgen&#8230;</string>
+
+    <!-- Other Notifications -->
+    <string name="servicesChannelGroup">Fortschreitende Aufgaben</string>
+    <string name="servicesChannelGroupDesc">Lang andauernde Aufgaben wie Herunterladen und Exportieren.</string>
+    <string name="taskResultChannel">Aufgabenergebnisse</string>
+    <string name="taskResultChannelDesc">Benachrichtigt alles, was aus einer lang andauernden Aufgabe resultiert, wie Herunterladen, Exportieren und Massenverfolgen.</string>
+</resources>

@@ -8,6 +8,7 @@ import android.os.Process.myPid
 import android.view.View
 import android.view.ViewStub
 import android.webkit.CookieManager
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
@@ -48,6 +49,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val host = "https://www.instagram.com/"
         const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"
+        const val preScheduledApplyEach =
+            "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
         const val spAccount = "account"
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val EXTRA_SHOW_AD = "show_ad"
@@ -64,6 +67,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         // WebView
         b.web.settings.javaScriptEnabled = true
+        b.web.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         b.web.webViewClient = myClient
         b.refresher.setOnRefreshListener { b.web.reload() }
 
@@ -108,8 +112,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         accounts.sortByDescending { it.last.toString() }
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)
-
-        //bw.logo.setOnClickListener { UiTools.reviewApp(this, 0) }
 
         // Add Account
         bw.addAccount.setOnClickListener {
@@ -238,8 +240,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 if (BuildConfig.DEBUG) throw e
             }
         }
-
-        val preScheduledApplyEach = "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
 
         @Throws(
             JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class

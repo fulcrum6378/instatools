@@ -3,31 +3,36 @@ package ir.mahdiparastesh.instatools.view
 import android.net.Uri
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.BaseExporter
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.calendar
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromMicroseconds
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.z
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 
 abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
     private var ink = StringBuilder()
+    private val allUsers = exp.threadData?.users?.plusElement(
+        Rest.User(c.m.acc?.name, false, c.m.acc?.id.toString(), "", c.m.acc?.user.toString())
+    )
 
     override fun run() {
         if (exp.threadData == null) {
             progress(100f, false); return; }
         progress(0f, false)
         for (dm in exp.threadData!!.items) {
-            val cal = dm.timestamp.xFromMicroseconds().calendar()
-            ink.append("${cal[Calendar.YEAR]}/${z(cal[Calendar.MONTH] + 1)}/${z(cal[Calendar.DAY_OF_MONTH])}, ")
-            ink.append("${z(cal[Calendar.HOUR_OF_DAY])}:${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])} - ")
+            if (dm.action_log != null) continue
+            ink.append(
+                SimpleDateFormat(
+                    "${UiTools.DATE_FORMAT}, ${UiTools.TIME_FORMAT}", Locale.getDefault()
+                ).format(Date(dm.timestamp.xFromMicroseconds()))
+            ).append(" - ")
             val user = if (dm.user_id == c.m.acc?.id?.toDouble()) "${c.m.acc?.user}"
             else exp.threadData!!.users.find { it.pk.toDouble() == dm.user_id }?.username
             ink.append("$user : ")
             ink.append(
                 when {
-                    dm.action_log != null -> "<${dm.action_log.description}>"
                     dm.animated_media != null -> "<sent a gif>"
                     dm.clip != null -> "<shared a clip>"
                     dm.direct_media_share != null -> "<tagged you in a post>"
@@ -52,6 +57,14 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                     else -> "<unknown media type>"
                 }
             )
+            if (dm.reactions != null) for (r in dm.reactions.emojis) ink.append("\n")
+                .append(r.emoji)
+                .append(" by ${allUsers?.find { it.pk.toDouble() == r.sender_id }?.username} at ")
+                .append(
+                    SimpleDateFormat(
+                        "${UiTools.DATE_FORMAT} - ${UiTools.TIME_FORMAT}", Locale.getDefault()
+                    ).format(Date(r.timestamp.xFromMicroseconds()))
+                )
             ink.append("\n")
         }
         c.c.contentResolver.openFileDescriptor(Uri.parse(Api.encode(exp.uri)), "w")?.use {

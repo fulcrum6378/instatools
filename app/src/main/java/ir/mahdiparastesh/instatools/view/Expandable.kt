@@ -108,14 +108,14 @@ class Expandable(
             }
         }
         b.viewInInsta.setOnClickListener {
-            media?.link()?.let {
+            media?.link()?.also {
                 try {
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
                             if (it.startsWith(UiTools.IG_OPENABLE) &&
                                 !it.startsWith("https://www.instagram.com/stories/highlights/")
                             ) setPackage(UiTools.INSTA_PACKAGE)
-                            else addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     )
                 } catch (e: ActivityNotFoundException) {

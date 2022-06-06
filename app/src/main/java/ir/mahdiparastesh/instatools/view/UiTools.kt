@@ -48,6 +48,8 @@ import kotlin.math.abs
 
 class UiTools {
     companion object {
+        const val DATE_FORMAT = "yyyy.MM.dd"
+        const val TIME_FORMAT = "hh:mm:ss"
         const val PROFILE = "https://www.instagram.com/%s/"
         const val POST_LINK = "https://www.instagram.com/p/%s/"
         const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s"

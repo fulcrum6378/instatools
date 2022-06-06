@@ -125,13 +125,10 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
                 else c.dao.deleteFriend(unf)
             }.start()
-            val index = c.m.unfollowers.value!!.indexOf(unf)
-            c.m.unfollowers.value!![index].unfollowed = true
-            f.b.rv.adapter?.notifyItemChanged(index)
-            /*c.m.unfollowers.value!!.remove(unf)
-            f.b.rv.adapter?.notifyItemRemoved(index)
-            if (index > 0) f.b.rv.adapter?.notifyItemChanged(index - 1)
-            f.b.rv.adapter?.notifyItemRangeChanged(index, c.m.unfollowers.value!!.size - 1)*/
+            c.m.unfollowers.value?.indexOf(unf)?.also { index ->
+                c.m.unfollowers.value?.getOrNull(index)?.unfollowed = true
+                f.b.rv.adapter?.notifyItemChanged(index)
+            }
             c.m.unfollowers.value = c.m.unfollowers.value
             if (c.m.unfollowers.value.isNullOrEmpty()) f.emptied(true)
         }

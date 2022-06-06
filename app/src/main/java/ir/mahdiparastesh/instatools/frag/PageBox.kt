@@ -19,7 +19,6 @@ import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.documentfile.provider.DocumentFile
-import androidx.media2.player.MediaPlayer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
@@ -68,7 +67,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             c, b.expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CT)
         ) { updateShadow() }
     }
-    var voicePlayer: MediaPlayer? = null
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.TERTIARY

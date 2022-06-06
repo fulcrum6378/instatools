@@ -135,11 +135,10 @@ class Dm(
         fun exported() = "Exported ${title()}_${UiTools.fileDateTime(Persistent.now())}"
     }
 
-    class ActionLog(
-        //val bold: Array<Any>,
-        val description: String,
-        //val is_reaction_log: Boolean,
-    )
+    class ActionLog
+    //val bold: Array<Any>,
+    //val description: String,
+    //val is_reaction_log: Boolean,
 
     class AnimatedMedia(
         //val id: String,
@@ -153,8 +152,8 @@ class Dm(
 
     class AnimatedMediaImage(
         val height: String,
-        val mp4: String, // .MP4
-        val mp4_size: String,
+        //val mp4: String, // .MP4
+        //val mp4_size: String,
         val size: String,
         val url: String, // .GIF
         //val webp: String, // .WEBP
@@ -209,9 +208,9 @@ class Dm(
     )
 
     class Emoji(
-        //val timestamp: Double,
+        val timestamp: Double,
         //val client_context: String,
-        //val sender_id: Double,
+        val sender_id: Double,
         val emoji: String,
         //val super_react_type: String,
     )
@@ -244,23 +243,22 @@ class Dm(
         lateinit var audio_src: String
     }
 
-    class Audio(
-        //val audio_src_expiration_timestamp_us: Double,
-        val duration: Double,
-        val fallback: AudioSrc,
-        val waveform_data: Array<Float>, // waves
-        //val waveform_sampling_frequency_hz: Float,
-    ) : AudioSrc()
+    class Audio : AudioSrc()
+    //val audio_src_expiration_timestamp_us: Double,
+    //val duration: Double,
+    //val fallback: AudioSrc,
+    //val waveform_data: Array<Float>, // waves
+    //val waveform_sampling_frequency_hz: Float,
 
     class VideoCallEvent(
         val action: String, // e.g.: "video_call_started" or "video_call_ended"; the same for audio calls
-        val call_duration: Double,
-        val call_start_time: Double,
-        val call_end_time: Double,
+        //val call_duration: Double,
+        //val call_start_time: Double,
+        //val call_end_time: Double,
         val description: String,
         // e.g.: "fulcrum1378 started a video chat" then "You missed a video chat"
         // e.g.: "You started an audio call" then "Audio call ended"
-        val did_join: Boolean?,
+        //val did_join: Boolean?,
         //val encoded_server_data_info: String,
         //val feature_set_str: String,
         //val text_attributes: Array<Any>,
@@ -329,8 +327,8 @@ class Dm(
 
     class DirectMediaShare(
         val text: String,
-        val media_share_type: String,// e.g.: "tag"
-        val tagged_user_id: Double,
+        //val media_share_type: String,// e.g.: "tag"
+        //val tagged_user_id: Double,
         val media: Media,
     )
 }
