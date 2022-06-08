@@ -137,7 +137,7 @@ class Exporter : ForegroundService() {
         threadData?.items?.sortBy { it.timestamp }
         FetchOfThread(
             this@Exporter, thread, threadData?.items?.firstOrNull()?.item_id ?: "",
-            handler, 75
+            handler, reqQueue, 75
         ).start()
     }
 

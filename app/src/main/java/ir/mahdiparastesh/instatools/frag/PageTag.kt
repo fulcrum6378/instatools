@@ -21,6 +21,7 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
@@ -158,10 +159,10 @@ class PageTag : BasePageViewer() {
                 c.m.vwTagged = null
                 interrupt()
                 return; }
-            Api<MediaWrapperApi>(
+            c.reqQueue.adder = Api<MediaWrapperApi>(
                 c, Api.Endpoint.TAGGED.url.format(
                     c.m.vwUser?.id ?: "", c.m.vwTagged?.next_max_id ?: ""
-                ), MediaWrapperApi::class, handler, onError = { interrupt() }
+                ), MediaWrapperApi::class, handler, autoQueue = false, onError = { interrupt() }
             ) { wrapper ->
                 if (c.m.vwTagged == null) {
                     c.m.vwTagged = wrapper

@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.frag.PageUnf.Companion.MAX_UNFOLLOW_AD
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -95,9 +96,9 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     override fun getItemCount() = c.m.unfollowers.value?.size ?: 0
 
     private fun unfollow(unf: Friend) {
-        Api<Rest>(
+        f.reqQueue.adder = Api<Rest>(
             c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest::class, null,
-            method = Request.Method.POST, onError = { res ->
+            method = Request.Method.POST, autoQueue = false, onError = { res ->
                 if (res?.statusCode == 429) {
                     var showing429 = true
                     c.loadInterstitial(R.string.interUnfMany) { !showing429 }

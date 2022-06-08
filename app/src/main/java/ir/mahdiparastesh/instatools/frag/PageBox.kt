@@ -22,6 +22,8 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.Volley
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
@@ -34,6 +36,7 @@ import ir.mahdiparastesh.instatools.databinding.DmNotSeenBinding
 import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
@@ -62,9 +65,10 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
     private var boxScroll: Int? = null
+    val reqQueue by lazy { Volley.newRequestQueue(c) }
     val expandable: Expandable by lazy {
         Expandable(
-            c, b.expanded, handler, c.color(if (!c.night()) R.color.defBG else R.color.CT)
+            c, b.expanded, handler, reqQueue, c.color(if (!c.night()) R.color.defBG else R.color.CT)
         ) { updateShadow() }
     }
 
@@ -133,7 +137,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     if (thdThread?.active != true &&
                         c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
                     ) thdThread = FetchOfThread(
-                        c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id, handler
+                        c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id,
+                        handler, reqQueue
                     ).also { it.start() }
                 }
             }
@@ -348,9 +353,9 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     inner class FetchOfInbox : BaseThread() {
         override fun run() {
             super.run()
-            Api<InboxPage>(
+            reqQueue.adder = Api<InboxPage>(
                 c, Api.Endpoint.INBOX.url.format(c.m.dmInbox?.oldest_cursor ?: ""),
-                InboxPage::class, handler, onError = { interrupt() }
+                InboxPage::class, handler, autoQueue = false, onError = { interrupt() }
             ) { page ->
                 if (!active) return@Api
                 if (c.m.dmInbox == null) c.m.dmInbox = page.inbox
@@ -368,13 +373,17 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
     class FetchOfThread(
         val c: Persistent, private val threadId: String, private val oldestId: String,
-        val handler: Handler?, private val limit: Int = 20
+        val handler: Handler?, private val queue: RequestQueue, private val limit: Int = 20
     ) : BaseThread() {
         override fun run() {
             super.run()
-            Api<Rest.InboxThread>(
-                c, Api.Endpoint.DIRECT.url.format(threadId, oldestId, limit), Rest.InboxThread::class,
-                handler, onError = { interrupt() }
+            queue.adder = Api<Rest.InboxThread>(
+                c,
+                Api.Endpoint.DIRECT.url.format(threadId, oldestId, limit),
+                Rest.InboxThread::class,
+                handler,
+                autoQueue = false,
+                onError = { interrupt() }
             ) { inbox ->
                 if (!active) return@Api
                 if (inbox.status == "ok")

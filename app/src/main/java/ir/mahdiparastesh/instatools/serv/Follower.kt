@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.*
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
+import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
@@ -11,6 +12,7 @@ import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.LongThread
@@ -24,6 +26,7 @@ class Follower : ForegroundService() {
     private var enqueuer: Enqueuer? = null
     private var scheduler: Scheduler? = null
     private var following = arrayListOf<Friend>()
+    private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val requiresHandling = true
     override val com: ForegroundServiceCompanion get() = Companion
@@ -117,10 +120,11 @@ class Follower : ForegroundService() {
         }
 
         private fun allFollow(next_max_id: String = "") {
-            Api<Rest.Follow>(
+            reqQueue.adder = Api<Rest.Follow>(
                 this@Follower,
                 (if (toBeEnqueued[0].isItFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
-                    .format(toBeEnqueued[0].id, next_max_id), Rest.Follow::class, handler
+                    .format(toBeEnqueued[0].id, next_max_id),
+                Rest.Follow::class, handler, autoQueue = false
             ) { flw -> handler?.obtainMessage(0, flw)?.sendToTarget() }
         }
 
@@ -173,9 +177,9 @@ class Follower : ForegroundService() {
             fwb = dao.aFollowable().getOrNull(0)
             if (fwb == null || !Follower.active.value!!) {
                 end(); return false; }
-            Api<Rest.DoFollow>(
+            reqQueue.adder = Api<Rest.DoFollow>(
                 this@Follower, Api.Endpoint.FOLLOW.url.format(fwb!!.id), Rest.DoFollow::class,
-                handler, method = Request.Method.POST
+                handler, autoQueue = false, method = Request.Method.POST
             ) { handler?.obtainMessage(0, fwb)?.sendToTarget() }
             return true
         }

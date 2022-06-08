@@ -14,6 +14,7 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
 import ir.mahdiparastesh.instatools.json.Rest.StoryReel
@@ -100,9 +101,10 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
     private fun loadHlItems(i: Int, onEnd: () -> Unit) {
         (c.m.vwReels?.getOrNull(i) as HighlightReel?)?.apply {
             if (items != null) return@loadHlItems
-            Api<Rest.Reels<HighlightReel>>(
+            c.reqQueue.adder = Api<Rest.Reels<HighlightReel>>(
                 c, Api.Endpoint.REEL_ITEM.url.format(id), Rest.Reels::class, PageRel.handler,
                 cache = true, typeToken = object : TypeToken<Rest.Reels<HighlightReel>>() {}.type,
+                autoQueue = false
             ) { reels ->
                 items = reels.reels.getOrDefault(id, null)?.items
                 onEnd()

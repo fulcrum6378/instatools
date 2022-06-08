@@ -18,6 +18,7 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.media2.common.SessionPlayer
 import com.android.volley.NetworkResponse
+import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
@@ -26,6 +27,7 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -48,9 +50,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     var user: String? = null
     var dbFav: Favourite? = null
     private var thread: Initial? = null
+    val reqQueue by lazy { Volley.newRequestQueue(c) }
     val expandable: Expandable by lazy {
         Expandable(
-            this, b.expanded, handler, color(if (!night()) R.color.defBG else R.color.CS)
+            this, b.expanded, handler, reqQueue, color(if (!night()) R.color.defBG else R.color.CS)
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
 
@@ -238,9 +241,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     inner class Initial : BaseThread() {
         override fun run() {
-            Api<GraphQl>(
+            reqQueue.adder = Api<GraphQl>(
                 this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
-                handler, onError = { interrupt() }
+                handler, autoQueue = false, onError = { interrupt() }
             ) { graphql ->
                 m.vwUser = graphql.data.user
                 if (m.vwUser == null) {

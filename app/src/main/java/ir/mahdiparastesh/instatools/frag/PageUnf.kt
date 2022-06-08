@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.android.volley.NetworkResponse
+import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -24,6 +25,7 @@ import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
@@ -34,6 +36,7 @@ class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     var thread: Inquiry? = null
     var counter = 0
+    val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.PRIMARY
@@ -158,10 +161,10 @@ class PageUnf : BasePageMain() {
 
         private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
             if (!active || c.m.acc == null) return
-            Api<Rest.Follow>(
+            reqQueue.adder = Api<Rest.Follow>(
                 c, (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
-                handler, onError = { interrupt() }
+                handler, autoQueue = false, onError = { interrupt() }
             ) { flw ->
                 if (c.m.acc != null) CoroutineScope(Dispatchers.IO).launch {
                     for (u in flw.users) {

@@ -18,6 +18,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable.INFINITE
 import com.android.volley.NetworkResponse
 import com.android.volley.Request
+import com.android.volley.toolbox.Volley
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
@@ -29,6 +30,7 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListPost
@@ -51,6 +53,7 @@ class PageSvd : BasePageMain(), Selective {
     private var selectionBadge: BadgeDrawable? = null
     private var selectionGuide: LottieAnimationView? = null
     private var reallyHasMore = true
+    val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.SECONDARY
@@ -302,9 +305,9 @@ class PageSvd : BasePageMain(), Selective {
         override fun run() {
             if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
             super.run()
-            if (c.m.saved == null) Api<GraphQl>(
+            if (c.m.saved == null) reqQueue.adder = Api<GraphQl>(
                 c, Api.Endpoint.PROFILE.url.format(c.m.acc!!.user), GraphQl::class,
-                handler, onError = { interrupt() }
+                handler, autoQueue = false, onError = { interrupt() }
             ) { graphql ->
                 if (!active) return@Api
                 val edgeList = graphql.data.user?.edge_saved_media
@@ -321,12 +324,12 @@ class PageSvd : BasePageMain(), Selective {
                     )?.sendToTarget()
                 }
                 done(null)
-            } else Api<GraphQl>(
+            } else reqQueue.adder = Api<GraphQl>(
                 c, Api.Endpoint.SAVED.url.format(
                     c.m.acc!!.id,
                     c.m.saved!!.edges.size,
                     c.m.saved?.page_info?.end_cursor ?: ""
-                ), GraphQl::class, handler, onError = { interrupt() }
+                ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
             ) { res ->
                 if (!active) return@Api
                 val edgeList = res.data.user?.edge_saved_media
@@ -379,9 +382,9 @@ class PageSvd : BasePageMain(), Selective {
                 c.dao.addQueued(Queued(Persistent.now(), UiTools.POST_LINK.format(post.shortcode)))
             } catch (e: IllegalStateException) { // DB is closed
             }
-            if (unsave) Api<Rest>(
+            if (unsave) reqQueue.adder = Api<Rest>(
                 c, Api.Endpoint.UNSAVE.url.format(post.id), Rest::class, null,
-                method = Request.Method.POST, onError = { ended() }
+                method = Request.Method.POST, autoQueue = false, onError = { ended() }
             ) { rest ->
                 if (rest.status == "ok")
                     handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()

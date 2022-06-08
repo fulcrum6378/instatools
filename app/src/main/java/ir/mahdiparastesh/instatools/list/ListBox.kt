@@ -45,7 +45,7 @@ class ListBox(val c: Main, private val f: PageBox) :
             f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
                 c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.firstOrNull()?.item_id ?: "",
-                PageBox.handler
+                PageBox.handler, f.reqQueue
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {

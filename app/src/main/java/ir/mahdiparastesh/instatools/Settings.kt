@@ -49,7 +49,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
     private lateinit var adBanner: AdView
     private lateinit var prf: SharedPreferences
-    private var globalMode = false
+    private var globalMode = true
     private var giveLinkBack: String? = null
     private val saveLauncher = launcher(this)
     private var aliases: HashMap<String, String>? = null

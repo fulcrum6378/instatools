@@ -201,10 +201,8 @@ class Downloads : ServiceOwnerActivity() {
         fun initService(c: BaseActivity, link: String? = null) {
             val uri = c.sPreference(Settings.spStorage)
             if (uri == null || !c.c.isPathAccessible(uri)) {
-                c.goTo(Settings::class) {
-                    putExtra(Settings.EXTRA_GIVE_LINK_BACK, link)
-                    putExtra(Settings.EXTRA_IS_GLOBAL, true)
-                }; return; }
+                c.goTo(Settings::class) { putExtra(Settings.EXTRA_GIVE_LINK_BACK, link) }
+                return; }
             if (Queuer.active.value!!) {
                 if (!link.isNullOrBlank())
                     Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()

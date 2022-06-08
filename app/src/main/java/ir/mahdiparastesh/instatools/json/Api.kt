@@ -27,6 +27,7 @@ class Api<JSON>(
     method: Int = Method.GET,
     private val acc: Account? = c.m.acc,
     private val typeToken: java.lang.reflect.Type? = null,
+    autoQueue: Boolean = true,
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url),
@@ -39,7 +40,7 @@ class Api<JSON>(
             retryPolicy = DefaultRetryPolicy(
                 15000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
             )
-            Volley.newRequestQueue(c.c).add(this)
+            if (autoQueue) Volley.newRequestQueue(c.c).add(this)
         } else gotError(handleError, onError)
     }
 
@@ -159,6 +160,12 @@ class Api<JSON>(
                 uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
             return uriBuilder.build().toString()
         }
+
+        var RequestQueue.adder: Request<*>?
+            get() = null
+            set(req) {
+                add(req)
+            }
     }
 
     @Suppress("SpellCheckingInspection")

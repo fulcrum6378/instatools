@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
@@ -37,6 +38,7 @@ import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
@@ -69,7 +71,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
     var schRes: Array<Rest.ItemUser>? = null
-    var searcher: Api<Rest.Search>? = null
+    private val schQueue by lazy { Volley.newRequestQueue(c) }
     var searchErrored = false
 
     override val menuRes = R.menu.main_tlb
@@ -233,8 +235,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         R.id.mnDownloads -> goTo(Downloads::class)
         R.id.mnFavourites -> goTo(Favourites::class)
         R.id.mnMassFollower -> goTo(MassFollower::class)
-        R.id.mnGSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, true) }
-        R.id.mnSettings -> goTo(Settings::class)
+        R.id.mnGSettings -> goTo(Settings::class)
+        R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
             AlertDialog.Builder(this).apply {
                 setTitle(R.string.backgroundTasks)
@@ -304,10 +306,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     searchErrored = false
                     b.searchStatus.playAnimation()
                     b.searchStatus.vis()
-                    searcher?.cancel()
-                    searcher = Api(
+                    schQueue.cancelAll { true }
+                    schQueue.adder = Api<Rest.Search>(
                         this@Main, Api.Endpoint.SEARCH.url.format(newText), Rest.Search::class,
-                        null, cache = true, onError = {
+                        null, cache = true, autoQueue = false, onError = {
                             searchErrored = true
                             b.searchStatus.setAnimation(R.raw.failed)
                         }

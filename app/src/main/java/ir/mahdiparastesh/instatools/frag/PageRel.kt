@@ -12,6 +12,7 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.Highlights
 import ir.mahdiparastesh.instatools.json.Rest.Story
@@ -95,16 +96,16 @@ class PageRel : BasePageViewer() {
                 interrupt()
                 return; }
             c.m.vwReels = CopyOnWriteArrayList()
-            Api<Story>(
-                c, Api.Endpoint.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class, handler,
-                onError = { interrupt() }) { story ->
+            c.reqQueue.adder = Api<Story>(
+                c, Api.Endpoint.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class,
+                handler, autoQueue = false, onError = { interrupt() }) { story ->
                 if (!story.reel?.items.isNullOrEmpty()) c.m.vwReels?.add(story.reel)
                 storyFetched = true
                 interrupt()
             }
-            Api<Highlights>(
+            c.reqQueue.adder = Api<Highlights>(
                 c, Api.Endpoint.HIGHLIGHTS.url.format(c.m.vwUser?.id ?: ""), Highlights::class,
-                handler, onError = { interrupt() }) { highlights ->
+                handler, autoQueue = false, onError = { interrupt() }) { highlights ->
                 c.m.vwReels?.addAll(highlights.tray)
                 highlightsFetched = true
                 interrupt()
