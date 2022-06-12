@@ -97,12 +97,15 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     }
                     Api.HANDLE_ERROR -> {
                         b.refresher.isRefreshing = false
-                        Snackbar.make(
-                            b.root, c.getString(
-                                R.string.unknownError,
-                                (msg.obj as NetworkResponse?)?.statusCode.toString()
-                            ), Snackbar.LENGTH_SHORT
-                        ).show()
+                        try {
+                            Snackbar.make(
+                                b.root, c.getString(
+                                    R.string.unknownError,
+                                    (msg.obj as NetworkResponse?)?.statusCode.toString()
+                                ), Snackbar.LENGTH_SHORT
+                            ).show()
+                        } catch (ignored: IllegalArgumentException) {
+                        }
                     }
                     PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Expandable.HANDLE_EXPANDABLE_ERROR ->

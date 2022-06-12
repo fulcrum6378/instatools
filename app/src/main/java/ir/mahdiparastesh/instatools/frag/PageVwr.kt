@@ -84,12 +84,15 @@ class PageVwr : BasePageViewer() {
             Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
         },
         Api.HANDLE_ERROR to {
-            Snackbar.make(
-                b.root, c.getString(
-                    R.string.unknownError,
-                    (it.obj as NetworkResponse?)?.statusCode.toString()
-                ), Snackbar.LENGTH_SHORT
-            ).show()
+            try {
+                Snackbar.make(
+                    b.root, c.getString(
+                        R.string.unknownError,
+                        (it.obj as NetworkResponse?)?.statusCode.toString()
+                    ), Snackbar.LENGTH_SHORT
+                ).show()
+            } catch (ignored: IllegalArgumentException) {
+            }
         }
     )
 

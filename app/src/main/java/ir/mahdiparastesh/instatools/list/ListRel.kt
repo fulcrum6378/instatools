@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.gson.reflect.TypeToken
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.json.Api
@@ -18,8 +20,15 @@ import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
 import ir.mahdiparastesh.instatools.json.Rest.StoryReel
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
+import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListRel(private val c: Viewer, private val f: PageRel) :
     RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
@@ -38,6 +47,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
     override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
         val rel = c.m.vwReels?.getOrNull(i) ?: return
 
+        // Reel data
         h.b.title.text =
             if (rel is StoryReel) c.getString(R.string.vwStoryReel)
             else "${i + begHigh}. ${(rel as HighlightReel).title}"
@@ -55,6 +65,13 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
             else h.b.icon.setImageDrawable(null)
         }
 
+        // Actions
+        h.b.downloadAll.setOnClickListener {
+            if (rel is StoryReel || rel.items != null) downloadAll(rel)
+            else loadHlItems(h.layoutPosition) { downloadAll(rel) }
+        }
+
+        // ListRli manager
         h.b.reel.scaleY = if (rel.opened) 1f else 0f
         h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
             height = if (rel.opened) c.resources.getDimension(R.dimen.vwReelHeight).toInt() else 0
@@ -109,6 +126,21 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
                 items = reels.reels.getOrDefault(id, null)?.items
                 onEnd()
             }
+        }
+    }
+
+    private fun downloadAll(rel: Rest.Reel) {
+        CoroutineScope(Dispatchers.IO).launch {
+            for (rli in rel.items!!) c.dao.addQueued(
+                Queued(
+                    Persistent.now(), rli.link() ?: "",
+                    if (rli.taken_at > 0.0) rli.taken_at.xFromSeconds() else Persistent.now(),
+                    rli.user.pk, c.m.vwUser?.username,
+                    rli.pk ?: rli.id, rli.nearest(Versioned.BEST),
+                    rli.thumb(), rli.media_type.toInt().toByte()
+                )
+            )
+            withContext(Dispatchers.Main) { Downloads.initService(c, "") }
         }
     }
 }

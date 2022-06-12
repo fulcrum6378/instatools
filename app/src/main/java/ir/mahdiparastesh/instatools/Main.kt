@@ -372,6 +372,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         number = num ?: 0
         backgroundColor = ca[i]
         badgeTextColor = if (!night()) bg[i] else color(R.color.defBG)
+        maxCharacterCount = UiTools.MAX_BADGE_CHAR
     }
 
     override fun selective(bb: Boolean): Boolean {

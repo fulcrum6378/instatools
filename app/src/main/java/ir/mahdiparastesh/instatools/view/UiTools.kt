@@ -62,6 +62,7 @@ class UiTools {
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
         private const val maxInaccurateTimeItems = 2
         val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
+        const val MAX_BADGE_CHAR = 5
 
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
             val list = ArrayList<AppCompatTextView>()

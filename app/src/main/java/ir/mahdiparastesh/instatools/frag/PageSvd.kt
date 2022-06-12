@@ -281,6 +281,7 @@ class PageSvd : BasePageMain(), Selective {
                     backgroundColor = c.ca[1]
                     badgeTextColor = if (!c.night()) c.bg[1] else c.color(R.color.defBG)
                     selectionBadge = this
+                    maxCharacterCount = UiTools.MAX_BADGE_CHAR
                 }, c.tbTitle!!
             )
         }

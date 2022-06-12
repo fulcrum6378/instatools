@@ -31,10 +31,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
+import java.util.concurrent.CopyOnWriteArrayList
 
 class Queuer : ForegroundService() {
     private var dest: String? = null
-    private var handlingLinks = arrayListOf<Link>()
+    private var handlingLinks = CopyOnWriteArrayList<Link>()
     private var handlingLink = false
     private var download: BaseThread? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }

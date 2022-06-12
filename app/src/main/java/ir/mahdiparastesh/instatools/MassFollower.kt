@@ -252,6 +252,7 @@ class MassFollower : ServiceOwnerActivity() {
                 backgroundColor = if (!night()) color(R.color.CP) else color(R.color.defCA)
                 badgeTextColor = if (!night()) color(R.color.defBG) else color(R.color.CP)
                 controllerBadge = this
+                maxCharacterCount = 2
             }, b.toolbar, R.id.mftControl
         )
     }

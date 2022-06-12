@@ -75,7 +75,10 @@ class PageUnf : BasePageMain() {
             )
         },
         HANDLE_COULD_NOT to {
-            Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
+            try {
+                Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
+            } catch (ignored: IllegalArgumentException) {
+            }
         },
         HANDLE_FAV_CHANGED to { msg ->
             var id: String? = null
