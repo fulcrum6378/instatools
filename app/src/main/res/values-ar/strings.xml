@@ -133,6 +133,7 @@
     <string name="downloadsHelp1">1. افتح انستغرام ،\n2. اختر منشورًا أو قصة ،\n3. شاركها في هذا التطبيق.</string>
     <string name="downloadsHelp2">حتى يتم تنزيله على الفور!</string>
     <string name="nonInstagramUrl">آسف ولكن هذا التطبيق يقوم بتنزيل محتوى انستغرام فقط!</string>
+    <string name="dtRetryAll">أعد محاولة الكل</string>
 
     <!-- Favourites -->
     <string name="favourites">المفضلة</string>

@@ -20,7 +20,7 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
-import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
@@ -32,7 +32,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.commons.text.StringEscapeUtils
 import kotlin.system.exitProcess
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
@@ -49,8 +48,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val host = "https://www.instagram.com/"
         const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"
-        const val preScheduledApplyEach =
-            "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
         const val spAccount = "account"
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val EXTRA_SHOW_AD = "show_ad"
@@ -215,8 +212,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     try {
                         collect(html)
                     } catch (e: JsonSyntaxException) {
-                        // This has happened for some users with an unknown cause
-                        // Also the page may have failed to load properly.
                         if (BuildConfig.DEBUG) throw e else {
                             Delay { b.web.reload() }
                             if (improperLoading < 3) improperLoading++
@@ -245,21 +240,15 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class
         )
         private fun collect(html: String) {
-            var read = html
-            val scheduledApplyEach = arrayListOf<String>()
-            while (read.contains(preScheduledApplyEach)) {
-                read = read.substringAfter(preScheduledApplyEach)
-                scheduledApplyEach.add(read.substringBefore(");});});"))
-            }
-            val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
-            if (configWrapper != null) {
+            PageConfig.findConfigWrapper(html, true, {
+                Delay { b.web.reload() }
+                if (improperLoading < 3) improperLoading++
+            }) { wrapper ->
                 @Suppress("UNCHECKED_CAST")
-                val config = Gson().fromJson(
-                    StringEscapeUtils.unescapeJava(configWrapper),
-                    ConfigWrapper::class.java
-                ).define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
+                val config =
+                    wrapper.define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(
-                    config["raw"] as String, ConfigWrapper.RawSharedData::class.java
+                    config["raw"] as String, PageConfig.RawSharedData::class.java
                 )
                 id = cookieManager.getCookie(host)
                     .substringAfter("ds_user_id=")
@@ -277,14 +266,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     accounts.add(this)
                     CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 }
-            } else {
-                if (BuildConfig.DEBUG) throw Exception("Shared data not found!") else {
-                    Delay { b.web.reload() }
-                    if (improperLoading < 3) improperLoading++
-                }
+                gsp.edit().putString(spAccount, id).apply()
+                goTo(Main::class, true)
             }
-            gsp.edit().putString(spAccount, id).apply()
-            goTo(Main::class, true)
         }
     }
 
@@ -299,12 +283,5 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         moveTaskToBack(true)
         killProcess(myPid())
         exitProcess(0)
-    }
-
-    class ConfigWrapper(val define: Array<Array<Any>>) {
-
-        data class RawSharedData(val config: PageConfig, val rollout_hash: String?)
-
-        data class PageConfig(val viewer: GraphQl.User)
     }
 }

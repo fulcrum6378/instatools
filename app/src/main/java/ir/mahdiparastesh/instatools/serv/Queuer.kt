@@ -14,6 +14,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -24,6 +25,7 @@ import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.xFromSeconds
@@ -139,53 +141,65 @@ class Queuer : ForegroundService() {
             }
             // including "instagram.com/tv/" and "instagram.com/reel/"
             else -> reqQueue.adder = object : StringRequest(cur.link, { html ->
-                Api<Media.MediaWrapperApi>(
-                    this, Api.Endpoint.MEDIA_ITEM.url.format(
-                        html.substringAfter("content=\"instagram://media?id=")
-                            .substringBefore("\"")
-                    ), Media.MediaWrapperApi::class, handler
-                ) { wrapper ->
-                    val med = wrapper.items?.getOrNull(0)
-                    if (med == null) {
-                        handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                    var found = true
-                    val addOns = arrayListOf<Queued>()
-                    when {
-                        med.carousel_media != null -> for (car in med.carousel_media!!)
-                            if (cur.qud!!.url == null) cur.qud!!.apply {
+                PageConfig.findConfigWrapper(
+                    html, false, { Api.gotError(handler, null, null) }) { cnfWrapper ->
+                    @Suppress("UNCHECKED_CAST")
+                    val mediaId =
+                        (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
+                            ?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
+                            Gson().fromJson(
+                                Gson().toJson(it), PageConfig.PolarisPostRoot::class.java
+                            )
+                        }?.rootView?.props?.media_id
+                    if (mediaId == null) {
+                        Api.gotError(handler, null, null); return@findConfigWrapper; }
+                    reqQueue.adder = Api<Media.MediaWrapperApi>(
+                        this, Api.Endpoint.MEDIA_ITEM.url.format(mediaId),
+                        Media.MediaWrapperApi::class, handler, autoQueue = false
+                    ) { wrapper ->
+                        val med = wrapper.items?.getOrNull(0)
+                        if (med == null) {
+                            handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
+                        var found = true
+                        val addOns = arrayListOf<Queued>()
+                        when {
+                            med.carousel_media != null -> for (car in med.carousel_media!!)
+                                if (cur.qud!!.url == null) cur.qud!!.apply {
+                                    date = med.taken_at.xFromSeconds()
+                                    userId = med.user.pk
+                                    userName = med.user.username
+                                    itemId = car.pk
+                                    url = car.nearest(Versioned.BEST)
+                                    thumb = med.thumb()
+                                    mediaType = car.media_type.toInt().toByte()
+                                } else addOns.add(
+                                    Queued(
+                                        cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
+                                        med.user.pk, med.user.username,
+                                        car.pk, car.nearest(Versioned.BEST),
+                                        car.thumb(), car.media_type.toInt().toByte()
+                                    )
+                                )
+                            med.image_versions2 != null -> cur.qud!!.apply {
                                 date = med.taken_at.xFromSeconds()
                                 userId = med.user.pk
                                 userName = med.user.username
-                                itemId = car.pk
-                                url = car.nearest(Versioned.BEST)
+                                itemId = med.pk
+                                url = med.nearest(Versioned.BEST)
                                 thumb = med.thumb()
-                                mediaType = car.media_type.toInt().toByte()
-                            } else addOns.add(
-                                Queued(
-                                    cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
-                                    med.user.pk, med.user.username,
-                                    car.pk, car.nearest(Versioned.BEST),
-                                    car.thumb(), car.media_type.toInt().toByte()
-                                )
-                            )
-                        med.image_versions2 != null -> cur.qud!!.apply {
-                            date = med.taken_at.xFromSeconds()
-                            userId = med.user.pk
-                            userName = med.user.username
-                            itemId = med.pk
-                            url = med.nearest(Versioned.BEST)
-                            thumb = med.thumb()
-                            mediaType = med.media_type.toInt().toByte()
+                                mediaType = med.media_type.toInt().toByte()
+                            }
+                            else -> {
+                                found = false
+                                Toast.makeText(c, "Unknown media type!!?!", Toast.LENGTH_LONG)
+                                    .show()
+                            }
                         }
-                        else -> {
-                            found = false
-                            Toast.makeText(c, "Unknown media!!?!", Toast.LENGTH_LONG).show()
+                        if (found) handleQueued(cur.qud!!, addOns)
+                        else {
+                            linkHandled()
+                            if (download?.active != true) finish(false)
                         }
-                    }
-                    if (found) handleQueued(cur.qud!!, addOns)
-                    else {
-                        linkHandled()
-                        if (download?.active != true) finish(false)
                     }
                 }
             }, { Api.gotError(handler, null, it) }) {

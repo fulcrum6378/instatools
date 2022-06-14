@@ -118,6 +118,7 @@
     <string name="downloadsHelp1">1. Öffnen Sie Instagram,\n2. Wählen Sie einen Beitrag oder eine Geschichte aus,\n3. Teilen Sie es in dieser App;</string>
     <string name="downloadsHelp2">damit es sofort heruntergeladen wird!</string>
     <string name="nonInstagramUrl">Tut mir leid, aber diese App lädt nur Instagram-Inhalte herunter!</string>
+    <string name="dtRetryAll">Alle wiederholen</string>
 
     <!-- Favourites -->
     <string name="favourites">Favoriten</string>

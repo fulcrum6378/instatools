@@ -37,7 +37,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CopyOnWriteArrayList
 
+@SuppressLint("NotifyDataSetChanged")
 class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
     private lateinit var bd: GuideSwipeDeleteBinding
@@ -55,7 +57,6 @@ class Downloads : ServiceOwnerActivity() {
         initToolbar(b.toolbar, R.string.downloads)
 
         handler = object : Handler(Looper.getMainLooper()) {
-            @SuppressLint("NotifyDataSetChanged")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_INSERTED -> {
@@ -131,7 +132,7 @@ class Downloads : ServiceOwnerActivity() {
     override fun onResume() {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch {
-            m.queueds = ArrayList(dao.queueds())
+            m.queueds = CopyOnWriteArrayList(dao.queueds())
             m.queueds!!.sortBy { it.addedAt }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
             withContext(Dispatchers.Main) {
@@ -165,6 +166,19 @@ class Downloads : ServiceOwnerActivity() {
                 if (Queuer.active.value!!) stopService(Intent(c, Queuer::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
+            }
+            R.id.dtRetryAll -> if (m.queueds != null) CoroutineScope(Dispatchers.IO).launch {
+                var any = false
+                m.queueds?.forEach {
+                    if (!it.failed) return@forEach
+                    it.failed = false
+                    dao.updateQueued(it)
+                    any = true
+                }
+                if (any) withContext(Dispatchers.Main) {
+                    b.rv.adapter?.notifyDataSetChanged()
+                    initService(this@Downloads, "")
+                }
             }
         }
         return super.onMenuItemClick(item)

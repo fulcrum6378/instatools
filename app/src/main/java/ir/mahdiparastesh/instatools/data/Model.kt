@@ -23,7 +23,7 @@ class Model : ViewModel() {
     val currentPage = MutableLiveData(Settings.defSpMainPage)
 
     // Downloads
-    var queueds: ArrayList<Queued>? = null
+    var queueds: CopyOnWriteArrayList<Queued>? = null
 
     // Viewer
     var vwUser: GraphQl.User? = null

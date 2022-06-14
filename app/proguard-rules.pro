@@ -6,8 +6,8 @@
 -keep class ir.mahdiparastesh.instatools.json.Media$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.GraphQl { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.GraphQl$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.PageConfig { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.PageConfig$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.Login$ConfigWrapper { <fields>; }
--keep class ir.mahdiparastesh.instatools.Login$ConfigWrapper$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.more.Versioned { <fields>; }

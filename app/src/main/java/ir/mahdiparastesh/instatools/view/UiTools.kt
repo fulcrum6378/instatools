@@ -62,7 +62,7 @@ class UiTools {
         val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
         private const val maxInaccurateTimeItems = 2
         val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
-        const val MAX_BADGE_CHAR = 5
+        const val MAX_BADGE_CHAR = 6
 
         fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
             val list = ArrayList<AppCompatTextView>()
@@ -89,7 +89,7 @@ class UiTools {
                 c.startActivity(
                     Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
                         .setPackage(INSTA_PACKAGE)
-                    //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
             } catch (e: ActivityNotFoundException) {
             }

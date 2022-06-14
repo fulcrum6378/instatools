@@ -130,6 +130,7 @@
     <string name="downloadsHelp1">1. Откройте Инстаграм,\n2. Выберите пост или историю,\n3. Поделитесь им в этом приложении;</string>
     <string name="downloadsHelp2">так что он будет загружен немедленно!</string>
     <string name="nonInstagramUrl">Извините, но это приложение загружает только контент из Instagram!</string>
+    <string name="dtRetryAll">Повторить все</string>
 
     <!-- Favourites -->
     <string name="favourites">Избранное</string>

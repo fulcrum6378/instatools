@@ -118,6 +118,7 @@
     <string name="downloadsHelp1">1. Open Instagram,\n2. Choose a post or story,\n3. Share it into this app;</string>
     <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
     <string name="nonInstagramUrl">Sorry but this app downloads only Instagram content!</string>
+    <string name="dtRetryAll">Retry all</string>
 
     <!-- Favourites -->
     <string name="favourites">Favourites</string>

@@ -133,6 +133,7 @@
     <string name="downloadsHelp1">۱. اینستاگرام را باز کنید،\n۲. یک پست یا استوری را انتخاب کنید،\n۳. آنرا در این اپ به اشتراک بگذارید؛</string>
     <string name="downloadsHelp2">تا بلافاصله دانلود شود!</string>
     <string name="nonInstagramUrl">این اپ فقط از اینستاگرام، محتوا دریافت میکند!</string>
+    <string name="dtRetryAll">امتحان دوباره همه</string>
 
     <!-- Favourites -->
     <string name="favourites">مورد علاقه</string>

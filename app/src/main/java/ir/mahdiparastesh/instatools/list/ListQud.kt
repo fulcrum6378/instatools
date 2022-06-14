@@ -7,6 +7,7 @@ import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieDrawable
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -48,6 +49,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                 else -> R.raw.download
             }
         )
+        h.b.status.repeatCount = if (qud.failed) 0 else LottieDrawable.INFINITE
         val pad = if (!qud.failed) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
         h.b.status.setPadding(pad, pad, pad, pad)
         h.b.status.isClickable = qud.failed
@@ -59,7 +61,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                 try {
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(it.link))
-                        //.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 } catch (e: ActivityNotFoundException) {
                 }
@@ -67,10 +69,10 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         }
         h.b.status.isClickable = qud.failed
         h.b.status.setOnClickListener(if (qud.failed) View.OnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                c.m.queueds?.getOrNull(h.layoutPosition)?.apply {
+            c.m.queueds?.getOrNull(h.layoutPosition)?.apply {
+                CoroutineScope(Dispatchers.IO).launch {
                     failed = false
-                    c.dao.updateQueued(this)
+                    c.dao.updateQueued(this@apply)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
                         Downloads.initService(c, "")

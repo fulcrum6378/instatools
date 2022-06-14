@@ -118,6 +118,7 @@
     <string name="downloadsHelp1">1. Instagram\'ı açın,\n2. Bir gönderi veya hikaye seçin,\n3. Bu uygulamada paylaşın;</string>
     <string name="downloadsHelp2">böylece hemen indirilecek!</string>
     <string name="nonInstagramUrl">Üzgünüz ama bu uygulama yalnızca Instagram içeriğini indiriyor!</string>
+    <string name="dtRetryAll">Tümünü yeniden dene</string>
 
     <!-- Favourites -->
     <string name="favourites">Favoriler</string>
