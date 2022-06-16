@@ -209,7 +209,7 @@ class MassFollower : ServiceOwnerActivity() {
                         // https://developer.android.com/training/monitoring-device-state/doze-standby.html
                         1 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                             appSettings(android.provider.Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS) {
-                                data = Uri.parse("package:$packageName")
+                                data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
                             }
                     }
                 }

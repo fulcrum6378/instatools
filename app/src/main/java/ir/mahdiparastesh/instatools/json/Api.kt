@@ -54,6 +54,7 @@ class Api<JSON>(
             Gson().fromJson(response, typeToken ?: clazz.java) as JSON
         } catch (e: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>")) when {
+                url == Endpoint.SIGN_OUT.url -> gotError(this)
                 response.contains("Log in • Instagram") -> {
                     ForegroundService.terminateTasks(c.c)
                     c.gsp.edit().remove(Login.spAccount).apply()
