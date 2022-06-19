@@ -259,10 +259,11 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setView(bd.root)
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
+                    if (m.acc == null) return@setPositiveButton
                     Api<Rest.Signing>(
                         this@Main, Api.Endpoint.SIGN_OUT.url, Rest.Signing::class, null,
                         method = Request.Method.POST,
-                        body = "one_tap_app_login=1&user_id=${m.acc!!.id}",
+                        body = "one_tap_app_login=1&user_id=${m.acc?.id}",
                         onError = { signOut(bd.root.isChecked) }
                     ) { signOut(bd.root.isChecked) }
                 }

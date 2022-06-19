@@ -217,7 +217,6 @@ class PageUnf : BasePageMain() {
             interrupt()
         }
 
-        @SuppressLint("InlinedApi")
         private fun gotNewOnes(num: Int) {
             if (!active || c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -235,7 +234,7 @@ class PageUnf : BasePageMain() {
                         PendingIntent.getActivity(
                             c.c, 0, Intent(c.c, Main::class.java)
                                 .apply { putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, 0) },
-                            ForegroundService.ntfMutability(PendingIntent.FLAG_IMMUTABLE)
+                            ForegroundService.ntfMutability()
                         )
                     )
                     setAutoCancel(true)

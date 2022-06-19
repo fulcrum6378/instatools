@@ -22,14 +22,17 @@ class ListCar(val c: BaseActivity, private val med: Media) :
     val players: ArrayList<MediaPlayer?>
 
     init {
+        val quality =
+            (if (med.product_type == "story") c.dm.heightPixels
+            else arrayOf(c.dm.widthPixels, c.dm.heightPixels).min()).toFloat()
         if (med.carousel_media != null) for (slide in med.carousel_media!!) slides.add(
             Slide(
-                slide.nearest(Versioned.BEST),
+                slide.nearest(quality),
                 MediaType.values().find { it.inDb == (slide.media_type).toInt().toByte() }!!
             )
         ) else if (med.image_versions2 != null) slides.add(
             Slide(
-                med.nearest(Versioned.BEST),
+                med.nearest(quality),
                 MediaType.values().find { it.inDb == (med.media_type).toInt().toByte() }!!
             )
         )
@@ -38,10 +41,8 @@ class ListCar(val c: BaseActivity, private val med: Media) :
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListCarBinding> {
-        val b = ListCarBinding.inflate(c.layoutInflater, parent, false)
-        return AnyViewHolder(b)
-    }
+    ): AnyViewHolder<ListCarBinding> =
+        AnyViewHolder(ListCarBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListCarBinding>, i: Int) {
         h.b.image.vis(false)
