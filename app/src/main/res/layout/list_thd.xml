@@ -8,7 +8,7 @@
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,6 +18,7 @@
         android:paddingStart="30dp"
         android:paddingEnd="30dp"
         android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.InstaTools.Light"
         android:textColor="?attr/defCA"
         android:textSize="14sp" />
 
@@ -92,32 +93,24 @@
                     app:layout_constraintTop_toTopOf="@id/msgIv" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/msgIvHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.66"
                 android:textAlignment="viewStart"
-                android:textColor="?attr/colorAccent"
                 android:textSize="@dimen/dmHintFont"
                 android:textStyle="italic"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/msgIvCl" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/msgTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewStart"
-                android:textColor="?attr/colorAccent"
                 android:textSize="@dimen/dmFont"
                 app:layout_constraintTop_toBottomOf="@id/msgIvHint" />
-
-            <!--<androidx.media2.widget.MediaControlView
-                android:id="@+id/voicePlayer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:enableControlView="true" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
@@ -136,7 +129,7 @@
             app:layout_constraintStart_toStartOf="@id/message"
             app:layout_constraintTop_toBottomOf="@id/message" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -144,6 +137,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="3dp"
             android:alpha="0.8"
+            android:textAppearance="@style/TextAppearance.InstaTools.Light"
             android:textColor="?attr/defCA"
             android:textSize="11dp"
             app:layout_constraintBottom_toBottomOf="@id/message"

@@ -4,5 +4,4 @@
     android:layout_height="wrap_content"
     android:checked="true"
     android:text="@string/alsoDeleteData"
-    android:textColor="@color/defCA"
     android:textSize="16sp" />

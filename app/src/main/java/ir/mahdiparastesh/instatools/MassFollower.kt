@@ -11,10 +11,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
 import android.widget.SeekBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
@@ -36,10 +36,8 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.inaccurateTime
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -88,7 +86,7 @@ class MassFollower : ServiceOwnerActivity() {
                         setTitle(R.string.massFollower)
                         setMessage(R.string.mfDetectedSpam)
                         setNeutralButton(R.string.ok, null)
-                    }.show().stylise(this@MassFollower)
+                    }.show()
                 }
                 updateIfEmpty(m.fwb.value.isNullOrEmpty())
                 updateShadow()
@@ -98,10 +96,6 @@ class MassFollower : ServiceOwnerActivity() {
             fun find(msg: Message): Int? = if (m.fwb.value != null)
                 Followable.find(msg.obj as Followable, m.fwb.value!!) else null
         }
-
-        // Guide
-        arrayOf(b.guideTv1, b.guideTv2).forEach { it.typeface = fontRegular }
-        b.guideTv3.bolden(this)
 
         // Listing
         b.rv.layoutManager = ChipsLayoutManager.newBuilder(this).build()
@@ -126,8 +120,6 @@ class MassFollower : ServiceOwnerActivity() {
         })
 
         // Bottom Panel
-        b.seekTitle.typeface = fontLight
-        b.seekIndicator.typeface = fontLight
         if (Follower.active.value != true) Follower.DELAY =
             sp?.getLong(Settings.spFollowerDelay, Settings.defSpFollowerDelay)
                 ?: Settings.defSpFollowerDelay
@@ -213,7 +205,7 @@ class MassFollower : ServiceOwnerActivity() {
                             }
                     }
                 }
-            }.show().stylise(this@MassFollower)
+            }.show()
         }
         return super.onMenuItemClick(item)
     }
@@ -277,19 +269,14 @@ class MassFollower : ServiceOwnerActivity() {
             val bp = PayForItBinding.inflate(c.layoutInflater)
             bp.root.forEachIndexed { i, v ->
                 if (v !is LinearLayout) return@forEachIndexed
-                val tvLl = v[1] as LinearLayout
-                (tvLl[0] as TextView).typeface = c.fontBold
-                (tvLl[1] as TextView).apply {
-                    text = c.getString(R.string.mfUnlockTimes, UNLOCK_TIMES[i])
-                    typeface = c.fontRegular
-                }
+                ((v[1] as LinearLayout)[1] as AppCompatTextView)
+                    .text = c.getString(R.string.mfUnlockTimes, UNLOCK_TIMES[i])
             }
             AlertDialog.Builder(c).apply {
                 setTitle(R.string.massFollower)
                 setMessage(R.string.mfPayForIt)
                 setView(bp.root)
             }.show().apply {
-                stylise(c)
                 if (UiTools.hasReviewedApp(c))
                     bp.root.removeView(bp.rateUs)
                 else bp.rateUs.setOnClickListener {

@@ -36,12 +36,8 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListRelBinding> {
-        val b = ListRelBinding.inflate(c.layoutInflater, parent, false)
-        b.title.typeface = c.fontBold
-        b.desc.typeface = c.fontLight
-        return AnyViewHolder(b)
-    }
+    ): AnyViewHolder<ListRelBinding> =
+        AnyViewHolder(ListRelBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {

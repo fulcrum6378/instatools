@@ -7,16 +7,15 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.Typeface
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
@@ -36,8 +35,6 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
-import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.bolden
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.themeColor
 import kotlinx.coroutines.CoroutineScope
@@ -52,9 +49,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
-    val fontBold: Typeface by lazy { font(R.string.font_bold) }
-    val fontRegular: Typeface by lazy { font(R.string.font_regular) }
-    val fontLight: Typeface by lazy { font(R.string.font_light) }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val shallBolden by lazy { c.resources.getBoolean(R.bool.shallBolden) }
     val colorAc = MutableLiveData<Int?>(null)
@@ -83,9 +77,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
         fun Context.night(): Boolean = resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-        fun Context.font(@StringRes fileName: Int): Typeface =
-            Typeface.createFromAsset(assets, "fonts/${resources.getString(fileName)}")
 
         fun areAdsReady() = adsInitStatus?.isReady() == true
     }
@@ -163,20 +154,17 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             return; }
     }
 
-    var tbTitle: TextView? = null
+    var tbTitle: AppCompatTextView? = null
     lateinit var toolbar: Toolbar
-    fun initToolbar(
-        tb: Toolbar, title: Int, font: Typeface = fontBold, changeTitleTo: String? = null
-    ) {
+    fun initToolbar(tb: Toolbar, title: Int, changeTitleTo: String? = null) {
         toolbar = tb
         setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
-            if (getTitle is TextView && getTitle.text.toString() == getString(title))
+            if (getTitle is AppCompatTextView && getTitle.text.toString() == getString(title))
                 tbTitle = getTitle
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
-        tbTitle?.bolden(this, font)
         if (this !is Main) {
             supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
@@ -212,7 +200,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         if (!::toolbar.isInitialized) {
             Delay(3000L) { onPrepareOptionsMenu(menu) }
             return false; }
-        toolbar.menu.forEach { it.stylise(this, colorAc.value ?: -1) }
+        //toolbar.menu.forEach { it.stylise(this, colorAc.value ?: -1) }
         return true
     }
 
@@ -332,6 +320,4 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             interstitialAd = null
         }
     }
-
-    // In case of heavy UI blocking, reboot the device, it could be because of so much debugging!
 }

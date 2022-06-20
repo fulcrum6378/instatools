@@ -19,11 +19,11 @@
 
         <LinearLayout style="@style/payForItItemTvLl">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/payForItItemTv1"
                 android:text="@string/rateUs" />
 
-            <TextView style="@style/payForItItemTv2" />
+            <androidx.appcompat.widget.AppCompatTextView style="@style/payForItItemTv2" />
         </LinearLayout>
     </LinearLayout>
 
@@ -37,11 +37,11 @@
 
         <LinearLayout style="@style/payForItItemTvLl">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/payForItItemTv1"
                 android:text="@string/watchAnAd" />
 
-            <TextView style="@style/payForItItemTv2" />
+            <androidx.appcompat.widget.AppCompatTextView style="@style/payForItItemTv2" />
         </LinearLayout>
     </LinearLayout>
 

@@ -74,10 +74,30 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/up.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/video.xml" value="0.1015" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/welcome.xml" value="0.240625" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/bold.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/light.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/logo.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/medium.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/text.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-fa/bold.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-fa/light.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-fa/logo.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-fa/medium.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-fa/text.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ru/bold.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ru/light.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ru/medium.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ru/text.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font/bold.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font/light.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font/logo.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font/medium.xml" value="0.2546875" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font/text.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/also_delete_data - Copy.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/also_delete_data.xml" value="0.19701086956521738" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/also_revoke_perm.xml" value="0.20108695652173914" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/direct.xml" value="0.17798913043478262" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/dm_not_seen.xml" value="0.11666666666666667" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/downloader.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/downloads.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/expandable.xml" value="0.213768115942029" />
@@ -107,6 +127,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/page_rel.xml" value="0.20153985507246377" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/page_tag.xml" value="0.20153985507246377" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/page_vwr.xml" value="0.20153985507246377" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/pay_for_it.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/saver.xml" value="0.17798913043478262" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/settings.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/layout/spinner.xml" value="0.20108695652173914" />

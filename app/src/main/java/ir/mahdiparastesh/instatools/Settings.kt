@@ -11,12 +11,12 @@ import android.os.StatFs
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.SeekBar
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.get
-import androidx.core.view.iterator
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
@@ -33,10 +33,8 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.view.SpinnerAdapter
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.showBytes
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -191,13 +189,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         intent.getStringExtra(EXTRA_GIVE_LINK_BACK)?.let { giveLinkBack = it }
 
         // Beauty
-        for (l in b.ll.iterator())
-            if (l is LinearLayout) (l[0] as TextView).typeface = fontRegular
-        arrayOf(b.stMainPath, b.stCacheLimitTv).forEach { it.typeface = fontLight }
-        arrayOf(
-            b.stBranching, b.stAutoDeleteEmptyDirs, b.stAddAlias, b.stClearCache, b.stResetData,
-            b.stResetSettings
-        ).forEach { it.typeface = fontRegular }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             b.sv.setOnScrollChangeListener { _, _, scrollY, _, _ ->
                 b.tbShadow.vish(scrollY > 0)
@@ -265,7 +256,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     CoroutineScope(Dispatchers.IO).launch { deleteDb(m.acc!!.id.toString()) }
                     recreateMain = true
                 }
-            }.show().stylise(this)
+            }.show()
         }
         b.stResetSettings.setOnClickListener {
             AlertDialog.Builder(this).apply {
@@ -280,7 +271,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     }
                     recreate()
                 }
-            }.show().stylise(this)
+            }.show()
         }
 
         // Ads
@@ -301,7 +292,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 setTitle(R.string.stHelp)
                 setMessage(R.string.stHelpMessage)
                 setNeutralButton(R.string.ok, null)
-            }.show().stylise(this)
+            }.show()
         }
         return super.onMenuItemClick(item)
     }
@@ -357,7 +348,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             setTitle(R.string.stAliasing)
             setMessage(R.string.stAliasingDesc)
             bfa = FolderAliasBinding.inflate(layoutInflater)
-            arrayOf(bfa!!.aliasProfile, bfa!!.aliasAddFolder).forEach { it.typeface = fontLight }
             bfa!!.aliasProfile.setText(u)
             m.fav?.also { fav ->
                 bfa!!.aliasProfile.setAdapter(
@@ -382,7 +372,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             setNegativeButton(R.string.cancel, null)
             setNeutralButton(R.string.remove) { _, _ ->
                 val br = AlsoRevokePermBinding.inflate(layoutInflater)
-                br.root.typeface = fontRegular
                 AlertDialog.Builder(this@Settings).apply {
                     setTitle(R.string.remove)
                     setView(br.root)
@@ -402,17 +391,19 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         } else showAliases()
                     }
                     setNegativeButton(R.string.cancel, null)
-                }.show().stylise(this@Settings)
+                }.show()
             }
             setOnDismissListener { bfa = null }
-        }.show().stylise(this)
+        }.show()
     }
 
     private fun FolderAliasBinding.listPaths() {
         uriFolders = ArrayList(contentResolver.persistedUriPermissions.map { it.uri }
             .sortedBy { it.folderName() })
         uriFolders?.removeAll { it.toString() == prf.getString(spStorage, "null") }
-        folders.adapter = SpinnerAdapter(this@Settings, uriFolders!!.map { it.folderName() })
+        folders.adapter = ArrayAdapter(
+            this@Settings, R.layout.spinner, uriFolders!!.map { it.folderName() })
+            .apply { setDropDownViewResource(R.layout.spinner_dd) }
     }
 
     override fun onActivityResult(result: ActivityResult) {

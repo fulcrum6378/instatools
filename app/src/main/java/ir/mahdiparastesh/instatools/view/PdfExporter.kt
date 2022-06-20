@@ -12,14 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.get
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.font
 import ir.mahdiparastesh.instatools.more.BaseExporter
 import ir.mahdiparastesh.instatools.serv.Exporter
 import java.io.FileOutputStream
@@ -91,9 +89,7 @@ abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             LayoutInflater.from(c).cloneInContext(
                 ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
             ), parent, false
-        ).onCreate(
-            c.font(R.string.font_regular), c.font(R.string.font_light), true
-        ).onBind(c, exp.threadData!!.items, i, downloaded = exp.media).root
+        ).onCreate(true).onBind(c, exp.threadData!!.items, i, downloaded = exp.media).root
 
     private fun percent(mess: Int) {
         progress(

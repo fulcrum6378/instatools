@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- #TextAppearance -->
+    <style name="TextAppearance.InstaTools.Bold" parent="@android:style/TextAppearance">
+        <item name="fontFamily">@font/bold</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Medium" parent="@android:style/TextAppearance">
+        <item name="fontFamily">@font/medium</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Light" parent="@android:style/TextAppearance">
+        <item name="fontFamily">@font/light</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Toolbar" parent="@style/TextAppearance.InstaTools.Bold">
+        <item name="android:textSize">@dimen/tbTitle</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Toolbar.Main" parent="@android:style/TextAppearance">
+        <item name="android:textSize">@dimen/tbTitleMain</item>
+        <item name="fontFamily">@font/logo</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Nav" parent="@style/TextAppearance.InstaTools.Medium">
+        <item name="android:textSize">@dimen/navFont</item>
+    </style>
+
+
+    <!-- #Global -->
     <style name="root">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -18,9 +46,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?actionBarSize</item>
         <item name="layout_constraintTop_toTopOf">parent</item>
-        <item name="popupTheme">@style/Theme.InstaTools.OverflowMenu</item>
-        <item name="titleTextColor">?attr/colorAccent</item>
-        <item name="titleTextAppearance">@style/Theme.InstaTools.Toolbar</item>
+        <item name="popupTheme">@style/Theme.InstaTools.Popup</item>
+        <item name="titleTextAppearance">@style/TextAppearance.InstaTools.Toolbar</item>
     </style>
 
     <style name="sep">
@@ -113,7 +140,6 @@
         <item name="android:lineSpacingMultiplier">1.2</item>
         <item name="android:visibility">gone</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textSize">@dimen/emptyListFont</item>
         <item name="layout_constraintWidth_percent">0.75</item>
     </style>
@@ -136,7 +162,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lineSpacingMultiplier">1.25</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:justificationMode" tools:ignore="NewApi">inter_word</item>
         <item name="layout_constraintWidth_percent">0.75</item>
     </style>
@@ -168,11 +193,11 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="payForItItemTv1" parent="payForItItemTv">
         <item name="android:textSize">18sp</item>
+        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Bold</item>
     </style>
 
     <style name="payForItItemTv2" parent="payForItItemTv">
@@ -198,7 +223,6 @@
     <style name="expOptCheck" parent="expOptItem">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -211,7 +235,6 @@
     <style name="expOptRadio">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -221,7 +244,6 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
 
@@ -230,7 +252,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:justificationMode" tools:ignore="NewApi">inter_word</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textAlignment">center</item>
         <item name="android:layout_marginTop">36sp</item>
         <item name="android:lineSpacingMultiplier">1.1</item>
@@ -258,17 +279,18 @@
     <style name="vwFlwTv">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textAlignment">center</item>
     </style>
 
     <style name="vwFlwNum" parent="vwFlwTv">
         <item name="android:textSize">22sp</item>
+        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Bold</item>
     </style>
 
     <style name="vwFlwText" parent="vwFlwTv">
         <item name="android:textSize">15sp</item>
         <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Light</item>
     </style>
 
     <style name="vwPager">
@@ -297,10 +319,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/stItemName</item>
-        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:paddingStart">@dimen/stStarter</item>
-        <!--<item name="android:drawableStart">@drawable/settings</item>
-        <item name="android:drawablePadding">10dp</item>-->
     </style>
 
     <style name="stSubItem">
@@ -310,7 +329,6 @@
         <item name="android:paddingLeft">@dimen/stStarter</item>
         <item name="android:paddingRight">@dimen/stStarter</item>
         <item name="android:textSize">@dimen/stSubItemFont</item>
-        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="stPath" parent="stSubItem">
@@ -320,6 +338,7 @@
         <item name="android:textSize">@dimen/stPathFont</item>
         <item name="android:textColor">@color/defCA</item>
         <item name="android:alpha">0.75</item>
+        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Light</item>
     </style>
 
     <style name="stButton" parent="stSubItem">

@@ -31,7 +31,6 @@ import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -104,11 +103,8 @@ class Downloads : ServiceOwnerActivity() {
             b.pasteLink.setTextColor(this)
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
-        b.pasteLink.typeface = fontRegular
 
         // More
-        b.downloadsHelp1.typeface = fontRegular
-        b.downloadsHelp2.typeface = fontRegular
         ItemTouchHelper(SwipeToRemove()).attachToRecyclerView(b.rv)
     }
 
@@ -120,7 +116,7 @@ class Downloads : ServiceOwnerActivity() {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
                     setNeutralButton(R.string.ok, null)
-                }.show().stylise(this)
+                }.show()
                 return@also
             }
             initService(this, it)

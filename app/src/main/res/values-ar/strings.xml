@@ -1,12 +1,6 @@
 <resources>
     <string name="app_name">اینستاتولز</string>
 
-    <!-- #FONTS -->
-    <string name="font_logo" translatable="false">ibm_plex_sans_arabic_bold.ttf</string>
-    <string name="font_bold" translatable="false">ibm_plex_sans_arabic_bold.ttf</string>
-    <string name="font_regular" translatable="false">ibm_plex_sans_arabic_regular.ttf</string>
-    <string name="font_light" translatable="false">ibm_plex_sans_arabic_regular.ttf</string>
-
     <!-- #GLOBAL -->
     <string name="guest">ضيف</string>
     <string name="navOpen">فتح</string>

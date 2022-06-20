@@ -6,16 +6,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import android.widget.RadioGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.documentfile.provider.DocumentFile
@@ -24,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
-import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.BuildConfig
@@ -50,7 +48,6 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.areEnabled
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -174,17 +171,18 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         // DM won't be Seen Guide
         if (!asGuest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
             && !guideDmNotSeenShowing
-        ) AlertDialog.Builder(c).apply {
+        ) AlertDialog.Builder(
+            ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
+        ).apply {
             guideDmNotSeenShowing = true
             val bn = DmNotSeenBinding.inflate(inflater)
-            bn.desc.typeface = c.fontRegular
             setTitle(R.string.dmNotSeen)
             setView(bn.root)
             setPositiveButton(R.string.ok) { _, _ ->
                 guideDmNotSeenShowing = false
                 c.gsp.edit().putBoolean(Settings.spLearntDmNotSeen, true).apply()
             }
-        }.show().stylise(c)
+        }.show()
     }
 
     override fun updateShadow() {
@@ -200,12 +198,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     fun expOptions(method: Exporter.Method, thread: Dm.DmThread) {
         // selection: Array<String>? = null
         val bi = ExportOptionsBinding.inflate(inflater, null, false)
-        bi.ll.forEach { ch ->
-            when (ch) {
-                is MaterialCheckBox -> ch.typeface = c.fontRegular
-                is RadioGroup -> ch.forEach { (it as MaterialRadioButton).typeface = c.fontRegular }
-            }
-        }
         val opt = c.sp?.getString(Settings.spExpOptions, null)
             ?.let { Exportable.Options.parse(it) } ?: Exportable.Options()
         bi.incImage.isChecked = opt.img()
@@ -270,9 +262,10 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             }
         })
         bi.desc.setText(method.desc)
-        bi.desc.typeface = c.fontLight
 
-        AlertDialog.Builder(c).apply {
+        AlertDialog.Builder(
+            ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
+        ).apply {
             setTitle(c.getString(R.string.exportOptions, method.ext.uppercase()))
             setView(bi.root)
             setNegativeButton(R.string.cancel, null)
@@ -304,7 +297,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 activityResulted = false
                 c.loadInterstitial(R.string.interExporting) { !c.showingAd && activityResulted }
             }
-        }.show().stylise(c)
+        }.show()
     }
 
     private var activityResulted = false
@@ -315,11 +308,13 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         if (dirFileProblem && result.data!!.data!!.authority !=
             Uri.parse(c.sPreference(Settings.spStorage)).authority
         ) {
-            AlertDialog.Builder(c).apply {
+            AlertDialog.Builder(
+                ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
+            ).apply {
                 setTitle(R.string.exportHtml)
                 setMessage(R.string.unsupportedExportUriAuth)
                 setNeutralButton(R.string.ok, null)
-            }.show().stylise(c)
+            }.show()
             DocumentFile.fromSingleUri(c.c, result.data!!.data!!)?.delete()
             // This won't work in DropBox! But works in Google Drive and AnyDesk :)
             return; }

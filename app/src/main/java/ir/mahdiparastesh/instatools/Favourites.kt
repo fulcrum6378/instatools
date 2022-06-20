@@ -62,7 +62,6 @@ class Favourites : BaseActivity() {
             anJumper?.cancel()
             anJumper = UiTools.anJumper(this, b.jumper, it)
         }
-        b.empty.typeface = fontRegular
 
         load()
     }

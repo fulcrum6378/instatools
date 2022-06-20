@@ -49,12 +49,12 @@
 
                     <LinearLayout style="@style/vwFlwLl">
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/followersNum"
                             style="@style/vwFlwNum"
                             android:text="@string/vwFlwZero" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/followersText"
                             style="@style/vwFlwText"
                             android:text="@string/vwFollowers" />
@@ -67,12 +67,12 @@
 
                     <LinearLayout style="@style/vwFlwLl">
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/followingNum"
                             style="@style/vwFlwNum"
                             android:text="@string/vwFlwZero" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/followingText"
                             style="@style/vwFlwText"
                             android:text="@string/vwFollowing" />
@@ -90,7 +90,7 @@
             <!-- layout_height="wrap_content|match_parent" will cause an
             ArrayIndexOutOfBoundsException sometimes -->
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/privateAcc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +100,6 @@
                 android:lineSpacingMultiplier="1.2"
                 android:text="@string/vwPrivate"
                 android:textAlignment="center"
-                android:textColor="?attr/colorAccent"
                 android:textSize="@dimen/guestFont"
                 android:visibility="gone"
                 tools:ignore="RtlHardcoded" />

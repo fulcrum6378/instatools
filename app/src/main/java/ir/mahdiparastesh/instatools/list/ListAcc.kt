@@ -17,7 +17,6 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +26,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListAccBinding> {
-        val b = ListAccBinding.inflate(c.layoutInflater, parent, false)
-        b.name.typeface = c.fontRegular
-        b.user.typeface = c.fontRegular
-        return AnyViewHolder(b)
-    }
+    ): AnyViewHolder<ListAccBinding> =
+        AnyViewHolder(ListAccBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListAccBinding>, i: Int) {
         // Apparently even the most static kinds of list adapters need to be null-safe.
@@ -70,7 +65,6 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
         MaterialMenu(c, v, R.menu.acc_more, Act().apply {
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
-                bd.root.typeface = c.fontRegular
                 AlertDialog.Builder(c).apply {
                     setTitle(R.string.signOut)
                     setMessage(R.string.signOutSure)
@@ -85,7 +79,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                             onError = { signOut(acc, i, bd.root.isChecked) }
                         ) { signOut(acc, i, bd.root.isChecked) }
                     }
-                }.show().stylise(c)
+                }.show()
             }
         }).show()
         return true

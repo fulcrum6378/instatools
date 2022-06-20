@@ -17,8 +17,6 @@ class ListSch(val c: Main) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListAccBinding> {
         val b = ListAccBinding.inflate(c.layoutInflater, parent, false)
-        b.name.typeface = c.fontRegular
-        b.user.typeface = c.fontRegular
         b.root.setPadding(hPad, 0, hPad, 0)
         b.root.removeView(b.more)
         return AnyViewHolder(b)

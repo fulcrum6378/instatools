@@ -16,7 +16,7 @@
             style="@style/toolbar"
             app:title="@string/app_name"
             app:titleMarginTop="@dimen/tbTitleMainMarginTop"
-            app:titleTextAppearance="@style/Theme.InstaTools.Toolbar.Main" />
+            app:titleTextAppearance="@style/TextAppearance.InstaTools.Toolbar.Main" />
 
         <FrameLayout
             android:id="@+id/frame"
@@ -36,6 +36,7 @@
             android:background="@color/defBG"
             android:saveEnabled="false"
             android:theme="@style/Theme.MaterialComponents.DayNight"
+            app:itemTextAppearance="@style/TextAppearance.InstaTools.Light"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/main_bnv" />
 
@@ -70,5 +71,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/main_nav_header"
+        app:itemTextAppearance="@style/TextAppearance.InstaTools.Nav"
         app:menu="@menu/main_nav" />
 </androidx.drawerlayout.widget.DrawerLayout>

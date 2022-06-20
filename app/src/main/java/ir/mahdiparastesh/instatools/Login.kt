@@ -26,7 +26,6 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +81,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                                 setTitle(R.string.guest)
                                 setMessage(R.string.needAuthentication)
                                 setNeutralButton(R.string.ok, null)
-                            }.show().stylise(this@Login)
+                            }.show()
                             val signedOutFrom =
                                 if (this != -1L) accounts.find { it.id == this } else null
                             if (signedOutFrom == null || accounts.size <= 1) {
@@ -115,7 +114,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             gonnaAdd = true
             browse()
         }
-        bw.addAccTv.typeface = fontRegular
     }
 
     private fun welcome() {
@@ -137,7 +135,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     gonnaBeGuest = true
                     browse()
                 }
-            }.show().stylise(this)
+            }.show()
             acc.cook != null -> browse(acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }

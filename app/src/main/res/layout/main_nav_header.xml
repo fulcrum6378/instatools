@@ -26,14 +26,15 @@
         android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@id/pict">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.InstaTools.Light"
             android:textColor="@color/defCALight"
             android:textSize="13sp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

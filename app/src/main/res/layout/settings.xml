@@ -29,11 +29,11 @@
 
             <LinearLayout style="@style/stItem">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     style="@style/stItemName"
                     android:text="@string/stDlPath" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stMainPath"
                     style="@style/stPath" />
 
@@ -43,8 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="@string/stBranching"
-                    android:textColor="?attr/colorAccent" />
+                    android:text="@string/stBranching" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/stAutoDeleteEmptyDirs"
@@ -52,15 +51,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="@string/stAutoDeleteEmptyDirs"
-                    android:textColor="?attr/colorAccent" />
+                    android:text="@string/stAutoDeleteEmptyDirs" />
             </LinearLayout>
 
             <View style="@style/stSep" />
 
             <LinearLayout style="@style/stItem">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     style="@style/stItemName"
                     android:text="@string/stAliasing" />
 
@@ -71,7 +69,7 @@
                     android:paddingLeft="0dp"
                     android:paddingRight="0dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stAddAlias"
                     style="@style/stButton"
                     android:text="@string/stAddAlias" />
@@ -83,7 +81,7 @@
                 android:id="@+id/stCache"
                 style="@style/stItem">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stCaching"
                     style="@style/stItemName" />
 
@@ -92,15 +90,16 @@
                     style="@style/stSubItem"
                     android:max="@integer/stCacheMaxNominal" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stCacheLimitTv"
                     style="@style/stSubItem"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="5dp"
                     android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.InstaTools.Light"
                     android:textSize="13sp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stClearCache"
                     style="@style/stButton"
                     android:text="@string/stClearCache" />
@@ -112,16 +111,16 @@
 
             <LinearLayout style="@style/stItem">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     style="@style/stItemName"
                     android:text="@string/stUserData" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stResetData"
                     style="@style/stButton"
                     android:text="@string/stResetData" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stResetSettings"
                     style="@style/stButton"
                     android:text="@string/stResetSettings" />

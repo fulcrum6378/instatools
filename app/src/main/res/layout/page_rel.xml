@@ -16,7 +16,7 @@
         android:id="@+id/jumper"
         style="@style/jumper" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/empty"
         style="@style/emptyList"
         android:text="@string/vwNoReels" />

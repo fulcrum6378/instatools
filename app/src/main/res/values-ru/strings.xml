@@ -1,8 +1,4 @@
 <resources>
-    <!-- #FONTS -->
-    <string name="font_bold" translatable="false">exo2_semibold.ttf</string>
-    <string name="font_regular" translatable="false">exo2_regular.ttf</string>
-    <string name="font_light" translatable="false">exo2_regular.ttf</string>
 
     <!-- #GLOBAL -->
     <string name="guest">Гость</string>

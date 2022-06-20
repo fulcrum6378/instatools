@@ -63,14 +63,14 @@
         app:layout_constraintStart_toStartOf="@id/rv"
         app:layout_constraintTop_toTopOf="@id/rv">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/downloadsHelp1"
             style="@style/downloadsHelp"
             android:lineSpacingMultiplier="1.6"
             android:text="@string/downloadsHelp1"
             android:textSize="@dimen/downloadsHelp1" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/downloadsHelp2"
             style="@style/downloadsHelp"
             android:layout_marginTop="36sp"

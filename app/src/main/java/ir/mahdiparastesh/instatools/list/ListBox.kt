@@ -21,12 +21,8 @@ class ListBox(val c: Main, private val f: PageBox) :
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListBoxBinding> {
-        val b = ListBoxBinding.inflate(f.inflater, parent, false)
-        b.name.typeface = c.fontRegular
-        b.last.typeface = c.fontRegular
-        return AnyViewHolder(b)
-    }
+    ): AnyViewHolder<ListBoxBinding> =
+        AnyViewHolder(ListBoxBinding.inflate(f.inflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListBoxBinding>, i: Int) {
         var thd = c.m.dmInbox?.threads?.getOrNull(i) ?: return
@@ -51,7 +47,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.more.setOnClickListener {
             thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c.wrapTheme(f.theme), c.fontRegular, it, R.menu.box_more, Act().apply {
+                c.wrapTheme(f.theme), it, R.menu.box_more, Act().apply {
                     this[R.id.bmHtml] = { f.expOptions(Exporter.Method.HTML, thd) }
                     this[R.id.bmPdf] = { f.expOptions(Exporter.Method.PDF, thd) }
                     this[R.id.bmTxt] = { f.expOptions(Exporter.Method.TXT, thd) }
@@ -59,7 +55,7 @@ class ListBox(val c: Main, private val f: PageBox) :
                     this[R.id.bmView] = {
                         thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
                     }
-                }, c.colorAc.value
+                }
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }

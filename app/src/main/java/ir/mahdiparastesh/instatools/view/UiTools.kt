@@ -7,7 +7,6 @@ import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
@@ -20,11 +19,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.RadioGroup
-import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
@@ -89,7 +86,7 @@ class UiTools {
                 c.startActivity(
                     Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
                         .setPackage(INSTA_PACKAGE)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
             } catch (e: ActivityNotFoundException) {
             }
@@ -119,7 +116,7 @@ class UiTools {
         }
 
         @Suppress("DEPRECATION")
-        fun TextView.anchor(text: String?, url: String?) {
+        fun AppCompatTextView.anchor(text: String?, url: String?) {
             if (text == null || url == null) {
                 movementMethod = null
                 setText("")
@@ -152,32 +149,6 @@ class UiTools {
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply { bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID }
 
-        fun AlertDialog.stylise(c: BaseActivity): AlertDialog {
-            // Don't move this function to BaseActivity
-            val ca = c.themeColor()
-            window?.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.apply {
-                typeface = c.fontBold
-                setTextColor(ca)
-            }
-            window?.findViewById<TextView>(android.R.id.message)?.apply {
-                typeface = c.fontRegular
-                //setTextColor(ca)
-            }
-            getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
-                typeface = c.fontRegular
-                setTextColor(ca)
-            }
-            getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
-                typeface = c.fontRegular
-                setTextColor(ca)
-            }
-            getButton(AlertDialog.BUTTON_NEUTRAL)?.apply {
-                typeface = c.fontRegular
-                setTextColor(ca)
-            }
-            return this
-        }
-
         fun String.accFromUrl(host: String): String? =
             if (startsWith(host)) substringAfter(host).substringBefore("/")
                 .substringBefore("?") else null
@@ -201,11 +172,6 @@ class UiTools {
                     ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-        }
-
-        fun TextView.bolden(c: BaseActivity, font: Typeface = c.fontBold) {
-            if (!c.shallBolden) typeface = font
-            else setTypeface(font, Typeface.BOLD)
         }
 
         fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {

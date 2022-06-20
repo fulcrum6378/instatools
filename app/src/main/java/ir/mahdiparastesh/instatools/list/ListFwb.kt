@@ -22,7 +22,6 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<AnyViewHolder<ListFwbB
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListFwbBinding> {
         val b = ListFwbBinding.inflate(c.layoutInflater, parent, false)
-        b.root.typeface = c.fontRegular
         b.root.chipBackgroundColor = ColorStateList.valueOf(ca)
         b.root.setTextColor(bg)
         b.root.closeIcon?.apply { colorFilter = bgCf }

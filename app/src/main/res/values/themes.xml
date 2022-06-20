@@ -1,14 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.InstaTools" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.InstaTools.Base" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/defCA</item>
         <item name="colorPrimaryDark">?attr/colorPrimary</item>
-        <item name="colorAccent">?attr/colorPrimary</item>
-        <item name="colorPrimaryWeak">@color/CSW</item>
-        <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
+        <item name="android:textAppearanceSmall">@style/TextAppearance.InstaTools.Medium</item>
+        <item name="android:textAppearanceMedium">@style/TextAppearance.InstaTools.Medium</item>
+        <item name="android:textAppearanceLarge">@style/TextAppearance.InstaTools.Medium</item>
+        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Medium</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:editTextColor">?attr/colorAccent</item>
+        <item name="titleTextColor">?attr/colorAccent</item>
+        <item name="android:checkboxStyle">@style/Theme.InstaTools.Checkbox</item>
+        <item name="android:radioButtonStyle">@style/Theme.InstaTools.Radio</item>
+    </style>
+
+    <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
+        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
         <item name="android:itemBackground">@drawable/menu_item</item>
@@ -17,11 +29,13 @@
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
+        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
@@ -29,6 +43,7 @@
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
         <item name="dmFromMe">@color/dmFromMe</item>
+        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
@@ -46,27 +61,50 @@
         <item name="dmFromMe">@color/dmFromMeLight</item>
     </style>
 
-    <style name="Theme.InstaTools.Toolbar" parent="Theme.InstaTools">
-        <item name="android:textSize">@dimen/tbTitle</item>
-    </style>
-
-    <style name="Theme.InstaTools.Toolbar.Main" parent="Theme.InstaTools.Toolbar">
-        <item name="android:textSize">@dimen/tbTitleMain</item>
-    </style>
-
-    <style name="Theme.InstaTools.OverflowMenu" parent="Widget.MaterialComponents.PopupMenu">
+    <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="fontFamily">@font/medium</item>
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
-    <style name="Theme.InstaTools.OverflowMenu.Primary" parent="Theme.InstaTools.OverflowMenu">
+    <style name="Theme.InstaTools.OverflowMenu.Primary" parent="Theme.InstaTools.Popup">
         <item name="android:textColor">@color/CP</item>
     </style>
 
-    <style name="Theme.InstaTools.OverflowMenu.Secondary" parent="Theme.InstaTools.OverflowMenu">
+    <style name="Theme.InstaTools.OverflowMenu.Secondary" parent="Theme.InstaTools.Popup">
         <item name="android:textColor">@color/CS</item>
     </style>
 
-    <style name="Theme.InstaTools.OverflowMenu.Tertiary" parent="Theme.InstaTools.OverflowMenu">
+    <style name="Theme.InstaTools.OverflowMenu.Tertiary" parent="Theme.InstaTools.Popup">
+        <item name="fontFamily">@font/medium</item>
         <item name="android:textColor">@color/CT</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textColorPrimary">?attr/colorPrimary</item>
+        <item name="fontFamily">@font/bold</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.InstaTools.Medium</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Primary" parent="@style/Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/CP</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Secondary" parent="@style/Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/CS</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Tertiary" parent="@style/Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/CT</item>
+    </style>
+
+    <style name="Theme.InstaTools.Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="buttonTint">?attr/colorAccent</item>
+    </style>
+
+    <style name="Theme.InstaTools.Radio" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="buttonTint">?attr/colorAccent</item>
     </style>
 </resources>

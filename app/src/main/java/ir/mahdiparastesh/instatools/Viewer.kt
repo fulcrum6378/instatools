@@ -79,7 +79,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         if (resolvedIntent == false) return
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
-        initToolbar(b.toolbar, R.string.vwTitle, changeTitleTo = user)
+        initToolbar(b.toolbar, R.string.vwTitle, user)
         createPages(b.pager)
 
         handler = object : Handler(Looper.getMainLooper()) {

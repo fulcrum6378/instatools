@@ -2,7 +2,7 @@ package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Favourites
@@ -18,10 +18,9 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListFavBinding> {
         val b = ListFavBinding.inflate(c.layoutInflater, parent, false)
-        b.name.typeface = c.fontRegular
-        b.user.typeface = c.fontRegular
         b.name.textDirection =
-            if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR else TextView.TEXT_DIRECTION_RTL
+            if (!c.dirRtl) AppCompatTextView.TEXT_DIRECTION_LTR
+            else AppCompatTextView.TEXT_DIRECTION_RTL
         return AnyViewHolder(b)
     }
 

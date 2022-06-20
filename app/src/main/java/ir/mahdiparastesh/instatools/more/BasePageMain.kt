@@ -33,8 +33,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
     open fun expanded(): ExpandableBinding? = null
 
     protected open fun guestMode(parent: ConstraintLayout) {
-        val gb = GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
-        gb.root.typeface = c.fontRegular
+        GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
         onLoaded(false, asGuest = true)
         for (ch in parent) if (ch is RecyclerView) ch.vis(false)
         refresher().isEnabled = false

@@ -111,7 +111,7 @@ class PageSvd : BasePageMain(), Selective {
             if (number != null && number > 0) try {
                 Snackbar.make(
                     b.root, c.getString(R.string.reallyHasNoMore, number), 10000
-                ).show()
+                )/*.setAnchorView(c.b.bnv)*/.show()
             } catch (ignored: IllegalArgumentException) {
             }
         },

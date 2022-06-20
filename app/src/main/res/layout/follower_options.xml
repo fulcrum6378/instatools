@@ -9,7 +9,6 @@
         android:layout_height="wrap_content"
         android:checked="false"
         android:text="@string/alsoRequestPv"
-        android:textColor="@color/defCA"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -19,7 +18,7 @@
         android:orientation="horizontal"
         android:paddingTop="7dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/limitTv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -40,6 +39,7 @@
             android:maxLines="1"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
+            android:textAppearance="@style/TextAppearance.InstaTools.Bold"
             android:textColor="@color/defCA"
             android:textSize="16sp" />
     </LinearLayout>

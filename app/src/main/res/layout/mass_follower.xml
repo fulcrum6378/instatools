@@ -41,12 +41,12 @@
         android:paddingRight="@dimen/mfPadV"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/seekTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="18dp"
-            android:textColor="?attr/colorAccent"
+            android:textAppearance="@style/TextAppearance.InstaTools.Light"
             android:textSize="13sp"
             app:layout_constraintBottom_toTopOf="@id/seek"
             app:layout_constraintStart_toStartOf="parent" />
@@ -59,12 +59,12 @@
             android:max="@integer/mfMaxNominal"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/seekIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:textColor="?attr/colorAccent"
+            android:textAppearance="@style/TextAppearance.InstaTools.Light"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,23 +82,24 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/guideTv1"
                 style="@style/mfGuideTv"
                 android:layout_marginTop="0sp"
                 android:text="@string/mfGuide1" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/guideTv2"
                 style="@style/mfGuideTv"
                 android:text="@string/mfGuide2" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/guideTv3"
                 style="@style/mfGuideTv"
                 android:justificationMode="none"
                 android:lineSpacingMultiplier="1.0"
                 android:text="@string/mfGuide3"
+                android:textAppearance="@style/TextAppearance.InstaTools.Bold"
                 tools:ignore="UnusedAttribute" />
         </LinearLayout>
     </ScrollView>

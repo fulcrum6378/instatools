@@ -8,6 +8,7 @@
         android:hint="@string/stAliasProfile"
         android:importantForAutofill="no"
         android:inputType="textUri"
+        android:textAppearance="@style/TextAppearance.InstaTools.Light"
         android:textIsSelectable="true" />
 
     <Spinner
@@ -17,8 +18,9 @@
         android:layout_height="wrap_content"
         android:backgroundTint="?attr/colorAccent" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/aliasAddFolder"
         style="@style/stButton"
-        android:text="@string/addFolder" />
+        android:text="@string/addFolder"
+        android:textAppearance="@style/TextAppearance.InstaTools.Light" />
 </LinearLayout>

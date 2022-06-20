@@ -3,11 +3,10 @@ package ir.mahdiparastesh.instatools.list
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.graphics.Typeface
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -40,7 +39,7 @@ class ListThd(val c: Main, private val f: PageBox) :
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListThdBinding> = AnyViewHolder(
-        ListThdBinding.inflate(f.inflater, parent, false).onCreate(c.fontRegular, c.fontLight)
+        ListThdBinding.inflate(f.inflater, parent, false).onCreate()
     )
 
     override fun onBindViewHolder(h: AnyViewHolder<ListThdBinding>, i: Int) {
@@ -50,12 +49,7 @@ class ListThd(val c: Main, private val f: PageBox) :
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
 
     companion object {
-        fun ListThdBinding.onCreate(
-            fontRegular: Typeface, fontLight: Typeface, isExporting: Boolean = false
-        ): ListThdBinding {
-            date.typeface = fontLight
-            msgTv.typeface = fontRegular
-            time.typeface = fontLight
+        fun ListThdBinding.onCreate(isExporting: Boolean = false): ListThdBinding {
             if (isExporting) msgIvCl.removeView(msgLoading)
             return this
         }
@@ -110,8 +104,8 @@ class ListThd(val c: Main, private val f: PageBox) :
                 if (dm.is_sent_by_viewer) R.drawable.dm_from_me else R.drawable.dm_to_me
             )
             message.textAlignment =
-                if (dm.is_sent_by_viewer) TextView.TEXT_ALIGNMENT_VIEW_END
-                else TextView.TEXT_ALIGNMENT_VIEW_START
+                if (dm.is_sent_by_viewer) AppCompatTextView.TEXT_ALIGNMENT_VIEW_END
+                else AppCompatTextView.TEXT_ALIGNMENT_VIEW_START
 
             // Message
             msgTv.anchor(null, null)
@@ -217,7 +211,7 @@ class ListThd(val c: Main, private val f: PageBox) :
             reactions.removeAllViews()
             reactions.vis(dm.reactions != null)
             if (dm.reactions != null) for (r in dm.reactions.emojis) reactions.addView(
-                TextView(c).apply {
+                AppCompatTextView(c).apply {
                     layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
                     text = r.emoji
                 }

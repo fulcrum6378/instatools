@@ -2,12 +2,9 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
@@ -44,11 +41,9 @@ import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
-import ir.mahdiparastesh.instatools.view.MaterialMenu.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.isReady
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +96,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        initToolbar(b.toolbar, R.string.app_name, font = font(R.string.font_logo))
+        initToolbar(b.toolbar, R.string.app_name)
 
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
@@ -128,10 +123,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             searchInput?.setHintTextColor(weaken(it))
             searchClose?.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
-        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it ->
-            it.setTextColor(ca[i / 2])
-            it.typeface = fontLight
-        }
+        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // Navigation
         toggleNav = object : ActionBarDrawerToggle(
@@ -152,20 +144,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        b.nav.menu.forEach { it.stylise(this, color(R.color.defCA), R.dimen.navFont) }
 
         // Miscellaneous
         if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
-                    deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.EXPORTING")
-                    deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.FOLLOWING")
-                    deleteNotificationChannel("ir.mahdiparastesh.instatools.serv.DOWNLOADING")
-                    deleteNotificationChannel("ir.mahdiparastesh.instatools.frag.NEW_ITEMS")
-                }
-            gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
-        }
+        ) gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
     }
 
     override fun onAccountSet() {
@@ -195,11 +177,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (!guest) {
             Glide.with(c).load(m.acc!!.pict).into(bh.pict)
             bh.user.text = m.acc!!.user
-            bh.user.typeface = fontLight
-            if (!m.acc!!.name.isNullOrBlank()) {
+            if (!m.acc!!.name.isNullOrBlank())
                 bh.name.text = m.acc!!.name
-                bh.name.typeface = fontRegular
-            } else bh.name.vis(false)
+            else bh.name.vis(false)
             bh.ll.setOnClickListener { UiTools.openProfile(this, m.acc!!.user!!) }
         } else bh.root.vis(false)
 
@@ -238,7 +218,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         R.id.mnGSettings -> goTo(Settings::class)
         R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
-            AlertDialog.Builder(this).apply {
+            AlertDialog.Builder(
+                ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
+            ).apply {
                 setTitle(R.string.backgroundTasks)
                 setMessage(R.string.terminateBgTasks)
                 setNegativeButton(R.string.no, null)
@@ -246,14 +228,17 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     ForegroundService.terminateTasks(c)
                     switchAcc()
                 }
-            }.show().stylise(this)
+            }.show()
             true
         } else {
             switchAcc(); true; }
         R.id.mnSignOut -> {
-            val bd = AlsoDeleteDataBinding.inflate(layoutInflater)
-            bd.root.typeface = fontRegular
-            AlertDialog.Builder(this).apply {
+            val bd = AlsoDeleteDataBinding.inflate(
+                layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
+            )
+            AlertDialog.Builder(
+                ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
+            ).apply {
                 setTitle(R.string.signOut)
                 setMessage(R.string.signOutSure)
                 setView(bd.root)
@@ -267,7 +252,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                         onError = { signOut(bd.root.isChecked) }
                     ) { signOut(bd.root.isChecked) }
                 }
-            }.show().stylise(this)
+            }.show()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -279,7 +264,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
             // useless: search_button, search_go_btn, search_mag_icon
             searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
-            searchInput?.typeface = fontRegular
             searchInput?.setHint(R.string.mtSearch)
             searchInput?.textSize = dimen(R.dimen.searchFont)
 

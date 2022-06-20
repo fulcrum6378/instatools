@@ -35,7 +35,6 @@ import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +69,6 @@ class PageVwr : BasePageViewer() {
                         R.drawable.private_account, if (c.night()) R.color.defCA else null
                     )!!, null, null
                 )
-                b.privateAcc.typeface = c.fontRegular
                 b.privateAcc.layoutParams =
                     (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
                         val vPad = ((c.dm.heightPixels.toFloat()
@@ -148,8 +146,6 @@ class PageVwr : BasePageViewer() {
                 }
             }).show()
         }
-        arrayOf(b.followersNum, b.followingNum).forEach { it.typeface = c.fontBold }
-        arrayOf(b.followersText, b.followingText).forEach { it.typeface = c.fontLight }
         b.followers.setOnClickListener { flwClick(true, it) }
         b.following.setOnClickListener { flwClick(false, it) }
         showProfile()
@@ -225,9 +221,6 @@ class PageVwr : BasePageViewer() {
         MaterialMenu(c, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
                 val bo = FollowerOptionsBinding.inflate(layoutInflater)
-                bo.alsoRequestPv.typeface = c.fontRegular
-                bo.limitTv.typeface = c.fontRegular
-                bo.limit.typeface = c.fontBold
                 var flwLimit = ((if (isItFollowers) c.m.vwUser?.edge_followed_by?.count
                 else c.m.vwUser?.edge_follow?.count) ?: 0.0).toInt()
                 if (flwLimit > MassFollower.FOLLOW_LIMIT) flwLimit = MassFollower.FOLLOW_LIMIT
@@ -245,7 +238,7 @@ class PageVwr : BasePageViewer() {
                             )
                         ) { c.goTo(MassFollower::class) }
                     }
-                }.show().stylise(c)
+                }.show()
             }
         }).show()
     }

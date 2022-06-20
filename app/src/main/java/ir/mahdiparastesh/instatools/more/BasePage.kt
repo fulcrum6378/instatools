@@ -8,7 +8,7 @@ import android.os.Message
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
@@ -36,7 +36,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
 
     abstract val bInitialised: Boolean
     open fun rv(): RecyclerView = root.findViewById(R.id.rv)
-    open fun empty(): TextView? = root.findViewById(R.id.empty)
+    open fun empty(): AppCompatTextView? = root.findViewById(R.id.empty)
     open fun error(): ImageView? = root.findViewById(R.id.error)
     open fun loading(): LottieAnimationView? = root.findViewById(R.id.loading)
     open fun jumper(): ImageView = root.findViewById(R.id.jumper)
@@ -94,7 +94,6 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
 
     open fun emptied(isEmpty: Boolean) {
         empty()?.vis(isEmpty)
-        if (isEmpty) empty()?.typeface = c.fontRegular
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true

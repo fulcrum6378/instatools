@@ -19,14 +19,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="10dp"
         android:textAlignment="viewStart"
-        android:textColor="?attr/colorAccent"
         android:textSize="@dimen/userFont"
         app:layout_constraintBottom_toTopOf="@id/user"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,13 +33,12 @@
         app:layout_constraintTop_toTopOf="@id/photo"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/user"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:textAlignment="viewStart"
-        android:textColor="?attr/colorAccent"
         android:textDirection="ltr"
         android:textSize="@dimen/userDescFont"
         app:layout_constraintBottom_toBottomOf="@id/photo"

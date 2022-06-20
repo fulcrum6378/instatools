@@ -1,9 +1,10 @@
 package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
+import android.view.ContextThemeWrapper
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
@@ -22,7 +23,6 @@ import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.Companion.stylise
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 
 class ListUnf(val c: Main, private val f: PageUnf) :
@@ -32,10 +32,9 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListUnfBinding> {
         val b = ListUnfBinding.inflate(f.inflater, parent, false)
-        b.name.typeface = c.fontRegular
-        b.user.typeface = c.fontRegular
         b.name.textDirection =
-            if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR else TextView.TEXT_DIRECTION_RTL
+            if (!c.dirRtl) AppCompatTextView.TEXT_DIRECTION_LTR
+            else AppCompatTextView.TEXT_DIRECTION_RTL
         return AnyViewHolder(b)
     }
 
@@ -49,8 +48,8 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.user.layoutParams = (h.b.user.layoutParams as ConstraintLayout.LayoutParams)
             .apply { width = if (unf.unfollowed) ViewGroup.LayoutParams.MATCH_PARENT else 0 }
         h.b.user.textAlignment =
-            if (unf.unfollowed) TextView.TEXT_ALIGNMENT_CENTER
-            else TextView.TEXT_ALIGNMENT_VIEW_START
+            if (unf.unfollowed) AppCompatTextView.TEXT_ALIGNMENT_CENTER
+            else AppCompatTextView.TEXT_ALIGNMENT_VIEW_START
         // Presumably after invoking "notifyItemMoved()" the alpha value of the root is animated;
         // so if you change it statically here, your changes won't survive the animation.
         val alpha = when {
@@ -69,11 +68,11 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c.wrapTheme(f.theme), c.fontRegular, it, R.menu.unf_more, Act().apply {
+                c.wrapTheme(f.theme), it, R.menu.unf_more, Act().apply {
                     this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
                     this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
                     this[R.id.umToFav] = { toggleFav(u) }
-                }, c.colorAc.value
+                }
             ).apply {
                 if (!u.unfollowed) menu.findItem(R.id.umToFav)
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)
@@ -83,12 +82,14 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.unfollow.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             if (!u.priv) unfollow(u)
-            else AlertDialog.Builder(c).apply {
+            else AlertDialog.Builder(
+                ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
+            ).apply {
                 setTitle(R.string.unfollow)
                 setMessage(R.string.unfollowPV)
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ -> unfollow(u) }
-            }.show().stylise(c)
+            }.show()
         }
         h.b.sep.vis(i < itemCount - 1)
     }
@@ -102,7 +103,9 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 if (res?.statusCode == 429) {
                     var showing429 = true
                     c.loadInterstitial(R.string.interUnfMany) { !showing429 }
-                    AlertDialog.Builder(c).apply {
+                    AlertDialog.Builder(
+                        ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
+                    ).apply {
                         setTitle(R.string.unfollow)
                         setMessage(R.string.unfollowedSoMany)
                         setNeutralButton(R.string.ok, null)
@@ -110,7 +113,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                             showing429 = false
                             c.showInterstitial()
                         }
-                    }.show().stylise(c)
+                    }.show()
                 } else PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
             }
         ) {

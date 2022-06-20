@@ -81,11 +81,11 @@
             android:alpha="0.8"
             android:background="@color/expOptSep" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorAccent"
+            android:textAppearance="@style/TextAppearance.InstaTools.Light"
             android:textSize="15sp" />
     </LinearLayout>
 </ScrollView>

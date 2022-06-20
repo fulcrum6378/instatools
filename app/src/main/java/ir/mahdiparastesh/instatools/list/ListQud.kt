@@ -25,12 +25,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListQudBinding> {
-        val b = ListQudBinding.inflate(c.layoutInflater, parent, false)
-        b.user.typeface = c.fontRegular
-        b.date.typeface = c.fontRegular
-        return AnyViewHolder(b)
-    }
+    ): AnyViewHolder<ListQudBinding> =
+        AnyViewHolder(ListQudBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
