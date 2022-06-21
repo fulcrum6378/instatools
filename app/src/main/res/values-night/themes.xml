@@ -6,6 +6,7 @@
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
         <item name="android:itemBackground">@drawable/menu_item_secondary_night</item>
+        <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
     </style>
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
@@ -31,18 +32,30 @@
     </style>
 
 
+    <!-- PopupMenu -->
+    <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="fontFamily">@font/medium</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="colorPrimaryWeak">@color/weakWhite</item>
+    </style>
+
     <style name="Theme.InstaTools.Popup.Primary" parent="Theme.InstaTools.Popup">
-        <item name="android:textColor">@color/defCA</item>
+        <item name="colorPrimary">@color/CP</item>
+        <item name="colorAccent">@color/defCA</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Secondary" parent="Theme.InstaTools.Popup">
-        <item name="android:textColor">@color/defCA</item>
+        <item name="colorPrimary">@color/CS</item>
+        <item name="colorAccent">@color/defCA</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Tertiary" parent="Theme.InstaTools.Popup">
-        <item name="android:textColor">@color/defCA</item>
+        <item name="colorPrimary">@color/CT</item>
+        <item name="colorAccent">@color/defCA</item>
     </style>
 
+
+    <!-- AlertDialog -->
     <style name="Theme.InstaTools.Dialog.Primary" parent="@style/Theme.InstaTools.Dialog">
         <item name="colorPrimary">@color/defCA</item>
     </style>

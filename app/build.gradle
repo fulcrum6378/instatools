@@ -12,7 +12,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 32
-        versionName '18.7.5'
+        versionName '18.8'
     }
 
     signingConfigs {
@@ -99,7 +99,7 @@ dependencies {
     implementation "androidx.media2:media2-player:$media2_version"
     //noinspection GradleDependency
     implementation 'com.tbuonomo:dotsindicator:4.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3'
     implementation 'com.google.android.play:core:1.10.3'
 
     implementation 'com.github.fulcrum1378:ChipsLayoutManager:5140e08'

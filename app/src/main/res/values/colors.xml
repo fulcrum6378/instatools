@@ -25,6 +25,7 @@
         <item>@color/CS</item>
         <item>@color/CT</item>
     </array>
+    <color name="weakWhite">#EEFFFFFF</color>
 
     <!-- #GLOBAL -->
     <color name="selectedTick">#FFFFFF</color>

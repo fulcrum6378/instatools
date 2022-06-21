@@ -63,24 +63,30 @@
         <item name="dmFromMe">@color/dmFromMeLight</item>
     </style>
 
+
+    <!-- PopupMenu -->
     <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
         <item name="fontFamily">@font/medium</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Primary" parent="Theme.InstaTools.Popup">
-        <item name="android:textColor">@color/CP</item>
-        <item name="colorPrimary">#00F</item>
+        <item name="colorPrimary">@color/CP</item>
+        <item name="colorPrimaryWeak">@color/CPW</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Secondary" parent="Theme.InstaTools.Popup">
-        <item name="android:textColor">@color/CS</item>
+        <item name="colorPrimary">@color/CS</item>
+        <item name="colorPrimaryWeak">@color/CSW</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Tertiary" parent="Theme.InstaTools.Popup">
-        <item name="android:textColor">@color/CT</item>
+        <item name="colorPrimary">@color/CT</item>
+        <item name="colorPrimaryWeak">@color/CTW</item>
     </style>
 
+
+    <!-- AlertDialog -->
     <style name="Theme.InstaTools.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textColorPrimary">?attr/colorPrimary</item>
@@ -99,6 +105,8 @@
         <item name="colorPrimary">@color/CT</item>
     </style>
 
+
+    <!-- Miscellaneous -->
     <style name="Theme.InstaTools.Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="buttonTint">?attr/colorAccent</item>
