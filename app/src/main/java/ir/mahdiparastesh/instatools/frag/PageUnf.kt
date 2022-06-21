@@ -30,6 +30,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.*
 
 class PageUnf : BasePageMain() {
@@ -75,10 +76,7 @@ class PageUnf : BasePageMain() {
             )
         },
         HANDLE_COULD_NOT to {
-            try {
-                Snackbar.make(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT).show()
-            } catch (ignored: IllegalArgumentException) {
-            }
+            UiTools.snackbar(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT, c.b.bnv)
         },
         HANDLE_FAV_CHANGED to { msg ->
             var id: String? = null

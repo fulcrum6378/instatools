@@ -85,10 +85,7 @@ class PageSvd : BasePageMain(), Selective {
             )
         },
         Expandable.HANDLE_EXPANDABLE_ERROR to {
-            try {
-                Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
-            } catch (ignored: IllegalArgumentException) {
-            }
+            UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
         },
         HANDLE_UNSAVE_DONE to { msg ->
             c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
@@ -108,12 +105,9 @@ class PageSvd : BasePageMain(), Selective {
         },
         HANDLE_REALLY_NO_MORE to {
             val number = c.m.saved?.hiddenItems()
-            if (number != null && number > 0) try {
-                Snackbar.make(
-                    b.root, c.getString(R.string.reallyHasNoMore, number), 10000
-                )/*.setAnchorView(c.b.bnv)*/.show()
-            } catch (ignored: IllegalArgumentException) {
-            }
+            if (number != null && number > 0) UiTools.snackbar(
+                b.root, c.getString(R.string.reallyHasNoMore, number), 10000, c.b.bnv
+            )
         },
         HANDLE_UPDATE_PROFILE to { msg ->
             val list = msg.obj as List<String>

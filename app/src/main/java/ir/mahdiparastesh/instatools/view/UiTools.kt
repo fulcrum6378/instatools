@@ -34,6 +34,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.MassFollower.Companion.rewardAccountForFollower
@@ -271,6 +272,21 @@ class UiTools {
                 } else if (BuildConfig.DEBUG) task.exception?.let { throw it }
                 onReqComplete()
             }
+        }
+
+        fun snackbar(view: View, text: String, dur: Int, anchor: View? = null) {
+            try {
+                Snackbar.make(
+                    ContextThemeWrapper(view.context, R.style.Theme_InstaTools_Snackbar),
+                    view, text, dur
+                ).setAnchorView(anchor).setTextMaxLines(5).show()
+            } catch (ignored: IllegalArgumentException) {
+                // No suitable parent found from the given view. Please provide a valid view.
+            }
+        }
+
+        fun snackbar(view: View, @StringRes res: Int, dur: Int, anchor: View? = null) {
+            snackbar(view, view.context.getString(res), dur, anchor)
         }
     }
 }

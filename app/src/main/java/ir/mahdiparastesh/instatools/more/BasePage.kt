@@ -79,11 +79,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     }
 
     open fun onFailed(message: String) {
-        try {
-            Snackbar.make(root, message, Snackbar.LENGTH_LONG).show()
-        } catch (ignored: IllegalArgumentException) {
-            // No suitable parent found from the given view. Please provide a valid view.
-        }
+        UiTools.snackbar(root, message, Snackbar.LENGTH_LONG)
         if (loading() != null && root.contains(loading()!!)) {
             loading()?.animation?.cancel()
             root.removeView(loading())

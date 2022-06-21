@@ -3,13 +3,17 @@ package ir.mahdiparastesh.instatools.view
 import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StyleRes
 import androidx.appcompat.widget.PopupMenu
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.more.BaseActivity
 
 typealias Act = HashMap<Int, (item: MenuItem) -> Unit>
 
-class MaterialMenu(val c: ContextThemeWrapper, v: View, res: Int, actions: Act) :
-    PopupMenu(ContextThemeWrapper(c, R.style.Theme_InstaTools_Popup), v) {
+class MaterialMenu(
+    c: BaseActivity, v: View, res: Int, actions: Act,
+    @StyleRes theme: Int = R.style.Theme_InstaTools_Popup
+) : PopupMenu(ContextThemeWrapper(c, theme), v) {
 
     init {
         setOnMenuItemClickListener {

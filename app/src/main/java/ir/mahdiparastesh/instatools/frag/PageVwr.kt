@@ -79,18 +79,14 @@ class PageVwr : BasePageViewer() {
             }
         },
         HANDLE_ABORTED to {
-            Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
+            UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
         },
         Api.HANDLE_ERROR to {
-            try {
-                Snackbar.make(
-                    b.root, c.getString(
-                        R.string.unknownError,
-                        (it.obj as NetworkResponse?)?.statusCode.toString()
-                    ), Snackbar.LENGTH_SHORT
-                ).show()
-            } catch (ignored: IllegalArgumentException) {
-            }
+            UiTools.snackbar(
+                b.root, c.getString(
+                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
+                ), Snackbar.LENGTH_SHORT
+            )
         }
     )
 

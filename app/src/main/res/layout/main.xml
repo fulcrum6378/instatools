@@ -35,8 +35,7 @@
             android:layout_height="@dimen/bnv"
             android:background="@color/defBG"
             android:saveEnabled="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight"
-            app:itemTextAppearance="@style/TextAppearance.InstaTools.Light"
+            android:theme="@style/Theme.InstaTools.BNV"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/main_bnv" />
 

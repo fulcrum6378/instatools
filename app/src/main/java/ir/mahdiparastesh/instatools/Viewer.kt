@@ -93,23 +93,20 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     }
                     HANDLE_ABORTED -> {
                         b.refresher.isRefreshing = false
-                        Snackbar.make(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG).show()
+                        UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
                     }
                     Api.HANDLE_ERROR -> {
                         b.refresher.isRefreshing = false
-                        try {
-                            Snackbar.make(
-                                b.root, c.getString(
-                                    R.string.unknownError,
-                                    (msg.obj as NetworkResponse?)?.statusCode.toString()
-                                ), Snackbar.LENGTH_SHORT
-                            ).show()
-                        } catch (ignored: IllegalArgumentException) {
-                        }
+                        UiTools.snackbar(
+                            b.root, c.getString(
+                                R.string.unknownError,
+                                (msg.obj as NetworkResponse?)?.statusCode.toString()
+                            ), Snackbar.LENGTH_SHORT
+                        )
                     }
                     PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Expandable.HANDLE_EXPANDABLE_ERROR ->
-                        Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
+                        UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
                 }
             }
         }

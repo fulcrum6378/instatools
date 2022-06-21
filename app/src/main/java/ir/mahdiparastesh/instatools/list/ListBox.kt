@@ -47,7 +47,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.more.setOnClickListener {
             thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c.wrapTheme(f.theme), it, R.menu.box_more, Act().apply {
+                c, it, R.menu.box_more, Act().apply {
                     this[R.id.bmHtml] = { f.expOptions(Exporter.Method.HTML, thd) }
                     this[R.id.bmPdf] = { f.expOptions(Exporter.Method.PDF, thd) }
                     this[R.id.bmTxt] = { f.expOptions(Exporter.Method.TXT, thd) }
@@ -55,7 +55,7 @@ class ListBox(val c: Main, private val f: PageBox) :
                     this[R.id.bmView] = {
                         thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
                     }
-                }
+                }, R.style.Theme_InstaTools_Popup_Tertiary
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }

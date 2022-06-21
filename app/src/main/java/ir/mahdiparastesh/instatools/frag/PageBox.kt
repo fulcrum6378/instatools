@@ -47,6 +47,7 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.areEnabled
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vis
 import ir.mahdiparastesh.instatools.view.UiTools.Companion.vish
@@ -103,10 +104,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             )
         },
         Expandable.HANDLE_EXPANDABLE_ERROR to {
-            try {
-                Snackbar.make(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG).show()
-            } catch (ignored: IllegalArgumentException) {
-            }
+            UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
         },
     )
 

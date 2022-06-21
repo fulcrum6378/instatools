@@ -68,11 +68,11 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.root.setOnClickListener {
             val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c.wrapTheme(f.theme), it, R.menu.unf_more, Act().apply {
+                c, it, R.menu.unf_more, Act().apply {
                     this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
                     this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
                     this[R.id.umToFav] = { toggleFav(u) }
-                }
+                }, R.style.Theme_InstaTools_Popup_Primary
             ).apply {
                 if (!u.unfollowed) menu.findItem(R.id.umToFav)
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)

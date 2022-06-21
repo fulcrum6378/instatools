@@ -46,7 +46,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?actionBarSize</item>
         <item name="layout_constraintTop_toTopOf">parent</item>
-        <item name="popupTheme">@style/Theme.InstaTools.Popup</item>
         <item name="titleTextAppearance">@style/TextAppearance.InstaTools.Toolbar</item>
     </style>
 

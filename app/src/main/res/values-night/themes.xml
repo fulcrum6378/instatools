@@ -11,32 +11,47 @@
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
+        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
         <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
-        <item name="android:itemBackground">@drawable/menu_item</item>
         <item name="defCA">@color/defCA</item>
         <item name="dmFromMe">@color/dmFromMe</item>
+        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
+        <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
 
-    <style name="Theme.InstaTools.OverflowMenu.Primary" parent="Theme.InstaTools.Popup">
+    <style name="Theme.InstaTools.Popup.Primary" parent="Theme.InstaTools.Popup">
         <item name="android:textColor">@color/defCA</item>
     </style>
 
-    <style name="Theme.InstaTools.OverflowMenu.Secondary" parent="Theme.InstaTools.Popup">
+    <style name="Theme.InstaTools.Popup.Secondary" parent="Theme.InstaTools.Popup">
         <item name="android:textColor">@color/defCA</item>
     </style>
 
-    <style name="Theme.InstaTools.OverflowMenu.Tertiary" parent="Theme.InstaTools.Popup">
+    <style name="Theme.InstaTools.Popup.Tertiary" parent="Theme.InstaTools.Popup">
         <item name="android:textColor">@color/defCA</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Primary" parent="@style/Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/defCA</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Secondary" parent="@style/Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/defCA</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Tertiary" parent="@style/Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/defCA</item>
     </style>
 </resources>

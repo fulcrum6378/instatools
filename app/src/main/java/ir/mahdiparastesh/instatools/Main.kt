@@ -68,6 +68,12 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     var schRes: Array<Rest.ItemUser>? = null
     private val schQueue by lazy { Volley.newRequestQueue(c) }
     var searchErrored = false
+    private val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+    private val popupThemes = arrayOf(
+        R.style.Theme_InstaTools_Popup_Primary,
+        R.style.Theme_InstaTools_Popup_Secondary,
+        R.style.Theme_InstaTools_Popup_Tertiary
+    )
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
@@ -82,12 +88,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     companion object : ActivityCompanion() {
         var guest = false
-        val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
-        val overflowThemes = arrayOf(
-            R.style.Theme_InstaTools_OverflowMenu_Primary,
-            R.style.Theme_InstaTools_OverflowMenu_Secondary,
-            R.style.Theme_InstaTools_OverflowMenu_Tertiary
-        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -170,7 +170,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Theming
         if (night()) colorBG.value = bg[m.currentPage.value!!]
         else colorAc.value = ca[m.currentPage.value!!]
-        b.toolbar.popupTheme = overflowThemes[m.currentPage.value!!]
+        b.toolbar.popupTheme = popupThemes[m.currentPage.value!!]
 
         // Navigation
         bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
@@ -336,7 +336,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
         sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.apply()
-        b.toolbar.popupTheme = overflowThemes[i]
+        b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()
         val col = if (night()) bg else ca
