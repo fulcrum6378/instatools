@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">InstaTools</string>
+    <string name="app_name" translatable="false">Downloader</string><!--InstaTools-->
 
     <!-- #GLOBAL -->
     <string name="guest">Guest</string>
@@ -67,7 +67,8 @@
     <string name="addAccount">Add Account</string>
     <string name="guestShortDesc">Enter without authentication</string>
     <string name="guestSure">Unfortunately Instagram won\'t let you view people in its website so frequently without signing in. It\'ll force you sign in or sign up to do that. (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.) So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.</string>
-    <string name="needAuthentication">Instagram doesn\'t let us in. You need to login to continue&#8230;</string>
+    <string name="needAuthentication">It doesn\'t let us in. You need to login to continue&#8230;</string>
+    <!-- TODO Instagram -->
 
     <!-- Main -->
     <string name="unfollowers">Unfollowers</string>
@@ -123,8 +124,8 @@
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
     <string name="dwShare">@string/download</string>
-    <string name="pasteLink">Paste a link&#8230;</string>
-    <string name="downloadsHelp1">1. Open Instagram,\n2. Choose a post or story,\n3. Share it into this app;</string>
+    <string name="pasteLink">Paste a link&#8230;</string><!-- TODO Instagram -->
+    <string name="downloadsHelp1">1. Open,\n2. Choose a post or story,\n3. Share it into this app;</string>
     <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
     <string name="nonInstagramUrl">Sorry but this app downloads only Instagram content!</string>
     <string name="dtRetryAll">Retry all</string>

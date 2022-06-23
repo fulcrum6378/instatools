@@ -12,7 +12,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 32
-        versionName '18.8'
+        versionName '18.9'
     }
 
     signingConfigs {
@@ -33,6 +33,7 @@ android {
 
     flavorDimensions('store')
     productFlavors {
+        def beth_version = 25
         all { dimension 'store' }
         iran {
             versionCode 54 // 38
@@ -40,13 +41,27 @@ android {
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 24
+            versionCode beth_version
             signingConfig signingConfigs.beth
-            // Use BETH for Google Play; Use ALEPH for Galaxy Store
+        }
+        galaxy {
+            applicationIdSuffix '.beth'
+            versionCode beth_version
+            signingConfig signingConfigs.aleph
         }
     }
-    sourceSets.iran { res.srcDirs = ['src/main/res', 'src/main/res_iran'] }
-    sourceSets.play { res.srcDirs = ['src/main/res', 'src/main/res_play'] }
+    sourceSets.iran {
+        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_iran']
+        res.srcDirs = ['src/main/res', 'src/main/res_iran']
+    }
+    sourceSets.play {
+        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_play']
+        res.srcDirs = ['src/main/res', 'src/main/res_play']
+    }
+    sourceSets.galaxy {
+        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_galaxy']
+        res.srcDirs = ['src/main/res', 'src/main/res_play'] // Galaxy uses Play resources!!
+    }
 
     buildTypes {
         debuggee {
