@@ -25,7 +25,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.vish
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
     private lateinit var guestAdBanner: AdView
-    var ftDetached = false
 
     abstract val theme: BaseActivity.Theme
     abstract val emptyIcon: Int
@@ -57,11 +56,6 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
             refresher().isRefreshing = true
             onRefresh()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ftDetached = false
     }
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {

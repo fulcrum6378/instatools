@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.view
 
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -97,7 +96,6 @@ object UiTools {
         return if (s.length == 1) "0$s" else s
     }
 
-    @SuppressLint("MissingPermission")
     @Suppress("DEPRECATION")
     fun Context.shake(dur: Long = 48L) {
         val vib = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)

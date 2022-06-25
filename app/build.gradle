@@ -12,7 +12,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 32
-        versionName '18.9'
+        versionName '19.0.5'
     }
 
     signingConfigs {
@@ -33,10 +33,10 @@ android {
 
     flavorDimensions('store')
     productFlavors {
-        def beth_version = 25
+        def beth_version = 26
         all { dimension 'store' }
         iran {
-            versionCode 54 // 38
+            versionCode 55 // 38
             signingConfig signingConfigs.aleph
         }
         play {
@@ -51,7 +51,7 @@ android {
         }
     }
     sourceSets.iran {
-        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_iran']
+        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_galaxy'/*'src/main/kotlin_iran'*/]
         res.srcDirs = ['src/main/res', 'src/main/res_iran']
     }
     sourceSets.play {

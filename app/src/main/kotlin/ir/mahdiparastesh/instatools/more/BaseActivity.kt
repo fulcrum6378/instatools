@@ -104,7 +104,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     var isAccountSet = false
     open fun onAccountSet() {
-        sp = initSp(m.acc)
+        if (m.acc?.id != -1L) sp = initSp(m.acc)
         isAccountSet = true
     }
 

@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 
 abstract class BasePage<C> : Fragment(), BackStackOwner,
     Toolbar.OnMenuItemClickListener where C : BaseActivity {
+    var ftDetached = false
 
     @Suppress("UNCHECKED_CAST")
     protected val c: C by lazy { activity as C }
@@ -67,6 +68,11 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
             anJumper?.cancel()
             anJumper = UiTools.anJumper(c, jumper(), it)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ftDetached = false
     }
 
     open fun onLoaded(isEmpty: Boolean, asGuest: Boolean = false) {

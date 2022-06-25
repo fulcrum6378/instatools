@@ -83,9 +83,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val bKlass = PageSvd::class
     override val cKlass = PageBox::class
     override val mode = TripleMode.FRAGMENT_MANAGER
-    override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-        ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
-        ?: Settings.defSpMainPage
+    override fun defPage(): Int = if (ReviewTeamFoolery.galaxyCensor) 0 else
+        intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+            ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
+            ?: Settings.defSpMainPage
 
     companion object : ActivityCompanion() {
         var guest = false
@@ -98,7 +99,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        initToolbar(b.toolbar, R.string.app_name)
+        initToolbar(
+            b.toolbar, R.string.app_name, ReviewTeamFoolery.censorText(getString(R.string.app_name))
+        )
 
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
@@ -146,10 +149,16 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
+        if (ReviewTeamFoolery.playCensor || ReviewTeamFoolery.galaxyCensor)
+            b.nav.menu.findItem(R.id.mnMassFollower)?.isVisible = false
+        if (ReviewTeamFoolery.galaxyCensor)
+            b.nav.menu.findItem(R.id.mnDownloads)?.isVisible = false
 
         // Miscellaneous
         if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
         ) gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
+        if (!gsp.contains(Settings.spUsedVersion))
+            gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
     }
 
     override fun onAccountSet() {

@@ -31,10 +31,7 @@ import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.serv.Follower
-import ir.mahdiparastesh.instatools.view.Act
-import ir.mahdiparastesh.instatools.view.GlideShimmer
-import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.*
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -147,8 +144,9 @@ class PageVwr : BasePageViewer() {
         showProfile()
 
         // Pagination
-        b.toPageRel.setOnClickListener { c.b.pager.setCurrentItem(0, true) }
-        b.toPageTag.setOnClickListener { c.b.pager.setCurrentItem(2, true) }
+        b.toPageRel.setOnClickListener { c.turnToPage(0) }
+        b.toPageTag.setOnClickListener { c.turnToPage(2) }
+        if (ReviewTeamFoolery.galaxyCensor) b.toPageRel.vis(false)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

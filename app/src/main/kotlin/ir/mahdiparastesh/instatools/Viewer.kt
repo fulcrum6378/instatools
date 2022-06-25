@@ -37,6 +37,7 @@ import ir.mahdiparastesh.instatools.more.BasePageViewer
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.ReviewTeamFoolery
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -63,7 +64,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override val aKlass = PageRel::class
     override val bKlass = PageVwr::class
     override val cKlass = PageTag::class
-    override val mode = TripleMode.VIEW_PAGER
+    override val mode = TripleMode.FRAGMENT_MANAGER
     override fun defPage(): Int = 1
 
     companion object : ActivityCompanion() {
@@ -80,7 +81,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.vwTitle, user)
-        createPages(b.pager)
+        createPages()
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -156,6 +157,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         fixTbMenu()
+        if (ReviewTeamFoolery.galaxyCensor)
+            b.toolbar.menu.findItem(R.id.vtInsta)?.isVisible = false
         return true
     }
 
@@ -230,8 +233,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (expandable.zoomed) {
                 expandable.collapse(); return; }
         }
-        if (b.pager.currentItem != 1) {
-            b.pager.setCurrentItem(1, true); return; }
+        if (currentPage.value != 1) {
+            turnToPage(1); return; }
         m.vwUser = null
         m.vwReels = null
         m.vwTagged = null

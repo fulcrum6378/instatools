@@ -101,7 +101,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     protected fun pages(): Array<BasePage<*>?> = arrayOf(page1, page2, page3)
 
     protected var lastPage: Int = 0
-    protected open fun turnToPage(i: Int): Boolean {
+    open fun turnToPage(i: Int): Boolean {
         if (i == currentPage.value || currentPage.value == null) return false
         lastPage = currentPage.value!!
         currentPage.value = i
@@ -112,7 +112,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             else attach(pages()[currentPage.value!!]!!)
             commit()
         }
-        (pages()[lastPage] as BasePageMain).ftDetached = true
+        (pages()[lastPage] as BasePage).ftDetached = true
         return true
     }
 
@@ -170,5 +170,6 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         }
     }
 
+    @Suppress("unused")
     enum class TripleMode { FRAGMENT_MANAGER, VIEW_PAGER }
 }
