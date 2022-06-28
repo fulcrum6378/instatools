@@ -27,7 +27,7 @@ import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.expt.HtmlExporter
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.expt.PdfExporter

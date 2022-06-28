@@ -113,7 +113,7 @@ class GraphQl(val data: GraphQlData) : Rest() {
         //val clips_music_attribution_info: Any?,
         //val coauthor_producers: Array<Any>,
         //val comments_disabled: Boolean,
-        //val dash_info: Map<String, *>,
+        //val dash_info: DashInfo?,
         //val display_url: String,
         //val dimensions: Map<String, Double>,
         //val edge_liked_by: Map<String, Double>,
@@ -172,4 +172,10 @@ class GraphQl(val data: GraphQlData) : Rest() {
         //val display_url: String, // USE THIS
         //val display_resources: Array<Src>
     )
+
+    /*class DashInfo(
+        override val is_dash_eligible: Any?,
+        override val video_dash_manifest: String?,
+        override val number_of_qualities: Float?
+    ) : Audible*/
 }

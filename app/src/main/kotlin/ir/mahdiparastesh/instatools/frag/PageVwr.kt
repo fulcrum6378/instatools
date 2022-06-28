@@ -237,8 +237,9 @@ class PageVwr : BasePageViewer() {
         }).show()
     }
 
-    override fun avoidRefresh(): Boolean =
+    override fun avoidRefresh(): Boolean = if (::b.isInitialized)
         b.nsv.canScrollVertically(-1) || tracker?.hasSelection() == true
+    else false
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(b.nsv.scrollY > 0)

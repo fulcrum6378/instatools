@@ -32,8 +32,8 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         super.onCreate(savedInstanceState)
     }
 
-    open fun createPages(pager: ViewPager2? = null) {
-        currentPage.value = defPage()
+    open fun createPages(pager: ViewPager2? = null, toDefaultPage: Boolean = true) {
+        if (toDefaultPage) currentPage.value = defPage()
         createCurrentPage()
         if (pager == null) {
             val pages = pages()
@@ -42,7 +42,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                 add(R.id.frame, pages[i]!!)
                 if (i != currentPage.value) {
                     detach(pages[i]!!)
-                    (pages[i] as BasePageMain).ftDetached = true
+                    (pages[i] as BasePage).ftDetached = true
                 }
                 commit()
             }

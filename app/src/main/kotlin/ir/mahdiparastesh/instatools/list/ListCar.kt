@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.databinding.ListCarBinding
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.serv.Queuer.MediaType
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis

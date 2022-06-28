@@ -21,7 +21,7 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
 import ir.mahdiparastesh.instatools.json.Rest.StoryReel
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds

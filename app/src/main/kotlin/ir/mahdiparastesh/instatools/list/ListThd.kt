@@ -19,7 +19,7 @@ import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.FastCustomGlide

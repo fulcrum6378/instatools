@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.json
 
-import ir.mahdiparastesh.instatools.more.Versioned
 import ir.mahdiparastesh.instatools.view.UiTools
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -40,7 +39,6 @@ class Media(
     image_versions2: ImageVersions2?,
     //val inline_composer_display_condition: Boolean,
     //val integrity_review_decision: String,
-    //val is_dash_eligible: Float,
     //val is_in_profile_grid: Boolean,
     //val is_paid_partnership: Boolean,
     //val is_post_live: Boolean,
@@ -53,7 +51,6 @@ class Media(
     val media_type: Float,// 1=>image, 2=>video, 8=>slider
     //val music_metadata: MusicMetadata?,
     //val nearly_complete_copyright_match: Boolean,
-    //val number_of_qualities: Float,
     //val organic_tracking_token: String,
     original_height: Float?,
     //val original_media_has_visual_reply_media: Boolean,
@@ -75,7 +72,6 @@ class Media(
     //val top_likers: Array<Any>,
     val user: Rest.User,
     //val video_codec: String?,
-    //val video_dash_manifest: String?,
     //val video_duration: Double?,
     //val video_subtitles_confidence: Double?,
     //val video_subtitles_uri: String?,
@@ -85,7 +81,12 @@ class Media(
     var mahdi_reel_type: String? = null,
     var mahdi_reel_id: String? = null,
     var mahdi_reel_user_name: String? = null,
-) : Versioned(image_versions2, original_height, original_width, video_versions, carousel_media) {
+
+    override val is_dash_eligible: Any?,
+    override val video_dash_manifest: String?,
+    override val number_of_qualities: Float?
+) : Versioned(image_versions2, original_height, original_width, video_versions, carousel_media),
+    Audible {
 
     fun link() = when (product_type) {
         "feed", "carousel_container" -> UiTools.POST_LINK.format(code)
@@ -148,12 +149,14 @@ class Media(
         val pk: String,
         //val sharing_friction_info: Map<String, *>,
         //val video_codec: String?,
-        //val video_dash_manifest: String?,
         //val video_duration: Double?,
         //val video_subtitles_confidence: Double?,
         //val video_subtitles_uri: String?,
         video_versions: Array<VideoVersion>?,
-    ) : Versioned(image_versions2, original_height, original_width, video_versions, null)
+        override val is_dash_eligible: Any?,
+        override val video_dash_manifest: String?,
+        override val number_of_qualities: Float?
+    ) : Versioned(image_versions2, original_height, original_width, video_versions, null), Audible
 
     class ImageVersions2(
         val candidates: Array<Candidate>,

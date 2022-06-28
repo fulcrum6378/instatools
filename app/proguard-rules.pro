@@ -10,4 +10,5 @@
 -keep class ir.mahdiparastesh.instatools.json.PageConfig$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.more.Versioned { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Versioned { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Audible { <fields>; }

@@ -1,7 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.Versioned
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.view.UiTools
 
 @Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")

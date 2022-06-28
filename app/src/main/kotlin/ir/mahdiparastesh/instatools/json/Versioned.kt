@@ -1,6 +1,5 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.json
 
-import ir.mahdiparastesh.instatools.json.Media
 import kotlin.math.abs
 
 @Suppress("UNCHECKED_CAST")

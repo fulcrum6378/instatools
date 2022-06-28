@@ -63,11 +63,15 @@ class Api<JSON>(
                 }
                 response.contains("Content unavailable &bull; Instagram") ->
                     gotError(this)
-                else -> gotError(this)
-            } else gotError(this)
+                else -> {
+                    if (BuildConfig.DEBUG) throw e else gotError(this)
+                }
+            } else {
+                if (BuildConfig.DEBUG) throw e else gotError(this)
+            }
             null
         } catch (e: Exception) {
-            gotError(this)
+            if (BuildConfig.DEBUG) throw e else gotError(this)
             null
         }
         try {
