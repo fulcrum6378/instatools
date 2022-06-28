@@ -362,8 +362,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             setView(bfa!!.root)
             setPositiveButton(R.string.save) { _, _ ->
                 val newU = bfa!!.aliasProfile.text.toString()
+                if (newU.isBlank()) return@setPositiveButton
                 if (newU != u) aliases?.remove(u)
-                uriFolders?.getOrNull(bfa!!.folders.selectedItemPosition)?.let {
+                uriFolders?.getOrNull(bfa!!.folders.selectedItemPosition)?.also {
                     aliases?.set(newU, it.toString())
                 }
                 saveAliases(prf, aliases)
@@ -371,15 +372,16 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             }
             setNegativeButton(R.string.cancel, null)
             setNeutralButton(R.string.remove) { _, _ ->
+                val uri = u?.let { aliases?.getOrElse(it) { null } }?.let { Uri.parse(it) }
+                    ?: return@setNeutralButton
                 val br = AlsoRevokePermBinding.inflate(layoutInflater)
                 AlertDialog.Builder(this@Settings).apply {
                     setTitle(R.string.remove)
                     setView(br.root)
                     setPositiveButton(R.string.sContinue) { _, _ ->
-                        val uri = u?.let { aliases?.getOrElse(it) { null } }?.let { Uri.parse(it) }
                         aliases?.remove(u)
                         saveAliases(prf, aliases)
-                        if (br.root.isChecked && uri != null) {
+                        if (br.root.isChecked) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 StorageCache.folderRemoved(this@Settings, uri)
                                 uri.release(contentResolver)

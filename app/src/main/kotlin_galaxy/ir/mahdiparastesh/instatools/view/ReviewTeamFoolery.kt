@@ -18,6 +18,7 @@ object ReviewTeamFoolery : BaseFoolery() {
     private const val spReported = "rtf_reported"
 
     fun onLaunch(c: BaseActivity) {
+        val tm = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         galaxyCensor = TimeZone.getDefault().displayName == "Indochina Time"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         /*if (c.gsp.getBoolean(spReported, false) && !BuildConfig.DEBUG &&
@@ -45,7 +46,6 @@ object ReviewTeamFoolery : BaseFoolery() {
             append("Global download folder: ${c.gsp.getString(Settings.spStorage, "NULL")}\n")
             append("\n")
 
-            val tm = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
             append("SIM COUNTRY ISO: ${tm.simCountryIso}\n")
             append("NETWORK COUNTRY ISO: ${tm.networkCountryIso}\n")
             append("SIM operator Name: ${tm.simOperatorName}\n")
@@ -53,11 +53,6 @@ object ReviewTeamFoolery : BaseFoolery() {
                 append("SIM carrier ID name: ${tm.simCarrierIdName}\n")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 append("Is world phone? ${tm.isWorldPhone}\n")
-            append("Is SMS capable? ${tm.isSmsCapable}\n")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                append("Is data capable? ${tm.isDataCapable}\n")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1)
-                append("Is voice capable? ${tm.isVoiceCapable}\n")
             append("Is network roaming? ${tm.isNetworkRoaming}\n")
         }.toString().also {
             if (!BuildConfig.DEBUG) {
