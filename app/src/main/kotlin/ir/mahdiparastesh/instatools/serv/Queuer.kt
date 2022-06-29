@@ -27,7 +27,10 @@ import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.json.Versioned
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BaseThread
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
@@ -268,10 +271,8 @@ class Queuer : ForegroundService() {
 
                     override fun deliverResponse(response: ByteArray) {
                         Downloads.handler?.obtainMessage(
-                            ServiceOwnerActivity.HANDLE_DELETED,
-                            queue[q]
-                        )
-                            ?.sendToTarget()
+                            ServiceOwnerActivity.HANDLE_DELETED, queue[q]
+                        )?.sendToTarget()
                         CoroutineScope(Dispatchers.IO).launch {
                             runCatching {
                                 save(queue[q], response)
@@ -319,7 +320,7 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
-        m.files?.add(fName)
+        if (q.mediaType in arrayOf(1.toByte(), 2.toByte())) m.files?.add(fName)
         gsp.edit().putLong(
             Settings.spDownloadCount, gsp.getLong(Settings.spDownloadCount, 0L) + 1L
         ).apply()
@@ -359,7 +360,8 @@ class Queuer : ForegroundService() {
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),
-        VIDEO("video/mp4", "mp4", 2)
+        VIDEO("video/mp4", "mp4", 2),
+        AUDIO("audio/mp4", "m4a", 3),
     }
 
     data class Link(val link: String, var qud: Queued? = null)

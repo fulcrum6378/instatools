@@ -116,7 +116,7 @@ open class Rest {
 
     class Reels<R>(
         val reels: Map<String, R>,
-        val reels_media: Array<R>,
+        //val reels_media: Array<R>,
     ) : Rest() where R : Reel
 
     abstract class Reel(

@@ -24,9 +24,17 @@
         tools:ignore="UnusedAttribute">
 
         <ImageView
+            android:id="@+id/volume"
+            style="@style/expandableButton"
+            android:src="@drawable/volume_up"
+            android:tooltipText="@string/muteSound"
+            android:visibility="gone" />
+
+        <ImageView
             android:id="@+id/download"
             style="@style/expandableButton"
             android:src="@drawable/download"
+            android:tooltipText="@string/download"
             android:visibility="gone" />
 
         <ImageView
@@ -41,6 +49,13 @@
             style="@style/expandableButton"
             android:src="@drawable/download_all"
             android:tooltipText="@string/downloadAll"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/downloadAudio"
+            style="@style/expandableButton"
+            android:src="@drawable/download_audio"
+            android:tooltipText="@string/downloadAudio"
             android:visibility="gone" />
 
         <ImageView

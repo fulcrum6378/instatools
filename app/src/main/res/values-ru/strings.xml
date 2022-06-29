@@ -1,5 +1,4 @@
 <resources>
-
     <!-- #GLOBAL -->
     <string name="guest">Гость</string>
     <string name="navOpen">Открытым</string>
@@ -9,7 +8,6 @@
     <string name="signOut">Выход</string>
     <string name="download">Скачать</string>
     <string name="remove">Удалять</string>
-    <string name="openLink">Открыть ссылку</string>
     <string name="ok">В ПОРЯДКЕ!</string>
     <string name="cancel">Отмена</string>
     <string name="no">Нет</string>
@@ -46,6 +44,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Скачать все слайды</string>
     <string name="downloadThis">Скачать только этот слайд</string>
+    <string name="downloadAudio">Скачать аудио</string>
+    <string name="muteSound">Воспроизвести/отключить звук</string>
     <string-array name="bytes">
         <item>%d Б</item>
         <item>%d КБ</item>
@@ -61,6 +61,9 @@
     <string name="save">Сохранять</string>
     <string name="tryAgain">Попробуйте еще раз</string>
     <string name="openFolder">Открыть в папке</string>
+    <string name="ourIGPage">Наша страница в инстаграм</string>
+    <string name="googlePlay">Гугл игры</string>
+    <string name="galaxyStore">Магазин Галактики</string>
 
     <!-- Login -->
     <string name="addAccount">Добавить аккаунт</string>
@@ -75,6 +78,7 @@
     <string name="guestDesc">Вы используете это приложение в гостевом режиме.\nТаким образом, вы не можете использовать эту функцию!</string>
     <string name="signOutSure">Вы уверены, что хотите выйти из своей учетной записи Instagram?</string>
     <string name="mtSearch">Введите имя профиля или ссылку&#8230;</string>
+    <string name="supportDesc">По любому вопросу, критике, предложению или чему-то еще, что вы хотели бы нам сообщить, вы можете связаться с нами, используя следующие способы:\n\nБудем рады вашим комментариям и ответим в ближайшее время&#8230;</string>
     <string name="terminateBgTasks">Некоторые задачи выполняются в фоновом режиме. Вы уверены, что хотите уничтожить их всех?</string>
     <string name="alsoDeleteData">Также удалить мои пользовательские данные и настройки</string>
     <string name="toExit">Нажмите дважды, чтобы выйти&#8230;</string>

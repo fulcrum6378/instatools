@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">InstaTools</string>
 
     <!-- #GLOBAL -->
+    <string name="ourIG" translatable="false">\@instatools.apk</string>
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
@@ -10,7 +11,6 @@
     <string name="signOut">Sign Out</string>
     <string name="download">Download</string>
     <string name="remove">Remove</string>
-    <string name="openLink">Open Link</string>
     <string name="ok">OK</string><!--DO NOT DELETE-->
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
@@ -47,6 +47,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
+    <string name="downloadAudio">Download Audio</string>
+    <string name="muteSound">Play/Mute Sound</string>
     <string-array name="bytes" translatable="false">
         <item>%d B</item>
         <item>%d KB</item>
@@ -62,6 +64,9 @@
     <string name="save">Save</string>
     <string name="tryAgain">Try Again</string>
     <string name="openFolder">Open in Folder</string>
+    <string name="ourIGPage">Our Instagram Page</string>
+    <string name="googlePlay" translatable="false">Google Play</string>
+    <string name="galaxyStore">Galaxy Store</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -76,6 +81,7 @@
     <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Enter a profile name or link&#8230;</string>
+    <string name="supportDesc">For any kind of question, criticism, suggestion, or anything else you\'d like to tell us, you can contact us using the following methods:\n\nWe\'ll be glad to hear your comments and we\'ll answer as soon as possible&#8230;</string>
     <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="toExit">Double tap to exit&#8230;</string>

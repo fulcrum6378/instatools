@@ -37,8 +37,8 @@ abstract class Database : RoomDatabase() {
         @Delete
         fun deleteFriend(item: Friend)
 
-        @Query("DELETE FROM Friend")
-        fun deleteFriends(): Int
+        /*@Query("DELETE FROM Friend")
+        fun deleteFriends(): Int*/
 
 
         @Query("SELECT * FROM Queued")
@@ -56,8 +56,8 @@ abstract class Database : RoomDatabase() {
         @Delete
         fun deleteQueued(item: Queued)
 
-        @Query("DELETE FROM Queued")
-        fun deleteQueueds(): Int
+        /*@Query("DELETE FROM Queued")
+        fun deleteQueueds(): Int*/
 
 
         @Query("SELECT * FROM Exportable")
@@ -101,8 +101,8 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Followable LIMIT 1")
         fun aFollowable(): List<Followable>
 
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addFollowable(item: Followable): Long
+        /*@Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun addFollowable(item: Followable): Long*/
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addFollowables(items: List<Followable>): List<Long>

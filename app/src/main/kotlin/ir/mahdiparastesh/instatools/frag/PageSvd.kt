@@ -101,7 +101,7 @@ class PageSvd : BasePageMain(), Selective {
         HANDLE_SHOW_AD to { c.loadInterstitial(R.string.interUnsaving, true) },
         HANDLE_INIT_QUEUER to {
             Downloads.initService(c, "")
-            if (!UiTools.hasReviewedApp(c)) UiTools.reviewApp(c)
+            //if (!UiTools.hasReviewedApp(c)) UiTools.reviewApp(c) // TODO
         },
         HANDLE_REALLY_NO_MORE to {
             val number = c.m.saved?.hiddenItems()

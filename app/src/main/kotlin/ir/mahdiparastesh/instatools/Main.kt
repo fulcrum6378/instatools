@@ -31,6 +31,7 @@ import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
+import ir.mahdiparastesh.instatools.databinding.SupportMethodsBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
@@ -149,10 +150,12 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        if (ReviewTeamFoolery.playCensor || ReviewTeamFoolery.galaxyCensor)
+        if (ReviewTeamFoolery.playCensor || ReviewTeamFoolery.galaxyCensor) {
             b.nav.menu.findItem(R.id.mnMassFollower)?.isVisible = false
-        if (ReviewTeamFoolery.galaxyCensor)
-            b.nav.menu.findItem(R.id.mnDownloads)?.isVisible = false
+            b.nav.menu.findItem(R.id.mnSupport)?.isVisible = false
+            if (ReviewTeamFoolery.galaxyCensor)
+                b.nav.menu.findItem(R.id.mnDownloads)?.isVisible = false
+        }
 
         // Miscellaneous
         if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
@@ -263,9 +266,35 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                         onError = { signOut(bd.root.isChecked) }
                     ) { signOut(bd.root.isChecked) }
                 }
-            }.show()
-            true
-        }
+            }.show(); true; }
+        R.id.mnSupport -> {
+            val bs = SupportMethodsBinding.inflate(layoutInflater)
+            bs.instagram.setOnClickListener { UiTools.openProfile(this@Main, UiTools.OUR_IG) }
+            bs.googlePlay.setOnClickListener {
+                if (!UiTools.hasReviewedApp(this@Main)) UiTools.reviewApp(this@Main)
+                else UiTools.openLink(
+                    this@Main, "https://play.google.com/store/apps/details" +
+                            "?id=ir.mahdiparastesh.instatools.beth"
+                )
+            }
+            //if (BuildConfig.FLAVOR != "galaxy") bs.galaxyStore.vis(false) else {
+            Glide.with(c).load("https://galaxystore.samsung.com/galaxyapps.png")
+                .into(bs.galaxyStoreIv)
+            bs.galaxyStore.setOnClickListener {
+                UiTools.openLink(
+                    this@Main, "https://galaxystore.samsung.com/detail/" +
+                            "ir.mahdiparastesh.instatools.beth"
+                )
+            }
+            //}
+            AlertDialog.Builder(
+                ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Secondary)
+            ).apply {
+                setTitle(R.string.stHelp)
+                setMessage(R.string.supportDesc)
+                setView(bs.root)
+                setNeutralButton(R.string.ok, null)
+            }.show(); true; }
         else -> super.onOptionsItemSelected(item)
     }
 

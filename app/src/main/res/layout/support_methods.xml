@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="20sp"
+    android:paddingBottom="5sp"
+    android:theme="@style/Theme.InstaTools.Secondary"
+    tools:ignore="ContentDescription">
+
+    <LinearLayout
+        android:id="@+id/instagram"
+        style="@style/supportMethodItem">
+
+        <ImageView
+            style="@style/dialogItemIv"
+            android:src="@mipmap/launcher" />
+
+        <LinearLayout style="@style/dialogItemTvLl">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/dialogItemTv1"
+                android:text="@string/ourIG" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/dialogItemTv2"
+                android:text="@string/ourIGPage" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/googlePlay"
+        style="@style/supportMethodItem">
+
+        <ImageView
+            style="@style/dialogItemIv"
+            android:src="@drawable/google_play" />
+
+        <LinearLayout style="@style/dialogItemTvLl">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/dialogItemTv1"
+                android:text="@string/googlePlay" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/galaxyStore"
+        style="@style/supportMethodItem">
+
+        <ImageView
+            android:id="@+id/galaxyStoreIv"
+            style="@style/dialogItemIv" />
+
+        <LinearLayout style="@style/dialogItemTvLl">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/dialogItemTv1"
+                android:text="@string/galaxyStore" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

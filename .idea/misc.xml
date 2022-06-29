@@ -7,6 +7,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable-night/menu_item.xml" value="0.1845" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable-night/path_selector.xml" value="0.1" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/add.xml" value="0.1015625" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/audio.xml" value="0.1845" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button.xml" value="0.105" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_1.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/button_accent.xml" value="0.184" />
@@ -26,6 +27,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/done_unf.xml" value="0.182" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download.xml" value="0.175" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download_all.xml" value="0.1865" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download_audio.xml" value="0.1845" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/download_one.xml" value="0.1865" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/edit.xml" value="0.186" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/error.xml" value="0.1815" />
@@ -33,7 +35,9 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/exit.xml" value="0.1795" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/favourite.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/follow.xml" value="0.135" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/google_play.xml" value="0.1845" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/guest.xml" value="0.1815" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/help.xml" value="0.1845" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/ig_bg.xml" value="0.1045" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/info.xml" value="0.192" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/instagram.xml" value="0.1815" />
@@ -73,6 +77,7 @@
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/unfollowers_on.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/up.xml" value="0.1815" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/video.xml" value="0.1015" />
+        <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/volume_up.xml" value="0.1845" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/drawable/welcome.xml" value="0.240625" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/bold.xml" value="0.2546875" />
         <entry key="..\:/Users/fulcr/Projects/InstaTools/app/src/main/res/font-ar/light.xml" value="0.2546875" />

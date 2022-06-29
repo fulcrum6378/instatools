@@ -44,6 +44,7 @@ import java.util.*
 import kotlin.math.abs
 
 object UiTools {
+    const val OUR_IG = "instatools.apk"
     const val DATE_FORMAT = "yyyy.MM.dd"
     const val TIME_FORMAT = "hh:mm:ss"
     const val PROFILE = "https://www.instagram.com/%s/"
@@ -86,6 +87,15 @@ object UiTools {
                 Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
                     .setPackage(INSTA_PACKAGE)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (e: ActivityNotFoundException) {
+        }
+    }
+
+    fun openLink(c: Activity, link: String) {
+        try {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(link)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } catch (e: ActivityNotFoundException) {
         }

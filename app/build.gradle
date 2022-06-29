@@ -12,7 +12,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 32
-        versionName '19.3'
+        versionName '19.6'
     }
 
     signingConfigs {
@@ -33,10 +33,10 @@ android {
 
     flavorDimensions('store')
     productFlavors {
-        def beth_version = 26
+        def beth_version = 27
         all { dimension 'store' }
         iran {
-            versionCode 55 // 38
+            versionCode 56 // 38
             signingConfig signingConfigs.aleph
         }
         play {

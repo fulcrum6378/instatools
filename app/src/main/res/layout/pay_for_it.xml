@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/rateUs"
-        style="@style/payForItItem">
+        style="@style/dialogItem">
 
         <ImageView
             style="@style/payForItItemIv"
@@ -20,16 +20,16 @@
         <LinearLayout style="@style/payForItItemTvLl">
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/payForItItemTv1"
+                style="@style/dialogItemTv1"
                 android:text="@string/rateUs" />
 
-            <androidx.appcompat.widget.AppCompatTextView style="@style/payForItItemTv2" />
+            <androidx.appcompat.widget.AppCompatTextView style="@style/dialogItemTv2" />
         </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/watchAnAd"
-        style="@style/payForItItem">
+        style="@style/dialogItem">
 
         <ImageView
             style="@style/payForItItemIv"
@@ -38,10 +38,10 @@
         <LinearLayout style="@style/payForItItemTvLl">
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/payForItItemTv1"
+                style="@style/dialogItemTv1"
                 android:text="@string/watchAnAd" />
 
-            <androidx.appcompat.widget.AppCompatTextView style="@style/payForItItemTv2" />
+            <androidx.appcompat.widget.AppCompatTextView style="@style/dialogItemTv2" />
         </LinearLayout>
     </LinearLayout>
 

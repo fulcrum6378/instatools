@@ -8,7 +8,6 @@
     <string name="signOut">Sair</string>
     <string name="download">Download</string>
     <string name="remove">Remover</string>
-    <string name="openLink">Link aberto</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="no">Não</string>
@@ -45,6 +44,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Baixe todos os slides</string>
     <string name="downloadThis">Baixe apenas este slide</string>
+    <string name="downloadAudio">Baixar áudio</string>
+    <string name="muteSound">Reproduzir/Silenciar som</string>
     <string name="maximum">Máximo: %s</string>
     <string name="unlimited">Ilimitada</string>
     <string name="addShortcut">Adicionar atalho</string>
@@ -53,6 +54,8 @@
     <string name="save">Salve</string>
     <string name="tryAgain">Tente novamente</string>
     <string name="openFolder">Abrir na pasta</string>
+    <string name="ourIGPage">Nossa página no Instagram</string>
+    <string name="galaxyStore">Galaxy Store</string>
 
     <!-- Login -->
     <string name="addAccount">Adicionar Conta</string>
@@ -67,6 +70,7 @@
     <string name="guestDesc">Você está usando este aplicativo no modo visitante.\nPortanto, você não pode usar esse recurso!</string>
     <string name="signOutSure">Tem certeza de que deseja sair da sua conta do Instagram?</string>
     <string name="mtSearch">Insira um nome de perfil ou link&#8230;</string>
+    <string name="supportDesc">Para qualquer tipo de dúvida, crítica, sugestão ou qualquer outra coisa que queira nos contar, você pode nos contatar através dos seguintes meios:\n\nFicaremos felizes em ouvir seus comentários e responderemos o mais rápido possível&#8230;</string>
     <string name="terminateBgTasks">Algumas tarefas estão sendo executadas em segundo plano. Tem certeza de que deseja encerrar todos eles?</string>
     <string name="alsoDeleteData">Excluir também meus dados e configurações de usuário</string>
     <string name="toExit">Toque duas vezes para sair&#8230;</string>

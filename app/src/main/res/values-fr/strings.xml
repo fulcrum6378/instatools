@@ -8,7 +8,6 @@
     <string name="signOut">Se déconnecter</string>
     <string name="download">Télécharger</string>
     <string name="remove">Retirer</string>
-    <string name="openLink">Ouvrir le lien</string>
     <string name="ok">D\'ACCORD</string>
     <string name="cancel">Annuler</string>
     <string name="no">Non</string>
@@ -45,6 +44,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Télécharger toutes les diapositives</string>
     <string name="downloadThis">Télécharger uniquement cette diapositive</string>
+    <string name="downloadAudio">Télécharger l\'audio</string>
+    <string name="muteSound">Lire/couper le son</string>
     <string name="maximum">Maximum: %s</string>
     <string name="unlimited">Illimité</string>
     <string name="addShortcut">Ajouter un raccourci</string>
@@ -53,6 +54,8 @@
     <string name="save">Sauvegarder</string>
     <string name="tryAgain">Réessayer</string>
     <string name="openFolder">Ouvrir dans le dossier</string>
+    <string name="ourIGPage">Notre page Instagram</string>
+    <string name="galaxyStore">Magasin Galaxie</string>
 
     <!-- Login -->
     <string name="addAccount">Ajouter un compte</string>
@@ -67,6 +70,7 @@
     <string name="guestDesc">Vous utilisez cette application en mode Invité.\nVous ne pouvez donc pas utiliser cette fonctionnalité !</string>
     <string name="signOutSure">Êtes-vous sûr de vouloir vous déconnecter de votre compte Instagram ?</string>
     <string name="mtSearch">Entrez un nom de profil ou un lien&#8230;</string>
+    <string name="supportDesc">Pour tout type de question, critique, suggestion ou toute autre chose que vous aimeriez nous dire, vous pouvez nous contacter en utilisant les méthodes suivantes :\n\nNous serons heureux d\'entendre vos commentaires et nous vous répondrons dès que possible&#8230;</string>
     <string name="terminateBgTasks">Certaines tâches s\'exécutent en arrière-plan. Êtes-vous sûr de vouloir tous les résilier ?</string>
     <string name="alsoDeleteData">Supprimer également mes données d\'utilisateur et mes paramètres</string>
     <string name="toExit">Appuyez deux fois pour quitter&#8230;</string>

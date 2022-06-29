@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.list
 
 import android.net.Uri
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.media.AudioAttributesCompat
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.UriMediaItem
@@ -11,13 +12,15 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.databinding.ListCarBinding
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.serv.Queuer.MediaType
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-class ListCar(val c: BaseActivity, private val med: Media) :
-    RecyclerView.Adapter<AnyViewHolder<ListCarBinding>>() {
+class ListCar(
+    val c: BaseActivity,
+    private val med: Media,
+    private val muteSound: MutableLiveData<Boolean>
+) : RecyclerView.Adapter<AnyViewHolder<ListCarBinding>>() {
     private val slides = arrayListOf<Slide>()
     val players: ArrayList<MediaPlayer?>
 
@@ -72,9 +75,12 @@ class ListCar(val c: BaseActivity, private val med: Media) :
                                 .build()
                         ).build()
                     )
+                    playerVolume = if (muteSound.value == false) 0f else 1f
                     h.b.video.setPlayer(this)
                     prepare()
                 }
+            }
+            else -> { /* IMPOSSIBLE */
             }
         }
     }

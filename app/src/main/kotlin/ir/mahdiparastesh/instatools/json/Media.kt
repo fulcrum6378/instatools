@@ -30,7 +30,7 @@ class Media(
     //val facepile_top_likers: Array<Any>,
     //val featured_products_cta: Any?,
     //val filter_type: Float,
-    //val has_audio: Boolean?,
+    val has_audio: Boolean?,
     //val has_liked: Boolean,
     //val has_more_comments: Boolean,
     //val hide_view_all_comment_entrypoint: Boolean,
@@ -107,6 +107,9 @@ class Media(
     // In Java, more methods doesn't not mean "takes more memory", nor does it, in itself,
     // influence how long it takes to construct the object, so it's not a concern for the
     // heaviness of an object in Java.
+
+    fun hasAudio() = has_audio == true ||
+            (carousel_media != null && carousel_media?.any { it.media_type == 2f } == true)
 
 
     class MediaWrapperApi(

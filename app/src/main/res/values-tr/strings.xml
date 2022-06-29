@@ -8,7 +8,6 @@
     <string name="signOut">Oturumu Kapat</string>
     <string name="download">İndirmek</string>
     <string name="remove">Kaldırmak</string>
-    <string name="openLink">Linki aç</string>
     <string name="ok">Iyi</string>
     <string name="cancel">İptal</string>
     <string name="no">Hayır</string>
@@ -45,6 +44,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Tüm slaytları indir</string>
     <string name="downloadThis">Yalnızca bu slaydı indir</string>
+    <string name="downloadAudio">Ses İndir</string>
+    <string name="muteSound">Oynat/Sesi Kapat</string>
     <string name="maximum">Maksimum: %s</string>
     <string name="unlimited">Sınırsız</string>
     <string name="addShortcut">Kısayol ekle</string>
@@ -53,6 +54,8 @@
     <string name="save">Kaydetmek</string>
     <string name="tryAgain">Tekrar deneyin</string>
     <string name="openFolder">Klasörde Aç</string>
+    <string name="ourIGPage">Instagram Sayfamız</string>
+    <string name="galaxyStore">Galaksi Mağazası</string>
 
     <!-- Login -->
     <string name="addAccount">Hesap Eklemek</string>
@@ -67,6 +70,7 @@
     <string name="guestDesc">Bu uygulamayı misafir modunda kullanıyorsunuz.\nYani bu özelliği kullanamazsınız!</string>
     <string name="signOutSure">Instagram hesabınızdan çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="mtSearch">Bir profil adı veya bağlantı girin&#8230;</string>
+    <string name="supportDesc">Her türlü soru, eleştiri, öneri veya bize iletmek istediğiniz herhangi bir şey için aşağıdaki yöntemlerle bizimle iletişime geçebilirsiniz:\n\nYorumlarınızı duymaktan memnuniyet duyacağız ve en kısa sürede cevap vereceğiz&#8230;</string>
     <string name="terminateBgTasks">Bazı görevler arka planda çalışıyor. Hepsini sonlandırmak istediğinizden emin misiniz?</string>
     <string name="alsoDeleteData">Ayrıca kullanıcı verilerimi ve ayarlarımı sil</string>
     <string name="toExit">Çıkmak için iki kez dokunun&#8230;</string>

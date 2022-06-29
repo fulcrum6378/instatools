@@ -1,9 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +30,8 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         val qud = c.m.queueds?.getOrNull(i) ?: return
 
         // Main
-        Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
+        if (qud.mediaType != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
+        else h.b.thumb.setImageResource(R.drawable.audio)
         h.b.user.text = "${i + 1}. ${qud.userName ?: "..."}"
         h.b.date.text = UiTools.date(qud.addedAt)
 
@@ -53,14 +51,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         // Clicks
         h.b.root.setOnClickListener {
             c.m.queueds?.getOrNull(h.layoutPosition)?.let {
-                if (it.link.isBlank()) return@let
-                try {
-                    c.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(it.link))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                } catch (e: ActivityNotFoundException) {
-                }
+                if (it.link.isNotBlank()) UiTools.openLink(c, it.link)
             }
         }
         h.b.status.isClickable = qud.failed

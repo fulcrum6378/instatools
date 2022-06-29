@@ -10,7 +10,6 @@
     <string name="signOut">الخروج من الحساب</string>
     <string name="download">تحميل</string>
     <string name="remove">إزالة</string>
-    <string name="openLink">افتح الرابط</string>
     <string name="ok">نعم</string>
     <string name="cancel">إلغاء</string>
     <string name="no">لا</string>
@@ -47,6 +46,8 @@
     <string name="inaccurateTimeSep">،&#160;</string>
     <string name="downloadAll">قم بتنزيل كافة الشرائح</string>
     <string name="downloadThis">قم بتنزيل هذه الشريحة فقط</string>
+    <string name="downloadAudio">قم بتنزيل الصوت فقط</string>
+    <string name="muteSound">تشغيل / كتم الصوت</string>
     <string-array name="bytes">
         <item>%d بايت</item>
         <item>%d كيلوبايت</item>
@@ -62,6 +63,9 @@
     <string name="save">احفظ</string>
     <string name="tryAgain">حاول ثانية</string>
     <string name="openFolder">فتح في المجلد</string>
+    <string name="ourIGPage">صفحتنا فی انستغرام</string>
+    <string name="googlePlay">تطبيقات جوجل</string>
+    <string name="galaxyStore">متجر جالاكسي</string>
 
     <!-- Login -->
     <string name="addAccount">إنشاء حساب</string>
@@ -76,6 +80,7 @@
     <string name="guestDesc">أنت تستخدم هذا التطبيق في وضع الضيف.\nلذلك لا يمكنك استخدام هذه الميزة!</string>
     <string name="signOutSure">هل أنت متأكد أنك تريد تسجيل الخروج من حساب انستغرام الخاص بك؟</string>
     <string name="mtSearch">أدخل اسم ملف تعريف أو ارتباط &#8230;</string>
+    <string name="supportDesc">لأي نوع من الأسئلة أو النقد أو الاقتراح أو أي شيء آخر تود إخبارنا به ، يمكنك الاتصال بنا باستخدام الطرق التالية:\n\nسنكون سعداء لسماع تعليقاتكم وسنقوم بالرد في أقرب وقت ممكن&#8230;</string>
     <string name="terminateBgTasks">تعمل بعض المهام في الخلفية. هل أنت متأكد أنك تريد إنهاء كل منهم؟</string>
     <string name="alsoDeleteData">احذف أيضًا بيانات المستخدم والإعدادات</string>
     <string name="toExit">انقر نقرًا مزدوجًا للخروج &#8230;</string>

@@ -14,6 +14,7 @@ import android.os.Handler
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.lifecycle.MutableLiveData
 import com.android.volley.RequestQueue
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -23,10 +24,10 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
@@ -34,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.apache.commons.text.StringEscapeUtils
 
 class Expandable(
     private val c: BaseActivity,
@@ -50,6 +52,7 @@ class Expandable(
     private var currentAnimator: Animator? = null
     private var startScale: Float? = null
     private var startBounds: RectF? = null
+    private val muteSound = MutableLiveData(false)
 
     companion object {
         const val HANDLE_EXPANDABLE_ERROR = 55
@@ -57,6 +60,12 @@ class Expandable(
     }
 
     init {
+        b.volume.setOnClickListener { muteSound.value = !(muteSound.value ?: false) }
+        muteSound.observe(c) { bb ->
+            b.volume.setImageResource(if (bb) R.drawable.volume_off else R.drawable.volume_up)
+            (b.slider.adapter as ListCar?)?.players
+                ?.forEach { it?.playerVolume = if (bb) 0f else 1f }
+        }
         b.download.setOnClickListener {
             media?.apply {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -110,6 +119,24 @@ class Expandable(
                 }
             }
         }
+        b.downloadAudio.setOnClickListener {
+            val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
+            val audioUrl = (car ?: media)?.audioUrl()?.let { StringEscapeUtils.unescapeXml(it) }
+                ?: return@setOnClickListener
+            media?.apply {
+                CoroutineScope(Dispatchers.IO).launch {
+                    c.dao.addQueued(
+                        Queued(
+                            Persistent.now(), link() ?: audioUrl,
+                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
+                            user.pk, mahdi_reel_user_name ?: user.username,
+                            car?.pk ?: pk, audioUrl, car?.thumb() ?: thumb(), 3.toByte()
+                        )
+                    )
+                    initQueuer()
+                }
+            }
+        }
         b.viewInInsta.setOnClickListener {
             media?.link()?.also {
                 try {
@@ -129,7 +156,7 @@ class Expandable(
 
     private fun loaded() {
         if (media == null) return
-        b.slider.adapter = ListCar(c, media!!)
+        b.slider.adapter = ListCar(c, media!!, muteSound)
         b.indicator.setViewPager2(b.slider)
         b.buttons.vis()
         val isSlider = media?.carousel_media != null
@@ -137,7 +164,9 @@ class Expandable(
         b.downloadAll.vis(isSlider)
         b.downloadThis.vis(isSlider)
         b.download.vis(!isSlider)
-        // TODO media?.audioUrl()
+        val hasAudio = media?.hasAudio() == true
+        b.downloadAudio.vis(hasAudio)
+        b.volume.vis(hasAudio)
     }
 
     fun expand() {

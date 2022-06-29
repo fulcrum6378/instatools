@@ -28,4 +28,8 @@
         android:id="@+id/mnSignOut"
         android:icon="@drawable/exit"
         android:title="@string/signOut" />
+    <item
+        android:id="@+id/mnSupport"
+        android:icon="@drawable/help"
+        android:title="@string/stHelp" />
 </menu>

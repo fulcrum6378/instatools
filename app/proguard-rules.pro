@@ -1,14 +1,14 @@
 -keep class ir.mahdiparastesh.instatools.data.Account { <fields>; }
 -keep class ir.mahdiparastesh.instatools.data.Exportable$Options { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Audible { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Dm { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Dm$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Media { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Media$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.GraphQl { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.GraphQl$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Media { <fields>; }
+-keep class ir.mahdiparastesh.instatools.json.Media$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.PageConfig { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.PageConfig$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Versioned { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Audible { <fields>; }

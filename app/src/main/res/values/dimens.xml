@@ -36,6 +36,7 @@
     <dimen name="searchFont">15sp</dimen>
     <dimen name="simpleLoading">200dp</dimen>
     <dimen name="simpleError">120dp</dimen>
+    <dimen name="dialogItemIv">28sp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">45dp</dimen>
@@ -64,7 +65,6 @@
     <!-- MassFollower -->
     <dimen name="mfPadV">15dp</dimen>
     <dimen name="mfGuideTv">19sp</dimen>
-    <dimen name="mfPayForItIcon">28sp</dimen>
 
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>

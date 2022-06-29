@@ -8,7 +8,6 @@
     <string name="signOut">Austragen</string>
     <string name="download">Download</string>
     <string name="remove">Entfernen</string>
-    <string name="openLink">Verbindung öffnen</string>
     <string name="ok">OK</string>
     <string name="cancel">Absagen</string>
     <string name="no">Nein</string>
@@ -45,6 +44,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Laden Sie alle Folien herunter</string>
     <string name="downloadThis">Laden Sie nur diese Folie herunter</string>
+    <string name="downloadAudio">Audio herunterladen</string>
+    <string name="muteSound">Ton abspielen/stummschalten</string>
     <string name="maximum">Maximal: %s</string>
     <string name="unlimited">Unbegrenzt</string>
     <string name="addShortcut">Verknüpfung hinzufügen</string>
@@ -53,6 +54,8 @@
     <string name="save">Speichern</string>
     <string name="tryAgain">Versuch es noch einmal</string>
     <string name="openFolder">In Ordner öffnen</string>
+    <string name="ourIGPage">Unsere Instagram-Seite</string>
+    <string name="galaxyStore">Galaxy-Shop</string>
 
     <!-- Login -->
     <string name="addAccount">Konto hinzufügen</string>
@@ -67,6 +70,7 @@
     <string name="guestDesc">Sie verwenden diese App im Gastmodus.\nSie können diese Funktion also nicht verwenden!</string>
     <string name="signOutSure">Möchten Sie sich wirklich von Ihrem Instagram-Konto abmelden?</string>
     <string name="mtSearch">Geben Sie einen Profilnamen oder Link ein&#8230;</string>
+    <string name="supportDesc">Bei Fragen, Kritik, Anregungen oder anderen Dingen, die Sie uns mitteilen möchten, können Sie uns auf folgende Weise erreichen:\n\nWir freuen uns auf Ihre Kommentare und werden so schnell wie möglich antworten &#8230;</string>
     <string name="terminateBgTasks">Einige Aufgaben laufen im Hintergrund. Sind Sie sicher, dass Sie alle beenden möchten?</string>
     <string name="alsoDeleteData">Löschen Sie auch meine Benutzerdaten und Einstellungen</string>
     <string name="toExit">Zum Beenden doppeltippen&#8230;</string>

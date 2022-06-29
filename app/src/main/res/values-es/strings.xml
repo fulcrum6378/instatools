@@ -8,7 +8,6 @@
     <string name="signOut">Desconectar</string>
     <string name="download">Descargar</string>
     <string name="remove">Eliminar</string>
-    <string name="openLink">Enlace Abierto</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="no">No</string>
@@ -45,6 +44,8 @@
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Descargar todas las diapositivas</string>
     <string name="downloadThis">Descargar solo esta diapositiva</string>
+    <string name="downloadAudio">Descargar audio</string>
+    <string name="muteSound">Reproducir/Silenciar sonido</string>
     <string name="maximum">Máxima: %s</string>
     <string name="unlimited">Ilimitado</string>
     <string name="addShortcut">Añadir atajo</string>
@@ -53,6 +54,8 @@
     <string name="save">Guardar</string>
     <string name="tryAgain">Intentar otra vez</string>
     <string name="openFolder">Abrir en carpeta</string>
+    <string name="ourIGPage">Nuestra página de Instagram</string>
+    <string name="galaxyStore">Tienda de Galaxias</string>
 
     <!-- Login -->
     <string name="addAccount">Añadir Cuenta</string>
@@ -67,6 +70,7 @@
     <string name="guestDesc">Estás usando esta aplicación en modo invitado.\n¡Así que no puedes usar esta función!</string>
     <string name="signOutSure">¿Estás seguro de que quieres cerrar sesión en tu cuenta de Instagram?</string>
     <string name="mtSearch">Introduce un nombre de perfil o enlace&#8230;</string>
+    <string name="supportDesc">Para cualquier tipo de duda, crítica, sugerencia o cualquier otra cosa que quiera comentarnos, puede ponerse en contacto con nosotros a través de los siguientes medios:\n\nEstaremos encantados de escuchar tus comentarios y te responderemos lo antes posible&#8230;</string>
     <string name="terminateBgTasks">Algunas tareas se ejecutan en segundo plano. ¿Estás seguro de que quieres eliminarlos a todos?</string>
     <string name="alsoDeleteData">Eliminar también mis datos de usuario y configuración</string>
     <string name="toExit">Toca dos veces para salir&#8230;</string>

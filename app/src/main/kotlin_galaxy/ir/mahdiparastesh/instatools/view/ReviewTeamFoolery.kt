@@ -51,8 +51,6 @@ object ReviewTeamFoolery : BaseFoolery() {
             append("SIM operator Name: ${tm.simOperatorName}\n")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 append("SIM carrier ID name: ${tm.simCarrierIdName}\n")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                append("Is world phone? ${tm.isWorldPhone}\n")
             append("Is network roaming? ${tm.isNetworkRoaming}\n")
         }.toString().also {
             if (!BuildConfig.DEBUG) {
