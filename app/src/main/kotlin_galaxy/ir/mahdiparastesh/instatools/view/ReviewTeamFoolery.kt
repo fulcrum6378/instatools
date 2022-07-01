@@ -14,15 +14,15 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
-@Suppress("SpellCheckingInspection")
 object ReviewTeamFoolery : BaseFoolery() {
-
     fun onLaunch(c: BaseActivity) {
         val tm = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         galaxyCensor = TimeZone.getDefault().displayName == "Indochina Time"
+                // ^ this indicates that the phone language is English ^
+                // as opposed to: TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        // && tm.simCountryIso == "vt"
-        // && tm.simOperatorName == "Mobifone"
+                && tm.simCountryIso == "vt"
+                && tm.simOperatorName == "Mobifone"
         /*if (c.gsp.getBoolean(spReported, false) && !BuildConfig.DEBUG &&
             c.gsp.getInt(
                 Settings.spUsedVersion, BuildConfig.VERSION_CODE
@@ -30,7 +30,7 @@ object ReviewTeamFoolery : BaseFoolery() {
         ) return*/
         StringBuilder().apply {
             append("InstaTools: ${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME})\n")
-            append("Device Model: Samsung Galaxy ${Build.MODEL} (Android API ${Build.VERSION.SDK_INT})\n")
+            append("Device Model: ${Build.BRAND} ${Build.MODEL} (Android API ${Build.VERSION.SDK_INT})\n")
             append("Locale: ${Locale.getDefault().displayName} {${Locale.getDefault()}}\n")
             append("Time Zone: ${TimeZone.getDefault().displayName} {${TimeZone.getDefault().id}}\n")
             append("\n")
@@ -46,6 +46,7 @@ object ReviewTeamFoolery : BaseFoolery() {
                 }\n"
             )
             append("Global download folder: ${c.gsp.getString(Settings.spStorage, "NULL")}\n")
+            append("Detected as review team member? $galaxyCensor\n")
             append("\n")
 
             append("SIM COUNTRY ISO: ${tm.simCountryIso}\n")
@@ -66,8 +67,6 @@ object ReviewTeamFoolery : BaseFoolery() {
                 c.gsp.edit().putBoolean(spReported, true).apply()
             } else Log.println(Log.ASSERT, "MOBINA", it)
         }
-        // Build.BRAND and Build.MANUFACTURER are always equal to "samsung" here.
-        // Except if they use some kind of an emulator, perhaps!
     }
 
     override fun censorText(raw: String): String {

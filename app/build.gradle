@@ -33,7 +33,7 @@ android {
 
     flavorDimensions('store')
     productFlavors {
-        def beth_version = 27
+        def beth_version = 28
         all { dimension 'store' }
         iran {
             versionCode 56 // 38

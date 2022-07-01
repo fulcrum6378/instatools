@@ -174,7 +174,7 @@ class PageSvd : BasePageMain(), Selective {
         if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
 
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
-        else b.rv.adapter?.notifyDataSetChanged() // created only once
+        else b.rv.adapter?.notifyDataSetChanged()
 
         // Selection Guide
         if (!asGuest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, false)
@@ -187,7 +187,7 @@ class PageSvd : BasePageMain(), Selective {
             setAnimation(R.raw.guide_selection)
             playAnimation()
             translationX = c.dm.widthPixels * -0.12f
-            translationY = c.dm.widthPixels * -0.01f
+            translationY = c.dm.widthPixels * -0.01f // TODO both cause inconsistencies
             b.root.addView(this, 1)
         }
 
