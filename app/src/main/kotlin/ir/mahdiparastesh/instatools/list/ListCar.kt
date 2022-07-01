@@ -71,7 +71,7 @@ class ListCar(
                     setMediaItem(
                         UriMediaItem.Builder(Uri.parse(it)).setMetadata(
                             MediaMetadata.Builder()
-                                .putString(MediaMetadata.METADATA_KEY_TITLE, med.user.visName())
+                                .putString(MediaMetadata.METADATA_KEY_TITLE, "")
                                 .build()
                         ).build()
                     )

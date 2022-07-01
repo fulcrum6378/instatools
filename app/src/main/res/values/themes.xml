@@ -15,8 +15,8 @@
         <item name="titleTextColor">?attr/colorAccent</item>
         <item name="android:checkboxStyle">@style/Theme.InstaTools.Checkbox</item>
         <item name="android:radioButtonStyle">@style/Theme.InstaTools.Radio</item>
-        <item name="android:popupMenuStyle">@style/Theme.InstaTools.Popup</item>
-        <item name="popupTheme">@style/Theme.InstaTools.Popup</item>
+        <item name="popupTheme">@style/Theme.InstaTools.Popup.Secondary</item>
+        <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">

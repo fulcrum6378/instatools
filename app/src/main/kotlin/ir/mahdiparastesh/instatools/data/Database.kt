@@ -2,11 +2,13 @@ package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @androidx.room.Database(
     entities = [
         Friend::class, Queued::class, Exportable::class, Favourite::class, Followable::class
-    ], version = 7, exportSchema = false
+    ], version = 8, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -44,7 +46,7 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Queued")
         fun queueds(): List<Queued>
 
-        @Query("SELECT * FROM Queued WHERE failed = 0")
+        @Query("SELECT * FROM Queued WHERE status = 0")
         fun readyQueueds(): List<Queued>
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -117,6 +119,11 @@ abstract class Database : RoomDatabase() {
     companion object {
         fun build(c: Context, user: String) = Room
             .databaseBuilder(c, Database::class.java, "$user.db")
+            .addMigrations(object : Migration(7, 8) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("ALTER TABLE Queued RENAME COLUMN failed TO status;")
+                }
+            })
             .fallbackToDestructiveMigration()
             .build()
     }

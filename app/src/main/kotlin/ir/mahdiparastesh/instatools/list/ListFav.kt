@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +23,6 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
         return AnyViewHolder(b)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: AnyViewHolder<ListFavBinding>, i: Int) {
         val fav = c.m.fav?.getOrNull(i) ?: return
         Glide.with(c.c).load(fav.photo).into(h.b.photo)

@@ -5,15 +5,12 @@
         <item name="backgroundColor">?attr/colorPrimary</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
-        <item name="android:itemBackground">@drawable/menu_item_secondary_night</item>
-        <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
     </style>
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
         <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
-        <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
@@ -28,7 +25,6 @@
         <item name="defCA">@color/defCA</item>
         <item name="dmFromMe">@color/dmFromMe</item>
         <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
-        <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
 
@@ -37,6 +33,7 @@
         <item name="fontFamily">@font/medium</item>
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="colorPrimaryWeak">@color/weakWhite</item>
+        <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Primary" parent="Theme.InstaTools.Popup">
@@ -47,6 +44,7 @@
     <style name="Theme.InstaTools.Popup.Secondary" parent="Theme.InstaTools.Popup">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorAccent">@color/defCA</item>
+        <item name="android:itemBackground">@drawable/menu_item_secondary_night</item>
     </style>
 
     <style name="Theme.InstaTools.Popup.Tertiary" parent="Theme.InstaTools.Popup">

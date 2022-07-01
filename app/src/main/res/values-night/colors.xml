@@ -14,6 +14,9 @@
         <item>@color/defCA</item>
     </array>
 
+    <!-- #GLOBAL -->
+    <color name="expandableHeaderBg">#AA8B006D</color>
+
     <!-- Main -->
     <color name="unfollowers">@color/defCA</color>
     <color name="saved">@color/defCA</color>

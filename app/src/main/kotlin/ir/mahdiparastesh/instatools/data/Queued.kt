@@ -15,12 +15,18 @@ class Queued(
     var url: String? = null,
     var thumb: String? = null,
     var mediaType: Byte? = null,
-    var failed: Boolean = false
+    var status: Byte = 0, // 0=>Pending, 1=>Failed, 2=>Suspended
 ) {
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
     fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date!!)}_$itemId.$ext"
+
+    fun isMainFile() = mediaType !in arrayOf(3.toByte())
+
+    fun isReady() = status == 0.toByte()
+
+    fun isFailed() = status == 1.toByte()
 
     companion object {
         fun find(it: Queued, inList: List<Queued>?): Int? {

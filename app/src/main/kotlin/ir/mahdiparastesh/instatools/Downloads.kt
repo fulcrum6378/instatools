@@ -67,7 +67,7 @@ class Downloads : ServiceOwnerActivity() {
                     HANDLE_DELETED -> {
                         if (m.queueds?.size in 1..5)
                             loadInterstitial(R.string.interDownloaded) {
-                                m.queueds?.filter { !it.failed }.isNullOrEmpty()
+                                m.queueds?.filter { it.isReady() }.isNullOrEmpty()
                             }
                         find(msg)?.let {
                             m.queueds!!.removeAt(it)
@@ -166,8 +166,8 @@ class Downloads : ServiceOwnerActivity() {
             R.id.dtRetryAll -> if (m.queueds != null) CoroutineScope(Dispatchers.IO).launch {
                 var any = false
                 m.queueds?.forEach {
-                    if (!it.failed) return@forEach
-                    it.failed = false
+                    if (it.isReady()) return@forEach
+                    it.status = 0.toByte()
                     dao.updateQueued(it)
                     any = true
                 }

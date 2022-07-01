@@ -18,6 +18,7 @@ import androidx.lifecycle.MutableLiveData
 import com.android.volley.RequestQueue
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.json.Api
@@ -167,6 +168,10 @@ class Expandable(
         val hasAudio = media?.hasAudio() == true
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
+        if (c !is Viewer) media?.user?.also { user ->
+            b.username.text = "@${user.username}"
+            b.username.setOnClickListener { UiTools.openProfile(c, user.username) }
+        }
     }
 
     fun expand() {
@@ -174,6 +179,7 @@ class Expandable(
         zoomed = true
         onZoomChanged(zoomed)
         currentAnimator?.cancel()
+        b.username.text = ""
         if (media == null) queue.adder = Api<Media.MediaWrapperApi>(
             c, Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.MediaWrapperApi::class,
             handler, autoQueue = false, cache = true
@@ -225,7 +231,7 @@ class Expandable(
                 with(ObjectAnimator.ofFloat(b.slider, View.SCALE_Y, startScale!!, 1f))
                 with(
                     ObjectAnimator.ofArgb(
-                        b.slider, "backgroundColor", c.color(R.color.tp), colorBg
+                        b.slider, "backgroundColor", c.color(android.R.color.transparent), colorBg
                     )
                 ) // IT WORKS BITCH
             }

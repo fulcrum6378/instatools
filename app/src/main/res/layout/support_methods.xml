@@ -21,7 +21,8 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/dialogItemTv1"
-                android:text="@string/ourIG" />
+                android:text="@string/ourIG"
+                android:textAlignment="viewStart" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/dialogItemTv2"

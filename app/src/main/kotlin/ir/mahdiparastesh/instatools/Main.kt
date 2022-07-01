@@ -277,16 +277,16 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                             "?id=ir.mahdiparastesh.instatools.beth"
                 )
             }
-            //if (BuildConfig.FLAVOR != "galaxy") bs.galaxyStore.vis(false) else {
-            Glide.with(c).load("https://galaxystore.samsung.com/galaxyapps.png")
-                .into(bs.galaxyStoreIv)
-            bs.galaxyStore.setOnClickListener {
-                UiTools.openLink(
-                    this@Main, "https://galaxystore.samsung.com/detail/" +
-                            "ir.mahdiparastesh.instatools.beth"
-                )
+            if (BuildConfig.FLAVOR != "galaxy") bs.galaxyStore.vis(false) else {
+                Glide.with(c).load("https://galaxystore.samsung.com/galaxyapps.png")
+                    .into(bs.galaxyStoreIv)
+                bs.galaxyStore.setOnClickListener {
+                    UiTools.openLink(
+                        this@Main, "https://galaxystore.samsung.com/detail/" +
+                                "ir.mahdiparastesh.instatools.beth"
+                    )
+                }
             }
-            //}
             AlertDialog.Builder(
                 ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Secondary)
             ).apply {
@@ -410,9 +410,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
         CoroutineScope(Dispatchers.IO).launch {
-            if (bd) {
-                Settings.deleteDb(m.acc!!.id.toString())
-                Settings.deleteSp(this@Main)
+            if (bd) m.acc?.also { acc ->
+                Settings.deleteDb(acc.id.toString())
+                Settings.deleteSp(this@Main, acc)
             }
             Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc?.id } })
             withContext(Dispatchers.Main) { switchAcc() }

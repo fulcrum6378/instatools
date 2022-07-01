@@ -14,13 +14,15 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
+@Suppress("SpellCheckingInspection")
 object ReviewTeamFoolery : BaseFoolery() {
-    private const val spReported = "rtf_reported"
 
     fun onLaunch(c: BaseActivity) {
         val tm = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         galaxyCensor = TimeZone.getDefault().displayName == "Indochina Time"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        // && tm.simCountryIso == "vt"
+        // && tm.simOperatorName == "Mobifone"
         /*if (c.gsp.getBoolean(spReported, false) && !BuildConfig.DEBUG &&
             c.gsp.getInt(
                 Settings.spUsedVersion, BuildConfig.VERSION_CODE
@@ -65,6 +67,7 @@ object ReviewTeamFoolery : BaseFoolery() {
             } else Log.println(Log.ASSERT, "MOBINA", it)
         }
         // Build.BRAND and Build.MANUFACTURER are always equal to "samsung" here.
+        // Except if they use some kind of an emulator, perhaps!
     }
 
     override fun censorText(raw: String): String {

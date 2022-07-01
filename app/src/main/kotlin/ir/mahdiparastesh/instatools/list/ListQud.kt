@@ -1,7 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.annotation.SuppressLint
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieDrawable
@@ -25,7 +23,6 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
     ): AnyViewHolder<ListQudBinding> =
         AnyViewHolder(ListQudBinding.inflate(c.layoutInflater, parent, false))
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
         val qud = c.m.queueds?.getOrNull(i) ?: return
 
@@ -36,17 +33,19 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.date.text = UiTools.date(qud.addedAt)
 
         // Status
-        h.b.status.setAnimation(
+        if (qud.status == 2.toByte())
+            h.b.status.setImageResource(R.drawable.play)
+        else h.b.status.setAnimation(
             when {
-                qud.failed -> R.raw.failed
+                qud.isFailed() -> R.raw.failed
                 i > 0 || !Queuer.active.value!! -> R.raw.pending
                 else -> R.raw.download
             }
         )
-        h.b.status.repeatCount = if (qud.failed) 0 else LottieDrawable.INFINITE
-        val pad = if (!qud.failed) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
+        h.b.status.repeatCount = if (qud.isFailed()) 0 else LottieDrawable.INFINITE
+        val pad =
+            if (!qud.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
         h.b.status.setPadding(pad, pad, pad, pad)
-        h.b.status.isClickable = qud.failed
 
         // Clicks
         h.b.root.setOnClickListener {
@@ -54,11 +53,15 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                 if (it.link.isNotBlank()) UiTools.openLink(c, it.link)
             }
         }
-        h.b.status.isClickable = qud.failed
-        h.b.status.setOnClickListener(if (qud.failed) View.OnClickListener {
+        h.b.status.setOnClickListener {
+            if (h.layoutPosition == 0) return@setOnClickListener
             c.m.queueds?.getOrNull(h.layoutPosition)?.apply {
                 CoroutineScope(Dispatchers.IO).launch {
-                    failed = false
+                    when (status) {
+                        0.toByte() -> status = 2.toByte()
+                        1.toByte() -> status = 0.toByte()
+                        2.toByte() -> status = 0.toByte()
+                    }
                     c.dao.updateQueued(this@apply)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
@@ -66,7 +69,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                     }
                 }
             }
-        } else null)
+        }
 
         // Separator
         h.b.sep.vis(i < itemCount - 1)

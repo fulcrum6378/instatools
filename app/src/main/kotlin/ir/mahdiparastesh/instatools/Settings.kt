@@ -105,7 +105,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             ).forEach { f -> if (f.exists()) f.delete() }
         }
 
-        @Suppress("unused", "RedundantSuspendModifier")
+        @Suppress("RedundantSuspendModifier")
         suspend fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
             File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }

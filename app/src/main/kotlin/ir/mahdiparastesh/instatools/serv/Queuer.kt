@@ -89,7 +89,7 @@ class Queuer : ForegroundService() {
                         handleLinks()
                     }
                     Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
-                        qud!!.failed = true
+                        qud!!.status = 1.toByte()
                         Thread { dao.updateQueued(qud!!) }.start()
                         Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, qud)
                             ?.sendToTarget()
@@ -255,7 +255,7 @@ class Queuer : ForegroundService() {
 
             reqQueue.add(
                 object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
-                    queue[q].failed = true
+                    queue[q].status = 1.toByte()
                     Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, queue[q])
                         ?.sendToTarget()
                     CoroutineScope(Dispatchers.IO).launch {
@@ -306,6 +306,7 @@ class Queuer : ForegroundService() {
             q.userName in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
                 ?.exists() == true ->
                 DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
+            !q.isMainFile() -> stem
             bPreference(Settings.spBranching, Settings.defSpBranching) ->
                 stem.findFile(q.userName!!) ?: stem.createDirectory(q.userName!!)
             else -> stem
@@ -320,7 +321,7 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
-        if (q.mediaType in arrayOf(1.toByte(), 2.toByte())) m.files?.add(fName)
+        if (q.isMainFile()) m.files?.add(fName)
         gsp.edit().putLong(
             Settings.spDownloadCount, gsp.getLong(Settings.spDownloadCount, 0L) + 1L
         ).apply()

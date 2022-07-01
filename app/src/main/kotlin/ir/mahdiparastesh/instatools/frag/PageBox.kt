@@ -352,11 +352,12 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             ) { page ->
                 if (!active) return@Api
                 if (c.m.dmInbox == null) c.m.dmInbox = page.inbox
-                else {
-                    c.m.dmInbox?.threads?.addAll(page.inbox.threads)
-                    c.m.dmInbox?.threads?.sortByDescending { it.last_activity_at }
-                    c.m.dmInbox?.oldest_cursor = page.inbox.oldest_cursor
-                    c.m.dmInbox?.has_older = page.inbox.has_older
+                else c.m.dmInbox?.apply {
+                    threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
+                    threads.addAll(page.inbox.threads)
+                    threads.sortByDescending { it.last_activity_at }
+                    oldest_cursor = page.inbox.oldest_cursor
+                    has_older = page.inbox.has_older
                 }
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 interrupt()
@@ -371,12 +372,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         override fun run() {
             super.run()
             queue.adder = Api<Rest.InboxThread>(
-                c,
-                Api.Endpoint.DIRECT.url.format(threadId, oldestId, limit),
-                Rest.InboxThread::class,
-                handler,
-                autoQueue = false,
-                onError = { interrupt() }
+                c, Api.Endpoint.DIRECT.url.format(threadId, oldestId, limit),
+                Rest.InboxThread::class, handler, autoQueue = false, onError = { interrupt() }
             ) { inbox ->
                 if (!active) return@Api
                 if (inbox.status == "ok")

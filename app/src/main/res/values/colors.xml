@@ -10,7 +10,6 @@
     <!--<color name="CTL">#406AC9</color>-->
     <color name="CTW">#44406AC9</color>
 
-    <color name="tp">#00000000</color>
     <color name="shadow">#55000000</color>
     <color name="defBG">#FFF</color>
     <color name="defCALight">#262626</color>
@@ -28,8 +27,9 @@
     <color name="weakWhite">#EEFFFFFF</color>
 
     <!-- #GLOBAL -->
-    <color name="selectedTick">#FFFFFF</color>
+    <color name="selectedTick">#FFF</color>
     <color name="shimmerIvBg">#DADADA</color>
+    <color name="expandableHeaderBg">#AAFFFFFF</color>
 
     <!-- Main -->
     <color name="unfollowers">@color/CP</color>

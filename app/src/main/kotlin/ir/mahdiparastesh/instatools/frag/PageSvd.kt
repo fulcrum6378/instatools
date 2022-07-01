@@ -99,10 +99,7 @@ class PageSvd : BasePageMain(), Selective {
             }
         },
         HANDLE_SHOW_AD to { c.loadInterstitial(R.string.interUnsaving, true) },
-        HANDLE_INIT_QUEUER to {
-            Downloads.initService(c, "")
-            //if (!UiTools.hasReviewedApp(c)) UiTools.reviewApp(c) // TODO
-        },
+        HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
         HANDLE_REALLY_NO_MORE to {
             val number = c.m.saved?.hiddenItems()
             if (number != null && number > 0) UiTools.snackbar(
@@ -240,7 +237,7 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     override fun goBack(): Boolean {
-        (b.rv.adapter as ListSvd?)?.let {
+        if (bInitialised) (b.rv.adapter as ListSvd?)?.also {
             if (it.expandable.zoomed) {
                 jumper().vis(true)
                 it.expandable.collapse(); return@goBack true; }

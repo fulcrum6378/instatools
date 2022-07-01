@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.annotation.SuppressLint
 import android.view.ContextThemeWrapper
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -38,7 +37,6 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         return AnyViewHolder(b)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: AnyViewHolder<ListUnfBinding>, i: Int) {
         val unf = c.m.unfollowers.value?.getOrNull(i) ?: return
 
