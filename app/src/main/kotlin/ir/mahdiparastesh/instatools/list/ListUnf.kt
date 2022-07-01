@@ -10,6 +10,8 @@ import com.android.volley.Request
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
@@ -123,6 +125,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 c.loadInterstitial(R.string.interUnfMany, true)
                 f.counter = 0
             }
+            c.incrementCounter(Settings.spUnfollowCount)
             Thread {
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
                 else c.dao.deleteFriend(unf)

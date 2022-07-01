@@ -83,6 +83,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         // Mere-Global Hidden Preferences
         const val spDownloadCount = "download_count" // def: 0L
+        const val spUnfollowCount = "unfollow_count" // def: 0L
+        const val spExportCount = "export_count" // def: 0L
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
         const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false
@@ -173,6 +175,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         fun Uri.release(cr: ContentResolver) {
             cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        }
+
+        fun Persistent.incrementCounter(key: String) {
+            gsp.edit().putLong(key, gsp.getLong(key, 0L) + 1L).apply()
         }
     }
 

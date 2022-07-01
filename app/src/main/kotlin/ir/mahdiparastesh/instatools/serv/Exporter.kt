@@ -20,18 +20,19 @@ import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.expt.HtmlExporter
+import ir.mahdiparastesh.instatools.expt.PdfExporter
+import ir.mahdiparastesh.instatools.expt.TxtExporter
 import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.json.Versioned
-import ir.mahdiparastesh.instatools.expt.HtmlExporter
 import ir.mahdiparastesh.instatools.view.Notify
-import ir.mahdiparastesh.instatools.expt.PdfExporter
-import ir.mahdiparastesh.instatools.expt.TxtExporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -305,6 +306,7 @@ class Exporter : ForegroundService() {
         // Don't update notification here; it'll create another after onDestroy
         CoroutineScope(Dispatchers.IO).launch {
             dao.deleteExportable(oldExp)
+            incrementCounter(Settings.spExportCount)
             withContext(Dispatchers.Main) {
                 handle()
                 eventNotification(Notify.ID_EXPORTER_DONE) {

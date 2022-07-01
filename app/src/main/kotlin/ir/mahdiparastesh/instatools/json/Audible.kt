@@ -14,4 +14,6 @@ interface Audible {
             .substringAfter(">")
             .substringBefore("</BaseURL>")
     }
+    // M4A ought not to be stored as MP3!
+    // https://www.veed.io/convert/m4a-to-mp3
 }

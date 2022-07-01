@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.json.Api
@@ -322,9 +323,7 @@ class Queuer : ForegroundService() {
             FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
         }
         if (q.isMainFile()) m.files?.add(fName)
-        gsp.edit().putLong(
-            Settings.spDownloadCount, gsp.getLong(Settings.spDownloadCount, 0L) + 1L
-        ).apply()
+        incrementCounter(Settings.spDownloadCount)
     }
 
     override fun finish(cancelled: Boolean) {

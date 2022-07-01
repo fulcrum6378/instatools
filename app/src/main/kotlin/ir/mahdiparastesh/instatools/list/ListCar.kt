@@ -75,7 +75,7 @@ class ListCar(
                                 .build()
                         ).build()
                     )
-                    playerVolume = if (muteSound.value == false) 0f else 1f
+                    playerVolume = if (muteSound.value == true) 0f else 1f
                     h.b.video.setPlayer(this)
                     prepare()
                 }

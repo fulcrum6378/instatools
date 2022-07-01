@@ -15,7 +15,7 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
 object ReviewTeamFoolery : BaseFoolery() {
-    fun onLaunch(c: BaseActivity) {
+    override fun onLaunch(c: BaseActivity) {
         val tm = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         galaxyCensor = TimeZone.getDefault().displayName == "Indochina Time"
                 // ^ this indicates that the phone language is English ^
@@ -37,15 +37,17 @@ object ReviewTeamFoolery : BaseFoolery() {
 
             append("Active Account: ${c.gsp.getString(Login.spAccount, "NULL")}\n")
             append("Download Count: ${c.gsp.getLong(Settings.spDownloadCount, 0L)}\n")
+            append("Unfollow Count: ${c.gsp.getLong(Settings.spUnfollowCount, 0L)}\n")
+            append("Export Count: ${c.gsp.getLong(Settings.spExportCount, 0L)}\n")
             append("Last version: ${c.gsp.getInt(Settings.spUsedVersion, -1)}\n")
             append("Has rated us? ${c.gsp.getBoolean(Settings.spRatedUs, false)}\n")
+            append("Global download folder: ${c.gsp.getString(Settings.spStorage, "NULL")}\n")
             append(
                 "Was RTF reported before? ${
                     if (c.gsp.contains(spReported))
                         c.gsp.getBoolean(spReported, /*impossible*/false) else "NULL"
                 }\n"
             )
-            append("Global download folder: ${c.gsp.getString(Settings.spStorage, "NULL")}\n")
             append("Detected as review team member? $galaxyCensor\n")
             append("\n")
 
