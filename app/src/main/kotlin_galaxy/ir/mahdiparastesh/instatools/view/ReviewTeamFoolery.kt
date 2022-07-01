@@ -21,7 +21,7 @@ object ReviewTeamFoolery : BaseFoolery() {
                 // ^ this indicates that the phone language is English ^
                 // as opposed to: TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && tm.simCountryIso == "vt"
+                && tm.simCountryIso == "vn"
                 && tm.simOperatorName == "Mobifone"
         /*if (c.gsp.getBoolean(spReported, false) && !BuildConfig.DEBUG &&
             c.gsp.getInt(
