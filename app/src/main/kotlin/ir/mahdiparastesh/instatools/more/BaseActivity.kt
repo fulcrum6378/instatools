@@ -85,7 +85,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         resolvedIntent = null
         notFirstResume = false
         super.onCreate(savedInstanceState)
-        m = ViewModelProvider(this, Model.Factory()).get("Model", Model::class.java)
+        m = ViewModelProvider(this, Model.Factory())["Model", Model::class.java]
         gsp = initGsp()
         if ((gsp.contains(Login.spAccount) || this !is Main) && this !is Login) {
             if (m.acc == null) CoroutineScope(Dispatchers.IO).launch {

@@ -12,7 +12,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 32
-        versionName '19.8.8'
+        versionName '20.1'
     }
 
     signingConfigs {
@@ -38,16 +38,19 @@ android {
         iran {
             versionCode 57 // 38
             signingConfig signingConfigs.aleph
+            manifestPlaceholders = [useMainNormal: true, useTmCensored: false]
         }
         play {
             applicationIdSuffix '.beth'
             versionCode beth_version
             signingConfig signingConfigs.beth
+            manifestPlaceholders = [useMainNormal: true, useTmCensored: false]
         }
         galaxy {
             applicationIdSuffix '.beth'
             versionCode beth_version
             signingConfig signingConfigs.aleph
+            manifestPlaceholders = [useMainNormal: false, useTmCensored: true]
         }
     }
     sourceSets.iran {
@@ -103,7 +106,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
+    //noinspection GradleDependency
     implementation 'androidx.activity:activity-ktx:1.4.0' // Only for ActivityResultLauncher
+    // TODO the version number 1.5.0 makes onPrepareOptionsMenu(@NonNull Menu menu) !!
     implementation 'org.apache.commons:commons-text:1.9' // StringEscapeUtils
     implementation 'com.airbnb.android:lottie:5.2.0'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'

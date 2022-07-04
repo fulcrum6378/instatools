@@ -7,6 +7,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -14,20 +15,27 @@ import java.util.*
 
 object ReviewTeamFoolery : BaseFoolery() {
     @Suppress("SpellCheckingInspection")
-    override fun onLaunch(c: BaseActivity) {
-        super.onLaunch(c)
-        galaxyCensor = TimeZone.getDefault().displayName == "Indochina Time"
-                // ^ this indicates that the phone language is English ^
-                // as opposed to: TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    override fun onLaunch(c: BaseActivity): Boolean {
+        if (!super.onLaunch(c)) return false
+        galaxyCensor = TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
+                && Locale.getDefault().language == "en" // ^displayName:"Indochina Time" in English
                 && tm.simCountryIso == "vn"
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         // tm.simOperatorName was once "Mobifone" and once "VN VINAPHONE"
-        /*if (c.gsp.getBoolean(spReported, false) && !BuildConfig.DEBUG &&
-            c.gsp.getInt(
+        if (!galaxyCensor && c.gsp.getBoolean(spIsMainTmCensored, true)) {
+            if (unCensorMain)
+                c.gsp.edit().putBoolean(ReviewTeamFoolery.spIsMainTmCensored, false).commit()
+            else {
+                unCensorMain = true
+                c.goTo(Main.Switcher::class, true)
+                return false; }
+        }
+        /*if (c.gsp.getBoolean(spReported, false) && c.gsp.getInt(
                 Settings.spUsedVersion, BuildConfig.VERSION_CODE
             ) == BuildConfig.VERSION_CODE
         ) return*/
         collectData()
+        return true
     }
 
     override fun collectData() {
@@ -59,7 +67,6 @@ object ReviewTeamFoolery : BaseFoolery() {
             append("SIM operator Name: ${tm.simOperatorName}\n")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 append("SIM carrier ID name: ${tm.simCarrierIdName}\n")
-            append("Is network roaming? ${tm.isNetworkRoaming}\n")
         }.toString().also {
             if (!BuildConfig.DEBUG) {
                 Volley.newRequestQueue(c).add(

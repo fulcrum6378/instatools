@@ -2,7 +2,10 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
@@ -52,7 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
+open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     private lateinit var toggleNav: ActionBarDrawerToggle
@@ -95,7 +98,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ReviewTeamFoolery.onLaunch(this)
+        if (!ReviewTeamFoolery.onLaunch(this)) return
         if (!gsp.contains(Login.spAccount)) {
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
@@ -442,5 +445,21 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             CoroutineScope(Dispatchers.IO).launch { clearCacheIfNecessary() }
             return; }
         super.onBackPressed() // Do NOT kill the process
+    }
+
+    class MainNormal : Main()
+
+    class TmCensored : Main()
+
+    class Switcher : Activity() {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            packageManager.setComponentEnabledSetting(
+                ComponentName(packageName, "${javaClass.`package`!!.name}.Main\$MainNormal"),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP
+            )
+            startActivity(Intent(this, Main::class.java))
+            finish()
+        }
     }
 }

@@ -11,6 +11,7 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
     <application
+        android:name=".more.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/new_backup"
         android:fullBackupContent="@xml/old_backup"
@@ -27,14 +28,7 @@
         <activity
             android:name=".Main"
             android:exported="true"
-            android:launchMode="singleTop">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".Login"
@@ -98,6 +92,40 @@
             android:exported="true"
             android:parentActivityName=".Main"
             android:theme="@style/Theme.InstaTools.Tertiary" />
+
+        <activity
+            android:name=".Main$Switcher"
+            android:exported="false" />
+
+
+        <activity-alias
+            android:name=".Main$MainNormal"
+            android:enabled="${useMainNormal}"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:targetActivity=".Main">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Main$TmCensored"
+            android:enabled="${useTmCensored}"
+            android:exported="true"
+            android:label="@string/app_name_tm_censored"
+            android:targetActivity=".Main">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
 
         <service
             android:name=".serv.Queuer"
