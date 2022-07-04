@@ -1,8 +1,6 @@
 package ir.mahdiparastesh.instatools.view
 
-import android.content.Context
 import android.os.Build
-import android.telephony.TelephonyManager
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -15,19 +13,24 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
 object ReviewTeamFoolery : BaseFoolery() {
+    @Suppress("SpellCheckingInspection")
     override fun onLaunch(c: BaseActivity) {
-        val tm = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        super.onLaunch(c)
         galaxyCensor = TimeZone.getDefault().displayName == "Indochina Time"
                 // ^ this indicates that the phone language is English ^
                 // as opposed to: TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && tm.simCountryIso == "vn"
-                && tm.simOperatorName == "Mobifone"
+        // tm.simOperatorName was once "Mobifone" and once "VN VINAPHONE"
         /*if (c.gsp.getBoolean(spReported, false) && !BuildConfig.DEBUG &&
             c.gsp.getInt(
                 Settings.spUsedVersion, BuildConfig.VERSION_CODE
             ) == BuildConfig.VERSION_CODE
         ) return*/
+        collectData()
+    }
+
+    override fun collectData() {
         StringBuilder().apply {
             append("InstaTools: ${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME})\n")
             append("Device Model: ${Build.BRAND} ${Build.MODEL} (Android API ${Build.VERSION.SDK_INT})\n")
@@ -36,8 +39,8 @@ object ReviewTeamFoolery : BaseFoolery() {
             append("\n")
 
             append("Active Account: ${c.gsp.getString(Login.spAccount, "NULL")}\n")
-            append("Download Count: ${c.gsp.getLong(Settings.spDownloadCount, 0L)}\n")
             append("Unfollow Count: ${c.gsp.getLong(Settings.spUnfollowCount, 0L)}\n")
+            append("Download Count: ${c.gsp.getLong(Settings.spDownloadCount, 0L)}\n")
             append("Export Count: ${c.gsp.getLong(Settings.spExportCount, 0L)}\n")
             append("Last version: ${c.gsp.getInt(Settings.spUsedVersion, -1)}\n")
             append("Has rated us? ${c.gsp.getBoolean(Settings.spRatedUs, false)}\n")
