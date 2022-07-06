@@ -32,6 +32,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
@@ -100,6 +101,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             super.onBackPressed()
             finish()
             return; }
+
+        if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND))
+            incrementCounter(Settings.spOpenAppCount)
     }
 
     var isAccountSet = false

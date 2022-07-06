@@ -48,9 +48,11 @@ object ReviewTeamFoolery : BaseFoolery() {
             append("\n")
 
             append("Active Account: ${c.gsp.getString(Login.spAccount, "NULL")}\n")
+            append("App Opening Count: ${c.gsp.getLong(Settings.spOpenAppCount, 0L)}\n")
             append("Unfollow Count: ${c.gsp.getLong(Settings.spUnfollowCount, 0L)}\n")
             append("Download Count: ${c.gsp.getLong(Settings.spDownloadCount, 0L)}\n")
             append("Export Count: ${c.gsp.getLong(Settings.spExportCount, 0L)}\n")
+            append("Download Error Count: ${c.gsp.getLong(Settings.spDlErrorCount, 0L)}\n")
             append("Last version: ${c.gsp.getInt(Settings.spUsedVersion, -1)}\n")
             append("Has rated us? ${c.gsp.getBoolean(Settings.spRatedUs, false)}\n")
             append("Global download folder: ${c.gsp.getString(Settings.spStorage, "NULL")}\n")

@@ -82,9 +82,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spExpOptions = "export_options"
 
         // Mere-Global Hidden Preferences
+        const val spOpenAppCount = "open_app_count" // def: 0L
         const val spDownloadCount = "download_count" // def: 0L
         const val spUnfollowCount = "unfollow_count" // def: 0L
         const val spExportCount = "export_count" // def: 0L
+        const val spDlErrorCount = "download_error_count" // def: 0L
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
         const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false

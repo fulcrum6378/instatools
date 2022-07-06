@@ -92,6 +92,7 @@ class Queuer : ForegroundService() {
                     Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
                         qud!!.status = 1.toByte()
                         Thread { dao.updateQueued(qud!!) }.start()
+                        incrementCounter(Settings.spDlErrorCount)
                         Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, qud)
                             ?.sendToTarget()
                         linkHandled()
@@ -262,6 +263,7 @@ class Queuer : ForegroundService() {
                     CoroutineScope(Dispatchers.IO).launch {
                         dao.updateQueued(queue[q])
                     }.invokeOnCompletion { downloaded() }
+                    incrementCounter(Settings.spDlErrorCount)
                 }) {
                     override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!)
 
