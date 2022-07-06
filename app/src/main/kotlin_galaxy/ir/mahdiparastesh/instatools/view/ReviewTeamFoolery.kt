@@ -21,7 +21,8 @@ object ReviewTeamFoolery : BaseFoolery() {
                 && Locale.getDefault().language == "en" // ^displayName:"Indochina Time" in English
                 && tm.simCountryIso == "vn"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        // tm.simOperatorName was once "Mobifone" and once "VN VINAPHONE"
+        // tm.simOperatorName => "Mobifone" | "VN VINAPHONE" | "Viettel" | ??
+        // The review team test the app in every update, even if the binary has not changed!
         if (!galaxyCensor && c.gsp.getBoolean(spIsMainTmCensored, true)) {
             if (unCensorMain)
                 c.gsp.edit().putBoolean(ReviewTeamFoolery.spIsMainTmCensored, false).commit()
