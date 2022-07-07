@@ -119,7 +119,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             window.statusBarColor = it
             window.navigationBarColor = it
             styliseToolbar()
-            onPrepareOptionsMenu(null)
+            onPrepareOptionsMenu(b.toolbar.menu)
             b.nav.setBackgroundColor(it)
             b.searchRes.setBackgroundColor(it)
             b.bnv.setBackgroundColor(it)
@@ -301,7 +301,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         else -> super.onOptionsItemSelected(item)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
         (b.toolbar.menu.findItem(R.id.mtSearch)?.actionView as SearchView?)?.apply {
             searchInput = findViewById(androidx.appcompat.R.id.search_src_text)

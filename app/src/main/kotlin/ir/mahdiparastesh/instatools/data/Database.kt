@@ -71,8 +71,8 @@ abstract class Database : RoomDatabase() {
         @Delete
         fun deleteExportable(item: Exportable)
 
-        @Query("DELETE FROM Exportable")
-        fun deleteExportables()
+        /*@Query("DELETE FROM Exportable")
+        fun deleteExportables()*/
 
 
         @Query("SELECT * FROM Favourite")

@@ -18,11 +18,10 @@ object ReviewTeamFoolery : BaseFoolery() {
     override fun onLaunch(c: BaseActivity): Boolean {
         if (!super.onLaunch(c)) return false
         galaxyCensor = TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
-                && Locale.getDefault().language == "en" // ^displayName:"Indochina Time" in English
+                && Locale.getDefault().language == "en"
                 && tm.simCountryIso == "vn"
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         // tm.simOperatorName => "Mobifone" | "VN VINAPHONE" | "Viettel" | ??
-        // The review team test the app in every update, even if the binary has not changed!
         if (!galaxyCensor && c.gsp.getBoolean(spIsMainTmCensored, true)) {
             if (unCensorMain)
                 c.gsp.edit().putBoolean(ReviewTeamFoolery.spIsMainTmCensored, false).commit()
@@ -38,6 +37,9 @@ object ReviewTeamFoolery : BaseFoolery() {
         collectData()
         return true
     }
+    // When the app information is changed but the app binary is not changed, the review team
+    // sometimes test the binary and sometimes not. When I changed few information in Persian
+    // they tested and when I added German with screenshots and etc. they did not!!
 
     override fun collectData() {
         StringBuilder().apply {

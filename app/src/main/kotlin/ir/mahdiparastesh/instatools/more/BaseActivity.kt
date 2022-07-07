@@ -199,11 +199,10 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         return true
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         if (!::toolbar.isInitialized) {
             Delay(3000L) { onPrepareOptionsMenu(menu) }
             return false; }
-        //toolbar.menu.forEach { it.stylise(this, colorAc.value ?: -1) }
         return true
     }
 
