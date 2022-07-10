@@ -9,4 +9,5 @@
     android:paddingBottom="15dp"
     android:textAppearance="@style/TextAppearance.InstaTools.Light"
     android:textSize="@dimen/stPathFont"
+    android:theme="@style/Theme.InstaTools.Tertiary"
     tools:viewBindingIgnore="true" />

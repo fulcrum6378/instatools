@@ -129,7 +129,11 @@ class Downloads : ServiceOwnerActivity() {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch {
             m.queueds = CopyOnWriteArrayList(dao.queueds())
-            m.queueds!!.sortBy { it.addedAt }
+            try {
+                m.queueds!!.sortBy { it.addedAt }
+            } catch (e: java.lang.UnsupportedOperationException) {
+                // Mysterious error by CopyOnWriteArrayList$COWIterator.set at CopyOnWriteArrayList.sort
+            }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
             withContext(Dispatchers.Main) {
                 if (m.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)

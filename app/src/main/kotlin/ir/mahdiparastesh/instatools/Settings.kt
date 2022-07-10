@@ -82,11 +82,13 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spExpOptions = "export_options"
 
         // Mere-Global Hidden Preferences
+        const val spFirstOpenApp = "first_open_app" // def: null
         const val spOpenAppCount = "open_app_count" // def: 0L
-        const val spDownloadCount = "download_count" // def: 0L
         const val spUnfollowCount = "unfollow_count" // def: 0L
-        const val spExportCount = "export_count" // def: 0L
+        const val spDownloadCount = "download_count" // def: 0L
         const val spDlErrorCount = "download_error_count" // def: 0L
+        const val spUnsaveCount = "unsave_count" // def: 0L
+        const val spExportCount = "export_count" // def: 0L
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
         const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false
@@ -413,7 +415,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         uriFolders?.removeAll { it.toString() == prf.getString(spStorage, "null") }
         folders.adapter = ArrayAdapter(
             this@Settings, R.layout.spinner, uriFolders!!.map { it.folderName() })
-            .apply { setDropDownViewResource(R.layout.spinner_dd) }
+            .apply { setDropDownViewResource(R.layout.spinner_dd_tertiary) }
     }
 
     override fun onActivityResult(result: ActivityResult) {
@@ -430,10 +432,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     try {
                         onBackPressed()
                     } catch (e: java.lang.IllegalStateException) {
-                        // by androidx.fragment.app.FragmentManager.ensureExecReady()
-                        // which has multiple throwing conditions.
-                        // All the 7 crashes occurred with Android 9 on five Galaxy models.
-                        if (BuildConfig.DEBUG) throw e // TODO analyse this
+                        // FragmentManager is already executing transactions.
                     }
                     goTo(Downloads::class, animate = false)
                     // If you call finish() here, Downloads will be loaded without a background

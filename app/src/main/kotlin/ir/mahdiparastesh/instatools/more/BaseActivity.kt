@@ -102,8 +102,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             finish()
             return; }
 
-        if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND))
+        if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)) {
             incrementCounter(Settings.spOpenAppCount)
+            if (!gsp.contains(Settings.spFirstOpenApp))
+                gsp.edit().putLong(Settings.spFirstOpenApp, Persistent.now()).apply()
+        }
     }
 
     var isAccountSet = false

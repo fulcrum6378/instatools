@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
@@ -378,8 +379,10 @@ class PageSvd : BasePageMain(), Selective {
                 c, Api.Endpoint.UNSAVE.url.format(post.id), Rest::class, null,
                 method = Request.Method.POST, autoQueue = false, onError = { ended() }
             ) { rest ->
-                if (rest.status == "ok")
+                if (rest.status == "ok") {
                     handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
+                    c.incrementCounter(Settings.spUnsaveCount)
+                }
                 ended()
             }
             if (!unsave) ended()

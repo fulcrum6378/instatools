@@ -447,6 +447,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         super.onBackPressed() // Do NOT kill the process
     }
 
+
     class MainNormal : Main()
 
     class TmCensored : Main()

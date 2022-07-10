@@ -125,7 +125,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         toolbar.inflateMenu(if (bb) page.selectiveMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(if (isSelective) page else this)
         if (this is Main) styliseToolbar()
-        Delay(100) { onPrepareOptionsMenu(null) }
+        Delay(100) { onPrepareOptionsMenu(toolbar.menu) }
         return true
     }
 

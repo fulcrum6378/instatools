@@ -2,17 +2,15 @@ package ir.mahdiparastesh.instatools.list
 
 import android.view.ContextThemeWrapper
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.bumptech.glide.Glide
-import ir.mahdiparastesh.instatools.Main
-import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
-import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
@@ -61,7 +59,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
 
         Glide.with(c.c).load(unf.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${unf.name}"
-        h.b.user.text = if (unf.unfollowedMeAt != null) c.getString(
+        h.b.user.text = if (unf.unfollowedMeAt != null && !unf.unfollowed) c.getString(
             R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
         ) else unf.user
 
@@ -114,11 +112,16 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                             c.showInterstitial()
                         }
                     }.show()
-                } else PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
+                } else {
+                    PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
+                    if (BuildConfig.DEBUG)
+                        Toast.makeText(c.c, res?.statusCode.toString(), Toast.LENGTH_SHORT).show()
+                }
             }
         ) {
             if (it.status != "ok") {
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
+                if (BuildConfig.DEBUG) Toast.makeText(c.c, it.status, Toast.LENGTH_SHORT).show()
                 return@Api; }
             f.counter++
             if (f.counter >= MAX_UNFOLLOW_AD) {
