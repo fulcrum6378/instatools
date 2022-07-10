@@ -37,7 +37,7 @@ import ir.mahdiparastesh.instatools.more.BasePageViewer
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.ReviewTeamFoolery
+import ir.mahdiparastesh.instatools.view.Intelligence
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -157,7 +157,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         fixTbMenu()
-        if (ReviewTeamFoolery.galaxyCensor)
+        if (Intelligence.galaxyCensor)
             b.toolbar.menu.findItem(R.id.vtInsta)?.isVisible = false
         return true
     }

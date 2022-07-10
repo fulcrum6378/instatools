@@ -45,7 +45,7 @@ import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
-import ir.mahdiparastesh.instatools.view.ReviewTeamFoolery
+import ir.mahdiparastesh.instatools.view.Intelligence
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.isReady
@@ -87,7 +87,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val bKlass = PageSvd::class
     override val cKlass = PageBox::class
     override val mode = TripleMode.FRAGMENT_MANAGER
-    override fun defPage(): Int = if (ReviewTeamFoolery.galaxyCensor) 0 else
+    override fun defPage(): Int = if (Intelligence.galaxyCensor) 0 else
         intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
             ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
             ?: Settings.defSpMainPage
@@ -98,13 +98,13 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!ReviewTeamFoolery.onLaunch(this)) return
+        if (!Intelligence.onLaunch(this)) return
         if (!gsp.contains(Login.spAccount)) {
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(
-            b.toolbar, R.string.app_name, ReviewTeamFoolery.censorText(getString(R.string.app_name))
+            b.toolbar, R.string.app_name, Intelligence.censorText(getString(R.string.app_name))
         )
 
         // Bottom Navigation Bar
@@ -153,10 +153,10 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        if (ReviewTeamFoolery.playCensor || ReviewTeamFoolery.galaxyCensor) {
+        if (Intelligence.playCensor || Intelligence.galaxyCensor) {
             b.nav.menu.findItem(R.id.mnMassFollower)?.isVisible = false
             b.nav.menu.findItem(R.id.mnSupport)?.isVisible = false
-            if (ReviewTeamFoolery.galaxyCensor)
+            if (Intelligence.galaxyCensor)
                 b.nav.menu.findItem(R.id.mnDownloads)?.isVisible = false
         }
 

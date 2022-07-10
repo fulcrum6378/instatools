@@ -53,7 +53,7 @@ android {
         }
     }
     sourceSets.iran {
-        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_galaxy'/*'src/main/kotlin_iran'*/]
+        kotlin.srcDirs = ['src/main/kotlin', 'src/main/kotlin_iran']
         res.srcDirs = ['src/main/res', 'src/main/res_iran']
     }
     sourceSets.play {

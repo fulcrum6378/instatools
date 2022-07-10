@@ -1,6 +1,7 @@
-package ir.mahdiparastesh.instatools.view
+package ir.mahdiparastesh.instatools.more
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -11,11 +12,11 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.view.UiTools
 import java.util.*
 
 @Suppress("unused")
-abstract class BaseFoolery {
+abstract class BaseIntel {
     @Suppress("MemberVisibilityCanBePrivate")
     protected val spReported = "rtf_reported"
     protected val spIsMainTmCensored = "is_main_tm_censored"
@@ -33,10 +34,18 @@ abstract class BaseFoolery {
         return true
     }
 
-    protected fun userScore(): Long = c.gsp.getLong(Settings.spOpenAppCount, 0L) +
+    private fun userScore(): Long = c.gsp.getLong(Settings.spOpenAppCount, 0L) +
             c.gsp.getLong(Settings.spUnfollowCount, 0L) +
             c.gsp.getLong(Settings.spDownloadCount, 0L) +
             c.gsp.getLong(Settings.spExportCount, 0L)
+
+    protected fun shallCollect() =
+        c.intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)
+                && (!c.gsp.getBoolean(spReported, false) ||
+                c.gsp.getInt(
+                    Settings.spUsedVersion, BuildConfig.VERSION_CODE
+                ) != BuildConfig.VERSION_CODE ||
+                userScore() > 100)
 
     protected fun collectData() {
         StringBuilder().apply {

@@ -146,7 +146,7 @@ class PageVwr : BasePageViewer() {
         // Pagination
         b.toPageRel.setOnClickListener { c.turnToPage(0) }
         b.toPageTag.setOnClickListener { c.turnToPage(2) }
-        if (ReviewTeamFoolery.galaxyCensor) b.toPageRel.vis(false)
+        if (Intelligence.galaxyCensor) b.toPageRel.vis(false)
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

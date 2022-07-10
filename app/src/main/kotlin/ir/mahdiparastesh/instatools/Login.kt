@@ -25,7 +25,7 @@ import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.view.ReviewTeamFoolery
+import ir.mahdiparastesh.instatools.view.Intelligence
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +80,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                             cameHereToAuth = true
                             AlertDialog.Builder(this@Login).apply {
                                 setTitle(R.string.guest)
-                                setMessage(ReviewTeamFoolery.censorText(getString(R.string.needAuthentication)))
+                                setMessage(Intelligence.censorText(getString(R.string.needAuthentication)))
                                 setNeutralButton(R.string.ok, null)
                             }.show()
                             val signedOutFrom =
@@ -129,7 +129,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         when {
             acc.id == -1L -> AlertDialog.Builder(this).apply {
                 setTitle(R.string.guest)
-                setMessage(ReviewTeamFoolery.censorText(getString(R.string.guestSure)))
+                setMessage(Intelligence.censorText(getString(R.string.guestSure)))
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.sContinue) { _, _ ->
                     m.acc = acc

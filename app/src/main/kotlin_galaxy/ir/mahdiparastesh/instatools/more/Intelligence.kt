@@ -1,15 +1,10 @@
-package ir.mahdiparastesh.instatools.view
+package ir.mahdiparastesh.instatools.more
 
-import android.content.Intent
 import android.os.Build
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
-import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 
-object ReviewTeamFoolery : BaseFoolery() {
-    @Suppress("SpellCheckingInspection")
+object Intelligence : BaseIntel() {
     override fun onLaunch(c: BaseActivity): Boolean {
         if (!super.onLaunch(c)) return false
         galaxyCensor = TimeZone.getDefault().id == "Asia/Ho_Chi_Minh"
@@ -19,20 +14,13 @@ object ReviewTeamFoolery : BaseFoolery() {
         // tm.simOperatorName => "Mobifone" | "VN VINAPHONE" | "Viettel" | ??
         if (!galaxyCensor && c.gsp.getBoolean(spIsMainTmCensored, true)) {
             if (unCensorMain)
-                c.gsp.edit().putBoolean(ReviewTeamFoolery.spIsMainTmCensored, false).commit()
+                c.gsp.edit().putBoolean(Intelligence.spIsMainTmCensored, false).commit()
             else {
                 unCensorMain = true
                 c.goTo(Main.Switcher::class, true)
                 return false; }
         }
-        if ((c.intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)
-                    && (!c.gsp.getBoolean(spReported, false) ||
-                    c.gsp.getInt(
-                        Settings.spUsedVersion, BuildConfig.VERSION_CODE
-                    ) != BuildConfig.VERSION_CODE ||
-                    userScore() > 100))
-            || galaxyCensor
-        ) collectData()
+        if (shallCollect() || galaxyCensor) collectData()
         return true
     }
 

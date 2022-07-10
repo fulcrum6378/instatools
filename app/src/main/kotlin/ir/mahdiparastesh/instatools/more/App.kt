@@ -6,7 +6,7 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Bundle
 import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.view.ReviewTeamFoolery
+import ir.mahdiparastesh.instatools.view.Intelligence
 
 class App : Application() {
     override fun onCreate() {
@@ -30,7 +30,7 @@ class App : Application() {
 
         override fun onActivityStopped(activity: Activity) {
             stack--
-            if (stack == 0 && ReviewTeamFoolery.unCensorMain)
+            if (stack == 0 && Intelligence.unCensorMain)
                 packageManager.setComponentEnabledSetting(
                     ComponentName(
                         packageName, "${activity.javaClass.`package`!!.name}.Main\$TmCensored"
