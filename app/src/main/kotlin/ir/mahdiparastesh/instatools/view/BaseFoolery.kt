@@ -16,6 +16,7 @@ import java.util.*
 
 @Suppress("unused")
 abstract class BaseFoolery {
+    @Suppress("MemberVisibilityCanBePrivate")
     protected val spReported = "rtf_reported"
     protected val spIsMainTmCensored = "is_main_tm_censored"
     protected lateinit var tm: TelephonyManager
@@ -39,7 +40,10 @@ abstract class BaseFoolery {
 
     protected fun collectData() {
         StringBuilder().apply {
-            append("InstaTools: ${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME})\n")
+            append(
+                "InstaTools: ${BuildConfig.VERSION_CODE} " +
+                        "(${BuildConfig.VERSION_NAME} - ${BuildConfig.FLAVOR})\n"
+            )
             append("Device Model: ${Build.BRAND} ${Build.MODEL} (Android API ${Build.VERSION.SDK_INT})\n")
             append("Locale: ${Locale.getDefault().displayName} {${Locale.getDefault()}}\n")
             append("Time Zone: ${TimeZone.getDefault().displayName} {${TimeZone.getDefault().id}}\n")
