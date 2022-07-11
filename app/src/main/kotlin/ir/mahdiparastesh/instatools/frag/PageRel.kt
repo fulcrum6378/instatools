@@ -116,7 +116,7 @@ class PageRel : BasePageViewer() {
             try {
                 c.m.vwReels?.sortByDescending { it is Rest.StoryReel }
             } catch (e: java.lang.UnsupportedOperationException) {
-                // Mysterious error by CopyOnWriteArrayList$COWIterator.set at CopyOnWriteArrayList.sort
+                // Mysterious error by CopyOnWriteArrayList$COWIterator.set  while sorting
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             super.interrupt()

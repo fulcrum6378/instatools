@@ -7,5 +7,5 @@ object Intelligence : BaseIntel() {
         return true
     }
     // Myket doesn't test app updates!!
-    // Bazaar apparently doesn't test all app updates!!
+    // Bazaar doesn't test app updates!!
 }

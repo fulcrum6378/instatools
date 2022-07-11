@@ -1,11 +1,8 @@
 package ir.mahdiparastesh.instatools.more
 
-import android.os.Build
-
 object Intelligence : BaseIntel() {
     override fun onLaunch(c: BaseActivity): Boolean {
         if (!super.onLaunch(c)) return false
-        playCensor = Build.BRAND == "google" && tm.simOperatorName == "Android"
         if (shallCollect() || playCensor) collectData()
         return true
     }

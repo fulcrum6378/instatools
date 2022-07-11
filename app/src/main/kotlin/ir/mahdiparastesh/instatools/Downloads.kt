@@ -132,7 +132,7 @@ class Downloads : ServiceOwnerActivity() {
             try {
                 m.queueds!!.sortBy { it.addedAt }
             } catch (e: java.lang.UnsupportedOperationException) {
-                // Mysterious error by CopyOnWriteArrayList$COWIterator.set at CopyOnWriteArrayList.sort
+                // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
             }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
             withContext(Dispatchers.Main) {
