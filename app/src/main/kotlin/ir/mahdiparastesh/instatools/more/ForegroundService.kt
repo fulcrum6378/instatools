@@ -25,7 +25,7 @@ import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
-    private var mViewModelStore = ViewModelStore()
+    private val mViewModelStore = ViewModelStore()
     private val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
     private val db: Database by dbLazy
     val dao: Database.DAO by lazy { db.dao() }
@@ -95,7 +95,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onCreate() {
         super.onCreate()
         com.active.value = true
-        m = ViewModelProvider(viewModelStore, Model.Factory()).get("Model", Model::class.java)
+        m = ViewModelProvider(viewModelStore, Model.Factory())["Model", Model::class.java]
         gsp = initGsp()
         sp = initSp(m.acc)
 
@@ -112,6 +112,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private lateinit var ntfAct: KClass<*>
     private var ntfPage: Int? = null
     protected var ntfText: String? = null
+    protected var ntfSmallText: String? = null
     open fun initialNotification(
         com: ForegroundServiceCompanion, openActivity: KClass<*>, turnToPage: Int? = null,
         progress: Pair<Int, Int>? = null
@@ -127,14 +128,15 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         startForeground(com.ntfId, notification(progress))
     }
 
-    open fun updateNotification(progress: Pair<Int, Int>?) {
+    open fun updateNotification(progress: Pair<Int, Int>? = null) {
         NotificationManagerCompat.from(c).notify(ntfCom.ntfId, notification(progress))
     }
 
-    open fun notification(progress: Pair<Int, Int>?) =
+    private fun notification(progress: Pair<Int, Int>?) =
         NotificationCompat.Builder(c, ntfCom.channel.id).apply {
             setSmallIcon(ntfCom.ntfSmallIcon)
             setContentTitle(getString(ntfCom.ntfTitle))
+            ntfSmallText?.also { setContentText(it) }
             setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)

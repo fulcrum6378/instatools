@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.FrameLayout
@@ -280,7 +281,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                             "?id=ir.mahdiparastesh.instatools.beth"
                 )
             }
-            if (BuildConfig.FLAVOR != "galaxy") bs.galaxyStore.vis(false) else {
+            if (Build.BRAND != "samsung") bs.galaxyStore.vis(false) else {
                 Glide.with(c).load("https://galaxystore.samsung.com/galaxyapps.png")
                     .into(bs.galaxyStoreIv)
                 bs.galaxyStore.setOnClickListener {

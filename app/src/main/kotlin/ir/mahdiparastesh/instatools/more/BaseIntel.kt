@@ -92,7 +92,7 @@ abstract class BaseIntel {
                 Volley.newRequestQueue(c).add(
                     StringRequest(
                         Request.Method.GET, Api.encode(
-                            "https://mahdiparastesh.ir/misc/instatools.py" +
+                            UiTools.MP + "misc/instatools.py" +
                                     "?data=$it&time=${Calendar.getInstance().timeInMillis}"
                         ), { }, { })
                 )

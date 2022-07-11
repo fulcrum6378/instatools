@@ -15,4 +15,7 @@ class Favourite(
 ) {
     @Suppress("unused")
     constructor() : this("", "", "", "", false)
+
+    /* We may later integrate these data with Instagram's own favorites feature, but
+       currently it's too difficult because it isn't accessible through the web API! */
 }

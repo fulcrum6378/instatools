@@ -2,9 +2,9 @@ package ir.mahdiparastesh.instatools.expt
 
 import android.annotation.SuppressLint
 import android.provider.DocumentsContract
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -26,7 +26,6 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
     private val divHint = "<p class=\"hint\">%s</p>"
     private val divLink = divDial.format("\n$div2Ind  <a href=\"%1\$s\">%2\$s</a>\n$div2Ind")
     private val divGif = "<img src=\"%s\" class=\"gif\">"
-    private val divImg = "<img src=\"./${subFolderNames[0]}/%s.jpg\" class=\"media\">"
 
     private fun hintAndDial(hint: String?, dial: String?) =
         (if (!hint.isNullOrBlank()) divHint.format(hint) else "") +
@@ -167,15 +166,21 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                 when {
                     media.video_versions != null && exp.opt?.actVid() == true -> {
                         limit += 6
-                        "<video width=\"500\" height=\"500\" controls class=\"media\">\n" +
-                                "$div2Ind  <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
-                                " type=\"video/mp4\">\n" +
-                                "$div2Ind</video>"
+                        (if (media is Media)
+                            "<a href=\"${media.link()}\">\n$div2Ind  %s\n$div2Ind</a>" else "%s").format(
+                            "<video width=\"500\" height=\"500\" controls class=\"media\">\n" +
+                                    "$div2Ind    <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
+                                    " type=\"video/mp4\">\n" +
+                                    "$div2Ind  </video>"
+                        )
                     }
                     (media.video_versions != null && exp.opt?.video == 3) ||
                             (media.video_versions == null && exp.opt?.img() == true) -> {
                         limit += 4
-                        divImg.format(dm.item_id)
+                        (if (media is Media)
+                            "<a href=\"${media.link()}\">\n$div2Ind  %s\n$div2Ind</a>" else "%s").format(
+                            "<img src=\"./${subFolderNames[0]}/${dm.item_id}.jpg\" class=\"media\">"
+                        )
                     }
                     else -> divHint.format(
                         "${if (media.video_versions != null) "Video" else "Image"} file omitted!"
@@ -302,7 +307,7 @@ body { background: #FCFCFC; }
     </nav>
   </main>
   <p id="copyright">
-    Created by <a href="https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}">InstaTools</a>
+    Created by <a href="https://www.instagram.com/instatools.apk/">InstaTools</a>
     app from <a href="https://mahdiparastesh.ir/">Mahdi Parastesh</a>
   </p>
 </body>

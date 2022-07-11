@@ -18,8 +18,8 @@ import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.json.Versioned
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.FastCustomGlide
@@ -172,7 +172,7 @@ class ListThd(val c: Main, private val f: PageBox) :
                             msgIv.setImageBitmap(BitmapFactory.decodeByteArray(data, 0, data.size))
                             return@apply; }
                     }
-                } // TODO SUCKS IN PDF
+                }
                 if (downloaded != null || (carousel_media == null && image_versions2 == null)) return@apply
 
                 msgLoading.apply {

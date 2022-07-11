@@ -65,9 +65,10 @@ abstract class MultiExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp
                 try {
                     DocumentsContract.moveDocument(
                         c.c.contentResolver, it.uri, tmpDir.uri, folder.uri
-                    )
+                    ) // returned a malfunctioned Uri
                     // Uri authorities must be the same in order for this code to work;
                     // otherwise it'll throw SecurityException.
+                    // It's too difficult or perhaps impossible to delete that test file!
                 } catch (e: Exception) {
                     // IllegalStateException when moving from Internal Storage to SD Card!!
                     val folderName = folder.name ?: exp.threadData!!.exported()
@@ -75,7 +76,6 @@ abstract class MultiExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp
                         c.c, Uri.parse(c.sPreference(Settings.spStorage))
                     )?.createDirectory(folderName)
                 }
-                it.delete() // TODO: THIS ALWAYS FAILS
             }
             subFolders.forEach {
                 if (it != null) DocumentsContract.moveDocument(

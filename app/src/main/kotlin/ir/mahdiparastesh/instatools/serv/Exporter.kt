@@ -62,6 +62,7 @@ class Exporter : ForegroundService() {
         val fileTypes = arrayOf(
             "image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a", "image/gif" to "gif"
         )
+        var ntfDoneIdInc = 0
 
         fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
                 c.sPreference(Settings.spStorage) != null
@@ -86,7 +87,7 @@ class Exporter : ForegroundService() {
                                 exp?.threadData?.items?.size ?: 0,
                                 dmThd.title()
                             )
-                            updateNotification(null)
+                            updateNotification()
                             // Inbox API has no reference to number of items in a thread.
                             exp?.fetchData()
                         } else CoroutineScope(Dispatchers.IO).launch {
@@ -161,11 +162,8 @@ class Exporter : ForegroundService() {
         val vid = opt?.vid() == true
         val actVid = opt?.actVid() == true
         for (dm in threadData!!.items) {
-            if (actVid && dm.animated_media != null) {
-                /*media[dm.item_id] = Downloadable(
-                    dm.animated_media.images.fixed_height.url, 3, cacheDir!!, dm.item_id, -2
-                )*/// HTML gets them dynamically, PDF cannot show them properly, and TXT...
-                continue; }
+            if (actVid && dm.animated_media != null) continue
+            // HTML gets GIFs dynamically, PDF cannot show them properly, and TXT...
             if (dm.voice_media != null) {
                 if (opt?.voice == 0 && dm.voice_media.media != null)
                     media[dm.item_id] = Downloadable(
@@ -175,52 +173,28 @@ class Exporter : ForegroundService() {
             if (opt?.img() == true || opt?.vid() == true) (when {
                 vid && dm.clip != null -> dm.clip.clip
                 dm.direct_media_share != null -> when (dm.direct_media_share.media.media_type) {
-                    1f -> if (img) dm.direct_media_share.media else null
-                    2f -> if (vid) dm.direct_media_share.media else null
-                    8f -> dm.direct_media_share.media.carousel_media?.let {
-                        when (it.getOrNull(0)?.media_type) {
-                            1f -> if (img) it[0] else null
-                            2f -> if (vid) it[0] else null
-                            else -> null
-                        }
-                    }
+                    1f, 2f -> if (img || vid) dm.direct_media_share.media else null
+                    8f -> dm.direct_media_share.media.carousel_media
+                        ?.let { if (img || vid) it[0] else null }
                     else -> null
                 }
                 vid && dm.felix_share != null -> dm.felix_share.video
-                dm.media != null -> when (dm.media.media_type) {
-                    1f -> if (img) dm.media else null
-                    2f -> if (vid) dm.media else null
-                    else -> null
-                }
+                dm.media != null -> if (img || vid) dm.media else null
                 dm.media_share != null -> when (dm.media_share.media_type) {
-                    1f -> if (img) dm.media_share else null
-                    2f -> if (vid) dm.media_share else null
-                    8f -> dm.media_share.carousel_media?.let {
-                        when (it.getOrNull(0)?.media_type) {
-                            1f -> if (img) it[0] else null
-                            2f -> if (vid) it[0] else null
-                            else -> null
-                        }
-                    }
+                    1f, 2f -> if (img || vid) dm.media_share else null
+                    8f -> dm.media_share.carousel_media?.let { if (img || vid) it[0] else null }
                     else -> null
                 }
                 img && dm.raven_media != null -> dm.raven_media
-                dm.reel_share != null -> when (dm.reel_share.media?.media_type) {
-                    1f -> if (img) dm.reel_share.media else null
-                    2f -> if (vid) dm.reel_share.media else null
-                    else -> null
-                }
-                dm.story_share != null -> when (dm.story_share.media?.media_type) {
-                    1f -> if (img) dm.story_share.media else null
-                    2f -> if (vid) dm.story_share.media else null
-                    else -> null
-                }
+                dm.reel_share != null -> if (img || vid) dm.reel_share.media else null
+                dm.story_share != null -> if (img || vid) dm.story_share.media else null
                 else -> null
             })?.apply {
                 if (carousel_media == null && image_versions2 == null) return@apply
                 val theVer = carousel_media?.getOrNull(0) ?: this
                 val quality = when {
-                    theVer.video_versions != null && opt!!.video == 3 -> Versioned.WORST
+                    theVer.video_versions != null && opt!!.video == 3 ->
+                        if (img) -opt!!.image.toFloat() else Versioned.MEDIUM
                     theVer.video_versions != null -> -opt!!.video.toFloat()
                     else -> -opt!!.image.toFloat()
                 }
@@ -244,7 +218,7 @@ class Exporter : ForegroundService() {
         if (dl == null) {
             withContext(Dispatchers.Main) {
                 threadData?.title()?.also { ntfText = c.getString(R.string.exporterWriting, it) }
-                updateNotification(null)
+                updateNotification()
             }
             export(); return; }
         val iDone = media.entries.size - queueSize
@@ -309,7 +283,7 @@ class Exporter : ForegroundService() {
             incrementCounter(Settings.spExportCount)
             withContext(Dispatchers.Main) {
                 handle()
-                eventNotification(Notify.ID_EXPORTER_DONE) {
+                eventNotification(Notify.ID_EXPORTER_DONE + ntfDoneIdInc) {
                     setContentTitle(
                         getString(R.string.exporterDone, oldExp.threadData?.title() ?: "")
                     )
@@ -330,6 +304,7 @@ class Exporter : ForegroundService() {
                         )
                     )
                 }
+                ntfDoneIdInc++
             }
         }
     }

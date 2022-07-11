@@ -255,6 +255,8 @@ class Queuer : ForegroundService() {
                     interrupt(); return; }
             }
 
+            ntfSmallText = queue[q].userName
+            updateNotification()
             reqQueue.add(
                 object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
                     queue[q].status = 1.toByte()

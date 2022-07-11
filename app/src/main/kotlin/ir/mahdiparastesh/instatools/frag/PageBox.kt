@@ -49,6 +49,7 @@ import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.areEnabled
+import ir.mahdiparastesh.instatools.view.UiTools.enabled
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -207,7 +208,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
         if (!method.img) {
             bi.incImage.isChecked = false
-            bi.incImage.isEnabled = false
+            bi.incImage.enabled(false)
             bi.quaImage.areEnabled(false)
             bi.quaImage.clearCheck()
         } else bi.incImage.setOnCheckedChangeListener(object :
@@ -229,21 +230,24 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             bi.incVideo.isChecked = false
             bi.quaVideo.clearCheck()
             if (!method.img) {
-                bi.incVideo.isEnabled = false
+                bi.incVideo.enabled(false)
                 bi.quaVideo.areEnabled(false)
             } else {
                 bi.quaVideo.forEachIndexed { i, v ->
-                    if (i != 0) v.isEnabled = false
-                    else (v as MaterialRadioButton).isChecked = bi.incVideo.isChecked
+                    if (i != 0) (v as MaterialRadioButton).enabled(false)
+                    else (v as MaterialRadioButton).apply {
+                        isChecked = bi.incVideo.isChecked
+                        enabled(bi.incVideo.isChecked)
+                    }
                 }
                 bi.incVideo.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) bi.quaVideo.check(Exportable.Options.quaVideo[3])
                     else bi.quaVideo.clearCheck()
-                    bi.quaVideo[0].isEnabled = isChecked
+                    (bi.quaVideo[0] as MaterialRadioButton).enabled(isChecked)
                 }
             }
             bi.incVoice.isChecked = false
-            bi.incVoice.isEnabled = false
+            bi.incVoice.enabled(false)
         } else bi.incVideo.setOnCheckedChangeListener(object :
             CompoundButton.OnCheckedChangeListener {
             var wasCheckedItem = bi.quaVideo.checkedRadioButtonId

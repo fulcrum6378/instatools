@@ -17,6 +17,7 @@ import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import android.widget.CompoundButton
 import android.widget.RadioGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -56,10 +57,12 @@ object UiTools {
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
     private const val ADMOB = "com.google.android.gms.ads.MobileAds"
+    const val MP = "https://mahdiparastesh.ir/"
     val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
     private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6
+    private const val OPTION_DISABLED_ALPHA = 0.5f
 
     fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
         val list = ArrayList<AppCompatTextView>()
@@ -245,7 +248,15 @@ object UiTools {
             theme.resolveAttribute(attr, this, true)
         }.data
 
-    fun RadioGroup.areEnabled(bb: Boolean) = forEach { it.isEnabled = bb }
+    fun RadioGroup.areEnabled(bb: Boolean) = forEach {
+        it.isEnabled = bb
+        it.alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
+    }
+
+    fun CompoundButton.enabled(bb: Boolean) {
+        isEnabled = bb
+        alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
+    }
 
     fun GraphQl.Post.thumb(nearest: Double = 0.0): String {
         if (thumbnail_resources == null) return thumbnail_src
