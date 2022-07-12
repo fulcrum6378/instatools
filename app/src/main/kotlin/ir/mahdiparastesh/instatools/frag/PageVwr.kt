@@ -31,7 +31,10 @@ import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.serv.Follower
-import ir.mahdiparastesh.instatools.view.*
+import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.GlideShimmer
+import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -153,7 +156,7 @@ class PageVwr : BasePageViewer() {
         when (item.itemId) {
             R.id.vtDownload -> {
                 if (tracker != null && c.m.vwUser?.edges() != null)
-                    Saver(tracker!!.selection).start()
+                    Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.m.vwUser?.edges() != null)
@@ -284,7 +287,11 @@ class PageVwr : BasePageViewer() {
         }
     }
 
-    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
+    class Saver(c: BaseActivity, selection: Selection<String>) : BaseSaver(c, selection) {
+        companion object : Alive()
+
+        override val com: Alive = Companion
+
         override fun handle() {
             val edg = list.getOrNull(0)
             if (edg == null) {

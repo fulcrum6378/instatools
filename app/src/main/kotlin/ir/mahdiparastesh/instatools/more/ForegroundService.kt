@@ -26,9 +26,6 @@ import kotlin.reflect.KClass
 
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private val mViewModelStore = ViewModelStore()
-    private val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
-    private val db: Database by dbLazy
-    val dao: Database.DAO by lazy { db.dao() }
     lateinit var handling: HandlerThread
     private var wakeLock: PowerManager.WakeLock? = null
 
@@ -76,6 +73,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     // Because "this" is apparently null at the time of instantiation,
     // So you cannot invoke "applicationContext" on it!
     override val c: Context get() = applicationContext
+    final override val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    override val db: Database by dbLazy
+    override val dao: Database.DAO by lazy { db.dao() }
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null

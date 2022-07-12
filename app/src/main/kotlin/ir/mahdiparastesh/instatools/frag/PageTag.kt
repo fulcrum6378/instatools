@@ -96,7 +96,7 @@ class PageTag : BasePageViewer() {
         when (item.itemId) {
             R.id.vtDownload -> {
                 if (tracker != null && c.m.vwTagged?.items != null)
-                    Saver(tracker!!.selection).start()
+                    Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.m.vwTagged?.items != null)
@@ -183,7 +183,11 @@ class PageTag : BasePageViewer() {
         }
     }
 
-    inner class Saver(selection: Selection<String>) : BaseSaver(selection) {
+    class Saver(c: BaseActivity, selection: Selection<String>) : BaseSaver(c, selection) {
+        companion object : Alive()
+
+        override val com: Alive = Companion
+
         override fun handle() {
             val edg = list.getOrNull(0)
             if (edg == null) {

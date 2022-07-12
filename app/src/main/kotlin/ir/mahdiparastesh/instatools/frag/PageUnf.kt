@@ -58,7 +58,7 @@ class PageUnf : BasePageMain() {
                 if (isNullOrEmpty() && msg.arg1 == 1 &&
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
                         ?: 0L)) > 86400000
-                ) thread = Inquiry().also { it.start() }
+                ) thread = Inquiry(c).also { it.start() }
                 else onLoaded(isNullOrEmpty())
             }
         },
@@ -128,7 +128,7 @@ class PageUnf : BasePageMain() {
     override fun onRefresh() {
         if (thread?.active == true) return
         b.rv.adapter = null
-        thread = Inquiry().also { it.start() }
+        thread = Inquiry(c).also { it.start() }
     }
 
     private fun load(initial: Boolean) {
@@ -146,9 +146,13 @@ class PageUnf : BasePageMain() {
     }
 
 
-    inner class Inquiry : BaseThread() {
+    class Inquiry(c: Persistent) : DbRelatedThread(c) {
+        companion object : Alive()
+
         lateinit var oldFriends: List<Friend>
         var newFriends = arrayListOf<Friend>()
+        private val reqQueue by lazy { Volley.newRequestQueue(c.c) }
+        override val com: Alive = Companion
 
         init {
             c.m.unfollowers.value = null
@@ -218,15 +222,15 @@ class PageUnf : BasePageMain() {
         private fun gotNewOnes(num: Int) {
             if (!active || c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+                (c.c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .createNotificationChannel(Notify.Channel.UNF_NEW_ITEMS.create(c.c))
             NotificationManagerCompat.from(c.c).notify(
                 Notify.ID_UNF_NEW_ITEMS, NotificationCompat.Builder(
                     c.c, Notify.Channel.UNF_NEW_ITEMS.id
                 ).apply {
                     setSmallIcon(R.drawable.notification)
-                    setContentTitle(getString(R.string.newUnfNtfChannel))
-                    setContentText(getString(R.string.newUnfNtfText, num))
+                    setContentTitle(c.c.getString(R.string.newUnfNtfChannel))
+                    setContentText(c.c.getString(R.string.newUnfNtfText, num))
                     priority = NotificationCompat.PRIORITY_HIGH
                     setContentIntent(
                         PendingIntent.getActivity(

@@ -199,19 +199,19 @@ class PageSvd : BasePageMain(), Selective {
         when (item.itemId) {
             R.id.mtUnsaveDownload -> {
                 if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
-                    tracker!!.selection, unsave = true, download = true
+                    c, this, tracker!!.selection, unsave = true, download = true
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtDownload -> {
                 if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
-                    tracker!!.selection, unsave = false, download = true
+                    c, this, tracker!!.selection, unsave = false, download = true
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtUnsave -> {
                 if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
-                    tracker!!.selection, unsave = true, download = false
+                    c, this, tracker!!.selection, unsave = true, download = false
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
@@ -351,9 +351,13 @@ class PageSvd : BasePageMain(), Selective {
         }
     }
 
-    inner class Saver(
+    class Saver(
+        c: BaseActivity, val f: PageSvd,
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
-    ) : BaseSaver(selection) {
+    ) : BaseSaver(c, selection) {
+        companion object : Alive()
+
+        override val com: Alive = Companion
 
         override fun run() {
             if (unsave && list.size > 4)
@@ -375,7 +379,7 @@ class PageSvd : BasePageMain(), Selective {
                 c.dao.addQueued(Queued(Persistent.now(), UiTools.POST_LINK.format(post.shortcode)))
             } catch (e: IllegalStateException) { // DB is closed
             }
-            if (unsave) reqQueue.adder = Api<Rest>(
+            if (unsave) f.reqQueue.adder = Api<Rest>(
                 c, Api.Endpoint.UNSAVE.url.format(post.id), Rest::class, null,
                 method = Request.Method.POST, autoQueue = false, onError = { ended() }
             ) { rest ->

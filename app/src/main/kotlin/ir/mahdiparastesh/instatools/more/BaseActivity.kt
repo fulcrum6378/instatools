@@ -46,9 +46,6 @@ import kotlin.reflect.KClass
 
 abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener,
     Toolbar.OnMenuItemClickListener {
-    private val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
-    val db: Database by dbLazy
-    val dao: Database.DAO by lazy { db.dao() }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
@@ -60,6 +57,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
     override val c: Context get() = applicationContext
+    final override val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    override val db: Database by dbLazy
+    override val dao: Database.DAO by lazy { db.dao() }
     override lateinit var m: Model
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null

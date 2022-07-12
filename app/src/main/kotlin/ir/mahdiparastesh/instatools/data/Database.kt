@@ -2,8 +2,6 @@ package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
 import androidx.room.*
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 @androidx.room.Database(
     entities = [
@@ -119,11 +117,6 @@ abstract class Database : RoomDatabase() {
     companion object {
         fun build(c: Context, user: String) = Room
             .databaseBuilder(c, Database::class.java, "$user.db")
-            .addMigrations(object : Migration(7, 8) {
-                override fun migrate(db: SupportSQLiteDatabase) {
-                    db.execSQL("ALTER TABLE Queued RENAME COLUMN failed TO status;")
-                }
-            })
             .fallbackToDestructiveMigration()
             .build()
     }

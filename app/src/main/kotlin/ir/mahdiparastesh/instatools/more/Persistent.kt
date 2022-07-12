@@ -10,6 +10,7 @@ import android.os.Process.myPid
 import android.os.Process.myUid
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import java.util.*
 import kotlin.system.exitProcess
@@ -19,6 +20,9 @@ interface Persistent {
     val m: Model
     val gsp: SharedPreferences
     val sp: SharedPreferences?
+    val dbLazy: Lazy<Database>
+    val db: Database
+    val dao: Database.DAO
 
     fun initGsp(): SharedPreferences =
         c.getSharedPreferences("global", Context.MODE_PRIVATE)

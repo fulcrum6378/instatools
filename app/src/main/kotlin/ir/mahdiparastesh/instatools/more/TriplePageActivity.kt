@@ -16,7 +16,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     protected var page2: B? = null
     protected var page3: C? = null
 
-    abstract val currentPage: MutableLiveData<Int>
+    abstract val currentPage: MutableLiveData<Int> // NON-NULL
     abstract val aKlass: KClass<A>
     abstract val bKlass: KClass<B>
     abstract val cKlass: KClass<C>
@@ -107,12 +107,13 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         currentPage.value = i
         val createdCur = createCurrentPage()
         transFrag(lastPage, currentPage.value!!).apply {
-            detach(pages()[lastPage]!!)
-            if (createdCur) add(R.id.frame, pages()[currentPage.value!!]!!)
-            else attach(pages()[currentPage.value!!]!!)
+            pages().getOrNull(lastPage)?.also { detach(it) }
+            pages().getOrNull(currentPage.value!!)?.also {
+                if (createdCur) add(R.id.frame, it) else attach(it)
+            }
             commit()
         }
-        (pages()[lastPage] as BasePage).ftDetached = true
+        pages()[lastPage]?.ftDetached = true
         return true
     }
 
