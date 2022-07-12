@@ -36,6 +36,7 @@
             android:background="@color/defBG"
             android:saveEnabled="false"
             android:theme="@style/Theme.InstaTools.BNV"
+            app:itemRippleColor="@color/defRipple"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/main_bnv" />
 
@@ -70,6 +71,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/main_nav_header"
+        app:itemRippleColor="@color/defRipple"
         app:itemTextAppearance="@style/TextAppearance.InstaTools.Nav"
         app:menu="@menu/main_nav" />
 </androidx.drawerlayout.widget.DrawerLayout>

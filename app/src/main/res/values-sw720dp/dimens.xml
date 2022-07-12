@@ -27,6 +27,7 @@
     <dimen name="searchFont">18sp</dimen>
     <dimen name="simpleLoading">300dp</dimen>
     <dimen name="simpleError">180dp</dimen>
+    <dimen name="dmProfile">48dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">70dp</dimen>

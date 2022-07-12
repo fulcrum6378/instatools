@@ -275,8 +275,10 @@ class Exporter : ForegroundService() {
         }
     }
 
+    private val endedOnes = arrayListOf<Long>()
     private fun end(oldExp: Exportable?, alternativeFolder: Uri? = null) {
-        if (oldExp == null) return
+        if (oldExp == null || oldExp.addedAt in endedOnes) return
+        endedOnes.add(oldExp.addedAt)
         // Don't update notification here; it'll create another after onDestroy
         CoroutineScope(Dispatchers.IO).launch {
             dao.deleteExportable(oldExp)

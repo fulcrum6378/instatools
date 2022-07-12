@@ -39,17 +39,17 @@ abstract class LongThread(private val looper: Looper) : BaseThread() {
 }
 
 abstract class DbRelatedThread(val c: Persistent) : BaseThread() {
-    abstract val com: Alive
+    abstract val com: Alive.OfThread
 
     override fun run() {
-        com.active.value = true
+        com.active = true
         super.run()
     }
 
     override fun interrupt() {
-        if (com.active.value == false) return
+        if (!com.active) return
         if (c.dbLazy.isInitialized() && !Alive.anyLiving()) c.db.close()
-        com.active.value = false
+        com.active = false
         super.interrupt()
     }
 }

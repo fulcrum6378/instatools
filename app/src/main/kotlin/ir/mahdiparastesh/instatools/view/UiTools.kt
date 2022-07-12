@@ -6,6 +6,8 @@ import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
@@ -18,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.CompoundButton
+import android.widget.ImageView
 import android.widget.RadioGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -26,6 +29,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.initialization.AdapterStatus
@@ -305,5 +310,32 @@ object UiTools {
 
     fun snackbar(view: View, @StringRes res: Int, dur: Int, anchor: View? = null) {
         snackbar(view, view.context.getString(res), dur, anchor)
+    }
+
+    fun bmpRound(bmp: Bitmap): Bitmap =
+        Bitmap.createBitmap(bmp.width, bmp.height, Bitmap.Config.ARGB_8888).apply {
+            val canvas = Canvas(this)
+            canvas.drawRoundRect(
+                RectF(Rect(0, 0, bmp.width, bmp.height)),
+                bmp.width / 2f, bmp.height / 2f,
+                Paint().apply { flags = Paint.ANTI_ALIAS_FLAG })
+            val paintImage =
+                Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP) }
+            canvas.drawBitmap(bmp, 0f, 0f, paintImage)
+        }
+
+    fun targetProfile(iv: ImageView) = object : CustomTarget<Bitmap>() {
+        override fun onLoadCleared(placeholder: Drawable?) {
+            iv.setImageDrawable(null)
+        }
+
+        override fun onResourceReady(res: Bitmap, trans: Transition<in Bitmap>?) {
+            iv.setImageBitmap(bmpRound(res))
+        }
+
+        override fun onLoadFailed(errorDrawable: Drawable?) {
+            super.onLoadFailed(errorDrawable)
+            iv.setImageDrawable(null)
+        }
     }
 }

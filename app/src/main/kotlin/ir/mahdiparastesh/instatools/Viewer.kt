@@ -30,14 +30,10 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListCar
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
-import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.more.Intelligence
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -228,11 +224,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     }
 
     override fun onBackPressed() {
+        if (::b.isInitialized && expandable.zoomed) {
+            expandable.collapse(); return; }
         if (pageGoBack()) return
-        if (::b.isInitialized) {
-            if (expandable.zoomed) {
-                expandable.collapse(); return; }
-        }
         if (currentPage.value != 1) {
             turnToPage(1); return; }
         m.vwUser = null

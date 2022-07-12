@@ -5,9 +5,9 @@ import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.frag.PageVwr
+import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.shake
-import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
 abstract class BasePageViewer : BasePage<Viewer>(), Selective {
@@ -31,9 +31,6 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
     }
 
     override fun goBack(): Boolean {
-        if (c.expandable.zoomed) {
-            jumper().vis(true)
-            c.expandable.collapse(); return true; }
         if (tracker?.hasSelection() == true) {
             tracker?.clearSelection()
             return true
@@ -53,6 +50,7 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
             c.fixTbMenu()
             c.shake()
             if (this@BasePageViewer is PageVwr) rv().isNestedScrollingEnabled = status
+            if (status) (rv().adapter as ListPost<*, *>?)?.firstLongClickSelect = true
         }
     }
 }

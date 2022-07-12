@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.json
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
+import android.util.DisplayMetrics
 import com.android.volley.*
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
@@ -44,7 +45,8 @@ class Api<JSON>(
         } else gotError(handleError, onError)
     }
 
-    override fun getHeaders(): Map<String, String> = Headers(acc!!, method == Method.POST)
+    override fun getHeaders(): Map<String, String> =
+        Headers(acc!!, method == Method.POST, if (c is BaseActivity) c.dm else null)
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
@@ -174,7 +176,7 @@ class Api<JSON>(
     }
 
     @Suppress("SpellCheckingInspection")
-    class Headers(acc: Account, isImperative: Boolean = false) :
+    class Headers(acc: Account, isImperative: Boolean = false, dm: DisplayMetrics? = null) :
         HashMap<String, String>() {
         init {
             this["accept"] = "*/*"
@@ -194,6 +196,7 @@ class Api<JSON>(
                 if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
             } else { // Cookie "rur" is different between MEDIA_ITEM and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
+                if (dm != null) this["viewport-width"] = dm.widthPixels.toString()
             }
             if (cookies.contains("csrftoken="))
                 this["x-csrftoken"] = cookies

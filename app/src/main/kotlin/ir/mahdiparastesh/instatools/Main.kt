@@ -297,7 +297,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setTitle(R.string.stHelp)
                 setMessage(R.string.supportDesc)
                 setView(bs.root)
-                setNeutralButton(R.string.ok, null)
+                setPositiveButton(R.string.ok, null)
             }.show(); true; }
         else -> super.onOptionsItemSelected(item)
     }

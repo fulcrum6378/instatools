@@ -56,7 +56,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
             if (this != null) Glide.with(c.c)
                 .load(url)
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .into(h.b.icon)
             else h.b.icon.setImageDrawable(null)
         }

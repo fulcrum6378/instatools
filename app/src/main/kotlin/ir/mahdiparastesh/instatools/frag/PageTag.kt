@@ -184,9 +184,9 @@ class PageTag : BasePageViewer() {
     }
 
     class Saver(c: BaseActivity, selection: Selection<String>) : BaseSaver(c, selection) {
-        companion object : Alive()
+        companion object : Alive.OfThread()
 
-        override val com: Alive = Companion
+        override val com: Alive.OfThread = Companion
 
         override fun handle() {
             val edg = list.getOrNull(0)

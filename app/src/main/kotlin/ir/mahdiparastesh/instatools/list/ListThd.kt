@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.list
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
@@ -20,9 +21,11 @@ import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.FastCustomGlide
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.anchor
 import ir.mahdiparastesh.instatools.view.UiTools.calendar
@@ -43,7 +46,7 @@ class ListThd(val c: Main, private val f: PageBox) :
     )
 
     override fun onBindViewHolder(h: AnyViewHolder<ListThdBinding>, i: Int) {
-        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!.items, i, idealW, f, h)
+        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!, i, idealW, f, h)
     }
 
     override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
@@ -56,18 +59,18 @@ class ListThd(val c: Main, private val f: PageBox) :
 
         @SuppressLint("CheckResult", "SetTextI18n")
         fun ListThdBinding.onBind(
-            c: Context, list: List<Dm>, i: Int, idealW: Float = Versioned.BEST,
+            c: Context, thread: Dm.DmThread, i: Int, idealW: Float = Versioned.BEST,
             f: PageBox? = null, h: AnyViewHolder<ListThdBinding>? = null,
             downloaded: HashMap<String, Downloadable>? = null,
         ): ListThdBinding {
-            val dm = list.getOrNull(i) ?: return this
+            val dm = thread.items.getOrNull(i) ?: return this
             body.vis(dm.action_log == null)
 
             // Date
             val cal = dm.timestamp.xFromMicroseconds().calendar()
             var showDate = true
             if (i > 0) {
-                val prev = list[i - 1].timestamp.xFromMicroseconds().calendar()
+                val prev = thread.items[i - 1].timestamp.xFromMicroseconds().calendar()
                 if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
                     cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
                     cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
@@ -106,6 +109,31 @@ class ListThd(val c: Main, private val f: PageBox) :
             message.textAlignment =
                 if (dm.is_sent_by_viewer) AppCompatTextView.TEXT_ALIGNMENT_VIEW_END
                 else AppCompatTextView.TEXT_ALIGNMENT_VIEW_START
+
+            // Profile
+            val next = thread.items.filter { it.action_log == null }
+                .find { it.item_id == thread.items.getOrNull(i + 1)?.item_id }
+            val showPro = !dm.is_sent_by_viewer && dm.user_id != next?.user_id
+            profile.visibility = when {
+                dm.is_sent_by_viewer -> View.GONE
+                showPro -> View.VISIBLE
+                else -> View.INVISIBLE
+            }
+            val userId = dm.user_id.toLong().toString()
+            if (downloaded == null) {
+                if (showPro) Glide.with(c).asBitmap()
+                    .load(thread.users.find { it.pk == userId }?.profile_pic_url)
+                    .into(UiTools.targetProfile(profile))
+                else Glide.with(c).clear(profile)
+            } else downloaded.getOrDefault(Exporter.USER_PROFILE_IMG.format(userId), null)
+                ?.cache?.also {
+                    FileInputStream(it).use { fis ->
+                        val data = fis.readBytes()
+                        if (data.isNotEmpty()) profile.setImageBitmap(
+                            UiTools.bmpRound(BitmapFactory.decodeByteArray(data, 0, data.size))
+                        )
+                    }
+                }
 
             // Message
             msgTv.anchor(null, null)
@@ -182,7 +210,7 @@ class ListThd(val c: Main, private val f: PageBox) :
                 }
                 Glide.with(c).load(
                     carousel_media?.getOrNull(0)?.nearest(idealW) ?: nearest(idealW)
-                ).diskCacheStrategy(DiskCacheStrategy.ALL).into(
+                ).diskCacheStrategy(DiskCacheStrategy.RESOURCE).into(
                     FastCustomGlide {
                         if (h != null && h.layoutPosition != i) return@FastCustomGlide
                         msgLoading.pauseAnimation()

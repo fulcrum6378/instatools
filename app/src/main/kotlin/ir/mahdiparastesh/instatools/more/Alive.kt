@@ -14,9 +14,13 @@ abstract class Alive {
     companion object {
         private fun anyDbRelatedRunning() = arrayOf(
             PageUnf.Inquiry, PageSvd.Saver, PageVwr.Saver, PageTag.Saver
-        ).any { it.active.value!! }
+        ).any { it.active }
 
         fun anyLiving() =
             BaseActivity.anyActive() || ForegroundService.anyRunning() || anyDbRelatedRunning()
+    }
+
+    abstract class OfThread {
+        var active = false
     }
 }

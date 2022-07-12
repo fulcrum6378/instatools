@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
@@ -26,6 +27,7 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
 
     protected val typeVideo = c.drawable(R.drawable.video)!!
     protected val typeStack = c.drawable(R.drawable.stack)!!
+    var firstLongClickSelect = false
 
     abstract val inflater: LayoutInflater
     abstract val tracker: SelectionTracker<String>?
@@ -59,29 +61,37 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         val flex = flexible(i) ?: return
+        val norm = tracker?.isSelected(flex.id) != true
 
         if (flex.thumb != null) Glide.with(c.c)
             .load(flex.thumb)
             .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
         h.b.type.setImageDrawable(flex.typeDrw())
         h.b.stored.vis(flex.isStored())
-
-        h.b.click.setBackgroundResource(
-            if (tracker?.isSelected(flex.id) != true) R.drawable.button else R.drawable.selected
-        )
-        h.b.click.setOnClickListener {
-            expandable.settings(h.layoutPosition)
-            expandable.thumb = it
-            try {
-                expandable.expand()
-                f.jumper().vis(false)
-            } catch (e: Exception) {
-                if (BuildConfig.DEBUG) throw e
+        h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
+        h.b.click.setOnClickListener { expand(it, h.layoutPosition) }
+        h.b.click.setOnLongClickListener {
+            if (firstLongClickSelect) {
+                firstLongClickSelect = false
+                return@setOnLongClickListener false
             }
+            expand(it, h.layoutPosition)
+            true
+        }
+    }
+
+    private fun expand(v: View, i: Int) {
+        expandable.settings(i)
+        expandable.thumb = v
+        try {
+            expandable.expand()
+            f.jumper().vis(false)
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) throw e
         }
     }
 

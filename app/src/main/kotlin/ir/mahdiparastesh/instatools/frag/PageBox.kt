@@ -342,8 +342,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 expandable.collapse(); return true; }
             c.m.dmThread = null
             onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
-            return true
-        }
+            return true; }
         return false
     }
 

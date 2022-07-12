@@ -147,12 +147,12 @@ class PageUnf : BasePageMain() {
 
 
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
-        companion object : Alive()
+        companion object : Alive.OfThread()
 
         lateinit var oldFriends: List<Friend>
         var newFriends = arrayListOf<Friend>()
         private val reqQueue by lazy { Volley.newRequestQueue(c.c) }
-        override val com: Alive = Companion
+        override val com: Alive.OfThread = Companion
 
         init {
             c.m.unfollowers.value = null

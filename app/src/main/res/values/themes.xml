@@ -123,6 +123,7 @@
     </style>
 
     <style name="Theme.InstaTools.BNV" parent="Theme.MaterialComponents.DayNight">
+        <!-- don't use Widget.MaterialComponents -->
         <item name="android:textColor">@android:color/white</item>
         <item name="fontFamily">@font/light</item>
     </style>

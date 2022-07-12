@@ -170,7 +170,7 @@ class PageVwr : BasePageViewer() {
         if (com.active.value != true || c.m.vwUser == null || !bInitialised) return
         Glide.with(c.c)
             .load(c.m.vwUser!!.photo())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(b.proPic, b.proPicIv))
             .into(b.proPicIv)
         b.followersNum.text = c.m.vwUser!!.edge_followed_by.toString()
@@ -288,9 +288,9 @@ class PageVwr : BasePageViewer() {
     }
 
     class Saver(c: BaseActivity, selection: Selection<String>) : BaseSaver(c, selection) {
-        companion object : Alive()
+        companion object : Alive.OfThread()
 
-        override val com: Alive = Companion
+        override val com: Alive.OfThread = Companion
 
         override fun handle() {
             val edg = list.getOrNull(0)

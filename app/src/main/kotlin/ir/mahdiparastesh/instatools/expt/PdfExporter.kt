@@ -88,7 +88,7 @@ abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             LayoutInflater.from(c).cloneInContext(
                 ContextThemeWrapper(c, BaseActivity.Theme.TERTIARY_LIGHT.res)
             ), parent, false
-        ).onCreate(true).onBind(c, exp.threadData!!.items, i, downloaded = exp.media).root
+        ).onCreate(true).onBind(c, exp.threadData!!, i, downloaded = exp.media).root
 
     private fun percent(mess: Int) {
         progress(

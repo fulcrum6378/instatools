@@ -14,6 +14,7 @@
     <color name="defBG">#FFF</color>
     <color name="defCALight">#262626</color>
     <color name="defCA">@color/defCALight</color>
+    <color name="defRipple">#11000000</color>
     <array name="BG">
         <item>@color/defBG</item>
         <item>@color/defBG</item>

@@ -286,10 +286,13 @@ class PageSvd : BasePageMain(), Selective {
             c.selective(status)
             c.shake()
             if (!status) BadgeUtils.detachBadgeDrawable(selectionBadge, c.tbTitle!!)
-            else if (selectionGuide != null) {
-                b.root.removeView(selectionGuide)
-                c.gsp.edit().putBoolean(Settings.spLearntSelection, true).apply()
-                b.rv.suppressLayout(false)
+            else {
+                (b.rv.adapter as ListSvd?)?.firstLongClickSelect = true
+                if (selectionGuide != null) {
+                    b.root.removeView(selectionGuide)
+                    c.gsp.edit().putBoolean(Settings.spLearntSelection, true).apply()
+                    b.rv.suppressLayout(false)
+                }
             }
         }
     }
@@ -355,9 +358,9 @@ class PageSvd : BasePageMain(), Selective {
         c: BaseActivity, val f: PageSvd,
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
     ) : BaseSaver(c, selection) {
-        companion object : Alive()
+        companion object : Alive.OfThread()
 
-        override val com: Alive = Companion
+        override val com: Alive.OfThread = Companion
 
         override fun run() {
             if (unsave && list.size > 4)

@@ -37,6 +37,7 @@
     <dimen name="simpleLoading">200dp</dimen>
     <dimen name="simpleError">120dp</dimen>
     <dimen name="dialogItemIv">28sp</dimen>
+    <dimen name="dmProfile">40dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">45dp</dimen>

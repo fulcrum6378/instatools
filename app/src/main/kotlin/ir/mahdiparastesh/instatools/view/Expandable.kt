@@ -160,6 +160,7 @@ class Expandable(
         b.slider.adapter = ListCar(c, media!!, muteSound)
         b.indicator.setViewPager2(b.slider)
         b.buttons.vis()
+        b.username.vis()
         val isSlider = media?.carousel_media != null
         b.indicator.vis(isSlider)
         b.downloadAll.vis(isSlider)
@@ -255,6 +256,7 @@ class Expandable(
         media = null
         b.indicator.vis(false)
         b.buttons.vis(false)
+        b.username.vis(false)
         currentAnimator?.cancel()
         currentAnimator = AnimatorSet().apply {
             play(ObjectAnimator.ofFloat(b.slider, View.X, startBounds!!.left)).apply {
