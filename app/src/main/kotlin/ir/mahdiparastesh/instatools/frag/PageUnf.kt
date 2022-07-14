@@ -244,5 +244,6 @@ class PageUnf : BasePageMain() {
             )
             c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.apply()
         }
+        // Never use Fragment::getString()
     }
 }

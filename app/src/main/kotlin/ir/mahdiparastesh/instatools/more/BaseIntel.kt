@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -39,13 +38,13 @@ abstract class BaseIntel {
             c.gsp.getLong(Settings.spDownloadCount, 0L) +
             c.gsp.getLong(Settings.spExportCount, 0L)
 
-    protected fun shallCollect() =
-        c.intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)
-                && (!c.gsp.getBoolean(spReported, false) ||
-                c.gsp.getInt(
-                    Settings.spUsedVersion, BuildConfig.VERSION_CODE
-                ) != BuildConfig.VERSION_CODE ||
-                userScore() > 100)
+    protected fun shallCollect() = false
+    /*c.intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)
+            && (!c.gsp.getBoolean(spReported, false) ||
+            c.gsp.getInt(
+                Settings.spUsedVersion, BuildConfig.VERSION_CODE
+            ) != BuildConfig.VERSION_CODE ||
+            userScore() > 100)*/
 
     protected fun collectData() {
         StringBuilder().apply {

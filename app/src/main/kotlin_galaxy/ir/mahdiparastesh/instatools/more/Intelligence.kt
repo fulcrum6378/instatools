@@ -33,9 +33,8 @@ object Intelligence : BaseIntel() {
     }
 
     // When the app information is changed but the app binary is not changed, the review team
-    // sometimes test the binary and sometimes not. When I changed few information in Persian
-    // they tested and when I added German with screenshots and etc. they did not!!
+    // sometimes test the binary and sometimes not.
 
-    // They test since Monday to Friday; ~6:00 to ~14:00 in Iran Time.
+    // They work since Monday to Friday; ~6:00 to ~14:00 in Iran Time.
     // Although they have rarely reviewed apps at the evening!
 }

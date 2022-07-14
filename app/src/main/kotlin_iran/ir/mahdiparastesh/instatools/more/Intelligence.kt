@@ -6,6 +6,5 @@ object Intelligence : BaseIntel() {
         if (shallCollect() || iranCensor) collectData()
         return true
     }
-    // Myket doesn't test app updates!!
-    // Bazaar doesn't test app updates!!
+    // Myket and Bazaar don't test app updates!!
 }
