@@ -88,7 +88,7 @@
                 app:layoutManager="ir.mahdiparastesh.instatools.view.SafeGridManager"
                 app:spanCount="3" />
             <!-- layout_height="wrap_content|match_parent" will cause an
-            ArrayIndexOutOfBoundsException sometimes -->
+                 ArrayIndexOutOfBoundsException sometimes -->
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/privateAcc"

@@ -4,6 +4,7 @@ package ir.mahdiparastesh.instatools.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -19,12 +20,23 @@ open class SafeGridManager : GridLayoutManager {
 
     constructor(context: Context, spanCount: Int) : super(context, spanCount)
 
-    override fun onLayoutChildren(
-        rv: RecyclerView.Recycler?, state: RecyclerView.State?
-    ) {
+    override fun onLayoutChildren(rv: RecyclerView.Recycler?, state: RecyclerView.State?) {
         try {
             super.onLayoutChildren(rv, state)
         } catch (e: IndexOutOfBoundsException) {
+        }
+    }
+
+    override fun onFocusSearchFailed(
+        focused: View,
+        focusDirection: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ): View? {
+        return try {
+            super.onFocusSearchFailed(focused, focusDirection, recycler, state)
+        } catch (e: IndexOutOfBoundsException) {
+            null
         }
     }
 }
