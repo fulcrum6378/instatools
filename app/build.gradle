@@ -35,19 +35,19 @@ android {
     productFlavors {
         all { dimension 'store' }
         iran {
-            versionCode 59 // 38
+            versionCode 60 // 38
             signingConfig signingConfigs.aleph
             manifestPlaceholders = [useMainNormal: true, useTmCensored: false]
         }
         play {
             applicationIdSuffix '.beth'
-            versionCode 29
+            versionCode 30
             signingConfig signingConfigs.beth
             manifestPlaceholders = [useMainNormal: true, useTmCensored: false]
         }
         galaxy {
             applicationIdSuffix '.beth'
-            versionCode 30
+            versionCode 31
             signingConfig signingConfigs.aleph
             manifestPlaceholders = [useMainNormal: false, useTmCensored: true]
         }
