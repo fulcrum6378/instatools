@@ -12,9 +12,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
@@ -24,9 +21,8 @@ import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Intelligence
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +35,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var bw: WelcomeBinding
     lateinit var accounts: ArrayList<Account>
     private lateinit var cookieManager: CookieManager
-    private var adBanner: AdView? = null
+    // private var adBanner: AdView? = null
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -50,8 +46,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val loginUrl = "${host}accounts/login/"
         const val spAccount = "account"
         const val EXTRA_NEED_AUTH = "needAuthentication"
-        const val EXTRA_SHOW_AD = "show_ad"
         var cameHereToAuth = false
+        // const val EXTRA_SHOW_AD = "show_ad"
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -92,8 +88,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                         }
                     else -> {
                         welcome()
-                        if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
-                            loadInterstitial(R.string.interAccSwitched, true)
+                        /*if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
+                            loadInterstitial(R.string.interAccSwitched, true)*/
                     }
                 }
             }
@@ -119,7 +115,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private fun welcome() {
         b.refresher.vis(false)
-        adBanner?.vis(false)
+        // adBanner?.vis(false)
         if (!::bw.isInitialized) b.welcomeStub.inflate()
         else bw.root.vis()
     }
@@ -151,7 +147,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private var gonnaBeGuest = false
     private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
         b.refresher.vis()
-        adBanner?.vis(true)
+        // adBanner?.vis(true)
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also {
             it.setAcceptCookie(true)
@@ -164,13 +160,13 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
         doClearHistory = true
 
-        if (areAdsReady() && adBanner == null) {
+        /*if (areAdsReady() && adBanner == null) {
             adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmWebView)
             b.root.addView(adBanner, 1, UiTools.adaptiveBannerLp())
             adBanner!!.loadAd(AdRequest.Builder().build())
             b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)
                 .apply { bottomToTop = R.id.adBanner }
-        }
+        }*/
     }
 
     override fun onDestroy() {

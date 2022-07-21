@@ -18,8 +18,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.documentfile.provider.DocumentFile
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.StorageCache
@@ -33,7 +31,6 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -45,7 +42,6 @@ import java.io.File
 
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
-    private lateinit var adBanner: AdView
     private lateinit var prf: SharedPreferences
     private var globalMode = true
     private var giveLinkBack: String? = null
@@ -55,6 +51,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private val cacheMin: Int by lazy { resources.getInteger(R.integer.stCacheMin) }
     private val cacheMax: Int by lazy { cacheMin + resources.getInteger(R.integer.stCacheMaxNominal) }
     private var uriFolders: ArrayList<Uri>? = null
+    // private lateinit var adBanner: AdView
 
     override val menuRes = R.menu.settings_tlb
     override val com: ActivityCompanion get() = Companion
@@ -285,9 +282,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         // Ads
-        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmSettings)
+        /*adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmSettings)
         b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-        adBanner.loadAd(AdRequest.Builder().build())
+        adBanner.loadAd(AdRequest.Builder().build())*/
     }
 
     override fun onResume() {

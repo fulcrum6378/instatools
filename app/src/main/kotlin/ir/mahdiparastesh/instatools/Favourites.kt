@@ -6,24 +6,19 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.runBlocking
 
 class Favourites : BaseActivity() {
     private lateinit var b: FavouritesBinding
-    private lateinit var adBanner: AdView
+    // private lateinit var adBanner: AdView
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -66,7 +61,7 @@ class Favourites : BaseActivity() {
         load()
     }
 
-    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady()) return
         adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmFavourites)
@@ -74,7 +69,7 @@ class Favourites : BaseActivity() {
         adBanner.loadAd(AdRequest.Builder().build())
         b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)
             .apply { bottomToTop = R.id.adBanner }
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()

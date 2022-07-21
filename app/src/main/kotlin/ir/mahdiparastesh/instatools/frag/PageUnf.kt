@@ -36,8 +36,8 @@ import kotlinx.coroutines.*
 class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     var thread: Inquiry? = null
-    var counter = 0
     val reqQueue by lazy { Volley.newRequestQueue(c) }
+    // var counter = 0
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.PRIMARY
@@ -111,7 +111,7 @@ class PageUnf : BasePageMain() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
         const val HANDLE_FAV_CHANGED = 4
-        const val MAX_UNFOLLOW_AD = 10
+        // const val MAX_UNFOLLOW_AD = 10
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =

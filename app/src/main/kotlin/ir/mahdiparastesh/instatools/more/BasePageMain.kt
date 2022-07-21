@@ -10,21 +10,18 @@ import androidx.core.view.iterator
 import androidx.media2.common.SessionPlayer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 import ir.mahdiparastesh.instatools.list.ListCar
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
-    private lateinit var guestAdBanner: AdView
+    // private lateinit var guestAdBanner: AdView
 
     abstract val theme: BaseActivity.Theme
     abstract val emptyIcon: Int
@@ -39,9 +36,9 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         jumper().vis(false)
         rv().vis(false)
 
-        guestAdBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmGuest)
+        /*guestAdBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmGuest)
         root.addView(guestAdBanner, UiTools.adaptiveBannerLp())
-        guestAdBanner.loadAd(AdRequest.Builder().build())
+        guestAdBanner.loadAd(AdRequest.Builder().build())*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

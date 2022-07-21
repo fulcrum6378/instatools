@@ -13,7 +13,10 @@ import android.view.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.*
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
@@ -25,18 +28,11 @@ import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.initialization.InitializationStatus
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ir.mahdiparastesh.instatools.*
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
-import ir.mahdiparastesh.instatools.view.UiTools.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,15 +40,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
-abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationCompleteListener,
-    Toolbar.OnMenuItemClickListener {
+abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuItemClickListener {
+    // , OnInitializationCompleteListener
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
-    var interstitialAd: InterstitialAd? = null
+
+    /*var interstitialAd: InterstitialAd? = null
     var loadingAd = false
     var showingAd = false
-    private var retryForAd = 0
+    private var retryForAd = 0*/
 
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
@@ -67,9 +64,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     abstract class ActivityCompanion : Alive()
 
     companion object {
-        const val ADMOB_DELAY = 2000L
-        const val MAX_AD_RETRY = 2
-        var adsInitStatus: InitializationStatus? = null
+        // const val ADMOB_DELAY = 2000L
+        // const val MAX_AD_RETRY = 2
+        // var adsInitStatus: InitializationStatus? = null
 
         fun anyActive() = arrayOf(
             Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
@@ -78,7 +75,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         fun Context.night(): Boolean = resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-        fun areAdsReady() = adsInitStatus?.isReady() == true
+        // fun areAdsReady() = adsInitStatus?.isReady() == true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,19 +135,19 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         onBuildUiBasedOnAccount()
     }
 
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         if (adsInitStatus?.isReady() != true)
             Delay(ADMOB_DELAY) { initAdmob() }
         else onInitializationComplete(adsInitStatus!!)
-    }
+    }*/
 
-    private fun initAdmob() {
+    /*private fun initAdmob() {
         retryForAd = 0
         MobileAds.initialize(c, this)
-    }
+    }*/
 
-    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         Companion.adsInitStatus = adsInitStatus
         if (!adsInitStatus.isReady()) {
             if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
@@ -158,7 +155,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
                 retryForAd++
             } else retryForAd = 0
             return; }
-    }
+    }*/
 
     var tbTitle: AppCompatTextView? = null
     lateinit var toolbar: Toolbar
@@ -211,7 +208,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true
 
-    @MainThread
+    /*@MainThread
     fun loadInterstitial(@StringRes adUnitId: Int, autoPlay: () -> Boolean) {
         if (adsInitStatus?.isReady() != true) {
             if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
@@ -243,7 +240,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
     @MainThread
     fun showInterstitial() {
         if (!showingAd) interstitialAd?.show(this@BaseActivity)
-    }
+    }*/
 
     var notFirstResume = false
     override fun onPause() {
@@ -310,7 +307,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
         TERTIARY_LIGHT(R.style.Theme_InstaTools_Tertiary_Light)
     }
 
-    inner class InterstitialCallback : FullScreenContentCallback() {
+    /*inner class InterstitialCallback : FullScreenContentCallback() {
         override fun onAdShowedFullScreenContent() {
             showingAd = true
         }
@@ -324,5 +321,5 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, OnInitializationC
             showingAd = false
             interstitialAd = null
         }
-    }
+    }*/
 }

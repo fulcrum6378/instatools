@@ -10,8 +10,9 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
-import android.view.*
-import android.widget.FrameLayout
+import android.view.ContextThemeWrapper
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -24,9 +25,6 @@ import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
@@ -45,11 +43,10 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.more.Intelligence
+import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
-import ir.mahdiparastesh.instatools.view.UiTools.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,8 +63,8 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
     val exportLauncher = launcher { page3?.onActivityResult(it) }
-    private lateinit var adBanner: AdView
-    private var adBannerLoaded = false
+    // private lateinit var adBanner: AdView
+    // private var adBannerLoaded = false
 
     var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
@@ -136,9 +133,9 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // Navigation
-        toggleNav = object : ActionBarDrawerToggle(
+        toggleNav = /*object :*/ ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
-        ) {
+        )/* {
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
                 if (::adBanner.isInitialized && !adBannerLoaded) {
@@ -146,7 +143,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     adBannerLoaded = true
                 }
             }
-        }.apply {
+        }*/.apply {
             b.root.addDrawerListener(this)
             isDrawerIndicatorEnabled = true
             syncState()
@@ -163,9 +160,8 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
         // Miscellaneous
         if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
+            || !gsp.contains(Settings.spUsedVersion)
         ) gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
-        if (!gsp.contains(Settings.spUsedVersion))
-            gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
     }
 
     override fun onAccountSet() {
@@ -220,14 +216,14 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             recreate(); return; }
     }
 
-    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady() || !::b.isInitialized) return
         adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDrawer)
         b.nav.addView(adBanner, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply { gravity = Gravity.BOTTOM })
-    }
+    }*/
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mnDownloads -> goTo(Downloads::class)

@@ -11,15 +11,11 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.initialization.InitializationStatus
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
@@ -30,7 +26,6 @@ import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +37,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
     private lateinit var bd: GuideSwipeDeleteBinding
-    private lateinit var adBanner: AdView
     private val handledLinks = mutableSetOf<String>()
+    // private lateinit var adBanner: AdView
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
@@ -65,10 +60,10 @@ class Downloads : ServiceOwnerActivity() {
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
                     HANDLE_DELETED -> {
-                        if (m.queueds?.size in 1..5)
+                        /*if (m.queueds?.size in 1..5)
                             loadInterstitial(R.string.interDownloaded) {
                                 m.queueds?.filter { it.isReady() }.isNullOrEmpty()
-                            }
+                            }*/
                         find(msg)?.let {
                             m.queueds!!.removeAt(it)
                             b.rv.adapter?.notifyItemRemoved(it)
@@ -84,7 +79,7 @@ class Downloads : ServiceOwnerActivity() {
                     HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
-                    SHOW_AD -> showInterstitial()
+                    // SHOW_AD -> showInterstitial()
                 }
                 updateIfEmpty(m.queueds.isNullOrEmpty())
             }
@@ -141,7 +136,7 @@ class Downloads : ServiceOwnerActivity() {
         }
     }
 
-    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady()) return
         adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDownloads)
@@ -152,7 +147,7 @@ class Downloads : ServiceOwnerActivity() {
         b.guideSwipeDeleteStub.layoutParams =
             (b.guideSwipeDeleteStub.layoutParams as ConstraintLayout.LayoutParams)
                 .apply { bottomToTop = R.id.adBanner }
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
@@ -209,7 +204,7 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
-        const val SHOW_AD = 5
+        // const val SHOW_AD = 5
 
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {

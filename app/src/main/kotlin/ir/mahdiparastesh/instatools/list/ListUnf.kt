@@ -14,7 +14,6 @@ import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.frag.PageUnf.Companion.MAX_UNFOLLOW_AD
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
@@ -99,18 +98,18 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest::class, null,
             method = Request.Method.POST, autoQueue = false, onError = { res ->
                 if (res?.statusCode == 429) {
-                    var showing429 = true
-                    c.loadInterstitial(R.string.interUnfMany) { !showing429 }
+                    /*var showing429 = true
+                    c.loadInterstitial(R.string.interUnfMany) { !showing429 }*/
                     AlertDialog.Builder(
                         ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
                     ).apply {
                         setTitle(R.string.unfollow)
                         setMessage(R.string.unfollowedSoMany)
                         setNeutralButton(R.string.ok, null)
-                        setOnDismissListener {
+                        /*setOnDismissListener {
                             showing429 = false
                             c.showInterstitial()
-                        }
+                        }*/
                     }.show()
                 } else {
                     PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
@@ -123,11 +122,11 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 if (BuildConfig.DEBUG) Toast.makeText(c.c, it.status, Toast.LENGTH_SHORT).show()
                 return@Api; }
-            f.counter++
+            /*f.counter++
             if (f.counter >= MAX_UNFOLLOW_AD) {
                 c.loadInterstitial(R.string.interUnfMany, true)
                 f.counter = 0
-            }
+            }*/
             c.incrementCounter(Settings.spUnfollowCount)
             Thread {
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })

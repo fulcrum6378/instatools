@@ -6,38 +6,21 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.*
-import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.forEach
-import androidx.core.view.forEachIndexed
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.initialization.InitializationStatus
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
-import ir.mahdiparastesh.instatools.databinding.PayForItBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.inaccurateTime
-import ir.mahdiparastesh.instatools.view.UiTools.isReady
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -47,9 +30,9 @@ import kotlinx.coroutines.withContext
 
 class MassFollower : ServiceOwnerActivity() {
     private lateinit var b: MassFollowerBinding
-    private lateinit var adBanner: AdView
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
-    private var controllerBadge: BadgeDrawable? = null
+    // private lateinit var adBanner: AdView
+    // private var controllerBadge: BadgeDrawable? = null
 
     override val menuRes = R.menu.follower_tlb
     override val com: ActivityCompanion get() = Companion
@@ -81,7 +64,7 @@ class MassFollower : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.fwb.value!!.size)
                     }
-                    HANDLE_REWARD_CONSUMED -> countPermissions()
+                    // HANDLE_REWARD_CONSUMED -> countPermissions()
                     HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower).apply {
                         setTitle(R.string.massFollower)
                         setMessage(R.string.mfDetectedSpam)
@@ -145,7 +128,7 @@ class MassFollower : ServiceOwnerActivity() {
         indicateSeek(true)
     }
 
-    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         super.onInitializationComplete(adsInitStatus)
         if (!adsInitStatus.isReady()) return
         adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmMassFollower)
@@ -155,12 +138,12 @@ class MassFollower : ServiceOwnerActivity() {
             .apply { bottomToTop = R.id.adBanner }
         b.guide.layoutParams = (b.guide.layoutParams as ConstraintLayout.LayoutParams)
             .apply { bottomToTop = R.id.adBanner }
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
         Follower.active.observe(this) { updateControlButton(it) }
-        countPermissions()
+        // countPermissions()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             b.toolbar.menu.findItem(R.id.mfTroubleshoot).isVisible = false
         return ret
@@ -235,7 +218,7 @@ class MassFollower : ServiceOwnerActivity() {
         b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
+    /*@SuppressLint("UnsafeOptInUsageError")
     fun countPermissions() {
         BadgeUtils.detachBadgeDrawable(controllerBadge, b.toolbar, R.id.mftControl)
         BadgeUtils.attachBadgeDrawable(
@@ -247,21 +230,21 @@ class MassFollower : ServiceOwnerActivity() {
                 maxCharacterCount = 2
             }, b.toolbar, R.id.mftControl
         )
-    }
+    }*/
 
     companion object : ActivityCompanion() {
         const val HANDLE_REWARD_CONSUMED = 5
         const val HANDLE_DETECTED_AS_SPAMMER = 6
         const val FOLLOW_LIMIT = 9999 // edit EditText's maxLength whenever you edit this.
-        const val RATE_US_UNINTENTIONALLY_UNLOCK_TIMES = 10
-        private val UNLOCK_TIMES = arrayOf(50, 5)
-        private var mRewardedAd: RewardedAd? = null
-        private var loadingAd = false
+        // const val RATE_US_UNINTENTIONALLY_UNLOCK_TIMES = 10
+        // private val UNLOCK_TIMES = arrayOf(50, 5)
+        // private var mRewardedAd: RewardedAd? = null
+        // private var loadingAd = false
 
         fun initService(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit = {}
         ) {
-            if (loadingAd || mRewardedAd != null) return
+            /*if (loadingAd || mRewardedAd != null) return
             if (c.m.acc!!.mfrw > 0) {
                 onStart()
                 actuallyInitService(c, enq)
@@ -292,17 +275,19 @@ class MassFollower : ServiceOwnerActivity() {
                         if (it) cancel()
                     }
                 }
-            }
+            }*/
+            onStart()
+            actuallyInitService(c, enq)
         }
 
-        private fun PayForItBinding.loading(bb: Boolean) {
+        /*private fun PayForItBinding.loading(bb: Boolean) {
             root.forEach { if (it is LinearLayout) it.vis(!bb) }
             loading.vis(bb)
             if (bb) loading.playAnimation()
             else loading.pauseAnimation()
-        }
+        }*/
 
-        @MainThread
+        /*@MainThread
         private fun watchAnAd(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit,
             onResult: (success: Boolean) -> Unit
@@ -332,15 +317,15 @@ class MassFollower : ServiceOwnerActivity() {
                         mRewardedAd = null
                     }
                 })
-        }
+        }*/
 
-        fun BaseActivity.rewardAccountForFollower(times: Int) {
+        /*fun BaseActivity.rewardAccountForFollower(times: Int) {
             m.acc?.apply {
                 mfrw += times
                 saveMe(c)
             }
             if (this is MassFollower) countPermissions()
-        }
+        }*/
 
         @MainThread
         private fun actuallyInitService(c: BaseActivity, enq: Follower.ToBeEnqueued? = null) {
@@ -358,7 +343,7 @@ class MassFollower : ServiceOwnerActivity() {
         }
     }
 
-    class RewardAdCallback(
+    /*class RewardAdCallback(
         private val c: Context, private val onResult: (success: Boolean) -> Unit
     ) : FullScreenContentCallback() {
         override fun onAdShowedFullScreenContent() {
@@ -376,5 +361,5 @@ class MassFollower : ServiceOwnerActivity() {
         override fun onAdDismissedFullScreenContent() {
             mRewardedAd = null
         }
-    }
+    }*/
 }

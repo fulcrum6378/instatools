@@ -331,7 +331,7 @@ class Queuer : ForegroundService() {
     }
 
     override fun finish(cancelled: Boolean) {
-        if (!cancelled) Downloads.handler?.obtainMessage(Downloads.SHOW_AD)?.sendToTarget()
+        // if (!cancelled) Downloads.handler?.obtainMessage(Downloads.SHOW_AD)?.sendToTarget()
         destroy()
     }
 

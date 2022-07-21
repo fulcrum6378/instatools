@@ -17,7 +17,6 @@ import android.text.Html
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.widget.CompoundButton
 import android.widget.ImageView
@@ -26,23 +25,20 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.get
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.initialization.AdapterStatus
-import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
-import ir.mahdiparastesh.instatools.*
-import ir.mahdiparastesh.instatools.MassFollower.Companion.rewardAccountForFollower
+import ir.mahdiparastesh.instatools.BuildConfig
+import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -61,13 +57,13 @@ object UiTools {
     const val IGTV_LINK = "https://www.instagram.com/tv/%s/"
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
-    private const val ADMOB = "com.google.android.gms.ads.MobileAds"
     const val MP = "https://mahdiparastesh.ir/"
     val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
     private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6
     private const val OPTION_DISABLED_ALPHA = 0.5f
+    // private const val ADMOB = "com.google.android.gms.ads.MobileAds"
 
     fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
         val list = ArrayList<AppCompatTextView>()
@@ -151,7 +147,7 @@ object UiTools {
 
     fun Double.xFromSeconds() = toLong() * 1000L
 
-    fun adaptiveBanner(c: BaseActivity, @StringRes unitId: Int) = AdView(c).apply {
+    /*fun adaptiveBanner(c: BaseActivity, @StringRes unitId: Int) = AdView(c).apply {
         id = R.id.adBanner
         setAdSize(
             AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
@@ -163,7 +159,7 @@ object UiTools {
 
     fun adaptiveBannerLp() = ConstraintLayout.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-    ).apply { bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID }
+    ).apply { bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID }*/
 
     fun String.accFromUrl(host: String): String? =
         if (startsWith(host)) substringAfter(host).substringBefore("/")
@@ -236,9 +232,9 @@ object UiTools {
         return units[unit].format(nominalSize)
     }
 
-    fun InitializationStatus.isReady(): Boolean = if (adapterStatusMap.containsKey(ADMOB))
+    /*fun InitializationStatus.isReady(): Boolean = if (adapterStatusMap.containsKey(ADMOB))
         adapterStatusMap[ADMOB]?.initializationState == AdapterStatus.State.READY
-    else false
+    else false*/
 
     fun fileDateTime(time: Long): String {
         val cal = Calendar.getInstance().apply { timeInMillis = time }
@@ -278,7 +274,7 @@ object UiTools {
 
     fun reviewApp(
         c: BaseActivity,
-        reward: Int = MassFollower.RATE_US_UNINTENTIONALLY_UNLOCK_TIMES,
+        // reward: Int = MassFollower.RATE_US_UNINTENTIONALLY_UNLOCK_TIMES,
         onReqSuccess: () -> Unit = {},
         onReqComplete: () -> Unit = {},
         onDone: () -> Unit = {}
@@ -289,7 +285,7 @@ object UiTools {
                 onReqSuccess()
                 reviewManager.launchReviewFlow(c, task.result).addOnCompleteListener {
                     onDone()
-                    c.rewardAccountForFollower(reward)
+                    // c.rewardAccountForFollower(reward)
                     c.gsp.edit().putBoolean(Settings.spRatedUs, true).apply()
                 }
             } else if (BuildConfig.DEBUG) task.exception?.let { throw it }

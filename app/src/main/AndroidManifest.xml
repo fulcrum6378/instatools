@@ -142,8 +142,8 @@
             android:exported="false"
             android:stopWithTask="false" />
 
-        <meta-data
+        <!--<meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/app_ad_id" />
+            android:value="@string/app_ad_id" />-->
     </application>
 </manifest>

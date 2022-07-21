@@ -14,8 +14,6 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
@@ -31,7 +29,7 @@ import ir.mahdiparastesh.instatools.view.UiTools
 class PageTag : BasePageViewer() {
     lateinit var b: PageTagBinding
     private var thread: FetchSome? = null
-    private lateinit var adBanner: AdView
+    // private lateinit var adBanner: AdView
 
     override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
@@ -81,13 +79,13 @@ class PageTag : BasePageViewer() {
         }
 
         // Banner Ad
-        if (BaseActivity.areAdsReady()) {
+        /*if (BaseActivity.areAdsReady()) {
             adBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmPageTag)
             b.root.addView(adBanner, UiTools.adaptiveBannerLp())
             adBanner.loadAd(AdRequest.Builder().build())
             b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
                 .apply { bottomToTop = R.id.adBanner }
-        }
+        }*/
 
         load()
     }
