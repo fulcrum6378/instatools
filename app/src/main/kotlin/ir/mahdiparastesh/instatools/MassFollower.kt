@@ -9,8 +9,11 @@ import android.os.*
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SeekBar
+import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
@@ -31,12 +34,17 @@ import kotlinx.coroutines.withContext
 class MassFollower : ServiceOwnerActivity() {
     private lateinit var b: MassFollowerBinding
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
+    val mm: MyModel by viewModels()
     // private lateinit var adBanner: AdView
     // private var controllerBadge: BadgeDrawable? = null
 
     override val menuRes = R.menu.follower_tlb
     override val com: ActivityCompanion get() = Companion
     override val controllerId = R.id.mftControl
+
+    class MyModel : ViewModel() {
+        var fwb = MutableLiveData<ArrayList<Followable>?>(null)
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,19 +58,19 @@ class MassFollower : ServiceOwnerActivity() {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_INSERTED -> (msg.obj as List<Followable>).apply {
-                        if (m.fwb.value == null) m.fwb.value = ArrayList(this)
+                        if (mm.fwb.value == null) mm.fwb.value = ArrayList(this)
                         else {
-                            val wasEmpty = m.fwb.value!!.isEmpty()
-                            m.fwb.value!!.addAll(this)
-                            if (wasEmpty) m.fwb.value = m.fwb.value
+                            val wasEmpty = mm.fwb.value!!.isEmpty()
+                            mm.fwb.value!!.addAll(this)
+                            if (wasEmpty) mm.fwb.value = mm.fwb.value
                         }
-                        val firstPos = (m.fwb.value?.size ?: 1) - 1
+                        val firstPos = (mm.fwb.value?.size ?: 1) - 1
                         b.rv.adapter?.notifyItemRangeInserted(firstPos, firstPos + size)
                     }
                     HANDLE_DELETED -> find(msg)?.let {
-                        m.fwb.value!!.removeAt(it)
+                        mm.fwb.value!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.fwb.value!!.size)
+                        b.rv.adapter?.notifyItemRangeChanged(it, mm.fwb.value!!.size)
                     }
                     // HANDLE_REWARD_CONSUMED -> countPermissions()
                     HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower).apply {
@@ -71,18 +79,18 @@ class MassFollower : ServiceOwnerActivity() {
                         setNeutralButton(R.string.ok, null)
                     }.show()
                 }
-                updateIfEmpty(m.fwb.value.isNullOrEmpty())
+                updateIfEmpty(mm.fwb.value.isNullOrEmpty())
                 updateShadow()
                 estimate()
             }
 
-            fun find(msg: Message): Int? = if (m.fwb.value != null)
-                Followable.find(msg.obj as Followable, m.fwb.value!!) else null
+            fun find(msg: Message): Int? = if (mm.fwb.value != null)
+                Followable.find(msg.obj as Followable, mm.fwb.value!!) else null
         }
 
         // Listing
         b.rv.layoutManager = ChipsLayoutManager.newBuilder(this).build()
-        m.fwb.observe(this) {
+        mm.fwb.observe(this) {
             val queued = !it.isNullOrEmpty()
             b.rv.vis(queued)
             b.panel.vis(queued)
@@ -93,7 +101,7 @@ class MassFollower : ServiceOwnerActivity() {
                 if (b.rv.adapter == null) b.rv.adapter = ListFwb(this)
                 else b.rv.adapter?.notifyDataSetChanged()
             }
-            updateIfEmpty(m.fwb.value.isNullOrEmpty())
+            updateIfEmpty(mm.fwb.value.isNullOrEmpty())
             estimate()
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -119,7 +127,7 @@ class MassFollower : ServiceOwnerActivity() {
             }
         })
 
-        if (m.fwb.value == null) load()
+        if (mm.fwb.value == null) load()
     }
 
     override fun onResume() {
@@ -151,24 +159,24 @@ class MassFollower : ServiceOwnerActivity() {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.mftControl -> if (!m.fwb.value.isNullOrEmpty()) {
+            R.id.mftControl -> if (!mm.fwb.value.isNullOrEmpty()) {
                 if (Follower.active.value!!) stopService(Intent(c, Follower::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this)
             }
-            R.id.mfExport -> if (!m.fwb.value.isNullOrEmpty())
+            R.id.mfExport -> if (!mm.fwb.value.isNullOrEmpty())
                 startActivity(Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        getString(R.string.mfExportSubject, m.fwb.value?.size ?: 0)
+                        getString(R.string.mfExportSubject, mm.fwb.value?.size ?: 0)
                     )
-                    putExtra(Intent.EXTRA_TEXT, m.fwb.value?.joinToString("\n") { it.user })
+                    putExtra(Intent.EXTRA_TEXT, mm.fwb.value?.joinToString("\n") { it.user })
                 })
-            R.id.mftClear -> if (!m.fwb.value.isNullOrEmpty())
+            R.id.mftClear -> if (!mm.fwb.value.isNullOrEmpty())
                 CoroutineScope(Dispatchers.IO).launch {
                     dao.deleteFollowables()
-                    withContext(Dispatchers.Main) { m.fwb.value = arrayListOf() }
+                    withContext(Dispatchers.Main) { mm.fwb.value = arrayListOf() }
                 }
             R.id.mfTroubleshoot -> AlertDialog.Builder(this@MassFollower).apply {
                 setTitle(R.string.mfTroubleshoot)
@@ -196,7 +204,7 @@ class MassFollower : ServiceOwnerActivity() {
     private fun load() {
         CoroutineScope(Dispatchers.IO).launch {
             val data = dao.followables()
-            withContext(Dispatchers.Main) { m.fwb.value = ArrayList(data) }
+            withContext(Dispatchers.Main) { mm.fwb.value = ArrayList(data) }
         }
     }
 
@@ -209,13 +217,18 @@ class MassFollower : ServiceOwnerActivity() {
     private fun estimate() {
         b.seekTitle.text = getString(
             R.string.mfSeekTitle,
-            c.inaccurateTime(Follower.DELAY * (m.fwb.value?.size ?: 0)),
-            (m.fwb.value?.size ?: 0)
+            c.inaccurateTime(Follower.DELAY * (mm.fwb.value?.size ?: 0)),
+            (mm.fwb.value?.size ?: 0)
         )
     }
 
     private fun updateShadow() {
         b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
+    }
+
+    override fun onBackPressed() {
+        mm.fwb.value = null
+        super.onBackPressed()
     }
 
     /*@SuppressLint("UnsafeOptInUsageError")

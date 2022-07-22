@@ -52,15 +52,15 @@ class PageVwr : BasePageViewer() {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super.onLoaded(c.m.vwUser?.edges().isNullOrEmpty(), false)
+                super.onLoaded(c.mm.vwUser?.edges().isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.m.vwUser?.edges().isNullOrEmpty())
+            } else onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
 
-            if (c.m.vwUser?.hasMore() == true && thread?.active != true
+            if (c.mm.vwUser?.hasMore() == true && thread?.active != true
                 && !b.rv.canScrollVertically(1)
             ) thread = FetchSome().also { it.start() }
 
-            val showPv = c.m.vwUser?.pv() == true && c.m.vwUser?.followed_by_viewer == false
+            val showPv = c.mm.vwUser?.pv() == true && c.mm.vwUser?.followed_by_viewer == false
             b.privateAcc.vis(showPv)
             b.rv.vis(!showPv)
             if (showPv) {
@@ -111,7 +111,7 @@ class PageVwr : BasePageViewer() {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && thread?.active != true &&
-                    c.m.vwUser?.hasMore() == true
+                    c.mm.vwUser?.hasMore() == true
                 ) thread = FetchSome().also { it.start() }
             }
         })
@@ -126,15 +126,15 @@ class PageVwr : BasePageViewer() {
             height = c.dm.widthPixels
         }
         b.proClick.setOnClickListener { v ->
-            if (c.m.vwUser?.photo() == null) return@setOnClickListener
+            if (c.mm.vwUser?.photo() == null) return@setOnClickListener
             MaterialMenu(c, v, R.menu.viewer_pic_more, Act().apply {
                 this[R.id.vpDownload] = {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.dao.addQueued(
                             Queued(
-                                Persistent.now(), "", Persistent.now(), c.m.vwUser!!.id,
-                                c.user, "profile_photo", c.m.vwUser!!.photo(),
-                                c.m.vwUser!!.photo(), 1
+                                Persistent.now(), "", Persistent.now(), c.mm.vwUser!!.id,
+                                c.user, "profile_photo", c.mm.vwUser!!.photo(),
+                                c.mm.vwUser!!.photo(), 1
                             )
                         )
                         withContext(Dispatchers.Main) { Downloads.initService(c, "") }
@@ -155,40 +155,40 @@ class PageVwr : BasePageViewer() {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload -> {
-                if (tracker != null && c.m.vwUser?.edges() != null)
+                if (tracker != null && c.mm.vwUser?.edges() != null)
                     Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
-            R.id.vtSelectAll -> if (c.m.vwUser?.edges() != null)
-                tracker?.setItemsSelected(c.m.vwUser!!.edges()!!.map { it.node.id }, true)
+            R.id.vtSelectAll -> if (c.mm.vwUser?.edges() != null)
+                tracker?.setItemsSelected(c.mm.vwUser!!.edges()!!.map { it.node.id }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
     }
 
     fun showProfile() {
-        if (com.active.value != true || c.m.vwUser == null || !bInitialised) return
+        if (com.active.value != true || c.mm.vwUser == null || !bInitialised) return
         Glide.with(c.c)
-            .load(c.m.vwUser!!.photo())
+            .load(c.mm.vwUser!!.photo())
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(b.proPic, b.proPicIv))
             .into(b.proPicIv)
-        b.followersNum.text = c.m.vwUser!!.edge_followed_by.toString()
-        b.followingNum.text = c.m.vwUser!!.edge_follow.toString()
+        b.followersNum.text = c.mm.vwUser!!.edge_followed_by.toString()
+        b.followingNum.text = c.mm.vwUser!!.edge_follow.toString()
         handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
 
-        if (c.m.vwUser != null) c.dbFav?.apply {
+        if (c.mm.vwUser != null) c.dbFav?.apply {
             var changed = false
-            if (user != c.m.vwUser!!.username) {
-                user = c.m.vwUser!!.username
+            if (user != c.mm.vwUser!!.username) {
+                user = c.mm.vwUser!!.username
                 changed = true
             }
-            if (name != c.m.vwUser!!.full_name) {
-                name = c.m.vwUser!!.full_name
+            if (name != c.mm.vwUser!!.full_name) {
+                name = c.mm.vwUser!!.full_name
                 changed = true
             }
-            if (photo != c.m.vwUser!!.profile_pic_url_hd) {
-                photo = c.m.vwUser!!.profile_pic_url_hd
+            if (photo != c.mm.vwUser!!.profile_pic_url_hd) {
+                photo = c.mm.vwUser!!.profile_pic_url_hd
                 changed = true
             }
             if (changed) Thread { c.dao.updateFavourite(this) }.start()
@@ -212,14 +212,14 @@ class PageVwr : BasePageViewer() {
     }
 
     private fun flwClick(isItFollowers: Boolean, v: View) {
-        if (c.m.vwUser?.access() != true || c.m.vwUser?.id == null || Main.guest ||
-            c.m.vwUser?.id == c.m.acc?.id.toString()
+        if (c.mm.vwUser?.access() != true || c.mm.vwUser?.id == null || Main.guest ||
+            c.mm.vwUser?.id == c.m.acc?.id.toString()
         ) return
         MaterialMenu(c, v, R.menu.vwr_flw_more, Act().apply {
             this[R.id.vfFollowAll] = {
                 val bo = FollowerOptionsBinding.inflate(layoutInflater)
-                var flwLimit = ((if (isItFollowers) c.m.vwUser?.edge_followed_by?.count
-                else c.m.vwUser?.edge_follow?.count) ?: 0.0).toInt()
+                var flwLimit = ((if (isItFollowers) c.mm.vwUser?.edge_followed_by?.count
+                else c.mm.vwUser?.edge_follow?.count) ?: 0.0).toInt()
                 if (flwLimit > MassFollower.FOLLOW_LIMIT) flwLimit = MassFollower.FOLLOW_LIMIT
                 bo.limit.setText(flwLimit.toString())
                 AlertDialog.Builder(c).apply {
@@ -230,7 +230,7 @@ class PageVwr : BasePageViewer() {
                     setPositiveButton(R.string.yes) { _, _ ->
                         MassFollower.initService(
                             c, Follower.ToBeEnqueued(
-                                c.m.vwUser!!.id, isItFollowers,
+                                c.mm.vwUser!!.id, isItFollowers,
                                 bo.alsoRequestPv.isChecked, bo.limit.text.toString().toLong()
                             )
                         ) { c.goTo(MassFollower::class) }
@@ -249,9 +249,9 @@ class PageVwr : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.m.vwUser?.edges()?.getOrNull(i)?.node?.id
+        override fun getKey(i: Int): String? = c.mm.vwUser?.edges()?.getOrNull(i)?.node?.id
         override fun getPosition(key: String): Int {
-            c.m.vwUser?.edges()?.forEachIndexed { i, edge ->
+            c.mm.vwUser?.edges()?.forEachIndexed { i, edge ->
                 if (edge.node.id == key) return@getPosition i
             }
             return -1
@@ -260,21 +260,21 @@ class PageVwr : BasePageViewer() {
 
     inner class FetchSome : BaseThread() {
         override fun run() {
-            if (c.m.vwUser == null) {
+            if (c.mm.vwUser == null) {
                 interrupt()
                 return; }
             c.reqQueue.adder = Api<GraphQl>(
                 c, Api.Endpoint.POSTS.url.format(
                     // I was gonna give the "id" (Thread.getId()) of Java thread to this API... XD
-                    c.m.vwUser!!.id, c.m.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
-                    c.m.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
+                    c.mm.vwUser!!.id, c.mm.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
+                    c.mm.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
                 ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
             ) { res ->
                 val add = res.data.user?.edge_owner_to_timeline_media
                 if (add == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
-                c.m.vwUser?.edge_owner_to_timeline_media?.apply {
+                c.mm.vwUser?.edge_owner_to_timeline_media?.apply {
                     page_info = add.page_info
                     count = add.count
                     val lastBefore = edges.size
@@ -287,7 +287,7 @@ class PageVwr : BasePageViewer() {
         }
     }
 
-    class Saver(c: BaseActivity, selection: Selection<String>) : BaseSaver(c, selection) {
+    class Saver(c: Viewer, selection: Selection<String>) : BaseSaver<Viewer>(c, selection) {
         companion object : Alive.OfThread()
 
         override val com: Alive.OfThread = Companion
@@ -299,7 +299,7 @@ class PageVwr : BasePageViewer() {
                 interrupt()
                 return
             }
-            c.m.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
+            (c as Viewer).mm.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
                 c.dao.addQueued(
                     Queued(Persistent.now(), UiTools.POST_LINK.format(edge.node.shortcode))
                 )

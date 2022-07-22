@@ -37,11 +37,11 @@ class PageTag : BasePageViewer() {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super@PageTag.onLoaded(c.m.vwTagged?.items.isNullOrEmpty(), false)
+                super@PageTag.onLoaded(c.mm.vwTagged?.items.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.m.vwTagged?.items.isNullOrEmpty())
+            } else onLoaded(c.mm.vwTagged?.items.isNullOrEmpty())
 
-            if (c.m.vwTagged?.more_available == true && !b.rv.canScrollVertically(1)
+            if (c.mm.vwTagged?.more_available == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
             ) thread = FetchSome().also { it.start() }
         },
@@ -67,7 +67,7 @@ class PageTag : BasePageViewer() {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && thread?.active != true &&
-                    c.m.vwTagged?.more_available != false
+                    c.mm.vwTagged?.more_available != false
                 ) thread = FetchSome().also { it.start() }
             }
         })
@@ -93,12 +93,12 @@ class PageTag : BasePageViewer() {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload -> {
-                if (tracker != null && c.m.vwTagged?.items != null)
+                if (tracker != null && c.mm.vwTagged?.items != null)
                     Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
-            R.id.vtSelectAll -> if (c.m.vwTagged?.items != null)
-                tracker?.setItemsSelected(c.m.vwTagged!!.items!!.map { it.pk }, true)
+            R.id.vtSelectAll -> if (c.mm.vwTagged?.items != null)
+                tracker?.setItemsSelected(c.mm.vwTagged!!.items!!.map { it.pk }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -106,10 +106,10 @@ class PageTag : BasePageViewer() {
 
     fun load() {
         if (com.active.value != true) return
-        if (c.m.vwTagged != null)
+        if (c.mm.vwTagged != null)
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
         else if (thread?.active != true) {
-            c.m.vwTagged = null
+            c.mm.vwTagged = null
             thread = FetchSome().also { it.start() }
         }
     }
@@ -142,9 +142,9 @@ class PageTag : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.m.vwTagged?.items?.getOrNull(i)?.pk
+        override fun getKey(i: Int): String? = c.mm.vwTagged?.items?.getOrNull(i)?.pk
         override fun getPosition(key: String): Int {
-            c.m.vwTagged?.items?.forEachIndexed { i, med ->
+            c.mm.vwTagged?.items?.forEachIndexed { i, med ->
                 if (med.pk == key) return@getPosition i
             }
             return -1
@@ -153,19 +153,19 @@ class PageTag : BasePageViewer() {
 
     inner class FetchSome : BaseThread() {
         override fun run() {
-            if (c.m.vwUser == null) {
-                c.m.vwTagged = null
+            if (c.mm.vwUser == null) {
+                c.mm.vwTagged = null
                 interrupt()
                 return; }
             c.reqQueue.adder = Api<MediaWrapperApi>(
                 c, Api.Endpoint.TAGGED.url.format(
-                    c.m.vwUser?.id ?: "", c.m.vwTagged?.next_max_id ?: ""
+                    c.mm.vwUser?.id ?: "", c.mm.vwTagged?.next_max_id ?: ""
                 ), MediaWrapperApi::class, handler, autoQueue = false, onError = { interrupt() }
             ) { wrapper ->
-                if (c.m.vwTagged == null) {
-                    c.m.vwTagged = wrapper
+                if (c.mm.vwTagged == null) {
+                    c.mm.vwTagged = wrapper
                     handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                } else c.m.vwTagged?.apply {
+                } else c.mm.vwTagged?.apply {
                     val lastBefore = items?.size ?: 0
                     val ids = items?.map { it.pk }
                     wrapper.items
@@ -181,7 +181,7 @@ class PageTag : BasePageViewer() {
         }
     }
 
-    class Saver(c: BaseActivity, selection: Selection<String>) : BaseSaver(c, selection) {
+    class Saver(c: Viewer, selection: Selection<String>) : BaseSaver<Viewer>(c, selection) {
         companion object : Alive.OfThread()
 
         override val com: Alive.OfThread = Companion
@@ -193,7 +193,7 @@ class PageTag : BasePageViewer() {
                 interrupt()
                 return
             }
-            c.m.vwTagged?.items?.find { it.pk == edg }?.let { edge ->
+            (c as Viewer).mm.vwTagged?.items?.find { it.pk == edg }?.let { edge ->
                 c.dao.addQueued(Queued(Persistent.now(), UiTools.POST_LINK.format(edge.code)))
             }
             ended()

@@ -15,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -22,6 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.android.volley.Request
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
@@ -29,6 +31,7 @@ import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
@@ -39,6 +42,8 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
+import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
@@ -63,6 +68,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
     val exportLauncher = launcher { page3?.onActivityResult(it) }
+    val mm: MyModel by viewModels()
     // private lateinit var adBanner: AdView
     // private var adBannerLoaded = false
 
@@ -80,7 +86,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
-    override val currentPage: MutableLiveData<Int> get() = m.currentPage
+    override val currentPage: MutableLiveData<Int> get() = mm.currentPage
     override val aKlass = PageUnf::class
     override val bKlass = PageSvd::class
     override val cKlass = PageBox::class
@@ -89,6 +95,21 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
             ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
             ?: Settings.defSpMainPage
+
+    class MyModel : ViewModel() {
+        var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
+        var saved: GraphQl.EdgeList? = null
+        var dmInbox: Dm.Inbox? = null
+        var dmThread: Dm.DmThread? = null
+        val currentPage = MutableLiveData(Settings.defSpMainPage)
+
+        fun accountSwitched() {
+            unfollowers.value = null
+            saved = null
+            dmInbox = null
+            dmThread = null
+        }
+    }
 
     companion object : ActivityCompanion() {
         var guest = false
@@ -108,7 +129,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
-        m.unfollowers.observe(this) { bnvBadge(0, it?.filter { u -> !u.unfollowed }?.size) }
+        mm.unfollowers.observe(this) { bnvBadge(0, it?.filter { u -> !u.unfollowed }?.size) }
 
         // Theming
         if (night()) colorBG.observe(this) {
@@ -179,12 +200,12 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         createPages()
 
         // Bottom Navigation Bar
-        b.bnv.selectedItemId = bnvButtons[m.currentPage.value!!]
+        b.bnv.selectedItemId = bnvButtons[mm.currentPage.value!!]
 
         // Theming
-        if (night()) colorBG.value = bg[m.currentPage.value!!]
-        else colorAc.value = ca[m.currentPage.value!!]
-        b.toolbar.popupTheme = popupThemes[m.currentPage.value!!]
+        if (night()) colorBG.value = bg[mm.currentPage.value!!]
+        else colorAc.value = ca[mm.currentPage.value!!]
+        b.toolbar.popupTheme = popupThemes[mm.currentPage.value!!]
 
         // Navigation
         bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
@@ -375,12 +396,12 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
-        sp?.edit()?.putInt(spMainPage, m.currentPage.value!!)?.apply()
+        sp?.edit()?.putInt(spMainPage, mm.currentPage.value!!)?.apply()
         b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()
         val col = if (night()) bg else ca
-        anTheme = ValueAnimator.ofArgb(col[lastPage], col[m.currentPage.value!!]).apply {
+        anTheme = ValueAnimator.ofArgb(col[lastPage], col[mm.currentPage.value!!]).apply {
             duration = resources.getInteger(R.integer.transFrag).toLong()
             addUpdateListener {
                 if (night()) colorBG.value = it.animatedValue as Int
@@ -425,6 +446,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         page2?.saver?.interrupt()
         page3?.boxThread?.interrupt()
         page3?.thdThread?.interrupt()
+        mm.accountSwitched()
         super.switchAcc()
     }
 

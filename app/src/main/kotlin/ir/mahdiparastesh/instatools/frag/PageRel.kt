@@ -28,7 +28,7 @@ class PageRel : BasePageViewer() {
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { onLoaded(c.m.vwReels.isNullOrEmpty()) },
+        HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty()) },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
         Api.HANDLE_ERROR to {
             onFailed(
@@ -57,7 +57,7 @@ class PageRel : BasePageViewer() {
 
     fun load() {
         if (com.active.value != true) return
-        if (c.m.vwReels != null)
+        if (c.mm.vwReels != null)
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
         else if (thread?.active != true)
             thread = FetchAll().also { it.start() }
@@ -90,22 +90,22 @@ class PageRel : BasePageViewer() {
         private var highlightsFetched = false
 
         override fun run() {
-            if (c.m.vwUser == null) {
-                c.m.vwReels = null
+            if (c.mm.vwUser == null) {
+                c.mm.vwReels = null
                 interrupt()
                 return; }
-            c.m.vwReels = CopyOnWriteArrayList()
+            c.mm.vwReels = CopyOnWriteArrayList()
             c.reqQueue.adder = Api<Story>(
-                c, Api.Endpoint.STORY.url.format(c.m.vwUser?.id ?: ""), Story::class,
+                c, Api.Endpoint.STORY.url.format(c.mm.vwUser?.id ?: ""), Story::class,
                 handler, autoQueue = false, onError = { interrupt() }) { story ->
-                if (!story.reel?.items.isNullOrEmpty()) c.m.vwReels?.add(story.reel)
+                if (!story.reel?.items.isNullOrEmpty()) c.mm.vwReels?.add(story.reel)
                 storyFetched = true
                 interrupt()
             }
             c.reqQueue.adder = Api<Highlights>(
-                c, Api.Endpoint.HIGHLIGHTS.url.format(c.m.vwUser?.id ?: ""), Highlights::class,
+                c, Api.Endpoint.HIGHLIGHTS.url.format(c.mm.vwUser?.id ?: ""), Highlights::class,
                 handler, autoQueue = false, onError = { interrupt() }) { highlights ->
-                c.m.vwReels?.addAll(highlights.tray)
+                c.mm.vwReels?.addAll(highlights.tray)
                 highlightsFetched = true
                 interrupt()
             }
@@ -114,7 +114,7 @@ class PageRel : BasePageViewer() {
         override fun interrupt() {
             if (!storyFetched || !highlightsFetched) return
             try {
-                c.m.vwReels?.sortByDescending { it is Rest.StoryReel }
+                c.mm.vwReels?.sortByDescending { it is Rest.StoryReel }
             } catch (e: java.lang.UnsupportedOperationException) {
                 // Mysterious error by CopyOnWriteArrayList$COWIterator.set  while sorting
             }

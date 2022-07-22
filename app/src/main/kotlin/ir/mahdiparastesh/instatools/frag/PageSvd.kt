@@ -68,12 +68,12 @@ class PageSvd : BasePageMain(), Selective {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super@PageSvd.onLoaded(c.m.saved?.edges.isNullOrEmpty(), false)
+                super@PageSvd.onLoaded(c.mm.saved?.edges.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-                c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-            } else onLoaded(c.m.saved?.edges.isNullOrEmpty())
+                c.bnvBadge(1, c.mm.saved?.count?.toInt() ?: 0)
+            } else onLoaded(c.mm.saved?.edges.isNullOrEmpty())
 
-            if (c.m.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
+            if (c.mm.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
             ) thread = FetchSome().also { it.start() }
         },
@@ -89,20 +89,20 @@ class PageSvd : BasePageMain(), Selective {
             UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
         },
         HANDLE_UNSAVE_DONE to { msg ->
-            c.m.saved?.apply { if (count > 0.0) count -= 1.0 }
-            c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
-            c.m.saved?.edges?.find { it.node.id == msg.obj as String }?.let { post ->
-                val x = c.m.saved!!.edges.indexOf(post)
-                c.m.saved!!.edges.removeAt(x)
+            c.mm.saved?.apply { if (count > 0.0) count -= 1.0 }
+            c.bnvBadge(1, c.mm.saved?.count?.toInt() ?: 0)
+            c.mm.saved?.edges?.find { it.node.id == msg.obj as String }?.let { post ->
+                val x = c.mm.saved!!.edges.indexOf(post)
+                c.mm.saved!!.edges.removeAt(x)
                 b.rv.adapter?.notifyItemRemoved(x)
-                b.rv.adapter?.notifyItemRangeChanged(x, c.m.saved!!.edges.size)
-                if (c.m.saved?.edges.isNullOrEmpty()) onLoaded(true)
+                b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.edges.size)
+                if (c.mm.saved?.edges.isNullOrEmpty()) onLoaded(true)
             }
         },
         // HANDLE_SHOW_AD to { c.loadInterstitial(R.string.interUnsaving, true) },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
         HANDLE_REALLY_NO_MORE to {
-            val number = c.m.saved?.hiddenItems()
+            val number = c.mm.saved?.hiddenItems()
             if (number != null && number > 0) UiTools.snackbar(
                 b.root, c.getString(R.string.reallyHasNoMore, number), 10000, c.b.bnv
             )
@@ -142,7 +142,7 @@ class PageSvd : BasePageMain(), Selective {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && reallyHasMore &&
-                    thread?.active != true && c.m.saved?.page_info?.has_next_page != false
+                    thread?.active != true && c.mm.saved?.page_info?.has_next_page != false
                 ) thread = FetchSome().also { it.start() }
             }
         })
@@ -151,7 +151,7 @@ class PageSvd : BasePageMain(), Selective {
                 super.canScrollVertically() && selectionGuide == null
         }
 
-        if (c.m.saved != null) onLoaded(c.m.saved?.edges.isNullOrEmpty())
+        if (c.mm.saved != null) onLoaded(c.mm.saved?.edges.isNullOrEmpty())
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
 
@@ -162,7 +162,7 @@ class PageSvd : BasePageMain(), Selective {
 
     override fun onRefresh() {
         if (thread?.active == true) return
-        c.m.saved = null
+        c.mm.saved = null
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
         tracker?.clearSelection()
@@ -172,7 +172,7 @@ class PageSvd : BasePageMain(), Selective {
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        if (!asGuest) c.bnvBadge(1, c.m.saved?.count?.toInt() ?: 0)
+        if (!asGuest) c.bnvBadge(1, c.mm.saved?.count?.toInt() ?: 0)
 
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
@@ -198,25 +198,25 @@ class PageSvd : BasePageMain(), Selective {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mtUnsaveDownload -> {
-                if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
+                if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
                     c, this, tracker!!.selection, unsave = true, download = true
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtDownload -> {
-                if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
+                if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
                     c, this, tracker!!.selection, unsave = false, download = true
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtUnsave -> {
-                if (tracker != null && c.m.saved != null && saver?.active != true) saver = Saver(
+                if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
                     c, this, tracker!!.selection, unsave = true, download = false
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
-            R.id.mtSelectAll -> if (c.m.saved != null)
-                tracker?.setItemsSelected(c.m.saved!!.edges.map { it.node.id }, true)
+            R.id.mtSelectAll -> if (c.mm.saved != null)
+                tracker?.setItemsSelected(c.mm.saved!!.edges.map { it.node.id }, true)
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -251,9 +251,9 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.m.saved?.edges?.getOrNull(i)?.node?.id
+        override fun getKey(i: Int): String? = c.mm.saved?.edges?.getOrNull(i)?.node?.id
         override fun getPosition(key: String): Int {
-            c.m.saved?.edges?.forEachIndexed { i, edge ->
+            c.mm.saved?.edges?.forEachIndexed { i, edge ->
                 if (edge.node.id == key) return@getPosition i
             }
             return -1
@@ -299,9 +299,9 @@ class PageSvd : BasePageMain(), Selective {
 
     inner class FetchSome : BaseThread() {
         override fun run() {
-            if (c.m.saved?.page_info?.has_next_page == false || c.m.acc == null) return
+            if (c.mm.saved?.page_info?.has_next_page == false || c.m.acc == null) return
             super.run()
-            if (c.m.saved == null) reqQueue.adder = Api<GraphQl>(
+            if (c.mm.saved == null) reqQueue.adder = Api<GraphQl>(
                 c, Api.Endpoint.PROFILE.url.format(c.m.acc!!.user), GraphQl::class,
                 handler, autoQueue = false, onError = { interrupt() }
             ) { graphql ->
@@ -310,7 +310,7 @@ class PageSvd : BasePageMain(), Selective {
                 if (edgeList == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
-                c.m.saved = edgeList
+                c.mm.saved = edgeList
                 graphql.data.user.also { u ->
                     if (c.m.acc!!.user != u.username || c.m.acc!!.name != u.full_name ||
                         c.m.acc!!.pict != (u.profile_pic_url_hd ?: u.profile_pic_url)
@@ -323,8 +323,8 @@ class PageSvd : BasePageMain(), Selective {
             } else reqQueue.adder = Api<GraphQl>(
                 c, Api.Endpoint.SAVED.url.format(
                     c.m.acc!!.id,
-                    c.m.saved!!.edges.size,
-                    c.m.saved?.page_info?.end_cursor ?: ""
+                    c.mm.saved!!.edges.size,
+                    c.mm.saved?.page_info?.end_cursor ?: ""
                 ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
             ) { res ->
                 if (!active) return@Api
@@ -342,7 +342,7 @@ class PageSvd : BasePageMain(), Selective {
 
         private fun done(add: GraphQl.EdgeList? = null) {
             if (!active) return
-            if (add != null) c.m.saved?.apply {
+            if (add != null) c.mm.saved?.apply {
                 page_info = add.page_info
                 count = add.count
                 edges.removeAll { it.node.id in add.edges.map { addable -> addable.node.id } }
@@ -355,9 +355,9 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     class Saver(
-        c: BaseActivity, val f: PageSvd,
+        c: Main, val f: PageSvd,
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
-    ) : BaseSaver(c, selection) {
+    ) : BaseSaver<Main>(c, selection) {
         companion object : Alive.OfThread()
 
         override val com: Alive.OfThread = Companion
@@ -374,7 +374,7 @@ class PageSvd : BasePageMain(), Selective {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return; }
-            val post = c.m.saved?.edges?.find { it.node.id == svd }?.node
+            val post = (c as Main).mm.saved?.edges?.find { it.node.id == svd }?.node
             if (post == null) {
                 ended(); return; }
 

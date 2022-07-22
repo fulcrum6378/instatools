@@ -11,11 +11,13 @@ import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.media2.common.SessionPlayer
 import com.android.volley.NetworkResponse
 import com.android.volley.toolbox.Volley
@@ -29,6 +31,8 @@ import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
@@ -41,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CopyOnWriteArrayList
 
 class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
@@ -53,15 +58,23 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             this, b.expanded, handler, reqQueue, color(if (!night()) R.color.defBG else R.color.CS)
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
+    val mm: MyModel by viewModels()
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
-    override val currentPage: MutableLiveData<Int> get() = m.vwCurrentPage
+    override val currentPage: MutableLiveData<Int> get() = mm.vwCurrentPage
     override val aKlass = PageRel::class
     override val bKlass = PageVwr::class
     override val cKlass = PageTag::class
     override val mode = TripleMode.FRAGMENT_MANAGER
     override fun defPage(): Int = 1
+
+    class MyModel : ViewModel() {
+        var vwUser: GraphQl.User? = null
+        var vwTagged: Media.MediaWrapperApi? = null
+        var vwReels: CopyOnWriteArrayList<Rest.Reel>? = null
+        var vwCurrentPage = MutableLiveData(1)
+    }
 
     companion object : ActivityCompanion() {
         private const val EXTRA_USER = "EXTRA_USER"
@@ -123,7 +136,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.extras?.getString(EXTRA_USER)?.let {
             if (!onCreation && user == it) return false
-            if (user != it) m.vwUser = null
+            if (user != it) mm.vwUser = null
             user = it
         }
         intent.data?.let {
@@ -161,9 +174,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtInsta -> UiTools.openProfile(this, user!!)
-            R.id.vtFav -> if (m.vwUser != null) CoroutineScope(Dispatchers.IO).launch {
+            R.id.vtFav -> if (mm.vwUser != null) CoroutineScope(Dispatchers.IO).launch {
                 if (dbFav == null) {
-                    dbFav = m.vwUser!!.favourite()
+                    dbFav = mm.vwUser!!.favourite()
                     dao.addFavourite(dbFav!!)
                 } else {
                     dao.deleteFavourite(dbFav!!)
@@ -171,7 +184,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 }
                 withContext(Dispatchers.Main) { fixTbMenu() }
             }
-            R.id.vtShortcut -> m.vwUser?.also {
+            R.id.vtShortcut -> mm.vwUser?.also {
                 val bmp = (page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, it.username).apply {
@@ -198,7 +211,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     }
 
     private fun load(firstLoad: Boolean = false) {
-        if (m.vwUser != null) {
+        if (mm.vwUser != null) {
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             return; }
         reset(firstLoad)
@@ -229,10 +242,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         if (pageGoBack()) return
         if (currentPage.value != 1) {
             turnToPage(1); return; }
-        m.vwUser = null
-        m.vwReels = null
-        m.vwTagged = null
-        m.vwCurrentPage.value = 1
+        mm.vwUser = null
+        mm.vwReels = null
+        mm.vwTagged = null
+        mm.vwCurrentPage.value = 1
         super.onBackPressed()
     }
 
@@ -242,8 +255,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
                 handler, autoQueue = false, onError = { interrupt() }
             ) { graphql ->
-                m.vwUser = graphql.data.user
-                if (m.vwUser == null) {
+                mm.vwUser = graphql.data.user
+                if (mm.vwUser == null) {
                     Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
                     interrupt(); return@Api
                 }

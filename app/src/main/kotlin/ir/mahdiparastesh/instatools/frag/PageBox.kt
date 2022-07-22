@@ -79,20 +79,20 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
-            if (c.m.dmThread == null) {
-                onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
-                if (c.m.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
+            if (c.mm.dmThread == null) {
+                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+                if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
                 ) boxThread = FetchOfInbox().also { it.start() }
             } else if (msg.obj != null) {
                 val dmThd = msg.obj as Dm.DmThread
-                val bef = c.m.dmThread!!.items.size
-                c.m.dmThread!!.items.addAll(dmThd.items)
-                c.m.dmThread!!.has_older = dmThd.has_older
-                c.m.dmThread!!.items.sortBy { it.timestamp }
-                val dif = c.m.dmThread!!.items.size - bef
+                val bef = c.mm.dmThread!!.items.size
+                c.mm.dmThread!!.items.addAll(dmThd.items)
+                c.mm.dmThread!!.has_older = dmThd.has_older
+                c.mm.dmThread!!.items.sortBy { it.timestamp }
+                val dif = c.mm.dmThread!!.items.size - bef
                 b.rv.adapter?.let {
                     it.notifyItemRangeInserted(0, dif)
-                    it.notifyItemRangeChanged(dif, c.m.dmThread!!.items.size)
+                    it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
                 }
             }
         },
@@ -119,42 +119,42 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         if (Main.guest) return
 
         b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback c.m.dmThread != null
+            return@setOnChildScrollUpCallback c.mm.dmThread != null
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (c.m.dmThread == null) {
+                if (c.mm.dmThread == null) {
                     if (!b.rv.canScrollVertically(1) &&
-                        boxThread?.active != true && c.m.dmInbox?.has_older != false
+                        boxThread?.active != true && c.mm.dmInbox?.has_older != false
                     ) boxThread = FetchOfInbox().also { it.start() }
                     boxScroll = (b.rv.layoutManager as LinearLayoutManager)
                         .findFirstCompletelyVisibleItemPosition()
                 } else {
                     if (thdThread?.active != true &&
-                        c.m.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
+                        c.mm.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
                     ) thdThread = FetchOfThread(
-                        c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.first().item_id,
+                        c, c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id,
                         handler, reqQueue
                     ).also { it.start() }
                 }
             }
         })
 
-        if (c.m.dmInbox != null) onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
+        if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
         else if (boxThread?.active != true) boxThread = FetchOfInbox().also { it.start() }
     }
 
     override fun onRefresh() {
         if (boxThread?.active == true) return
         b.rv.adapter = null
-        c.m.dmInbox = null
+        c.mm.dmInbox = null
         boxThread = FetchOfInbox().also { it.start() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        if (c.m.dmThread == null) {
+        if (c.mm.dmThread == null) {
             val prevScrollPos = boxScroll
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
                 b.rv.adapter = ListBox(c, this)
@@ -190,7 +190,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     }
 
     override fun updateJumper() {
-        if (c.m.dmThread == null) super.updateJumper()
+        if (c.mm.dmThread == null) super.updateJumper()
         else if (shouldShowJumper.value == true) shouldShowJumper.value = false
     }
 
@@ -336,12 +336,12 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     // AnyDesk Dls:   "content://com.anydesk.anydeskandroid.documents.downloads/document/"
 
     override fun goBack(): Boolean {
-        if (c.m.dmThread != null) {
+        if (c.mm.dmThread != null) {
             if (expandable.zoomed) {
                 jumper().vis(true)
                 expandable.collapse(); return true; }
-            c.m.dmThread = null
-            onLoaded(c.m.dmInbox?.threads.isNullOrEmpty())
+            c.mm.dmThread = null
+            onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
             return true; }
         return false
     }
@@ -350,12 +350,12 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         override fun run() {
             super.run()
             reqQueue.adder = Api<InboxPage>(
-                c, Api.Endpoint.INBOX.url.format(c.m.dmInbox?.oldest_cursor ?: ""),
+                c, Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
                 InboxPage::class, handler, autoQueue = false, onError = { interrupt() }
             ) { page ->
                 if (!active) return@Api
-                if (c.m.dmInbox == null) c.m.dmInbox = page.inbox
-                else c.m.dmInbox?.apply {
+                if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
+                else c.mm.dmInbox?.apply {
                     threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
                     threads.addAll(page.inbox.threads)
                     threads.sortByDescending { it.last_activity_at }

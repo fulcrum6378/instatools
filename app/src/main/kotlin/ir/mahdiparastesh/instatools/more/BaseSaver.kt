@@ -5,7 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-abstract class BaseSaver(c: Persistent, selection: Selection<String>) : DbRelatedThread(c) {
+abstract class BaseSaver<C>(c: C, selection: Selection<String>) :
+    DbRelatedThread(c) where C : Persistent {
     val list = ArrayList(selection.toList())
 
     override fun run() {

@@ -29,7 +29,7 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<AnyViewHolder<ListFwbB
     }
 
     override fun onBindViewHolder(h: AnyViewHolder<ListFwbBinding>, i: Int) {
-        val fwb = c.m.fwb.value?.getOrNull(i) ?: return
+        val fwb = c.mm.fwb.value?.getOrNull(i) ?: return
         h.b.root.text = fwb.user
         h.b.root.setOnClickListener { UiTools.openProfile(c, fwb.user) }
         h.b.root.setOnCloseIconClickListener {
@@ -41,5 +41,5 @@ class ListFwb(val c: MassFollower) : RecyclerView.Adapter<AnyViewHolder<ListFwbB
         }
     }
 
-    override fun getItemCount() = c.m.fwb.value?.size ?: 0
+    override fun getItemCount() = c.mm.fwb.value?.size ?: 0
 }

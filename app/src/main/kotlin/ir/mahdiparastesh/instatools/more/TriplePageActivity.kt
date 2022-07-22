@@ -61,25 +61,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                     pages()[it]?.updateShadow()
                     pages()[it]?.updateJumper()
                 } catch (e: NullPointerException) {
-                    // At last, I discovered the cause!!
-                    // De-Obfuscated 2 crashes from Samsung Galaxy J6 - Android 10 - Foreground.
-                    // at ir.mahdiparastesh.instatools.more.BasePage$c$2 :: invoke()
-                    // at kotlin.SynchronizedLazyImpl.getValue()
-                    // at BasePage.getC()
-                    // at PageBox.x0 => updateJumper
-                    // at ir.mahdiparastesh.instatools.more.BasePage.onViewCreated$lambda-2 =>
-                    // The fragment was already created!! The observer created before in createPages() calls updateShadow() [y0] and updateJumper() [x0] on the page!
-                    // at ir.mahdiparastesh.instatools.MassFollower$$InternalSyntheticLambda$0$d45a8368c506fa4b043ac5ad8a7b8957a2b8afdf4ecb73c64edc892d284d9c1e$0.onChanged$bridge (MassFollower.java)
-                    // I think this one could be somehow mistaken with ( observer.mObserver.onChanged((T) mData); ) in considerNotify method of LiveData
-                    // at androidx.lifecycle.LiveData.considerNotify (LiveData.java:29)
-                    // at androidx.lifecycle.LiveData.dispatchingValue (LiveData.java:44)
-                    // at androidx.lifecycle.LiveData.setValue (LiveData.java)
-                    // at androidx.lifecycle.MutableLiveData.setValue (MutableLiveData.java)
-                    // at TriplePageActivity::turnToPage => currentPage.value = i
-                    // at Main::turnToPage
-                    // at Main::onCreate$$lambda-1 => (b.bnv.setOnItemSelectedListener {})
-                    // at com.google.android.material.navigation.NavigationBarView$1.onMenuItemSelected
-                    // The user clicked on BNV ^
+                    // getC() might cause it!
                 }
             }
         }

@@ -9,11 +9,13 @@ import android.os.Looper
 import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.data.Queued
@@ -38,11 +40,16 @@ class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
+    val mm: MyModel by viewModels()
     // private lateinit var adBanner: AdView
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
     override val controllerId = R.id.dtControl
+
+    class MyModel : ViewModel() {
+        var queueds: CopyOnWriteArrayList<Queued>? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +61,8 @@ class Downloads : ServiceOwnerActivity() {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_INSERTED -> {
-                        m.queueds!!.add(msg.obj as Queued)
-                        val pos = (m.queueds?.size ?: 1)
+                        mm.queueds!!.add(msg.obj as Queued)
+                        val pos = (mm.queueds?.size ?: 1)
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
@@ -65,15 +72,15 @@ class Downloads : ServiceOwnerActivity() {
                                 m.queueds?.filter { it.isReady() }.isNullOrEmpty()
                             }*/
                         find(msg)?.let {
-                            m.queueds!!.removeAt(it)
+                            mm.queueds!!.removeAt(it)
                             b.rv.adapter?.notifyItemRemoved(it)
-                            b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size)
+                            b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
                             if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         }
                     }
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
-                        m.queueds!![it] = msg.obj as Queued
+                        mm.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
                     HANDLE_RESET ->
@@ -81,11 +88,11 @@ class Downloads : ServiceOwnerActivity() {
                         else b.rv.adapter?.notifyDataSetChanged()
                     // SHOW_AD -> showInterstitial()
                 }
-                updateIfEmpty(m.queueds.isNullOrEmpty())
+                updateIfEmpty(mm.queueds.isNullOrEmpty())
             }
 
             fun find(msg: Message): Int? =
-                if (m.queueds != null) Queued.find(msg.obj as Queued, m.queueds!!) else null
+                if (mm.queueds != null) Queued.find(msg.obj as Queued, mm.queueds!!) else null
         }
 
         // Paste Link
@@ -123,15 +130,15 @@ class Downloads : ServiceOwnerActivity() {
     override fun onResume() {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch {
-            m.queueds = CopyOnWriteArrayList(dao.queueds())
+            mm.queueds = CopyOnWriteArrayList(dao.queueds())
             try {
-                m.queueds!!.sortBy { it.addedAt }
+                mm.queueds!!.sortBy { it.addedAt }
             } catch (e: java.lang.UnsupportedOperationException) {
                 // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
             }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
             withContext(Dispatchers.Main) {
-                if (m.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
+                if (mm.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
             }
         }
     }
@@ -157,14 +164,14 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.dtControl -> if (!m.queueds.isNullOrEmpty()) {
+            R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
                 if (Queuer.active.value!!) stopService(Intent(c, Queuer::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
             }
-            R.id.dtRetryAll -> if (m.queueds != null) CoroutineScope(Dispatchers.IO).launch {
+            R.id.dtRetryAll -> if (mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
                 var any = false
-                m.queueds?.forEach {
+                mm.queueds?.forEach {
                     if (it.isReady()) return@forEach
                     it.status = 0.toByte()
                     dao.updateQueued(it)
@@ -182,7 +189,7 @@ class Downloads : ServiceOwnerActivity() {
     private var isSwipeDeleteInflated: Boolean? = false
     override fun onStateChanged(hasContent: Boolean) {
         super.onStateChanged(hasContent)
-        b.empty.vis(m.queueds.isNullOrEmpty())
+        b.empty.vis(mm.queueds.isNullOrEmpty())
 
         // Swipe to Delete Guide
         if (isSwipeDeleteInflated == null) return
@@ -201,6 +208,11 @@ class Downloads : ServiceOwnerActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         if (isTaskRoot) goTo(Main::class)
+    }
+
+    override fun onDestroy() {
+        mm.queueds = null
+        super.onDestroy()
     }
 
     companion object : ActivityCompanion() {
@@ -233,18 +245,18 @@ class Downloads : ServiceOwnerActivity() {
         ): Boolean = false
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
-            val q = m.queueds?.getOrNull(h.layoutPosition) ?: return
+            val q = mm.queueds?.getOrNull(h.layoutPosition) ?: return
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     dao.deleteQueued(q)
                 } catch (e: Exception) {
                 }
-                if (m.queueds != null) withContext(Dispatchers.Main) {
-                    Queued.find(q, m.queueds)?.let {
-                        m.queueds?.removeAt(it)
+                if (mm.queueds != null) withContext(Dispatchers.Main) {
+                    Queued.find(q, mm.queueds)?.let {
+                        mm.queueds?.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
-                        if (m.queueds == null) return@let
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.queueds!!.size - 1)
+                        if (mm.queueds == null) return@let
+                        b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size - 1)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
                 }

@@ -50,7 +50,7 @@ class PageUnf : BasePageMain() {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_LOADED to { msg ->
             (msg.obj as List<Friend>).apply {
-                c.m.unfollowers.value = ArrayList(this).apply {
+                c.mm.unfollowers.value = ArrayList(this).apply {
                     val favIds = (c.m.fav ?: listOf()).map { it.id }
                     for (f in 0 until size) this[f].inFav = this[f].id in favIds
                     specialSort()
@@ -90,10 +90,10 @@ class PageUnf : BasePageMain() {
                 c.m.fav?.removeAll { f -> f.id == it }
                 id = it
             }
-            Friend.find(id!!, c.m.unfollowers.value)?.also { before ->
-                c.m.unfollowers.value?.getOrNull(before)?.inFav = favNow
-                c.m.unfollowers.value?.specialSort()
-                Friend.find(id!!, c.m.unfollowers.value)?.also { after ->
+            Friend.find(id!!, c.mm.unfollowers.value)?.also { before ->
+                c.mm.unfollowers.value?.getOrNull(before)?.inFav = favNow
+                c.mm.unfollowers.value?.specialSort()
+                Friend.find(id!!, c.mm.unfollowers.value)?.also { after ->
                     b.rv.adapter?.notifyItemMoved(before, after)
                     when {
                         before > after -> b.rv.adapter
@@ -121,7 +121,7 @@ class PageUnf : BasePageMain() {
         super.onViewCreated(view, savedInstanceState)
         if (Main.guest) return
 
-        if (c.m.unfollowers.value != null) onLoaded(c.m.unfollowers.value.isNullOrEmpty())
+        if (c.mm.unfollowers.value != null) onLoaded(c.mm.unfollowers.value.isNullOrEmpty())
         else load(true)
     }
 
@@ -155,7 +155,7 @@ class PageUnf : BasePageMain() {
         override val com: Alive.OfThread = Companion
 
         init {
-            c.m.unfollowers.value = null
+            (c as Main).mm.unfollowers.value = null
         }
 
         override fun run() {

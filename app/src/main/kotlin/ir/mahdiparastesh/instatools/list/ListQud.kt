@@ -24,7 +24,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         AnyViewHolder(ListQudBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
-        val qud = c.m.queueds?.getOrNull(i) ?: return
+        val qud = c.mm.queueds?.getOrNull(i) ?: return
 
         // Main
         if (qud.mediaType != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
@@ -49,13 +49,13 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
 
         // Clicks
         h.b.root.setOnClickListener {
-            c.m.queueds?.getOrNull(h.layoutPosition)?.let {
+            c.mm.queueds?.getOrNull(h.layoutPosition)?.let {
                 if (it.link.isNotBlank()) UiTools.openLink(c, it.link)
             }
         }
         h.b.status.setOnClickListener {
-            if (h.layoutPosition == 0) return@setOnClickListener
-            c.m.queueds?.getOrNull(h.layoutPosition)?.apply {
+            c.mm.queueds?.getOrNull(h.layoutPosition)?.apply {
+                if (h.layoutPosition == 0 && status == 0.toByte()) return@setOnClickListener
                 CoroutineScope(Dispatchers.IO).launch {
                     when (status) {
                         0.toByte() -> status = 2.toByte()
@@ -75,7 +75,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.queueds?.size ?: 0
+    override fun getItemCount() = c.mm.queueds?.size ?: 0
 
     override fun onViewAttachedToWindow(h: AnyViewHolder<ListQudBinding>) {
         h.b.status.resumeAnimation()
