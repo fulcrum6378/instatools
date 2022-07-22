@@ -79,8 +79,7 @@ class StorageCache {
         }
 
         private fun List<DocumentFile>.filterMedia() = filter {
-            it.isFile && it.name != null &&
-                    (it.name!!.endsWith(".jpg") || it.name!!.endsWith(".mp4"))
+            it.isFile && it.name?.let { n -> n.endsWith(".jpg") || n.endsWith(".mp4") } == true
         }.map { it.name!! }.toSet()
     }
 

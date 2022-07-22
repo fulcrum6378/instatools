@@ -430,7 +430,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     private var exiting = false
     override fun onBackPressed() {
-        if (b.root.isDrawerOpen(GravityCompat.START)) {
+        if (::b.isInitialized && b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START)
             toggleNav.syncState()
             return; }
