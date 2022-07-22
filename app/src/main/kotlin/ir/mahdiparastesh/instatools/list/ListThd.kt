@@ -46,10 +46,10 @@ class ListThd(val c: Main, private val f: PageBox) :
     )
 
     override fun onBindViewHolder(h: AnyViewHolder<ListThdBinding>, i: Int) {
-        if (c.m.dmThread != null) h.b.onBind(c.c, c.m.dmThread!!, i, idealW, f, h)
+        if (c.mm.dmThread != null) h.b.onBind(c.c, c.mm.dmThread!!, i, idealW, f, h)
     }
 
-    override fun getItemCount() = c.m.dmThread?.items?.size ?: 0
+    override fun getItemCount() = c.mm.dmThread?.items?.size ?: 0
 
     companion object {
         fun ListThdBinding.onCreate(isExporting: Boolean = false): ListThdBinding {

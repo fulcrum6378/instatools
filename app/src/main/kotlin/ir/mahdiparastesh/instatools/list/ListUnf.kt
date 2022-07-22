@@ -37,7 +37,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     }
 
     override fun onBindViewHolder(h: AnyViewHolder<ListUnfBinding>, i: Int) {
-        val unf = c.m.unfollowers.value?.getOrNull(i) ?: return
+        val unf = c.mm.unfollowers.value?.getOrNull(i) ?: return
 
         h.b.photo.vis(!unf.unfollowed)
         h.b.name.vis(!unf.unfollowed)
@@ -63,7 +63,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         ) else unf.user
 
         h.b.root.setOnClickListener {
-            val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            val u = c.mm.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
                 c, it, R.menu.unf_more, Act().apply {
                     this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
@@ -77,7 +77,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             }.show()
         }
         h.b.unfollow.setOnClickListener {
-            val u = c.m.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            val u = c.mm.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             if (!u.priv) unfollow(u)
             else AlertDialog.Builder(
                 ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
@@ -91,7 +91,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.unfollowers.value?.size ?: 0
+    override fun getItemCount() = c.mm.unfollowers.value?.size ?: 0
 
     private fun unfollow(unf: Friend) {
         f.reqQueue.adder = Api<Rest>(
@@ -132,12 +132,12 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
                 else c.dao.deleteFriend(unf)
             }.start()
-            c.m.unfollowers.value?.indexOf(unf)?.also { index ->
-                c.m.unfollowers.value?.getOrNull(index)?.unfollowed = true
+            c.mm.unfollowers.value?.indexOf(unf)?.also { index ->
+                c.mm.unfollowers.value?.getOrNull(index)?.unfollowed = true
                 f.b.rv.adapter?.notifyItemChanged(index)
             }
-            c.m.unfollowers.value = c.m.unfollowers.value
-            if (c.m.unfollowers.value.isNullOrEmpty()) f.emptied(true)
+            c.mm.unfollowers.value = c.mm.unfollowers.value
+            if (c.mm.unfollowers.value.isNullOrEmpty()) f.emptied(true)
         }
     }
 

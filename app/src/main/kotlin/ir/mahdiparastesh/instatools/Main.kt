@@ -102,12 +102,14 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
         val currentPage = MutableLiveData(Settings.defSpMainPage)
+        var showingHelp = false
 
         fun accountSwitched() {
             unfollowers.value = null
             saved = null
             dmInbox = null
             dmThread = null
+            showingHelp = false
         }
     }
 
@@ -308,6 +310,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     )
                 }
             }
+            mm.showingHelp = true
             AlertDialog.Builder(
                 ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Secondary)
             ).apply {
@@ -315,6 +318,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setMessage(R.string.supportDesc)
                 setView(bs.root)
                 setPositiveButton(R.string.ok, null)
+                setOnDismissListener { mm.showingHelp = false }
             }.show(); true; }
         else -> super.onOptionsItemSelected(item)
     }

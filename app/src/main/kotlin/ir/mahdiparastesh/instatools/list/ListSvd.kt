@@ -13,7 +13,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ListSvd(c: Main, f: PageSvd) : ListEdge<Main, PageSvd>(c, f) {
-    override val edges: CopyOnWriteArrayList<GraphQl.EdgePost>? get() = c.m.saved?.edges
+    override val edges: CopyOnWriteArrayList<GraphQl.EdgePost>? get() = c.mm.saved?.edges
     override val inflater: LayoutInflater by lazy { f.inflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
     override val handler: Handler? get() = PageSvd.handler

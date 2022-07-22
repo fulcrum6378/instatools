@@ -20,8 +20,8 @@ import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
 import ir.mahdiparastesh.instatools.json.Rest.StoryReel
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.json.Versioned
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
@@ -32,7 +32,7 @@ import kotlinx.coroutines.withContext
 
 class ListRel(private val c: Viewer, private val f: PageRel) :
     RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
-    private val begHigh: Int by lazy { if (c.m.vwReels?.any { it is StoryReel } == true) 0 else 1 }
+    private val begHigh: Int by lazy { if (c.mm.vwReels?.any { it is StoryReel } == true) 0 else 1 }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -41,7 +41,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
-        val rel = c.m.vwReels?.getOrNull(i) ?: return
+        val rel = c.mm.vwReels?.getOrNull(i) ?: return
 
         // Reel data
         h.b.title.text =
@@ -76,7 +76,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
         if (rel.opened && rel is HighlightReel)
             loadHlItems(i) { h.b.reel.adapter?.notifyDataSetChanged() }
         h.b.header.setOnClickListener {
-            c.m.vwReels?.getOrNull(h.layoutPosition)?.apply {
+            c.mm.vwReels?.getOrNull(h.layoutPosition)?.apply {
                 anSlide?.cancel()
                 opened = !opened
                 if (opened && this is HighlightReel)
@@ -103,16 +103,16 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
             }
         }
         if (h.b.reel.adapter == null)
-            h.b.reel.adapter = ListRli(c, f) { c.m.vwReels?.getOrNull(i) }
+            h.b.reel.adapter = ListRli(c, f) { c.mm.vwReels?.getOrNull(i) }
         else h.b.reel.adapter?.notifyDataSetChanged()
 
         h.b.line.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount(): Int = c.m.vwReels?.size ?: 0
+    override fun getItemCount(): Int = c.mm.vwReels?.size ?: 0
 
     private fun loadHlItems(i: Int, onEnd: () -> Unit) {
-        (c.m.vwReels?.getOrNull(i) as HighlightReel?)?.apply {
+        (c.mm.vwReels?.getOrNull(i) as HighlightReel?)?.apply {
             if (items != null) return@loadHlItems
             c.reqQueue.adder = Api<Rest.Reels<HighlightReel>>(
                 c, Api.Endpoint.REEL_ITEM.url.format(id), Rest.Reels::class, PageRel.handler,
@@ -131,7 +131,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
                 Queued(
                     Persistent.now(), rli.link() ?: "",
                     if (rli.taken_at > 0.0) rli.taken_at.xFromSeconds() else Persistent.now(),
-                    rli.user.pk, c.m.vwUser?.username,
+                    rli.user.pk, c.mm.vwUser?.username,
                     rli.pk ?: rli.id, rli.nearest(Versioned.BEST),
                     rli.thumb(), rli.media_type.toInt().toByte()
                 )

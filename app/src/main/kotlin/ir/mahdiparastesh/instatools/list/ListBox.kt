@@ -25,7 +25,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         AnyViewHolder(ListBoxBinding.inflate(f.inflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListBoxBinding>, i: Int) {
-        var thd = c.m.dmInbox?.threads?.getOrNull(i) ?: return
+        var thd = c.mm.dmInbox?.threads?.getOrNull(i) ?: return
         val firstUser = thd.users.getOrNull(0)
         if (firstUser == null && !thd.is_group) return
         // thd.users MAY HAVE BEEN EMPTY AND CAUSED THOSE 34-TIME CRASHES
@@ -36,16 +36,16 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.last.text =
             c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at.xFromMicroseconds()))
         h.b.root.setOnClickListener {
-            c.m.dmThread =
-                c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            c.mm.dmThread =
+                c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
-                c, c.m.dmThread!!.thread_id, c.m.dmThread!!.items.firstOrNull()?.item_id ?: "",
+                c, c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.firstOrNull()?.item_id ?: "",
                 PageBox.handler, f.reqQueue
             ).also { it.start() }
         }
         h.b.more.setOnClickListener {
-            thd = c.m.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            thd = c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
                 c, it, R.menu.box_more, Act().apply {
                     this[R.id.bmHtml] = { f.expOptions(Exporter.Method.HTML, thd) }
@@ -64,7 +64,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.dmInbox?.threads?.size ?: 0
+    override fun getItemCount() = c.mm.dmInbox?.threads?.size ?: 0
 
     override fun onViewAttachedToWindow(h: AnyViewHolder<ListBoxBinding>) {
         super.onViewAttachedToWindow(h)

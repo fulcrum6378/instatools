@@ -11,7 +11,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ListTag(c: Viewer, f: PageTag) : ListMedia<Viewer, PageTag>(c, f) {
-    override val media: CopyOnWriteArrayList<Media>? get() = c.m.vwTagged?.items
+    override val media: CopyOnWriteArrayList<Media>? get() = c.mm.vwTagged?.items
     override val inflater: LayoutInflater by lazy { c.layoutInflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
     override val handler: Handler? get() = Viewer.handler
