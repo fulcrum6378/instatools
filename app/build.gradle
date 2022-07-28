@@ -12,7 +12,7 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 32
-        versionName '21.0.3'
+        versionName '21.1'
     }
 
     signingConfigs {
@@ -121,3 +121,10 @@ dependencies {
 
     implementation 'com.github.fulcrum1378:ChipsLayoutManager:5140e08'
 }
+
+/*
+* com.android.build.gradle.internal.tasks.databinding.DataBindingGenBaseClassesTask uses a newly
+* deprecated Gradle class called IncrementalTaskInputs which needs to be replaced by InputChanges
+* class, ignore "Deprecated Gradle features were used in this build, making it incompatible with
+* Gradle 8.0." warning during build.
+*/

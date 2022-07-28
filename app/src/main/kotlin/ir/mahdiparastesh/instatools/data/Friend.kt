@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.data
 
 import android.database.sqlite.SQLiteConstraintException
+import android.database.sqlite.SQLiteDatabaseLockedException
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -54,6 +55,7 @@ class Friend(
                     else thread.newFriends.add(this)
                 }
             } catch (e: IllegalStateException) { // DB is closed.
+            } catch (e: SQLiteDatabaseLockedException) { // perhaps there were heavy transactions then
             }
         }
 

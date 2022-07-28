@@ -12,3 +12,6 @@
 -keep class ir.mahdiparastesh.instatools.json.Rest { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Versioned { <fields>; }
+
+-dontwarn ir.mahdiparastesh.chlm.Orientation
+-dontwarn javax.annotation.Nullable
