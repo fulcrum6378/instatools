@@ -174,8 +174,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         fun Uri.folderName() = path.toString().split("/").last()
 
         fun Uri.release(cr: ContentResolver) {
-            cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            try {
+                cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            } catch (e: SecurityException) {
+                // No permission grants found for UID XXX and Uri content://...
+            }
         }
 
         fun Persistent.incrementCounter(key: String) {
