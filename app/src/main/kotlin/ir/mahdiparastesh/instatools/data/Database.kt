@@ -16,8 +16,8 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Friend")
         fun friends(): List<Friend>
 
-        @Query("SELECT * FROM Friend WHERE follows = 1")
-        fun followers(): List<Friend>
+        /*@Query("SELECT * FROM Friend WHERE follows = 1")
+        fun followers(): List<Friend>*/
 
         @Query("SELECT * FROM Friend WHERE followed = 1")
         fun following(): List<Friend>
@@ -26,23 +26,23 @@ abstract class Database : RoomDatabase() {
         fun unfollowers(): List<Friend>
 
         @Query("SELECT * FROM Friend WHERE id LIKE :id LIMIT 1")
-        fun friend(id: String): Friend
+        suspend fun friend(id: String): Friend
 
         @Insert
-        fun addFriend(item: Friend)
+        suspend fun addFriend(item: Friend)
 
         @Update
-        fun updateFriend(item: Friend)
+        suspend fun updateFriend(item: Friend)
 
         @Delete
-        fun deleteFriend(item: Friend)
+        suspend fun deleteFriend(item: Friend)
 
         /*@Query("DELETE FROM Friend")
         fun deleteFriends(): Int*/
 
 
         @Query("SELECT * FROM Queued")
-        fun queueds(): List<Queued>
+        suspend fun queueds(): List<Queued>
 
         @Query("SELECT * FROM Queued WHERE status = 0")
         fun readyQueueds(): List<Queued>
@@ -51,23 +51,23 @@ abstract class Database : RoomDatabase() {
         fun addQueued(item: Queued): Long
 
         @Update
-        fun updateQueued(item: Queued)
+        suspend fun updateQueued(item: Queued)
 
         @Delete
-        fun deleteQueued(item: Queued)
+        suspend fun deleteQueued(item: Queued)
 
         /*@Query("DELETE FROM Queued")
         fun deleteQueueds(): Int*/
 
 
         @Query("SELECT * FROM Exportable")
-        fun exportables(): List<Exportable>
+        suspend fun exportables(): List<Exportable>
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addExportable(item: Exportable): Long
+        suspend fun addExportable(item: Exportable): Long
 
         @Delete
-        fun deleteExportable(item: Exportable)
+        suspend fun deleteExportable(item: Exportable)
 
         /*@Query("DELETE FROM Exportable")
         fun deleteExportables()*/
@@ -76,27 +76,27 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Favourite")
         fun favourites(): List<Favourite>
 
-        @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
-        fun favourite(id: String): List<Favourite>
+        /*@Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
+        fun favourite(id: String): List<Favourite>*/
 
         @Query("SELECT * FROM Favourite WHERE user = :user LIMIT 1")
-        fun favouriteByUser(user: String): List<Favourite>
+        suspend fun favouriteByUser(user: String): List<Favourite>
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addFavourite(item: Favourite)
+        suspend fun addFavourite(item: Favourite)
 
         @Update
-        fun updateFavourite(item: Favourite)
+        suspend fun updateFavourite(item: Favourite)
 
         @Delete
         fun deleteFavourite(item: Favourite)
 
         @Query("DELETE FROM Favourite WHERE id = :id")
-        fun deleteFavouriteById(id: String)
+        suspend fun deleteFavouriteById(id: String)
 
 
         @Query("SELECT * FROM Followable")
-        fun followables(): List<Followable>
+        suspend fun followables(): List<Followable>
 
         @Query("SELECT * FROM Followable LIMIT 1")
         fun aFollowable(): List<Followable>
@@ -111,7 +111,7 @@ abstract class Database : RoomDatabase() {
         fun deleteFollowable(item: Followable)
 
         @Query("DELETE FROM Followable")
-        fun deleteFollowables()
+        suspend fun deleteFollowables()
     }
 
     companion object {

@@ -25,6 +25,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.edit
 import androidx.core.view.forEach
 import androidx.core.view.get
 import com.bumptech.glide.request.target.CustomTarget
@@ -286,7 +287,7 @@ object UiTools {
                 reviewManager.launchReviewFlow(c, task.result).addOnCompleteListener {
                     onDone()
                     // c.rewardAccountForFollower(reward)
-                    c.gsp.edit().putBoolean(Settings.spRatedUs, true).apply()
+                    c.gsp.edit { putBoolean(Settings.spRatedUs, true) }
                 }
             } else if (BuildConfig.DEBUG) task.exception?.let { throw it }
             onReqComplete()

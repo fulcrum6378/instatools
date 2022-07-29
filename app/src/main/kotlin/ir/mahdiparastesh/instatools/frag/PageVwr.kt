@@ -191,7 +191,7 @@ class PageVwr : BasePageViewer() {
                 photo = c.mm.vwUser!!.profile_pic_url_hd
                 changed = true
             }
-            if (changed) Thread { c.dao.updateFavourite(this) }.start()
+            if (changed) CoroutineScope(Dispatchers.IO).launch { c.dao.updateFavourite(this@apply) }
         }
     }
 

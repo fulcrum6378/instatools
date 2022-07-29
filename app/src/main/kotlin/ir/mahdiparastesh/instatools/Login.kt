@@ -12,6 +12,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
@@ -185,7 +186,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
                     cookieManager.getCookie(host)
                 CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
-                gsp.edit().putString(spAccount, id).apply()
+                gsp.edit { putString(spAccount, id) }
                 goTo(Main::class, true); return; }
             if (doClearHistory) {
                 b.web.clearHistory()
@@ -261,7 +262,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     accounts.add(this)
                     CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 }
-                gsp.edit().putString(spAccount, id).apply()
+                gsp.edit { putString(spAccount, id) }
                 goTo(Main::class, true)
             }
         }

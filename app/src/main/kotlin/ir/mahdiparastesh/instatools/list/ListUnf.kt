@@ -22,6 +22,9 @@ import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ListUnf(val c: Main, private val f: PageUnf) :
     RecyclerView.Adapter<AnyViewHolder<ListUnfBinding>>() {
@@ -128,10 +131,10 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 f.counter = 0
             }*/
             c.incrementCounter(Settings.spUnfollowCount)
-            Thread {
+            CoroutineScope(Dispatchers.IO).launch {
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
                 else c.dao.deleteFriend(unf)
-            }.start()
+            }
             c.mm.unfollowers.value?.indexOf(unf)?.also { index ->
                 c.mm.unfollowers.value?.getOrNull(index)?.unfollowed = true
                 f.b.rv.adapter?.notifyItemChanged(index)
@@ -142,14 +145,14 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     }
 
     private fun toggleFav(u: Friend) {
-        Thread {
+        CoroutineScope(Dispatchers.IO).launch {
             val fav = u.toFavourite()
             if (!u.inFav) c.dao.addFavourite(fav)
             else c.dao.deleteFavouriteById(u.id)
             PageUnf.handler?.obtainMessage(
                 PageUnf.HANDLE_FAV_CHANGED, if (!u.inFav) fav else u.id
             )?.sendToTarget()
-        }.start()
+        }
     }
 
     companion object {

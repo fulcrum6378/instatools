@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.core.content.edit
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -95,7 +96,7 @@ abstract class BaseIntel {
                                     "?data=$it&time=${Calendar.getInstance().timeInMillis}"
                         ), { }, { })
                 )
-                c.gsp.edit().putBoolean(spReported, true).apply()
+                c.gsp.edit { putBoolean(spReported, true) }
             } else Log.println(Log.ASSERT, "MOBINA", it)
         }
     }

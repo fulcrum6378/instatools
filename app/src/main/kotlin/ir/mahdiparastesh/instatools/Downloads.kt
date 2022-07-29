@@ -12,6 +12,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -264,7 +265,7 @@ class Downloads : ServiceOwnerActivity() {
             }
             if (isSwipeDeleteInflated != null) {
                 b.root.removeView(bd.root)
-                gsp.edit().putBoolean(Settings.spLearntSwipeDelete, true).apply()
+                gsp.edit { putBoolean(Settings.spLearntSwipeDelete, true) }
                 isSwipeDeleteInflated = null
             }
         }

@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
@@ -168,7 +169,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun saveAliases(sp: SharedPreferences, aliases: HashMap<String, String>?) {
             if (aliases == null) return
-            sp.edit().putString(spAliases, Gson().toJson(aliases)).apply()
+            sp.edit { putString(spAliases, Gson().toJson(aliases)) }
         }
 
         fun Uri.folderName() = path.toString().split("/").last()
@@ -183,7 +184,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         fun Persistent.incrementCounter(key: String) {
-            gsp.edit().putLong(key, gsp.getLong(key, 0L) + 1L).apply()
+            gsp.edit { putLong(key, gsp.getLong(key, 0L) + 1L) }
         }
     }
 
@@ -214,12 +215,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stMainPath.setOnClickListener { selectPath() }
         b.stBranching.isChecked = prf.getBoolean(spBranching, defSpBranching)
         b.stBranching.setOnCheckedChangeListener { _, bb ->
-            prf.edit().putBoolean(spBranching, bb).apply()
+            prf.edit { putBoolean(spBranching, bb) }
         }
         b.stAutoDeleteEmptyDirs.isChecked =
             prf.getBoolean(spAutoDeleteEmptyDirs, defSpAutoDeleteEmptyDirs)
         b.stAutoDeleteEmptyDirs.setOnCheckedChangeListener { _, bb ->
-            prf.edit().putBoolean(spAutoDeleteEmptyDirs, bb).apply()
+            prf.edit { putBoolean(spAutoDeleteEmptyDirs, bb) }
         }
 
         // Alias Paths
@@ -240,7 +241,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                gsp.edit().putLong(spCacheLimit, cacheLimit).apply()
+                gsp.edit { putLong(spCacheLimit, cacheLimit) }
             }
         })
         if (!globalMode) {
@@ -276,10 +277,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    prf.edit().apply {
-                        allSps.forEach { remove(it) }
-                        apply()
-                    }
+                    prf.edit { allSps.forEach { remove(it) } }
                     recreate()
                 }
             }.show()
@@ -425,7 +423,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         when (selectingPathFor) {
             0 -> {
-                prf.edit().putString(spStorage, uri.toString()).apply()
+                prf.edit { putString(spStorage, uri.toString()) }
                 updateMainPath(uri.toString())
                 if (giveLinkBack != null) {
                     Downloads.initService(this, giveLinkBack)

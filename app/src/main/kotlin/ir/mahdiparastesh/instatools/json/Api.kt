@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
 import android.util.DisplayMetrics
+import androidx.core.content.edit
 import com.android.volley.*
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
@@ -59,7 +60,7 @@ class Api<JSON>(
                 url == Endpoint.SIGN_OUT.url -> gotError(this)
                 response.contains("Log in • Instagram") -> {
                     ForegroundService.terminateTasks(c.c)
-                    c.gsp.edit().remove(Login.spAccount).apply()
+                    c.gsp.edit { remove(Login.spAccount) }
                     c.needAuthentication()
                     if (c is BaseActivity) gotError(this)
                 }

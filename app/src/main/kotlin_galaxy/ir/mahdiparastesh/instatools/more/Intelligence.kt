@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.os.Build
+import androidx.core.content.edit
 import ir.mahdiparastesh.instatools.Main
 import java.util.*
 
@@ -14,7 +15,7 @@ object Intelligence : BaseIntel() {
         // tm.simOperatorName => "Mobifone" | "VN VINAPHONE" | "Viettel" | ??
         if (!galaxyCensor && c.gsp.getBoolean(spIsMainTmCensored, true)) {
             if (unCensorMain)
-                c.gsp.edit().putBoolean(Intelligence.spIsMainTmCensored, false).commit()
+                c.gsp.edit(true) { putBoolean(Intelligence.spIsMainTmCensored, false) }
             else {
                 unCensorMain = true
                 c.goTo(Main.Switcher::class, true)

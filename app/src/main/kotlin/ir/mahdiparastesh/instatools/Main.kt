@@ -20,6 +20,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
@@ -184,7 +185,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Miscellaneous
         if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
             || !gsp.contains(Settings.spUsedVersion)
-        ) gsp.edit().putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE).apply()
+        ) gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
     }
 
     override fun onAccountSet() {
@@ -400,7 +401,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
-        sp?.edit()?.putInt(spMainPage, mm.currentPage.value!!)?.apply()
+        sp?.edit { putInt(spMainPage, mm.currentPage.value!!) }
         b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()

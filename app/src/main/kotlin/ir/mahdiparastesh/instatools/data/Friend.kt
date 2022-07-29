@@ -26,7 +26,6 @@ class Friend(
     fun toFavourite() = Favourite(id, user, name, pict, priv)
 
     companion object {
-        @Suppress("RedundantSuspendModifier")
         suspend fun add(
             dao: Database.DAO, thread: PageUnf.Inquiry, newer: Friend, inFollowersList: Boolean
         ) {

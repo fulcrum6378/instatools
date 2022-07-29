@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.edit
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.documentfile.provider.DocumentFile
@@ -179,7 +180,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             setView(bn.root)
             setPositiveButton(R.string.ok) { _, _ ->
                 guideDmNotSeenShowing = false
-                c.gsp.edit().putBoolean(Settings.spLearntDmNotSeen, true).apply()
+                c.gsp.edit { putBoolean(Settings.spLearntDmNotSeen, true) }
             }
         }.show()
     }
@@ -277,7 +278,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 opt.video = if (bi.incVideo.isChecked)
                     Exportable.Options.quaVideo.indexOf(bi.quaVideo.checkedRadioButtonId) else -1
                 opt.voice = if (bi.incVoice.isChecked) 0 else -1
-                c.sp?.edit()?.putString(Settings.spExpOptions, opt.toJson())?.apply()
+                c.sp?.edit { putString(Settings.spExpOptions, opt.toJson()) }
                 exportable =
                     Exportable(thread.thread_id, null, method.id, opt.toJson(), threadData = thread)
 

@@ -22,6 +22,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -102,7 +103,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)) {
             incrementCounter(Settings.spOpenAppCount)
             if (!gsp.contains(Settings.spFirstOpenApp))
-                gsp.edit().putLong(Settings.spFirstOpenApp, Persistent.now()).apply()
+                gsp.edit { putLong(Settings.spFirstOpenApp, Persistent.now()) }
         }
     }
 

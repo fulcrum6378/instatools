@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Process
 import android.os.Process.myPid
 import android.os.Process.myUid
+import androidx.core.content.edit
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
@@ -57,7 +58,7 @@ interface Persistent {
     }
 
     fun switchAcc() {
-        gsp.edit().remove(Login.spAccount).apply()
+        gsp.edit { remove(Login.spAccount) }
         m.acc = null
         if (this is BaseActivity)
             goTo(Login::class, true) // { putExtra(Login.EXTRA_SHOW_AD, true) }

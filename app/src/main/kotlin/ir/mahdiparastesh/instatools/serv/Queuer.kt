@@ -91,7 +91,7 @@ class Queuer : ForegroundService() {
                     }
                     Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
                         qud!!.status = 1.toByte()
-                        Thread { dao.updateQueued(qud!!) }.start()
+                        CoroutineScope(Dispatchers.IO).launch { dao.updateQueued(qud!!) }
                         incrementCounter(Settings.spDlErrorCount)
                         Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, qud)
                             ?.sendToTarget()

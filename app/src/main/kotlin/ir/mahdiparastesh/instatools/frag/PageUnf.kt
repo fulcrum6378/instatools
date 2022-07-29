@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.edit
 import com.android.volley.NetworkResponse
 import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
@@ -65,7 +66,7 @@ class PageUnf : BasePageMain() {
         HANDLE_FETCHED to {
             load(false)
             b.refresher.isRefreshing = false
-            c.sp?.edit()?.putLong(Settings.spUnfLastChecked, Persistent.now())?.apply()
+            c.sp?.edit { putLong(Settings.spUnfLastChecked, Persistent.now()) }
         },
         //HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) }
         Api.HANDLE_ERROR to {
@@ -242,7 +243,7 @@ class PageUnf : BasePageMain() {
                     setAutoCancel(true)
                 }.build()
             )
-            c.sp?.edit()?.putLong(Settings.spNotifiedUnfTill, Persistent.now())?.apply()
+            c.sp?.edit { putLong(Settings.spNotifiedUnfTill, Persistent.now()) }
         }
         // Never use Fragment::getString()
     }

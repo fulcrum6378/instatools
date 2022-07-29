@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.edit
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
@@ -290,7 +291,7 @@ class PageSvd : BasePageMain(), Selective {
                 (b.rv.adapter as ListSvd?)?.firstLongClickSelect = true
                 if (selectionGuide != null) {
                     b.root.removeView(selectionGuide)
-                    c.gsp.edit().putBoolean(Settings.spLearntSelection, true).apply()
+                    c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
                     b.rv.suppressLayout(false)
                 }
             }

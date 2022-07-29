@@ -12,6 +12,7 @@ import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
@@ -123,7 +124,7 @@ class MassFollower : ServiceOwnerActivity() {
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                sp?.edit()?.putLong(Settings.spFollowerDelay, Follower.DELAY)?.apply()
+                sp?.edit { putLong(Settings.spFollowerDelay, Follower.DELAY) }
             }
         })
 

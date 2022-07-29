@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.list
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.bumptech.glide.Glide
@@ -94,7 +95,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
             c.accounts.removeAll { it.id == acc.id }
             Account.save(c, c.accounts)
             if (c.gsp.getString(Login.spAccount, null) == acc.id.toString())
-                c.gsp.edit().remove(Login.spAccount).apply()
+                c.gsp.edit { remove(Login.spAccount) }
         }
         notifyItemRemoved(i)
         notifyItemRangeChanged(i, c.accounts.size)
