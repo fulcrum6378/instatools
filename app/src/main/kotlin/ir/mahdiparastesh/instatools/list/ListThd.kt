@@ -162,8 +162,10 @@ class ListThd(val c: Main, private val f: PageBox) :
                 dm.media != null -> media = dm.media
                 dm.media_share != null -> media = dm.media_share
                 dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
-                dm.profile != null ->
-                    msgTv.anchor("@${dm.profile.username}", PROFILE.format(dm.profile.username))
+                dm.profile != null -> msgTv.anchor(
+                    "@${dm.profile.username} [User ID: ${dm.profile.pk}]",
+                    PROFILE.format(dm.profile.username)
+                )
                 dm.raven_media != null -> media = dm.raven_media
                 dm.reel_share != null -> {
                     media = dm.reel_share.media

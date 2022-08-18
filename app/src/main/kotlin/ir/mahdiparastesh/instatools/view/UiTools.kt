@@ -180,11 +180,14 @@ object UiTools {
 
     @Suppress("SpellCheckingInspection")
     fun openDm(c: Activity, threadId: String) {
-        c.startActivity(
-            Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
-                ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
-            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
+        try {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
+                    ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (e: ActivityNotFoundException) {
+        }
     }
 
     fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {

@@ -24,7 +24,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
     private val div2Ind = "$div1Ind  "
     private val divDial = "<p class=\"dial\">%s</p>"
     private val divHint = "<p class=\"hint\">%s</p>"
-    private val divLink = divDial.format("\n$div2Ind  <a href=\"%1\$s\">%2\$s</a>\n$div2Ind")
+    private val divLink = divDial.format("\n$div2Ind  <a href=\"%1\$s\">%2\$s</a>%3\$s\n$div2Ind")
     private val divGif = "<img src=\"%s\" class=\"gif\">"
 
     private fun hintAndDial(hint: String?, dial: String?) =
@@ -92,7 +92,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     dm.felix_share.text?.let { divDial.format(it) } ?: ""
                 }
                 dm.like != null -> divDial.format(dm.like)
-                dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text)
+                dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text, "")
                 dm.live_viewer_invite != null -> hintAndDial(
                     dm.live_viewer_invite.cta_button_name, dm.live_viewer_invite.text
                 )
@@ -106,7 +106,8 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                 }
                 dm.placeholder != null -> divHint.format(dm.placeholder.message)
                 dm.profile != null -> divLink.format(
-                    UiTools.PROFILE.format(dm.profile.username), "@${dm.profile.username}"
+                    UiTools.PROFILE.format(dm.profile.username), "@${dm.profile.username}",
+                    " <i>[User ID: ${dm.profile.pk}]</i>"
                 )
                 dm.raven_media != null -> {
                     media = dm.raven_media
@@ -150,10 +151,17 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     hRef = UiTools.PROFILE.format(username)
                     imgTitle = " title=\"$full_name\""
                 }
+                @Suppress("SpellCheckingInspection")
                 div.append(
                     "$div1Ind<a href=\"$hRef\">\n$div1Ind  <img ${
-                        if (showPro) "src=\"./${subFolderNames[0]}/" +
-                                "${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" " else ""
+                        when {
+                            exp.opt?.img() != true ->
+                                "src=\"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=\"" +
+                                        " style=\"background-color: #33AADD;\" "
+                            showPro -> "src=\"./${subFolderNames[0]}/" +
+                                    "${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" "
+                            else -> ""
+                        }
                     }class=\"profile${if (!showPro) " repeated" else ""}\"$imgTitle>\n$div1Ind</a>\n"
                 )
             }

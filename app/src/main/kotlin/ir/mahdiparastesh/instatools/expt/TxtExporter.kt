@@ -46,7 +46,7 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                     dm.media_share != null ->
                         "<shared a ${if (dm.media_share.media_type == 1f) "picture" else "video"}>"
                     dm.placeholder != null -> "<${dm.placeholder.message}>"
-                    dm.profile != null -> "@${dm.profile.username}"
+                    dm.profile != null -> "@${dm.profile.username} <User ID: ${dm.profile.pk}>"
                     dm.raven_media != null ->
                         "<captured a ${if (dm.raven_media.media_type == 1f) "photo" else "video"}>"
                     dm.reel_share != null -> "<shared a reel>${dm.reel_share.text.shareText()}"

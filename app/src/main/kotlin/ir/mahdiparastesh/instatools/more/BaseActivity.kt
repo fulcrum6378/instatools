@@ -65,9 +65,11 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     abstract class ActivityCompanion : Alive()
 
     companion object {
-        // const val ADMOB_DELAY = 2000L
-        // const val MAX_AD_RETRY = 2
-        // var adsInitStatus: InitializationStatus? = null
+        /*const val ADMOB_DELAY = 2000L
+        const val MAX_AD_RETRY = 2
+        var adsInitStatus: InitializationStatus? = null
+
+        fun areAdsReady() = adsInitStatus?.isReady() == true*/
 
         fun anyActive() = arrayOf(
             Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
@@ -75,8 +77,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
         fun Context.night(): Boolean = resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-        // fun areAdsReady() = adsInitStatus?.isReady() == true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,9 +146,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     /*private fun initAdmob() {
         retryForAd = 0
         MobileAds.initialize(c, this)
-    }*/
+    }
 
-    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
+    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
         Companion.adsInitStatus = adsInitStatus
         if (!adsInitStatus.isReady()) {
             if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
@@ -296,7 +296,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
 
-    fun launcher(callback: ActivityResultCallback<ActivityResult>) =
+    fun launcherForResult(callback: ActivityResultCallback<ActivityResult>) =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
 
     @Suppress("unused")

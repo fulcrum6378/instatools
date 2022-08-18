@@ -83,16 +83,16 @@ class Follower : ForegroundService() {
         override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
             0 to { msg ->
                 val flw = msg.obj as Rest.Follow
-                var sum: Int
-                dao.addFollowables(flw.users.filter {
+                var sum = 0
+                flw.users?.filter {
                     (toBeEnqueued[0].includePv || !it.is_private) &&
                             it.pk !in following.map { f -> f.id } && it.pk != m.acc!!.id.toString()
-                }.map { Followable(it.pk, it.username, it.is_private) }.also {
+                }?.map { Followable(it.pk, it.username, it.is_private) }?.also {
                     sum = it.size
                     total += sum
                     MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_INSERTED, it)
                         ?.sendToTarget()
-                })
+                }?.also { dao.addFollowables(it) }
                 if (flw.next_max_id == null || total >= toBeEnqueued[0].limitTo) enqueuingDone()
                 else allFollow(flw.next_max_id)
                 if (sum > 0 && scheduler?.active != true)

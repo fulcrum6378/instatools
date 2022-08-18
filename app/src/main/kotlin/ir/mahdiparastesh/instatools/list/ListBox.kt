@@ -28,7 +28,6 @@ class ListBox(val c: Main, private val f: PageBox) :
         var thd = c.mm.dmInbox?.threads?.getOrNull(i) ?: return
         val firstUser = thd.users.getOrNull(0)
         if (firstUser == null && !thd.is_group) return
-        // thd.users MAY HAVE BEEN EMPTY AND CAUSED THOSE 34-TIME CRASHES
         if (!thd.is_group) Glide.with(c.c).load(firstUser!!.profile_pic_url).into(h.b.photo)
         else h.b.photo.setImageResource(R.drawable.switch_account)
         h.b.name.text = thd.title()

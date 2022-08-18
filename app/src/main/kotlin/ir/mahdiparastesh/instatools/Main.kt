@@ -68,10 +68,10 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    val exportLauncher = launcher { page3?.onActivityResult(it) }
+    val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
     val mm: MyModel by viewModels()
-    // private lateinit var adBanner: AdView
-    // private var adBannerLoaded = false
+    /*private lateinit var adBanner: AdView
+    private var adBannerLoaded = false*/
 
     var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
@@ -487,4 +487,20 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             finish()
         }
     }
+
+    /* TODO:
+    * Problems:
+    * Volley throws OutOfMemory while downloading long videos
+    * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
+    * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
+    *
+    * Extension:
+    * "Automatic Actions": Live Unfollower finder, notification-enabled download
+    * Conditional jump to bottom
+    * Exporter maximum date of top and bottom which would need a calendar picker!?!?
+    * Live Live downloader
+    * Undo for Unsave
+    * View post/story in Instatools intent filter
+    * Max slides for HtmlExporter
+    */
 }

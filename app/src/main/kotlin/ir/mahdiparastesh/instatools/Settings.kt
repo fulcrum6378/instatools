@@ -46,7 +46,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var prf: SharedPreferences
     private var globalMode = true
     private var giveLinkBack: String? = null
-    private val saveLauncher = launcher(this)
+    private val saveLauncher = launcherForResult(this)
     private var aliases: HashMap<String, String>? = null
     private var cacheLimit: Long = defSpCacheLimit
     private val cacheMin: Int by lazy { resources.getInteger(R.integer.stCacheMin) }
@@ -87,6 +87,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spDlErrorCount = "download_error_count" // def: 0L
         const val spUnsaveCount = "unsave_count" // def: 0L
         const val spExportCount = "export_count" // def: 0L
+        const val spShortcutCount = "shortcut_count" // def: 0L
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
         const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false

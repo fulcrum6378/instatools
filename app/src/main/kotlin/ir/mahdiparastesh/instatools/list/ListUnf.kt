@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.list
 
 import android.view.ContextThemeWrapper
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
@@ -100,7 +101,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         f.reqQueue.adder = Api<Rest>(
             c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest::class, null,
             method = Request.Method.POST, autoQueue = false, onError = { res ->
-                if (res?.statusCode == 429) {
+                if (res?.statusCode == 429) try {
                     /*var showing429 = true
                     c.loadInterstitial(R.string.interUnfMany) { !showing429 }*/
                     AlertDialog.Builder(
@@ -114,6 +115,8 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                             c.showInterstitial()
                         }*/
                     }.show()
+                } catch (e: WindowManager.BadTokenException) {
+                    // activity is not running!!
                 } else {
                     PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                     if (BuildConfig.DEBUG)

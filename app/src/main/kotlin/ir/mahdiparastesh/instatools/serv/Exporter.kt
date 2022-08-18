@@ -154,13 +154,13 @@ class Exporter : ForegroundService() {
             cacheDir = File(Cache(c), it)
             if (!cacheDir!!.exists()) cacheDir!!.mkdir()
         }
-        for (user in threadData!!.users) {
-            val key = USER_PROFILE_IMG.format(user.pk)
-            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key, 0)
-        }
         val img = opt?.img() == true
         val vid = opt?.vid() == true
         val actVid = opt?.actVid() == true
+        if (img) for (user in threadData!!.users) {
+            val key = USER_PROFILE_IMG.format(user.pk)
+            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key, 0)
+        }
         for (dm in threadData!!.items) {
             if (actVid && dm.animated_media != null) continue
             // HTML gets GIFs dynamically, PDF cannot show them properly, and TXT...
@@ -290,7 +290,8 @@ class Exporter : ForegroundService() {
                         getString(R.string.exporterDone, oldExp.threadData?.title() ?: "")
                     )
                     if (alternativeFolder != null) setStyle(
-                        NotificationCompat.BigTextStyle().bigText(getString(R.string.exportRescued))
+                        NotificationCompat.BigTextStyle()
+                            .bigText(getString(R.string.exportRescued))
                     )
                     addAction(
                         0, getString(R.string.openFolder), PendingIntent.getActivity(
@@ -315,9 +316,18 @@ class Exporter : ForegroundService() {
         val id: Int, val mime: String, val ext: String, val asTree: Boolean, val img: Boolean,
         val vid: Boolean, @StringRes val desc: Int
     ) {
-        HTML(0, DIR_MIME, "html", true, true, true, R.string.exportHtmlDesc),
-        PDF(1, "application/pdf", "pdf", false, true, false, R.string.exportPdfDesc),
-        TXT(2, "text/plain", "txt", false, false, false, R.string.exportTxtDesc),
+        HTML(
+            0, DIR_MIME, "html", true, true, true,
+            R.string.exportHtmlDesc
+        ),
+        PDF(
+            1, "application/pdf", "pdf", false, true, false,
+            R.string.exportPdfDesc
+        ),
+        TXT(
+            2, "text/plain", "txt", false, false, false,
+            R.string.exportTxtDesc
+        ),
     }
 
     inner class Downloadable(

@@ -172,7 +172,7 @@ class PageUnf : BasePageMain() {
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
                 handler, autoQueue = false, onError = { interrupt() }
             ) { flw ->
-                if (c.m.acc != null) CoroutineScope(Dispatchers.IO).launch {
+                if (c.m.acc != null && flw.users != null) CoroutineScope(Dispatchers.IO).launch {
                     for (u in flw.users) {
                         if (!c.db.isOpen) return@launch
                         Friend.add(

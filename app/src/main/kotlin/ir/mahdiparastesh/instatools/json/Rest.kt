@@ -72,7 +72,7 @@ open class Rest {
     class Follow(
         // Both following and followers
         val next_max_id: String? = null,
-        val users: Array<User>,
+        val users: Array<User>? = null,
         //val big_list: Boolean,
         //val page_size: Double,
     ) : Rest()

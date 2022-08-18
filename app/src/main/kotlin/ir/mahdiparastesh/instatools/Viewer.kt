@@ -22,6 +22,7 @@ import androidx.media2.common.SessionPlayer
 import com.android.volley.NetworkResponse
 import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
@@ -173,21 +174,23 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtInsta -> UiTools.openProfile(this, user!!)
-            R.id.vtFav -> if (mm.vwUser != null) CoroutineScope(Dispatchers.IO).launch {
-                if (dbFav == null) {
-                    dbFav = mm.vwUser!!.favourite()
-                    dao.addFavourite(dbFav!!)
-                } else {
-                    dao.deleteFavourite(dbFav!!)
-                    dbFav = null
+            R.id.vtInsta -> user?.also { UiTools.openProfile(this, it) }
+            R.id.vtFav -> mm.vwUser?.also { user ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (dbFav == null) {
+                        dbFav = user.favourite()
+                        dao.addFavourite(dbFav!!)
+                    } else {
+                        dao.deleteFavourite(dbFav!!)
+                        dbFav = null
+                    }
+                    withContext(Dispatchers.Main) { fixTbMenu() }
                 }
-                withContext(Dispatchers.Main) { fixTbMenu() }
             }
-            R.id.vtShortcut -> mm.vwUser?.also {
+            R.id.vtShortcut -> mm.vwUser?.also { u ->
                 val bmp = (page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
-                    c, ShortcutInfoCompat.Builder(c, it.username).apply {
+                    c, ShortcutInfoCompat.Builder(c, u.username).apply {
                         setIntent(
                             Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.PROFILE.format(user)))
                                 .setPackage(UiTools.INSTA_PACKAGE)
@@ -197,9 +200,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                                 Bitmap.createScaledBitmap(bmp, 128, 128, true)
                             )
                         )
-                        setShortLabel(it.full_name.ifBlank { it.username })
+                        setShortLabel(u.full_name.ifBlank { u.username })
                     }.build(), null
                 )
+                incrementCounter(Settings.spShortcutCount)
             }
         }
         return super.onMenuItemClick(item)

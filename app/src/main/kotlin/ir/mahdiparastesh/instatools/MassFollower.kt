@@ -36,8 +36,8 @@ class MassFollower : ServiceOwnerActivity() {
     private lateinit var b: MassFollowerBinding
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
     val mm: MyModel by viewModels()
-    // private lateinit var adBanner: AdView
-    // private var controllerBadge: BadgeDrawable? = null
+    /*private lateinit var adBanner: AdView
+    private var controllerBadge: BadgeDrawable? = null*/
 
     override val menuRes = R.menu.follower_tlb
     override val com: ActivityCompanion get() = Companion
@@ -74,11 +74,12 @@ class MassFollower : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.fwb.value!!.size)
                     }
                     // HANDLE_REWARD_CONSUMED -> countPermissions()
-                    HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower).apply {
-                        setTitle(R.string.massFollower)
-                        setMessage(R.string.mfDetectedSpam)
-                        setNeutralButton(R.string.ok, null)
-                    }.show()
+                    HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower)
+                        .apply {
+                            setTitle(R.string.massFollower)
+                            setMessage(R.string.mfDetectedSpam)
+                            setNeutralButton(R.string.ok, null)
+                        }.show()
                 }
                 updateIfEmpty(mm.fwb.value.isNullOrEmpty())
                 updateShadow()
@@ -192,7 +193,9 @@ class MassFollower : ServiceOwnerActivity() {
                         ) appSettings(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
                         // https://developer.android.com/training/monitoring-device-state/doze-standby.html
                         1 -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                            appSettings(android.provider.Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS) {
+                            appSettings(
+                                android.provider.Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS
+                            ) {
                                 data = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
                             }
                     }
@@ -250,10 +253,10 @@ class MassFollower : ServiceOwnerActivity() {
         const val HANDLE_REWARD_CONSUMED = 5
         const val HANDLE_DETECTED_AS_SPAMMER = 6
         const val FOLLOW_LIMIT = 9999 // edit EditText's maxLength whenever you edit this.
-        // const val RATE_US_UNINTENTIONALLY_UNLOCK_TIMES = 10
-        // private val UNLOCK_TIMES = arrayOf(50, 5)
-        // private var mRewardedAd: RewardedAd? = null
-        // private var loadingAd = false
+        /*const val RATE_US_UNINTENTIONALLY_UNLOCK_TIMES = 10
+        private val UNLOCK_TIMES = arrayOf(50, 5)
+        private var mRewardedAd: RewardedAd? = null
+        private var loadingAd = false*/
 
         fun initService(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit = {}
@@ -299,9 +302,9 @@ class MassFollower : ServiceOwnerActivity() {
             loading.vis(bb)
             if (bb) loading.playAnimation()
             else loading.pauseAnimation()
-        }*/
+        }
 
-        /*@MainThread
+        @MainThread
         private fun watchAnAd(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit,
             onResult: (success: Boolean) -> Unit
@@ -331,9 +334,9 @@ class MassFollower : ServiceOwnerActivity() {
                         mRewardedAd = null
                     }
                 })
-        }*/
+        }
 
-        /*fun BaseActivity.rewardAccountForFollower(times: Int) {
+        fun BaseActivity.rewardAccountForFollower(times: Int) {
             m.acc?.apply {
                 mfrw += times
                 saveMe(c)

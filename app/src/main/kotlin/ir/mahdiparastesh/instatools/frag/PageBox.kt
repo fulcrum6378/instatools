@@ -205,7 +205,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         bi.incVideo.isChecked = opt.vid()
         if (opt.vid()) bi.quaVideo.check(Exportable.Options.quaVideo[opt.video])
         bi.incVoice.isChecked = opt.voi()
-        // TODO: MAX SLIDES
 
         if (!method.img) {
             bi.incImage.isChecked = false
