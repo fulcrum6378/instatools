@@ -51,7 +51,10 @@ class Follower : ForegroundService() {
     }
 
     override fun resolveIntent(intent: Intent) {
-        intent.getParcelableExtra<ToBeEnqueued>(EXTRA_ENQUEUE)?.let { tbe ->
+        @Suppress("DEPRECATION")
+        (if (Build.VERSION.SDK_INT < 33)
+            intent.getParcelableExtra(EXTRA_ENQUEUE)
+        else intent.getParcelableExtra(EXTRA_ENQUEUE, ToBeEnqueued::class.java))?.let { tbe ->
             toBeEnqueued.add(tbe)
             if (enqueuer?.active != true) enqueuer = Enqueuer().also { it.start() }
         }

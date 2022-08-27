@@ -44,14 +44,28 @@ class PageConfig(
 
     data class SharedDataConfig(val viewer: GraphQl.User)
 
-    data class PolarisPostRoot(val rootView: PolarisView /*, val url: String "\/p\/CeyIexyDcYd\/"*/)
+    data class PolarisRoot(
+        val rootView: PolarisView, //val url: String "\/p\/CeyIexyDcYd\/"
+        val params: PolarisRootParams,
+    )
 
-    data class PolarisView(val props: PolarisViewProps)
+    data class PolarisView(
+        val props: PolarisViewProps,
+        val resource: PolarisRootRes,
+    )
 
     data class PolarisViewProps(
         val media_id: String,
         val media_owner_id: String,
         val media_type: Float,
-        val page_logging: Map<String, Any>
+        //val page_logging: Map<String, Any>,
+        val user: GraphQl.User,
     )
+
+    data class PolarisRootRes(val __dr: String)
+    // post => "PolarisPostRoot.react"
+    // story => "PolarisStoriesMediaRoot.react"
+    // highlight => "PolarisStoriesHighlightsRoot.react"
+
+    data class PolarisRootParams(val initial_media_id: String, val username: String)
 }

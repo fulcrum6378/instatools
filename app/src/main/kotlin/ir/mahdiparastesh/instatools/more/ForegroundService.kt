@@ -174,7 +174,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     open fun destroy() {
-        stopForeground(true)
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        else stopForeground(true)
         stopSelf()
     }
 

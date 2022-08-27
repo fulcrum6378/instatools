@@ -268,6 +268,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.web.canGoBack()) {
             b.web.goBack(); return; }

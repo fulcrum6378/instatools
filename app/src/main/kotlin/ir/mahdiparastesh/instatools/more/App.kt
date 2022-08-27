@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Bundle
 import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.more.Intelligence
 
 class App : Application() {
     override fun onCreate() {

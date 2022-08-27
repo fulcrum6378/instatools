@@ -34,8 +34,8 @@ class GraphQl(val data: GraphQlData) : Rest() {
         //val connected_fb_page: Any?,
         //val country_block: Boolean?,
         //val edge_felix_video_timeline: EdgeList?, // Useless "VIDEOS" tab
-        val edge_follow: EdgeFollow,
-        val edge_followed_by: EdgeFollow,
+        val edge_follow: EdgeFollow?,
+        val edge_followed_by: EdgeFollow?,
         //val edge_media_collections: EdgeList?,
         //val edge_mutual_followed_by: Map<String?, *>?,
         val edge_owner_to_timeline_media: EdgeList?, // Main posts

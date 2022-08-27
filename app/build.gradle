@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
     buildToolsVersion '33.0.0'
 
     defaultConfig {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
-        targetSdk 32
-        versionName '21.4'
+        targetSdk 33
+        versionName '21.6'
     }
 
     signingConfigs {

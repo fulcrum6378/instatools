@@ -206,6 +206,7 @@ class Downloads : ServiceOwnerActivity() {
         } else isSwipeDeleteInflated = null
     }
 
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         super.onBackPressed()
         if (isTaskRoot) goTo(Main::class)

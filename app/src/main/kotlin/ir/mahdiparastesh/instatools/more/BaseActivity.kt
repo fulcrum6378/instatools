@@ -96,7 +96,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         } else onAccountSet()
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
-            super.onBackPressed()
+            @Suppress("DEPRECATION") super.onBackPressed()
             finish()
             return; }
 
@@ -174,7 +174,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
             }
-            toolbar.setNavigationOnClickListener { onBackPressed() }
+            toolbar.setNavigationOnClickListener {
+                @Suppress("DEPRECATION") onBackPressed()
+            }
         }
     }
 

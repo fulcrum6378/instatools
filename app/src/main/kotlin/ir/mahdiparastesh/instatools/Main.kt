@@ -456,6 +456,8 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     }
 
     private var exiting = false
+
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (::b.isInitialized && b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START)

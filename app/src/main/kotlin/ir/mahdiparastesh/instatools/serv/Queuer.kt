@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
@@ -15,6 +14,7 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -23,11 +23,8 @@ import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.StorageCache
-import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.*
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
-import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.PageConfig
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -119,48 +116,23 @@ class Queuer : ForegroundService() {
                 ?.sendToTarget()
         }.start()
 
-        @Suppress("SpellCheckingInspection")
-        when {
-            cur.link.contains("stor") -> {
-                reqQueue.adder = Api<Media.MediaWrapperApi>(
-                    this, Api.Endpoint.MEDIA_ITEM.url.format(
-                        if (cur.link.contains("/stories/"))
-                            cur.link.substringAfterLast("/").substringBefore("?")
-                        else cur.link.substringAfter("story_media_id=")
-                            .substringBefore("&")
-                    ), Media.MediaWrapperApi::class, handler, autoQueue = false, cache = true
-                ) { media ->
-                    val med = media.items?.firstOrNull()
-                    if (med == null) {
-                        handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
-                    cur.qud!!.apply {
-                        date = med.taken_at.xFromSeconds()
-                        userId = med.user.pk
-                        userName = med.user.username
-                        itemId = med.pk
-                        url = med.nearest(Versioned.BEST)
-                        thumb = med.thumb()
-                        mediaType = med.media_type.toInt().toByte()
+        reqQueue.adder = object : StringRequest(cur.link, { html ->
+            PageConfig.findConfigWrapper(
+                html, false, { Api.gotError(handler, null, null) }) { cnfWrapper ->
+                @Suppress("UNCHECKED_CAST")
+                val root =
+                    (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
+                        ?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
+                        Gson().fromJson(
+                            Gson().toJson(it), PageConfig.PolarisRoot::class.java
+                        )
                     }
-                    handleQueued(cur.qud!!, null)
-                }
-            }
-            // including "instagram.com/tv/" and "instagram.com/reel/"
-            else -> reqQueue.adder = object : StringRequest(cur.link, { html ->
-                PageConfig.findConfigWrapper(
-                    html, false, { Api.gotError(handler, null, null) }) { cnfWrapper ->
-                    @Suppress("UNCHECKED_CAST")
-                    val mediaId =
-                        (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
-                            ?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
-                            Gson().fromJson(
-                                Gson().toJson(it), PageConfig.PolarisPostRoot::class.java
-                            )
-                        }?.rootView?.props?.media_id
-                    if (mediaId == null) {
-                        Api.gotError(handler, null, null); return@findConfigWrapper; }
-                    reqQueue.adder = Api<Media.MediaWrapperApi>(
-                        this, Api.Endpoint.MEDIA_ITEM.url.format(mediaId),
+                if (root == null) {
+                    Api.gotError(handler, null, null); return@findConfigWrapper; }
+
+                when (root.rootView.resource.__dr) {
+                    "PolarisPostRoot.react" -> reqQueue.adder = Api<Media.MediaWrapperApi>(
+                        this, Api.Endpoint.MEDIA_ITEM.url.format(root.rootView.props.media_id),
                         Media.MediaWrapperApi::class, handler, autoQueue = false
                     ) { wrapper ->
                         val med = wrapper.items?.getOrNull(0)
@@ -195,11 +167,7 @@ class Queuer : ForegroundService() {
                                 thumb = med.thumb()
                                 mediaType = med.media_type.toInt().toByte()
                             }
-                            else -> {
-                                found = false
-                                Toast.makeText(c, "Unknown media type!!?!", Toast.LENGTH_LONG)
-                                    .show()
-                            }
+                            else -> found = false
                         }
                         if (found) handleQueued(cur.qud!!, addOns)
                         else {
@@ -207,10 +175,60 @@ class Queuer : ForegroundService() {
                             if (download?.active != true) finish(false)
                         }
                     }
+                    "PolarisStoriesMediaRoot.react" -> reqQueue.adder =
+                        Api<Rest.Reels<Rest.StoryReel>>(
+                            this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user.id),
+                            Rest.Reels::class, handler, autoQueue = false, cache = true,
+                            typeToken = object : TypeToken<Rest.Reels<Rest.StoryReel>>() {}.type
+                        ) { reels ->
+                            val med =
+                                reels.reels.getOrDefault(root.rootView.props.user.id, null)?.items
+                                    ?.find { it.pk == root.params.initial_media_id }
+                            if (med == null) {
+                                handler?.obtainMessage(Api.HANDLE_ERROR)
+                                    ?.sendToTarget(); return@Api; }
+                            cur.qud!!.apply {
+                                date = med.taken_at.xFromSeconds()
+                                userId = med.user.pk
+                                userName = med.user.username
+                                itemId = med.pk
+                                url = med.nearest(Versioned.BEST)
+                                thumb = med.thumb()
+                                mediaType = med.media_type.toInt().toByte()
+                            }
+                            handleQueued(cur.qud!!, null)
+                        }
+                    "PolarisStoriesHighlightsRoot.react" -> reqQueue.adder =
+                        Api<Rest.Reels<Rest.HighlightReel>>(
+                            this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user.id),
+                            Rest.Reels::class, handler, autoQueue = false, cache = true,
+                            typeToken = object : TypeToken<Rest.Reels<Rest.HighlightReel>>() {}.type
+                        ) { reel ->
+                            val med =
+                                reel.reels.getOrDefault(root.rootView.props.user.id, null)?.items
+                                    ?.find { it.pk == root.params.initial_media_id }
+                            if (med == null) {
+                                handler?.obtainMessage(Api.HANDLE_ERROR)
+                                    ?.sendToTarget(); return@Api; }
+                            cur.qud!!.apply {
+                                date = med.taken_at.xFromSeconds()
+                                userId = med.user.pk
+                                userName = med.user.username
+                                itemId = med.pk
+                                url = med.nearest(Versioned.BEST)
+                                thumb = med.thumb()
+                                mediaType = med.media_type.toInt().toByte()
+                            }
+                            handleQueued(cur.qud!!, null)
+                        }
+                    else -> {
+                        Api.gotError(handler, null, null)
+                        if (BuildConfig.DEBUG) throw Exception(root.rootView.resource.__dr)
+                    }
                 }
-            }, { Api.gotError(handler, null, it) }) {
-                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
             }
+        }, { Api.gotError(handler, null, it) }) {
+            override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
         }
     }
 

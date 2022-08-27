@@ -230,6 +230,7 @@ class MassFollower : ServiceOwnerActivity() {
         b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         mm.fwb.value = null
         super.onBackPressed()
