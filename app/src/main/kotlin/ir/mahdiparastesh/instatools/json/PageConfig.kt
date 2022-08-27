@@ -67,5 +67,9 @@ class PageConfig(
     // story => "PolarisStoriesMediaRoot.react"
     // highlight => "PolarisStoriesHighlightsRoot.react"
 
-    data class PolarisRootParams(val initial_media_id: String, val username: String)
+    data class PolarisRootParams(
+        val highlight_reel_id: String?,
+        val initial_media_id: String?,
+        val username: String?,
+    )
 }

@@ -123,9 +123,8 @@ class Queuer : ForegroundService() {
                 val root =
                     (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
                         ?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
-                        Gson().fromJson(
-                            Gson().toJson(it), PageConfig.PolarisRoot::class.java
-                        )
+                        //throw Exception(Gson().toJson(it))
+                        Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                     }
                 if (root == null) {
                     Api.gotError(handler, null, null); return@findConfigWrapper; }
@@ -181,16 +180,15 @@ class Queuer : ForegroundService() {
                             Rest.Reels::class, handler, autoQueue = false, cache = true,
                             typeToken = object : TypeToken<Rest.Reels<Rest.StoryReel>>() {}.type
                         ) { reels ->
-                            val med =
-                                reels.reels.getOrDefault(root.rootView.props.user.id, null)?.items
-                                    ?.find { it.pk == root.params.initial_media_id }
+                            val rel = reels.reels.getOrDefault(root.rootView.props.user.id, null)
+                            val med = rel?.items?.find { it.pk == root.params.initial_media_id }
                             if (med == null) {
                                 handler?.obtainMessage(Api.HANDLE_ERROR)
                                     ?.sendToTarget(); return@Api; }
                             cur.qud!!.apply {
                                 date = med.taken_at.xFromSeconds()
-                                userId = med.user.pk
-                                userName = med.user.username
+                                userId = rel.user.pk
+                                userName = rel.user.username
                                 itemId = med.pk
                                 url = med.nearest(Versioned.BEST)
                                 thumb = med.thumb()
@@ -200,20 +198,25 @@ class Queuer : ForegroundService() {
                         }
                     "PolarisStoriesHighlightsRoot.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.HighlightReel>>(
-                            this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user.id),
-                            Rest.Reels::class, handler, autoQueue = false, cache = true,
+                            this, Api.Endpoint.REEL_ITEM.url.format(
+                                "highlight%3A${root.params.highlight_reel_id}"
+                            ), Rest.Reels::class, handler, autoQueue = false, cache = true,
                             typeToken = object : TypeToken<Rest.Reels<Rest.HighlightReel>>() {}.type
-                        ) { reel ->
-                            val med =
-                                reel.reels.getOrDefault(root.rootView.props.user.id, null)?.items
-                                    ?.find { it.pk == root.params.initial_media_id }
+                        ) { reels ->
+                            val rel = reels.reels.getOrDefault(
+                                "highlight:${root.params.highlight_reel_id}", null
+                            )
+                            val med = rel?.items?.find {
+                                it.id == cur.link.substringAfter("story_media_id=")
+                                    .substringBefore("&")
+                            }
                             if (med == null) {
                                 handler?.obtainMessage(Api.HANDLE_ERROR)
                                     ?.sendToTarget(); return@Api; }
                             cur.qud!!.apply {
                                 date = med.taken_at.xFromSeconds()
-                                userId = med.user.pk
-                                userName = med.user.username
+                                userId = rel.user.pk
+                                userName = rel.user.username
                                 itemId = med.pk
                                 url = med.nearest(Versioned.BEST)
                                 thumb = med.thumb()
