@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
@@ -43,12 +45,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageVwr : BasePageViewer() {
-    lateinit var b: PageVwrBinding
+    private lateinit var b: PageVwrBinding
     private var thread: FetchSome? = null
+    val proPicIv: ImageView? get() = if (bInitialised) b.proPicIv else null
+    val privateAcc: AppCompatTextView? get() = if (bInitialised) b.privateAcc else null
 
     override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout get() = b.root
+    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {

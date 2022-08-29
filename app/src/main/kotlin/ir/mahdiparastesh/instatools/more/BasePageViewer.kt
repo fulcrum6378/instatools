@@ -17,17 +17,17 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 
     open fun avoidRefresh(): Boolean =
-        rv().canScrollVertically(-1) || tracker?.hasSelection() == true
+        rv()?.canScrollVertically(-1) == true || tracker?.hasSelection() == true
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(
-            rv().computeVerticalScrollOffset() > 0 && !c.expandable.zoomed
+            rv()!!.computeVerticalScrollOffset() > 0 && !c.expandable.zoomed
         )
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun reset() {
-        if (bInitialised) rv().adapter?.notifyDataSetChanged()
+        if (bInitialised) rv()?.adapter?.notifyDataSetChanged()
     }
 
     override fun goBack(): Boolean {
@@ -49,8 +49,8 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
             c.b.toolbar.inflateMenu(if (status) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
             c.fixTbMenu()
             c.shake()
-            if (this@BasePageViewer is PageVwr) rv().isNestedScrollingEnabled = status
-            if (status) (rv().adapter as ListPost<*, *>?)?.firstLongClickSelect = true
+            if (this@BasePageViewer is PageVwr) rv()?.isNestedScrollingEnabled = status
+            if (status) (rv()?.adapter as ListPost<*, *>?)?.firstLongClickSelect = true
         }
     }
 }

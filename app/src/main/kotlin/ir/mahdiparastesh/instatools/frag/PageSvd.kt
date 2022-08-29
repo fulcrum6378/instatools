@@ -60,7 +60,7 @@ class PageSvd : BasePageMain(), Selective {
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.SECONDARY
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout get() = b.root
+    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val emptyIcon: Int = R.drawable.done_svd
     override fun expanded(): ExpandableBinding = b.expanded
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
@@ -234,14 +234,14 @@ class PageSvd : BasePageMain(), Selective {
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(
-            rv().computeVerticalScrollOffset() > 0 && (b.rv.adapter as ListSvd?)?.expandable?.zoomed != true
+            rv()!!.computeVerticalScrollOffset() > 0 && (b.rv.adapter as ListSvd?)?.expandable?.zoomed != true
         )
     }
 
     override fun goBack(): Boolean {
         if (bInitialised) (b.rv.adapter as ListSvd?)?.also {
             if (it.expandable.zoomed) {
-                jumper().vis(true)
+                jumper()?.vis(true)
                 it.expandable.collapse(); return@goBack true; }
         }
         if (tracker?.hasSelection() == true) {

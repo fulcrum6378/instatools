@@ -30,17 +30,17 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     // If you use "get()", it'll throw NullPointerException in picture-in-picture!
 
     abstract val com: PageCompanion
-    abstract val root: ConstraintLayout
+    abstract val root: ConstraintLayout?
     abstract val selectiveMenuRes: Int?
     abstract val messages: Array<Pair<Int, ((msg: Message) -> Unit)>>
     open var afterMessageHandled: () -> Unit = {}
 
     abstract val bInitialised: Boolean
-    open fun rv(): RecyclerView = root.findViewById(R.id.rv)
-    open fun empty(): AppCompatTextView? = root.findViewById(R.id.empty)
-    open fun error(): ImageView? = root.findViewById(R.id.error)
-    open fun loading(): LottieAnimationView? = root.findViewById(R.id.loading)
-    open fun jumper(): ImageView = root.findViewById(R.id.jumper)
+    open fun rv(): RecyclerView? = root?.findViewById(R.id.rv)
+    open fun empty(): AppCompatTextView? = root?.findViewById(R.id.empty)
+    open fun error(): ImageView? = root?.findViewById(R.id.error)
+    open fun loading(): LottieAnimationView? = root?.findViewById(R.id.loading)
+    open fun jumper(): ImageView? = root?.findViewById(R.id.jumper)
 
     abstract class PageCompanion : Alive()
 
@@ -55,18 +55,18 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
             }
         }
 
-        rv().addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        rv()?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 onRecyclerViewScrolled()
             }
         })
-        jumper().apply {
-            setOnClickListener { rv().smoothScrollToPosition(0) }
+        jumper()?.apply {
+            setOnClickListener { rv()?.smoothScrollToPosition(0) }
             translationY = UiTools.jumperTrans(c)
         }
         shouldShowJumper.observe(c) {
             anJumper?.cancel()
-            anJumper = UiTools.anJumper(c, jumper(), it)
+            anJumper = jumper()?.let { jumper -> UiTools.anJumper(c, jumper, it) }
         }
     }
 
@@ -76,21 +76,22 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     }
 
     open fun onLoaded(isEmpty: Boolean, asGuest: Boolean = false) {
-        if (loading() != null && root.contains(loading()!!)) {
+        if (loading() != null && root!!.contains(loading()!!)) {
             loading()?.animation?.cancel()
-            root.removeView(loading())
+            root!!.removeView(loading())
         }
         error()?.vis(false)
         emptied(isEmpty)
     }
 
     open fun onFailed(message: String) {
-        UiTools.snackbar(root, message, Snackbar.LENGTH_LONG)
-        if (loading() != null && root.contains(loading()!!)) {
+        if (root != null)
+            UiTools.snackbar(root!!, message, Snackbar.LENGTH_LONG)
+        if (loading() != null && root!!.contains(loading()!!)) {
             loading()?.animation?.cancel()
-            root.removeView(loading())
+            root?.removeView(loading())
         }
-        if (rv().adapter == null) error()?.vis()
+        if (rv()?.adapter == null) error()?.vis()
         emptied(false)
     }
 
@@ -109,7 +110,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     var shouldShowJumper = MutableLiveData(false)
     private var anJumper: ObjectAnimator? = null
     open fun updateJumper() {
-        if (bInitialised) (rv().computeVerticalScrollOffset() > c.dm.heightPixels)
+        if (bInitialised) (rv()!!.computeVerticalScrollOffset() > c.dm.heightPixels)
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 

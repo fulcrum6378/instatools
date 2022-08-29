@@ -40,7 +40,7 @@ class ListRli(private val c: Viewer, private val f: PageRel, private val reel: (
             c.expandable.thumb = h.b.root
             try {
                 c.expandable.expand()
-                f.jumper().vis(false)
+                f.jumper()?.vis(false)
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) throw e
             }

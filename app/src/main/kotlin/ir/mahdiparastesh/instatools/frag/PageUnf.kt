@@ -43,7 +43,7 @@ class PageUnf : BasePageMain() {
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.PRIMARY
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout get() = b.root
+    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val emptyIcon: Int = R.drawable.done_unf
     override val selectiveMenuRes: Int? = null
 

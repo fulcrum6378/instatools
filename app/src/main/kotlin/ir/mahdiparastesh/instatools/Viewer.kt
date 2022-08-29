@@ -153,13 +153,13 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             load()
             b.toolbar.title = user
             if (page1?.bInitialised == true)
-                page1?.b?.rv?.adapter = null
+                page1?.rv()?.adapter = null
             if (page2?.bInitialised == true) {
-                page2?.b?.proPicIv?.setImageDrawable(null)
-                page2?.b?.privateAcc?.vis(false)
+                page2?.proPicIv?.setImageDrawable(null)
+                page2?.privateAcc?.vis(false)
             }
             if (page3?.bInitialised == true)
-                page3?.b?.rv?.adapter = null
+                page3?.rv()?.adapter = null
         }
         return true
     }
@@ -188,7 +188,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 }
             }
             R.id.vtShortcut -> mm.vwUser?.also { u ->
-                val bmp = (page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
+                val bmp = (page2?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, u.username).apply {
                         setIntent(

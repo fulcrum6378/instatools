@@ -89,7 +89,7 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
         expandable.thumb = v
         try {
             expandable.expand()
-            f.jumper().vis(false)
+            f.jumper()?.vis(false)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) throw e
         }

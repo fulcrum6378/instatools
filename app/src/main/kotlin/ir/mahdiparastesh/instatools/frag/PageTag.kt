@@ -27,13 +27,13 @@ import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.UiTools
 
 class PageTag : BasePageViewer() {
-    lateinit var b: PageTagBinding
+    private lateinit var b: PageTagBinding
     private var thread: FetchSome? = null
     // private lateinit var adBanner: AdView
 
     override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout get() = b.root
+    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {

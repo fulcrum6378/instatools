@@ -21,12 +21,12 @@ import ir.mahdiparastesh.instatools.more.BaseThread
 import java.util.concurrent.CopyOnWriteArrayList
 
 class PageRel : BasePageViewer() {
-    lateinit var b: PageRelBinding
+    private lateinit var b: PageRelBinding
     private var thread: FetchAll? = null
 
     override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout get() = b.root
+    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty()) },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },

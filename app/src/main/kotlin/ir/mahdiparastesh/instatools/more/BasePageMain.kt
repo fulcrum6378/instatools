@@ -25,16 +25,16 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
 
     abstract val theme: BaseActivity.Theme
     abstract val emptyIcon: Int
-    private fun refresher(): SwipeRefreshLayout = root.findViewById(R.id.refresher)
+    private fun refresher(): SwipeRefreshLayout? = root?.findViewById(R.id.refresher)
     open fun expanded(): ExpandableBinding? = null
 
     protected open fun guestMode(parent: ConstraintLayout) {
         GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
         onLoaded(false, asGuest = true)
         for (ch in parent) if (ch is RecyclerView) ch.vis(false)
-        refresher().isEnabled = false
-        jumper().vis(false)
-        rv().vis(false)
+        refresher()?.isEnabled = false
+        jumper()?.vis(false)
+        rv()?.vis(false)
 
         /*guestAdBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmGuest)
         root.addView(guestAdBanner, UiTools.adaptiveBannerLp())
@@ -42,7 +42,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        refresher().setOnRefreshListener(this)
+        refresher()?.setOnRefreshListener(this)
         super.onViewCreated(view, savedInstanceState)
         if (Main.guest) {
             guestMode(view as ConstraintLayout); return; }
@@ -50,18 +50,18 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         empty()?.compoundDrawables?.getOrNull(1)?.colorFilter =
             PorterDuffColorFilter(c.wrapTheme(theme).themeColor(), PorterDuff.Mode.SRC_IN)
         error()?.setOnClickListener {
-            refresher().isRefreshing = true
+            refresher()?.isRefreshing = true
             onRefresh()
         }
     }
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        refresher().isRefreshing = false
+        refresher()?.isRefreshing = false
         super.onLoaded(isEmpty, asGuest)
     }
 
     override fun onFailed(message: String) {
-        refresher().isRefreshing = false
+        refresher()?.isRefreshing = false
         super.onFailed(message)
     }
 
@@ -71,7 +71,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
     }
 
     override fun updateShadow() {
-        if (bInitialised) c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0)
+        if (bInitialised) c.b.tbShadow.vish(rv()!!.computeVerticalScrollOffset() > 0)
     }
 
     override fun onPause() {

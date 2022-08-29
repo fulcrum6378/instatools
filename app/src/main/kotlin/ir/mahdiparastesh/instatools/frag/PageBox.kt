@@ -187,7 +187,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
     override fun updateShadow() {
         if (bInitialised)
-            c.b.tbShadow.vish(rv().computeVerticalScrollOffset() > 0 && !expandable.zoomed)
+            c.b.tbShadow.vish(rv()!!.computeVerticalScrollOffset() > 0 && !expandable.zoomed)
     }
 
     override fun updateJumper() {
@@ -338,7 +338,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override fun goBack(): Boolean {
         if (c.mm.dmThread != null) {
             if (expandable.zoomed) {
-                jumper().vis(true)
+                jumper()?.vis(true)
                 expandable.collapse(); return true; }
             c.mm.dmThread = null
             onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
