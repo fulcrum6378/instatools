@@ -180,8 +180,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     if (dbFav == null) {
                         dbFav = user.favourite()
                         dao.addFavourite(dbFav!!)
+                        m.fav?.add(dbFav!!)
                     } else {
                         dao.deleteFavourite(dbFav!!)
+                        m.fav?.remove(dbFav!!)
                         dbFav = null
                     }
                     withContext(Dispatchers.Main) { fixTbMenu() }

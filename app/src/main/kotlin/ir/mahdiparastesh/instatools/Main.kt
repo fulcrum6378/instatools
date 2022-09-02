@@ -489,20 +489,22 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             finish()
         }
     }
-
-    /* TODO:
-    * Problems:
-    * Volley throws OutOfMemory as soon as downloading long videos start!
-    * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
-    * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
-    *
-    * Extension:
-    * "Automatic Actions": Live Unfollower finder, notification-enabled download
-    * Conditional jump to bottom
-    * Exporter maximum date of top and bottom which would need a calendar picker!?!?
-    * Live Live downloader
-    * Undo for Unsave
-    * View post/story in Instatools intent filter
-    * Max slides for HtmlExporter
-    */
 }
+
+/* TODO:
+* Problems:
+* Volley throws OutOfMemory as soon as downloading long videos start!
+* When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
+* Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
+* Unsave doesn't work at the first login
+*
+* Extension:
+* Notify on download failure
+* "Automatic Actions": Live Unfollower finder, notification-enabled download
+* Conditional jump to bottom
+* Exporter maximum date of top and bottom which would need a calendar picker!?!?
+* Live Live downloader
+* Undo for Unsave
+* View post/story in Instatools intent filter
+* Max slides for HtmlExporter
+*/
