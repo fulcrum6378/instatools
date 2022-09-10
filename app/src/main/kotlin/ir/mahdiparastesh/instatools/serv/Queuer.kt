@@ -34,6 +34,11 @@ import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.apache.commons.imaging.Imaging
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
+import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -345,7 +350,19 @@ class Queuer : ForegroundService() {
         if (leaf != null) return
         leaf = branch.createFile(type.mime, fName) ?: return
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
-            FileOutputStream(des.fileDescriptor).use { fos -> fos.write(ba) }
+            FileOutputStream(des.fileDescriptor).use { fos ->
+                when (q.mediaType) {
+                    1.toByte() -> ExifRewriter().updateExifMetadataLossless(ba, fos,
+                        ((Imaging.getMetadata(ba) as JpegImageMetadata).exif.outputSet
+                            ?: TiffOutputSet()).apply {
+                            orCreateExifDirectory.apply {
+                                removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
+                                add(ExifTagConstants.EXIF_TAG_SOFTWARE, "InstaTools")
+                            }
+                        })
+                    else -> fos.write(ba)
+                }
+            }
         }
         if (q.isMainFile()) m.files?.add(fName)
         incrementCounter(Settings.spDownloadCount)
