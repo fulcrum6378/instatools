@@ -45,8 +45,16 @@ class PageConfig(
     data class SharedDataConfig(val viewer: GraphQl.User)
 
     data class PolarisRoot(
-        val rootView: PolarisView, //val url: String "\/p\/CeyIexyDcYd\/"
+        //val actorID: String,
+        val rootView: PolarisView,
+        //val tracePolicy: String,
+        //val meta: PolarisMeta,
+        //val prefetchable: Boolean,
+        //val entityKeyConfig: Map<String, Any?>,
+        //val hostableView: Map<String, Any?>,
+        //val url: String "\/p\/CeyIexyDcYd\/"
         val params: PolarisRootParams,
+        //val routePath: String,
     )
 
     data class PolarisView(
@@ -66,6 +74,8 @@ class PageConfig(
     // post => "PolarisPostRoot.react"
     // story => "PolarisStoriesMediaRoot.react"
     // highlight => "PolarisStoriesHighlightsRoot.react"
+
+    // data class PolarisMeta(val title: String/*, val accessory: Any?, val favicon: Any?*/)
 
     data class PolarisRootParams(
         val highlight_reel_id: String?,

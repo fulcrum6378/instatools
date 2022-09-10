@@ -59,6 +59,7 @@ object UiTools {
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MP = "https://mahdiparastesh.ir/"
+    const val APP_NAME = "InstaTools"
     val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
     private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight

@@ -30,6 +30,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,8 +39,12 @@ import org.apache.commons.imaging.Imaging
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
+import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
+import java.io.BufferedOutputStream
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Queuer : ForegroundService() {
@@ -50,6 +55,7 @@ class Queuer : ForegroundService() {
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
+    private val tiffDate = SimpleDateFormat("yyyy:MM:dd kk:mm:ss", Locale.getDefault())
 
     override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
@@ -352,14 +358,37 @@ class Queuer : ForegroundService() {
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos ->
                 when (q.mediaType) {
-                    1.toByte() -> ExifRewriter().updateExifMetadataLossless(ba, fos,
-                        ((Imaging.getMetadata(ba) as JpegImageMetadata).exif.outputSet
+                    1.toByte() -> ExifRewriter().updateExifMetadataLossless(ba,
+                        BufferedOutputStream(fos),
+                        ((Imaging.getMetadata(ba) as JpegImageMetadata?)?.exif?.outputSet
                             ?: TiffOutputSet()).apply {
-                            orCreateExifDirectory.apply {
+                            orCreateRootDirectory.apply {
+                                removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+                                add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+
                                 removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
-                                add(ExifTagConstants.EXIF_TAG_SOFTWARE, "InstaTools")
+                                add(ExifTagConstants.EXIF_TAG_SOFTWARE, UiTools.APP_NAME)
+
+                                removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
+                                add(TiffTagConstants.TIFF_TAG_ARTIST, q.userName)
+
+                                removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
+                                add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.userName}")
                             }
-                        })
+                            orCreateExifDirectory.apply {
+                                removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL)
+                                add( // Date taken
+                                    ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
+                                    tiffDate.format(q.addedAt)
+                                )
+
+                                /*removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
+                                add(ExifTagConstants.EXIF_TAG_USER_COMMENT, )*/
+
+                                removeField(ExifTagConstants.EXIF_TAG_SITE)
+                                add(ExifTagConstants.EXIF_TAG_SITE, q.link)
+                            }
+                        }) // location data is currently not possible with edge post location.
                     else -> fos.write(ba)
                 }
             }

@@ -12,7 +12,7 @@ class Media(
     //val can_view_more_preview_comments: Boolean,
     //val can_viewer_reshare: Boolean,
     //val can_viewer_save: Boolean,
-    //val caption: Caption,
+    //val caption: Caption?,
     //val caption_is_edited: Boolean,
     carousel_media: Array<CarouselMedia>?,
     //val carousel_media_count: Double?,
@@ -176,7 +176,24 @@ class Media(
         val id: String
     ) : Candidate(width, height, url)
 
-    //class Caption : HashMap<String, Any?>()
+    /*class Caption(
+        //val pk: String,
+        //val user_id: Double,
+        val text: String,
+        //val type: Float,
+        //val created_at: Double,
+        //val created_at_utc: Double,
+        //val content_type: String,
+        //val status: String,
+        //val bit_flags: Float,
+        //val did_report_as_spam: Boolean,
+        //val share_enabled: Boolean,
+        //val user: Rest.User,
+        //val is_covered: Boolean,
+        //val is_ranked_comment: Boolean,
+        //val has_translation: Boolean,
+        //val private_reply_status: Float,
+    )*/
 
     /*class MusicMetadata(
         val audio_type: Any?,
