@@ -13,8 +13,12 @@ import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.coremedia.iso.IsoFile
+import com.coremedia.iso.boxes.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.googlecode.mp4parser.MemoryDataSourceImpl
+import com.googlecode.mp4parser.util.Path
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -41,11 +45,13 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
-import java.io.BufferedOutputStream
-import java.io.FileOutputStream
+import java.io.*
+import java.nio.ByteBuffer
+import java.nio.channels.FileChannel
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
+
 
 class Queuer : ForegroundService() {
     private var dest: String? = null
@@ -389,6 +395,88 @@ class Queuer : ForegroundService() {
                                 add(ExifTagConstants.EXIF_TAG_SITE, q.link)
                             }
                         }) // location data is currently not possible with edge post location.
+                    2.toByte() -> {
+                        val isoFile = IsoFile(MemoryDataSourceImpl(ba))
+                        val movie = isoFile.getBoxes(MovieBox::class.java)[0]
+                        var freeBox = findFreeBox(movie)
+
+                        val correctOffset = needsOffsetCorrection(isoFile)
+                        val sizeBefore = movie.size
+                        var offset = 0L
+                        for (box in isoFile.boxes) {
+                            if ("moov" == box.type) break
+                            offset += box.size
+                        }
+
+                        // Create structure or just navigate to Apple List Box.
+                        var userDataBox: UserDataBox?
+                        if (Path.getPath<UserDataBox>(movie, "udta")
+                                .also { userDataBox = it } == null
+                        ) {
+                            userDataBox = UserDataBox()
+                            movie.addBox(userDataBox)
+                        }
+                        var metaBox: MetaBox?
+                        if (Path.getPath<MetaBox>(userDataBox, "meta")
+                                .also { metaBox = it } == null
+                        ) {
+                            metaBox = MetaBox()
+                            val hdlr = HandlerBox()
+                            hdlr.handlerType = "mdir"
+                            metaBox!!.addBox(hdlr)
+                            userDataBox!!.addBox(metaBox)
+                        }
+                        /*if (freeBox == null) {
+                            freeBox = FreeBox(480 * 854)
+                            metaBox!!.addBox(freeBox)
+                        }*/
+                        /*var ilst: AppleItemListBox?
+                        if (Path.getPath<AppleItemListBox>(metaBox, "ilst")
+                                .also { ilst = it } == null
+                        ) {
+                            ilst = AppleItemListBox()
+                            metaBox!!.addBox(ilst)
+                        }
+
+                        // Got Apple List Box
+                        var nam: AppleNameBox?
+                        if (Path.getPath<AppleNameBox>(ilst, "©nam").also { nam = it } == null)
+                            nam = AppleNameBox()
+                        nam!!.dataCountry = 0
+                        nam!!.dataLanguage = 0
+                        nam!!.value = "InstaTools"
+                        ilst!!.addBox(nam)*/
+
+                        val copyrightBox = CopyrightBox()
+                        copyrightBox.copyright = "All Rights Reserved, me, myself and I, 2015"
+                        copyrightBox.language = "eng"
+                        userDataBox!!.addBox(copyrightBox)
+
+                        /*var sizeAfter = movie.size
+                        var diff = sizeAfter - sizeBefore
+                        // can we compensate by resizing a Free Box we have found?
+                        // This is the difference of before/after
+
+                        if (freeBox.data.limit() > diff) { // either shrink or grow!
+                            freeBox.data =
+                                ByteBuffer.allocate((freeBox.data.limit() - diff).toInt())
+                            sizeAfter = movie.size
+                            diff = sizeAfter - sizeBefore
+                        }
+                        if (correctOffset && diff != 0L) correctChunkOffsets(movie, diff)*/
+                        //val baos = BetterByteArrayOutputStream()
+                        movie.getBox(fos.channel) // Channels.newChannel(baos)
+                        isoFile.close()
+                        //baos.close()
+                        /*val fc = if (diff != 0L) {
+                            // this is not good: We have to insert bytes in the middle of the file
+                            // and this costs time as it requires re-writing most of the file's data
+                            splitFileAndInsert(fos, offset, sizeAfter - sizeBefore)
+                        } else fos.channel // simple overwrite of something with the file
+                        fc.position(offset)
+                        fc.write(ByteBuffer.wrap(baos.buffer, 0, baos.size()))
+                        fc.close()*/
+                    }
                     else -> fos.write(ba)
                 }
             }
@@ -428,6 +516,71 @@ class Queuer : ForegroundService() {
         Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET)?.sendToTarget()
         super.onDestroy()
     }
+
+    @Throws(IOException::class)
+    fun splitFileAndInsert(fos: FileOutputStream, pos: Long, length: Long): FileChannel {
+        val read = fos.channel
+        val tmp = File.createTempFile("ChangeMetaData", "splitFileAndInsert")
+        val tmpWrite = RandomAccessFile(tmp, "rw").channel
+        read.position(pos)
+        tmpWrite.transferFrom(read, 0, read.size() - pos)
+        read.close()
+        val write = fos.channel
+        write.position(pos + length)
+        tmpWrite.position(0)
+        var transferred = 0L
+        while (tmpWrite.transferTo(0, tmpWrite.size() - transferred, write)
+                .let { transferred += it; transferred } != tmpWrite.size()
+        ) {
+        }
+        tmpWrite.close()
+        tmp.delete()
+        return write
+    }
+
+    private fun needsOffsetCorrection(isoFile: IsoFile): Boolean {
+        return if (Path.getPath<MovieBox>(isoFile, "moov[0]/mvex[0]") != null) {
+            false // Fragmented files don't need a correction
+        } else {
+            // no correction needed if mdat is before moov as insert into moov want change the offsets of mdat
+            for (box in isoFile.boxes) {
+                if ("moov" == box.type) return true
+                if ("mdat" == box.type) return false
+            }
+            throw RuntimeException("I need moov or mdat. Otherwise all this doesn't make sense")
+        }
+    }
+
+    private fun findFreeBox(c: Container): FreeBox? {
+        for (box in c.boxes) {
+            System.err.println(box.type)
+            if (box is FreeBox) return box
+            if (box is Container) {
+                val freeBox = findFreeBox(box as Container)
+                if (freeBox != null) return freeBox
+            }
+        }
+        return null
+    }
+
+    private fun correctChunkOffsets(movieBox: MovieBox, correction: Long) {
+        var chunkOffsetBoxes: List<ChunkOffsetBox> =
+            Path.getPaths(movieBox as Box, "trak/mdia[0]/minf[0]/stbl[0]/stco[0]")
+        if (chunkOffsetBoxes.isEmpty()) {
+            chunkOffsetBoxes =
+                Path.getPaths(movieBox as Box, "trak/mdia[0]/minf[0]/stbl[0]/st64[0]")
+        }
+        for (chunkOffsetBox in chunkOffsetBoxes) {
+            val cOffsets = chunkOffsetBox.chunkOffsets
+            for (i in cOffsets.indices) {
+                cOffsets[i] += correction
+            }
+        }
+    }
+
+    /*private class BetterByteArrayOutputStream : ByteArrayOutputStream() {
+        val buffer: ByteArray get() = buf
+    }*/
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),
