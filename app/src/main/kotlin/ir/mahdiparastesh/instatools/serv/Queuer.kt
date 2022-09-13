@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
@@ -18,6 +19,7 @@ import com.coremedia.iso.boxes.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.googlecode.mp4parser.MemoryDataSourceImpl
+import com.googlecode.mp4parser.boxes.microsoft.XtraBox
 import com.googlecode.mp4parser.util.Path
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
@@ -45,9 +47,8 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
-import java.io.*
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
+import java.io.BufferedOutputStream
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
@@ -344,6 +345,7 @@ class Queuer : ForegroundService() {
         download = Download().also { it.start() }
     }
 
+    @Suppress("SpellCheckingInspection")
     private fun save(q: Queued, ba: ByteArray) {
         val branch: DocumentFile = when {
             q.userName in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
@@ -395,87 +397,42 @@ class Queuer : ForegroundService() {
                                 add(ExifTagConstants.EXIF_TAG_SITE, q.link)
                             }
                         }) // location data is currently not possible with edge post location.
-                    2.toByte() -> {
-                        val isoFile = IsoFile(MemoryDataSourceImpl(ba))
-                        val movie = isoFile.getBoxes(MovieBox::class.java)[0]
-                        var freeBox = findFreeBox(movie)
+                    2.toByte() -> IsoFile(MemoryDataSourceImpl(ba)).use { isoFile ->
+                        // moov: 1, moov/udta: 0, moov[0]: 1, moov/udta[0]: 0, moov[0]/udta[0]: 0
+                        val userDataBox: UserDataBox = Path.getPath(isoFile, "/moov/udta")
+                            ?: UserDataBox().also { isoFile.movieBox.addBox(it) }
+                        val originalUserDataSize = userDataBox.size
 
-                        val correctOffset = needsOffsetCorrection(isoFile)
-                        val sizeBefore = movie.size
-                        var offset = 0L
-                        for (box in isoFile.boxes) {
-                            if ("moov" == box.type) break
-                            offset += box.size
-                        }
-
-                        // Create structure or just navigate to Apple List Box.
-                        var userDataBox: UserDataBox?
-                        if (Path.getPath<UserDataBox>(movie, "udta")
-                                .also { userDataBox = it } == null
-                        ) {
-                            userDataBox = UserDataBox()
-                            movie.addBox(userDataBox)
-                        }
-                        var metaBox: MetaBox?
-                        if (Path.getPath<MetaBox>(userDataBox, "meta")
-                                .also { metaBox = it } == null
-                        ) {
-                            metaBox = MetaBox()
-                            val hdlr = HandlerBox()
-                            hdlr.handlerType = "mdir"
-                            metaBox!!.addBox(hdlr)
-                            userDataBox!!.addBox(metaBox)
-                        }
-                        /*if (freeBox == null) {
-                            freeBox = FreeBox(480 * 854)
-                            metaBox!!.addBox(freeBox)
-                        }*/
-                        /*var ilst: AppleItemListBox?
-                        if (Path.getPath<AppleItemListBox>(metaBox, "ilst")
-                                .also { ilst = it } == null
-                        ) {
-                            ilst = AppleItemListBox()
-                            metaBox!!.addBox(ilst)
-                        }
-
-                        // Got Apple List Box
-                        var nam: AppleNameBox?
-                        if (Path.getPath<AppleNameBox>(ilst, "©nam").also { nam = it } == null)
-                            nam = AppleNameBox()
-                        nam!!.dataCountry = 0
-                        nam!!.dataLanguage = 0
-                        nam!!.value = "InstaTools"
-                        ilst!!.addBox(nam)*/
-
-                        val copyrightBox = CopyrightBox()
+                        /*val copyrightBox = CopyrightBox()
                         copyrightBox.copyright = "All Rights Reserved, me, myself and I, 2015"
                         copyrightBox.language = "eng"
-                        userDataBox!!.addBox(copyrightBox)
+                        userDataBox!!.addBox(copyrightBox)*/
 
-                        /*var sizeAfter = movie.size
-                        var diff = sizeAfter - sizeBefore
-                        // can we compensate by resizing a Free Box we have found?
-                        // This is the difference of before/after
+                        /*val authorBox = AuthorBox()
+                        authorBox.author = "DAYYUTH"
+                        authorBox.language = "eng"
+                        userDataBox!!.addBox(authorBox)
 
-                        if (freeBox.data.limit() > diff) { // either shrink or grow!
-                            freeBox.data =
-                                ByteBuffer.allocate((freeBox.data.limit() - diff).toInt())
-                            sizeAfter = movie.size
-                            diff = sizeAfter - sizeBefore
-                        }
-                        if (correctOffset && diff != 0L) correctChunkOffsets(movie, diff)*/
-                        //val baos = BetterByteArrayOutputStream()
-                        movie.getBox(fos.channel) // Channels.newChannel(baos)
-                        isoFile.close()
-                        //baos.close()
-                        /*val fc = if (diff != 0L) {
-                            // this is not good: We have to insert bytes in the middle of the file
-                            // and this costs time as it requires re-writing most of the file's data
-                            splitFileAndInsert(fos, offset, sizeAfter - sizeBefore)
-                        } else fos.channel // simple overwrite of something with the file
-                        fc.position(offset)
-                        fc.write(ByteBuffer.wrap(baos.buffer, 0, baos.size()))
-                        fc.close()*/
+                        val titleBox = TitleBox()
+                        titleBox.title = "KIR"
+                        titleBox.language = "eng"
+                        userDataBox.addBox(titleBox)
+
+                        val genreBox = GenreBox()
+                        genreBox.genre = "KOS"
+                        genreBox.language = "eng"
+                        userDataBox.addBox(genreBox)*/
+
+                        /*val xtraBox = XtraBox()
+                        xtraBox.setTagValue("WM/EncodingTime", q.addedAt - 50000000L)
+                        userDataBox.addBox(xtraBox)*/ // Throws NullPointerException
+
+                        /*if (needsOffsetCorrection(isoFile))
+                            correctChunkOffsets(isoFile, userDataBox.size - originalUserDataSize)*/
+
+                        //Log.println(Log.ASSERT, "TRIJNTJE",
+                        isoFile.writeContainer(fos.channel)
+                        //isoFile.getBox(fos.channel)
                     }
                     else -> fos.write(ba)
                 }
@@ -517,70 +474,37 @@ class Queuer : ForegroundService() {
         super.onDestroy()
     }
 
-    @Throws(IOException::class)
-    fun splitFileAndInsert(fos: FileOutputStream, pos: Long, length: Long): FileChannel {
-        val read = fos.channel
-        val tmp = File.createTempFile("ChangeMetaData", "splitFileAndInsert")
-        val tmpWrite = RandomAccessFile(tmp, "rw").channel
-        read.position(pos)
-        tmpWrite.transferFrom(read, 0, read.size() - pos)
-        read.close()
-        val write = fos.channel
-        write.position(pos + length)
-        tmpWrite.position(0)
-        var transferred = 0L
-        while (tmpWrite.transferTo(0, tmpWrite.size() - transferred, write)
-                .let { transferred += it; transferred } != tmpWrite.size()
-        ) {
-        }
-        tmpWrite.close()
-        tmp.delete()
-        return write
-    }
-
     private fun needsOffsetCorrection(isoFile: IsoFile): Boolean {
-        return if (Path.getPath<MovieBox>(isoFile, "moov[0]/mvex[0]") != null) {
-            false // Fragmented files don't need a correction
-        } else {
-            // no correction needed if mdat is before moov as insert into moov want change the offsets of mdat
-            for (box in isoFile.boxes) {
-                if ("moov" == box.type) return true
-                if ("mdat" == box.type) return false
-            }
-            throw RuntimeException("I need moov or mdat. Otherwise all this doesn't make sense")
+        if (Path.getPaths<Box>(isoFile, "mdat").size > 1) throw RuntimeException(
+            "There might be the weird case that a file has two mdats. One before" +
+                    " moov and one after moov. That would need special handling therefore I just throw an " +
+                    "exception here. "
+        )
+        if (Path.getPaths<Box>(isoFile, "moof").size > 0)
+            throw RuntimeException("Fragmented MP4 files need correction, too. (But I would need to look where)")
+        for (box: Box in isoFile.boxes) {
+            if (("mdat" == box.type)) return false
+            if (("moov" == box.type)) return true
         }
+        throw RuntimeException("Hmmm - shouldn't happen")
     }
 
-    private fun findFreeBox(c: Container): FreeBox? {
-        for (box in c.boxes) {
-            System.err.println(box.type)
-            if (box is FreeBox) return box
-            if (box is Container) {
-                val freeBox = findFreeBox(box as Container)
-                if (freeBox != null) return freeBox
-            }
-        }
-        return null
-    }
-
-    private fun correctChunkOffsets(movieBox: MovieBox, correction: Long) {
-        var chunkOffsetBoxes: List<ChunkOffsetBox> =
-            Path.getPaths(movieBox as Box, "trak/mdia[0]/minf[0]/stbl[0]/stco[0]")
-        if (chunkOffsetBoxes.isEmpty()) {
-            chunkOffsetBoxes =
-                Path.getPaths(movieBox as Box, "trak/mdia[0]/minf[0]/stbl[0]/st64[0]")
-        }
-        for (chunkOffsetBox in chunkOffsetBoxes) {
+    private fun correctChunkOffsets(tempIsoFile: IsoFile, correction: Long) {
+        val sampleTableBoxes: List<SampleTableBox> =
+            Path.getPaths(tempIsoFile, "/moov[0]/trak/mdia[0]/minf[0]/stbl[0]")
+        for (sampleTableBox: SampleTableBox in sampleTableBoxes) {
+            val stblChildren: MutableList<Box?> = ArrayList(sampleTableBox.boxes)
+            val chunkOffsetBox: ChunkOffsetBox = Path.getPath(sampleTableBox, "stco")
+            stblChildren.remove(Path.getPath(sampleTableBox, "co64"))
+            stblChildren.remove(chunkOffsetBox)
             val cOffsets = chunkOffsetBox.chunkOffsets
-            for (i in cOffsets.indices) {
-                cOffsets[i] += correction
-            }
+            for (i in cOffsets.indices) cOffsets[i] += correction
+            val cob = StaticChunkOffsetBox()
+            cob.chunkOffsets = cOffsets
+            stblChildren.add(cob)
+            sampleTableBox.boxes = stblChildren
         }
     }
-
-    /*private class BetterByteArrayOutputStream : ByteArrayOutputStream() {
-        val buffer: ByteArray get() = buf
-    }*/
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),

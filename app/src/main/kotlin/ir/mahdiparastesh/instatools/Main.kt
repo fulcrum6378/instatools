@@ -500,6 +500,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 * Unsave doesn't work at the first login
 *
 * Extension:
+* Metadata for videos and audios
 * Append captions to images as comments
 * Notify on download failure
 * "Automatic Actions": Live Unfollower finder, notification-enabled download
