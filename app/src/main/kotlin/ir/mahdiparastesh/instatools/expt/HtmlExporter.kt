@@ -316,7 +316,7 @@ body { background: #FCFCFC; }
   </main>
   <p id="copyright">
     Created by <a href="https://www.instagram.com/instatools.apk/">InstaTools</a>
-    app from <a href="https://mahdiparastesh.ir/">Mahdi Parastesh</a>
+    app from <a href="${UiTools.MP}">Mahdi Parastesh</a>
   </p>
 </body>
 </html>"""

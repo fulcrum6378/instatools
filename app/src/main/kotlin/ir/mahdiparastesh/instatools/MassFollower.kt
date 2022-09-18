@@ -36,8 +36,6 @@ class MassFollower : ServiceOwnerActivity() {
     private lateinit var b: MassFollowerBinding
     val seekMin: Int by lazy { resources.getInteger(R.integer.mfMin) }
     val mm: MyModel by viewModels()
-    /*private lateinit var adBanner: AdView
-    private var controllerBadge: BadgeDrawable? = null*/
 
     override val menuRes = R.menu.follower_tlb
     override val com: ActivityCompanion get() = Companion
@@ -73,7 +71,6 @@ class MassFollower : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.fwb.value!!.size)
                     }
-                    // HANDLE_REWARD_CONSUMED -> countPermissions()
                     HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower)
                         .apply {
                             setTitle(R.string.massFollower)
@@ -137,18 +134,6 @@ class MassFollower : ServiceOwnerActivity() {
         if (notFirstResume) load()
         indicateSeek(true)
     }
-
-    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
-        super.onInitializationComplete(adsInitStatus)
-        if (!adsInitStatus.isReady()) return
-        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmMassFollower)
-        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-        adBanner.loadAd(AdRequest.Builder().build())
-        b.panel.layoutParams = (b.panel.layoutParams as ConstraintLayout.LayoutParams)
-            .apply { bottomToTop = R.id.adBanner }
-        b.guide.layoutParams = (b.guide.layoutParams as ConstraintLayout.LayoutParams)
-            .apply { bottomToTop = R.id.adBanner }
-    }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
@@ -236,114 +221,17 @@ class MassFollower : ServiceOwnerActivity() {
         super.onBackPressed()
     }
 
-    /*@SuppressLint("UnsafeOptInUsageError")
-    fun countPermissions() {
-        BadgeUtils.detachBadgeDrawable(controllerBadge, b.toolbar, R.id.mftControl)
-        BadgeUtils.attachBadgeDrawable(
-            BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
-                number = m.acc?.mfrw ?: 0
-                backgroundColor = if (!night()) color(R.color.CP) else color(R.color.defCA)
-                badgeTextColor = if (!night()) color(R.color.defBG) else color(R.color.CP)
-                controllerBadge = this
-                maxCharacterCount = 2
-            }, b.toolbar, R.id.mftControl
-        )
-    }*/
-
     companion object : ActivityCompanion() {
         const val HANDLE_REWARD_CONSUMED = 5
         const val HANDLE_DETECTED_AS_SPAMMER = 6
         const val FOLLOW_LIMIT = 9999 // edit EditText's maxLength whenever you edit this.
-        /*const val RATE_US_UNINTENTIONALLY_UNLOCK_TIMES = 10
-        private val UNLOCK_TIMES = arrayOf(50, 5)
-        private var mRewardedAd: RewardedAd? = null
-        private var loadingAd = false*/
 
         fun initService(
             c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit = {}
         ) {
-            /*if (loadingAd || mRewardedAd != null) return
-            if (c.m.acc!!.mfrw > 0) {
-                onStart()
-                actuallyInitService(c, enq)
-                return; }
-            val bp = PayForItBinding.inflate(c.layoutInflater)
-            bp.root.forEachIndexed { i, v ->
-                if (v !is LinearLayout) return@forEachIndexed
-                ((v[1] as LinearLayout)[1] as AppCompatTextView)
-                    .text = c.getString(R.string.mfUnlockTimes, UNLOCK_TIMES[i])
-            }
-            AlertDialog.Builder(c).apply {
-                setTitle(R.string.massFollower)
-                setMessage(R.string.mfPayForIt)
-                setView(bp.root)
-            }.show().apply {
-                if (UiTools.hasReviewedApp(c))
-                    bp.root.removeView(bp.rateUs)
-                else bp.rateUs.setOnClickListener {
-                    bp.loading(true)
-                    UiTools.reviewApp(
-                        c, UNLOCK_TIMES[0], { this@apply.cancel() }, { bp.loading(false) }
-                    )
-                }
-                bp.watchAnAd.setOnClickListener {
-                    bp.loading(true)
-                    watchAnAd(c, enq, onStart) {
-                        bp.loading(it)
-                        if (it) cancel()
-                    }
-                }
-            }*/
             onStart()
             actuallyInitService(c, enq)
         }
-
-        /*private fun PayForItBinding.loading(bb: Boolean) {
-            root.forEach { if (it is LinearLayout) it.vis(!bb) }
-            loading.vis(bb)
-            if (bb) loading.playAnimation()
-            else loading.pauseAnimation()
-        }
-
-        @MainThread
-        private fun watchAnAd(
-            c: BaseActivity, enq: Follower.ToBeEnqueued? = null, onStart: () -> Unit,
-            onResult: (success: Boolean) -> Unit
-        ) {
-            loadingAd = true
-            RewardedAd.load(
-                c, c.getString(R.string.rewardMfwStarter),
-                AdRequest.Builder().build(), object : RewardedAdLoadCallback() {
-                    override fun onAdLoaded(rewardedAd: RewardedAd) {
-                        loadingAd = false
-                        mRewardedAd = rewardedAd
-                        mRewardedAd?.fullScreenContentCallback = RewardAdCallback(c, onResult)
-                        mRewardedAd?.show(c) {
-                            c.rewardAccountForFollower(it.amount)
-                            actuallyInitService(c, enq)
-                            onStart()
-                        }
-                    }
-
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        onResult(false)
-                        loadingAd = false
-                        Toast.makeText(
-                            c, c.getString(R.string.failedToLoadAd, adError.message),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        mRewardedAd = null
-                    }
-                })
-        }
-
-        fun BaseActivity.rewardAccountForFollower(times: Int) {
-            m.acc?.apply {
-                mfrw += times
-                saveMe(c)
-            }
-            if (this is MassFollower) countPermissions()
-        }*/
 
         @MainThread
         private fun actuallyInitService(c: BaseActivity, enq: Follower.ToBeEnqueued? = null) {
@@ -356,28 +244,8 @@ class MassFollower : ServiceOwnerActivity() {
         fun BaseActivity.appSettings(action: String, onIntent: (Intent.() -> Unit)? = null) {
             try {
                 startActivity(Intent(action).apply { onIntent?.let { it() } })
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
             }
         }
     }
-
-    /*class RewardAdCallback(
-        private val c: Context, private val onResult: (success: Boolean) -> Unit
-    ) : FullScreenContentCallback() {
-        override fun onAdShowedFullScreenContent() {
-            onResult(true)
-        }
-
-        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-            onResult(false)
-            Toast.makeText(
-                c, c.getString(R.string.failedToShowAd, adError.message), Toast.LENGTH_LONG
-            ).show()
-            mRewardedAd = null
-        }
-
-        override fun onAdDismissedFullScreenContent() {
-            mRewardedAd = null
-        }
-    }*/
 }

@@ -102,21 +102,14 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest::class, null,
             method = Request.Method.POST, autoQueue = false, onError = { res ->
                 if (res?.statusCode == 429) try {
-                    /*var showing429 = true
-                    c.loadInterstitial(R.string.interUnfMany) { !showing429 }*/
                     AlertDialog.Builder(
                         ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
                     ).apply {
                         setTitle(R.string.unfollow)
                         setMessage(R.string.unfollowedSoMany)
                         setNeutralButton(R.string.ok, null)
-                        /*setOnDismissListener {
-                            showing429 = false
-                            c.showInterstitial()
-                        }*/
                     }.show()
-                } catch (e: WindowManager.BadTokenException) {
-                    // activity is not running!!
+                } catch (_: WindowManager.BadTokenException) { // activity is not running!!
                 } else {
                     PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                     if (BuildConfig.DEBUG)
@@ -128,11 +121,6 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 if (BuildConfig.DEBUG) Toast.makeText(c.c, it.status, Toast.LENGTH_SHORT).show()
                 return@Api; }
-            /*f.counter++
-            if (f.counter >= MAX_UNFOLLOW_AD) {
-                c.loadInterstitial(R.string.interUnfMany, true)
-                f.counter = 0
-            }*/
             c.incrementCounter(Settings.spUnfollowCount)
             CoroutineScope(Dispatchers.IO).launch {
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })

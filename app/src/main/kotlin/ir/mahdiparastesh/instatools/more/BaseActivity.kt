@@ -42,15 +42,9 @@ import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
 abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuItemClickListener {
-    // , OnInitializationCompleteListener
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
-
-    /*var interstitialAd: InterstitialAd? = null
-    var loadingAd = false
-    var showingAd = false
-    private var retryForAd = 0*/
 
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
@@ -65,12 +59,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     abstract class ActivityCompanion : Alive()
 
     companion object {
-        /*const val ADMOB_DELAY = 2000L
-        const val MAX_AD_RETRY = 2
-        var adsInitStatus: InitializationStatus? = null
-
-        fun areAdsReady() = adsInitStatus?.isReady() == true*/
-
         fun anyActive() = arrayOf(
             Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
         ).any { it.active.value!! }
@@ -136,28 +124,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         onBuildUiBasedOnAccount()
     }
 
-    /*override fun onStart() {
-        super.onStart()
-        if (adsInitStatus?.isReady() != true)
-            Delay(ADMOB_DELAY) { initAdmob() }
-        else onInitializationComplete(adsInitStatus!!)
-    }*/
-
-    /*private fun initAdmob() {
-        retryForAd = 0
-        MobileAds.initialize(c, this)
-    }
-
-    override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
-        Companion.adsInitStatus = adsInitStatus
-        if (!adsInitStatus.isReady()) {
-            if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
-                initAdmob()
-                retryForAd++
-            } else retryForAd = 0
-            return; }
-    }*/
-
     var tbTitle: AppCompatTextView? = null
     lateinit var toolbar: Toolbar
     fun initToolbar(tb: Toolbar, title: Int, changeTitleTo: String? = null) {
@@ -210,40 +176,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true
-
-    /*@MainThread
-    fun loadInterstitial(@StringRes adUnitId: Int, autoPlay: () -> Boolean) {
-        if (adsInitStatus?.isReady() != true) {
-            if (retryForAd < MAX_AD_RETRY) Delay(ADMOB_DELAY) {
-                loadInterstitial(adUnitId)
-                retryForAd++
-            } else retryForAd = 0
-            return; }
-        if (interstitialAd != null || loadingAd) return
-        loadingAd = true
-        InterstitialAd.load(
-            c, getString(adUnitId), AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    loadingAd = false
-                }
-
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    loadingAd = false
-                    interstitialAd = ad.apply { fullScreenContentCallback = InterstitialCallback() }
-                    if (autoPlay()) showInterstitial()
-                }
-            })
-    }
-
-    fun loadInterstitial(@StringRes adUnitId: Int, autoPlay: Boolean = false) {
-        loadInterstitial(adUnitId) { autoPlay }
-    }
-
-    @MainThread
-    fun showInterstitial() {
-        if (!showingAd) interstitialAd?.show(this@BaseActivity)
-    }*/
 
     var notFirstResume = false
     override fun onPause() {
@@ -309,20 +241,4 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         TERTIARY(R.style.Theme_InstaTools_Tertiary),
         TERTIARY_LIGHT(R.style.Theme_InstaTools_Tertiary_Light)
     }
-
-    /*inner class InterstitialCallback : FullScreenContentCallback() {
-        override fun onAdShowedFullScreenContent() {
-            showingAd = true
-        }
-
-        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-            showingAd = false
-            interstitialAd = null
-        }
-
-        override fun onAdDismissedFullScreenContent() {
-            showingAd = false
-            interstitialAd = null
-        }
-    }*/
 }

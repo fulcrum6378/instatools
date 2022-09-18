@@ -18,7 +18,6 @@ import kotlinx.coroutines.runBlocking
 
 class Favourites : BaseActivity() {
     private lateinit var b: FavouritesBinding
-    // private lateinit var adBanner: AdView
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -60,16 +59,6 @@ class Favourites : BaseActivity() {
 
         load()
     }
-
-    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
-        super.onInitializationComplete(adsInitStatus)
-        if (!adsInitStatus.isReady()) return
-        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmFavourites)
-        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-        adBanner.loadAd(AdRequest.Builder().build())
-        b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)
-            .apply { bottomToTop = R.id.adBanner }
-    }*/
 
     override fun onResume() {
         super.onResume()

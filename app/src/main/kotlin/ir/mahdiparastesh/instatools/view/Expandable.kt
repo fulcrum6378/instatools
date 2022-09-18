@@ -149,7 +149,7 @@ class Expandable(
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     )
-                } catch (e: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                 }
             }
         }
@@ -178,7 +178,7 @@ class Expandable(
     fun expand() {
         if (thumb == null || (node == null && media == null) || zoomed) return
         zoomed = true
-        onZoomChanged(zoomed)
+        onZoomChanged(true)
         currentAnimator?.cancel()
         b.username.text = ""
         if (media == null) queue.adder = Api<Media.MediaWrapperApi>(
@@ -274,7 +274,7 @@ class Expandable(
                     b.slider.adapter = null
                     currentAnimator = null
                     zoomed = false
-                    onZoomChanged(zoomed)
+                    onZoomChanged(false)
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
@@ -283,7 +283,7 @@ class Expandable(
                     b.root.vish(false)
                     currentAnimator = null
                     zoomed = false
-                    onZoomChanged(zoomed)
+                    onZoomChanged(false)
                 }
             })
             start()

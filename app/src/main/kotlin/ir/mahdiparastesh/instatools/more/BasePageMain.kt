@@ -21,7 +21,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.vish
 
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
-    // private lateinit var guestAdBanner: AdView
 
     abstract val theme: BaseActivity.Theme
     abstract val emptyIcon: Int
@@ -35,10 +34,6 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         refresher()?.isEnabled = false
         jumper()?.vis(false)
         rv()?.vis(false)
-
-        /*guestAdBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmGuest)
-        root.addView(guestAdBanner, UiTools.adaptiveBannerLp())
-        guestAdBanner.loadAd(AdRequest.Builder().build())*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

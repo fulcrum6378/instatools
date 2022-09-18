@@ -100,7 +100,6 @@ class PageSvd : BasePageMain(), Selective {
                 if (c.mm.saved?.edges.isNullOrEmpty()) onLoaded(true)
             }
         },
-        // HANDLE_SHOW_AD to { c.loadInterstitial(R.string.interUnsaving, true) },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
         HANDLE_REALLY_NO_MORE to {
             val number = c.mm.saved?.hiddenItems()
@@ -126,7 +125,6 @@ class PageSvd : BasePageMain(), Selective {
         const val HANDLE_INIT_QUEUER = 11
         const val HANDLE_REALLY_NO_MORE = 13
         const val HANDLE_UPDATE_PROFILE = 14
-        // const val HANDLE_SHOW_AD = 12
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -362,12 +360,6 @@ class PageSvd : BasePageMain(), Selective {
         companion object : Alive.OfThread()
 
         override val com: Alive.OfThread = Companion
-
-        /*override fun run() {
-            if (unsave && list.size > 4)
-                handler?.obtainMessage(HANDLE_SHOW_AD)?.sendToTarget()
-            super.run()
-        }*/
 
         override fun handle() {
             val svd = list.getOrNull(0)

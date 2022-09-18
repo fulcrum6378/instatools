@@ -42,7 +42,6 @@ class Downloads : ServiceOwnerActivity() {
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
     val mm: MyModel by viewModels()
-    // private lateinit var adBanner: AdView
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
@@ -144,19 +143,6 @@ class Downloads : ServiceOwnerActivity() {
         }
     }
 
-    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
-        super.onInitializationComplete(adsInitStatus)
-        if (!adsInitStatus.isReady()) return
-        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDownloads)
-        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-        adBanner.loadAd(AdRequest.Builder().build())
-        b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
-            .apply { bottomToTop = R.id.adBanner }
-        b.guideSwipeDeleteStub.layoutParams =
-            (b.guideSwipeDeleteStub.layoutParams as ConstraintLayout.LayoutParams)
-                .apply { bottomToTop = R.id.adBanner }
-    }*/
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
         Queuer.active.observe(this) { updateControlButton(it) }
@@ -251,7 +237,7 @@ class Downloads : ServiceOwnerActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     dao.deleteQueued(q)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                 }
                 if (mm.queueds != null) withContext(Dispatchers.Main) {
                     Queued.find(q, mm.queueds)?.let {

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">InstaTools</string>
-    <string name="app_name_tm_censored" translatable="false">Unfollowers &amp; Other Tools</string>
+    <string name="app_name">InstaTools</string>
 
     <!-- #GLOBAL -->
-    <string name="ourIG" translatable="false">\@instatools.apk</string>
     <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
@@ -27,17 +25,13 @@
     <string name="viewProfile">View Profile</string>
     <string name="viewHere">View Here</string>
     <string name="viewInInsta">View in Instagram</string>
-    <string name="addToFav">Add to favorites</string>
-    <string name="removeFav">Remove from favorites</string>
+    <string name="addToFav">Add to favourites</string>
+    <string name="removeFav">Remove from favourites</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="openDmInInsta">Open Chat in Instagram</string>
     <string name="pageNotExist">This page doesn\'t exist!</string>
     <string name="sContinue">Continue</string>
-    <string name="rateUs">Rate this App</string>
-    <string name="watchAnAd">Watch an Ad</string>
-    <string name="failedToLoadAd">Loading ad failed: %s</string>
-    <string name="failedToShowAd">Showing ad failed: %s</string>
     <string-array name="inaccurateTime">
         <item>%d months</item>
         <item>%d weeks</item>
@@ -66,14 +60,16 @@
     <string name="save">Save</string>
     <string name="tryAgain">Try Again</string>
     <string name="openFolder">Open in Folder</string>
-    <string name="ourIGPage">Our Instagram Page</string>
-    <string name="googlePlay" translatable="false">Google Play</string>
-    <string name="galaxyStore">Galaxy Store</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
     <string name="guestShortDesc">Enter without authentication</string>
-    <string name="guestSure">Unfortunately Instagram won\'t let you view people in its website so frequently without signing in. It\'ll force you sign in or sign up to do that. (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.) So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.</string>
+    <string name="guestSure">
+        Unfortunately Instagram won\'t let you view people in its website so frequently without signing in.
+        It\'ll force you sign in or sign up to do that.
+        (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.)
+        So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.
+    </string>
     <string name="needAuthentication">Instagram doesn\'t let us in. You need to login to continue&#8230;</string>
 
     <!-- Main -->
@@ -83,8 +79,9 @@
     <string name="guestDesc">You\'re using this app in guest mode.\nSo you cannot use this feature!</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Enter a profile name or link&#8230;</string>
-    <string name="supportDesc">For any kind of question, criticism, suggestion, or anything else you\'d like to tell us, you can contact us using the following methods:\n\nWe\'d be glad to hear your comments and we\'ll answer as soon as possible&#8230;</string>
-    <string name="terminateBgTasks">Some tasks are running in the background. Are you sure you want to terminate them all?</string>
+    <string name="terminateBgTasks">
+        Some tasks are running in the background. Are you sure you want to terminate them all?
+    </string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="toExit">Double tap to exit&#8230;</string>
 
@@ -97,14 +94,19 @@
     <string name="newUnfNtfChannel">New unfollowers</string>
     <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
-    <string name="unfollowedSoMany">Unfortunately Instagram won\'t allow you to unfollow a large number of people so frequently in order to combat spam. Please try again about half an hour later&#8230;</string>
+    <string name="unfollowedSoMany">
+        Unfortunately Instagram, in order to combat spam, won\'t allow you to unfollow
+        a large number of people so frequently. Please try again about half an hour later&#8230;
+    </string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">Unsave Only</string>
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="svdEmpty">You have no saved posts!</string>
-    <string name="reallyHasNoMore">You have had %d more posts saved; but they\'re apparently deleted, blocked or hidden in any way!</string>
+    <string name="reallyHasNoMore">
+        You have had %d more posts saved; but they\'re apparently deleted, blocked or hidden in any way!
+    </string>
 
     <!-- PageBox -->
     <string name="boxUntil">Until %s</string>
@@ -123,7 +125,10 @@
     <string name="expOptMed">Medium quality</string>
     <string name="expOptHig">High quality</string>
     <string name="expOptThm">Only a thumbnail (first frame)</string>
-    <string name="unsupportedExportUriAuth">Sorry, but this kind of folder is not supported for this export type! Although you can export into this very folder in the other file types.</string>
+    <string name="unsupportedExportUriAuth">
+        Sorry, but this kind of folder is not supported for this export type!
+        Although you can export into this very folder in the other file types.
+    </string>
     <string name="exportHtmlDesc">Caution: an HTML file can only be viewed properly using a PC or macOS!</string>
     <string name="exportPdfDesc">A PDF file cannot contain audio and video.</string>
     <string name="exportTxtDesc">A plain text file cannot contain any kind of media.</string>
@@ -132,14 +137,20 @@
     <string name="downloads">Downloads</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Paste a link&#8230;</string>
-    <string name="downloadsHelp1">1. Open Instagram,\n2. Choose a post or story,\n3. Share it into this app;</string>
+    <string name="downloadsHelp1">
+        1. Open Instagram,\n
+        2. Choose a post or story,\n
+        3. Share it into this app;
+    </string>
     <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
     <string name="nonInstagramUrl">Sorry but this app downloads only Instagram content!</string>
     <string name="dtRetryAll">Retry all</string>
 
     <!-- Favourites -->
-    <string name="favourites">Favorites</string>
-    <string name="favEmpty">Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.</string>
+    <string name="favourites">Favourites</string>
+    <string name="favEmpty">
+        Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.
+    </string>
 
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
@@ -149,7 +160,10 @@
     <string name="vwFlwZero" translatable="false">0</string>
     <string name="vwPrivate">This account is private!</string>
     <string name="followAll">Follow All</string>
-    <string name="followAllSure">Are you sure you want to follow all of these accounts? (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)</string>
+    <string name="followAllSure">
+        Are you sure you want to follow all of these accounts?
+        (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)
+    </string>
     <string name="alsoRequestPv">Also send request to the private accounts.</string>
     <string name="mfLimit">Limit their number to:</string>
     <string name="vwStoryReel">Main Stories</string>
@@ -159,19 +173,31 @@
 
     <!-- Mass Follower -->
     <string name="massFollower">Mass Follower</string>
-    <string name="mfGuide1">Instagram won\'t let you follow a large number of people so frequently. It may block your account or sign you out of your session.</string>
-    <string name="mfGuide2">But using this tool, you can follow numerous people slowly and one by one, so that Instagram won\'t suspect it is a robot or a spammer.</string>
-    <string name="mfGuide3">1. Open a profile in InstaTools,\n\n2. Tap on the number of their followers or following,\n\n3. Select \"Follow All\"&#8230;</string>
+    <string name="mfGuide1">
+        Instagram won\'t let you follow a large number of people so frequently.
+        It may block your account or sign you out of your session.
+    </string>
+    <string name="mfGuide2">
+        But using this tool, you can follow numerous people slowly and one by one,
+        so that Instagram won\'t suspect it is a robot or a spammer.
+    </string>
+    <string name="mfGuide3">
+        1. Open a profile in InstaTools,\n\n
+        2. Tap on the number of their followers or following,\n\n
+        3. Select \"Follow All\"&#8230;
+    </string>
     <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
     <string name="mfClear">Clear the queue</string>
     <string name="mfExport">Export the queue</string>
     <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
-    <string name="mfPayForIt">In order to unlock this feature, choose one of the following methods:</string>
     <string name="mfUnlockTimes">Unlock for %d times</string>
-    <string name="mfDetectedSpam">Unfortunately Instagram has detected you as a spammer; please increase the delay time and try again later!</string>
+    <string name="mfDetectedSpam">
+        Unfortunately Instagram has detected you as a spammer;
+        please increase the delay time and try again later!
+    </string>
     <string name="mfTroubleshoot">Not Working?</string>
     <string-array name="mfTroubleshoot">
-        <item>Disable battery optimization for this app</item>
+        <item>Disable battery optimisation for this app</item>
         <item>Allow background data usage</item>
     </string-array>
 
@@ -191,13 +217,22 @@
     <string name="stClearCacheWaitExporter">Please wait until exporting finishes!</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
-    <string name="stResetDataSure">This includes the unfollowers list, the favorite accounts list, the download queue and the export queue. But you won\'t be signed out of your account. Proceed?</string>
+    <string name="stResetDataSure">
+        This includes the unfollowers list, the favourite accounts list, the download queue and the export queue.
+        But you won\'t be signed out of your account. Proceed?
+    </string>
     <string name="stResetSettings">Reset my settings</string>
     <string name="stResetSettingsSure">Are you sure? (you WON\'T be sign out of your account)</string>
     <string name="stAutoDeleteEmptyDirs">Automatically delete empty folders</string>
     <string name="stHelp">Help</string>
-    <string name="stHelpMessage">The Settings of This Account inherit the Global Settings, wherever you leave a setting of this account empty.</string>
-    <string name="stAlsoRevokePerm">Also revoke permission from the selected folder. (this cancels any other exception related to this folder)</string>
+    <string name="stHelpMessage">
+        The Settings of This Account inherit the Global Settings,
+        wherever you leave a setting of this account empty.
+    </string>
+    <string name="stAlsoRevokePerm">
+        Also revoke permission from the selected folder.
+        (this cancels any other exception related to this folder)
+    </string>
 
 
     <!-- Queuer -->
@@ -214,9 +249,15 @@
     <string name="exporterWriting">Writing %s\'s chat into the storage&#8230;</string>
     <string name="exporterDone">Exported %s\'s chat.</string>
     <string name="exporterFailed">Export failed!</string>
-    <string name="exporterFailed429">Unfortunately Instagram blocked these requests because they were too many and were done so frequently, in order to combat spam. Please try again a few hours later&#8230;</string>
+    <string name="exporterFailed429">
+        Unfortunately Instagram blocked these requests because they were too many and were done so frequently,
+        in order to combat spam. Please try again a few hours later&#8230;
+    </string>
     <string name="exporterFailedUnk">An unknown error occurred: %s</string>
-    <string name="exportRescued">The exported files were unable to be transferred to the destination folder which you specified! So we moved them into an alternative destination which can be opened using the button below.</string>
+    <string name="exportRescued">
+        The exported files were unable to be transferred to the destination folder which you specified!
+        So we moved them into an alternative destination which can be opened using the button below.
+    </string>
 
     <!-- Follower -->
     <string name="followerChannel" translatable="false">@string/massFollower</string>
@@ -228,5 +269,7 @@
     <string name="servicesChannelGroup">Progressing Tasks</string>
     <string name="servicesChannelGroupDesc">Long-running tasks like downloading and exporting.</string>
     <string name="taskResultChannel">Task Results</string>
-    <string name="taskResultChannelDesc">Notifies anything resulted from a long-running task, like downloading, exporting and mass following.</string>
+    <string name="taskResultChannelDesc">
+        Notifies anything resulted from a long-running task, like downloading, exporting and mass following.
+    </string>
 </resources>

@@ -52,7 +52,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private val cacheMin: Int by lazy { resources.getInteger(R.integer.stCacheMin) }
     private val cacheMax: Int by lazy { cacheMin + resources.getInteger(R.integer.stCacheMaxNominal) }
     private var uriFolders: ArrayList<Uri>? = null
-    // private lateinit var adBanner: AdView
 
     override val menuRes = R.menu.settings_tlb
     override val com: ActivityCompanion get() = Companion
@@ -283,11 +282,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 }
             }.show()
         }
-
-        // Ads
-        /*adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmSettings)
-        b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-        adBanner.loadAd(AdRequest.Builder().build())*/
     }
 
     override fun onResume() {

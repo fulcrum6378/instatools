@@ -295,14 +295,10 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 // I didn't find an easy way to exclude the non-compatible hosts.
                 // In Linux/Unix, you cannot transform a directory to a file!
                 // Google Drive, Dropbox and AnyDesk understand Android directory mime type is a folder.
-
-                // activityResulted = false
-                // c.loadInterstitial(R.string.interExporting) { !c.showingAd && activityResulted }
             }
         }.show()
     }
 
-    // private var activityResulted = false
     private var dirFileProblem = false
     override fun onActivityResult(result: ActivityResult) {
         if (result.data?.data == null || exportable == null) { // "action" and "type" are null!
@@ -325,8 +321,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             c.dao.addExportable(exportable!!)
             withContext(Dispatchers.Main) { c.startService(Intent(c, Exporter::class.java)) }
         }
-        // c.showInterstitial()
-        // activityResulted = true
         dirFileProblem = false
     }
     // Downloads:     "content://com.android.providers.downloads.documents/document/"

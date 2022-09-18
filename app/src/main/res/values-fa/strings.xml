@@ -32,10 +32,6 @@
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
     <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
     <string name="sContinue">ادامه</string>
-    <string name="rateUs">امتیاز دادن به این اپ</string>
-    <string name="watchAnAd">تماشای تبلیغات</string>
-    <string name="failedToLoadAd">بارگذاری تبلیغات دچار خطا شد: %s</string>
-    <string name="failedToShowAd">نمایش تبلیغات دچار خطا شد: %s</string>
     <string-array name="inaccurateTime">
         <item>%d ماه</item>
         <item>%d هفته</item>
@@ -64,9 +60,6 @@
     <string name="save">ذخیره</string>
     <string name="tryAgain">تلاش دوباره</string>
     <string name="openFolder">بازکردن در فولدر</string>
-    <string name="ourIGPage">پیج اینستاگرام ما</string>
-    <string name="googlePlay">گوگل پلی</string>
-    <string name="galaxyStore">گلکسی استور</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -81,7 +74,6 @@
     <string name="guestDesc">در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
-    <string name="supportDesc">برای مطرح کردن هر گونه سوال، انتقاد، پیشنهاد و هر چیز دیگری که می خواهید به ما بگویید، از یکی از روش های زیر می توانید با ما صحبت کنید:\n\nما بی صبرانه منتظر نظرات شما هستیم و در اسرع وقت پاسخ خواهیم داد&#8230;</string>
     <string name="terminateBgTasks">تعدادی کار ناتمام در پشت صحنه هنوز در حال انجام هستند. آیا میخواهید تمام آنها را متوقف کنید؟</string>
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
@@ -163,7 +155,6 @@
     <string name="mfClear">پاک کردن لیست</string>
     <string name="mfExport">استخراج لیست</string>
     <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
-    <string name="mfPayForIt">برای فعالسازی این قابلیت یکی از روش های زیر را انتخاب کنید:</string>
     <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
     <string name="mfDetectedSpam">متاسفانه اینستاگرام «موقتا» شما را به عنوان «اسپمر» شناسایی کرده است! لطفا مدت تاخیر بین هر فالو را زیاد کرده و بعدا دوباره سرویس را روشن نمایید.</string>
     <string name="mfTroubleshoot">کار نمیکنه؟</string>

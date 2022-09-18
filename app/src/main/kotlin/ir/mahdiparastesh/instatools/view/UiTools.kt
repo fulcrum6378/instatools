@@ -94,7 +94,7 @@ object UiTools {
                     .setPackage(INSTA_PACKAGE)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
         }
     }
 
@@ -103,7 +103,7 @@ object UiTools {
             c.startActivity(
                 Intent(Intent.ACTION_VIEW, Uri.parse(link)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
         }
     }
 
@@ -187,7 +187,7 @@ object UiTools {
                     ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
         }
     }
 

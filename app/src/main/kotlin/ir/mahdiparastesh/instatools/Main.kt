@@ -2,13 +2,9 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.ComponentName
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.os.Build
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.Menu
@@ -37,7 +33,6 @@ import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
-import ir.mahdiparastesh.instatools.databinding.SupportMethodsBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
@@ -49,7 +44,6 @@ import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Intelligence
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
@@ -59,7 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
+class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     private lateinit var toggleNav: ActionBarDrawerToggle
@@ -70,8 +64,6 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     private val colorBG = MutableLiveData<Int?>(null)
     val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
     val mm: MyModel by viewModels()
-    /*private lateinit var adBanner: AdView
-    private var adBannerLoaded = false*/
 
     var searchInput: SearchView.SearchAutoComplete? = null
     private var searchClose: ImageView? = null
@@ -92,8 +84,7 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val bKlass = PageSvd::class
     override val cKlass = PageBox::class
     override val mode = TripleMode.FRAGMENT_MANAGER
-    override fun defPage(): Int = if (Intelligence.galaxyCensor) 0 else
-        intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+    override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
             ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
             ?: Settings.defSpMainPage
 
@@ -103,14 +94,12 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
         val currentPage = MutableLiveData(Settings.defSpMainPage)
-        var showingHelp = false
 
         fun accountSwitched() {
             unfollowers.value = null
             saved = null
             dmInbox = null
             dmThread = null
-            showingHelp = false
         }
     }
 
@@ -120,14 +109,11 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!Intelligence.onLaunch(this)) return
         if (!gsp.contains(Login.spAccount)) {
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-        initToolbar(
-            b.toolbar, R.string.app_name, Intelligence.censorText(getString(R.string.app_name))
-        )
+        initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
 
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
@@ -157,17 +143,9 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // Navigation
-        toggleNav = /*object :*/ ActionBarDrawerToggle(
+        toggleNav = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
-        )/* {
-            override fun onDrawerOpened(drawerView: View) {
-                super.onDrawerOpened(drawerView)
-                if (::adBanner.isInitialized && !adBannerLoaded) {
-                    adBanner.loadAd(AdRequest.Builder().build())
-                    adBannerLoaded = true
-                }
-            }
-        }*/.apply {
+        ).apply {
             b.root.addDrawerListener(this)
             isDrawerIndicatorEnabled = true
             syncState()
@@ -175,12 +153,6 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.nav.setNavigationItemSelectedListener(this)
         if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
             .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
-        if (Intelligence.playCensor || Intelligence.galaxyCensor) {
-            b.nav.menu.findItem(R.id.mnMassFollower)?.isVisible = false
-            b.nav.menu.findItem(R.id.mnSupport)?.isVisible = false
-            if (Intelligence.galaxyCensor)
-                b.nav.menu.findItem(R.id.mnDownloads)?.isVisible = false
-        }
 
         // Miscellaneous
         if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
@@ -290,36 +262,6 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                         onError = { signOut(bd.root.isChecked) }
                     ) { signOut(bd.root.isChecked) }
                 }
-            }.show(); true; }
-        R.id.mnSupport -> {
-            val bs = SupportMethodsBinding.inflate(layoutInflater)
-            bs.instagram.setOnClickListener { UiTools.openProfile(this@Main, UiTools.OUR_IG) }
-            bs.googlePlay.setOnClickListener {
-                if (!UiTools.hasReviewedApp(this@Main)) UiTools.reviewApp(this@Main)
-                else UiTools.openLink(
-                    this@Main, "https://play.google.com/store/apps/details" +
-                            "?id=ir.mahdiparastesh.instatools.beth"
-                )
-            }
-            if (Build.BRAND != "samsung") bs.galaxyStore.vis(false) else {
-                Glide.with(c).load("https://galaxystore.samsung.com/galaxyapps.png")
-                    .into(bs.galaxyStoreIv)
-                bs.galaxyStore.setOnClickListener {
-                    UiTools.openLink(
-                        this@Main, "https://galaxystore.samsung.com/detail/" +
-                                "ir.mahdiparastesh.instatools.beth"
-                    )
-                }
-            }
-            mm.showingHelp = true
-            AlertDialog.Builder(
-                ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Secondary)
-            ).apply {
-                setTitle(R.string.stHelp)
-                setMessage(R.string.supportDesc)
-                setView(bs.root)
-                setPositiveButton(R.string.ok, null)
-                setOnDismissListener { mm.showingHelp = false }
             }.show(); true; }
         else -> super.onOptionsItemSelected(item)
     }
@@ -471,23 +413,6 @@ open class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             CoroutineScope(Dispatchers.IO).launch { clearCacheIfNecessary() }
             return; }
         super.onBackPressed() // Do NOT kill the process
-    }
-
-
-    class MainNormal : Main()
-
-    class TmCensored : Main()
-
-    class Switcher : Activity() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            packageManager.setComponentEnabledSetting(
-                ComponentName(packageName, "${javaClass.`package`!!.name}.Main\$MainNormal"),
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP
-            )
-            startActivity(Intent(this, Main::class.java))
-            finish()
-        }
     }
 }
 

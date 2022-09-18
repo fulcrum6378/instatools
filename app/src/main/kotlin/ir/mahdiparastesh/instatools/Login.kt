@@ -22,7 +22,6 @@ import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.Intelligence
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +35,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var bw: WelcomeBinding
     lateinit var accounts: ArrayList<Account>
     private lateinit var cookieManager: CookieManager
-    // private var adBanner: AdView? = null
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -48,7 +46,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val spAccount = "account"
         const val EXTRA_NEED_AUTH = "needAuthentication"
         var cameHereToAuth = false
-        // const val EXTRA_SHOW_AD = "show_ad"
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -77,7 +74,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                             cameHereToAuth = true
                             AlertDialog.Builder(this@Login).apply {
                                 setTitle(R.string.guest)
-                                setMessage(Intelligence.censorText(getString(R.string.needAuthentication)))
+                                setMessage(getString(R.string.needAuthentication))
                                 setNeutralButton(R.string.ok, null)
                             }.show()
                             val signedOutFrom =
@@ -87,11 +84,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                                 browse()
                             } else selectAccount(signedOutFrom)
                         }
-                    else -> {
-                        welcome()
-                        /*if (intent.getBooleanExtra(EXTRA_SHOW_AD, false))
-                            loadInterstitial(R.string.interAccSwitched, true)*/
-                    }
+                    else -> welcome()
                 }
             }
         }
@@ -116,7 +109,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     private fun welcome() {
         b.refresher.vis(false)
-        // adBanner?.vis(false)
         if (!::bw.isInitialized) b.welcomeStub.inflate()
         else bw.root.vis()
     }
@@ -126,7 +118,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         when {
             acc.id == -1L -> AlertDialog.Builder(this).apply {
                 setTitle(R.string.guest)
-                setMessage(Intelligence.censorText(getString(R.string.guestSure)))
+                setMessage(getString(R.string.guestSure))
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.sContinue) { _, _ ->
                     m.acc = acc
@@ -148,7 +140,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private var gonnaBeGuest = false
     private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
         b.refresher.vis()
-        // adBanner?.vis(true)
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also {
             it.setAcceptCookie(true)
@@ -160,14 +151,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
         doClearHistory = true
-
-        /*if (areAdsReady() && adBanner == null) {
-            adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmWebView)
-            b.root.addView(adBanner, 1, UiTools.adaptiveBannerLp())
-            adBanner!!.loadAd(AdRequest.Builder().build())
-            b.refresher.layoutParams = (b.refresher.layoutParams as ConstraintLayout.LayoutParams)
-                .apply { bottomToTop = R.id.adBanner }
-        }*/
     }
 
     override fun onDestroy() {

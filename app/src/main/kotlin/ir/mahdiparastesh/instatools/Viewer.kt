@@ -167,8 +167,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         fixTbMenu()
-        if (Intelligence.galaxyCensor)
-            b.toolbar.menu.findItem(R.id.vtInsta)?.isVisible = false
         return true
     }
 
@@ -225,7 +223,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             try {
                 dbFav = dao.favouriteByUser(user!!).getOrNull(0)
                 withContext(Dispatchers.Main) { fixTbMenu() }
-            } catch (e: NullPointerException) {
+            } catch (_: NullPointerException) {
             }
         }
         if (thread?.active != true) thread = Initial().also { it.start() }

@@ -38,7 +38,6 @@ class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     var thread: Inquiry? = null
     val reqQueue by lazy { Volley.newRequestQueue(c) }
-    // var counter = 0
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.PRIMARY
@@ -68,7 +67,6 @@ class PageUnf : BasePageMain() {
             b.refresher.isRefreshing = false
             c.sp?.edit { putLong(Settings.spUnfLastChecked, Persistent.now()) }
         },
-        //HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) }
         Api.HANDLE_ERROR to {
             onFailed(
                 c.getString(
@@ -112,7 +110,6 @@ class PageUnf : BasePageMain() {
         const val HANDLE_LOADED = 2
         const val HANDLE_COULD_NOT = 3
         const val HANDLE_FAV_CHANGED = 4
-        // const val MAX_UNFOLLOW_AD = 10
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =

@@ -262,14 +262,6 @@
         <item name="android:textSize">@dimen/mfGuideTv</item>
     </style>
 
-    <style name="payForItItemTvLl" parent="dialogItemTvLl">
-        <item name="android:paddingStart">10sp</item>
-    </style>
-
-    <style name="payForItItemIv" parent="dialogItemIv">
-        <item name="android:layout_gravity">top</item>
-    </style>
-
 
     <!-- Viewer -->
     <style name="vwFlwCl">

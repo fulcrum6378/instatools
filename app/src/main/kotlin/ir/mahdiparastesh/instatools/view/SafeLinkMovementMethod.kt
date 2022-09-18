@@ -40,7 +40,7 @@ class SafeLinkMovementMethod : LinkMovementMethod() {
                                 .putExtra(Browser.EXTRA_APPLICATION_ID, widget.context.packageName)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
-                    } catch (e: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                     } else link.onClick(widget)
                 } else if (action == MotionEvent.ACTION_DOWN) Selection.setSelection(
                     buffer, buffer.getSpanStart(link), buffer.getSpanEnd(link)
