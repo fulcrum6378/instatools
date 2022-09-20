@@ -191,7 +191,9 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                         )
                     }
                     else -> divHint.format(
-                        "${if (media.video_versions != null) "Video" else "Image"} file omitted!"
+                        (if (media is Media) "<a href=\"${media.link()}\">" else "") +
+                                "${if (media.video_versions != null) "Video" else "Image"} file omitted!" +
+                                (if (media is Media) "</a>" else "")
                     )
                 } + (if (nonMedia.isNotBlank()) "\n$div2Ind" else "")
             )

@@ -53,7 +53,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-
 class Queuer : ForegroundService() {
     private var dest: String? = null
     private var handlingLinks = CopyOnWriteArrayList<Link>()
@@ -397,7 +396,7 @@ class Queuer : ForegroundService() {
                                 add(ExifTagConstants.EXIF_TAG_SITE, q.link)
                             }
                         }) // location data is currently not possible with edge post location.
-                    2.toByte() -> IsoFile(MemoryDataSourceImpl(ba)).use { isoFile ->
+                    22.toByte() -> IsoFile(MemoryDataSourceImpl(ba)).use { isoFile ->
                         // moov: 1, moov/udta: 0, moov[0]: 1, moov/udta[0]: 0, moov[0]/udta[0]: 0
                         val userDataBox: UserDataBox = Path.getPath(isoFile, "/moov/udta")
                             ?: UserDataBox().also { isoFile.movieBox.addBox(it) }

@@ -41,8 +41,14 @@ abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             page++
         }
         runCatching {
-            c.c.contentResolver.openFileDescriptor(Uri.parse(Api.encode(exp.uri)), "w")?.use {
-                FileOutputStream(it.fileDescriptor).use { fos -> document.writeTo(fos) }
+            try {
+                c.c.contentResolver.openFileDescriptor(Uri.parse(Api.encode(exp.uri)), "w")?.use {
+                    FileOutputStream(it.fileDescriptor).use { fos -> document.writeTo(fos) }
+                }
+            } catch (_: SecurityException) {
+                // TODO RESCUE THE EXPORT!!
+                progress(100f, false)
+                document.close()
             }
         }.onSuccess {
             progress(100f, true)
