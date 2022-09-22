@@ -80,7 +80,7 @@ class Exporter : ForegroundService() {
                         if (exp?.threadData == null || dmThd.items.isNotEmpty()) {
                             if (exp?.threadData == null)
                                 exp?.threadData = dmThd
-                            else if (dmThd.items.isNotEmpty())
+                            else // if (dmThd.items.isNotEmpty()) obviously true
                                 exp?.threadData?.items?.addAll(dmThd.items)
                             ntfText = c.getString(
                                 R.string.exporterFetchTexts,
