@@ -9,6 +9,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
+        app:popupTheme="@style/Theme.InstaTools.Popup.Primary"
         app:title="@string/massFollower" />
 
     <androidx.recyclerview.widget.RecyclerView

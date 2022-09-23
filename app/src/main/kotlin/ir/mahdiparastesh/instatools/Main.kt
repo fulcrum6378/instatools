@@ -212,15 +212,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             recreate(); return; }
     }
 
-    /*override fun onInitializationComplete(adsInitStatus: InitializationStatus) {
-        super.onInitializationComplete(adsInitStatus)
-        if (!adsInitStatus.isReady() || !::b.isInitialized) return
-        adBanner = UiTools.adaptiveBanner(this, R.string.bnrBtmDrawer)
-        b.nav.addView(adBanner, FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply { gravity = Gravity.BOTTOM })
-    }*/
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mnDownloads -> goTo(Downloads::class)
         R.id.mnFavourites -> goTo(Favourites::class)

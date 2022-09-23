@@ -1,11 +1,8 @@
 package ir.mahdiparastesh.instatools.data
 
-import android.database.sqlite.SQLiteConstraintException
-import android.database.sqlite.SQLiteDatabaseLockedException
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.view.UiTools.calendar
 
 @Entity
@@ -27,38 +24,6 @@ class Friend(
     fun toFavourite() = Favourite(id, user, name, pict, priv)
 
     companion object {
-        suspend fun add(
-            dao: Database.DAO, thread: PageUnf.Inquiry, newer: Friend, inFollowersList: Boolean
-        ) {
-            try {
-                dao.addFriend(newer)
-                thread.newFriends.add(newer)
-            } catch (e: SQLiteConstraintException) {
-                newer.apply {
-                    val older = thread.oldFriends.find { it.id == id } ?: dao.friend(id)
-                    if (inFollowersList) {
-                        followed = older.followed
-                        unfollowedMeAt = null
-                    } else {
-                        val followsNow = thread.newFriends.find { it.id == id } != null
-                        follows = followsNow
-                        unfollowedMeAt = if (followsNow) null else older.unfollowedMeAt
-                    }
-
-                    try {
-                        dao.updateFriend(this)
-                    } catch (e: IllegalStateException) {
-                        // Thrown rarely by SQLiteSession::throwIfNoTransaction with an unknown cause
-                    }
-                    val index = find(this, thread.newFriends)
-                    if (index != null) thread.newFriends[index] = this
-                    else thread.newFriends.add(this)
-                }
-            } catch (e: IllegalStateException) { // DB is closed.
-            } catch (e: SQLiteDatabaseLockedException) { // perhaps there were heavy transactions then
-            }
-        }
-
         fun find(it: Friend, inList: List<Friend>?): Int? {
             if (inList == null) return null
             for (i in inList.indices) if (inList[i].id == it.id) return i

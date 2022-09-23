@@ -28,8 +28,11 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Friend WHERE id LIKE :id LIMIT 1")
         suspend fun friend(id: String): Friend
 
+        /*@Insert
+        suspend fun addFriend(item: Friend)*/
+
         @Insert
-        suspend fun addFriend(item: Friend)
+        suspend fun addFriends(item: List<Friend>)
 
         @Update
         suspend fun updateFriend(item: Friend)
@@ -37,8 +40,8 @@ abstract class Database : RoomDatabase() {
         @Delete
         suspend fun deleteFriend(item: Friend)
 
-        /*@Query("DELETE FROM Friend")
-        fun deleteFriends(): Int*/
+        @Query("DELETE FROM Friend")
+        suspend fun deleteFriends(): Int
 
 
         @Query("SELECT * FROM Queued")

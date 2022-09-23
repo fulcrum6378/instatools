@@ -53,3 +53,8 @@ abstract class DbRelatedThread(val c: Persistent) : BaseThread() {
         super.interrupt()
     }
 }
+
+/*
+* When you call "Looper.prepare()", the thread will be dedicated to the act of looping,
+* and therefore it will no longer useful for other purposes!
+*/

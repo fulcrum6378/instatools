@@ -6,10 +6,10 @@ import android.widget.ListView
 import androidx.annotation.AttrRes
 
 class FlatListView(
-    c: Context, attrs: AttributeSet?, @AttrRes defStyleAttr: Int
-) : ListView(c, attrs, defStyleAttr) {
-    constructor(c: Context, attrs: AttributeSet?) : this(c, attrs, 0)
-    constructor(c: Context) : this(c, null, 0)
+    context: Context, attrs: AttributeSet?, @AttrRes defStyleAttr: Int
+) : ListView(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context) : this(context, null, 0)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(

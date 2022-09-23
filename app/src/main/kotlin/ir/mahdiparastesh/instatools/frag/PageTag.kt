@@ -29,7 +29,6 @@ import ir.mahdiparastesh.instatools.view.UiTools
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
     private var thread: FetchSome? = null
-    // private lateinit var adBanner: AdView
 
     override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
@@ -77,15 +76,6 @@ class PageTag : BasePageViewer() {
             c.b.refresher.isRefreshing = true
             thread = FetchSome().also { it.start() }
         }
-
-        // Banner Ad
-        /*if (BaseActivity.areAdsReady()) {
-            adBanner = UiTools.adaptiveBanner(c, R.string.bnrBtmPageTag)
-            b.root.addView(adBanner, UiTools.adaptiveBannerLp())
-            adBanner.loadAd(AdRequest.Builder().build())
-            b.rv.layoutParams = (b.rv.layoutParams as ConstraintLayout.LayoutParams)
-                .apply { bottomToTop = R.id.adBanner }
-        }*/
 
         load()
     }

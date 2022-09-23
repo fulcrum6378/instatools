@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabaseLockedException
 import android.os.Build
 import android.os.Bundle
 import android.os.Message
@@ -147,8 +148,8 @@ class PageUnf : BasePageMain() {
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
         companion object : Alive.OfThread()
 
-        lateinit var oldFriends: List<Friend>
-        var newFriends = arrayListOf<Friend>()
+        private lateinit var oldFriends: List<Friend>
+        private val newFriends = arrayListOf<Friend>()
         private val reqQueue by lazy { Volley.newRequestQueue(c.c) }
         override val com: Alive.OfThread = Companion
 
@@ -169,31 +170,49 @@ class PageUnf : BasePageMain() {
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
                 handler, autoQueue = false, onError = { interrupt() }
             ) { flw ->
-                if (c.m.acc != null && flw.users != null) CoroutineScope(Dispatchers.IO).launch {
-                    for (u in flw.users) {
-                        if (!c.db.isOpen) return@launch
-                        Friend.add(
-                            c.dao, this@Inquiry, Friend(
-                                u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
-                                theFollowers, !theFollowers
-                            ), theFollowers
+                if (c.m.acc == null || flw.users == null) return@Api
+                for (u in flw.users) {
+                    val already = newFriends.indexOfFirst { it.id == u.pk }
+                    if (already > -1) newFriends[already].apply {
+                        if (theFollowers) follows = true
+                        else followed = true
+                    } else newFriends.add(
+                        Friend(
+                            u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
+                            theFollowers, !theFollowers
                         )
-                    }
-                    if (flw.next_max_id == null) {
-                        if (theFollowers) allFollow(theFollowers = false) else ended()
-                    } else allFollow(flw.next_max_id, theFollowers)
+                    )
                 }
+                if (flw.next_max_id == null) {
+                    if (theFollowers) allFollow(theFollowers = false)
+                    else CoroutineScope(Dispatchers.IO).launch { ended() }
+                } else allFollow(flw.next_max_id, theFollowers)
             }
         }
 
         private suspend fun ended() {
-            if (!active || c.m.acc == null) return
-            oldFriends.filter { it.id !in newFriends.map { f -> f.id } }
-                .forEach { c.dao.deleteFriend(it) }
+            // Update newFriends
+            if (!active || c.m.acc == null || !c.db.isOpen) return
             newFriends.forEach { newer ->
-                if (oldFriends.find { it.id == newer.id }?.follows == true && !newer.follows)
-                    c.dao.updateFriend(newer.apply { unfollowedMeAt = Persistent.now() })
+                if (newer.follows) newer.unfollowedMeAt = null
+                else oldFriends.find { it.id == newer.id }.also { before ->
+                    if (before?.follows == true && !newer.follows)
+                        newer.unfollowedMeAt = Persistent.now()
+                    else newer.unfollowedMeAt = before?.unfollowedMeAt
+                }
             }
+
+            // Replace Friends
+            if (!active || c.m.acc == null || !c.db.isOpen) return
+            try {
+                c.dao.deleteFriends()
+                c.dao.addFriends(newFriends)
+            } catch (e: IllegalStateException) { // DB is closed.
+            } catch (e: SQLiteDatabaseLockedException) { // perhaps there were heavy transactions then.
+            }
+
+            // Update the Favourites
+            if (!active || c.m.acc == null || !c.db.isOpen) return
             c.m.fav?.forEach { fav ->
                 newFriends.find { fav.id == it.id }?.also { friend ->
                     fav.user = friend.user
@@ -203,6 +222,8 @@ class PageUnf : BasePageMain() {
                     c.dao.updateFavourite(fav)
                 }
             }
+
+            // Notify the results
             if (!active || c.m.acc == null) return
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             val newUnf = newFriends.filter {
@@ -241,7 +262,6 @@ class PageUnf : BasePageMain() {
                 }.build()
             )
             c.sp?.edit { putLong(Settings.spNotifiedUnfTill, Persistent.now()) }
-        }
-        // Never use Fragment::getString()
+        } // Never use Fragment::getString()
     }
 }
