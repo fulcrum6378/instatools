@@ -362,6 +362,9 @@ class Queuer : ForegroundService() {
         // the user might want to re-download it!
         if (leaf != null) return
         leaf = branch.createFile(type.mime, fName) ?: return
+        // Nevertheless files are RARELY duplicated with a " (1)" suffix.
+        // It presumably happens during slow connections.
+        // It could be because of simultaneous writing.
         c.contentResolver.openFileDescriptor(leaf.uri, "w")?.use { des ->
             FileOutputStream(des.fileDescriptor).use { fos ->
                 when (q.mediaType) {

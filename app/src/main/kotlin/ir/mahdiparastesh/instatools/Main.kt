@@ -409,7 +409,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
 * Problems:
-* Detected as a spammer regularly!
 * Volley->OutOfMemory:
 *     1. Stream files directly to the storage
 *     2. Download it without Volley somehow (requires HTTP headers)
@@ -417,7 +416,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
 * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
 * Unsave doesn't work at the first login
-* What if the export didn't succeed, no message shows that to the user!
 *
 * Extension:
 * Metadata for videos and audios
@@ -430,5 +428,4 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 * Undo for Unsave
 * View post/story in Instatools intent filter
 * Max slides for HtmlExporter
-* Custom error on file already exists
 */

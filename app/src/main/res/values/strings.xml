@@ -254,6 +254,7 @@
         in order to combat spam. Please try again a few hours later&#8230;
     </string>
     <string name="exporterFailedUnk">An unknown error occurred: %s</string>
+    <string name="exporterAborted">Could not export %s\'s chat!</string>
     <string name="exportRescued">
         The exported files were unable to be transferred to the destination folder which you specified!
         So we moved them into an alternative destination which can be opened using the button below.

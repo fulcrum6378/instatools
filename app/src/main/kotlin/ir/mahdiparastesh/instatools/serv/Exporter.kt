@@ -145,7 +145,7 @@ class Exporter : ForegroundService() {
 
     private suspend fun Exportable.fetchMedia() {
         if (threadData?.items == null) {
-            end(this); return; }
+            end(this, false); return; }
         media = hashMapOf()
         if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
             fetchMedium(); return; }
@@ -254,29 +254,29 @@ class Exporter : ForegroundService() {
 
     private fun Exportable.export() {
         if (threadData?.items == null) {
-            end(this); return; }
+            end(this, false); return; }
         when (type) {
             0 -> object : HtmlExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
-                    if (percent == 100f) end(this@export, rescueFolder?.uri)
+                    if (percent == 100f) end(this@export, succeeded, rescueFolder?.uri)
                 }
             }.start()
             1 -> object : PdfExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
-                    if (percent == 100f) end(this@export)
+                    if (percent == 100f) end(this@export, succeeded)
                 }
             }.start()
             2 -> object : TxtExporter(this@Exporter, this@export) {
                 override fun progress(percent: Float, succeeded: Boolean) {
-                    if (percent == 100f) end(this@export)
+                    if (percent == 100f) end(this@export, succeeded)
                 }
             }.start()
-            else -> end(this)
+            else -> end(this, false)
         }
-    }
+    } // Single-file exports do NOT need rescuing, they send files even to the cloud and virtual folders!
 
     private val endedOnes = arrayListOf<Long>()
-    private fun end(oldExp: Exportable?, alternativeFolder: Uri? = null) {
+    private fun end(oldExp: Exportable?, succeeded: Boolean, alternativeFolder: Uri? = null) {
         if (oldExp == null || oldExp.addedAt in endedOnes) return
         endedOnes.add(oldExp.addedAt)
         // Don't update notification here; it'll create another after onDestroy
@@ -287,13 +287,16 @@ class Exporter : ForegroundService() {
                 handle()
                 eventNotification(Notify.ID_EXPORTER_DONE + ntfDoneIdInc) {
                     setContentTitle(
-                        getString(R.string.exporterDone, oldExp.threadData?.title() ?: "")
+                        getString(
+                            if (succeeded) R.string.exporterDone else R.string.exporterAborted,
+                            oldExp.threadData?.title() ?: ""
+                        )
                     )
-                    if (alternativeFolder != null) setStyle(
+                    if (succeeded && alternativeFolder != null) setStyle(
                         NotificationCompat.BigTextStyle()
                             .bigText(getString(R.string.exportRescued))
                     )
-                    addAction(
+                    if (succeeded) addAction(
                         0, getString(R.string.openFolder), PendingIntent.getActivity(
                             c, 0, Intent(Intent.ACTION_VIEW).apply {
                                 setDataAndType(alternativeFolder
