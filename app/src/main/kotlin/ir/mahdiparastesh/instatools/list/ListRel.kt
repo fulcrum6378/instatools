@@ -133,7 +133,8 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
                     if (rli.taken_at > 0.0) rli.taken_at.xFromSeconds() else Persistent.now(),
                     rli.user.pk, c.mm.vwUser?.username,
                     rli.pk ?: rli.id, rli.nearest(Versioned.BEST),
-                    rli.thumb(), rli.media_type.toInt().toByte()
+                    rli.thumb(), rli.media_type.toInt().toByte(),
+                    dur = rli.video_duration?.toLong(), caption = rli.caption?.text
                 )
             )
             withContext(Dispatchers.Main) { Downloads.initService(c, "") }

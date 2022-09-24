@@ -1,11 +1,13 @@
 package ir.mahdiparastesh.instatools.serv
 
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
@@ -14,13 +16,8 @@ import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.coremedia.iso.IsoFile
-import com.coremedia.iso.boxes.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.googlecode.mp4parser.MemoryDataSourceImpl
-import com.googlecode.mp4parser.boxes.microsoft.XtraBox
-import com.googlecode.mp4parser.util.Path
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -53,6 +50,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
+@Suppress("SpellCheckingInspection")
 class Queuer : ForegroundService() {
     private var dest: String? = null
     private var handlingLinks = CopyOnWriteArrayList<Link>()
@@ -166,12 +164,16 @@ class Queuer : ForegroundService() {
                                     url = car.nearest(Versioned.BEST)
                                     thumb = med.thumb()
                                     mediaType = car.media_type.toInt().toByte()
+                                    dur = car.video_duration?.toLong()
+                                    caption = med.caption?.text
                                 } else addOns.add(
                                     Queued(
                                         cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
                                         med.user.pk, med.user.username,
                                         car.pk, car.nearest(Versioned.BEST),
-                                        car.thumb(), car.media_type.toInt().toByte()
+                                        car.thumb(), car.media_type.toInt().toByte(),
+                                        dur = car.video_duration?.toLong(),
+                                        caption = med.caption?.text
                                     )
                                 )
                             med.image_versions2 != null -> cur.qud!!.apply {
@@ -182,6 +184,8 @@ class Queuer : ForegroundService() {
                                 url = med.nearest(Versioned.BEST)
                                 thumb = med.thumb()
                                 mediaType = med.media_type.toInt().toByte()
+                                dur = med.video_duration?.toLong()
+                                caption = med.caption?.text
                             }
                             else -> found = false
                         }
@@ -210,6 +214,8 @@ class Queuer : ForegroundService() {
                                 url = med.nearest(Versioned.BEST)
                                 thumb = med.thumb()
                                 mediaType = med.media_type.toInt().toByte()
+                                dur = med.video_duration?.toLong()
+                                caption = med.caption?.text
                             }
                             handleQueued(cur.qud!!, null)
                         }
@@ -238,6 +244,8 @@ class Queuer : ForegroundService() {
                                 url = med.nearest(Versioned.BEST)
                                 thumb = med.thumb()
                                 mediaType = med.media_type.toInt().toByte()
+                                dur = med.video_duration?.toLong()
+                                caption = med.caption?.text
                             }
                             handleQueued(cur.qud!!, null)
                         }
@@ -295,7 +303,23 @@ class Queuer : ForegroundService() {
 
             ntfSmallText = queue[q].userName
             updateNotification()
-            reqQueue.add(
+            if (queue[q].dur?.let { it > 600L } == true) {
+                (getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(
+                    DownloadManager.Request(Uri.parse(queue[q].url)).apply {
+                        setTitle(queue[q].userName)
+                        setDescription(queue[q].caption)
+                        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                        setDestinationInExternalPublicDir(
+                            Environment.DIRECTORY_DOWNLOADS, queue[q].fName(
+                                MediaType.values().find { it.inDb == queue[q].mediaType }!!.ext
+                            )
+                        )
+                    }
+                )
+                CoroutineScope(Dispatchers.IO)
+                    .launch { dao.deleteQueued(queue[q]) }
+                    .invokeOnCompletion { downloaded() }
+            } else reqQueue.add(
                 object : Request<ByteArray>(Method.GET, queue[q].url, Response.ErrorListener {
                     queue[q].status = 1.toByte()
                     Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, queue[q])
@@ -392,28 +416,30 @@ class Queuer : ForegroundService() {
                                     tiffDate.format(q.addedAt)
                                 )
 
-                                /*removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
-                                add(ExifTagConstants.EXIF_TAG_USER_COMMENT, )*/
+                                q.caption?.also {
+                                    removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
+                                    add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
+                                }
 
                                 removeField(ExifTagConstants.EXIF_TAG_SITE)
                                 add(ExifTagConstants.EXIF_TAG_SITE, q.link)
                             }
                         }) // location data is currently not possible with edge post location.
-                    22.toByte() -> IsoFile(MemoryDataSourceImpl(ba)).use { isoFile ->
+                    /*2.toByte() -> IsoFile(MemoryDataSourceImpl(ba)).use { isoFile ->
                         // moov: 1, moov/udta: 0, moov[0]: 1, moov/udta[0]: 0, moov[0]/udta[0]: 0
                         val userDataBox: UserDataBox = Path.getPath(isoFile, "/moov/udta")
                             ?: UserDataBox().also { isoFile.movieBox.addBox(it) }
                         val originalUserDataSize = userDataBox.size
 
-                        /*val copyrightBox = CopyrightBox()
+                        val copyrightBox = CopyrightBox()
                         copyrightBox.copyright = "All Rights Reserved, me, myself and I, 2015"
                         copyrightBox.language = "eng"
-                        userDataBox!!.addBox(copyrightBox)*/
+                        userDataBox.addBox(copyrightBox)
 
-                        /*val authorBox = AuthorBox()
+                        val authorBox = AuthorBox()
                         authorBox.author = "DAYYUTH"
                         authorBox.language = "eng"
-                        userDataBox!!.addBox(authorBox)
+                        userDataBox.addBox(authorBox)
 
                         val titleBox = TitleBox()
                         titleBox.title = "KIR"
@@ -423,19 +449,20 @@ class Queuer : ForegroundService() {
                         val genreBox = GenreBox()
                         genreBox.genre = "KOS"
                         genreBox.language = "eng"
-                        userDataBox.addBox(genreBox)*/
+                        userDataBox.addBox(genreBox)
 
-                        /*val xtraBox = XtraBox()
-                        xtraBox.setTagValue("WM/EncodingTime", q.addedAt - 50000000L)
-                        userDataBox.addBox(xtraBox)*/ // Throws NullPointerException
+                        //val xtraBox = XtraBox()
+                        //xtraBox.setTagValue("WM/EncodingTime", q.addedAt - 50000000L)
+                        //userDataBox.addBox(xtraBox) // Throws NullPointerException
 
-                        /*if (needsOffsetCorrection(isoFile))
-                            correctChunkOffsets(isoFile, userDataBox.size - originalUserDataSize)*/
+                        if (needsOffsetCorrection(isoFile))
+                            correctChunkOffsets(isoFile, userDataBox.size - originalUserDataSize)
 
                         //Log.println(Log.ASSERT, "TRIJNTJE",
-                        isoFile.writeContainer(fos.channel)
-                        //isoFile.getBox(fos.channel)
-                    }
+                        //isoFile.writeContainer(fos.channel)
+                        //isoFile.movieBox.getBox(fos.channel)
+                        isoFile.getBox(fos.channel)
+                    }*/
                     else -> fos.write(ba)
                 }
             }
@@ -445,7 +472,6 @@ class Queuer : ForegroundService() {
     }
 
     override fun finish(cancelled: Boolean) {
-        // if (!cancelled) Downloads.handler?.obtainMessage(Downloads.SHOW_AD)?.sendToTarget()
         destroy()
     }
 
@@ -476,7 +502,7 @@ class Queuer : ForegroundService() {
         super.onDestroy()
     }
 
-    private fun needsOffsetCorrection(isoFile: IsoFile): Boolean {
+    /*private fun needsOffsetCorrection(isoFile: IsoFile): Boolean {
         if (Path.getPaths<Box>(isoFile, "mdat").size > 1) throw RuntimeException(
             "There might be the weird case that a file has two mdats. One before" +
                     " moov and one after moov. That would need special handling therefore I just throw an " +
@@ -506,7 +532,16 @@ class Queuer : ForegroundService() {
             stblChildren.add(cob)
             sampleTableBox.boxes = stblChildren
         }
-    }
+        // OR....
+        var chunkOffsetBoxes: List<ChunkOffsetBox> =
+            Path.getPaths(tempIsoFile, "/moov[0]/trak/mdia[0]/minf[0]/stbl[0]/stco[0]")
+        if (chunkOffsetBoxes.isEmpty()) chunkOffsetBoxes =
+            Path.getPaths(tempIsoFile, "/moov[0]/trak/mdia[0]/minf[0]/stbl[0]/st64[0]")
+        for (chunkOffsetBox in chunkOffsetBoxes) {
+            val cOffsets = chunkOffsetBox.chunkOffsets
+            for (i in cOffsets.indices) cOffsets[i] += correction
+        }
+    }*/
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),

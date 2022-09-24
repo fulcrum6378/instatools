@@ -76,7 +76,8 @@ class Expandable(
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
                             user.pk, mahdi_reel_user_name ?: user.username,
                             pk ?: id, nearest(Versioned.BEST),
-                            thumb(), media_type.toInt().toByte()
+                            thumb(), media_type.toInt().toByte(),
+                            dur = video_duration?.toLong(), caption = caption?.text
                         )
                     )
                     initQueuer()
@@ -95,7 +96,8 @@ class Expandable(
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
                             user.pk, mahdi_reel_user_name ?: user.username,
                             car.pk, car.nearest(Versioned.BEST),
-                            car.thumb(), car.media_type.toInt().toByte()
+                            car.thumb(), car.media_type.toInt().toByte(),
+                            dur = car.video_duration?.toLong(), caption = caption?.text
                         )
                     )
                     initQueuer()
@@ -113,7 +115,8 @@ class Expandable(
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
                             user.pk, mahdi_reel_user_name ?: user.username,
                             car.pk, car.nearest(Versioned.BEST),
-                            car.thumb(), car.media_type.toInt().toByte()
+                            car.thumb(), car.media_type.toInt().toByte(),
+                            dur = car.video_duration?.toLong(), caption = caption?.text
                         )
                     )
                     initQueuer()

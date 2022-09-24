@@ -12,7 +12,7 @@ class Media(
     //val can_view_more_preview_comments: Boolean,
     //val can_viewer_reshare: Boolean,
     //val can_viewer_save: Boolean,
-    //val caption: Caption?,
+    val caption: Caption?,
     //val caption_is_edited: Boolean,
     carousel_media: Array<CarouselMedia>?,
     //val carousel_media_count: Double?,
@@ -72,7 +72,7 @@ class Media(
     //val top_likers: Array<Any>,
     val user: Rest.User,
     //val video_codec: String?,
-    //val video_duration: Double?,
+    val video_duration: Double?, // in seconds
     //val video_subtitles_confidence: Double?,
     //val video_subtitles_uri: String?,
     video_versions: Array<VideoVersion>?,
@@ -152,7 +152,7 @@ class Media(
         val pk: String,
         //val sharing_friction_info: Map<String, *>,
         //val video_codec: String?,
-        //val video_duration: Double?,
+        val video_duration: Double?, // in seconds
         //val video_subtitles_confidence: Double?,
         //val video_subtitles_uri: String?,
         video_versions: Array<VideoVersion>?,
@@ -176,7 +176,7 @@ class Media(
         val id: String
     ) : Candidate(width, height, url)
 
-    /*class Caption(
+    class Caption(
         //val pk: String,
         //val user_id: Double,
         val text: String,
@@ -193,7 +193,7 @@ class Media(
         //val is_ranked_comment: Boolean,
         //val has_translation: Boolean,
         //val private_reply_status: Float,
-    )*/
+    )
 
     /*class MusicMetadata(
         val audio_type: Any?,

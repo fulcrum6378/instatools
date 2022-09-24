@@ -61,7 +61,7 @@ interface Persistent {
         gsp.edit { remove(Login.spAccount) }
         m.acc = null
         if (this is BaseActivity)
-            goTo(Login::class, true) // { putExtra(Login.EXTRA_SHOW_AD, true) }
+            goTo(Login::class, true)
         m.accountSwitched()
     }
 

@@ -86,7 +86,6 @@ class Downloads : ServiceOwnerActivity() {
                     HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
-                    // SHOW_AD -> showInterstitial()
                 }
                 updateIfEmpty(mm.queueds.isNullOrEmpty())
             }
@@ -155,6 +154,7 @@ class Downloads : ServiceOwnerActivity() {
                 if (Queuer.active.value!!) stopService(Intent(c, Queuer::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
+                b.rv.adapter?.notifyDataSetChanged()
             }
             R.id.dtRetryAll -> if (mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
                 var any = false
@@ -204,8 +204,6 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
-        // const val SHOW_AD = 5
-
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             val uri = c.sPreference(Settings.spStorage)

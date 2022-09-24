@@ -16,6 +16,8 @@ class Queued(
     var thumb: String? = null,
     var mediaType: Byte? = null,
     var status: Byte = 0, // 0=>Pending, 1=>Failed, 2=>Suspended
+    var dur: Long? = null, // in seconds
+    var caption: String? = null,
 ) {
     @PrimaryKey(autoGenerate = true)
     var id = 0L
