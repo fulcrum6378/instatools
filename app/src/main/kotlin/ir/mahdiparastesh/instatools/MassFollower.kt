@@ -222,7 +222,6 @@ class MassFollower : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
-        const val HANDLE_REWARD_CONSUMED = 5
         const val HANDLE_DETECTED_AS_SPAMMER = 6
         const val FOLLOW_LIMIT = 9999 // edit EditText's maxLength whenever you edit this.
 

@@ -40,7 +40,7 @@ class Api<JSON>(
             setShouldCache(cache)
             tag = "fetch"
             retryPolicy = DefaultRetryPolicy(
-                15000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                20000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
             )
             if (autoQueue) Volley.newRequestQueue(c.c).add(this)
         } else gotError(handleError, onError)

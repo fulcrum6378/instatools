@@ -168,23 +168,17 @@ class Follower : ForegroundService() {
 
         override fun run() {
             super.run()
-            if (follow()) {
-                m.acc!!.mfrw--
-                m.acc!!.saveMe(c)
-                MassFollower.handler?.obtainMessage(MassFollower.HANDLE_REWARD_CONSUMED)
-                    ?.sendToTarget()
-            }
+            follow()
         }
 
-        private fun follow(): Boolean {
+        private fun follow() {
             fwb = dao.aFollowable().getOrNull(0)
             if (fwb == null || !Follower.active.value!!) {
-                end(); return false; }
+                end(); return; }
             reqQueue.adder = Api<Rest.DoFollow>(
                 this@Follower, Api.Endpoint.FOLLOW.url.format(fwb!!.id), Rest.DoFollow::class,
                 handler, autoQueue = false, method = Request.Method.POST
             ) { handler?.obtainMessage(0, fwb)?.sendToTarget() }
-            return true
         }
 
         private fun followed() {

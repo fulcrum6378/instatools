@@ -239,8 +239,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     config.getOrElse("rollout_hash") { raw.rollout_hash } as String,
                     Persistent.now()
                 ).apply {
-                    accounts.find { it.id == id }
-                        ?.also { mfrw = it.mfrw }
                     accounts.removeAll { it.id == id }
                     accounts.add(this)
                     CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }

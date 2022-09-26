@@ -414,6 +414,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 * Unsave doesn't work at the first login
 *
 * Extension:
+* Minimise the browser and see how the web API fetches thumbnails...
 * Notify on download failure
 * Live unfollower inspector
 * Conditional jump to bottom
