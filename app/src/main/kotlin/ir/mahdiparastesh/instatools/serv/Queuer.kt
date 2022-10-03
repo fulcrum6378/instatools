@@ -251,7 +251,8 @@ class Queuer : ForegroundService() {
                         }
                     else -> {
                         Api.gotError(handler, null, null)
-                        if (BuildConfig.DEBUG) throw Exception(root.rootView.resource.__dr)
+                        if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react")
+                            throw Exception(root.rootView.resource.__dr)
                     }
                 }
             }

@@ -124,6 +124,12 @@ class PageUnf : BasePageMain() {
         else load(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        (c.c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .cancel(Notify.ID_UNF_NEW_ITEMS)
+    }
+
     override fun onRefresh() {
         if (thread?.active == true) return
         b.rv.adapter = null

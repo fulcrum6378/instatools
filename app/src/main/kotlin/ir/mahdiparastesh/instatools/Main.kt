@@ -427,6 +427,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 * Live Live downloader
 * Notification-enabled download
 *
-* Extensions which are not recommended :
+* Extensions which are not recommended:
 * Metadata for videos and audios (whose libraries seem to be critically unstable)
 */
