@@ -11,7 +11,7 @@ android {
     signingConfigs {
         main {
             storeFile file('D:\\Experimental\\mahdiparastesh.jks')
-            keyAlias 'instatools'
+            keyAlias 'instatools' // _beth
             storePassword "${System.getenv("JERK")}"
             keyPassword "${System.getenv("JERK")}"
         }
@@ -22,7 +22,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 63
-        versionName '22.8.4'
+        versionName '22.8.5'
         signingConfig signingConfigs.main
     }
 
@@ -30,6 +30,7 @@ android {
         debuggee {
             debuggable true
             minifyEnabled false
+            // applicationIdSuffix = ".beth"
         }
         release {
             minifyEnabled true

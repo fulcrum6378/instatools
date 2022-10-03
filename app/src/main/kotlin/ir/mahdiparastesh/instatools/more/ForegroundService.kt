@@ -122,6 +122,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfPage = turnToPage
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+                deleteNotificationChannel(com.channel.id)
                 createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
                 createNotificationChannel(com.channel.create(c))
             }
@@ -138,9 +139,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             setContentTitle(getString(ntfCom.ntfTitle))
             ntfSmallText?.also { setContentText(it) }
             setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
+            priority = NotificationCompat.PRIORITY_LOW
+            // setSound(null) setSilent(true)
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
-            priority = NotificationCompat.PRIORITY_LOW
             setContentIntent(
                 PendingIntent.getActivity(
                     c, 0, Intent(c, ntfAct.java).apply {
