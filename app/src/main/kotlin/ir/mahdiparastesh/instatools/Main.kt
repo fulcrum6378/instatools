@@ -409,6 +409,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
 * Problems:
+* string res indentations
 * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
 * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
 * Unsave doesn't work at the first login

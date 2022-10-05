@@ -249,6 +249,9 @@ class Queuer : ForegroundService() {
                             }
                             handleQueued(cur.qud!!, null)
                         }
+                    "PolarisProfileRoot.react" -> CoroutineScope(Dispatchers.IO)
+                        .launch { dao.deleteQueued(cur.qud!!) }
+                        .invokeOnCompletion { linkHandled() }
                     else -> {
                         Api.gotError(handler, null, null)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react")
