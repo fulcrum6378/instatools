@@ -42,6 +42,7 @@ class Downloads : ServiceOwnerActivity() {
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
     val mm: MyModel by viewModels()
+    private var askedForDelete = false
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
@@ -232,6 +233,17 @@ class Downloads : ServiceOwnerActivity() {
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
             val q = mm.queueds?.getOrNull(h.layoutPosition) ?: return
+            if (!askedForDelete) AlertDialog.Builder(this@Downloads).apply {
+                setTitle(R.string.downloads)
+                setMessage(R.string.deleteItemSure)
+                setCancelable(false)
+                setPositiveButton(R.string.yes) { _, _ -> delete(q) }
+                setNegativeButton(R.string.no, null)
+            }.show()
+            else delete(q)
+        }
+
+        private fun delete(q: Queued) {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     dao.deleteQueued(q)

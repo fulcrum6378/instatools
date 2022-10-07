@@ -7,10 +7,7 @@ import android.os.Process.killProcess
 import android.os.Process.myPid
 import android.view.View
 import android.view.ViewStub
-import android.webkit.CookieManager
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import com.google.gson.Gson
@@ -46,6 +43,19 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val spAccount = "account"
         const val EXTRA_NEED_AUTH = "needAuthentication"
         var cameHereToAuth = false
+
+        fun CookieManager.getCookieOrganised(url: String): String {
+            val raw = getCookie(url).split("; ")
+            val map = HashMap<String, String>()
+            for (r in raw) {
+                val kv = r.split("=")
+                map[kv[0]] = kv[1]
+            }
+            val sb = StringBuilder()
+            for (e in map.entries)
+                sb.append("${e.key}=${e.value}; ")
+            return sb.toString().trimEnd()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -141,14 +151,26 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
         b.refresher.vis()
         if (::bw.isInitialized) bw.root.vis(false)
-        cookieManager = CookieManager.getInstance().also {
-            it.setAcceptCookie(true)
-            it.removeAllCookies { _ ->
-                if (withCookie != null && withCookie != "")
-                    for (k in withCookie.split("; "))
-                        it.setCookie(host, k)
-                b.web.loadUrl(beginWith)
-            }
+        cookieManager = CookieManager.getInstance().also { cm ->
+            cm.setAcceptCookie(true)
+            cm.removeAllCookies(object : ValueCallback<Boolean> {
+                private val settable by lazy { withCookie?.split("; ") }
+                private var i = 0
+
+                override fun onReceiveValue(value: Boolean) {
+                    if (!settable.isNullOrEmpty()) next() else done()
+                }
+
+                private fun next() {
+                    cm.setCookie(host, settable!![i]) {
+                        i++; if (settable!!.size > i) next() else done()
+                    }
+                }
+
+                private fun done() {
+                    b.web.loadUrl(beginWith)
+                }
+            })
         }
         doClearHistory = true
     }
@@ -167,7 +189,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             if (gonnaBeGuest) {
                 id = "-1"
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
-                    cookieManager.getCookie(host)
+                    cookieManager.getCookieOrganised(host)
                 CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 gsp.edit { putString(spAccount, id) }
                 goTo(Main::class, true); return; }
@@ -229,13 +251,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 val raw = Gson().fromJson(
                     config["raw"] as String, PageConfig.RawSharedData::class.java
                 )
-                id = cookieManager.getCookie(host)
+                id = cookieManager.getCookieOrganised(host)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";").toLong().toString()
                 val u = raw.config.viewer
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name,
-                    u.profile_pic_url_hd ?: u.profile_pic_url, cookieManager.getCookie(host),
+                    u.profile_pic_url_hd ?: u.profile_pic_url,
+                    cookieManager.getCookieOrganised(host),
                     config.getOrElse("rollout_hash") { raw.rollout_hash } as String,
                     Persistent.now()
                 ).apply {

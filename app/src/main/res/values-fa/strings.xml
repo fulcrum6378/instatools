@@ -60,6 +60,7 @@
     <string name="save">ذخیره</string>
     <string name="tryAgain">تلاش دوباره</string>
     <string name="openFolder">بازکردن در فولدر</string>
+    <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>

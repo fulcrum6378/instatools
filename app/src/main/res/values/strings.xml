@@ -60,6 +60,7 @@
     <string name="save">Save</string>
     <string name="tryAgain">Try Again</string>
     <string name="openFolder">Open in Folder</string>
+    <string name="deleteItemSure">Are you sure you want to delete this item?</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
