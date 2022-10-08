@@ -139,9 +139,9 @@
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">Paste a link&#8230;</string>
     <string name="downloadsHelp1">
-        1. Open Instagram,\n
-        2. Choose a post or story,\n
-        3. Share it into this app;
+        1. Open Instagram,
+        \n2. Choose a post or story,
+        \n3. Share it into this app;
     </string>
     <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
     <string name="nonInstagramUrl">Sorry but this app downloads only Instagram content!</string>
@@ -183,9 +183,9 @@
         so that Instagram won\'t suspect it is a robot or a spammer.
     </string>
     <string name="mfGuide3">
-        1. Open a profile in InstaTools,\n\n
-        2. Tap on the number of their followers or following,\n\n
-        3. Select \"Follow All\"&#8230;
+        1. Open a profile in InstaTools,
+        \n\n2. Tap on the number of their followers or following,
+        \n\n3. Select \"Follow All\"&#8230;
     </string>
     <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
     <string name="mfClear">Clear the queue</string>
