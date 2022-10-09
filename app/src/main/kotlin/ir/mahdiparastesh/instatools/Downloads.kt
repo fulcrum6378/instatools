@@ -67,17 +67,11 @@ class Downloads : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
-                    HANDLE_DELETED -> {
-                        /*if (m.queueds?.size in 1..5)
-                            loadInterstitial(R.string.interDownloaded) {
-                                m.queueds?.filter { it.isReady() }.isNullOrEmpty()
-                            }*/
-                        find(msg)?.let {
-                            mm.queueds!!.removeAt(it)
-                            b.rv.adapter?.notifyItemRemoved(it)
-                            b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
-                            if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
-                        }
+                    HANDLE_DELETED -> find(msg)?.let {
+                        mm.queueds!!.removeAt(it)
+                        b.rv.adapter?.notifyItemRemoved(it)
+                        b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
+                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
@@ -237,7 +231,10 @@ class Downloads : ServiceOwnerActivity() {
                 setTitle(R.string.downloads)
                 setMessage(R.string.deleteItemSure)
                 setCancelable(false)
-                setPositiveButton(R.string.yes) { _, _ -> delete(q) }
+                setPositiveButton(R.string.yes) { _, _ ->
+                    askedForDelete = true
+                    delete(q)
+                }
                 setNegativeButton(R.string.no, null)
             }.show()
             else delete(q)
