@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.serv
 
 import android.app.DownloadManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -497,6 +498,15 @@ class Queuer : ForegroundService() {
             }.onFailure {
                 if (BuildConfig.DEBUG) throw it
                 else super.destroy()
+            }
+            val failedSum = dao.queueds().filter { it.isFailed() }.size
+            if (failedSum > 0) eventNotification(Notify.ID_QUEUER_SOME_FAILED) {
+                setContentTitle(getString(R.string.queuerFailed, failedSum))
+                setContentIntent(
+                    PendingIntent.getActivity(
+                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                    )
+                )
             }
         }
     }

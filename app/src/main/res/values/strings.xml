@@ -240,6 +240,7 @@
     <string name="queuerChannel">Download queue</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
+    <string name="queuerFailed">Couldn\'t download %d items!</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Exporter</string>

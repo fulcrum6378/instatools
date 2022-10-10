@@ -65,8 +65,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
     val mm: MyModel by viewModels()
 
-    var searchInput: SearchView.SearchAutoComplete? = null
-    private var searchClose: ImageView? = null
+    lateinit var searchInput: SearchView.SearchAutoComplete
+    private lateinit var searchClose: ImageView
     var schRes: Array<Rest.ItemUser>? = null
     private val schQueue by lazy { Volley.newRequestQueue(c) }
     var searchErrored = false
@@ -85,8 +85,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val cKlass = PageBox::class
     override val mode = TripleMode.FRAGMENT_MANAGER
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-            ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
-            ?: Settings.defSpMainPage
+        ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
+        ?: Settings.defSpMainPage
 
     class MyModel : ViewModel() {
         var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
@@ -136,9 +136,12 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         } else colorAc.observe(this) {
             if (it == null) return@observe
             styliseToolbar()
-            searchInput?.setTextColor(it)
-            searchInput?.setHintTextColor(weaken(it))
-            searchClose?.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
+            if (::searchInput.isInitialized) {
+                searchInput.setTextColor(it)
+                searchInput.setHintTextColor(weaken(it))
+            }
+            if (::searchClose.isInitialized)
+                searchClose.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
@@ -263,8 +266,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
             // useless: search_button, search_go_btn, search_mag_icon
             searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
-            searchInput?.setHint(R.string.mtSearch)
-            searchInput?.textSize = dimen(R.dimen.searchFont)
+            searchInput.setHint(R.string.mtSearch)
+            searchInput.textSize = dimen(R.dimen.searchFont)
 
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String) = true
@@ -279,12 +282,13 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                         return true
                     }
                     UiTools.ACC_FROM_URL.forEach { host ->
-                        newText.accFromUrl(host)?.let {
-                            if (searchInput == null) return@let
-                            searchInput?.setText(it)
-                            return true
+                        newText.accFromUrl(host)?.also {
+                            searchInput.setText(it)
+                            return true // onQueryTextChange will be invoked again by setText!
                         }
                     }
+                    if (newText.startsWith("@")) {
+                        searchInput.setText(newText.substring(1)); return true; }
 
                     if (searchErrored) b.searchStatus.setAnimation(R.raw.pending)
                     searchErrored = false
@@ -308,9 +312,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             })
             colorAc.value?.also {
                 val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
-                searchInput?.setTextColor(it)
-                searchInput?.setHintTextColor(weaken(it))
-                searchClose?.colorFilter = cf
+                searchInput.setTextColor(it)
+                searchInput.setHintTextColor(weaken(it))
+                searchClose.colorFilter = cf
             }
         }
         b.toolbar.menu.findItem(R.id.mtSearch)?.setOnActionExpandListener(object :
@@ -409,13 +413,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
 * Problems:
-* Regularly detected as robot (APPARENTLY FIXED)
 * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
 * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
 *
 * Extension:
-* Minimise the browser and see how the web API fetches thumbnails...
-* Notify on download failure
 * Live unfollower inspector
 * Conditional jump to bottom
 * Exporter maximum date of top and bottom which would need a calendar picker!?!?
@@ -423,7 +424,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 * View post/story in Instatools intent filter
 * Max slides for HtmlExporter
 *
-* Extensions which need Android hacking:
+* Extensions which need comprehending Instagram APK file:
 * Live Live downloader
 * Notification-enabled download
 *

@@ -193,6 +193,7 @@
     <string name="queuerChannel">صف دانلود</string>
     <string name="queuerChannelDesc">اعلان های دانلود</string>
     <string name="queuerTitle">در حال دانلود&#8230;</string>
+    <string name="queuerFailed">دانلود %d مورد ممکن نشد!</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">استخراجگر</string>

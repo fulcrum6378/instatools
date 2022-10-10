@@ -198,7 +198,8 @@ class Api<JSON>(
                 if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
             } else { // Cookie "rur" is different between MEDIA_ITEM and GET but the same between themselves
                 this["sec-fetch-site"] = "same-site"
-                if (dm != null) this["viewport-width"] = dm.widthPixels.toString()
+                if (dm != null) this["viewport-width"] =
+                    (dm.widthPixels / dm.density).toInt().toString()
             }
             if (cookies.contains("csrftoken="))
                 this["x-csrftoken"] = cookies
