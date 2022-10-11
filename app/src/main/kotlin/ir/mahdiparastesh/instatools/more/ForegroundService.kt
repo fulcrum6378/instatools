@@ -11,7 +11,6 @@ import android.os.HandlerThread
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -28,6 +27,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private val mViewModelStore = ViewModelStore()
     lateinit var handling: HandlerThread
     private var wakeLock: PowerManager.WakeLock? = null
+    protected lateinit var ntfManager: NotificationManager
 
     abstract val com: ForegroundServiceCompanion
     abstract val requiresHandling: Boolean
@@ -99,6 +99,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         gsp = initGsp()
         sp = initSp(m.acc)
 
+        ntfManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (requiresHandling) handling = HandlerThread(com.klass.name).also { it.start() }
         if (waveLockTimeout != null) wakeLock =
             (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
@@ -120,17 +121,16 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfCom = com
         ntfAct = openActivity
         ntfPage = turnToPage
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
-                deleteNotificationChannel(com.channel.id)
-                createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
-                createNotificationChannel(com.channel.create(c))
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ntfManager.deleteNotificationChannel(com.channel.id)
+            ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
+            ntfManager.createNotificationChannel(com.channel.create(c))
+        }
         startForeground(com.ntfId, notification(progress))
     }
 
     open fun updateNotification(progress: Pair<Int, Int>? = null) {
-        NotificationManagerCompat.from(c).notify(ntfCom.ntfId, notification(progress))
+        ntfManager.notify(ntfCom.ntfId, notification(progress))
     }
 
     private fun notification(progress: Pair<Int, Int>?) =
@@ -157,9 +157,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     protected fun eventNotification(id: Int, func: NotificationCompat.Builder.() -> Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(Notify.Channel.RESULT.create(c))
-        NotificationManagerCompat.from(c).notify(
+            ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
+        ntfManager.notify(
             id, NotificationCompat.Builder(c, Notify.Channel.RESULT.id).apply {
                 setSmallIcon(R.drawable.notification)
                 func()

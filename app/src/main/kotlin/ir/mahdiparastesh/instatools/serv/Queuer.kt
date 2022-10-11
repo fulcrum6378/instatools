@@ -94,6 +94,8 @@ class Queuer : ForegroundService() {
         }
         if (m.acc == null || dest == null) {
             finish(false); return; }
+
+        ntfManager.cancel(Notify.ID_QUEUER_SOME_FAILED)
         initialNotification(Companion, Downloads::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
