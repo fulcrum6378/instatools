@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -28,6 +30,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -61,9 +64,9 @@ class Downloads : ServiceOwnerActivity() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_INSERTED -> {
-                        mm.queueds!!.add(msg.obj as Queued)
-                        val pos = (mm.queueds?.size ?: 1)
+                    HANDLE_INSERTED -> mm.queueds?.apply {
+                        add(msg.obj as Queued)
+                        val pos = mm.queueds?.size ?: 1
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
@@ -135,6 +138,8 @@ class Downloads : ServiceOwnerActivity() {
                 if (mm.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
             }
         }
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .cancel(Notify.ID_QUEUER_SOME_FAILED)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

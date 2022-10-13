@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.serv
 
 import android.app.DownloadManager
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
