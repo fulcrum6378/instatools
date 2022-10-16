@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.serv
 
 import android.app.DownloadManager
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -10,6 +9,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
@@ -263,7 +263,24 @@ class Queuer : ForegroundService() {
                     }
                 }
             }
-        }, { Api.gotError(handler, null, it) }) {
+        }, {
+            if (it.networkResponse?.statusCode == 429) {
+                if (Downloads.active.value == true)
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_429)?.sendToTarget()
+                else eventNotification(Notify.ID_QUEUER_429) {
+                    setContentTitle(getString(R.string.downloads))
+                    setStyle(
+                        NotificationCompat.BigTextStyle().bigText(getString(R.string.queuer429))
+                    )
+                    setContentIntent(
+                        PendingIntent.getActivity(
+                            c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                        )
+                    )
+                }
+                finish(true)
+            } else Api.gotError(handler, null, it)
+        }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
         }
     }

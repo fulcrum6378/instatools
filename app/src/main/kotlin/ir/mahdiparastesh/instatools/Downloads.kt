@@ -84,6 +84,11 @@ class Downloads : ServiceOwnerActivity() {
                     HANDLE_RESET ->
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
+                    HANDLE_429 -> AlertDialog.Builder(this@Downloads).apply {
+                        setTitle(R.string.downloads)
+                        setMessage(R.string.queuer429)
+                        setNeutralButton(R.string.ok, null)
+                    }.show()
                 }
                 updateIfEmpty(mm.queueds.isNullOrEmpty())
             }
@@ -204,6 +209,8 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
+        const val HANDLE_429 = 429
+
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             val uri = c.sPreference(Settings.spStorage)

@@ -16,6 +16,7 @@ class Notify {
         const val ID_EXPORTER = 2
         const val ID_FOLLOWER = 3
         const val ID_QUEUER_SOME_FAILED = 10
+        const val ID_QUEUER_429 = 11
         const val ID_EXPORTER_UNK_FETCH_ERROR = 20
         const val ID_EXPORTER_429 = 21
         const val ID_EXPORTER_DONE = 25 // incremental
