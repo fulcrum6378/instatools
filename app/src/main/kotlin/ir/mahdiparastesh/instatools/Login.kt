@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.os.Process.killProcess
 import android.os.Process.myPid
@@ -10,6 +11,8 @@ import android.view.ViewStub
 import android.webkit.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewFeature
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
@@ -70,6 +73,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.web.settings.javaScriptEnabled = true
         b.web.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         b.web.webViewClient = myClient
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && night()) {
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING))
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(b.web.settings, true)
+            else b.web.isForceDarkAllowed = true
+        }
         b.refresher.setOnRefreshListener { b.web.reload() }
 
         // Accounts

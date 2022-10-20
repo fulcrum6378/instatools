@@ -106,8 +106,8 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Followable LIMIT 1")
         fun aFollowable(): List<Followable>
 
-        /*@Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addFollowable(item: Followable): Long*/
+        @Query("SELECT COUNT(id) FROM Followable")
+        fun countFollowables(): Int
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addFollowables(items: List<Followable>): List<Long>

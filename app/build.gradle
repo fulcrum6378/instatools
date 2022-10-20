@@ -22,7 +22,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 63
-        versionName '23.2'
+        versionName '23.3'
         signingConfig signingConfigs.main
     }
 
@@ -52,7 +52,7 @@ android {
 //noinspection SpellCheckingInspection
 dependencies {
     def room_version = '2.4.3'
-    def glide_version = '4.13.2'
+    def glide_version = '4.14.2'
     def media2_version = '1.2.1'
 
     implementation 'androidx.activity:activity-ktx:1.6.0' // Only for ActivityResultLauncher
@@ -65,6 +65,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.webkit:webkit:1.5.0'
     implementation 'com.airbnb.android:lottie:5.2.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'

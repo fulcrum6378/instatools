@@ -234,7 +234,7 @@ class PageVwr : BasePageViewer() {
                         MassFollower.initService(
                             c, Follower.ToBeEnqueued(
                                 c.mm.vwUser!!.id, isItFollowers,
-                                bo.alsoRequestPv.isChecked, bo.limit.text.toString().toLong()
+                                bo.alsoRequestPv.isChecked, bo.limit.text.toString().toInt()
                             )
                         ) { c.goTo(MassFollower::class) }
                     }

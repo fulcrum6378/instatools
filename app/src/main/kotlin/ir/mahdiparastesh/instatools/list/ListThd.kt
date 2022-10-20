@@ -79,6 +79,7 @@ class ListThd(val c: Main, private val f: PageBox) :
             date.vis(showDate)
             if (showDate) date.text =
                 "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}.${z(cal[Calendar.DAY_OF_MONTH])}"
+
             if (dm.action_log != null) return this
 
             // Layout

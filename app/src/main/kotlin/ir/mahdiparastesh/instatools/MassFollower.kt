@@ -21,6 +21,7 @@ import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
 import ir.mahdiparastesh.instatools.list.ListFwb
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Follower
@@ -138,7 +139,6 @@ class MassFollower : ServiceOwnerActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
         Follower.active.observe(this) { updateControlButton(it) }
-        // countPermissions()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             b.toolbar.menu.findItem(R.id.mfTroubleshoot).isVisible = false
         return ret
@@ -197,6 +197,11 @@ class MassFollower : ServiceOwnerActivity() {
         }
     }
 
+    override fun onStateChanged(hasContent: Boolean) {
+        super.onStateChanged(hasContent)
+        mm.fwb.value = mm.fwb.value
+    }
+
     private fun indicateSeek(updateSb: Boolean = false) {
         b.seekIndicator.text = c.inaccurateTime(Follower.DELAY)
         if (updateSb) b.seek.progress = (Follower.properDelay(this).toInt() / 1000) - seekMin
@@ -217,7 +222,7 @@ class MassFollower : ServiceOwnerActivity() {
 
     @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
-        mm.fwb.value = null
+        Delay(500L) { mm.fwb.value = null }
         super.onBackPressed()
     }
 

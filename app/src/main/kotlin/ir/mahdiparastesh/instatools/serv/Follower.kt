@@ -10,7 +10,6 @@ import ir.mahdiparastesh.instatools.MassFollower
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Followable
-import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
@@ -19,13 +18,12 @@ import ir.mahdiparastesh.instatools.more.LongThread
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
-import kotlinx.coroutines.runBlocking
 
 class Follower : ForegroundService() {
     private var toBeEnqueued = arrayListOf<ToBeEnqueued>()
     private var enqueuer: Enqueuer? = null
     private var scheduler: Scheduler? = null
-    private var following = arrayListOf<Friend>()
+    private var following = arrayListOf<String>()
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val requiresHandling = true
@@ -75,7 +73,7 @@ class Follower : ForegroundService() {
         }
         DELAY = properDelay(this)
         Thread {
-            runBlocking { following.addAll(dao.following()) }
+            following.addAll(dao.following().map { f -> f.id })
             if (scheduler?.active != true) scheduler = Scheduler().also { it.start() }
         }.start()
     }
@@ -89,7 +87,10 @@ class Follower : ForegroundService() {
                 var sum = 0
                 flw.users?.filter {
                     (toBeEnqueued[0].includePv || !it.is_private) &&
-                            it.pk !in following.map { f -> f.id } && it.pk != m.acc!!.id.toString()
+                            it.pk !in following && it.pk != m.acc!!.id.toString()
+                }?.let {
+                    val toLimit = toBeEnqueued[0].limitTo - total
+                    if (toLimit < it.size) it.subList(0, toLimit) else it
                 }?.map { Followable(it.pk, it.username, it.is_private) }?.also {
                     sum = it.size
                     total += sum
@@ -116,10 +117,9 @@ class Follower : ForegroundService() {
             val cur = toBeEnqueued.getOrNull(0)
             total = 0
             if (cur == null || !Follower.active.value!!) {
+                if (scheduler?.active != true) scheduler = Scheduler().also { it.start() }
                 interrupt()
-                if (scheduler?.active != true) this@Follower.finish(false)
-                return; }
-            allFollow()
+            } else allFollow()
         }
 
         private fun allFollow(next_max_id: String = "") {
@@ -132,7 +132,7 @@ class Follower : ForegroundService() {
         }
 
         private fun enqueuingDone() {
-            toBeEnqueued.removeAt(0)
+            toBeEnqueued.removeFirstOrNull()
             enqueue()
         }
     }
@@ -188,8 +188,10 @@ class Follower : ForegroundService() {
                 MassFollower.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, it)
                     ?.sendToTarget()
             }
-            sleep(DELAY)
-            follow()
+            if (dao.countFollowables() > 0) {
+                sleep(DELAY)
+                follow()
+            } else end()
         }
 
         private fun end() {
@@ -203,20 +205,20 @@ class Follower : ForegroundService() {
         val id: String,
         val isItFollowers: Boolean,
         val includePv: Boolean,
-        val limitTo: Long
+        val limitTo: Int
     ) : Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString()!!,
             parcel.readByte() != 0.toByte(),
             parcel.readByte() != 0.toByte(),
-            parcel.readLong()
+            parcel.readInt()
         )
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(id)
             parcel.writeByte(if (isItFollowers) 1 else 0)
             parcel.writeByte(if (includePv) 1 else 0)
-            parcel.writeLong(limitTo)
+            parcel.writeInt(limitTo)
         }
 
         override fun describeContents(): Int = 0

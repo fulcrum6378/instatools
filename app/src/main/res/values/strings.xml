@@ -242,8 +242,8 @@
     <string name="queuerTitle">Downloading&#8230;</string>
     <string name="queuerFailed">Couldn\'t download %d items!</string>
     <string name="queuer429">
-        Unfortunately Instagram gave a "Too many requests" error!
-        \nYou can try again about half an hour later! Sorry!!
+        Unfortunately Instagram gave a \"too many requests\" error!
+        You can try again a few hours later! Sorry!!
     </string>
 
     <!-- Exporter -->
