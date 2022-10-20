@@ -108,7 +108,7 @@ class Api<JSON>(
         // Adding "media_id=" parameter is of no use, the results are the same!!
 
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
-        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),
+        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),// count=12&
 
         //FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
         FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),

@@ -15,6 +15,7 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
@@ -214,12 +215,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             if (url != host && !url.startsWith("$host?")) return
             try { // Don't remove the explanatory comments
                 view.evaluateJavascript(
-                    """(function() {
-        return document.getElementsByTagName('body')[0].innerHTML;
-    })()""".trimMargin()
-                ) { html ->
+                    "(function() { return document.getElementsByTagName('body')[0].innerHTML; })()"
+                ) { html -> // returns innerHtml of <body> inside "".
+                    collect(html)
                     try {
-                        collect(html)
                     } catch (e: JsonSyntaxException) {
                         if (BuildConfig.DEBUG) throw e else {
                             Delay { b.web.reload() }
@@ -249,13 +248,18 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class
         )
         private fun collect(html: String) {
-            PageConfig.findConfigWrapper(html, true, {
+            PageConfig.findFromJsEval(html, {
                 Delay { b.web.reload() }
                 if (improperLoading < 3) improperLoading++
             }) { wrapper ->
                 @Suppress("UNCHECKED_CAST")
-                val config =
-                    wrapper.define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
+                val config = (wrapper.require[0][3] as ArrayList<Map<String, PageConfig>>)
+                    .find { Gson().toJson(it).contains("XIGSharedData") }!!.let {
+                        Gson().fromJson(
+                            Gson().toJson(it), object : TypeToken<Map<String, PageConfig>>() {}.type
+                        ) as Map<String, PageConfig>
+                    }.values.elementAt(0).define
+                    .find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(
                     config["raw"] as String, PageConfig.RawSharedData::class.java
                 )

@@ -12,9 +12,10 @@ class PageConfig(
     companion object {
         private const val preScheduledApplyEach =
             "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
+        private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
 
-        fun findConfigWrapper(
-            html: String, unescape: Boolean = false,
+        fun findFromRawHtml(
+            html: String,
             onFailure: (e: Exception?) -> Unit, onSuccess: (wrapper: PageConfig) -> Unit
         ) {
             var read = html
@@ -26,10 +27,7 @@ class PageConfig(
             val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
             if (configWrapper != null)
                 try {
-                    Gson().fromJson(
-                        if (unescape) StringEscapeUtils.unescapeJson(configWrapper) else configWrapper,
-                        PageConfig::class.java
-                    )
+                    Gson().fromJson(configWrapper, PageConfig::class.java)
                 } catch (e: JsonSyntaxException) {
                     if (BuildConfig.DEBUG) throw e
                     onFailure(e)
@@ -39,6 +37,25 @@ class PageConfig(
                 if (BuildConfig.DEBUG) throw Exception("Couldn't find XIGSharedData!!")
                 else onFailure(null)
             }
+        }
+
+        fun findFromJsEval(
+            html: String,
+            onFailure: (e: Exception?) -> Unit, onSuccess: (wrapper: PageConfig) -> Unit
+        ) {
+            val read = StringEscapeUtils.unescapeJson(html)
+            val configWrapper = read.substring(read.indexOf(scheduledServerJS))
+                .substringBefore("</script>")
+            try {
+                Gson().fromJson(
+                    configWrapper, //
+                    PageConfig::class.java
+                )
+            } catch (e: JsonSyntaxException) {
+                if (BuildConfig.DEBUG) throw e
+                onFailure(e)
+                null
+            }?.also { onSuccess(it) }
         }
     }
 

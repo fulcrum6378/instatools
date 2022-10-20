@@ -189,6 +189,10 @@ class PageUnf : BasePageMain() {
                         )
                     )
                 }
+                /* FIXME Log.println(
+                    Log.ASSERT, Main::class.java.`package`!!.name,
+                    "Fetched $theFollowers : ${flw.users.size} of ${flw.page_size.toInt()}"
+                )*/
                 if (flw.next_max_id == null) {
                     if (theFollowers) allFollow(theFollowers = false)
                     else CoroutineScope(Dispatchers.IO).launch { ended() }

@@ -136,8 +136,8 @@ class Queuer : ForegroundService() {
         }.start()
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
-            PageConfig.findConfigWrapper(
-                html, false, { Api.gotError(handler, null, null) }) { cnfWrapper ->
+            PageConfig.findFromRawHtml(
+                html, { Api.gotError(handler, null, null) }) { cnfWrapper ->
                 @Suppress("UNCHECKED_CAST")
                 val root =
                     (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
@@ -146,7 +146,7 @@ class Queuer : ForegroundService() {
                         Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                     }
                 if (root == null) {
-                    Api.gotError(handler, null, null); return@findConfigWrapper; }
+                    Api.gotError(handler, null, null); return@findFromRawHtml; }
 
                 when (root.rootView.resource.__dr) {
                     "PolarisPostRoot.react" -> reqQueue.adder = Api<Media.MediaWrapperApi>(
