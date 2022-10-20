@@ -7,8 +7,7 @@ import org.apache.commons.text.StringEscapeUtils
 
 @Suppress("SpellCheckingInspection")
 class PageConfig(
-    val define: Array<Array<Any>>,
-    val require: Array<Array<Any>>
+    val define: Array<Array<Any>>, val require: Array<Array<Any>>
 ) {
     companion object {
         private const val preScheduledApplyEach =
@@ -32,11 +31,14 @@ class PageConfig(
                         PageConfig::class.java
                     )
                 } catch (e: JsonSyntaxException) {
-                    if (BuildConfig.DEBUG) throw e //Exception("Shared data not found in\n$unescaped")
+                    if (BuildConfig.DEBUG) throw e
                     onFailure(e)
                     null
                 }?.also { onSuccess(it) }
-            else onFailure(null)
+            else {
+                if (BuildConfig.DEBUG) throw Exception("Couldn't find XIGSharedData!!")
+                else onFailure(null)
+            }
         }
     }
 
