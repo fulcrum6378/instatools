@@ -16,7 +16,7 @@
     </array>
 
     <!-- #GLOBAL -->
-    <color name="expandableHeaderBg">#AA8B006D</color>
+    <color name="expandableHeaderBg">@android:color/transparent</color>
 
     <!-- Main -->
     <color name="unfollowers">@color/defCA</color>

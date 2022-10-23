@@ -98,10 +98,10 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/button"
-                    app:layout_constraintBottom_toBottomOf="@id/msgIv"
-                    app:layout_constraintLeft_toLeftOf="@id/msgIv"
-                    app:layout_constraintRight_toRightOf="@id/msgIv"
-                    app:layout_constraintTop_toTopOf="@id/msgIv" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.AppCompatTextView

@@ -412,24 +412,25 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 }
 
 /* TODO:
-* Problems:
-* Followers/following lists are randomly incomplete!!
-* Less frequently detected as a bot!
-* When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
-* Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
-*
-* Extension:
-* Live unfollower inspector
-* Conditional jump to bottom
-* Exporter maximum date of top and bottom which would need a calendar picker!?!?
-* Undo for Unsave
-* View post/story in Instatools intent filter
-* Max slides for HtmlExporter
-*
-* Extensions which need comprehending Instagram APK file:
-* Live Live downloader
-* Notification-enabled download
-*
-* Extensions which are not recommended:
-* Metadata for videos and audios (whose libraries seem to be critically unstable)
+  * Problems:
+  * Followers/following lists are randomly incomplete!!
+  * Less frequently detected as a bot!
+  * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
+  * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
+  * -
+  * Extension:
+  * Live unfollower inspector
+  * Conditional jump to bottom
+  * Exporter maximum date of top and bottom which would need a calendar picker!?!?
+  * Undo for Unsave
+  * View post/story in Instatools intent filter
+  * Max slides for HtmlExporter
+  * -
+  * Extensions which need comprehending Instagram APK file:
+  * Live Live downloader
+  * Notification-enabled download
+  * Web API sends followers & following irregularly and incompletely, so Inquiry always shows a random number!
+  * -
+  * Extensions which are not recommended:
+  * Metadata for videos and audios (whose libraries seem to be critically unstable)
 */
