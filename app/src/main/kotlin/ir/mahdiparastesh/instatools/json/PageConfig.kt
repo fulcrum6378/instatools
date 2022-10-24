@@ -34,7 +34,7 @@ class PageConfig(
                     null
                 }?.also { onSuccess(it) }
             else {
-                if (BuildConfig.DEBUG) throw Exception("Couldn't find XIGSharedData!!")
+                if (BuildConfig.DEBUG) throw Exception("Couldn't find XIGSharedData: $html")
                 else onFailure(null)
             }
         }
