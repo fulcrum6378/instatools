@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.json
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
 import org.apache.commons.text.StringEscapeUtils
 
@@ -18,6 +19,9 @@ class PageConfig(
             html: String,
             onFailure: (e: Exception?) -> Unit, onSuccess: (wrapper: PageConfig) -> Unit
         ) {
+            if (html.contains(scheduledServerJS))
+                return findFromPerhapsBakedHtml(html, onFailure, onSuccess)
+
             var read = html
             val scheduledApplyEach = arrayListOf<String>()
             while (read.contains(preScheduledApplyEach)) {
@@ -39,20 +43,26 @@ class PageConfig(
             }
         }
 
-        fun findFromJsEval(
+        private fun findFromPerhapsBakedHtml(
             html: String,
             onFailure: (e: Exception?) -> Unit, onSuccess: (wrapper: PageConfig) -> Unit
         ) {
             val read = StringEscapeUtils.unescapeJson(html)
-            val configWrapper = read.substring(read.indexOf(scheduledServerJS))
-                .substringBefore("</script>")
+            val index = read.indexOf(scheduledServerJS)
+            if (index == -1) {
+                onFailure(IllegalStateException("scheduledServerJS not found in $read"))
+                return; }
+            val configWrapper = read.substring(index).substringBefore("</script>")
             try {
-                Gson().fromJson(
-                    configWrapper, //
-                    PageConfig::class.java
-                )
+                @Suppress("UNCHECKED_CAST")
+                (Gson().fromJson(configWrapper, PageConfig::class.java).require[0][3]
+                        as ArrayList<Map<String, PageConfig>>)
+                    .find { Gson().toJson(it).contains("XIGSharedData") }!!.let {
+                        Gson().fromJson(
+                            Gson().toJson(it), object : TypeToken<Map<String, PageConfig>>() {}.type
+                        ) as Map<String, PageConfig>
+                    }.values.elementAt(0)
             } catch (e: JsonSyntaxException) {
-                if (BuildConfig.DEBUG) throw e
                 onFailure(e)
                 null
             }?.also { onSuccess(it) }

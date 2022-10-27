@@ -15,7 +15,6 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
@@ -29,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.apache.commons.text.StringEscapeUtils
 import kotlin.system.exitProcess
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
@@ -215,51 +215,32 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             if (url != host && !url.startsWith("$host?")) return
             try { // Don't remove the explanatory comments
                 view.evaluateJavascript(
-                    "(function() { return document.getElementsByTagName('body')[0].innerHTML; })()"
+                    "document.getElementsByTagName('body')[0].innerHTML"
                 ) { html -> // returns innerHtml of <body> inside "".
-                    collect(html)
                     try {
+                        collect(html)
                     } catch (e: JsonSyntaxException) {
-                        if (BuildConfig.DEBUG) throw e else {
-                            Delay { b.web.reload() }
-                            if (improperLoading < 3) improperLoading++
-                        }
+                        failed(e)
                     } catch (e: IllegalStateException) {
-                        // The page may have failed to load properly.
-                        Delay { b.web.reload() }
-                        if (improperLoading < 3) improperLoading++
-                        else if (BuildConfig.DEBUG) throw e
+                        failed(e) // The page may have failed to load properly.
                     } catch (e: NumberFormatException) {
                         // This happens when you go to, for example, the profiles/hashtags page,
                         // tap on the pretty "Instagram" title in the header, then you go to
                         // another page, e.g. sign up page, then you come back to the same
                         // "instagram.com" page, then you repeat this act once more.
-                    } catch (e: NullPointerException) {
-                        // Because of an unknown reason!!
                     }
-                    improperLoading = 0
                 }
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) throw e
             }
         }
 
-        @Throws(
-            JsonSyntaxException::class, NumberFormatException::class, NullPointerException::class
-        )
-        private fun collect(html: String) {
-            PageConfig.findFromJsEval(html, {
-                Delay { b.web.reload() }
-                if (improperLoading < 3) improperLoading++
-            }) { wrapper ->
-                @Suppress("UNCHECKED_CAST")
-                val config = (wrapper.require[0][3] as ArrayList<Map<String, PageConfig>>)
-                    .find { Gson().toJson(it).contains("XIGSharedData") }!!.let {
-                        Gson().fromJson(
-                            Gson().toJson(it), object : TypeToken<Map<String, PageConfig>>() {}.type
-                        ) as Map<String, PageConfig>
-                    }.values.elementAt(0).define
-                    .find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
+        @Throws(JsonSyntaxException::class, NumberFormatException::class)
+        private fun collect(html: String) { // NullPointerException::class
+            PageConfig.findFromRawHtml(
+                StringEscapeUtils.unescapeJson(html), { failed(it) }) { wrapper ->
+                @Suppress("UNCHECKED_CAST") val config =
+                    wrapper.define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(
                     config["raw"] as String, PageConfig.RawSharedData::class.java
                 )
@@ -280,7 +261,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
                 gsp.edit { putString(spAccount, id) }
                 goTo(Main::class, true)
+                improperLoading = 0
             }
+        }
+
+        private fun failed(e: Exception?) {
+            Delay { b.web.reload() }
+            if (improperLoading < 3) improperLoading++
+            else if (BuildConfig.DEBUG) throw e!!
         }
     }
 
