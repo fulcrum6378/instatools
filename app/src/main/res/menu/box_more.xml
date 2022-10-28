@@ -13,6 +13,9 @@
         android:id="@+id/bmOpenDmInInsta"
         android:title="@string/openDmInInsta" />
     <item
+        android:id="@+id/bmMarkAsSeen"
+        android:title="@string/markAsSeen" />
+    <item
         android:id="@+id/bmView"
         android:title="@string/viewProfile" />
 </menu>

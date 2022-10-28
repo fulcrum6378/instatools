@@ -185,4 +185,6 @@ open class Rest {
         //val feedback_url: String?,
         //val feedback_action: String?, // e.g.: "report_problem"
     ) : Rest()
+
+    class Seen(val status_code: String /* must be "200" */)
 }

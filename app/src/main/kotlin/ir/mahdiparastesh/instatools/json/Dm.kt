@@ -102,7 +102,7 @@ class Dm(
         //val pending: Boolean,
         //val pending_user_ids: Array<Any?>,
         //val prev_cursor: String,
-        //val read_state: Double,
+        var read_state: Double, // 0 => seen, 1 => not seen, nothing else
         //val relevancy_score: Double,
         //val relevancy_score_expr: Double,
         //val rtc_feature_set_str: String,

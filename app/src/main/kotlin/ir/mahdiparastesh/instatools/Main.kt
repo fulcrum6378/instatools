@@ -414,7 +414,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 /* TODO:
   * Problems:
   * Followers/following lists are randomly incomplete!!
-  * Less frequently detected as a bot!
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
   * -
@@ -433,4 +432,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Extensions which are not recommended:
   * Metadata for videos and audios (whose libraries seem to be critically unstable)
+  * -
+  * Alternate Solutions:
+  * Everyday open the Login WebView automatically in order to synchronise
 */

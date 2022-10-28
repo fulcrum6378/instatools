@@ -118,6 +118,7 @@
     <string name="exportHtmlDesc">توجه: یک فایل HTML را فقط با کامپیوتر میتوانید بدرستی مشاهده نمایید!</string>
     <string name="exportPdfDesc">یک فایل PDF نمی تواند صدا و فیلم در خود جای بدهد.</string>
     <string name="exportTxtDesc">یک فایل TXT فقط می تواند متن را در خود جای دهد.</string>
+    <string name="markAsSeen">سین کردن</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>

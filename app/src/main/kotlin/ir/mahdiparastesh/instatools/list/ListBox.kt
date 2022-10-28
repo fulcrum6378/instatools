@@ -2,12 +2,16 @@ package ir.mahdiparastesh.instatools.list
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.Request
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -51,6 +55,14 @@ class ListBox(val c: Main, private val f: PageBox) :
                     this[R.id.bmPdf] = { f.expOptions(Exporter.Method.PDF, thd) }
                     this[R.id.bmTxt] = { f.expOptions(Exporter.Method.TXT, thd) }
                     this[R.id.bmOpenDmInInsta] = { UiTools.openDm(c, thd.thread_id) }
+                    this[R.id.bmMarkAsSeen] = {
+                        val last = thd.items.lastOrNull()
+                        if (last != null) f.reqQueue.adder = Api<Rest.Seen>(
+                            c, Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id),
+                            Rest.Seen::class, null, method = Request.Method.POST,
+                            autoQueue = false /*, onError = {}*/
+                        ) { rest -> if (rest.status_code == "200") thd.read_state = 0.0 }
+                    }
                     this[R.id.bmView] = {
                         thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
                     }
@@ -58,6 +70,8 @@ class ListBox(val c: Main, private val f: PageBox) :
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }
+                if (thd.read_state != 1.0)
+                    menu.findItem(R.id.bmMarkAsSeen)?.let { i -> i.isVisible = false }
             }.show()
         }
         h.b.sep.vis(i < itemCount - 1)

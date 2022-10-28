@@ -308,7 +308,7 @@ class Queuer : ForegroundService() {
 
     inner class Download : BaseThread() {
         override fun run() {
-            val queue = ArrayList(dao.readyQueueds().sortedBy { it.addedAt })
+            val queue = ArrayList(dao.readyQueueds()/*.sortedBy { it.addedAt }*/)
             if (queue.isEmpty()) {
                 if (!handlingLink) this@Queuer.finish(false)
                 else interrupt()
@@ -513,13 +513,12 @@ class Queuer : ForegroundService() {
                     if (branch.isDirectory && branch.listFiles().isEmpty())
                         branch.delete()
                 StorageCache.saveStorageCache(this@Queuer)
-            }.onSuccess {
-                super.destroy()
             }.onFailure {
                 if (BuildConfig.DEBUG) throw it
-                else super.destroy()
             }
             val failedSum = dao.queueds().filter { it.isFailed() }.size
+            if (dao.readyQueueds().isNotEmpty()) { // double check in between
+                download = Download().also { it.start() }; return@launch; }
             if (failedSum > 0) eventNotification(Notify.ID_QUEUER_SOME_FAILED) {
                 setContentTitle(getString(R.string.queuerFailed, failedSum))
                 setContentIntent(
@@ -528,6 +527,7 @@ class Queuer : ForegroundService() {
                     )
                 )
             }
+            super.destroy()
         }
     }
 
