@@ -122,7 +122,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfAct = openActivity
         ntfPage = turnToPage
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ntfManager.deleteNotificationChannel(com.channel.id)
             ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
             ntfManager.createNotificationChannel(com.channel.create(c))
         }

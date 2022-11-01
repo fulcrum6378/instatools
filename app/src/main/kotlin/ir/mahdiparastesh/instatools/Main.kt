@@ -429,6 +429,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Live Live downloader
   * Notification-enabled download
   * Web API sends followers & following irregularly and incompletely, so Inquiry always shows a random number!
+  * Export/import blocked accounts lists from/into different accounts of one's
   * -
   * Extensions which are not recommended:
   * Metadata for videos and audios (whose libraries seem to be critically unstable)

@@ -12,7 +12,7 @@ android {
     signingConfigs {
         main {
             storeFile file('D:\\Experimental\\mahdiparastesh.jks')
-            keyAlias 'instatools' // _beth
+            keyAlias 'instatools'
             storePassword "${System.getenv("JERK")}"
             keyPassword "${System.getenv("JERK")}"
         }
@@ -31,12 +31,12 @@ android {
         debuggee {
             debuggable true
             minifyEnabled false
-            // applicationIdSuffix = ".beth"
         }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // applicationIdSuffix = ".beth"
         }
     }
     android.variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }

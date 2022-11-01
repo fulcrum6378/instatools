@@ -92,10 +92,13 @@ class Api<JSON>(
     }
 
     enum class Endpoint(val url: String) {
+        // Profiles
         PROFILE("https://i.instagram.com/api/v1/users/web_profile_info/?username=%s"),
-        MEDIA_ITEM("https://i.instagram.com/api/v1/media/%s/info/"),
+        SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
 
-        //INFO("https://i.instagram.com/api/v1/users/%s/info/"),
+        // Posts & Stories
+        MEDIA_ITEM("https://i.instagram.com/api/v1/media/%s/info/")
+        /*INFO("https://i.instagram.com/api/v1/users/%s/info/"),*/,
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
@@ -107,30 +110,35 @@ class Api<JSON>(
         // StoryReel = "Full-Screen Video"; Story { reel, reel, ... }, Highlights { reel, reel, ... }
         // Adding "media_id=" parameter is of no use, the results are the same!!
 
+        // Interactions
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
-        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s"),// count=12&
-
-        //FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),
+        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s")// count=12&
+        /*FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),*/,
         FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
         UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
+        /*RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
+        UNRESTRICT("https://www.instagram.com/api/v1/web/restrict_action/unrestrict/"),
+        // method = POST, body = "target_user_id=<USER_ID>", expect "{"status":"ok"}" */
+        /*BLOCK("https://www.instagram.com/api/v1/web/friendships/%d/block/"),
+        UNBLOCK("https://www.instagram.com/api/v1/web/friendships/%d/unblock/"),
+        // method = POST, expect "{"status":"ok"}" */
 
+        // Saving
         SAVED(
             "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
-        ),// This method brings posts with large thumbnails and no other candidates
-
-        //SAVE("https://www.instagram.com/web/save/%s/save/"),
+        )// This method brings posts with large thumbnails and no other candidates
+        /*SAVE("https://www.instagram.com/web/save/%s/save/"),*/,
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
+        // Messaging
         INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),
-
-        //persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
-        // Avoiding "limit" argument will default to 20, but can be more than that.
+        DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d")
+        /* persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
+        // Avoiding "limit" argument will default to 20, but can be more than that. */,
         SEEN("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 
-        SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
-
+        // Logging in/out
         SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// MEDIA_ITEM
     }
 
