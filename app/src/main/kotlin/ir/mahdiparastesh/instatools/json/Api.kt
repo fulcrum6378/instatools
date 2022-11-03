@@ -4,17 +4,14 @@ import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
 import android.util.DisplayMetrics
-import androidx.core.content.edit
 import com.android.volley.*
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
@@ -59,8 +56,6 @@ class Api<JSON>(
             if (response.startsWith("<!DOCTYPE html>")) when {
                 url == Endpoint.SIGN_OUT.url -> gotError(this)
                 response.contains("Log in • Instagram") -> {
-                    ForegroundService.terminateTasks(c.c)
-                    c.gsp.edit { remove(Login.spAccount) }
                     c.needAuthentication()
                     if (c is BaseActivity) gotError(this)
                 }

@@ -20,10 +20,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.Downloads
-import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
@@ -136,8 +133,10 @@ class Queuer : ForegroundService() {
         }.start()
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
-            PageConfig.findFromRawHtml(
-                html, { Api.gotError(handler, null, null) }) { cnfWrapper ->
+            PageConfig.findFromRawHtml(html, {
+                Api.gotError(handler, null, null)
+                if (it is Login.LoggedOutException) needAuthentication()
+            }) { cnfWrapper ->
                 @Suppress("UNCHECKED_CAST")
                 val root =
                     (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }

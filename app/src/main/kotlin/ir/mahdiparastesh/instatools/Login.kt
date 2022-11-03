@@ -28,7 +28,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.commons.text.StringEscapeUtils
 import kotlin.system.exitProcess
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
@@ -109,9 +108,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
-    override fun onAccountSet() {
-    }
-
+    override fun onAccountSet() {}
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
@@ -217,6 +214,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 view.evaluateJavascript(
                     "document.getElementsByTagName('body')[0].innerHTML"
                 ) { html -> // returns innerHtml of <body> inside "".
+                    if (html == "null") {
+                        failed(Exception("evaluateJavascript() returned null!"))
+                        return@evaluateJavascript; }
                     try {
                         collect(html)
                     } catch (e: JsonSyntaxException) {
@@ -231,14 +231,16 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     }
                 }
             } catch (e: Exception) {
-                if (BuildConfig.DEBUG) throw e
+                if (BuildConfig.DEBUG) throw e else failed(e)
             }
         }
 
         @Throws(JsonSyntaxException::class, NumberFormatException::class)
-        private fun collect(html: String) { // NullPointerException::class
-            PageConfig.findFromRawHtml(
-                StringEscapeUtils.unescapeJson(html), { failed(it) }) { wrapper ->
+        private fun collect(html: String) { // UnicodeUnescaper fucks up!
+            PageConfig.findFromRawHtml(html, { failed(it) },
+                { file, data ->
+                    c.openFileOutput(file, 0).use { it.write(data.encodeToByteArray()) }
+                }) { wrapper ->
                 @Suppress("UNCHECKED_CAST") val config =
                     wrapper.define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(
@@ -265,10 +267,13 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        private fun failed(e: Exception?) {
+        private fun failed(e: Exception) {
             Delay { b.web.reload() }
-            if (improperLoading < 3) improperLoading++
-            else if (BuildConfig.DEBUG) throw e!!
+            if (improperLoading < 6) improperLoading++
+            else {
+                if (BuildConfig.DEBUG) throw e
+                else welcome()
+            }
         }
     }
 
@@ -285,4 +290,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         killProcess(myPid())
         exitProcess(0)
     }
+
+    class LoggedOutException : Exception()
 }

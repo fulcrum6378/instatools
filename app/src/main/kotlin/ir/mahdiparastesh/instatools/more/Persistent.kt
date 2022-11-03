@@ -44,6 +44,8 @@ interface Persistent {
 
     fun needAuthentication() {
         if (Login.cameHereToAuth) return
+        ForegroundService.terminateTasks(c)
+        gsp.edit { remove(Login.spAccount) }
         m.accountSwitched()
         if (this is BaseActivity && this !is Login)
             goTo(Login::class, true) { putExtra(Login.EXTRA_NEED_AUTH, m.acc?.id ?: -1L) }

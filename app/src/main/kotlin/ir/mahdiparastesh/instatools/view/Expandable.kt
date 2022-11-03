@@ -37,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
+import java.util.concurrent.TimeoutException
 
 class Expandable(
     private val c: BaseActivity,
@@ -273,7 +274,12 @@ class Expandable(
                 override fun onAnimationEnd(animation: Animator) {
                     thumb?.alpha = 1f
                     thumb = null
-                    b.root.vish(false)
+                    try {
+                        b.root.vish(false)
+                    } catch (_: TimeoutException) {
+                        // Waited 100 milliseconds (plus 168807 nanoseconds delay) for
+                        // androidx.media2.player.MediaPlayer$20@60db9c3[status=PENDING]
+                    }
                     b.slider.adapter = null
                     currentAnimator = null
                     zoomed = false

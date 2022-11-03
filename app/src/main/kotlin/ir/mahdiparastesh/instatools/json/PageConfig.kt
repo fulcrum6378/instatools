@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.json
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
@@ -13,14 +14,18 @@ class PageConfig(
     companion object {
         private const val preScheduledApplyEach =
             "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
-        private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
+
+        // private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
+        private const val scheduledServerJSEscaped = "{\\\"require\\\":[[\\\"ScheduledServerJS\\\""
 
         fun findFromRawHtml(
-            html: String,
-            onFailure: (e: Exception?) -> Unit, onSuccess: (wrapper: PageConfig) -> Unit
+            html: String, onFailure: (e: Exception) -> Unit,
+            test: ((file: String, data: String) -> Unit)? = null,
+            onSuccess: (wrapper: PageConfig) -> Unit,
         ) {
-            if (html.contains(scheduledServerJS))
-                return findFromPerhapsBakedHtml(html, onFailure, onSuccess)
+            if (html.contains(scheduledServerJSEscaped))
+                return findFromPerhapsBakedHtml(html, onFailure, test, onSuccess)
+            test?.also { it("login.html", html) }
 
             var read = html
             val scheduledApplyEach = arrayListOf<String>()
@@ -37,25 +42,25 @@ class PageConfig(
                     onFailure(e)
                     null
                 }?.also { onSuccess(it) }
-            else {
-                if (BuildConfig.DEBUG) throw Exception("Couldn't find XIGSharedData: $html")
-                else onFailure(null)
-            }
+            else onFailure(IllegalStateException("Couldn't find XIGSharedData: $html"))
         }
 
         private fun findFromPerhapsBakedHtml(
-            html: String,
-            onFailure: (e: Exception?) -> Unit, onSuccess: (wrapper: PageConfig) -> Unit
+            html: String, onFailure: (e: Exception) -> Unit,
+            test: ((file: String, data: String) -> Unit)? = null,
+            onSuccess: (wrapper: PageConfig) -> Unit
         ) {
-            val read = StringEscapeUtils.unescapeJson(html)
-            val index = read.indexOf(scheduledServerJS)
+            val index = html.indexOf(scheduledServerJSEscaped)
             if (index == -1) {
-                onFailure(IllegalStateException("scheduledServerJS not found in $read"))
+                onFailure(IllegalStateException("scheduledServerJS not found in $html"))
                 return; }
-            val configWrapper = read.substring(index).substringBefore("</script>")
+            val configWrapper = StringEscapeUtils.unescapeJson(html.substring(index))
+                .substringBefore("</script>")
+            test?.also { it("wrapper.json", configWrapper) }
             try {
                 @Suppress("UNCHECKED_CAST")
-                (Gson().fromJson(configWrapper, PageConfig::class.java).require[0][3]
+                (GsonBuilder().setLenient().create()
+                    .fromJson(configWrapper, PageConfig::class.java).require[0][3]
                         as ArrayList<Map<String, PageConfig>>)
                     .find { Gson().toJson(it).contains("XIGSharedData") }!!.let {
                         Gson().fromJson(
