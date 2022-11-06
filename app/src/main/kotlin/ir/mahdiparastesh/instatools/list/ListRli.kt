@@ -17,13 +17,12 @@ class ListRli(private val c: Viewer, private val f: PageRel, private val reel: (
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListRliBinding> {
-        val b = ListRliBinding.inflate(c.layoutInflater, parent, false)
-        return AnyViewHolder(b)
-    }
+    ): AnyViewHolder<ListRliBinding> =
+        AnyViewHolder(ListRliBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListRliBinding>, i: Int) {
         val item = reel()?.items?.getOrNull(i) ?: return
+        h.b.number.text = "${i + 1}"
 
         Glide.with(c.c)
             .load(item.thumb())

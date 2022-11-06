@@ -43,7 +43,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val host = "https://www.instagram.com/"
         const val rawHost = "https://instagram.com/"
         const val loginUrl = "${host}accounts/login/"
-        const val spAccount = "account"
+        const val spAccount = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
         var cameHereToAuth = false
 
@@ -237,10 +237,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         @Throws(JsonSyntaxException::class, NumberFormatException::class)
         private fun collect(html: String) { // UnicodeUnescaper fucks up!
-            PageConfig.findFromRawHtml(html, { failed(it) },
-                { file, data ->
+            PageConfig.findFromRawHtml(
+                html, { failed(it) }, /*{ file, data ->
                     c.openFileOutput(file, 0).use { it.write(data.encodeToByteArray()) }
-                }) { wrapper ->
+                }*/
+            ) { wrapper ->
                 @Suppress("UNCHECKED_CAST") val config =
                     wrapper.define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(

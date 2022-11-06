@@ -4,7 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/vwReelWidth"
     android:layout_height="@dimen/vwReelHeight"
-    tools:ignore="ContentDescription">
+    tools:ignore="ContentDescription,MissingConstraints">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/number"
+        style="@style/parentConstraint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.InstaTools.Bold"
+        android:textColor="@color/rliNumber"
+        android:textSize="25sp" />
 
     <ImageView
         android:id="@+id/thumb"

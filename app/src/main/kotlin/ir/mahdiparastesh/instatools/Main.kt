@@ -416,6 +416,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Followers/following lists are randomly incomplete!!
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme
+  * Doesn't detect logged out situations
   * -
   * Extension:
   * Live unfollower inspector
@@ -436,4 +437,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Alternate Solutions:
   * Everyday open the Login WebView automatically in order to synchronise
+  *
+  * NOTES:
+  * Media of private accounts as well as DMs are accessible to the public via direct links!!
+  * So you don't need to bind cookies to the DownloadManager and perhaps even Queuer!
 */

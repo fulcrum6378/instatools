@@ -80,11 +80,11 @@ class PageSvd : BasePageMain(), Selective {
         },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
         Api.HANDLE_ERROR to {
-            onFailed(
-                c.getString(
-                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
-                )
-            )
+            val res = it.obj as? NetworkResponse
+            onFailed(c.getString(R.string.unknownError, res?.statusCode.toString()))
+            res?.data?.let { ba ->
+                c.openFileOutput("loggedOut.html", 0).use { o -> o.write(ba) }
+            } // TODO
         },
         Expandable.HANDLE_EXPANDABLE_ERROR to {
             UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)

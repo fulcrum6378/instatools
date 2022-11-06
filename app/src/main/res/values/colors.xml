@@ -43,6 +43,7 @@
 
     <!-- Viewer -->
     <color name="sepLine">#EEE</color>
+    <color name="rliNumber">#999</color>
 
     <!-- Settings -->
     <color name="stPath">#EFEFEF</color>
