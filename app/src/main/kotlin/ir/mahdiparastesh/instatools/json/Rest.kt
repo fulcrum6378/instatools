@@ -187,4 +187,11 @@ open class Rest {
     ) : Rest()
 
     class Seen(val status_code: String /* must be "200" */)
+
+    class ApiFailure(
+        //val message: String, // e.g.: "checkpoint_required"
+        //val checkpoint_url: String, // e.g.: "https://i.instagram.com/challenge/?next=<THE_API_ENDPOINT>"
+        val lock: Boolean,
+        //val flow_render_type: Float, // e.g.: 0
+    ) : Rest() // was "fail"
 }

@@ -134,7 +134,7 @@ class Queuer : ForegroundService() {
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
             PageConfig.findFromRawHtml(html, {
-                Api.gotError(handler, null, null)
+                Api.gotError(this@Queuer, handler, null, null)
                 if (it is Login.LoggedOutException) needAuthentication()
             }) { cnfWrapper ->
                 @Suppress("UNCHECKED_CAST")
@@ -145,7 +145,8 @@ class Queuer : ForegroundService() {
                         Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                     }
                 if (root == null) {
-                    Api.gotError(handler, null, null); return@findFromRawHtml; }
+                    Api.gotError(this@Queuer, handler, null, null)
+                    return@findFromRawHtml; }
 
                 when (root.rootView.resource.__dr) {
                     "PolarisPostRoot.react" -> reqQueue.adder = Api<Media.MediaWrapperApi>(
@@ -256,7 +257,7 @@ class Queuer : ForegroundService() {
                         .launch { dao.deleteQueued(cur.qud!!) }
                         .invokeOnCompletion { linkHandled() }
                     else -> {
-                        Api.gotError(handler, null, null)
+                        Api.gotError(this@Queuer, handler, null, null)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react")
                             throw Exception(root.rootView.resource.__dr)
                     }
@@ -278,7 +279,7 @@ class Queuer : ForegroundService() {
                     )
                 }
                 finish(true)
-            } else Api.gotError(handler, null, it)
+            } else Api.gotError(this@Queuer, handler, null, it)
         }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
         }

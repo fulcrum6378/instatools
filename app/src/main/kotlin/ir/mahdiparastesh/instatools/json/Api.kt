@@ -30,7 +30,7 @@ class Api<JSON>(
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url),
-    Response.ErrorListener { gotError(handleError, onError, it) }) {
+    Response.ErrorListener { gotError(c, handleError, onError, it) }) {
 
     init {
         if (acc != null) {
@@ -40,7 +40,7 @@ class Api<JSON>(
                 20000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
             )
             if (autoQueue) Volley.newRequestQueue(c.c).add(this)
-        } else gotError(handleError, onError)
+        } else gotError()
     }
 
     override fun getHeaders(): Map<String, String> =
@@ -54,36 +54,45 @@ class Api<JSON>(
             Gson().fromJson(response, typeToken ?: clazz.java) as JSON
         } catch (e: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>")) when {
-                url == Endpoint.SIGN_OUT.url -> gotError(this)
+                url == Endpoint.SIGN_OUT.url -> gotError()
                 response.contains("Log in • Instagram") -> {
                     c.needAuthentication()
-                    if (c is BaseActivity) gotError(this)
+                    if (c is BaseActivity) gotError()
                 }
                 response.contains("Content unavailable &bull; Instagram") ->
-                    gotError(this)
+                    gotError()
                 else -> {
-                    if (BuildConfig.DEBUG) throw e else gotError(this)
+                    if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
+                    else gotError()
                 }
             } else {
-                if (BuildConfig.DEBUG) throw e else gotError(this)
+                if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
+                else gotError()
             }
             null
         } catch (e: Exception) {
-            if (BuildConfig.DEBUG) throw e else gotError(this)
+            if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
+            else gotError()
             null
         }
         try {
             data?.let(onSuccess)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) throw e
-            else gotError(this)
+            else gotError()
         }
     }
 
-    var nwRes: NetworkResponse? = null
+    private var nwRes: NetworkResponse? = null
     override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
         nwRes = response
         return Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
+    }
+
+    private fun gotError() {
+        nwRes?.apiFailure(c)
+        handleError?.obtainMessage(HANDLE_ERROR, nwRes)?.sendToTarget()
+        onError?.let { func -> func(nwRes) }
     }
 
     enum class Endpoint(val url: String) {
@@ -142,17 +151,26 @@ class Api<JSON>(
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
         const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
 
-        fun <JSON> gotError(api: Api<JSON>, res: NetworkResponse? = api.nwRes) {
-            api.handleError?.obtainMessage(HANDLE_ERROR, res)?.sendToTarget()
-            api.onError?.let { func -> func(res) }
-        }
-
         fun gotError(
-            handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
+            c: Persistent, handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
             res: VolleyError? = null
         ) {
+            res?.networkResponse?.apiFailure(c)
             handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
             onError?.let { func -> func(res?.networkResponse) }
+        }
+
+        fun NetworkResponse.apiFailure(c: Persistent) {
+            //var needAuth = false
+            if (statusCode == 400) try {
+                val failure = Gson()
+                    .fromJson(String(data), Rest.ApiFailure::class.java)
+                if (failure.lock) {
+                    c.needAuthentication()
+                    // needAuth = true
+                }
+            } catch (_: JsonSyntaxException) {
+            }
         }
 
         fun encode(uriString: String?): String? {
