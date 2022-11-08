@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 63
-        versionName '23.9'
+        versionName '23.9.2'
         signingConfig signingConfigs.main
     }
 

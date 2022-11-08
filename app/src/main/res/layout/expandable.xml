@@ -23,13 +23,18 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/username"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:background="@drawable/button"
-        android:padding="10sp"
+        android:gravity="center_vertical|start"
+        android:lineSpacingExtra="0sp"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
         android:textAppearance="@style/TextAppearance.InstaTools.Bold"
         android:textSize="16.5sp"
+        app:layout_constraintBottom_toBottomOf="@id/buttons"
         app:layout_constraintEnd_toStartOf="@id/buttons"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/buttons"
