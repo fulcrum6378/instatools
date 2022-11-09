@@ -62,6 +62,7 @@ class Downloads : ServiceOwnerActivity() {
         initToolbar(b.toolbar, R.string.downloads)
 
         handler = object : Handler(Looper.getMainLooper()) {
+            @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_INSERTED -> mm.queueds?.apply {
@@ -81,9 +82,12 @@ class Downloads : ServiceOwnerActivity() {
                         mm.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
-                    HANDLE_RESET ->
+                    HANDLE_RESET -> {
+                        if (msg.arg1 == 1) mm.queueds =
+                            CopyOnWriteArrayList(msg.obj as List<Queued>)
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
+                    }
                     HANDLE_429 -> AlertDialog.Builder(this@Downloads).apply {
                         setTitle(R.string.downloads)
                         setMessage(R.string.queuer429)

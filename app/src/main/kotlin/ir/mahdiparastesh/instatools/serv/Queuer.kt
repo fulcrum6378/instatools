@@ -516,7 +516,10 @@ class Queuer : ForegroundService() {
             }.onFailure {
                 if (BuildConfig.DEBUG) throw it
             }
-            val failedSum = dao.queueds().filter { it.isFailed() }.size
+            val upToDate = dao.queueds()
+            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET, 1, 0, upToDate)
+                ?.sendToTarget()
+            val failedSum = upToDate.filter { it.isFailed() }.size
             if (dao.readyQueueds().isNotEmpty()) { // double check in between
                 download = Download().also { it.start() }; return@launch; }
             if (failedSum > 0) eventNotification(Notify.ID_QUEUER_SOME_FAILED) {
@@ -529,11 +532,6 @@ class Queuer : ForegroundService() {
             }
             super.destroy()
         }
-    }
-
-    override fun onDestroy() {
-        Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET)?.sendToTarget()
-        super.onDestroy()
     }
 
     /*private fun needsOffsetCorrection(isoFile: IsoFile): Boolean {
