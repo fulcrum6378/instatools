@@ -34,11 +34,14 @@ class PageConfig(
                 scheduledApplyEach.add(read.substringBefore(");});});"))
             }
             val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
+                ?.let { StringEscapeUtils.unescapeJson(it) }
             if (configWrapper != null)
                 try {
                     Gson().fromJson(configWrapper, PageConfig::class.java)
                 } catch (e: JsonSyntaxException) {
-                    if (BuildConfig.DEBUG) throw e
+                    if (BuildConfig.DEBUG) throw IllegalStateException(
+                        "The structure has changed (${e.message}): $configWrapper"
+                    )
                     onFailure(e)
                     null
                 }?.also { onSuccess(it) }
