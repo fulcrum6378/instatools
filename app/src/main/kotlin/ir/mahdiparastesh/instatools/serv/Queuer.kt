@@ -133,7 +133,7 @@ class Queuer : ForegroundService() {
         }.start()
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
-            PageConfig.findFromRawHtml(html, {
+            PageConfig.findFromRawHtml(html, false, {
                 Api.gotError(this@Queuer, handler, null, null)
                 if (it is Login.LoggedOutException) needAuthentication()
             }) { cnfWrapper ->

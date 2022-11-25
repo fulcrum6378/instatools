@@ -19,11 +19,11 @@ class PageConfig(
         private const val scheduledServerJSEscaped = "{\\\"require\\\":[[\\\"ScheduledServerJS\\\""
 
         fun findFromRawHtml(
-            html: String, onFailure: (e: Exception) -> Unit,
+            html: String, isEvaluated: Boolean, onFailure: (e: Exception) -> Unit,
             test: ((file: String, data: String) -> Unit)? = null,
             onSuccess: (wrapper: PageConfig) -> Unit,
         ) {
-            if (html.contains(scheduledServerJSEscaped))
+            if (html.contains(scheduledServerJSEscaped)) // always evaluated
                 return findFromPerhapsBakedHtml(html, onFailure, test, onSuccess)
             test?.also { it("login.html", html) }
 
@@ -34,7 +34,7 @@ class PageConfig(
                 scheduledApplyEach.add(read.substringBefore(");});});"))
             }
             val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
-                ?.let { StringEscapeUtils.unescapeJson(it) }
+                ?.let { if (isEvaluated) StringEscapeUtils.unescapeJson(it) else it }
             if (configWrapper != null)
                 try {
                     Gson().fromJson(configWrapper, PageConfig::class.java)
