@@ -44,7 +44,8 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                     dm.like != null -> dm.like
                     dm.link != null -> dm.link.text
                     dm.live_viewer_invite != null -> "<${dm.live_viewer_invite.cta_button_name}" +
-                            dm.live_viewer_invite.broadcast?.broadcast_owner?.username?.let { ", from @$it" } +
+                            (dm.live_viewer_invite.broadcast?.broadcast_owner?.username
+                                ?.let { ", from @$it" } ?: "") +
                             ">" + dm.live_viewer_invite.text.shareText()
                     dm.media != null ->
                         "<uploaded a ${if (dm.media.media_type == 1f) "picture" else "video"}>"
@@ -56,10 +57,10 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                     dm.raven_media != null ->
                         "<captured a ${if (dm.raven_media.media_type == 1f) "photo" else "video"}>"
                     dm.reel_share != null ->
-                        "<shared a reel${dm.reel_share.media?.link()?.let { ": $it" }}>" +
+                        "<shared a reel${dm.reel_share.media?.link()?.let { ": $it" } ?: ""}>" +
                                 dm.reel_share.text.shareText()
                     dm.story_share != null ->
-                        "<shared a story${dm.story_share.media?.link()?.let { ": $it" }}>" +
+                        "<shared a story${dm.story_share.media?.link()?.let { ": $it" } ?: ""}>" +
                                 dm.story_share.text.shareText()
                     dm.text != null -> dm.text
                     dm.video_call_event != null -> "<${dm.video_call_event.description}>"

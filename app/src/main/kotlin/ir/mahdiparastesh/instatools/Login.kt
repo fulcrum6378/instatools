@@ -48,7 +48,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         var cameHereToAuth = false
 
         fun CookieManager.getCookieOrganised(url: String): String {
-            val raw = getCookie(url).split("; ")
+            val raw = getCookie(url)?.split("; ") ?: return ""
             val map = HashMap<String, String>()
             for (r in raw) {
                 val kv = r.split("=")
