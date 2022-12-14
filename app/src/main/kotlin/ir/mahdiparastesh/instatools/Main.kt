@@ -414,7 +414,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 /* TODO:
   * Problems:
   * Disallow duplicate Queueds in databases.
-  * It cannot export blocked chats.
   * Followers/following lists are randomly incomplete!!
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only when you switch to the night mode, the PageSvd overflow menu has the same colour of that theme

@@ -22,6 +22,7 @@ import ir.mahdiparastesh.instatools.serv.Exporter
 import java.io.FileOutputStream
 
 abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
+    private val sumOfAll: Int by lazy { exp.threadData!!.items.size }
 
     @SuppressLint("InflateParams")
     override fun run() {
@@ -82,7 +83,7 @@ abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                     break
                 }
                 iMess++
-            } while ((measuredHeight - cutAt) < size.height && iMess < exp.threadData!!.items.size)
+            } while ((measuredHeight - cutAt) < size.height && iMess < sumOfAll)
             layout(0, 0, canvas.width, canvas.height)
             draw(canvas)
         }
@@ -96,9 +97,10 @@ abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             ), parent, false
         ).onCreate(true).onBind(c, exp.threadData!!, i, downloaded = exp.media).root
 
+    // "sumOfAll" is incremented by 1, in order for the percentage not to be 100 while writing the file.
     private fun percent(mess: Int) {
         progress(
-            if (mess == 0) 0f else ((100f / exp.threadData!!.items.size.toFloat()) * mess.toFloat()),
+            if (mess == 0) 0f else ((100f / (sumOfAll.toFloat() + 1f)) * mess.toFloat()),
             false
         )
     }

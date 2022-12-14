@@ -150,8 +150,9 @@ class Queuer : ForegroundService() {
                     }
                 if (root == null) {
                     Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
-                    // if (BuildConfig.DEBUG) throw Exception(Gson().toJson(cnfWrapper))
-                    // although not presistent; will be fixed by another retry
+                    if (BuildConfig.DEBUG)
+                        openFileOutput("${cur.qud?.addedAt}.json", 0) // FIXME
+                            .use { it.write(Gson().toJson(cnfWrapper).encodeToByteArray()) }
                     return@findFromRawHtml; }
 
                 when (root.rootView.resource.__dr) {
