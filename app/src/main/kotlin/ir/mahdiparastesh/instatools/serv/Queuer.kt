@@ -73,6 +73,8 @@ class Queuer : ForegroundService() {
         )
 
         const val HANDLE_LINK = 0
+        const val HANDLE_HTML_ERROR = 1
+        const val HANDLE_API_RES_ERROR = 2
         const val EXTRA_LINK = "link"
     }
 
@@ -102,14 +104,16 @@ class Queuer : ForegroundService() {
                         handlingLinks.add(Link(msg.obj as String))
                         handleLinks()
                     }
-                    Api.HANDLE_ERROR -> handlingLinks.getOrNull(0)?.apply {
-                        qud!!.status = 1.toByte()
-                        CoroutineScope(Dispatchers.IO).launch { dao.updateQueued(qud!!) }
-                        incrementCounter(Settings.spDlErrorCount)
-                        Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, qud)
-                            ?.sendToTarget()
-                        linkHandled()
-                    }
+                    HANDLE_HTML_ERROR, Api.HANDLE_ERROR, HANDLE_API_RES_ERROR ->
+                        handlingLinks.getOrNull(0)?.apply {
+                            qud!!.status = 1.toByte()
+                            CoroutineScope(Dispatchers.IO).launch { dao.updateQueued(qud!!) }
+                            incrementCounter(Settings.spDlErrorCount)
+                            Downloads.handler?.obtainMessage(
+                                ServiceOwnerActivity.HANDLE_CHANGED, qud
+                            )?.sendToTarget()
+                            linkHandled()
+                        }
                 }
             }
         }
@@ -134,9 +138,10 @@ class Queuer : ForegroundService() {
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
             PageConfig.findFromRawHtml(html, false, {
-                Api.gotError(this@Queuer, handler, null, null)
+                Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                 if (it is Login.LoggedOutException) needAuthentication()
-            }) { cnfWrapper ->
+                else if (BuildConfig.DEBUG) throw it
+            }, null) { cnfWrapper ->
                 @Suppress("UNCHECKED_CAST")
                 val root =
                     (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
@@ -145,7 +150,8 @@ class Queuer : ForegroundService() {
                         Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                     }
                 if (root == null) {
-                    Api.gotError(this@Queuer, handler, null, null)
+                    Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
+                    if (BuildConfig.DEBUG) throw Exception(Gson().toJson(cnfWrapper))
                     return@findFromRawHtml; }
 
                 when (root.rootView.resource.__dr) {
@@ -155,7 +161,8 @@ class Queuer : ForegroundService() {
                     ) { wrapper ->
                         val med = wrapper.items?.getOrNull(0)
                         if (med == null) {
-                            handler?.obtainMessage(Api.HANDLE_ERROR)?.sendToTarget(); return@Api; }
+                            handler?.obtainMessage(HANDLE_API_RES_ERROR)
+                                ?.sendToTarget(); return@Api; }
                         var found = true
                         val addOns = arrayListOf<Queued>()
                         when {
@@ -208,7 +215,7 @@ class Queuer : ForegroundService() {
                             val rel = reels.reels.getOrDefault(root.rootView.props.user.id, null)
                             val med = rel?.items?.find { it.pk == root.params.initial_media_id }
                             if (med == null) {
-                                handler?.obtainMessage(Api.HANDLE_ERROR)
+                                handler?.obtainMessage(HANDLE_API_RES_ERROR)
                                     ?.sendToTarget(); return@Api; }
                             cur.qud!!.apply {
                                 date = med.taken_at.xFromSeconds()
@@ -238,7 +245,7 @@ class Queuer : ForegroundService() {
                                     .substringBefore("&")
                             }
                             if (med == null) {
-                                handler?.obtainMessage(Api.HANDLE_ERROR)
+                                handler?.obtainMessage(HANDLE_API_RES_ERROR)
                                     ?.sendToTarget(); return@Api; }
                             cur.qud!!.apply {
                                 date = med.taken_at.xFromSeconds()
@@ -257,7 +264,7 @@ class Queuer : ForegroundService() {
                         .launch { dao.deleteQueued(cur.qud!!) }
                         .invokeOnCompletion { linkHandled() }
                     else -> {
-                        Api.gotError(this@Queuer, handler, null, null)
+                        Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react")
                             throw Exception(root.rootView.resource.__dr)
                     }
@@ -279,7 +286,10 @@ class Queuer : ForegroundService() {
                     )
                 }
                 finish(true)
-            } else Api.gotError(this@Queuer, handler, null, it)
+            } else {
+                Api.gotError(this@Queuer, handler, null, it, HANDLE_HTML_ERROR)
+                if (BuildConfig.DEBUG) throw Exception(it.networkResponse?.statusCode?.toString())
+            }
         }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
         }

@@ -153,10 +153,10 @@ class Api<JSON>(
 
         fun gotError(
             c: Persistent, handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
-            res: VolleyError? = null
+            res: VolleyError? = null, msgWhat: Int = HANDLE_ERROR
         ) {
             res?.networkResponse?.apiFailure(c)
-            handleError?.obtainMessage(HANDLE_ERROR, res?.networkResponse)?.sendToTarget()
+            handleError?.obtainMessage(msgWhat, res?.networkResponse)?.sendToTarget()
             onError?.let { func -> func(res?.networkResponse) }
         }
 

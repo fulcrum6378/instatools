@@ -237,11 +237,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         @Throws(JsonSyntaxException::class, NumberFormatException::class)
         private fun collect(html: String) { // UnicodeUnescaper fucks up!
-            PageConfig.findFromRawHtml(
-                html, true, { failed(it) }, /*{ file, data ->
-                    c.openFileOutput(file, 0).use { it.write(data.encodeToByteArray()) }
-                }*/
-            ) { wrapper ->
+            PageConfig.findFromRawHtml(html, true, { failed(it) }, null) { wrapper ->
                 @Suppress("UNCHECKED_CAST") val config =
                     wrapper.define.find { it.firstOrNull() == "XIGSharedData" }!![2] as Map<String, Any>
                 val raw = Gson().fromJson(

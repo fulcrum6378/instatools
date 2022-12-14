@@ -65,6 +65,7 @@ class PageVwr : BasePageViewer() {
             ) thread = FetchSome().also { it.start() }
 
             val showPv = c.mm.vwUser?.pv() == true && c.mm.vwUser?.followed_by_viewer == false
+                    && c.mm.vwUser?.username != c.m.acc?.user
             b.privateAcc.vis(showPv)
             b.rv.vis(!showPv)
             if (showPv) {

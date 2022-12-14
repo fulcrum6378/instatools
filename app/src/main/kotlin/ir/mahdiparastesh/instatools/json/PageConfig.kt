@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.json
 
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
@@ -15,17 +16,21 @@ class PageConfig(
         private const val preScheduledApplyEach =
             "(new ServerJS()).handleWithCustomApplyEach(ScheduledApplyEach,"
 
-        // private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
+        private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
         private const val scheduledServerJSEscaped = "{\\\"require\\\":[[\\\"ScheduledServerJS\\\""
 
         fun findFromRawHtml(
             html: String, isEvaluated: Boolean, onFailure: (e: Exception) -> Unit,
-            test: ((file: String, data: String) -> Unit)? = null,
-            onSuccess: (wrapper: PageConfig) -> Unit,
+            test: Context? = null, onSuccess: (wrapper: PageConfig) -> Unit,
         ) {
-            if (html.contains(scheduledServerJSEscaped)) // always evaluated
-                return findFromPerhapsBakedHtml(html, onFailure, test, onSuccess)
-            test?.also { it("login.html", html) }
+            if ((isEvaluated && html.contains(scheduledServerJSEscaped)) ||
+                (!isEvaluated && html.contains(scheduledServerJS))
+            ) return findFromPerhapsBakedHtml(
+                if (isEvaluated) StringEscapeUtils.unescapeJson(html) else html,
+                onFailure, test, onSuccess
+            )
+            test?.openFileOutput("login.html", 0)
+                ?.use { it.write(html.encodeToByteArray()) }
 
             var read = html
             val scheduledApplyEach = arrayListOf<String>()
@@ -50,16 +55,15 @@ class PageConfig(
 
         private fun findFromPerhapsBakedHtml(
             html: String, onFailure: (e: Exception) -> Unit,
-            test: ((file: String, data: String) -> Unit)? = null,
-            onSuccess: (wrapper: PageConfig) -> Unit
+            test: Context? = null, onSuccess: (wrapper: PageConfig) -> Unit
         ) {
-            val index = html.indexOf(scheduledServerJSEscaped)
+            val index = html.indexOf(scheduledServerJS)
             if (index == -1) {
                 onFailure(IllegalStateException("scheduledServerJS not found in $html"))
                 return; }
-            val configWrapper = StringEscapeUtils.unescapeJson(html.substring(index))
-                .substringBefore("</script>")
-            test?.also { it("wrapper.json", configWrapper) }
+            val configWrapper = html.substring(index).substringBefore("</script>")
+            test?.openFileOutput("wrapper.json", 0)
+                ?.use { it.write(configWrapper.encodeToByteArray()) }
             try {
                 @Suppress("UNCHECKED_CAST")
                 (GsonBuilder().setLenient().create()
