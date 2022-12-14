@@ -146,12 +146,12 @@ class Queuer : ForegroundService() {
                 val root =
                     (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
                         ?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
-                        //throw Exception(Gson().toJson(it))
                         Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                     }
                 if (root == null) {
                     Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
-                    if (BuildConfig.DEBUG) throw Exception(Gson().toJson(cnfWrapper))
+                    // if (BuildConfig.DEBUG) throw Exception(Gson().toJson(cnfWrapper))
+                    // although not presistent; will be fixed by another retry
                     return@findFromRawHtml; }
 
                 when (root.rootView.resource.__dr) {
