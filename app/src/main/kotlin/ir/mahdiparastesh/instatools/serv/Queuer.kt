@@ -139,19 +139,19 @@ class Queuer : ForegroundService() {
         reqQueue.adder = object : StringRequest(cur.link, { html ->
             PageConfig.findFromRawHtml(html, false, {
                 Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
-                if (it is Login.LoggedOutException) needAuthentication()
-                else if (BuildConfig.DEBUG) throw it
+                if (BuildConfig.DEBUG) throw it
             }, null) { cnfWrapper ->
                 @Suppress("UNCHECKED_CAST")
-                val root =
-                    (cnfWrapper.require.find { it.getOrNull(0) == "CometPlatformRootClient" }
-                        ?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
-                        Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
-                    }
+                val root = (cnfWrapper.require.find {
+                    val s = it.getOrNull(0)
+                    s != null && s is String && s.startsWith("CometPlatformRootClient")
+                }?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
+                    Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
+                }
                 if (root == null) {
                     Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                     if (BuildConfig.DEBUG)
-                        openFileOutput("${cur.qud?.addedAt}.json", 0) // FIXME
+                        openFileOutput("${cur.qud?.addedAt}.json", 0)
                             .use { it.write(Gson().toJson(cnfWrapper).encodeToByteArray()) }
                     return@findFromRawHtml; }
 
@@ -289,7 +289,14 @@ class Queuer : ForegroundService() {
                 finish(true)
             } else {
                 Api.gotError(this@Queuer, handler, null, it, HANDLE_HTML_ERROR)
-                if (BuildConfig.DEBUG) throw Exception(it.networkResponse?.statusCode?.toString())
+                it.networkResponse?.data?.let { ba -> String(ba) }?.also { html ->
+                    if (it.networkResponse?.statusCode == 500 &&
+                        html.contains(Login.LOGGED_OUT_MSG_500)
+                    ) needAuthentication()
+                    else throw Exception(it.networkResponse?.statusCode?.toString())
+                }
+                if (it.networkResponse == null && BuildConfig.DEBUG)
+                    throw Exception(it.networkResponse?.statusCode?.toString())
             }
         }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)

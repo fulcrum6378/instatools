@@ -10,6 +10,7 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.BuildConfig
+import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -30,7 +31,13 @@ class Api<JSON>(
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url),
-    Response.ErrorListener { gotError(c, handleError, onError, it) }) {
+    Response.ErrorListener {
+        if (it.networkResponse?.statusCode == 500 && it.networkResponse?.data
+                ?.let { ba -> String(ba) }?.contains(Login.LOGGED_OUT_MSG_500) == true
+        ) {
+            c.needAuthentication(); return@ErrorListener; }
+        gotError(c, handleError, onError, it)
+    }) {
 
     init {
         if (acc != null) {

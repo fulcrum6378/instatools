@@ -45,6 +45,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val loginUrl = "${host}accounts/login/"
         const val spAccount = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
+        const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong."
         var cameHereToAuth = false
 
         fun CookieManager.getCookieOrganised(url: String): String {
@@ -287,6 +288,4 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         killProcess(myPid())
         exitProcess(0)
     }
-
-    class LoggedOutException : Exception()
 }
