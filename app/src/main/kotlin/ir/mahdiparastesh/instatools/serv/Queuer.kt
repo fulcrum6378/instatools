@@ -9,6 +9,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
@@ -295,6 +296,8 @@ class Queuer : ForegroundService() {
                     ) needAuthentication()
                     else throw Exception(it.networkResponse?.statusCode?.toString())
                 } // if it.networkResponse == null, just Api.gotError
+                if (it.networkResponse == null && BuildConfig.DEBUG)
+                    Toast.makeText(c, "it.networkResponse == null", Toast.LENGTH_SHORT).show()
             }
         }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
