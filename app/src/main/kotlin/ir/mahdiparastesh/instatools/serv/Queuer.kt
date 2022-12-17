@@ -294,9 +294,7 @@ class Queuer : ForegroundService() {
                         html.contains(Login.LOGGED_OUT_MSG_500)
                     ) needAuthentication()
                     else throw Exception(it.networkResponse?.statusCode?.toString())
-                }
-                if (it.networkResponse == null && BuildConfig.DEBUG)
-                    throw Exception(it.networkResponse?.statusCode?.toString())
+                } // if it.networkResponse == null, just Api.gotError
             }
         }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
