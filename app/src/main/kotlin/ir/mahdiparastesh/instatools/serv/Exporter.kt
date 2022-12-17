@@ -247,7 +247,7 @@ class Exporter : ForegroundService() {
                 setShouldCache(false)
                 tag = "EXP_${dl.key}"
                 retryPolicy = DefaultRetryPolicy(
-                    15000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                    Api.DEFAULT_TIMEOUT, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
                 )
             })
     }

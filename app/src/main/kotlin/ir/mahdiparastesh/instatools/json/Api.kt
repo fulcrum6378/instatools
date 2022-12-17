@@ -44,7 +44,7 @@ class Api<JSON>(
             setShouldCache(cache)
             tag = "fetch"
             retryPolicy = DefaultRetryPolicy(
-                20000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                DEFAULT_TIMEOUT, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
             )
             if (autoQueue) Volley.newRequestQueue(c.c).add(this)
         } else gotError()
@@ -157,6 +157,7 @@ class Api<JSON>(
         const val HANDLE_ERROR = 100
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
         const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
+        const val DEFAULT_TIMEOUT = 15000
 
         fun gotError(
             c: Persistent, handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,

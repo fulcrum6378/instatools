@@ -9,7 +9,6 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import com.android.volley.DefaultRetryPolicy
@@ -295,12 +294,16 @@ class Queuer : ForegroundService() {
                         html.contains(Login.LOGGED_OUT_MSG_500)
                     ) needAuthentication()
                     else throw Exception(it.networkResponse?.statusCode?.toString())
-                } // if it.networkResponse == null, just Api.gotError
-                if (it.networkResponse == null && BuildConfig.DEBUG)
-                    Toast.makeText(c, "it.networkResponse == null", Toast.LENGTH_SHORT).show()
+                } // if it.networkResponse == null, just Api.gotError; slow internet connection!
             }
         }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
+        }.apply {
+            setShouldCache(false)
+            tag = "queuer_handle_link"
+            retryPolicy = DefaultRetryPolicy(
+                Api.DEFAULT_TIMEOUT, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+            )
         }
     }
 
@@ -399,7 +402,7 @@ class Queuer : ForegroundService() {
                     setShouldCache(false)
                     tag = queue[q].itemId
                     retryPolicy = DefaultRetryPolicy(
-                        20000, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                        Api.DEFAULT_TIMEOUT, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
                     )
                 }
             )

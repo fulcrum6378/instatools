@@ -118,7 +118,8 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
-            if (it in handledLinks) return@also
+            if (it in handledLinks || mm.queueds?.map { q -> q.link }
+                    ?.let { qs -> it in qs } == true) return@also
             if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith("https://instagram.com/")) {
                 AlertDialog.Builder(this).apply {
                     setTitle(R.string.downloads)
