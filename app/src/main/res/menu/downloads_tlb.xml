@@ -9,4 +9,10 @@
     <item
         android:id="@+id/dtRetryAll"
         android:title="@string/dtRetryAll" />
+    <item
+        android:id="@+id/dtPauseAll"
+        android:title="@string/dtPauseAll" />
+    <item
+        android:id="@+id/dtResumeAll"
+        android:title="@string/dtResumeAll" />
 </menu>

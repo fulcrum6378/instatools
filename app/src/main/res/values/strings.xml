@@ -147,6 +147,8 @@
     <string name="downloadsHelp2">so that it\'ll be downloaded immediately!</string>
     <string name="nonInstagramUrl">Sorry but this app downloads only Instagram content!</string>
     <string name="dtRetryAll">Retry all</string>
+    <string name="dtPauseAll">Pause all</string>
+    <string name="dtResumeAll">Resume all</string>
 
     <!-- Favourites -->
     <string name="favourites">Favourites</string>

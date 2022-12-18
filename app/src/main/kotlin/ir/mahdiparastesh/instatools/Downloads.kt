@@ -46,6 +46,8 @@ class Downloads : ServiceOwnerActivity() {
     private val handledLinks = mutableSetOf<String>()
     val mm: MyModel by viewModels()
     private var askedForDelete = false
+    private val statusPlan =
+        mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
 
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
@@ -166,19 +168,23 @@ class Downloads : ServiceOwnerActivity() {
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }
-            R.id.dtRetryAll -> if (mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
-                var any = false
-                mm.queueds?.forEach {
-                    if (it.isReady()) return@forEach
-                    it.status = 0.toByte()
-                    dao.updateQueued(it)
-                    any = true
+            R.id.dtRetryAll, R.id.dtPauseAll, R.id.dtResumeAll ->
+                if (!mm.queueds.isNullOrEmpty()) CoroutineScope(Dispatchers.IO).launch {
+                    var any = false
+                    mm.queueds?.forEach {
+                        if (it.status == statusPlan[item.itemId] ||
+                            !(item.itemId == R.id.dtRetryAll || it.status != 1.toByte()) ||
+                            (item.itemId == R.id.dtRetryAll && it.status == 2.toByte())
+                        ) return@forEach
+                        it.status = statusPlan[item.itemId]!!
+                        dao.updateQueued(it)
+                        any = true
+                    }
+                    if (any) withContext(Dispatchers.Main) {
+                        b.rv.adapter?.notifyDataSetChanged()
+                        if (item.itemId != R.id.dtPauseAll) initService(this@Downloads, "")
+                    }
                 }
-                if (any) withContext(Dispatchers.Main) {
-                    b.rv.adapter?.notifyDataSetChanged()
-                    initService(this@Downloads, "")
-                }
-            }
         }
         return super.onMenuItemClick(item)
     }

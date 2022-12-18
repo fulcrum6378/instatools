@@ -26,8 +26,7 @@ class Queued(
 
     fun isMainFile() = mediaType !in arrayOf(3.toByte())
 
-    fun isReady() = status == 0.toByte()
-
+    //fun isReady() = status == 0.toByte()
     fun isFailed() = status == 1.toByte()
 
     companion object {
