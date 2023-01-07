@@ -193,7 +193,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             if (!m.acc!!.name.isNullOrBlank())
                 bh.name.text = m.acc!!.name
             else bh.name.vis(false)
-            bh.ll.setOnClickListener { UiTools.openProfile(this, m.acc!!.user!!) }
+            bh.ll.setOnClickListener {
+                UiTools.openLink(this, UiTools.PROFILE.format(m.acc!!.user!!))
+            }
         } else bh.root.vis(false)
 
         // Miscellaneous
