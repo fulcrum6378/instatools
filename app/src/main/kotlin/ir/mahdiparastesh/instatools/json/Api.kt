@@ -34,6 +34,7 @@ class Api<JSON>(
     Response.ErrorListener {
         if (it.networkResponse?.statusCode == 500 && it.networkResponse?.data
                 ?.let { ba -> String(ba) }?.contains(Login.LOGGED_OUT_MSG_500) == true
+            && url != Endpoint.SIGN_OUT.url
         ) {
             c.needAuthentication(); return@ErrorListener; }
         gotError(c, handleError, onError, it)
