@@ -185,6 +185,18 @@ class Downloads : ServiceOwnerActivity() {
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads, "")
                     }
                 }
+            R.id.dtClearAll -> AlertDialog.Builder(this).apply {
+                setTitle(R.string.listClear)
+                setMessage(R.string.listClearSure)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        dao.deleteQueueds()
+                        mm.queueds?.clear()
+                        handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+                    }
+                }
+            }.show()
         }
         return super.onMenuItemClick(item)
     }

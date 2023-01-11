@@ -442,4 +442,5 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * NOTES:
   * Media of private accounts as well as DMs are accessible to the public via direct links!!
   * So you don't need to bind cookies to the DownloadManager and perhaps even Queuer!
+  * Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
 */

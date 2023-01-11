@@ -8,10 +8,10 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mfExport"
-        android:title="@string/mfExport" />
+        android:title="@string/listExport" />
     <item
         android:id="@+id/mftClear"
-        android:title="@string/mfClear" />
+        android:title="@string/listClear" />
     <item
         android:id="@+id/mfTroubleshoot"
         android:title="@string/mfTroubleshoot" />

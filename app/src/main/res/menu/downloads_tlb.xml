@@ -15,4 +15,7 @@
     <item
         android:id="@+id/dtResumeAll"
         android:title="@string/dtResumeAll" />
+    <item
+        android:id="@+id/dtClearAll"
+        android:title="@string/listClear" />
 </menu>

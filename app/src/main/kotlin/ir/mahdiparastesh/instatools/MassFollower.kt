@@ -161,10 +161,17 @@ class MassFollower : ServiceOwnerActivity() {
                     putExtra(Intent.EXTRA_TEXT, mm.fwb.value?.joinToString("\n") { it.user })
                 })
             R.id.mftClear -> if (!mm.fwb.value.isNullOrEmpty())
-                CoroutineScope(Dispatchers.IO).launch {
-                    dao.deleteFollowables()
-                    withContext(Dispatchers.Main) { mm.fwb.value = arrayListOf() }
-                }
+                AlertDialog.Builder(this@MassFollower).apply {
+                    setTitle(R.string.listClear)
+                    setMessage(R.string.listClearSure)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            dao.deleteFollowables()
+                            withContext(Dispatchers.Main) { mm.fwb.value = arrayListOf() }
+                        }
+                    }
+                }.show()
             R.id.mfTroubleshoot -> AlertDialog.Builder(this@MassFollower).apply {
                 setTitle(R.string.mfTroubleshoot)
                 // mfTroubleshootMsg: Make sure the following conditions are applied to this app:

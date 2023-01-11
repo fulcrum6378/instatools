@@ -61,8 +61,8 @@ abstract class Database : RoomDatabase() {
         @Delete
         suspend fun deleteQueued(item: Queued)
 
-        /*@Query("DELETE FROM Queued")
-        fun deleteQueueds(): Int*/
+        @Query("DELETE FROM Queued")
+        fun deleteQueueds(): Int
 
 
         @Query("SELECT * FROM Exportable")

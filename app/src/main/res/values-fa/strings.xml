@@ -61,6 +61,9 @@
     <string name="tryAgain">تلاش دوباره</string>
     <string name="openFolder">بازکردن در فولدر</string>
     <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
+    <string name="listExport">استخراج لیست</string>
+    <string name="listClear">پاک کردن همه</string>
+    <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
@@ -156,8 +159,6 @@
     <string name="mfGuide2">اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید بدون اینکه اینستاگرام به شما حساس شود.</string>
     <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
     <string name="mfSeekTitle">%1$s برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
-    <string name="mfClear">پاک کردن لیست</string>
-    <string name="mfExport">استخراج لیست</string>
     <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
     <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
     <string name="mfDetectedSpam">متاسفانه اینستاگرام «موقتا» شما را به عنوان «اسپمر» شناسایی کرده است! لطفا مدت تاخیر بین هر فالو را زیاد کرده و بعدا دوباره سرویس را روشن نمایید.</string>
