@@ -151,7 +151,9 @@ class Api<JSON>(
         SEEN("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 
         // Logging in/out
-        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/")// MEDIA_ITEM
+        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/"),// MEDIA_ITEM
+
+        RAW_QUERY("https://www.instagram.com/graphql/query"),
     }
 
     companion object {
@@ -186,7 +188,7 @@ class Api<JSON>(
             if (uriString == null) return null
             if (TextUtils.isEmpty(uriString)) return uriString
             val allowedUrlCharacters = Pattern.compile(
-                "([A-Za-z0-9_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[0-9a-fA-F]{2})+"
+                "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[0-9a-fA-F]{2})+"
             )
             val matcher = allowedUrlCharacters.matcher(uriString)
             var validUri: String? = null

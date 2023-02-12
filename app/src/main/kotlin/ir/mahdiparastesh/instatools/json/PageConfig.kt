@@ -2,9 +2,7 @@ package ir.mahdiparastesh.instatools.json
 
 import android.content.Context
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
 import org.apache.commons.text.StringEscapeUtils
 
@@ -21,17 +19,18 @@ class PageConfig(
 
         fun findFromRawHtml(
             html: String, isEvaluated: Boolean, onFailure: (e: Exception) -> Unit,
-            test: Context? = null, onSuccess: (wrapper: PageConfig) -> Unit,
+            testHtml: Context? = null, testJson: Context? = null,
+            onSuccess: (wrapper: PageConfig) -> Unit,
         ) {
+            // Check if it is already processed
             if ((isEvaluated && html.contains(scheduledServerJSEscaped)) ||
                 (!isEvaluated && html.contains(scheduledServerJS))
-            ) return findFromPerhapsBakedHtml(
+            ) return findFromProcessedHtml(
                 if (isEvaluated) StringEscapeUtils.unescapeJson(html) else html,
-                onFailure, test, onSuccess
+                onFailure, testHtml, testJson, onSuccess
             )
-            test?.openFileOutput("login.html", 0)
-                ?.use { it.write(html.encodeToByteArray()) }
 
+            // Find the JavaScript blocks containing "preScheduledApplyEach" and find XIGSharedData
             var read = html
             val scheduledApplyEach = arrayListOf<String>()
             while (read.contains(preScheduledApplyEach)) {
@@ -40,6 +39,9 @@ class PageConfig(
             }
             val configWrapper = scheduledApplyEach.find { it.contains("XIGSharedData") }
                 ?.let { if (isEvaluated) StringEscapeUtils.unescapeJson(it) else it }
+            testHtml?.openFileOutput("login_preprocess.html", 0)
+                ?.use { it.write(html.encodeToByteArray()) }
+
             if (configWrapper != null)
                 try {
                     Gson().fromJson(configWrapper, PageConfig::class.java)
@@ -49,22 +51,31 @@ class PageConfig(
                     )
                     onFailure(e)
                     null
-                }?.also { onSuccess(it) }
+                }?.also {
+                    testJson?.openFileOutput("wrapper_preprocess.json", 0)
+                        ?.use { j -> j.write(configWrapper.encodeToByteArray()) }
+                    onSuccess(it)
+                }
             else onFailure(IllegalStateException("Couldn't find XIGSharedData: $html"))
         }
 
-        private fun findFromPerhapsBakedHtml(
+        private fun findFromProcessedHtml(
             html: String, onFailure: (e: Exception) -> Unit,
-            test: Context? = null, onSuccess: (wrapper: PageConfig) -> Unit
+            testHtml: Context? = null, testJson: Context? = null,
+            onSuccess: (wrapper: PageConfig) -> Unit
         ) {
-            val index = html.indexOf(scheduledServerJS)
-            if (index == -1) {
-                onFailure(IllegalStateException("scheduledServerJS not found in $html"))
-                return; }
-            val configWrapper = html.substring(index).substringBefore("</script>")
-            test?.openFileOutput("wrapper.json", 0)
-                ?.use { it.write(configWrapper.encodeToByteArray()) }
-            try {
+            // Find the JSON blocks containing "scheduledServerJS" and find XIGSharedData
+            var read = html
+            val wrappers = arrayListOf<String>()
+            while (read.contains(scheduledServerJS)) {
+                read = read.substring(read.indexOf(scheduledServerJS))
+                wrappers.add(read.substringBefore("</script>"))
+                read = read.substringAfter("</script>")
+            }
+            val configWrapper = wrappers.find { it.contains("XIGSharedData") }
+            testHtml?.openFileOutput("login_processed.html", 0)
+                ?.use { it.write(html.encodeToByteArray()) }
+            /*try {
                 @Suppress("UNCHECKED_CAST")
                 (GsonBuilder().setLenient().create()
                     .fromJson(configWrapper, PageConfig::class.java).require[0][3]
@@ -77,7 +88,23 @@ class PageConfig(
             } catch (e: JsonSyntaxException) {
                 onFailure(e)
                 null
-            }?.also { onSuccess(it) }
+            }?.also { onSuccess(it) }*/
+
+            if (configWrapper != null)
+                try {
+                    Gson().fromJson(configWrapper, PageConfig::class.java)
+                } catch (e: JsonSyntaxException) {
+                    if (BuildConfig.DEBUG) throw IllegalStateException(
+                        "The structure has changed (${e.message}): $configWrapper"
+                    )
+                    onFailure(e)
+                    null
+                }?.also {
+                    testJson?.openFileOutput("wrapper_processed.json", 0)
+                        ?.use { j -> j.write(configWrapper.encodeToByteArray()) }
+                    onSuccess(it)
+                }
+            else onFailure(IllegalStateException("Couldn't find XIGSharedData: $html"))
         }
     }
 

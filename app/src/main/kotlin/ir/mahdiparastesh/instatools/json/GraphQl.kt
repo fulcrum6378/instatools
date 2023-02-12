@@ -7,7 +7,10 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 class GraphQl(val data: GraphQlData) : Rest() {
 
-    class GraphQlData(val user: User?)
+    class GraphQlData(
+        val user: User?,
+        val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo,
+    )
 
     /*class Profile(
         //val always_show_message_button_to_pro_account: Boolean,
@@ -178,4 +181,6 @@ class GraphQl(val data: GraphQlData) : Rest() {
         override val video_dash_manifest: String?,
         override val number_of_qualities: Float?
     ) : Audible*/
+
+    class MediaShortcodeWebInfo(val items: List<Media>)
 }
