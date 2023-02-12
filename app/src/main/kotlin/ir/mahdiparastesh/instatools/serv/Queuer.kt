@@ -120,7 +120,7 @@ class Queuer : ForegroundService() {
         if (download?.active != true) download = Download().also { it.start() }
     }
 
-    @Suppress("LABEL_NAME_CLASH")
+    @Suppress("LABEL_NAME_CLASH", "UNCHECKED_CAST")
     private fun handleLinks() {
         if (handlingLink) return
         val cur = handlingLinks.getOrNull(0)
@@ -137,44 +137,58 @@ class Queuer : ForegroundService() {
         }.start()
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
-            PageConfig.findFromRawHtml(html, false, {
+            PageConfig.findFromHtml(html, false, {
                 Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                 if (BuildConfig.DEBUG) throw it
-            }, null, null) { cnfWrapper ->
-                cnfWrapper.require.getOrNull(0)?.getOrNull(3)?.getOrNull(0)
-                throw Exception()
-                if (cur.link.contains("/p/")) {
-                    val shortcode = cur.link.substringAfter("/p/").substringBefore("/")
+            }, null, c) { cnfWrapper ->
+                if (cur.link.contains("/p/") || cur.link.contains("/reel/")
+                    || cur.link.contains("/tv/")
+                ) {
+                    val shortcode = when {
+                        cur.link.contains("/p/") -> cur.link.substringAfter("/p/")
+                        cur.link.contains("/reel/") -> cur.link.substringAfter("/reel/")
+                        cur.link.contains("/tv/") -> cur.link.substringAfter("/tv/")
+                        else -> throw Exception("IMPOSSIBLE")
+                    }.substringBefore("/")
+                    val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
                     reqQueue.adder = Api<GraphQl>(
-                        this, Api.Endpoint.RAW_QUERY.url, GraphQl::class, handler, "access_token=" +
-                                "&__d=www" +
+                        this, Api.Endpoint.RAW_QUERY.url, GraphQl::class, handler,
+                        "access_token=" +
+                                "&__d=" + siteData["haste_site"] +
                                 "&__user=0" +
                                 "&__a=1" +
-                                "&__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0FE2awt81sbzoaEd82lwv89k2C1Fwc61uwZx-0z8jwae4UaEW0D888cobEaU2eUlwhE2Lx_w4HwJwSyES1Twoob82ZwiU8UdUbGwbO1pw" +
-                                "&__csr=glhcrillJsB9N5GL8F6LV9lGm4oSAZUOVoCimE8ideXGXAgynCF5KEy2y00gc905eyRc02JG3C4m4o7y0zyw4Za2ye3ywXm3O6204pjgYwKoEy2u7u1RwjlG0j10PwbZ0ww15Kbm0oK0YU" +
+                                "&__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0F" +
+                                "E2awt81sbzoaEd82lwv89k2C1Fwc61uwZx-0z8jwae4UaEW0D888cobEaU2eUlwh" +
+                                "E2Lx_w4HwJwSyES1Twoob82ZwiU8UdUbGwbO1pw" +
+                                "&__csr=glhcrillJsB9N5GL8F6LV9lGm4oSAZUOVoCimE8ideXGXAgynCF5KEy2y" +
+                                "00gc905eyRc02JG3C4m4o7y0zyw4Za2ye3ywXm3O6204pjgYwKoEy2u7u1RwjlG0" +
+                                "j10PwbZ0ww15Kbm0oK0YU" +
                                 "&__req=3" +
-                                "&__hs=19400.HYP%3Ainstagram_web_pkg.2.1.0.0.1" +
+                                "&__hs=" + siteData["haste_session"] +
                                 "&dpr=1" +
-                                "&__ccg=EXCELLENT" +
-                                "&__rev=1006949493" +
+                                "&__ccg=" + (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
+                                as Map<String, String>)["connectionClass"]!! +
+                                "&__rev=" + (siteData["client_revision"] as Double)
+                            .toInt().toString() +
                                 "&__s=eiw83y%3Aude3gw%3Ap6j381" +
-                                "&__hsi=7199264773519010435" +
+                                "&__hsi=" + siteData["haste_session"] +
                                 "&__comet_req=7" +
-                                "&fb_dtsg=NAcNp0_Fks2ZSeFs2rU2SbcYJjmlfv-bkPXerpYdcMv8z8AbMOnA99A%3A17858225011064242%3A1675474923" +
-                                //        NAcPobZAqRkk_-kMU0vFAJyD-FjnUI7wq4zUElvGghwEJTzwBOFZDMw   17858225011064242   1675474923
+                                "&fb_dtsg=" + (cnfWrapper.define["DTSGInitialData"]!![1]
+                                as Map<String, String>)["token"]!! + // or DTSGInitData and async_get_token
                                 "&jazoest=26314" +
-                                "&lsd=Elg_euWrcHYdrYagxQayV2" +
-                                "&__spin_r=1006949493" +
-                                "&__spin_b=trunk" +
-                                "&__spin_t=1676209451" +
+                                "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
+                                "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
+                                "&__spin_b=" + siteData["__spin_b"] +
+                                "&__spin_t=" + (siteData["__spin_t"] as Double).toInt() +
                                 "&fb_api_caller_class=RelayModern" +
-                                "&fb_api_req_friendly_name=PolarisPostRootQuery" + // TODO
+                                "&fb_api_req_friendly_name=PolarisPostRootQuery" +
                                 "&variables=%7B%22shortcode%22%3A%22$shortcode%22%7D" +
                                 "&server_timestamps=true" +
                                 "&doc_id=18086740648321782",
                         method = Method.POST, autoQueue = false
                     ) { graphQl ->
-                        val med = graphQl.data.xdt_api__v1__media__shortcode__web_info.items.firstOrNull()
+                        val med =
+                            graphQl.data.xdt_api__v1__media__shortcode__web_info.items.firstOrNull()
                         if (med == null) {
                             handler?.obtainMessage(HANDLE_API_RES_ERROR)
                                 ?.sendToTarget(); return@Api; }
@@ -221,14 +235,11 @@ class Queuer : ForegroundService() {
                             if (download?.active != true) finish(false)
                         }
                     }
-                    return@findFromRawHtml
+                    return@findFromHtml
                 }
 
-                @Suppress("UNCHECKED_CAST")
-                val root = (cnfWrapper.require.find {
-                    val s = it.getOrNull(0)
-                    s != null && s is String && s.startsWith("CometPlatformRootClient")
-                }?.getOrNull(3) as List<Any>?)?.getOrNull(3)?.let {
+                val root = (cnfWrapper.require["CometPlatformRootClient"]
+                    ?.getOrNull(2) as List<Any>?)?.getOrNull(3)?.let {
                     Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                 }
                 if (root == null) {
@@ -236,61 +247,9 @@ class Queuer : ForegroundService() {
                     if (BuildConfig.DEBUG)
                         openFileOutput("${cur.qud?.addedAt}.json", 0)
                             .use { it.write(Gson().toJson(cnfWrapper).encodeToByteArray()) }
-                    return@findFromRawHtml; }
+                    return@findFromHtml; }
 
                 when (root.rootView.resource.__dr) {
-                    /*"PolarisPostRoot.react" -> reqQueue.adder = Api<Media.MediaWrapperApi>(
-                        this, Api.Endpoint.MEDIA_ITEM.url.format(root.rootView.props.media_id),
-                        Media.MediaWrapperApi::class, handler, autoQueue = false
-                    ) { wrapper ->
-                        val med = wrapper.items?.getOrNull(0)
-                        if (med == null) {
-                            handler?.obtainMessage(HANDLE_API_RES_ERROR)
-                                ?.sendToTarget(); return@Api; }
-                        var found = true
-                        val addOns = arrayListOf<Queued>()
-                        when {
-                            med.carousel_media != null -> for (car in med.carousel_media!!)
-                                if (cur.qud!!.url == null) cur.qud!!.apply {
-                                    date = med.taken_at.xFromSeconds()
-                                    userId = med.user.pk
-                                    userName = med.user.username
-                                    itemId = car.pk
-                                    url = car.nearest(Versioned.BEST)
-                                    thumb = med.thumb()
-                                    mediaType = car.media_type.toInt().toByte()
-                                    dur = car.video_duration?.toLong()
-                                    caption = med.caption?.text
-                                } else addOns.add(
-                                    Queued(
-                                        cur.qud!!.addedAt, cur.qud!!.link, cur.qud!!.date,
-                                        med.user.pk, med.user.username,
-                                        car.pk, car.nearest(Versioned.BEST),
-                                        car.thumb(), car.media_type.toInt().toByte(),
-                                        dur = car.video_duration?.toLong(),
-                                        caption = med.caption?.text
-                                    )
-                                )
-                            med.image_versions2 != null -> cur.qud!!.apply {
-                                date = med.taken_at.xFromSeconds()
-                                userId = med.user.pk
-                                userName = med.user.username
-                                itemId = med.pk
-                                url = med.nearest(Versioned.BEST)
-                                thumb = med.thumb()
-                                mediaType = med.media_type.toInt().toByte()
-                                dur = med.video_duration?.toLong()
-                                caption = med.caption?.text
-                            }
-                            else -> found = false
-                        }
-                        if (found) handleQueued(cur.qud!!, addOns)
-                        else {
-                            linkHandled()
-                            if (download?.active != true) finish(false)
-                        }
-                    }*/
-                    //"PolarisDesktopPostRoot.react" -> {}
                     "PolarisStoriesMediaRoot.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.StoryReel>>(
                             this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user.id),

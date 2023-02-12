@@ -188,7 +188,7 @@ class Api<JSON>(
             if (uriString == null) return null
             if (TextUtils.isEmpty(uriString)) return uriString
             val allowedUrlCharacters = Pattern.compile(
-                "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[0-9a-fA-F]{2})+"
+                "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[\\da-fA-F]{2})+"
             )
             val matcher = allowedUrlCharacters.matcher(uriString)
             var validUri: String? = null
