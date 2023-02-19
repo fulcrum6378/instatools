@@ -140,7 +140,7 @@ class Queuer : ForegroundService() {
             PageConfig.findFromHtml(html, false, {
                 Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                 if (BuildConfig.DEBUG) throw it
-            }, null, c) { cnfWrapper ->
+            }, null, null) { cnfWrapper ->
                 if (cur.link.contains("/p/") || cur.link.contains("/reel/")
                     || cur.link.contains("/tv/")
                 ) {
