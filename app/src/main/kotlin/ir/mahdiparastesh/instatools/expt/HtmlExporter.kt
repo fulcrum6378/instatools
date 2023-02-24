@@ -185,10 +185,11 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     (media.video_versions != null && exp.opt?.video == 3) ||
                             (media.video_versions == null && exp.opt?.img() == true) -> {
                         limit += 4
-                        (if (media is Media)
-                            "<a href=\"${media.link()}\">\n$div2Ind  %s\n$div2Ind</a>" else "%s").format(
+                        val imgThumb =
                             "<img src=\"./${subFolderNames[0]}/${dm.item_id}.jpg\" class=\"media\">"
-                        )
+                        (if (media is Media)
+                            "<a href=\"${media.link()}\">\n$div2Ind  $imgThumb\n$div2Ind</a>"
+                        else imgThumb) // don't use string formatting instead of imgThumb!
                     }
                     else -> divHint.format(
                         (if (media is Media) "<a href=\"${media.link()}\">" else "") +
