@@ -1,10 +1,12 @@
 package ir.mahdiparastesh.instatools.frag
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabaseLockedException
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
@@ -31,6 +34,7 @@ import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.*
@@ -152,7 +156,9 @@ class PageUnf : BasePageMain() {
 
 
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
-        companion object : Alive.OfThread()
+        companion object : Alive.OfThread() {
+            const val FLW_FETCH_DELAY = 300L
+        }
 
         private lateinit var oldFriends: List<Friend>
         private val newFriends = arrayListOf<Friend>()
@@ -196,7 +202,9 @@ class PageUnf : BasePageMain() {
                 if (flw.next_max_id == null) {
                     if (theFollowers) allFollow(theFollowers = false)
                     else CoroutineScope(Dispatchers.IO).launch { ended() }
-                } else allFollow(flw.next_max_id, theFollowers)
+                } else Delay(FLW_FETCH_DELAY) {
+                    allFollow(flw.next_max_id, theFollowers)
+                }
             }
         }
 
@@ -253,7 +261,10 @@ class PageUnf : BasePageMain() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 (c.c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .createNotificationChannel(Notify.Channel.UNF_NEW_ITEMS.create(c.c))
-            NotificationManagerCompat.from(c.c).notify(
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ActivityCompat.checkSelfPermission(c.c, Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED
+            ) NotificationManagerCompat.from(c.c).notify(
                 Notify.ID_UNF_NEW_ITEMS, NotificationCompat.Builder(
                     c.c, Notify.Channel.UNF_NEW_ITEMS.id
                 ).apply {

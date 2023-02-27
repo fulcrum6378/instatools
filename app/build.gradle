@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 63
-        versionName '24.5.6'
+        versionName '24.6.0'
         signingConfig signingConfigs.main
     }
 
@@ -82,10 +82,3 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.10.0' // StringEscapeUtils
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 }
-
-/*
-* com.android.build.gradle.internal.tasks.databinding.DataBindingGenBaseClassesTask uses a newly
-* deprecated Gradle class called IncrementalTaskInputs which needs to be replaced by InputChanges
-* class, ignore "Deprecated Gradle features were used in this build, making it incompatible with
-* Gradle 8.0." warning during build.
-*/

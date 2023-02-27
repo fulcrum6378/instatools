@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.view
 
+import android.Manifest
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -59,6 +60,10 @@ object UiTools {
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6
     private const val OPTION_DISABLED_ALPHA = 0.5f
+    val reqPermissions =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+        else arrayOf()
 
     fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
         val list = ArrayList<AppCompatTextView>()
