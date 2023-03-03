@@ -138,8 +138,11 @@ class Queuer : ForegroundService() {
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
             PageConfig.findFromHtml(html, false, {
-                Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
-                if (BuildConfig.DEBUG) throw it
+                if (it is PageConfig.Companion.NeedAuth) needAuthentication()
+                else {
+                    Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
+                    if (BuildConfig.DEBUG) throw it
+                }
             }, null, null) { cnfWrapper ->
                 if (cur.link.contains("/p/") || cur.link.contains("/reel/")
                     || cur.link.contains("/tv/")

@@ -67,8 +67,12 @@ class PageConfig(
                 testJson?.openFileOutput("wrapper.json", 0)
                     ?.use { j -> j.write(Gson().toJson(it).encodeToByteArray()) }
                 onSuccess(create(it))
-            } else onFailure(IllegalStateException("Couldn't find XIGSharedData: $html"))
+            } else if ("request.open('POST', '/client_error/', true);" in html)
+                onFailure(NeedAuth()) // not signed out but needs to assure you're not a robot
+            else onFailure(IllegalStateException("Couldn't find XIGSharedData: $html"))
         }
+
+        class NeedAuth : Exception()
     }
 
     data class RawSharedData(val config: SharedDataConfig, val rollout_hash: String?)
