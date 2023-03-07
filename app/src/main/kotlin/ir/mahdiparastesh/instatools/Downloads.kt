@@ -103,7 +103,7 @@ class Downloads : ServiceOwnerActivity() {
                 if (mm.queueds != null) Queued.find(msg.obj as Queued, mm.queueds!!) else null
         }
 
-        // Paste Link
+        // Paste link
         b.linkButton.setOnClickListener {
             if (b.pasteLink.text.toString() == "") return@setOnClickListener
             initService(this, b.pasteLink.text.toString())
@@ -112,6 +112,20 @@ class Downloads : ServiceOwnerActivity() {
         if (!night()) color(R.color.CS).apply {
             b.pasteLink.setTextColor(this)
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
+        }
+
+        // Load data
+        CoroutineScope(Dispatchers.IO).launch {
+            mm.queueds = CopyOnWriteArrayList(dao.queueds())
+            try {
+                mm.queueds!!.sortBy { it.addedAt }
+            } catch (e: java.lang.UnsupportedOperationException) {
+                // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
+            }
+            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+            withContext(Dispatchers.Main) {
+                if (mm.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
+            }
         }
 
         // More
@@ -138,18 +152,6 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onResume() {
         super.onResume()
-        CoroutineScope(Dispatchers.IO).launch {
-            mm.queueds = CopyOnWriteArrayList(dao.queueds())
-            try {
-                mm.queueds!!.sortBy { it.addedAt }
-            } catch (e: java.lang.UnsupportedOperationException) {
-                // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
-            }
-            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
-            withContext(Dispatchers.Main) {
-                if (mm.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
-            }
-        }
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
             .cancel(Notify.ID_QUEUER_SOME_FAILED)
     }
