@@ -87,6 +87,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             } else if (msg.obj != null) {
                 val dmThd = msg.obj as Dm.DmThread
                 val bef = c.mm.dmThread!!.items.size
+                c.mm.dmThread!!.items.removeAll { it.item_id in dmThd.items.map { t -> t.item_id } }
                 c.mm.dmThread!!.items.addAll(dmThd.items)
                 c.mm.dmThread!!.has_older = dmThd.has_older
                 c.mm.dmThread!!.items.sortBy { it.timestamp }

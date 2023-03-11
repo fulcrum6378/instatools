@@ -41,6 +41,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.root.setOnClickListener {
             c.mm.dmThread =
                 c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            c.mm.dmThread!!.items.sortBy { it.timestamp }
             f.onLoaded(false)
             f.thdThread = PageBox.FetchOfThread(
                 c, c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.firstOrNull()?.item_id ?: "",
