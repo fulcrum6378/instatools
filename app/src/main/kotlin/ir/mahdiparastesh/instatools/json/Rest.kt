@@ -77,17 +77,22 @@ open class Rest {
         //val page_size: Double,
     ) : Rest()
 
-    //class Friendships(val friendship_statuses: Map<String, Friendship>) : Rest()
+    class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()
 
-    /*class Friendship(
+    class FriendshipStatus(
+        //val blocking: Boolean,
+        //val followed_by: Boolean,
         val following: Boolean,
         //val incoming_request: Boolean,
         //val is_bestie: Boolean,
+        //val is_eligible_to_subscribe: Boolean,
         //val is_feed_favorite: Boolean,
         //val is_private: Boolean,
         //val is_restricted: Boolean,
+        //val muting: Boolean,
         //val outgoing_request: Boolean,
-    )*/
+        //val subscribed: Boolean,
+    )
 
     class InboxPage(
         //val has_pending_top_requests: Boolean,
@@ -177,20 +182,22 @@ open class Rest {
     class Signing/*(val login_nonce: String?)*/ : Rest()
 
     class DoFollow(
-        //val result: String?,
-        //val message: String?, // e.g.: "feedback_required"
-        val spam: Boolean?,
         //val feedback_title: String?, // e.g.: "Try again later"
         //val feedback_message: String?, // e.g.: "We restrict certain activity to protect our community."
         //val feedback_url: String?,
         //val feedback_action: String?, // e.g.: "report_problem"
+        //val friendship_status: FriendshipStatus,
+        //val message: String?, // e.g.: "feedback_required"
+        //val previous_following: Boolean?,
+        //val result: String?,
+        val spam: Boolean?,
     ) : Rest()
 
     class Seen(val status_code: String /* must be "200" */)
 
     class ApiFailure(
         //val message: String, // e.g.: "checkpoint_required"
-        //val checkpoint_url: String, // e.g.: "https://i.instagram.com/challenge/?next=<THE_API_ENDPOINT>"
+        //val checkpoint_url: String, // e.g.: "https://www.instagram.com/challenge/?next=<THE_API_ENDPOINT>"
         val lock: Boolean,
         //val flow_render_type: Float, // e.g.: 0
     ) : Rest() // was "fail"

@@ -105,29 +105,29 @@ class Api<JSON>(
 
     enum class Endpoint(val url: String) {
         // Profiles
-        PROFILE("https://i.instagram.com/api/v1/users/web_profile_info/?username=%s"),
+        PROFILE("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
         SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
 
         // Posts & Stories
-        MEDIA_ITEM("https://i.instagram.com/api/v1/media/%s/info/")
-        /*INFO("https://i.instagram.com/api/v1/users/%s/info/"),*/,
+        MEDIA_ITEM("https://www.instagram.com/api/v1/media/%s/info/")
+        /*INFO("https://www.instagram.com/api/v1/users/%s/info/"),*/,
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
         ),
-        TAGGED("https://i.instagram.com/api/v1/usertags/%1\$s/feed/?count=12&max_id=%2\$s"),
-        STORY("https://i.instagram.com/api/v1/feed/user/%s/story/"),
-        HIGHLIGHTS("https://i.instagram.com/api/v1/highlights/%s/highlights_tray/"),
-        REEL_ITEM("https://i.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
+        TAGGED("https://www.instagram.com/api/v1/usertags/%1\$s/feed/?count=12&max_id=%2\$s"),
+        STORY("https://www.instagram.com/api/v1/feed/user/%s/story/"),
+        HIGHLIGHTS("https://www.instagram.com/api/v1/highlights/%s/highlights_tray/"),
+        REEL_ITEM("https://www.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
         // StoryReel = "Full-Screen Video"; Story { reel, reel, ... }, Highlights { reel, reel, ... }
         // Adding "media_id=" parameter is of no use, the results are the same!!
 
         // Interactions
-        FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
-        FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s")// count=12&
+        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
+        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s")// count=12&
         /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/,
-        FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
-        UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
+        FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
+        UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
         /*RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
         UNRESTRICT("https://www.instagram.com/api/v1/web/restrict_action/unrestrict/"),
         // method = POST, body = "target_user_id=<USER_ID>", expect "{"status":"ok"}" */
@@ -137,6 +137,7 @@ class Api<JSON>(
 
         // Saving
         SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
+
         /*SAVE("https://www.instagram.com/web/save/%s/save/"),*/
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
@@ -156,9 +157,9 @@ class Api<JSON>(
     companion object {
         const val HANDLE_ERROR = 100
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
-        const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
         const val DEFAULT_TIMEOUT = 15000
 
+        @Suppress("SpellCheckingInspection")
         fun graphQlBody(cnfWrapper: PageConfig, shortcode: String): String {
             val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
             return "access_token=" +
@@ -328,31 +329,5 @@ class Api<JSON>(
   &server_timestamps=true
   &doc_id=18271948444105212",
   "method": "POST"
-});*/
-
-    //GET EXAMPLE
-    /*fetch("https://www.instagram.com/api/v1/feed/reels_tray/", {
-  "headers": {
-    "accept": "* / *",
-    "accept-language": "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6",
-    "sec-ch-prefers-color-scheme": "light",
-    "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Windows\"",
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin",
-    "viewport-width": "1366",
-    "x-asbd-id": "198387",
-    "x-csrftoken": "Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9",
-    "x-ig-app-id": "936619743392459",
-    "x-ig-www-claim": "hmac.AR3Yzja13RaHk1xYtslwCaBIoHJmBIwl1Jh0HrCaWQN6Pz3z",
-    "x-requested-with": "XMLHttpRequest",
-    "cookie": "mid=ZBv5VgALAAGDo48OHU8iPtxG8RBQ; ig_nrcb=1; ig_did=8DED6ECE-ADBC-4694-BA6B-63EDBE573C86; csrftoken=Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9; ds_user_id=52110444768; sessionid=52110444768%3ADzqH57S3s7GMP6%3A27%3AAYcdr3uAS-Pg8u8gJ9LpCDqS_t2bPsJotJjqRRksTw; datr=__kbZId7dfu-p7kw8Tb1QxWU; shbid=\"7818\\05452110444768\\0541711091089:01f70b74d318245f50ebb7540aa769cf1fcd2feb7965ab9a5745780d18fb6175103d688a\"; shbts=\"1679555089\\05452110444768\\0541711091089:01f72006b0d381042142331ca5895878d107adad21a0b5e7a4f53dca25bd90890a21bd3f\"; rur=\"NCG\\05452110444768\\0541711091338:01f764779199d73447c17a722a8b4030cb2498a4e1ab0e57878242822d318a90c414d93d\"",
-    "Referer": "https://www.instagram.com/p/CpwCoY3IYzI/",
-    "Referrer-Policy": "strict-origin-when-cross-origin"
-},
-"body": null,
-"method": "GET"
 });*/
 }

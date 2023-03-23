@@ -98,8 +98,8 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     override fun getItemCount() = c.mm.unfollowers.value?.size ?: 0
 
     private fun unfollow(unf: Friend) {
-        f.reqQueue.adder = Api<Rest>(
-            c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest::class, null,
+        f.reqQueue.adder = Api<Rest.DoFollow>(
+            c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class, null,
             method = Request.Method.POST, autoQueue = false, onError = { res ->
                 if (res?.statusCode == 429) try {
                     AlertDialog.Builder(
@@ -117,7 +117,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 }
             }
         ) {
-            if (it.status != "ok") {
+            if (it.status != "ok" || it.spam == true) {
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                 if (BuildConfig.DEBUG) Toast.makeText(c.c, it.status, Toast.LENGTH_SHORT).show()
                 return@Api; }

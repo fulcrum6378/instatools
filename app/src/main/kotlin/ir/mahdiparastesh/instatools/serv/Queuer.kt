@@ -49,7 +49,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Suppress("SpellCheckingInspection")
 class Queuer : ForegroundService() {
     private var dest: String? = null
     private var handlingLinks = CopyOnWriteArrayList<Link>()
