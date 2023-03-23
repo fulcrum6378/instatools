@@ -149,8 +149,8 @@ class Media(
         var next_max_id: String?,
         //var num_results: Float,
         //var requires_review: Boolean
-        var total_count: Float?
-    ) // "TAGGED" contains "status", but "MEDIA_ITEM" doesn't.
+        //var total_count: Float?
+    ) : Rest()
 
     /*class Thumbnails(
         //val video_length: Float,
@@ -230,4 +230,14 @@ class Media(
         val music_info: Any?,
         val original_sound_info: Any?,
     )*/
+
+    class Saved(val media: Media)
+
+    class SavedWrapper(
+        //var auto_load_more_enabled: Boolean,
+        var items: CopyOnWriteArrayList<Saved>?,
+        var more_available: Boolean,
+        var next_max_id: String?,
+        var num_results: Float,
+    ) : Rest()
 }

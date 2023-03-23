@@ -13,7 +13,7 @@ abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
 
     override fun flexible(i: Int): FlexiblePost? {
         val med = media?.getOrNull(i) ?: return null
-        return object : FlexiblePost(med.pk ?: med.id, med.thumb()) {
+        return object : FlexiblePost(med.id, med.thumb()) {
             override fun typeDrw() = when {
                 med.carousel_media != null -> typeStack
                 med.video_versions != null -> typeVideo

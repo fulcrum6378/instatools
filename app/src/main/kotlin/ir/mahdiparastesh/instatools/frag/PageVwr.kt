@@ -269,8 +269,7 @@ class PageVwr : BasePageViewer() {
                 return; }
             c.reqQueue.adder = Api<GraphQl>(
                 c, Api.Endpoint.POSTS.url.format(
-                    // I was gonna give the "id" (Thread.getId()) of Java thread to this API... XD
-                    c.mm.vwUser!!.id, c.mm.vwUser!!.edge_owner_to_timeline_media!!.edges.size,
+                    c.mm.vwUser!!.id,
                     c.mm.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
                 ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
             ) { res ->

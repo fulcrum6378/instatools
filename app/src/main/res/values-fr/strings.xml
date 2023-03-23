@@ -107,9 +107,6 @@
     <string name="downloadOnly">Télécharger uniquement</string>
     <string name="unsaveDownload">Annuler la sauvegarde et télécharger</string>
     <string name="svdEmpty">Vous n\'avez aucune publication enregistrée !</string>
-    <string name="reallyHasNoMore">
-        Vous avez enregistré %d messages supplémentaires ; mais ils sont apparemment supprimés, bloqués ou masqués de quelque manière que ce soit!
-    </string>
 
     <!-- PageBox -->
     <string name="boxUntil">Jusqu\'à %s</string>

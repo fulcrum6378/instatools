@@ -88,7 +88,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     class MyModel : ViewModel() {
         var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
-        var saved: Media.Wrapper? = null
+        var saved: Media.SavedWrapper? = null
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
         val currentPage = MutableLiveData(Settings.defSpMainPage)
@@ -359,7 +359,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         return true
     }
 
-    fun bnvBadge(i: Int, num: Int?) = b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
+    @Suppress("SameParameterValue")
+    private fun bnvBadge(i: Int, num: Int?) = b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
         isVisible = num != null
         number = num ?: 0
         backgroundColor = ca[i]

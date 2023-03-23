@@ -53,7 +53,6 @@ class PageSvd : BasePageMain(), Selective {
     var saver: Saver? = null
     private var selectionBadge: BadgeDrawable? = null
     private var selectionGuide: LottieAnimationView? = null
-    private var reallyHasMore = true
     val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: PageCompanion = Companion
@@ -88,8 +87,8 @@ class PageSvd : BasePageMain(), Selective {
         },
         HANDLE_UNSAVE_DONE to { msg ->
             //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
-            c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
-            c.mm.saved?.items?.find { it.id == msg.obj as String }?.let { media ->
+            //c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
+            c.mm.saved?.items?.find { it.media.id == msg.obj as String }?.let { media ->
                 val x = c.mm.saved!!.items!!.indexOf(media)
                 c.mm.saved!!.items!!.removeAt(x)
                 b.rv.adapter?.notifyItemRemoved(x)
@@ -98,12 +97,6 @@ class PageSvd : BasePageMain(), Selective {
             }
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
-        /*HANDLE_REALLY_NO_MORE to {
-            val number = c.mm.saved?.hiddenItems()
-            if (number != null && number > 0) UiTools.snackbar(
-                b.root, c.getString(R.string.reallyHasNoMore, number), 10000, c.b.bnv
-            )
-        },*/
     )
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
@@ -111,7 +104,6 @@ class PageSvd : BasePageMain(), Selective {
     companion object : PageCompanion() {
         const val HANDLE_UNSAVE_DONE = 10
         const val HANDLE_INIT_QUEUER = 11
-        //const val HANDLE_REALLY_NO_MORE = 13
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -127,7 +119,7 @@ class PageSvd : BasePageMain(), Selective {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1) && reallyHasMore &&
+                if (!b.rv.canScrollVertically(1) &&
                     thread?.active != true && c.mm.saved?.more_available != false
                 ) thread = FetchSome().also { it.start() }
             }
@@ -152,7 +144,6 @@ class PageSvd : BasePageMain(), Selective {
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
         tracker?.clearSelection()
-        reallyHasMore = true
         thread = FetchSome().also { it.start() }
     }
 
@@ -202,7 +193,7 @@ class PageSvd : BasePageMain(), Selective {
                 tracker?.clearSelection()
             }
             R.id.mtSelectAll -> if (c.mm.saved?.items != null)
-                tracker?.setItemsSelected(c.mm.saved!!.items!!.map { it.id }, true)
+                tracker?.setItemsSelected(c.mm.saved!!.items!!.map { it.media.id }, true)
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -237,10 +228,10 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.id
+        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.id
         override fun getPosition(key: String): Int {
             c.mm.saved?.items?.forEachIndexed { i, item ->
-                if (item.id == key) return@getPosition i
+                if (item.media.id == key) return@getPosition i
             }
             return -1
         }
@@ -287,17 +278,14 @@ class PageSvd : BasePageMain(), Selective {
         override fun run() {
             if (c.m.acc == null || c.mm.saved?.more_available == false) return
             super.run()
-            reqQueue.adder = Api<Media.Wrapper>(
+            reqQueue.adder = Api<Media.SavedWrapper>(
                 c, Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-                Media.Wrapper::class, handler, autoQueue = false, onError = { interrupt() }
+                Media.SavedWrapper::class, handler, autoQueue = false, onError = { interrupt() }
             ) { wrapper ->
                 if (!active) return@Api
                 if (wrapper.items == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
-                /*if (edgeList.edges.isEmpty()) {
-                    reallyHasMore = false
-                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()*/
                 if (c.mm.saved == null) {
                     c.mm.saved = wrapper
                     handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
@@ -306,7 +294,7 @@ class PageSvd : BasePageMain(), Selective {
                     items!!.addAll(wrapper.items!!)
                     more_available = wrapper.more_available
                     next_max_id = wrapper.next_max_id
-                    total_count = wrapper.total_count
+                    num_results = wrapper.num_results
                     handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
                         ?.sendToTarget()
                 }
@@ -329,16 +317,16 @@ class PageSvd : BasePageMain(), Selective {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return; }
-            val media = (c as Main).mm.saved?.items?.find { it.id == svd }
-            if (media == null) {
+            val saved = (c as Main).mm.saved?.items?.find { it.media.id == svd }
+            if (saved == null) {
                 ended(); return; }
 
             if (download) try {
-                media.queue(c.dao)
+                saved.media.queue(c.dao)
             } catch (e: IllegalStateException) { // DB is closed
             }
             if (unsave) f.reqQueue.adder = Api<Rest>(
-                c, Api.Endpoint.UNSAVE.url.format(media.id), Rest::class, null,
+                c, Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, null,
                 method = Request.Method.POST, autoQueue = false, onError = { ended() }
             ) { rest ->
                 if (rest.status == "ok") {
