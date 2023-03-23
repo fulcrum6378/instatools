@@ -77,9 +77,9 @@ open class Rest {
         //val page_size: Double,
     ) : Rest()
 
-    class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()
+    /*class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()*/
 
-    class FriendshipStatus(
+    /*class FriendshipStatus(
         //val blocking: Boolean,
         //val followed_by: Boolean,
         val following: Boolean,
@@ -92,7 +92,7 @@ open class Rest {
         //val muting: Boolean,
         //val outgoing_request: Boolean,
         //val subscribed: Boolean,
-    )
+    )*/
 
     class InboxPage(
         //val has_pending_top_requests: Boolean,

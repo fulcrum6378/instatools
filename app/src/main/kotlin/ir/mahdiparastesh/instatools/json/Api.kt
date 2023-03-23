@@ -111,7 +111,7 @@ class Api<JSON>(
                     "&include_reel=false&search_surface=web_top_search"
         ), // &rank_token=0.9366187585704904
 
-        // Posts & Stories TODO
+        // Posts & Stories
         MEDIA_ITEM("https://www.instagram.com/api/v1/media/%s/info/"),
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
@@ -137,10 +137,11 @@ class Api<JSON>(
         UNBLOCK("https://www.instagram.com/api/v1/web/friendships/%d/unblock/"),
         // method = POST, expect "{"status":"ok"}" */
 
-        // Saving TODO
+        // Saving
         SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
         //SAVE("https://www.instagram.com/web/save/%s/save/"),
+        // The fucking web API used /web/save for fulcrum6378 and /graphql/query for instatools.apk !?!
 
         // Messaging
         INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
@@ -167,30 +168,35 @@ class Api<JSON>(
                     "&__d=" + siteData["haste_site"] +
                     "&__user=0" +
                     "&__a=1" +
-                    "&__dyn=" /*TODO*/ +
-                    "&__csr=" /*TODO*/ +
-                    "&__req=" /*TODO d or 3?*/ +
+                    "&__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0F" +
+                    "E2awt81sbzoaEd82lwv89k2C1Fwc61uwZx-0z8jwae4UaEW0D888cobEaU2eUlwh" +
+                    "E2Lx_w4HwJwSyES1Twoob82ZwiU8UdUbGwbO1pw" /*TODO*/ +
+                    "&__csr=glhcrillJsB9N5GL8F6LV9lGm4oSAZUOVoCimE8ideXGXAgynCF5KEy2y" +
+                    "00gc905eyRc02JG3C4m4o7y0zyw4Za2ye3ywXm3O6204pjgYwKoEy2u7u1RwjlG0" +
+                    "j10PwbZ0ww15Kbm0oK0YU" /*TODO*/ +
+                    "&__req=3" /*TODO d or 3?*/ +
                     "&__hs=" + siteData["haste_session"] +
                     "&dpr=1" +
                     "&__ccg=" + (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
                     as Map<String, String>)["connectionClass"]!! +
                     "&__rev=" + (siteData["client_revision"] as Double)
                 .toInt().toString() +
-                    "&__s=" /*TODO*/ +
+                    "&__s=eiw83y%3Aude3gw%3Ap6j381" /*TODO*/ +
                     "&__hsi=" + siteData["haste_session"] +
                     "&__comet_req=7" +
                     "&fb_dtsg=" + (cnfWrapper.define["DTSGInitialData"]!![1]
                     as Map<String, String>)["token"]!! + // or DTSGInitData and async_get_token
-                    "&jazoest=" /*TODO 26314 or 26301*/ +
+                    "&jazoest=26314" /*TODO 26314 or 26301*/ +
                     "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
                     "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
                     "&__spin_b=" + siteData["__spin_b"] +
                     "&__spin_t=" + (siteData["__spin_t"] as Double).toInt() +
                     "&fb_api_caller_class=RelayModern" +
-                    "&fb_api_req_friendly_name=" /*TODO usePolarisSaveMediaSaveMutation or PolarisPostRootQuery*/ +
-                    "&variables=" /*TODO shortcode or media id?!?*/ +
+                    "&fb_api_req_friendly_name=PolarisPostRootQuery" +
+                    /*TODO usePolarisSaveMediaSaveMutation or PolarisPostRootQuery*/
+                    "&variables=%7B%22shortcode%22%3A%22$shortcode%22%7D" /*TODO shortcode or media id?!?*/ +
                     "&server_timestamps=true" +
-                    "&doc_id=" /*TODO*/
+                    "&doc_id=18086740648321782" /*TODO*/
         }
 
         fun gotError(
@@ -261,9 +267,9 @@ class Api<JSON>(
             if (isImperative) {
                 this["content-type"] = "application/x-www-form-urlencoded"
                 this["x-requested-with"] = "XMLHttpRequest"
-                //if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!! // TODO REMOVED?!?
+                if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
                 /*"x-fb-friendly-name": "usePolarisSaveMediaSaveMutation",
-    "x-fb-lsd": "4XmgR5VLJlf9HL7hUQOtwn",*/// TODO NECESSARY?!?
+    "x-fb-lsd": "4XmgR5VLJlf9HL7hUQOtwn",*/// IS IT NECESSARY FOR RAW_QUERY?!?
             } else { // Cookie "rur" is different between MEDIA_ITEM and GET but the same between themselves
                 this["accept"] = "*/*"
             }
@@ -272,7 +278,7 @@ class Api<JSON>(
             /* For this, load "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/5bb0ab377d4d.js"
              * Substring after "e.ASBD_ID='", substring before "'" */
             this["x-asbd-id"] = "198387" // STATIC
-            // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws" // TODO ?!?
+            // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
             this["x-ig-app-id"] = "936619743392459" // STATIC
             this["cookie"] = cookies
             this["Referer"] = "https://www.instagram.com/"
@@ -283,28 +289,7 @@ class Api<JSON>(
             this["Access-Control-Allow-Credentials"] = "true"
         }
     }
-    /*fetch("https://www.instagram.com/graphql/query", {
-  "headers": {
-    "accept-language": "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6",
-    "content-type": "application/x-www-form-urlencoded",
-    "sec-ch-prefers-color-scheme": "light",
-    "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Windows\"",
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin",
-    "viewport-width": "1366",
-    "x-asbd-id": "198387",
-    "x-csrftoken": "Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9",
-    "x-fb-friendly-name": "usePolarisSaveMediaSaveMutation",
-    "x-fb-lsd": "4XmgR5VLJlf9HL7hUQOtwn",
-    "x-ig-app-id": "936619743392459",
-    "cookie": "mid=ZBv5VgALAAGDo48OHU8iPtxG8RBQ; ig_nrcb=1; ig_did=8DED6ECE-ADBC-4694-BA6B-63EDBE573C86; csrftoken=Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9; ds_user_id=52110444768; sessionid=52110444768%3ADzqH57S3s7GMP6%3A27%3AAYcdr3uAS-Pg8u8gJ9LpCDqS_t2bPsJotJjqRRksTw; datr=__kbZId7dfu-p7kw8Tb1QxWU; shbid=\"7818\\05452110444768\\0541711091089:01f70b74d318245f50ebb7540aa769cf1fcd2feb7965ab9a5745780d18fb6175103d688a\"; shbts=\"1679555089\\05452110444768\\0541711091089:01f72006b0d381042142331ca5895878d107adad21a0b5e7a4f53dca25bd90890a21bd3f\"; rur=\"NCG\\05452110444768\\0541711091355:01f71a427f6269bdf5fdf61b90ccd7b80da87485586550697d5b64b2199b03b9edadd078\"",
-    "Referer": "https://www.instagram.com/p/CpwCoY3IYzI/",
-    "Referrer-Policy": "strict-origin-when-cross-origin"
-  },
-  "body": "access_token=
+    /*access_token=
   &__d=www
   &__user=0
   &__a=1
@@ -328,7 +313,59 @@ class Api<JSON>(
   &fb_api_req_friendly_name=usePolarisSaveMediaSaveMutation
   &variables=%7B%22media_id%22%3A%223057955718551407816%22%7D
   &server_timestamps=true
-  &doc_id=18271948444105212",
-  "method": "POST"
+  &doc_id=18271948444105212*/
+
+    /*fetch("https://www.instagram.com/api/v1/web/save/1375570347428689081/save/", {
+  "headers": {
+    "accept": "* / *",
+    "accept-language": "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6",
+    "content-type": "application/x-www-form-urlencoded",
+    "sec-ch-prefers-color-scheme": "light",
+    "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "viewport-width": "1366",
+    "x-asbd-id": "198387",
+    "x-csrftoken": "Cjp1JJ5miU23JtyVOUEKBmnRxjHvXyQ8",
+    "x-ig-app-id": "936619743392459",
+    "x-ig-www-claim": "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHN-B",
+    "x-instagram-ajax": "1007165757",
+    "x-requested-with": "XMLHttpRequest",
+    "cookie": "mid=ZBv5VgALAAGDo48OHU8iPtxG8RBQ; ig_nrcb=1; ig_did=8DED6ECE-ADBC-4694-BA6B-63EDBE573C86; datr=__kbZId7dfu-p7kw8Tb1QxWU; shbid=\"7818\\05452110444768\\0541711091089:01f70b74d318245f50ebb7540aa769cf1fcd2feb7965ab9a5745780d18fb6175103d688a\"; shbts=\"1679555089\\05452110444768\\0541711091089:01f72006b0d381042142331ca5895878d107adad21a0b5e7a4f53dca25bd90890a21bd3f\"; fbm_124024574287414=base_domain=.instagram.com; fbsr_124024574287414=20FQSqUJ5Lv0HUiZjGh6Gk2bRqhz8QioZRPrZG72qlQ.eyJ1c2VyX2lkIjoiMTAwMDA4MDA0ODE0NzI1IiwiY29kZSI6IkFRQ2RNT1FwMDlZQmxoTXdyQkN5SG1ZV2IwWDMwSGl0S3BQQlpoMlRQS3BHcWZBYjE0QW9qREN1SmhkdUFIS0FyX2V5VEFxMU9nWTZEc2xPOVdGa3ltMmhQUjlkcnFncEJSOElpNEZ5TGJ1SEkxRUtXUlFRRXpfTHVIdVppbXRMV2ZxQkJDWnlGcXp4S3JEVXRWZUM4M2FubHBYdGRTRXdlRk5ybmJBWXJfUE4zem5yZmxGN2FDWHlYZXNZWDN4cEpob216Y2FfTkhnMnB2ZjFjbVlZazdud24yZzI3d25hdjNxeUdQZVVDdTZmeDdKYk5LVjZVOUhhOFVERzVLX2NyWVZsX2c3b2N5cXpQbXRhc0J6YkhiTTB3UFg5cFo0WVNSS3NSSVVvczAwYVZOTmlxbDFxa01OYk9lQmVjOFlDM1l3ODEtYWtDb3JWYVVtdFJRN1FEd1FZIiwib2F1dGhfdG9rZW4iOiJFQUFCd3pMaXhuallCQUVERWdtUUdma2kwQ05iWkNzQXpYQmxySHJWWkJNWUp4eFpCUzVKeFVEbWZZVjNYY1pDSEtibkowaHRqVjhaQkx5T3ZQUGNCaHhuZnUwZmVMVzFGcmFURDZuWXNKSE5pMzZjNFpCMkNzUW5uWEtBNndYZVpDdGh2MmVqNkRMVURoWkNyU2JNVHFnNTNsVU5jTjFRc2Fwc1pDbmxCR1BxVmwzNWg1UmxxaXIxcTRaQlpCdU04Y0xhR2h4OVJCcVdoelBFZFFaRFpEIiwiYWxnb3JpdGhtIjoiSE1BQy1TSEEyNTYiLCJpc3N1ZWRfYXQiOjE2Nzk1NjA4MTB9; csrftoken=Cjp1JJ5miU23JtyVOUEKBmnRxjHvXyQ8; ds_user_id=8337021434; sessionid=8337021434%3A3POcNVKP3bbslO%3A6%3AAYdtoNd97Gdo-K4wjarpCYRbNELNbZt58VmkPvZv_w; rur=\"NAO\\0548337021434\\0541711104272:01f714449a2409bd27a9820a75e630f7e510af08f232a4d113eae3a516a82f9975dd79e8\"",
+    "Referer": "https://www.instagram.com/p/BMXAfFiDDS5/",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+},
+"body": null,
+"method": "POST"
+});*/
+
+    /*fetch("https://www.instagram.com/api/v1/web/save/1375570347428689081/unsave/", {
+  "headers": {
+    "accept": "* / *",
+    "accept-language": "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6",
+    "content-type": "application/x-www-form-urlencoded",
+    "sec-ch-prefers-color-scheme": "light",
+    "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "viewport-width": "1366",
+    "x-asbd-id": "198387",
+    "x-csrftoken": "Cjp1JJ5miU23JtyVOUEKBmnRxjHvXyQ8",
+    "x-ig-app-id": "936619743392459",
+    "x-ig-www-claim": "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHN-B",
+    "x-instagram-ajax": "1007165757",
+    "x-requested-with": "XMLHttpRequest",
+    "cookie": "mid=ZBv5VgALAAGDo48OHU8iPtxG8RBQ; ig_nrcb=1; ig_did=8DED6ECE-ADBC-4694-BA6B-63EDBE573C86; datr=__kbZId7dfu-p7kw8Tb1QxWU; shbid=\"7818\\05452110444768\\0541711091089:01f70b74d318245f50ebb7540aa769cf1fcd2feb7965ab9a5745780d18fb6175103d688a\"; shbts=\"1679555089\\05452110444768\\0541711091089:01f72006b0d381042142331ca5895878d107adad21a0b5e7a4f53dca25bd90890a21bd3f\"; fbm_124024574287414=base_domain=.instagram.com; fbsr_124024574287414=20FQSqUJ5Lv0HUiZjGh6Gk2bRqhz8QioZRPrZG72qlQ.eyJ1c2VyX2lkIjoiMTAwMDA4MDA0ODE0NzI1IiwiY29kZSI6IkFRQ2RNT1FwMDlZQmxoTXdyQkN5SG1ZV2IwWDMwSGl0S3BQQlpoMlRQS3BHcWZBYjE0QW9qREN1SmhkdUFIS0FyX2V5VEFxMU9nWTZEc2xPOVdGa3ltMmhQUjlkcnFncEJSOElpNEZ5TGJ1SEkxRUtXUlFRRXpfTHVIdVppbXRMV2ZxQkJDWnlGcXp4S3JEVXRWZUM4M2FubHBYdGRTRXdlRk5ybmJBWXJfUE4zem5yZmxGN2FDWHlYZXNZWDN4cEpob216Y2FfTkhnMnB2ZjFjbVlZazdud24yZzI3d25hdjNxeUdQZVVDdTZmeDdKYk5LVjZVOUhhOFVERzVLX2NyWVZsX2c3b2N5cXpQbXRhc0J6YkhiTTB3UFg5cFo0WVNSS3NSSVVvczAwYVZOTmlxbDFxa01OYk9lQmVjOFlDM1l3ODEtYWtDb3JWYVVtdFJRN1FEd1FZIiwib2F1dGhfdG9rZW4iOiJFQUFCd3pMaXhuallCQUVERWdtUUdma2kwQ05iWkNzQXpYQmxySHJWWkJNWUp4eFpCUzVKeFVEbWZZVjNYY1pDSEtibkowaHRqVjhaQkx5T3ZQUGNCaHhuZnUwZmVMVzFGcmFURDZuWXNKSE5pMzZjNFpCMkNzUW5uWEtBNndYZVpDdGh2MmVqNkRMVURoWkNyU2JNVHFnNTNsVU5jTjFRc2Fwc1pDbmxCR1BxVmwzNWg1UmxxaXIxcTRaQlpCdU04Y0xhR2h4OVJCcVdoelBFZFFaRFpEIiwiYWxnb3JpdGhtIjoiSE1BQy1TSEEyNTYiLCJpc3N1ZWRfYXQiOjE2Nzk1NjA4MTB9; csrftoken=Cjp1JJ5miU23JtyVOUEKBmnRxjHvXyQ8; ds_user_id=8337021434; sessionid=8337021434%3A3POcNVKP3bbslO%3A6%3AAYdtoNd97Gdo-K4wjarpCYRbNELNbZt58VmkPvZv_w; rur=\"NAO\\0548337021434\\0541711104288:01f7eb63ff875a373236f955cb23b2aac792f4399f8105cf70f5cd5011dd0f80b1dbf622\"",
+    "Referer": "https://www.instagram.com/p/BMXAfFiDDS5/",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+},
+"body": null,
+"method": "POST"
 });*/
 }
