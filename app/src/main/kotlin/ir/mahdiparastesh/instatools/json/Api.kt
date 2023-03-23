@@ -17,6 +17,7 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 
+@Suppress("UNCHECKED_CAST")
 class Api<JSON>(
     val c: Persistent,
     url: String,
@@ -56,7 +57,6 @@ class Api<JSON>(
 
     override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
 
-    @Suppress("UNCHECKED_CAST")
     override fun deliverResponse(response: String) {
         val data: JSON? = try {
             Gson().fromJson(response, typeToken ?: clazz.java) as JSON
@@ -215,36 +215,34 @@ class Api<JSON>(
     class Headers(acc: Account, isImperative: Boolean = false, dm: DisplayMetrics? = null) :
         HashMap<String, String>() {
         init {
-            this["accept"] = "*/*"
             this["accept-language"] = "en-GB"
             this["sec-ch-ua"] = "\" Not;A Brand\";\"InstaTools\""
             this["sec-ch-ua-mobile"] = "?1"
             this["sec-ch-ua-platform"] = "\"InstaTools - Android\""
             this["sec-fetch-dest"] = "empty"
             this["sec-fetch-mode"] = "cors"
+            this["sec-fetch-site"] = "same-origin"
+            if (dm != null) this["viewport-width"] =
+                (dm.widthPixels / dm.density).toInt().toString()
             // "cache-control": "max-age=0" // SET THIS IN ORDER TO DISABLE CACHE
 
             val cookies = acc.cook ?: ""
             if (isImperative) {
                 this["content-type"] = "application/x-www-form-urlencoded"
-                this["sec-fetch-site"] = "same-origin"
                 this["x-requested-with"] = "XMLHttpRequest"
-                if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
+                //if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!! // TODO REMOVED?!?
+                /*"x-fb-friendly-name": "usePolarisSaveMediaSaveMutation",
+    "x-fb-lsd": "4XmgR5VLJlf9HL7hUQOtwn",*/// TODO NECESSARY?!?
             } else { // Cookie "rur" is different between MEDIA_ITEM and GET but the same between themselves
-                this["sec-fetch-site"] = "same-site"
-                if (dm != null) this["viewport-width"] =
-                    (dm.widthPixels / dm.density).toInt().toString()
+                this["accept"] = "*/*"
             }
-            if (cookies.contains("csrftoken="))
-                this["x-csrftoken"] = cookies
-                    .substringAfter("csrftoken=")
-                    .substringBefore(";")
-            this["x-asbd-id"] = "198387" // MIGHT BE THE SAME FOR DIFFERENT ACCOUNTS
-            // For ^, load "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/5bb0ab377d4d.js"
-            // Substring after "e.ASBD_ID='", substring before "'"
-            // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
-            // But this one is NOT
-            this["x-ig-app-id"] = "936619743392459"
+            if (cookies.contains("csrftoken=")) this["x-csrftoken"] =
+                cookies.substringAfter("csrftoken=").substringBefore(";")
+            /* For this, load "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/5bb0ab377d4d.js"
+             * Substring after "e.ASBD_ID='", substring before "'" */
+            this["x-asbd-id"] = "198387" // STATIC
+            // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws" // TODO ?!?
+            this["x-ig-app-id"] = "936619743392459" // STATIC
             this["cookie"] = cookies
             this["Referer"] = "https://www.instagram.com/"
             this["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -254,4 +252,143 @@ class Api<JSON>(
             this["Access-Control-Allow-Credentials"] = "true"
         }
     }
+    /*fetch("https://www.instagram.com/graphql/query", {
+  "headers": {
+    "accept-language": "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6",
+    "content-type": "application/x-www-form-urlencoded",
+    "sec-ch-prefers-color-scheme": "light",
+    "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "viewport-width": "1366",
+    "x-asbd-id": "198387",
+    "x-csrftoken": "Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9",
+    "x-fb-friendly-name": "usePolarisSaveMediaSaveMutation",
+    "x-fb-lsd": "4XmgR5VLJlf9HL7hUQOtwn",
+    "x-ig-app-id": "936619743392459",
+    "cookie": "mid=ZBv5VgALAAGDo48OHU8iPtxG8RBQ; ig_nrcb=1; ig_did=8DED6ECE-ADBC-4694-BA6B-63EDBE573C86; csrftoken=Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9; ds_user_id=52110444768; sessionid=52110444768%3ADzqH57S3s7GMP6%3A27%3AAYcdr3uAS-Pg8u8gJ9LpCDqS_t2bPsJotJjqRRksTw; datr=__kbZId7dfu-p7kw8Tb1QxWU; shbid=\"7818\\05452110444768\\0541711091089:01f70b74d318245f50ebb7540aa769cf1fcd2feb7965ab9a5745780d18fb6175103d688a\"; shbts=\"1679555089\\05452110444768\\0541711091089:01f72006b0d381042142331ca5895878d107adad21a0b5e7a4f53dca25bd90890a21bd3f\"; rur=\"NCG\\05452110444768\\0541711091355:01f71a427f6269bdf5fdf61b90ccd7b80da87485586550697d5b64b2199b03b9edadd078\"",
+    "Referer": "https://www.instagram.com/p/CpwCoY3IYzI/",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "body": "access_token=
+  &__d=www
+  &__user=0
+  &__a=1
+  &__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0FE2awt81s8hwGwQw9m1YwBgao6C0Mo5W3S7U2cxe0EUjwGzE2swwwNwKwHw8Xxm16wa-7-0iK2S3qazo7u1xwIwbS1bwzwTwKG0L85C1Iw
+  &__csr=gbA8iNf96iAvTmhl8CmnF-Q5F9F_UzoOnGA9-ha4ei64EBbBxaqaCBxyq00huci4U08s40A83ayy09y1ya1Tw4owGA4wdJ0wwLw8-62a7k9a8xzB815Ddcywxo5G210vE81EC0hq04o8K8xW9w_w8B0ywiE5a01uqw1zC
+  &__req=d
+  &__hs=19439.HYP%3Ainstagram_web_pkg.2.1..0.1
+  &dpr=1
+  &__ccg=EXCELLENT
+  &__rev=1007164808
+  &__s=%3A9yh1xo%3Adgjmu0
+  &__hsi=7213635163592090066
+  &__comet_req=7
+  &fb_dtsg=NAcMjWMKaLVoP3nT7AqztOTSWhxh98WUK8xwLPN9XkXi5qmE4QZTnhQ%3A17843683126168011%3A1679555068
+  &jazoest=26301
+  &lsd=4XmgR5VLJlf9HL7hUQOtwn
+  &__spin_r=1007164808
+  &__spin_b=trunk
+  &__spin_t=1679555318
+  &fb_api_caller_class=RelayModern
+  &fb_api_req_friendly_name=usePolarisSaveMediaSaveMutation
+  &variables=%7B%22media_id%22%3A%223057955718551407816%22%7D
+  &server_timestamps=true
+  &doc_id=18271948444105212",
+  "method": "POST"
+});*/
+
+    class GraphQlBody(cnfWrapper: PageConfig) : HashMap<String, String>() {
+        init {
+            val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
+            this["access_token"] = ""
+            this["__d"] = siteData["haste_site"] as String
+            this["__user"] = "0"
+            this["__a"] = "1"
+            this["__dyn"] = "" // TODO
+            this["__csr"] = "" // TODO
+            this["__req"] = "" // TODO d or 3?
+            this["__hs"] = siteData["haste_session"] as String
+            this["dpr"] = "1"
+            this["__ccg"] = (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
+                    as Map<String, String>)["connectionClass"]!!
+            this["__rev"] = (siteData["client_revision"] as Double).toInt().toString()
+            this["__s"] = "" // TODO
+            this["__hsi"] = siteData["haste_session"] as String
+            this["__comet_req"] = "7"
+            this["fb_dtsg"] = (cnfWrapper.define["DTSGInitialData"]!![1]
+                    as Map<String, String>)["token"]!! // or DTSGInitData and async_get_token
+            this["jazoest"] = "" // TODO 26314 or 26301
+            this["lsd"] = (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!!
+            this["__spin_r"] = (siteData["__spin_r"] as Double).toInt().toString()
+            this["__spin_b"] = siteData["__spin_b"].toString()
+            this["__spin_t"] = (siteData["__spin_t"] as Double).toInt().toString()
+            this["fb_api_caller_class"] = "RelayModern"
+            this["fb_api_req_friendly_name"] = "" // TODO usePolarisSaveMediaSaveMutation or PolarisPostRootQuery
+            this["variables"] = "" // TODO ?!?
+            this["server_timestamps"] = "true"
+
+            "access_token=" +
+                    "&__d=" + siteData["haste_site"] +
+                    "&__user=0" +
+                    "&__a=1" +
+                    "&__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0F" +
+                    "E2awt81sbzoaEd82lwv89k2C1Fwc61uwZx-0z8jwae4UaEW0D888cobEaU2eUlwh" +
+                    "E2Lx_w4HwJwSyES1Twoob82ZwiU8UdUbGwbO1pw" +
+                    "&__csr=glhcrillJsB9N5GL8F6LV9lGm4oSAZUOVoCimE8ideXGXAgynCF5KEy2y" +
+                    "00gc905eyRc02JG3C4m4o7y0zyw4Za2ye3ywXm3O6204pjgYwKoEy2u7u1RwjlG0" +
+                    "j10PwbZ0ww15Kbm0oK0YU" +
+                    "&__req=3" +
+                    "&__hs=" + siteData["haste_session"] +
+                    "&dpr=1" +
+                    "&__ccg=" + (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
+                    as Map<String, String>)["connectionClass"]!! +
+                    "&__rev=" + (siteData["client_revision"] as Double)
+                .toInt().toString() +
+                    "&__s=eiw83y%3Aude3gw%3Ap6j381" +
+                    "&__hsi=" + siteData["haste_session"] +
+                    "&__comet_req=7" +
+                    "&fb_dtsg=" + (cnfWrapper.define["DTSGInitialData"]!![1]
+                    as Map<String, String>)["token"]!! + // or DTSGInitData and async_get_token
+                    "&jazoest=26314" +
+                    "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
+                    "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
+                    "&__spin_b=" + siteData["__spin_b"] +
+                    "&__spin_t=" + (siteData["__spin_t"] as Double).toInt() +
+                    "&fb_api_caller_class=RelayModern" +
+                    "&fb_api_req_friendly_name=PolarisPostRootQuery" +
+                    "&variables=%7B%22shortcode%22%3A%22$shortcode%22%7D" +
+                    "&server_timestamps=true" +
+                    "&doc_id=18086740648321782"
+        }
+    }
+
+    //GET EXAMPLE
+    /*fetch("https://www.instagram.com/api/v1/feed/reels_tray/", {
+  "headers": {
+    "accept": "* / *",
+    "accept-language": "en-GB,en;q=0.9,fa-IR;q=0.8,fa;q=0.7,en-US;q=0.6",
+    "sec-ch-prefers-color-scheme": "light",
+    "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "viewport-width": "1366",
+    "x-asbd-id": "198387",
+    "x-csrftoken": "Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9",
+    "x-ig-app-id": "936619743392459",
+    "x-ig-www-claim": "hmac.AR3Yzja13RaHk1xYtslwCaBIoHJmBIwl1Jh0HrCaWQN6Pz3z",
+    "x-requested-with": "XMLHttpRequest",
+    "cookie": "mid=ZBv5VgALAAGDo48OHU8iPtxG8RBQ; ig_nrcb=1; ig_did=8DED6ECE-ADBC-4694-BA6B-63EDBE573C86; csrftoken=Md9BSLhvPT2DUhLoDiuK1n0RXtBAUXW9; ds_user_id=52110444768; sessionid=52110444768%3ADzqH57S3s7GMP6%3A27%3AAYcdr3uAS-Pg8u8gJ9LpCDqS_t2bPsJotJjqRRksTw; datr=__kbZId7dfu-p7kw8Tb1QxWU; shbid=\"7818\\05452110444768\\0541711091089:01f70b74d318245f50ebb7540aa769cf1fcd2feb7965ab9a5745780d18fb6175103d688a\"; shbts=\"1679555089\\05452110444768\\0541711091089:01f72006b0d381042142331ca5895878d107adad21a0b5e7a4f53dca25bd90890a21bd3f\"; rur=\"NCG\\05452110444768\\0541711091338:01f764779199d73447c17a722a8b4030cb2498a4e1ab0e57878242822d318a90c414d93d\"",
+    "Referer": "https://www.instagram.com/p/CpwCoY3IYzI/",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+},
+"body": null,
+"method": "GET"
+});*/
 }
