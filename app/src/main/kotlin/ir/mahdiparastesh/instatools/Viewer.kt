@@ -72,7 +72,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     class MyModel : ViewModel() {
         var vwUser: GraphQl.User? = null
-        var vwTagged: Media.MediaWrapperApi? = null
+        var vwTagged: Media.Wrapper? = null
         var vwReels: CopyOnWriteArrayList<Rest.Reel>? = null
         var vwCurrentPage = MutableLiveData(1)
     }

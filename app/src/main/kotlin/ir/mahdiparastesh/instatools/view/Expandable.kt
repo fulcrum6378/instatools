@@ -185,8 +185,8 @@ class Expandable(
         onZoomChanged(true)
         currentAnimator?.cancel()
         b.username.text = ""
-        if (media == null) queue.adder = Api<Media.MediaWrapperApi>(
-            c, Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.MediaWrapperApi::class,
+        if (media == null) queue.adder = Api<Media.Wrapper>(
+            c, Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.Wrapper::class,
             handler, autoQueue = false, cache = true
         ) { wrapper ->
             media = wrapper.items?.getOrNull(0)

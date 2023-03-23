@@ -16,17 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
-import ir.mahdiparastesh.instatools.json.Media.MediaWrapperApi
-import ir.mahdiparastesh.instatools.json.Versioned
+import ir.mahdiparastesh.instatools.json.Media.Wrapper
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.more.*
-import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
@@ -149,10 +145,10 @@ class PageTag : BasePageViewer() {
                 c.mm.vwTagged = null
                 interrupt()
                 return; }
-            c.reqQueue.adder = Api<MediaWrapperApi>(
+            c.reqQueue.adder = Api<Wrapper>(
                 c, Api.Endpoint.TAGGED.url.format(
                     c.mm.vwUser?.id ?: "", c.mm.vwTagged?.next_max_id ?: ""
-                ), MediaWrapperApi::class, handler, autoQueue = false, onError = { interrupt() }
+                ), Wrapper::class, handler, autoQueue = false, onError = { interrupt() }
             ) { wrapper ->
                 if (c.mm.vwTagged == null) {
                     c.mm.vwTagged = wrapper
@@ -185,30 +181,7 @@ class PageTag : BasePageViewer() {
                 interrupt()
                 return
             }
-            (c as Viewer).mm.vwTagged?.items?.find { it.pk == post }?.also { med ->
-                val link = UiTools.POST_LINK.format(med.code)
-                when {
-                    med.carousel_media != null -> for (car in med.carousel_media!!) c.dao.addQueued(
-                        Queued(
-                            Persistent.now(), link,
-                            if (med.taken_at > 0.0) med.taken_at.xFromSeconds() else Persistent.now(),
-                            med.user.pk, med.user.username, car.pk, car.nearest(Versioned.BEST),
-                            car.thumb(), car.media_type.toInt().toByte(),
-                            dur = car.video_duration?.toLong(), caption = med.caption?.text
-                        )
-                    )
-                    med.image_versions2 != null -> c.dao.addQueued(
-                        Queued(
-                            Persistent.now(), link,
-                            if (med.taken_at > 0.0) med.taken_at.xFromSeconds() else Persistent.now(),
-                            med.user.pk, med.user.username,
-                            med.pk ?: med.id, med.nearest(Versioned.BEST),
-                            med.thumb(), med.media_type.toInt().toByte(),
-                            dur = med.video_duration?.toLong(), caption = med.caption?.text
-                        )
-                    )
-                }
-            }
+            (c as Viewer).mm.vwTagged?.items?.find { it.pk == post }?.queue(c.dao)
             ended()
         }
     }

@@ -1,6 +1,10 @@
 package ir.mahdiparastesh.instatools.json
 
+import ir.mahdiparastesh.instatools.data.Database
+import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
@@ -111,8 +115,33 @@ class Media(
     fun hasAudio() = has_audio == true ||
             (carousel_media != null && carousel_media?.any { it.media_type == 2f } == true)
 
+    fun queue(dao: Database.DAO) {
+        val link = UiTools.POST_LINK.format(code)
+        when {
+            carousel_media != null -> for (car in carousel_media!!) dao.addQueued(
+                Queued(
+                    Persistent.now(), link,
+                    if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
+                    user.pk, user.username, car.pk, car.nearest(BEST),
+                    car.thumb(), car.media_type.toInt().toByte(),
+                    dur = car.video_duration?.toLong(), caption = caption?.text
+                )
+            )
+            image_versions2 != null -> dao.addQueued(
+                Queued(
+                    Persistent.now(), link,
+                    if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
+                    user.pk, user.username,
+                    pk ?: id, nearest(BEST),
+                    thumb(), media_type.toInt().toByte(),
+                    dur = video_duration?.toLong(), caption = caption?.text
+                )
+            )
+        }
+    }
 
-    class MediaWrapperApi(
+
+    class Wrapper(
         //var auto_load_more_enabled: Boolean,
         var items: CopyOnWriteArrayList<Media>?,
         var more_available: Boolean,
@@ -120,7 +149,7 @@ class Media(
         var next_max_id: String?,
         //var num_results: Float,
         //var requires_review: Boolean
-        //var total_count: Float
+        var total_count: Float?
     ) // "TAGGED" contains "status", but "MEDIA_ITEM" doesn't.
 
     /*class Thumbnails(

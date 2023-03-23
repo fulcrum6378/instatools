@@ -37,11 +37,8 @@ import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.*
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
-import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.json.GraphQl
-import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -91,7 +88,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     class MyModel : ViewModel() {
         var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
-        var saved: GraphQl.EdgeList? = null
+        var saved: Media.Wrapper? = null
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
         val currentPage = MutableLiveData(Settings.defSpMainPage)

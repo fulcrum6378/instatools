@@ -153,10 +153,9 @@ class Queuer : ForegroundService() {
                         cur.link.contains("/tv/") -> cur.link.substringAfter("/tv/")
                         else -> throw Exception("IMPOSSIBLE")
                     }.substringBefore("/")
-                    val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
                     reqQueue.adder = Api<GraphQl>(
                         this, Api.Endpoint.RAW_QUERY.url, GraphQl::class, handler,
-                        "access_token=" +
+                        /*"access_token=" +
                                 "&__d=" + siteData["haste_site"] +
                                 "&__user=0" +
                                 "&__a=1" +
@@ -187,7 +186,8 @@ class Queuer : ForegroundService() {
                                 "&fb_api_req_friendly_name=PolarisPostRootQuery" +
                                 "&variables=%7B%22shortcode%22%3A%22$shortcode%22%7D" +
                                 "&server_timestamps=true" +
-                                "&doc_id=18086740648321782",
+                                "&doc_id=18086740648321782"*/
+                        Api.graphQlBody(cnfWrapper, shortcode),
                         method = Method.POST, autoQueue = false
                     ) { graphQl ->
                         val med =

@@ -28,12 +28,11 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
-import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
@@ -69,12 +68,12 @@ class PageSvd : BasePageMain(), Selective {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super@PageSvd.onLoaded(c.mm.saved?.edges.isNullOrEmpty(), false)
+                super@PageSvd.onLoaded(c.mm.saved?.items.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-                c.bnvBadge(1, c.mm.saved?.count?.toInt() ?: 0)
-            } else onLoaded(c.mm.saved?.edges.isNullOrEmpty())
+                //c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
+            } else onLoaded(c.mm.saved?.items.isNullOrEmpty())
 
-            if (c.mm.saved?.page_info?.has_next_page == true && !b.rv.canScrollVertically(1)
+            if (c.mm.saved?.more_available == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
             ) thread = FetchSome().also { it.start() }
         },
@@ -88,32 +87,23 @@ class PageSvd : BasePageMain(), Selective {
             UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
         },
         HANDLE_UNSAVE_DONE to { msg ->
-            c.mm.saved?.apply { if (count > 0.0) count -= 1.0 }
-            c.bnvBadge(1, c.mm.saved?.count?.toInt() ?: 0)
-            c.mm.saved?.edges?.find { it.node.id == msg.obj as String }?.let { post ->
-                val x = c.mm.saved!!.edges.indexOf(post)
-                c.mm.saved!!.edges.removeAt(x)
+            //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
+            c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
+            c.mm.saved?.items?.find { it.id == msg.obj as String }?.let { media ->
+                val x = c.mm.saved!!.items!!.indexOf(media)
+                c.mm.saved!!.items!!.removeAt(x)
                 b.rv.adapter?.notifyItemRemoved(x)
-                b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.edges.size)
-                if (c.mm.saved?.edges.isNullOrEmpty()) onLoaded(true)
+                b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items!!.size)
+                if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
             }
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
-        HANDLE_REALLY_NO_MORE to {
+        /*HANDLE_REALLY_NO_MORE to {
             val number = c.mm.saved?.hiddenItems()
             if (number != null && number > 0) UiTools.snackbar(
                 b.root, c.getString(R.string.reallyHasNoMore, number), 10000, c.b.bnv
             )
-        },
-        HANDLE_UPDATE_PROFILE to { msg ->
-            val list = msg.obj as List<String>
-            c.m.acc?.apply {
-                user = list[0]
-                name = list[1]
-                pict = list[2]
-                saveMe(c.c)
-            }
-        }
+        },*/
     )
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
@@ -121,8 +111,7 @@ class PageSvd : BasePageMain(), Selective {
     companion object : PageCompanion() {
         const val HANDLE_UNSAVE_DONE = 10
         const val HANDLE_INIT_QUEUER = 11
-        const val HANDLE_REALLY_NO_MORE = 13
-        const val HANDLE_UPDATE_PROFILE = 14
+        //const val HANDLE_REALLY_NO_MORE = 13
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -139,7 +128,7 @@ class PageSvd : BasePageMain(), Selective {
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1) && reallyHasMore &&
-                    thread?.active != true && c.mm.saved?.page_info?.has_next_page != false
+                    thread?.active != true && c.mm.saved?.more_available != false
                 ) thread = FetchSome().also { it.start() }
             }
         })
@@ -148,7 +137,7 @@ class PageSvd : BasePageMain(), Selective {
                 super.canScrollVertically() && selectionGuide == null
         }
 
-        if (c.mm.saved != null) onLoaded(c.mm.saved?.edges.isNullOrEmpty())
+        if (c.mm.saved != null) onLoaded(c.mm.saved?.items.isNullOrEmpty())
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
 
@@ -169,7 +158,7 @@ class PageSvd : BasePageMain(), Selective {
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        if (!asGuest) c.bnvBadge(1, c.mm.saved?.count?.toInt() ?: 0)
+        //if (!asGuest) c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
 
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
@@ -212,8 +201,8 @@ class PageSvd : BasePageMain(), Selective {
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
-            R.id.mtSelectAll -> if (c.mm.saved != null)
-                tracker?.setItemsSelected(c.mm.saved!!.edges.map { it.node.id }, true)
+            R.id.mtSelectAll -> if (c.mm.saved?.items != null)
+                tracker?.setItemsSelected(c.mm.saved!!.items!!.map { it.id }, true)
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -248,10 +237,10 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.saved?.edges?.getOrNull(i)?.node?.id
+        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.id
         override fun getPosition(key: String): Int {
-            c.mm.saved?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.id == key) return@getPosition i
+            c.mm.saved?.items?.forEachIndexed { i, item ->
+                if (item.id == key) return@getPosition i
             }
             return -1
         }
@@ -296,58 +285,33 @@ class PageSvd : BasePageMain(), Selective {
 
     inner class FetchSome : BaseThread() {
         override fun run() {
-            if (c.mm.saved?.page_info?.has_next_page == false || c.m.acc == null) return
+            if (c.m.acc == null || c.mm.saved?.more_available == false) return
             super.run()
-            if (c.mm.saved == null) reqQueue.adder = Api<GraphQl>(
-                c, Api.Endpoint.PROFILE.url.format(c.m.acc!!.user), GraphQl::class,
-                handler, autoQueue = false, onError = { interrupt() }
-            ) { graphql ->
+            reqQueue.adder = Api<Media.Wrapper>(
+                c, Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
+                Media.Wrapper::class, handler, autoQueue = false, onError = { interrupt() }
+            ) { wrapper ->
                 if (!active) return@Api
-                val edgeList = graphql.data.user?.edge_saved_media
-                if (edgeList == null) {
+                if (wrapper.items == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
-                c.mm.saved = edgeList
-                graphql.data.user.also { u ->
-                    if (c.m.acc!!.user != u.username || c.m.acc!!.name != u.full_name ||
-                        c.m.acc!!.pict != (u.profile_pic_url_hd ?: u.profile_pic_url)
-                    ) handler?.obtainMessage(
-                        HANDLE_UPDATE_PROFILE,
-                        listOf(u.username, u.full_name, u.profile_pic_url_hd ?: u.profile_pic_url)
-                    )?.sendToTarget()
-                }
-                done(null)
-            } else reqQueue.adder = Api<GraphQl>(
-                c, Api.Endpoint.SAVED.url.format(
-                    c.m.acc!!.id,
-                    c.mm.saved!!.edges.size,
-                    c.mm.saved?.page_info?.end_cursor ?: ""
-                ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
-            ) { res ->
-                if (!active) return@Api
-                val edgeList = res.data.user?.edge_saved_media
-                if (edgeList == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
-                    interrupt(); return@Api; }
-                if (edgeList.edges.isEmpty()) {
+                /*if (edgeList.edges.isEmpty()) {
                     reallyHasMore = false
-                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
-                    interrupt(); return@Api; }
-                done(edgeList)
+                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()*/
+                if (c.mm.saved == null) {
+                    c.mm.saved = wrapper
+                    handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                } else c.mm.saved?.apply {
+                    val lastBefore = items!!.size
+                    items!!.addAll(wrapper.items!!)
+                    more_available = wrapper.more_available
+                    next_max_id = wrapper.next_max_id
+                    total_count = wrapper.total_count
+                    handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
+                        ?.sendToTarget()
+                }
+                interrupt()
             }
-        }
-
-        private fun done(add: GraphQl.EdgeList? = null) {
-            if (!active) return
-            if (add != null) c.mm.saved?.apply {
-                page_info = add.page_info
-                count = add.count
-                edges.removeAll { it.node.id in add.edges.map { addable -> addable.node.id } }
-                val lastBefore = edges.size
-                edges.addAll(add.edges)
-                handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)?.sendToTarget()
-            } else handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-            interrupt()
         }
     }
 
@@ -365,16 +329,16 @@ class PageSvd : BasePageMain(), Selective {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return; }
-            val post = (c as Main).mm.saved?.edges?.find { it.node.id == svd }?.node
-            if (post == null) {
+            val media = (c as Main).mm.saved?.items?.find { it.id == svd }
+            if (media == null) {
                 ended(); return; }
 
             if (download) try {
-                c.dao.addQueued(Queued(Persistent.now(), UiTools.POST_LINK.format(post.shortcode)))
+                media.queue(c.dao)
             } catch (e: IllegalStateException) { // DB is closed
             }
             if (unsave) f.reqQueue.adder = Api<Rest>(
-                c, Api.Endpoint.UNSAVE.url.format(post.id), Rest::class, null,
+                c, Api.Endpoint.UNSAVE.url.format(media.id), Rest::class, null,
                 method = Request.Method.POST, autoQueue = false, onError = { ended() }
             ) { rest ->
                 if (rest.status == "ok") {

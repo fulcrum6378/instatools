@@ -125,7 +125,7 @@ class Api<JSON>(
         // Interactions
         FOLLOWERS("https://i.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
         FOLLOWING("https://i.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s")// count=12&
-        /*FRIENDSHIPS("https://i.instagram.com/api/v1/friendships/show_many/"),*/,
+        /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/,
         FOLLOW("https://www.instagram.com/web/friendships/%s/follow/"),
         UNFOLLOW("https://www.instagram.com/web/friendships/%s/unfollow/"),
         /*RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
@@ -136,19 +136,16 @@ class Api<JSON>(
         // method = POST, expect "{"status":"ok"}" */
 
         // Saving
-        SAVED(
-            "https://www.instagram.com/graphql/query/?query_hash=$savedHash" +
-                    "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
-        )// This method brings posts with large thumbnails and no other candidates
-        /*SAVE("https://www.instagram.com/web/save/%s/save/"),*/,
+        SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
+        /*SAVE("https://www.instagram.com/web/save/%s/save/"),*/
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
 
         // Messaging
-        INBOX("https://i.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d")
+        INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
+        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d")
         /* persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
         // Avoiding "limit" argument will default to 20, but can be more than that. */,
-        SEEN("https://i.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
+        SEEN("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 
         // Logging in/out
         SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/"),// MEDIA_ITEM
@@ -161,6 +158,38 @@ class Api<JSON>(
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
         const val savedHash = "2ce1d673055b99250e93b6f88f878fde"
         const val DEFAULT_TIMEOUT = 15000
+
+        fun graphQlBody(cnfWrapper: PageConfig, shortcode: String): String {
+            val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
+            return "access_token=" +
+                    "&__d=" + siteData["haste_site"] +
+                    "&__user=0" +
+                    "&__a=1" +
+                    "&__dyn=" /*TODO*/ +
+                    "&__csr=" /*TODO*/ +
+                    "&__req=" /*TODO d or 3?*/ +
+                    "&__hs=" + siteData["haste_session"] +
+                    "&dpr=1" +
+                    "&__ccg=" + (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
+                    as Map<String, String>)["connectionClass"]!! +
+                    "&__rev=" + (siteData["client_revision"] as Double)
+                .toInt().toString() +
+                    "&__s=" /*TODO*/ +
+                    "&__hsi=" + siteData["haste_session"] +
+                    "&__comet_req=7" +
+                    "&fb_dtsg=" + (cnfWrapper.define["DTSGInitialData"]!![1]
+                    as Map<String, String>)["token"]!! + // or DTSGInitData and async_get_token
+                    "&jazoest=" /*TODO 26314 or 26301*/ +
+                    "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
+                    "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
+                    "&__spin_b=" + siteData["__spin_b"] +
+                    "&__spin_t=" + (siteData["__spin_t"] as Double).toInt() +
+                    "&fb_api_caller_class=RelayModern" +
+                    "&fb_api_req_friendly_name=" /*TODO usePolarisSaveMediaSaveMutation or PolarisPostRootQuery*/ +
+                    "&variables=" /*TODO shortcode or media id?!?*/ +
+                    "&server_timestamps=true" +
+                    "&doc_id=" /*TODO*/
+        }
 
         fun gotError(
             c: Persistent, handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
@@ -300,71 +329,6 @@ class Api<JSON>(
   &doc_id=18271948444105212",
   "method": "POST"
 });*/
-
-    class GraphQlBody(cnfWrapper: PageConfig) : HashMap<String, String>() {
-        init {
-            val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
-            this["access_token"] = ""
-            this["__d"] = siteData["haste_site"] as String
-            this["__user"] = "0"
-            this["__a"] = "1"
-            this["__dyn"] = "" // TODO
-            this["__csr"] = "" // TODO
-            this["__req"] = "" // TODO d or 3?
-            this["__hs"] = siteData["haste_session"] as String
-            this["dpr"] = "1"
-            this["__ccg"] = (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
-                    as Map<String, String>)["connectionClass"]!!
-            this["__rev"] = (siteData["client_revision"] as Double).toInt().toString()
-            this["__s"] = "" // TODO
-            this["__hsi"] = siteData["haste_session"] as String
-            this["__comet_req"] = "7"
-            this["fb_dtsg"] = (cnfWrapper.define["DTSGInitialData"]!![1]
-                    as Map<String, String>)["token"]!! // or DTSGInitData and async_get_token
-            this["jazoest"] = "" // TODO 26314 or 26301
-            this["lsd"] = (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!!
-            this["__spin_r"] = (siteData["__spin_r"] as Double).toInt().toString()
-            this["__spin_b"] = siteData["__spin_b"].toString()
-            this["__spin_t"] = (siteData["__spin_t"] as Double).toInt().toString()
-            this["fb_api_caller_class"] = "RelayModern"
-            this["fb_api_req_friendly_name"] = "" // TODO usePolarisSaveMediaSaveMutation or PolarisPostRootQuery
-            this["variables"] = "" // TODO ?!?
-            this["server_timestamps"] = "true"
-
-            "access_token=" +
-                    "&__d=" + siteData["haste_site"] +
-                    "&__user=0" +
-                    "&__a=1" +
-                    "&__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0F" +
-                    "E2awt81sbzoaEd82lwv89k2C1Fwc61uwZx-0z8jwae4UaEW0D888cobEaU2eUlwh" +
-                    "E2Lx_w4HwJwSyES1Twoob82ZwiU8UdUbGwbO1pw" +
-                    "&__csr=glhcrillJsB9N5GL8F6LV9lGm4oSAZUOVoCimE8ideXGXAgynCF5KEy2y" +
-                    "00gc905eyRc02JG3C4m4o7y0zyw4Za2ye3ywXm3O6204pjgYwKoEy2u7u1RwjlG0" +
-                    "j10PwbZ0ww15Kbm0oK0YU" +
-                    "&__req=3" +
-                    "&__hs=" + siteData["haste_session"] +
-                    "&dpr=1" +
-                    "&__ccg=" + (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
-                    as Map<String, String>)["connectionClass"]!! +
-                    "&__rev=" + (siteData["client_revision"] as Double)
-                .toInt().toString() +
-                    "&__s=eiw83y%3Aude3gw%3Ap6j381" +
-                    "&__hsi=" + siteData["haste_session"] +
-                    "&__comet_req=7" +
-                    "&fb_dtsg=" + (cnfWrapper.define["DTSGInitialData"]!![1]
-                    as Map<String, String>)["token"]!! + // or DTSGInitData and async_get_token
-                    "&jazoest=26314" +
-                    "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
-                    "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
-                    "&__spin_b=" + siteData["__spin_b"] +
-                    "&__spin_t=" + (siteData["__spin_t"] as Double).toInt() +
-                    "&fb_api_caller_class=RelayModern" +
-                    "&fb_api_req_friendly_name=PolarisPostRootQuery" +
-                    "&variables=%7B%22shortcode%22%3A%22$shortcode%22%7D" +
-                    "&server_timestamps=true" +
-                    "&doc_id=18086740648321782"
-        }
-    }
 
     //GET EXAMPLE
     /*fetch("https://www.instagram.com/api/v1/feed/reels_tray/", {
