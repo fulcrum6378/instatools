@@ -106,11 +106,13 @@ class Api<JSON>(
     enum class Endpoint(val url: String) {
         // Profiles
         PROFILE("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
-        SEARCH("https://www.instagram.com/web/search/topsearch/?context=user&query=%s"),
+        SEARCH(
+            "https://www.instagram.com/api/v1/web/search/topsearch/?context=blended&query=%s" +
+                    "&include_reel=false&search_surface=web_top_search"
+        ), // &rank_token=0.9366187585704904
 
-        // Posts & Stories
-        MEDIA_ITEM("https://www.instagram.com/api/v1/media/%s/info/")
-        /*INFO("https://www.instagram.com/api/v1/users/%s/info/"),*/,
+        // Posts & Stories TODO
+        MEDIA_ITEM("https://www.instagram.com/api/v1/media/%s/info/"),
         POSTS(
             "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
                     "&variables={\"id\":\"%1\$s\",\"first\":%2\$s,\"after\":\"%3\$s\"}"
@@ -135,11 +137,10 @@ class Api<JSON>(
         UNBLOCK("https://www.instagram.com/api/v1/web/friendships/%d/unblock/"),
         // method = POST, expect "{"status":"ok"}" */
 
-        // Saving
+        // Saving TODO
         SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
-
-        /*SAVE("https://www.instagram.com/web/save/%s/save/"),*/
         UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
+        //SAVE("https://www.instagram.com/web/save/%s/save/"),
 
         // Messaging
         INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
