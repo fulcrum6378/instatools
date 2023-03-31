@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.badge.BadgeDrawable
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import kotlin.reflect.KClass
@@ -22,6 +23,8 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     abstract val cKlass: KClass<C>
     abstract val mode: TripleMode
     abstract fun defPage(): Int
+
+    var selectionBadge: BadgeDrawable? = null
 
     companion object {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"

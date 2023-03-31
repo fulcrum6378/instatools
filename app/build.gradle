@@ -22,8 +22,8 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 33
-        versionCode 64
-        versionName '25.0.5'
+        versionCode 65
+        versionName '25.2.0'
         signingConfig signingConfigs.main
     }
 
@@ -51,11 +51,11 @@ android {
 
 //noinspection SpellCheckingInspection
 dependencies {
-    def room_version = '2.5.0'
-    def glide_version = '4.14.2'
+    def room_version = '2.5.1'
+    def glide_version = '4.15.1'
     def media2_version = '1.2.1'
 
-    implementation 'androidx.activity:activity-ktx:1.6.1' // only for ActivityResultLauncher
+    implementation 'androidx.activity:activity-ktx:1.7.0' // only for ActivityResultLauncher
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation "androidx.media2:media2-widget:$media2_version"
@@ -66,7 +66,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.webkit:webkit:1.6.1'
-    implementation 'com.airbnb.android:lottie:5.2.0'
+    implementation 'com.airbnb.android:lottie:6.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     kapt "com.github.bumptech.glide:compiler:$glide_version"

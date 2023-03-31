@@ -64,6 +64,7 @@
     <string name="listExport">Export the list</string>
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
+    <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
@@ -149,6 +150,9 @@
     <string name="dtRetryAll">Retry all</string>
     <string name="dtPauseAll">Pause all</string>
     <string name="dtResumeAll">Resume all</string>
+    <string name="dtExportLinks">Export links</string>
+    <string name="dtImportLinks">Import links</string>
+    <string name="dEmptyQueue">The download list is empty!</string>
 
     <!-- Favourites -->
     <string name="favourites">Favourites</string>

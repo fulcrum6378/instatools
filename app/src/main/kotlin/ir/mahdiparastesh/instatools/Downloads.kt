@@ -11,6 +11,7 @@ import android.os.Looper
 import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AlertDialog
@@ -27,6 +28,7 @@ import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
@@ -37,6 +39,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 
 @SuppressLint("NotifyDataSetChanged")
@@ -186,21 +190,66 @@ class Downloads : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyDataSetChanged()
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads, "")
                     }
-                }
-            R.id.dtClearAll -> AlertDialog.Builder(this).apply {
-                setTitle(R.string.listClear)
-                setMessage(R.string.listClearSure)
-                setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ ->
-                    CoroutineScope(Dispatchers.IO).launch {
-                        dao.deleteQueueds()
-                        mm.queueds?.clear()
-                        handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+                } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+            R.id.dtExportLinks -> if (!mm.queueds.isNullOrEmpty())
+                exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = exportLinksMime
+                    putExtra(
+                        Intent.EXTRA_TITLE,
+                        "instatools_links_${UiTools.fileDateTime(Persistent.now())}.$exportLinksExt"
+                    )
+                }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+            R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = exportLinksMime
+            })
+            R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
+                AlertDialog.Builder(this).apply {
+                    setTitle(R.string.listClear)
+                    setMessage(R.string.listClearSure)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            dao.deleteQueueds()
+                            mm.queueds?.clear()
+                            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+                        }
                     }
-                }
-            }.show()
+                }.show() else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
         }
         return super.onMenuItemClick(item)
+    }
+
+    private val exportLinks = launcherForResult {
+        if (it.resultCode == RESULT_OK && mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
+            try {
+                contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
+                    FileOutputStream(des.fileDescriptor).use { fos ->
+                        fos.write(mm.queueds!!.joinToString("\n") { q -> q.link }
+                            .encodeToByteArray())
+                    }
+                }
+            } catch (_: Exception) {
+            }
+        }
+    }
+    private val importLinks = launcherForResult {
+        if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
+                    FileInputStream(des!!.fileDescriptor).readBytes().toString(Charsets.UTF_8)
+                        .split("\n")
+                }
+            }.onSuccess { links ->
+                dao.addQueueds(links.map { l -> Queued(Persistent.now(), l) })
+                handler?.obtainMessage(HANDLE_RESET, 1, 0, dao.queueds())?.sendToTarget()
+            }.onFailure {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private var isSwipeDeleteInflated: Boolean? = false
@@ -235,6 +284,8 @@ class Downloads : ServiceOwnerActivity() {
 
     companion object : ActivityCompanion() {
         const val HANDLE_429 = 429
+        const val exportLinksMime = "text/plain"
+        const val exportLinksExt = "txt"
 
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {

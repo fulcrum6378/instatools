@@ -63,6 +63,7 @@
     <string name="listExport">Exporter la liste</string>
     <string name="listClear">Tout effacer</string>
     <string name="listClearSure">Voulez-vous vraiment supprimer tous les éléments ?</string>
+    <string name="importReadError">Malheureusement une erreur s\'est produite lors de la lecture du fichier !</string>
 
     <!-- Login -->
     <string name="addAccount">Ajouter un compte</string>
@@ -148,6 +149,9 @@
     <string name="dtRetryAll">Tout réessayer</string>
     <string name="dtPauseAll">Tout mettre en pause</string>
     <string name="dtResumeAll">Tout résumer</string>
+    <string name="dtExportLinks">Exporter des liens</string>
+    <string name="dtImportLinks">Importer des liens</string>
+    <string name="dEmptyQueue">La liste de téléchargement est vide !</string>
 
     <!-- Favourites -->
     <string name="favourites">Favoris</string>

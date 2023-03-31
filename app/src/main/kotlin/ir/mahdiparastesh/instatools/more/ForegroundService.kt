@@ -24,10 +24,11 @@ import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
-    private val mViewModelStore = ViewModelStore()
     lateinit var handling: HandlerThread
     private var wakeLock: PowerManager.WakeLock? = null
     protected lateinit var ntfManager: NotificationManager
+
+    override val viewModelStore = ViewModelStore()
 
     abstract val com: ForegroundServiceCompanion
     abstract val requiresHandling: Boolean
@@ -192,6 +193,4 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun getViewModelStore(): ViewModelStore = mViewModelStore
 }

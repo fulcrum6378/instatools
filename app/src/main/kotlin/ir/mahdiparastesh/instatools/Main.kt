@@ -60,20 +60,20 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
-    val mm: MyModel by viewModels()
-
-    lateinit var searchInput: SearchView.SearchAutoComplete
-    private lateinit var searchClose: ImageView
-    var schRes: Array<Rest.ItemUser>? = null
-    private val schQueue by lazy { Volley.newRequestQueue(c) }
-    var searchErrored = false
     private val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
     private val popupThemes = arrayOf(
         R.style.Theme_InstaTools_Popup_Primary,
         R.style.Theme_InstaTools_Popup_Secondary,
         R.style.Theme_InstaTools_Popup_Tertiary
     )
+
+    val mm: MyModel by viewModels()
+    val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
+    lateinit var searchInput: SearchView.SearchAutoComplete
+    private lateinit var searchClose: ImageView
+    var schRes: Array<Rest.ItemUser>? = null
+    private val schQueue by lazy { Volley.newRequestQueue(c) }
+    var searchErrored = false
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion

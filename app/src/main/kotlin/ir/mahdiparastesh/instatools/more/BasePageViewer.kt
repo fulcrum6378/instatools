@@ -1,13 +1,19 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.annotation.SuppressLint
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.selection.SelectionTracker
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListPost
+import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Selective
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
+import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
 abstract class BasePageViewer : BasePage<Viewer>(), Selective {
@@ -38,7 +44,25 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
         return false
     }
 
+    @SuppressLint("UnsafeOptInUsageError")
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
+        override fun onItemStateChanged(key: String, selected: Boolean) {
+            if (c.tbTitle == null) return
+            BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
+            if (c.tbTitle?.parent == null) return
+            BadgeUtils.attachBadgeDrawable(
+                BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
+                    number = tracker?.selection?.size() ?: 0
+                    backgroundColor = c.themeColor(android.R.attr.colorAccent)
+                    badgeTextColor =
+                        if (c.night()) c.themeColor(android.R.attr.colorPrimary)
+                        else c.color(R.color.defBG)
+                    c.selectionBadge = this
+                    maxCharacterCount = UiTools.MAX_BADGE_CHAR
+                }, c.tbTitle!!
+            )
+        }
+
         override fun onSelectionChanged() {
             super.onSelectionChanged()
             val status = tracker?.hasSelection() == true
@@ -51,6 +75,10 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
             c.shake()
             if (this@BasePageViewer is PageVwr) rv()?.isNestedScrollingEnabled = status
             if (status) (rv()?.adapter as ListPost<*, *>?)?.firstLongClickSelect = true
+            else {
+                BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
+                c.selectionBadge = null
+            }
         }
     }
 }

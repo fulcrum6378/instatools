@@ -51,7 +51,6 @@ class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
     var thread: FetchSome? = null
     var saver: Saver? = null
-    private var selectionBadge: BadgeDrawable? = null
     private var selectionGuide: LottieAnimationView? = null
     val reqQueue by lazy { Volley.newRequestQueue(c) }
 
@@ -241,15 +240,15 @@ class PageSvd : BasePageMain(), Selective {
     inner class SelectObserver : SelectionTracker.SelectionObserver<String>() {
         override fun onItemStateChanged(key: String, selected: Boolean) {
             if (c.tbTitle == null) return
-            BadgeUtils.detachBadgeDrawable(selectionBadge, c.tbTitle!!)
+            BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
             if (c.tbTitle?.parent == null) return
             // to avoid NullPointerException in BadgeDrawable.updateAnchorParentToNotClip
             BadgeUtils.attachBadgeDrawable(
                 BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
                     number = tracker?.selection?.size() ?: 0
                     backgroundColor = c.ca[1]
-                    badgeTextColor = if (!c.night()) c.bg[1] else c.color(R.color.defBG)
-                    selectionBadge = this
+                    badgeTextColor = if (c.night()) c.bg[1] else c.color(R.color.defBG)
+                    c.selectionBadge = this
                     maxCharacterCount = UiTools.MAX_BADGE_CHAR
                 }, c.tbTitle!!
             )
@@ -262,14 +261,16 @@ class PageSvd : BasePageMain(), Selective {
             selectivity = status
             c.selective(status)
             c.shake()
-            if (!status) BadgeUtils.detachBadgeDrawable(selectionBadge, c.tbTitle!!)
-            else {
+            if (status) {
                 (b.rv.adapter as ListSvd?)?.firstLongClickSelect = true
                 if (selectionGuide != null) {
                     b.root.removeView(selectionGuide)
                     c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
                     b.rv.suppressLayout(false)
                 }
+            } else {
+                BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
+                c.selectionBadge = null
             }
         }
     }

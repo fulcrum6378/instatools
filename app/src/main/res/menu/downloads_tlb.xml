@@ -16,6 +16,12 @@
         android:id="@+id/dtResumeAll"
         android:title="@string/dtResumeAll" />
     <item
+        android:id="@+id/dtExportLinks"
+        android:title="@string/dtExportLinks" />
+    <item
+        android:id="@+id/dtImportLinks"
+        android:title="@string/dtImportLinks" />
+    <item
         android:id="@+id/dtClearAll"
         android:title="@string/listClear" />
 </menu>
