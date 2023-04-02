@@ -128,9 +128,9 @@ class Api<JSON>(
                     "&variables={\"id\":\"%1\$s\",\"first\":12,\"after\":\"%2\$s\"}"
         ),*///const val taggedHash = "be13233562af2d229b008d2976b998b5"
 
-        // Interactions
-        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?max_id=%2\$s"),
-        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?max_id=%2\$s")// count=12&
+        // Interactions (always use "?count=" for more accurate results)
+        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
+        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s")
         /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/,
         FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),

@@ -69,12 +69,22 @@ open class Rest {
         fun visName() = full_name?.ifBlank { username } ?: username
     }
 
+    /** Both following and followers receive this API. */
     class Follow(
-        // Both following and followers
-        val next_max_id: String? = null,
         val users: Array<User>? = null,
+        /* true for @fulcrum6378 which needs multiple fetches,
+         * false for @instatools.apk which requires a single one. */
         //val big_list: Boolean,
+        /* Maximum amount of users a single fetch can take which randomly is lower than expected!
+         * always equals 200, even in Instagram Web's own fetches! */
         //val page_size: Double,
+        val next_max_id: String? = null,
+        /* "Accounts you don't follow back", "Least interacted with", etc. ONLY IN FOLLOWERS! */
+        //val groups: Map<String, Any?>,
+        /* Only in followers */
+        //val more_groups_available: Boolean,
+        //val has_more: Boolean, always returns false incorrectly!
+        //val should_limit_list_of_followers: Boolean,
     ) : Rest()
 
     /*class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()*/

@@ -439,9 +439,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Extensions which are not recommended:
   * Metadata for videos and audios (whose libraries seem to be critically unstable)
-  * -
-  * Alternate Solutions:
-  * Everyday open the Login WebView automatically in order to synchronise
   *
   * NOTES:
   * Media of private accounts as well as DMs are accessible to the public via direct links!!

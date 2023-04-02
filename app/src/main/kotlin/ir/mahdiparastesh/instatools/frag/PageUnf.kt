@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabaseLockedException
 import android.os.Build
 import android.os.Bundle
 import android.os.Message
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -157,7 +158,7 @@ class PageUnf : BasePageMain() {
 
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
         companion object : Alive.OfThread() {
-            const val FLW_FETCH_DELAY = 300L
+            const val FLW_FETCH_DELAY = 5000L
         }
 
         private lateinit var oldFriends: List<Friend>
@@ -195,10 +196,15 @@ class PageUnf : BasePageMain() {
                         )
                     )
                 }
-                /* FIXME Log.println(
+                Log.println(
                     Log.ASSERT, Main::class.java.`package`!!.name,
-                    "Fetched $theFollowers : ${flw.users.size} of ${flw.page_size.toInt()}"
-                )*/
+                    "Fetched $theFollowers : ${flw.users.size} users"
+                )
+                c.c.openFileOutput(
+                    (if (theFollowers) "followers" else "following") + ".txt", Context.MODE_APPEND
+                ).use { fos ->
+                    fos.write(flw.users.joinToString("\n") { it.username }.encodeToByteArray())
+                }
                 if (flw.next_max_id == null) {
                     if (theFollowers) allFollow(theFollowers = false)
                     else CoroutineScope(Dispatchers.IO).launch { ended() }
