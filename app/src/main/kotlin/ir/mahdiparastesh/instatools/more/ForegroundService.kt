@@ -31,6 +31,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override val viewModelStore = ViewModelStore()
 
     abstract val com: ForegroundServiceCompanion
+    abstract var ntfTitle: String
+    protected open var ntfText: String? = null
+    protected open var ntfSmallText: String? = null
     abstract val requiresHandling: Boolean
     open val waveLockTimeout: Int? = null // in minutes
 
@@ -62,7 +65,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         abstract val channel: Notify.Channel
         open val ntfSmallIcon: Int = R.drawable.notification
         abstract val ntfId: Int
-        abstract val ntfTitle: Int
         abstract val ntfActions: Array<Pair<String, Int>>
 
         open fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
@@ -113,8 +115,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private lateinit var ntfCom: ForegroundServiceCompanion
     private lateinit var ntfAct: KClass<*>
     private var ntfPage: Int? = null
-    protected var ntfText: String? = null
-    protected var ntfSmallText: String? = null
     open fun initialNotification(
         com: ForegroundServiceCompanion, openActivity: KClass<*>, turnToPage: Int? = null,
         progress: Pair<Int, Int>? = null
@@ -136,7 +136,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     private fun notification(progress: Pair<Int, Int>?) =
         NotificationCompat.Builder(c, ntfCom.channel.id).apply {
             setSmallIcon(ntfCom.ntfSmallIcon)
-            setContentTitle(getString(ntfCom.ntfTitle))
+            setContentTitle(ntfTitle)
             ntfSmallText?.also { setContentText(it) }
             setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
             priority = NotificationCompat.PRIORITY_LOW

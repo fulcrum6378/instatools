@@ -60,14 +60,14 @@ class Queuer : ForegroundService() {
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
     private val tiffDate = SimpleDateFormat("yyyy:MM:dd kk:mm:ss", Locale.getDefault())
 
-    override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
+    override var ntfTitle = getString(R.string.queuerTitle)
+    override val requiresHandling = false
 
     companion object : ForegroundServiceCompanion() {
         override val klass = Queuer::class.java
         override val channel = Notify.Channel.QUEUER
         override val ntfId = Notify.ID_QUEUER
-        override val ntfTitle = R.string.queuerTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.stop
         )
@@ -369,6 +369,10 @@ class Queuer : ForegroundService() {
                     interrupt(); return; }
             }
 
+            ntfTitle = getString(
+                if (queue.size > 1) R.string.queuerTitleCount else R.string.queuerTitleCount1,
+                queue.size
+            )
             ntfSmallText = queue[q].userName
             updateNotification()
             if (queue[q].dur?.let { it > 600L } == true) {
@@ -545,6 +549,9 @@ class Queuer : ForegroundService() {
 
     override fun destroy() {
         download?.interrupt()
+        ntfTitle = getString(R.string.queuerTitle)
+        ntfSmallText = null
+        updateNotification()
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 clearCacheIfNecessary()

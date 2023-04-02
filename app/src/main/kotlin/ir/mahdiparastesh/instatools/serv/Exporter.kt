@@ -45,14 +45,14 @@ class Exporter : ForegroundService() {
     private val cache: File by lazy { Cache(c) }
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
-    override val requiresHandling = false
     override val com: ForegroundServiceCompanion get() = Companion
+    override var ntfTitle = getString(R.string.exporterTitle)
+    override val requiresHandling = false
 
     companion object : ForegroundServiceCompanion() {
         override val klass = Exporter::class.java
         override val channel = Notify.Channel.EXPORTER
         override val ntfId = Notify.ID_EXPORTER
-        override val ntfTitle = R.string.exporterTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.stop
         )

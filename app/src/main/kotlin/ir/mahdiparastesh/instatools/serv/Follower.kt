@@ -26,15 +26,15 @@ class Follower : ForegroundService() {
     private var following = arrayListOf<String>()
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
-    override val requiresHandling = true
     override val com: ForegroundServiceCompanion get() = Companion
+    override var ntfTitle = getString(R.string.followerTitle)
+    override val requiresHandling = true
     override val waveLockTimeout = 60
 
     companion object : ForegroundServiceCompanion() {
         override val klass = Follower::class.java
         override val channel = Notify.Channel.FOLLOWER
         override val ntfId = Notify.ID_FOLLOWER
-        override val ntfTitle = R.string.followerTitle
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.followerStop
         )

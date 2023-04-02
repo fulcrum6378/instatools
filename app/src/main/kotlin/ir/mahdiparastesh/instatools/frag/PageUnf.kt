@@ -157,7 +157,7 @@ class PageUnf : BasePageMain() {
 
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
         companion object : Alive.OfThread() {
-            const val FLW_FETCH_DELAY = 5000L
+            const val FLW_FETCH_DELAY = 750L
         }
 
         private lateinit var oldFriends: List<Friend>

@@ -243,6 +243,8 @@
     <string name="queuerChannel">File d\'attente de téléchargement</string>
     <string name="queuerChannelDesc">Télécharge les médias en file d\'attente</string>
     <string name="queuerTitle">Téléchargement&#8230;</string>
+    <string name="queuerTitleCount">Téléchargement de %d articles&#8230;</string>
+    <string name="queuerTitleCount1">Téléchargement de %d article&#8230;</string>
     <string name="queuerFailed">Impossible de télécharger %d éléments !</string>
     <string name="queuer429">
         Malheureusement, Instagram a donné une erreur \"trop de demandes\" !

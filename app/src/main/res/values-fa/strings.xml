@@ -200,6 +200,7 @@
     <string name="queuerChannel">صف دانلود</string>
     <string name="queuerChannelDesc">اعلان های دانلود</string>
     <string name="queuerTitle">در حال دانلود&#8230;</string>
+    <string name="queuerTitleCount">در حال دانلود %d مورد&#8230;</string>
     <string name="queuerFailed">دانلود %d مورد ممکن نشد!</string>
     <string name="queuer429">
         متاسفانه اینستاگرام خطای «درخواست های مکرر» داد!

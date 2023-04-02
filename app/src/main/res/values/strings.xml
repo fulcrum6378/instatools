@@ -245,6 +245,8 @@
     <string name="queuerChannel">Download queue</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
+    <string name="queuerTitleCount">Downloading %d item(s)&#8230;</string>
+    <string name="queuerTitleCount1" translatable="false">Downloading %d item&#8230;</string>
     <string name="queuerFailed">Couldn\'t download %d items!</string>
     <string name="queuer429">
         Unfortunately Instagram gave a \"too many requests\" error!

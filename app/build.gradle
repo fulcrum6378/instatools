@@ -22,8 +22,8 @@ android {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
         targetSdk 33
-        versionCode 65
-        versionName '25.4.5'
+        versionCode 66
+        versionName '25.5.0'
         signingConfig signingConfigs.main
     }
 
@@ -42,7 +42,6 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // applicationIdSuffix = ".beth"
         }
     }
     android.variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }
