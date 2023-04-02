@@ -46,7 +46,7 @@ class Exporter : ForegroundService() {
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: ForegroundServiceCompanion get() = Companion
-    override var ntfTitle = getString(R.string.exporterTitle)
+    override lateinit var ntfTitle: String
     override val requiresHandling = false
 
     companion object : ForegroundServiceCompanion() {
@@ -70,6 +70,7 @@ class Exporter : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
+        ntfTitle = getString(R.string.exporterTitle)
         initialNotification(Companion, Main::class, 2)
         if (!cache.exists()) cache.mkdir()
         handler = object : Handler(Looper.getMainLooper()) {

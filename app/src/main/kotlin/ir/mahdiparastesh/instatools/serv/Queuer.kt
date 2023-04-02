@@ -61,7 +61,7 @@ class Queuer : ForegroundService() {
     private val tiffDate = SimpleDateFormat("yyyy:MM:dd kk:mm:ss", Locale.getDefault())
 
     override val com: ForegroundServiceCompanion get() = Companion
-    override var ntfTitle = getString(R.string.queuerTitle)
+    override lateinit var ntfTitle: String
     override val requiresHandling = false
 
     companion object : ForegroundServiceCompanion() {
@@ -96,6 +96,7 @@ class Queuer : ForegroundService() {
             finish(false); return; }
 
         ntfManager.cancel(Notify.ID_QUEUER_SOME_FAILED)
+        ntfTitle = getString(R.string.queuerTitle)
         initialNotification(Companion, Downloads::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -544,6 +545,7 @@ class Queuer : ForegroundService() {
     }
 
     override fun finish(cancelled: Boolean) {
+        if (cancelled) reqQueue.cancelAll { true }
         destroy()
     }
 

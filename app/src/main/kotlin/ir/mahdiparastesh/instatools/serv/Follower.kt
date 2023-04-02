@@ -27,7 +27,7 @@ class Follower : ForegroundService() {
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: ForegroundServiceCompanion get() = Companion
-    override var ntfTitle = getString(R.string.followerTitle)
+    override lateinit var ntfTitle: String
     override val requiresHandling = true
     override val waveLockTimeout = 60
 
@@ -60,6 +60,7 @@ class Follower : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
+        ntfTitle = getString(R.string.followerTitle)
         initialNotification(Follower, MassFollower::class)
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
