@@ -356,6 +356,24 @@
         <item name="android:background">@null</item>
     </style>
 
+    <style name="stCheck">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:checked">false</item>
+        <item name="android:visibility">gone</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <style name="stSwitch">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/stSubItemFont</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
     <style name="stSpinner" parent="stSubItem">
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">12dp</item>

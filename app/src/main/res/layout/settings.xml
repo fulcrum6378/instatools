@@ -38,21 +38,31 @@
                     android:id="@+id/stMainPath"
                     style="@style/stPath" />
 
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/stBranching"
-                    style="@style/stSubItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/stBranching" />
+                <androidx.constraintlayout.widget.ConstraintLayout style="@style/stSubItem">
 
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/stAutoDeleteEmptyDirs"
-                    style="@style/stSubItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/stAutoDeleteEmptyDirs" />
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/stBranchingCb"
+                        style="@style/stCheck" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/stBranching"
+                        style="@style/stSwitch"
+                        android:text="@string/stBranching"
+                        app:layout_constraintStart_toEndOf="@id/stBranchingCb" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout style="@style/stSubItem">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/stAutoDeleteEmptyDirsCb"
+                        style="@style/stCheck" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/stAutoDeleteEmptyDirs"
+                        style="@style/stSwitch"
+                        android:text="@string/stAutoDeleteEmptyDirs"
+                        app:layout_constraintStart_toEndOf="@id/stAutoDeleteEmptyDirsCb" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
             <View style="@style/stSep" />

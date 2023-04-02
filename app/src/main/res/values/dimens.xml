@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <dimen name="tbTitleMain">20sp</dimen>
     <dimen name="tbTitle">20sp</dimen>
     <dimen name="tbTitleMainMarginTop">0sp</dimen>
@@ -75,4 +76,5 @@
     <dimen name="stPathFont">16sp</dimen>
     <dimen name="stPathCorner">20dp</dimen>
     <dimen name="stMarginV">18dp</dimen>
+    <dimen name="stSwitchPad">10dp</dimen>
 </resources>

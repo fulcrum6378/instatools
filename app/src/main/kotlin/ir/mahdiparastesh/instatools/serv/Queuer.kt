@@ -443,7 +443,7 @@ class Queuer : ForegroundService() {
                 ?.exists() == true ->
                 DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
             !q.isMainFile() -> stem
-            bPreference(Settings.spBranching, Settings.defSpBranching) ->
+            bPreference(Settings.spBranching, Settings.spBranchingCb, Settings.defSpBranching) ->
                 stem.findFile(q.userName!!) ?: stem.createDirectory(q.userName!!)
             else -> stem
         } ?: return
@@ -548,8 +548,10 @@ class Queuer : ForegroundService() {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 clearCacheIfNecessary()
-                if (dest == null ||
-                    !bPreference(Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs)
+                if (dest == null || !bPreference(
+                        Settings.spAutoDeleteEmptyDirs, Settings.spAutoDeleteEmptyDirsCb,
+                        Settings.defSpAutoDeleteEmptyDirs
+                    )
                 ) return@runCatching
                 val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
                 for (branch in stem.listFiles())

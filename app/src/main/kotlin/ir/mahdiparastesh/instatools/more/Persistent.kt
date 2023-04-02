@@ -38,8 +38,10 @@ interface Persistent {
     fun sPreference(key: String): String? =
         sp?.getString(key, null) ?: gsp.getString(key, null)
 
-    fun bPreference(key: String, def: Boolean): Boolean = sp?.getBoolean(key, def) ?: def
-    // Unavoidably gsp was left unused for good!
+    fun bPreference(key: String, keyCb: String, def: Boolean): Boolean =
+        if (sp?.getBoolean(keyCb, false) == true && sp?.contains(key) == true)
+            sp!!.getBoolean(key, true/*IMPOSSIBLE*/)
+        else gsp.getBoolean(key, def)
 
 
     fun needAuthentication() {

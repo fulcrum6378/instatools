@@ -16,6 +16,7 @@
         <item name="titleTextColor">?attr/colorAccent</item>
         <item name="android:checkboxStyle">@style/Theme.InstaTools.Checkbox</item>
         <item name="android:radioButtonStyle">@style/Theme.InstaTools.Radio</item>
+        <item name="switchStyle">@style/Theme.InstaTools.Switch</item>
         <item name="popupTheme">@style/Theme.InstaTools.Popup.Secondary</item>
         <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
     </style>
@@ -121,6 +122,10 @@
     <style name="Theme.InstaTools.Snackbar" parent="Widget.MaterialComponents.Snackbar">
         <item name="android:textColor">@android:color/white</item>
         <item name="fontFamily">@font/light</item>
+    </style>
+
+    <style name="Theme.InstaTools.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
     <style name="Theme.InstaTools.BNV" parent="Theme.MaterialComponents.DayNight">

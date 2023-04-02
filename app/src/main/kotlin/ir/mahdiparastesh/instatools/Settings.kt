@@ -60,9 +60,13 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // Preferences
         const val spStorage = "storage"
         const val spBranching = "branching"
+        const val spBranchingCb = "branching_checked"
         const val defSpBranching = true
+        const val defSpBranchingCb = true
         const val spAutoDeleteEmptyDirs = "auto_delete_empty_dirs"
+        const val spAutoDeleteEmptyDirsCb = "auto_delete_empty_dirs_checked"
         const val defSpAutoDeleteEmptyDirs = false
+        const val defSpAutoDeleteEmptyDirsCb = false
         private const val spAliases = "aliases"
 
         // Mere-Global Preferences
@@ -96,7 +100,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_GIVE_LINK_BACK = "giveLinkBack"
         private const val MB = 1048576L
-        val allSps = arrayOf(spStorage, spBranching, spMainPage, spAutoDeleteEmptyDirs)
+        val allSps = arrayOf(
+            spStorage, spBranching, spBranchingCb, spAutoDeleteEmptyDirs, spAutoDeleteEmptyDirsCb,
+            spAliases, spCacheLimit, spMainPage, spFollowerDelay, spExpOptions
+        )
         var recreateMain = false
 
         @Suppress("RedundantSuspendModifier")
@@ -212,6 +219,27 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         if (giveLinkBack != null) selectPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { selectPath() }
+        if (!globalMode) {
+            arrayOf(b.stBranchingCb, b.stAutoDeleteEmptyDirsCb).forEach { it.vis(true) }
+            arrayOf(b.stBranching, b.stAutoDeleteEmptyDirs).forEach {
+                it.setPaddingRelative(
+                    resources.getDimension(R.dimen.stSwitchPad).toInt(), 0, 0, 0
+                )
+            }
+            b.stBranchingCb.isChecked = prf.getBoolean(spBranchingCb, defSpBranchingCb)
+            b.stBranching.isEnabled = b.stBranchingCb.isChecked
+            b.stBranchingCb.setOnCheckedChangeListener { _, bb ->
+                prf.edit { putBoolean(spBranchingCb, bb) }
+                b.stBranching.isEnabled = bb
+            }
+            b.stAutoDeleteEmptyDirsCb.isChecked =
+                prf.getBoolean(spAutoDeleteEmptyDirsCb, defSpAutoDeleteEmptyDirsCb)
+            b.stAutoDeleteEmptyDirs.isEnabled = b.stAutoDeleteEmptyDirsCb.isChecked
+            b.stAutoDeleteEmptyDirsCb.setOnCheckedChangeListener { _, bb ->
+                prf.edit { putBoolean(spAutoDeleteEmptyDirsCb, bb) }
+                b.stAutoDeleteEmptyDirs.isEnabled = bb
+            }
+        }
         b.stBranching.isChecked = prf.getBoolean(spBranching, defSpBranching)
         b.stBranching.setOnCheckedChangeListener { _, bb ->
             prf.edit { putBoolean(spBranching, bb) }
