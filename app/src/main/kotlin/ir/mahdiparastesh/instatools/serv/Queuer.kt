@@ -206,13 +206,15 @@ class Queuer : ForegroundService() {
                             if (download?.active != true) finish(false)
                         }
                     }
-                    return@findFromHtml
-                }
+                    return@findFromHtml; }
+                // ELSE IF IT'S A STORY/HIGHLIGHT or an invalid link...
 
-                val root = (cnfWrapper.require["CometPlatformRootClient"]
-                    ?.getOrNull(2) as List<Any>?)?.getOrNull(3)?.let {
-                    Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
-                }
+                val root = (cnfWrapper.require.keys
+                    .find { it.startsWith("CometPlatformRootClient") }
+                    ?.let { cnfWrapper.require[it] }?.getOrNull(2) as List<Any>?)
+                    ?.getOrNull(3)?.let {
+                        Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
+                    }
                 if (root == null) {
                     Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                     if (BuildConfig.DEBUG)
@@ -295,7 +297,9 @@ class Queuer : ForegroundService() {
                 else eventNotification(Notify.ID_QUEUER_429) {
                     setContentTitle(getString(R.string.downloads))
                     setStyle(
-                        NotificationCompat.BigTextStyle().bigText(getString(R.string.queuer429))
+                        NotificationCompat.BigTextStyle().bigText(
+                            getString(R.string.queuer429)
+                        )
                     )
                     setContentIntent(
                         PendingIntent.getActivity(

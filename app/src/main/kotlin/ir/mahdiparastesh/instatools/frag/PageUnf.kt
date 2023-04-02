@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteDatabaseLockedException
 import android.os.Build
 import android.os.Bundle
 import android.os.Message
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -195,15 +194,6 @@ class PageUnf : BasePageMain() {
                             theFollowers, !theFollowers
                         )
                     )
-                }
-                Log.println(
-                    Log.ASSERT, Main::class.java.`package`!!.name,
-                    "Fetched $theFollowers : ${flw.users.size} users"
-                )
-                c.c.openFileOutput(
-                    (if (theFollowers) "followers" else "following") + ".txt", Context.MODE_APPEND
-                ).use { fos ->
-                    fos.write(flw.users.joinToString("\n") { it.username }.encodeToByteArray())
                 }
                 if (flw.next_max_id == null) {
                     if (theFollowers) allFollow(theFollowers = false)
