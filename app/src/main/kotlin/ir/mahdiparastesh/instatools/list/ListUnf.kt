@@ -113,13 +113,15 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 } else {
                     PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
                     if (BuildConfig.DEBUG)
-                        Toast.makeText(c.c, res?.statusCode.toString(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(c.c, "1: " + res?.statusCode.toString(), Toast.LENGTH_SHORT)
+                            .show()
                 }
             }
         ) {
             if (it.status != "ok" || it.spam == true) {
                 PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
-                if (BuildConfig.DEBUG) Toast.makeText(c.c, it.status, Toast.LENGTH_SHORT).show()
+                if (BuildConfig.DEBUG) Toast.makeText(c.c, "2: " + it.status, Toast.LENGTH_SHORT)
+                    .show()
                 return@Api; }
             c.incrementCounter(Settings.spUnfollowCount)
             CoroutineScope(Dispatchers.IO).launch {
