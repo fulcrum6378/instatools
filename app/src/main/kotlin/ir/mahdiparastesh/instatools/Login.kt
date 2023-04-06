@@ -9,10 +9,10 @@ import android.os.Process.myPid
 import android.view.View
 import android.view.ViewStub
 import android.webkit.*
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
@@ -91,7 +91,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
                         .apply {
                             cameHereToAuth = true
-                            AlertDialog.Builder(this@Login).apply {
+                            MaterialAlertDialogBuilder(this@Login).apply {
                                 setTitle(R.string.guest)
                                 setMessage(getString(R.string.needAuthentication))
                                 setNeutralButton(R.string.ok, null)
@@ -133,7 +133,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     fun selectAccount(acc: Account) {
         gonnaBeGuest = false
         when {
-            acc.id == -1L -> AlertDialog.Builder(this).apply {
+            acc.id == -1L -> MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.guest)
                 setMessage(getString(R.string.guestSure))
                 setNegativeButton(R.string.cancel, null)

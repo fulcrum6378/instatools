@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -25,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import com.android.volley.Request
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
@@ -226,7 +226,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         R.id.mnGSettings -> goTo(Settings::class)
         R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
-            AlertDialog.Builder(
+            MaterialAlertDialogBuilder(
                 ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
             ).apply {
                 setTitle(R.string.backgroundTasks)
@@ -244,7 +244,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             val bd = AlsoDeleteDataBinding.inflate(
                 layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
             )
-            AlertDialog.Builder(
+            MaterialAlertDialogBuilder(
                 ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
             ).apply {
                 setTitle(R.string.signOut)

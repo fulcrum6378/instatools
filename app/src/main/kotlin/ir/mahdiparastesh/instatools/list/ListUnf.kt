@@ -4,12 +4,12 @@ import android.view.ContextThemeWrapper
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Friend
@@ -83,7 +83,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.unfollow.setOnClickListener {
             val u = c.mm.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             if (!u.priv) unfollow(u)
-            else AlertDialog.Builder(
+            else MaterialAlertDialogBuilder(
                 ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
             ).apply {
                 setTitle(R.string.unfollow)
@@ -102,7 +102,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class, null,
             method = Request.Method.POST, autoQueue = false, onError = { res ->
                 if (res?.statusCode == 429) try {
-                    AlertDialog.Builder(
+                    MaterialAlertDialogBuilder(
                         ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
                     ).apply {
                         setTitle(R.string.unfollow)

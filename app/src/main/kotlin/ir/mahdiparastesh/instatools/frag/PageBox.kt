@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.core.view.forEachIndexed
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.BuildConfig
@@ -172,7 +172,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         // DM won't be Seen Guide
         if (!asGuest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
             && !guideDmNotSeenShowing
-        ) AlertDialog.Builder(
+        ) MaterialAlertDialogBuilder(
             ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
         ).apply {
             guideDmNotSeenShowing = true
@@ -266,7 +266,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         })
         bi.desc.setText(method.desc)
 
-        AlertDialog.Builder(
+        MaterialAlertDialogBuilder(
             ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
         ).apply {
             setTitle(c.getString(R.string.exportOptions, method.ext.uppercase()))
@@ -307,7 +307,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         if (dirFileProblem && result.data!!.data!!.authority !=
             Uri.parse(c.sPreference(Settings.spStorage)).authority
         ) {
-            AlertDialog.Builder(
+            MaterialAlertDialogBuilder(
                 ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
             ).apply {
                 setTitle(R.string.exportHtml)

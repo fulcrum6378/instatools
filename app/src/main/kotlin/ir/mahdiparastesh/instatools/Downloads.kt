@@ -14,7 +14,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -22,6 +21,7 @@ import androidx.core.graphics.red
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
@@ -94,7 +94,7 @@ class Downloads : ServiceOwnerActivity() {
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                     }
-                    HANDLE_429 -> AlertDialog.Builder(this@Downloads).apply {
+                    HANDLE_429 -> MaterialAlertDialogBuilder(this@Downloads).apply {
                         setTitle(R.string.downloads)
                         setMessage(R.string.queuer429)
                         setNeutralButton(R.string.ok, null)
@@ -141,7 +141,7 @@ class Downloads : ServiceOwnerActivity() {
             if (it in handledLinks || mm.queueds?.map { q -> q.link }
                     ?.let { qs -> it in qs } == true) return@also
             if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith("https://instagram.com/")) {
-                AlertDialog.Builder(this).apply {
+                MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
                     setNeutralButton(R.string.ok, null)
@@ -205,7 +205,7 @@ class Downloads : ServiceOwnerActivity() {
                 type = exportLinksMime
             })
             R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
-                AlertDialog.Builder(this).apply {
+                MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.listClear)
                     setMessage(R.string.listClearSure)
                     setNegativeButton(R.string.no, null)
@@ -315,7 +315,7 @@ class Downloads : ServiceOwnerActivity() {
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
             val q = mm.queueds?.getOrNull(h.layoutPosition) ?: return
-            if (!askedForDelete) AlertDialog.Builder(this@Downloads).apply {
+            if (!askedForDelete) MaterialAlertDialogBuilder(this@Downloads).apply {
                 setTitle(R.string.downloads)
                 setMessage(R.string.deleteItemSure)
                 setCancelable(false)

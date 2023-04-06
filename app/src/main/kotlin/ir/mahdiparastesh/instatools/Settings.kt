@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.StorageCache
@@ -286,7 +287,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // User Data
         if (globalMode) b.stResetData.vis(false)
         else b.stResetData.setOnClickListener {
-            AlertDialog.Builder(this).apply {
+            MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.stResetData)
                 setMessage(R.string.stResetDataSure)
                 setNegativeButton(R.string.no, null)
@@ -298,7 +299,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             }.show()
         }
         b.stResetSettings.setOnClickListener {
-            AlertDialog.Builder(this).apply {
+            MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.stResetSettings)
                 setMessage(R.string.stResetSettingsSure)
                 setNegativeButton(R.string.no, null)
@@ -319,7 +320,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.stHelp -> AlertDialog.Builder(this).apply {
+            R.id.stHelp -> MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.stHelp)
                 setMessage(R.string.stHelpMessage)
                 setNeutralButton(R.string.ok, null)
@@ -375,7 +376,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private var editingAlias: AlertDialog? = null
     private var bfa: FolderAliasBinding? = null
     private fun editAlias(u: String? = null) {
-        editingAlias = AlertDialog.Builder(this).apply {
+        editingAlias = MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.stAliasing)
             setMessage(R.string.stAliasingDesc)
             bfa = FolderAliasBinding.inflate(layoutInflater)
@@ -406,7 +407,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 val uri = u?.let { aliases?.getOrElse(it) { null } }?.let { Uri.parse(it) }
                     ?: return@setNeutralButton
                 val br = AlsoRevokePermBinding.inflate(layoutInflater)
-                AlertDialog.Builder(this@Settings).apply {
+                MaterialAlertDialogBuilder(this@Settings).apply {
                     setTitle(R.string.remove)
                     setView(br.root)
                     setPositiveButton(R.string.sContinue) { _, _ ->

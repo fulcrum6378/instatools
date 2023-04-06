@@ -11,11 +11,11 @@ import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.chlm.ChipsLayoutManager
 import ir.mahdiparastesh.instatools.data.Followable
 import ir.mahdiparastesh.instatools.databinding.MassFollowerBinding
@@ -72,7 +72,7 @@ class MassFollower : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.fwb.value!!.size)
                     }
-                    HANDLE_DETECTED_AS_SPAMMER -> AlertDialog.Builder(this@MassFollower)
+                    HANDLE_DETECTED_AS_SPAMMER -> MaterialAlertDialogBuilder(this@MassFollower)
                         .apply {
                             setTitle(R.string.massFollower)
                             setMessage(R.string.mfDetectedSpam)
@@ -161,7 +161,7 @@ class MassFollower : ServiceOwnerActivity() {
                     putExtra(Intent.EXTRA_TEXT, mm.fwb.value?.joinToString("\n") { it.user })
                 })
             R.id.mftClear -> if (!mm.fwb.value.isNullOrEmpty())
-                AlertDialog.Builder(this@MassFollower).apply {
+                MaterialAlertDialogBuilder(this@MassFollower).apply {
                     setTitle(R.string.listClear)
                     setMessage(R.string.listClearSure)
                     setNegativeButton(R.string.no, null)
@@ -172,7 +172,7 @@ class MassFollower : ServiceOwnerActivity() {
                         }
                     }
                 }.show()
-            R.id.mfTroubleshoot -> AlertDialog.Builder(this@MassFollower).apply {
+            R.id.mfTroubleshoot -> MaterialAlertDialogBuilder(this@MassFollower).apply {
                 setTitle(R.string.mfTroubleshoot)
                 // mfTroubleshootMsg: Make sure the following conditions are applied to this app:
                 val arr = resources.getStringArray(R.array.mfTroubleshoot).toMutableList()

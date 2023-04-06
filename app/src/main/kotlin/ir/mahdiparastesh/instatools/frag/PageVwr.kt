@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -20,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Queued
@@ -226,7 +226,7 @@ class PageVwr : BasePageViewer() {
                 else c.mm.vwUser?.edge_follow?.count) ?: 0.0).toInt()
                 if (flwLimit > MassFollower.FOLLOW_LIMIT) flwLimit = MassFollower.FOLLOW_LIMIT
                 bo.limit.setText(flwLimit.toString())
-                AlertDialog.Builder(c).apply {
+                MaterialAlertDialogBuilder(c).apply {
                     setTitle(R.string.followAll)
                     setMessage(c.getString(R.string.followAllSure))
                     setView(bo.root)
