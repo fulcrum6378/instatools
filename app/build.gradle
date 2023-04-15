@@ -7,7 +7,7 @@ plugins {
 android {
     namespace 'ir.mahdiparastesh.instatools'
     compileSdk 33
-    buildToolsVersion '34.0.0-rc2'
+    buildToolsVersion '34.0.0-rc3'
 
     signingConfigs {
         main {
@@ -23,15 +23,15 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 66
-        versionName '25.6.0'
+        versionName '25.6.2'
         signingConfig signingConfigs.main
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = '1.8' }
+    kotlinOptions { jvmTarget = '17' }
 
     buildTypes {
         debuggee {
