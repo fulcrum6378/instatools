@@ -68,7 +68,7 @@
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
-    <string name="guestShortDesc">Enter without authentication</string>
+    <string name="enterWithoutAuth">Enter without authentication</string>
     <string name="guestSure">
         Unfortunately Instagram won\'t let you view people in its website so frequently without signing in.
         It\'ll force you sign in or sign up to do that.

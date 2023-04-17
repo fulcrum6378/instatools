@@ -67,8 +67,10 @@ class Api<JSON>(
                     c.needAuthentication()
                     if (c is BaseActivity) gotError()
                 }
+
                 response.contains("Content unavailable &bull; Instagram") ->
                     gotError()
+
                 else -> {
                     if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
                     else gotError()

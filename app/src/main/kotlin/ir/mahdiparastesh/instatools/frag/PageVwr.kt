@@ -163,8 +163,10 @@ class PageVwr : BasePageViewer() {
                     Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
+
             R.id.vtSelectAll -> if (c.mm.vwUser?.edges() != null)
                 tracker?.setItemsSelected(c.mm.vwUser!!.edges()!!.map { it.node.id }, true)
+
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)

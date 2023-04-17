@@ -85,8 +85,10 @@ class PageTag : BasePageViewer() {
                     Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
+
             R.id.vtSelectAll -> if (c.mm.vwTagged?.items != null)
                 tracker?.setItemsSelected(c.mm.vwTagged!!.items!!.map { it.pk }, true)
+
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)

@@ -240,6 +240,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             true
         } else {
             switchAcc(); true; }
+
         R.id.mnSignOut -> {
             val bd = AlsoDeleteDataBinding.inflate(
                 layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
@@ -261,6 +262,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     ) { signOut(bd.root.isChecked) }
                 }
             }.show(); true; }
+
         else -> super.onOptionsItemSelected(item)
     }
 

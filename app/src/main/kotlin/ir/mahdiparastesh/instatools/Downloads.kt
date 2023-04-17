@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
@@ -18,6 +19,7 @@ import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +29,7 @@ import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
@@ -49,7 +52,6 @@ class Downloads : ServiceOwnerActivity() {
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
     val mm: MyModel by viewModels()
-    private var askedForDelete = false
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
 
@@ -59,6 +61,7 @@ class Downloads : ServiceOwnerActivity() {
 
     class MyModel : ViewModel() {
         var queueds: CopyOnWriteArrayList<Queued>? = null
+        var askedForDelete = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,23 +80,27 @@ class Downloads : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
+
                     HANDLE_DELETED -> find(msg)?.let {
                         mm.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
+
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
                         mm.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
+
                     HANDLE_RESET -> {
                         if (msg.arg1 == 1) mm.queueds =
                             CopyOnWriteArrayList(msg.obj as List<Queued>)
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                     }
+
                     HANDLE_429 -> MaterialAlertDialogBuilder(this@Downloads).apply {
                         setTitle(R.string.downloads)
                         setMessage(R.string.queuer429)
@@ -132,6 +139,19 @@ class Downloads : ServiceOwnerActivity() {
             }
         }
 
+        // Jumper
+        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateJumper()
+            }
+        })
+        b.jumper.setOnClickListener { b.rv.smoothScrollToPosition(0) }
+        b.jumper.translationY = UiTools.jumperTrans(this)
+        shouldShowJumper.observe(this) {
+            anJumper?.cancel()
+            anJumper = UiTools.anJumper(this, b.jumper, it)
+        }
+
         // More
         ItemTouchHelper(SwipeToRemove()).attachToRecyclerView(b.rv)
     }
@@ -162,7 +182,10 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
-        Queuer.active.observe(this) { updateControlButton(it) }
+        Queuer.active.observe(this) {
+            updateControlButton(it)
+            if (it) handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+        }
         return ret
     }
 
@@ -174,6 +197,7 @@ class Downloads : ServiceOwnerActivity() {
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }
+
             R.id.dtRetryAll, R.id.dtPauseAll, R.id.dtResumeAll ->
                 if (!mm.queueds.isNullOrEmpty()) CoroutineScope(Dispatchers.IO).launch {
                     var any = false
@@ -191,6 +215,7 @@ class Downloads : ServiceOwnerActivity() {
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads, "")
                     }
                 } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+
             R.id.dtExportLinks -> if (!mm.queueds.isNullOrEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
@@ -200,10 +225,12 @@ class Downloads : ServiceOwnerActivity() {
                         "instatools_links_${UiTools.fileDateTime(Persistent.now())}.$exportLinksExt"
                     )
                 }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+
             R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = exportLinksMime
             })
+
             R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.listClear)
@@ -246,7 +273,9 @@ class Downloads : ServiceOwnerActivity() {
                 handler?.obtainMessage(HANDLE_RESET, 1, 0, dao.queueds())?.sendToTarget()
             }.onFailure {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, R.string.importReadError, Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -267,8 +296,16 @@ class Downloads : ServiceOwnerActivity() {
                 b.guideSwipeDeleteStub.inflate()
                 isSwipeDeleteInflated = true
             }
+
             isSwipeDeleteInflated == true -> bd.root.vis(hasContent)
         } else isSwipeDeleteInflated = null
+    }
+
+    private var shouldShowJumper = MutableLiveData(false)
+    private var anJumper: ObjectAnimator? = null
+    private fun updateJumper() {
+        (b.rv.computeVerticalScrollOffset() > dm.heightPixels)
+            .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 
     @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
@@ -315,13 +352,14 @@ class Downloads : ServiceOwnerActivity() {
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
             val q = mm.queueds?.getOrNull(h.layoutPosition) ?: return
-            if (!askedForDelete) MaterialAlertDialogBuilder(this@Downloads).apply {
+            if (!mm.askedForDelete) MaterialAlertDialogBuilder(this@Downloads).apply {
                 setTitle(R.string.downloads)
                 setMessage(R.string.deleteItemSure)
                 setCancelable(false)
                 setPositiveButton(R.string.yes) { _, _ ->
-                    askedForDelete = true
+                    mm.askedForDelete = true
                     delete(q)
+                    Delay(30000L) { mm.askedForDelete = false }
                 }
                 setNegativeButton(R.string.no, null)
             }.show()

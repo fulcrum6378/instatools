@@ -8,6 +8,7 @@ import com.android.volley.Request
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Account
@@ -40,7 +41,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
         if (!guest) h.b.name.text = acc.name
         else h.b.name.setText(R.string.guest)
         if (!guest) h.b.user.text = acc.user
-        else h.b.user.setText(R.string.guestShortDesc)
+        else h.b.user.setText(R.string.enterWithoutAuth)
         h.b.name.vis(guest || acc.name != "")
         h.b.root.setOnClickListener {
             c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
@@ -64,6 +65,10 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
 
     private fun more(v: View, acc: Account, i: Int): Boolean {
         MaterialMenu(c, v, R.menu.acc_more, Act().apply {
+            this[R.id.amWithoutAuth] = {
+                c.gsp.edit { putString(Login.spAccount, acc.id.toString()) }
+                c.goTo(Main::class, true)
+            }
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
                 MaterialAlertDialogBuilder(c).apply {

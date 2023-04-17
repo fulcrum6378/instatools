@@ -102,8 +102,10 @@ class PageUnf : BasePageMain() {
                     when {
                         before > after -> b.rv.adapter
                             ?.notifyItemRangeChanged(after, (before - after) + 1)
+
                         after > before -> b.rv.adapter
                             ?.notifyItemRangeChanged(before, (after - before) + 1)
+
                         else -> b.rv.adapter?.notifyItemChanged(after)
                     }
                 }

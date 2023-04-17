@@ -60,6 +60,7 @@ class ListCar(
                 h.b.image.vis()
                 Glide.with(c.c).load(it).into(h.b.image)
             }
+
             MediaType.VIDEO -> slides[i].url?.let {
                 h.b.video.vis()
                 players[i] = MediaPlayer(c).apply {
@@ -80,6 +81,7 @@ class ListCar(
                     prepare()
                 }
             }
+
             else -> { /* IMPOSSIBLE */
             }
         }

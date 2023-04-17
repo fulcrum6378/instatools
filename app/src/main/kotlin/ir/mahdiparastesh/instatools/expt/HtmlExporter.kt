@@ -79,51 +79,63 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     limit += 2
                     divGif.format(dm.animated_media.images.fixed_height.url)
                 }
+
                 dm.clip != null -> {
                     media = dm.clip.clip
                     ""
                 }
+
                 dm.direct_media_share != null -> {
                     media = dm.direct_media_share.media
                     dm.direct_media_share.text
                 }
+
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
                     dm.felix_share.text?.let { divDial.format(it) } ?: ""
                 }
+
                 dm.like != null -> divDial.format(dm.like)
                 dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text, "")
                 dm.live_viewer_invite != null -> hintAndDial(
                     dm.live_viewer_invite.cta_button_name, dm.live_viewer_invite.text
                 )
+
                 dm.media != null -> {
                     media = dm.media
                     ""
                 }
+
                 dm.media_share != null -> {
                     media = dm.media_share
                     ""
                 }
+
                 dm.placeholder != null -> divHint.format(dm.placeholder.message)
                 dm.profile != null -> divLink.format(
                     UiTools.PROFILE.format(dm.profile.username), "@${dm.profile.username}",
                     " <i>[User ID: ${dm.profile.pk}]</i>"
                 )
+
                 dm.raven_media != null -> {
                     media = dm.raven_media
                     ""
                 }
+
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
                     hintAndDial(dm.reel_share.message, dm.reel_share.text)
                 }
+
                 dm.story_share != null -> {
                     media = dm.story_share.media
                     hintAndDial(dm.story_share.message, dm.story_share.text)
                 }
+
                 dm.text != null -> divDial.format(dm.text)
                 dm.video_call_event != null ->
                     divHint.format(dm.video_call_event.description)
+
                 dm.voice_media != null ->
                     when {
                         exp.opt?.voi() == true && dm.voice_media.media != null -> {
@@ -133,10 +145,13 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                                     " type=\"audio/mp4\">\n" +
                                     "$div2Ind</audio>"
                         }
+
                         dm.voice_media.media == null ->
                             divHint.format("Sent a voice message.")
+
                         else -> divHint.format("Voice message omitted!")
                     }
+
                 else -> ""
             }
             div.append( // "flex-direction" is direction-relative.
@@ -158,8 +173,10 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                             exp.opt?.img() != true ->
                                 "src=\"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=\"" +
                                         " style=\"background-color: #33AADD;\" "
+
                             showPro -> "src=\"./${subFolderNames[0]}/" +
                                     "${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" "
+
                             else -> ""
                         }
                     }class=\"profile${if (!showPro) " repeated" else ""}\"$imgTitle>\n$div1Ind</a>\n"
@@ -182,6 +199,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                                     "$div2Ind  </video>"
                         )
                     }
+
                     (media.video_versions != null && exp.opt?.video == 3) ||
                             (media.video_versions == null && exp.opt?.img() == true) -> {
                         limit += 4
@@ -191,6 +209,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                             "<a href=\"${media.link()}\">\n$div2Ind  $imgThumb\n$div2Ind</a>"
                         else imgThumb) // don't use string formatting instead of imgThumb!
                     }
+
                     else -> divHint.format(
                         (if (media is Media) "<a href=\"${media.link()}\">" else "") +
                                 "${if (media.video_versions != null) "Video" else "Image"} file omitted!" +

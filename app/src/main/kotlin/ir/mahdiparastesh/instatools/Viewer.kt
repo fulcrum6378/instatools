@@ -102,10 +102,12 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                         page2?.showProfile()
                         page3?.load()
                     }
+
                     HANDLE_ABORTED -> {
                         b.refresher.isRefreshing = false
                         UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
                     }
+
                     Api.HANDLE_ERROR -> {
                         b.refresher.isRefreshing = false
                         UiTools.snackbar(
@@ -115,6 +117,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                             ), Snackbar.LENGTH_SHORT
                         )
                     }
+
                     PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Expandable.HANDLE_EXPANDABLE_ERROR ->
                         UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
@@ -187,6 +190,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     withContext(Dispatchers.Main) { fixTbMenu() }
                 }
             }
+
             R.id.vtShortcut -> mm.vwUser?.also { u ->
                 val bmp = (page2?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(

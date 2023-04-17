@@ -80,6 +80,12 @@
             android:textSize="@dimen/downloadsHelp2" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/jumper"
+        style="@style/jumper"
+        app:layout_constraintBottom_toBottomOf="@null"
+        app:layout_constraintBottom_toTopOf="@id/guideSwipeDeleteStub" />
+
     <ViewStub
         android:id="@+id/guideSwipeDeleteStub"
         android:layout_width="match_parent"

@@ -103,6 +103,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                                 browse()
                             } else selectAccount(signedOutFrom)
                         }
+
                     else -> welcome()
                 }
             }
@@ -143,6 +144,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     browse()
                 }
             }.show()
+
             acc.cook != null -> browse(acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }
@@ -277,7 +279,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
-    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.web.canGoBack()) {
             b.web.goBack(); return; }
