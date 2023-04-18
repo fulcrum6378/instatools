@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 66
-        versionName '25.7.3'
+        versionName '25.7.5'
         signingConfig signingConfigs.main
     }
 
@@ -71,12 +71,12 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     kapt "com.github.bumptech.glide:compiler:$glide_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation 'com.github.fulcrum1378:ChipsLayoutManager:5140e08'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     //implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     //noinspection GradleDependency
     implementation 'com.tbuonomo:dotsindicator:4.2'
+    implementation 'ir.mahdiparastesh:chipslayoutmanager:0.4.5'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
     implementation 'org.apache.commons:commons-text:1.10.0' // StringEscapeUtils
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
