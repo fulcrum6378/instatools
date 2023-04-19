@@ -190,7 +190,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Navigation
         bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
         if (!guest) {
-            Glide.with(c).load(m.acc!!.pict).into(bh.pict)
+            Glide.with(c)
+                .load(m.acc!!.pict)
+                .placeholder(drawable(R.drawable.transparent_square))
+                .into(bh.pict)
             bh.user.text = m.acc!!.user
             if (!m.acc!!.name.isNullOrBlank())
                 bh.name.text = m.acc!!.name
@@ -420,10 +423,12 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
+  * Warn or do something in Downloads when using the guest mode
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
+  * Use URLConnection to track the percentage of downloads
   * Add seekbars in Settings for tweaking human-imitating delays
   * Live unfollower inspector
   * Conditional jump to bottom
