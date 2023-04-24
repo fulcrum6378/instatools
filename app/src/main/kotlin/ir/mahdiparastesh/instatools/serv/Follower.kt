@@ -88,7 +88,7 @@ class Follower : ForegroundService() {
                 var sum = 0
                 flw.users?.filter {
                     (toBeEnqueued[0].includePv || !it.is_private) &&
-                            it.pk !in following && it.pk != m.acc!!.id.toString()
+                        it.pk !in following && it.pk != m.acc!!.id.toString()
                 }?.let {
                     val toLimit = toBeEnqueued[0].limitTo - total
                     if (toLimit < it.size) it.subList(0, toLimit) else it

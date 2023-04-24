@@ -86,7 +86,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
                         addUpdateListener {
                             h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
                                 height = (c.resources.getDimension(R.dimen.vwReelHeight)
-                                        * it.animatedValue as Float).toInt()
+                                    * it.animatedValue as Float).toInt()
                             }
                         }
                         addListener(

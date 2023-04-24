@@ -123,8 +123,8 @@ object UiTools {
     fun date(time: Long): String {
         val cal = time.calendar()
         return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
-                "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
-                "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
+            "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
+            "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
     }
 
     @Suppress("DEPRECATION")
@@ -152,7 +152,7 @@ object UiTools {
             .substringBefore("?") else null
 
     fun jumperTrans(c: BaseActivity) = (c.resources.getDimension(R.dimen.jumperSize) +
-            c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
+        c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
 
     fun anJumper(c: BaseActivity, jumper: View, bb: Boolean): ObjectAnimator =
         ObjectAnimator.ofFloat(
@@ -224,8 +224,8 @@ object UiTools {
     fun fileDateTime(time: Long): String {
         val cal = Calendar.getInstance().apply { timeInMillis = time }
         return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
-                "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
-                "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
+            "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
+            "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
     }
 
     @ColorInt

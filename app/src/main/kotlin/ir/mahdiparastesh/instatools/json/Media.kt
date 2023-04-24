@@ -101,7 +101,6 @@ class Media(
             mahdi_reel_type == "user_reel" -> nearest(BEST) // archived story
             else -> UiTools.STORY_LINK.format(user.username, pk)
         }
-
         "clips" -> UiTools.REEL_LINK.format(code)
         "igtv" -> UiTools.IGTV_LINK.format(code)
         null -> nearest(BEST)
@@ -114,7 +113,7 @@ class Media(
     // heaviness of an object in Java.
 
     fun hasAudio() = has_audio == true ||
-            (carousel_media != null && carousel_media?.any { it.media_type == 2f } == true)
+        (carousel_media != null && carousel_media?.any { it.media_type == 2f } == true)
 
     fun queue(dao: Database.DAO) {
         val link = UiTools.POST_LINK.format(code)
@@ -128,7 +127,6 @@ class Media(
                     dur = car.video_duration?.toLong(), caption = caption?.text
                 )
             )
-
             image_versions2 != null -> dao.addQueued(
                 Queued(
                     Persistent.now(), link,

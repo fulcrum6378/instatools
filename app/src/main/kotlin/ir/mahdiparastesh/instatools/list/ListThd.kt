@@ -143,27 +143,23 @@ class ListThd(val c: Main, private val f: PageBox) :
             when {
                 dm.animated_media != null ->
                     msgIvHint.apply { text = "Sent a sticker"; vis() }
-
                 dm.clip != null -> media = dm.clip.clip
                 dm.direct_media_share != null -> {
                     media = dm.direct_media_share.media
                     msgTv.text = dm.direct_media_share.text
                 }
-
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
                     if (dm.felix_share.message != null)
                         msgIvHint.apply { text = dm.felix_share.message; vis() }
                     msgTv.text = dm.felix_share.text
                 }
-
                 dm.like != null -> msgTv.text = dm.like
                 dm.link != null -> msgTv.anchor(dm.link.text, dm.link.link_context.link_url)
                 dm.live_viewer_invite != null -> {
                     msgIvHint.apply { text = dm.live_viewer_invite.cta_button_name; vis() }
                     msgTv.text = dm.live_viewer_invite.text
                 }
-
                 dm.media != null -> media = dm.media
                 dm.media_share != null -> media = dm.media_share
                 dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
@@ -171,7 +167,6 @@ class ListThd(val c: Main, private val f: PageBox) :
                     "@${dm.profile.username} [User ID: ${dm.profile.pk}]",
                     PROFILE.format(dm.profile.username)
                 )
-
                 dm.raven_media != null -> media = dm.raven_media
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
@@ -180,7 +175,6 @@ class ListThd(val c: Main, private val f: PageBox) :
                     msgTv.text = dm.reel_share.text
                     media?.mahdi_reel_type = dm.reel_share.reel_type
                 }
-
                 dm.story_share != null -> {
                     media = dm.story_share.media
                     if (dm.story_share.message != null)
@@ -189,14 +183,11 @@ class ListThd(val c: Main, private val f: PageBox) :
                     media?.mahdi_reel_type = dm.story_share.reel_type
                     media?.mahdi_reel_id = dm.story_share.reel_id
                 }
-
                 dm.text != null -> msgTv.text = dm.text
                 dm.video_call_event != null ->
                     msgIvHint.apply { text = dm.video_call_event.description; vis() }
-
                 dm.voice_media != null ->
                     msgIvHint.apply { text = "Voice message omitted!"; vis() }
-
                 else ->
                     if (BuildConfig.DEBUG) throw Exception("NEW DM TYPE \"${dm.item_type}\" with id: ${dm.item_id}")
                     else msgIvHint.apply { text = "Unknown DM type \"${dm.item_type}\"!!"; vis() }

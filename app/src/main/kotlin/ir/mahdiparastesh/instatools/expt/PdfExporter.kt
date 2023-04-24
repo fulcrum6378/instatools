@@ -75,7 +75,7 @@ abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                 ) // AT_MOST
                 if ((measuredHeight - cutAt) >= size.height) {
                     cutAt = this[childCount - 1].measuredHeight -
-                            ((measuredHeight - cutAt) - size.height)
+                        ((measuredHeight - cutAt) - size.height)
                     if (cutAt <= 200) {
                         removeViewAt(childCount - 1)
                         cutAt = 0

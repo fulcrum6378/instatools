@@ -4,6 +4,9 @@
         android:id="@+id/amWithoutAuth"
         android:title="@string/enterWithoutAuth" />
     <item
+        android:id="@+id/amBrowseWeb"
+        android:title="@string/browseInTheWeb" />
+    <item
         android:id="@+id/amSignOut"
         android:title="@string/signOut" />
 </menu>

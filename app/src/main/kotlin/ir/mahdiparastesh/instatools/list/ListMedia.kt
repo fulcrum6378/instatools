@@ -7,7 +7,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
-        where C : BaseActivity, F : BasePage<C> {
+    where C : BaseActivity, F : BasePage<C> {
 
     abstract val media: CopyOnWriteArrayList<Media>?
 

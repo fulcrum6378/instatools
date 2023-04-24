@@ -8,7 +8,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.thumb
 import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class ListEdge<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
-        where C : BaseActivity, F : BasePage<C> {
+    where C : BaseActivity, F : BasePage<C> {
 
     abstract val edges: CopyOnWriteArrayList<GraphQl.EdgePost>?
 

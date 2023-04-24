@@ -69,6 +69,10 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                 c.gsp.edit { putString(Login.spAccount, acc.id.toString()) }
                 c.goTo(Main::class, true)
             }
+            this[R.id.amBrowseWeb] = {
+                c.gonnaBrowseWeb = true
+                c.browse(acc.cook, Login.host)
+            }
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
                 MaterialAlertDialogBuilder(c).apply {

@@ -32,6 +32,7 @@ class DocFileTreeWalk private constructor(
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     private inner class DocFileTreeWalkIterator : AbstractIterator<DocumentFile>() {
         private val state = ArrayDeque<WalkState>()
 
@@ -82,8 +83,7 @@ class DocFileTreeWalk private constructor(
                     fileList = root.listFiles()
                     if (fileList == null) {
                         onFail?.invoke(
-                            root,
-                            AccessDeniedException(
+                            root, AccessDeniedException(
                                 file = root,
                                 reason = "Cannot list files in a directory"
                             )

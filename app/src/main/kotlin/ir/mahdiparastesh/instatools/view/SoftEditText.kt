@@ -20,7 +20,7 @@ class SoftAutoCompleteTextView(
     c: Context, attrs: AttributeSet?, @AttrRes defStyleAttr: Int
 ) : AppCompatAutoCompleteTextView(c, attrs, defStyleAttr) {
     constructor(c: Context, attrs: AttributeSet?) :
-            this(c, attrs, R.attr.autoCompleteTextViewStyle)
+        this(c, attrs, R.attr.autoCompleteTextViewStyle)
 
     constructor(c: Context) : this(c, null, R.attr.autoCompleteTextViewStyle)
 

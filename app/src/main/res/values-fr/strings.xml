@@ -68,6 +68,7 @@
     <!-- Login -->
     <string name="addAccount">Ajouter un compte</string>
     <string name="enterWithoutAuth">Entrez sans authentification</string>
+    <string name="browseInTheWeb">Naviguer sur le Web</string>
     <string name="guestSure">
         Malheureusement, Instagram ne vous permettra pas de voir les gens sur son site Web si souvent sans vous connecter.
         Cela vous obligera à vous connecter ou à vous inscrire pour le faire.

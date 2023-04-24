@@ -65,7 +65,7 @@ class PageVwr : BasePageViewer() {
             ) thread = FetchSome().also { it.start() }
 
             val showPv = c.mm.vwUser?.pv() == true && c.mm.vwUser?.followed_by_viewer == false
-                    && c.mm.vwUser?.username != c.m.acc?.user
+                && c.mm.vwUser?.username != c.m.acc?.user
             b.privateAcc.vis(showPv)
             b.rv.vis(!showPv)
             if (showPv) {
@@ -77,7 +77,7 @@ class PageVwr : BasePageViewer() {
                 b.privateAcc.layoutParams =
                     (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
                         val vPad = ((c.dm.heightPixels.toFloat()
-                                - c.dm.widthPixels.toFloat()) * 0.19f).toInt()
+                            - c.dm.widthPixels.toFloat()) * 0.19f).toInt()
                         topMargin = vPad
                         bottomMargin = vPad
                     }
@@ -163,10 +163,8 @@ class PageVwr : BasePageViewer() {
                     Saver(c, tracker!!.selection).start()
                 tracker?.clearSelection()
             }
-
             R.id.vtSelectAll -> if (c.mm.vwUser?.edges() != null)
                 tracker?.setItemsSelected(c.mm.vwUser!!.edges()!!.map { it.node.id }, true)
-
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)

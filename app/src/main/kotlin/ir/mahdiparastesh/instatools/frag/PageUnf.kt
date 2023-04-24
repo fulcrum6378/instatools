@@ -102,10 +102,8 @@ class PageUnf : BasePageMain() {
                     when {
                         before > after -> b.rv.adapter
                             ?.notifyItemRangeChanged(after, (before - after) + 1)
-
                         after > before -> b.rv.adapter
                             ?.notifyItemRangeChanged(before, (after - before) + 1)
-
                         else -> b.rv.adapter?.notifyItemChanged(after)
                     }
                 }
@@ -244,7 +242,7 @@ class PageUnf : BasePageMain() {
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             val newUnf = newFriends.filter {
                 (it.unfollowedMeAt != null
-                        && it.unfollowedMeAt!! > (c.sp?.getLong(Settings.spNotifiedUnfTill, 0L)
+                    && it.unfollowedMeAt!! > (c.sp?.getLong(Settings.spNotifiedUnfTill, 0L)
                     ?: 0L))
             }
             if (newUnf.isNotEmpty()) {

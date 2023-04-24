@@ -65,7 +65,7 @@ class Exporter : ForegroundService() {
         var ntfDoneIdInc = 0
 
         fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-                c.sPreference(Settings.spStorage) != null
+            c.sPreference(Settings.spStorage) != null
     }
 
     override fun onCreate() {
@@ -95,7 +95,6 @@ class Exporter : ForegroundService() {
                             exp?.fetchMedia()
                         }
                     }
-
                     Api.HANDLE_ERROR -> {
                         when (val code = (msg.obj as NetworkResponse?)?.statusCode) {
                             429 -> eventNotification(Notify.ID_EXPORTER_429) {
@@ -106,7 +105,6 @@ class Exporter : ForegroundService() {
                                 )
                                 addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                             }
-
                             else -> eventNotification(Notify.ID_EXPORTER_UNK_FETCH_ERROR) {
                                 setContentTitle(getString(R.string.exporterFailed))
                                 setStyle(
@@ -182,7 +180,6 @@ class Exporter : ForegroundService() {
 
                     else -> null
                 }
-
                 vid && dm.felix_share != null -> dm.felix_share.video
                 dm.media != null -> if (img || vid) dm.media else null
                 dm.media_share != null -> when (dm.media_share.media_type) {
@@ -190,7 +187,6 @@ class Exporter : ForegroundService() {
                     8f -> dm.media_share.carousel_media?.let { if (img || vid) it[0] else null }
                     else -> null
                 }
-
                 img && dm.raven_media != null -> dm.raven_media
                 dm.reel_share != null -> if (img || vid) dm.reel_share.media else null
                 dm.story_share != null -> if (img || vid) dm.story_share.media else null
@@ -201,7 +197,6 @@ class Exporter : ForegroundService() {
                 val quality = when {
                     theVer.video_versions != null && opt!!.video == 3 ->
                         if (img) -opt!!.image.toFloat() else Versioned.MEDIUM
-
                     theVer.video_versions != null -> -opt!!.video.toFloat()
                     else -> -opt!!.image.toFloat()
                 }

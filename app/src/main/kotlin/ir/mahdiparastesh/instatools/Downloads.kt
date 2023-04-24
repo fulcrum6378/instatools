@@ -80,27 +80,23 @@ class Downloads : ServiceOwnerActivity() {
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                     }
-
                     HANDLE_DELETED -> find(msg)?.let {
                         mm.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                     }
-
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
                         mm.queueds!![it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
-
                     HANDLE_RESET -> {
                         if (msg.arg1 == 1) mm.queueds =
                             CopyOnWriteArrayList(msg.obj as List<Queued>)
                         if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
                         else b.rv.adapter?.notifyDataSetChanged()
                     }
-
                     HANDLE_429 -> MaterialAlertDialogBuilder(this@Downloads).apply {
                         setTitle(R.string.downloads)
                         setMessage(R.string.queuer429)
@@ -296,7 +292,6 @@ class Downloads : ServiceOwnerActivity() {
                 b.guideSwipeDeleteStub.inflate()
                 isSwipeDeleteInflated = true
             }
-
             isSwipeDeleteInflated == true -> bd.root.vis(hasContent)
         } else isSwipeDeleteInflated = null
     }

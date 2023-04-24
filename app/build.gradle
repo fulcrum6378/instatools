@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 67
-        versionName '25.7.7'
+        versionName '25.9.0'
         signingConfig signingConfigs.main
     }
 
@@ -54,7 +54,7 @@ dependencies {
     def glide_version = '4.15.1'
     def media2_version = '1.2.1'
 
-    implementation 'androidx.activity:activity-ktx:1.7.0' // only for ActivityResultLauncher
+    implementation 'androidx.activity:activity-ktx:1.7.1' // only for ActivityResultLauncher
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.10.0'

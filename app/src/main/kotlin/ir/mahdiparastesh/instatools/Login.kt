@@ -47,19 +47,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong."
         var cameHereToAuth = false
-
-        fun CookieManager.getCookieOrganised(url: String): String {
-            val raw = getCookie(url)?.split("; ") ?: return ""
-            val map = HashMap<String, String>()
-            for (r in raw) {
-                val kv = r.split("=")
-                map[kv[0]] = kv[1]
-            }
-            val sb = StringBuilder()
-            for (e in map.entries)
-                sb.append("${e.key}=${e.value}; ")
-            return sb.toString().trimEnd()
-        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -103,7 +90,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                                 browse()
                             } else selectAccount(signedOutFrom)
                         }
-
                     else -> welcome()
                 }
             }
@@ -144,7 +130,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     browse()
                 }
             }.show()
-
             acc.cook != null -> browse(acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }
@@ -157,7 +142,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private var doClearHistory = false
     private var gonnaAdd = false
     private var gonnaBeGuest = false
-    private fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
+    var gonnaBrowseWeb = false
+    fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
         b.refresher.vis()
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also { cm ->
@@ -212,7 +198,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            if (url != host && !url.startsWith("$host?")) return
+            if ((url != host && !url.startsWith("$host?")) || gonnaBrowseWeb) return
             try { // Don't remove the explanatory comments
                 view.evaluateJavascript(
                     "document.getElementsByTagName('body')[0].innerHTML"
@@ -279,12 +265,27 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
+    fun CookieManager.getCookieOrganised(url: String): String {
+        val raw = getCookie(url)?.split("; ") ?: return ""
+        val map = HashMap<String, String>()
+        for (r in raw) {
+            val kv = r.split("=")
+            map[kv[0]] = kv[1]
+        }
+        val sb = StringBuilder()
+        for (e in map.entries)
+            sb.append("${e.key}=${e.value}; ")
+        return sb.toString().trimEnd()
+    }
+
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.web.canGoBack()) {
             b.web.goBack(); return; }
-        if (gonnaAdd) {
+        if (gonnaAdd || gonnaBeGuest || gonnaBrowseWeb) {
             gonnaAdd = false
+            gonnaBeGuest = false
+            gonnaBrowseWeb = false
             b.web.loadUrl("")
             welcome()
             return; }

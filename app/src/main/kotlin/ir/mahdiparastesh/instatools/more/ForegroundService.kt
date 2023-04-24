@@ -54,10 +54,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         fun ntfMutability(bb: Boolean = true): Int = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                 if (bb) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_IMMUTABLE
-
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
                 if (bb) PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_IMMUTABLE
-
             else -> PendingIntent.FLAG_UPDATE_CURRENT
         }
     }

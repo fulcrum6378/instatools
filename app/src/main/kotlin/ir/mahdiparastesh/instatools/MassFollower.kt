@@ -67,13 +67,11 @@ class MassFollower : ServiceOwnerActivity() {
                         val firstPos = (mm.fwb.value?.size ?: 1) - 1
                         b.rv.adapter?.notifyItemRangeInserted(firstPos, firstPos + size)
                     }
-
                     HANDLE_DELETED -> find(msg)?.let {
                         mm.fwb.value!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.fwb.value!!.size)
                     }
-
                     HANDLE_DETECTED_AS_SPAMMER -> MaterialAlertDialogBuilder(this@MassFollower)
                         .apply {
                             setTitle(R.string.massFollower)
@@ -153,7 +151,6 @@ class MassFollower : ServiceOwnerActivity() {
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this)
             }
-
             R.id.mfExport -> if (!mm.fwb.value.isNullOrEmpty())
                 startActivity(Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
@@ -163,7 +160,6 @@ class MassFollower : ServiceOwnerActivity() {
                     )
                     putExtra(Intent.EXTRA_TEXT, mm.fwb.value?.joinToString("\n") { it.user })
                 })
-
             R.id.mftClear -> if (!mm.fwb.value.isNullOrEmpty())
                 MaterialAlertDialogBuilder(this@MassFollower).apply {
                     setTitle(R.string.listClear)
@@ -176,7 +172,6 @@ class MassFollower : ServiceOwnerActivity() {
                         }
                     }
                 }.show()
-
             R.id.mfTroubleshoot -> MaterialAlertDialogBuilder(this@MassFollower).apply {
                 setTitle(R.string.mfTroubleshoot)
                 // mfTroubleshootMsg: Make sure the following conditions are applied to this app:

@@ -105,7 +105,6 @@ class Queuer : ForegroundService() {
                         handlingLinks.add(Link(msg.obj as String))
                         handleLinks()
                     }
-
                     HANDLE_HTML_ERROR, Api.HANDLE_ERROR, HANDLE_API_RES_ERROR ->
                         handlingLinks.getOrNull(0)?.apply {
                             qud!!.status = 1.toByte()
@@ -189,7 +188,6 @@ class Queuer : ForegroundService() {
                                         caption = med.caption?.text
                                     )
                                 )
-
                             med.image_versions2 != null -> cur.qud!!.apply {
                                 date = med.taken_at.xFromSeconds()
                                 userId = med.user.pk
@@ -201,7 +199,6 @@ class Queuer : ForegroundService() {
                                 dur = med.video_duration?.toLong()
                                 caption = med.caption?.text
                             }
-
                             else -> found = false
                         }
                         if (found) handleQueued(cur.qud!!, addOns)
@@ -251,7 +248,6 @@ class Queuer : ForegroundService() {
                             }
                             handleQueued(cur.qud!!, null)
                         }
-
                     "PolarisStoriesHighlightsRoot.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.HighlightReel>>(
                             this, Api.Endpoint.REEL_ITEM.url.format(
@@ -282,11 +278,9 @@ class Queuer : ForegroundService() {
                             }
                             handleQueued(cur.qud!!, null)
                         }
-
                     "PolarisProfileRoot.react" -> CoroutineScope(Dispatchers.IO)
                         .launch { dao.deleteQueued(cur.qud!!) }
                         .invokeOnCompletion { linkHandled() }
-
                     else -> {
                         Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react") {
@@ -453,11 +447,9 @@ class Queuer : ForegroundService() {
             q.userName in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
                 ?.exists() == true ->
                 DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
-
             !q.isMainFile() -> stem
             bPreference(Settings.spBranching, Settings.spBranchingCb, Settings.defSpBranching) ->
                 stem.findFile(q.userName!!) ?: stem.createDirectory(q.userName!!)
-
             else -> stem
         } ?: return
         val type = MediaType.values().find { it.inDb == q.mediaType }!!

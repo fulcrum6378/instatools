@@ -29,8 +29,8 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
 
     private fun hintAndDial(hint: String?, dial: String?) =
         (if (!hint.isNullOrBlank()) divHint.format(hint) else "") +
-                (if (!hint.isNullOrBlank() && !dial.isNullOrBlank()) "\n$div2Ind" else "") +
-                (if (!dial.isNullOrBlank()) divDial.format(dial) else "")
+            (if (!hint.isNullOrBlank() && !dial.isNullOrBlank()) "\n$div2Ind" else "") +
+            (if (!dial.isNullOrBlank()) divDial.format(dial) else "")
 
     companion object {
         const val MAX_PAGINATION = 3
@@ -50,7 +50,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             val div = StringBuilder()
             var showPro =
                 divisions.isNullOrEmpty() || exp.threadData!!.items[i - 1].is_sent_by_viewer
-                        || exp.threadData!!.items[i - 1].action_log != null
+                    || exp.threadData!!.items[i - 1].action_log != null
 
             // Date
             val cal = dm.timestamp.xFromMicroseconds().calendar()
@@ -65,8 +65,8 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             if (showDate) {
                 div.append(
                     "    <p class=\"date text-center${if (!divisions.isNullOrEmpty()) " mt-5" else ""} " +
-                            "mb-2\">${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
-                            "${z(cal[Calendar.DAY_OF_MONTH])}</p>\n"
+                        "mb-2\">${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
+                        "${z(cal[Calendar.DAY_OF_MONTH])}</p>\n"
                 )
                 showPro = true
             }
@@ -79,84 +79,69 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     limit += 2
                     divGif.format(dm.animated_media.images.fixed_height.url)
                 }
-
                 dm.clip != null -> {
                     media = dm.clip.clip
                     ""
                 }
-
                 dm.direct_media_share != null -> {
                     media = dm.direct_media_share.media
                     dm.direct_media_share.text
                 }
-
                 dm.felix_share != null -> {
                     media = dm.felix_share.video
                     dm.felix_share.text?.let { divDial.format(it) } ?: ""
                 }
-
                 dm.like != null -> divDial.format(dm.like)
                 dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text, "")
                 dm.live_viewer_invite != null -> hintAndDial(
                     dm.live_viewer_invite.cta_button_name, dm.live_viewer_invite.text
                 )
-
                 dm.media != null -> {
                     media = dm.media
                     ""
                 }
-
                 dm.media_share != null -> {
                     media = dm.media_share
                     ""
                 }
-
                 dm.placeholder != null -> divHint.format(dm.placeholder.message)
                 dm.profile != null -> divLink.format(
                     UiTools.PROFILE.format(dm.profile.username), "@${dm.profile.username}",
                     " <i>[User ID: ${dm.profile.pk}]</i>"
                 )
-
                 dm.raven_media != null -> {
                     media = dm.raven_media
                     ""
                 }
-
                 dm.reel_share != null -> {
                     media = dm.reel_share.media
                     hintAndDial(dm.reel_share.message, dm.reel_share.text)
                 }
-
                 dm.story_share != null -> {
                     media = dm.story_share.media
                     hintAndDial(dm.story_share.message, dm.story_share.text)
                 }
-
                 dm.text != null -> divDial.format(dm.text)
                 dm.video_call_event != null ->
                     divHint.format(dm.video_call_event.description)
-
                 dm.voice_media != null ->
                     when {
                         exp.opt?.voi() == true && dm.voice_media.media != null -> {
                             limit += 4
                             "<audio controls>\n" +
-                                    "$div2Ind  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
-                                    " type=\"audio/mp4\">\n" +
-                                    "$div2Ind</audio>"
+                                "$div2Ind  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
+                                " type=\"audio/mp4\">\n" +
+                                "$div2Ind</audio>"
                         }
-
                         dm.voice_media.media == null ->
                             divHint.format("Sent a voice message.")
-
                         else -> divHint.format("Voice message omitted!")
                     }
-
                 else -> ""
             }
             div.append( // "flex-direction" is direction-relative.
                 "    <div class=\"dm\" style=\"flex-direction: " +
-                        "row${if (dm.is_sent_by_viewer) "-reverse" else ""};\">\n"
+                    "row${if (dm.is_sent_by_viewer) "-reverse" else ""};\">\n"
             )
             if (!dm.is_sent_by_viewer) {
                 val userId = dm.user_id.toLong().toString()
@@ -172,11 +157,9 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                         when {
                             exp.opt?.img() != true ->
                                 "src=\"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=\"" +
-                                        " style=\"background-color: #33AADD;\" "
-
+                                    " style=\"background-color: #33AADD;\" "
                             showPro -> "src=\"./${subFolderNames[0]}/" +
-                                    "${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" "
-
+                                "${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" "
                             else -> ""
                         }
                     }class=\"profile${if (!showPro) " repeated" else ""}\"$imgTitle>\n$div1Ind</a>\n"
@@ -184,8 +167,8 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             }
             div.append(
                 "$div1Ind<div class=\"d-inline-flex p-2 border rounded-3 mt-1 px-3 btn disabled " +
-                        (if (dm.is_sent_by_viewer) "btn-light" else "btn-outline-dark") +
-                        "${if (media != null) " card" else ""}\">\n$div2Ind"
+                    (if (dm.is_sent_by_viewer) "btn-light" else "btn-outline-dark") +
+                    "${if (media != null) " card" else ""}\">\n$div2Ind"
             )
             if (media != null) div.append(
                 when {
@@ -194,14 +177,13 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                         (if (media is Media)
                             "<a href=\"${media.link()}\">\n$div2Ind  %s\n$div2Ind</a>" else "%s").format(
                             "<video width=\"500\" height=\"500\" controls class=\"media\">\n" +
-                                    "$div2Ind    <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
-                                    " type=\"video/mp4\">\n" +
-                                    "$div2Ind  </video>"
+                                "$div2Ind    <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
+                                " type=\"video/mp4\">\n" +
+                                "$div2Ind  </video>"
                         )
                     }
-
                     (media.video_versions != null && exp.opt?.video == 3) ||
-                            (media.video_versions == null && exp.opt?.img() == true) -> {
+                        (media.video_versions == null && exp.opt?.img() == true) -> {
                         limit += 4
                         val imgThumb =
                             "<img src=\"./${subFolderNames[0]}/${dm.item_id}.jpg\" class=\"media\">"
@@ -209,11 +191,10 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                             "<a href=\"${media.link()}\">\n$div2Ind  $imgThumb\n$div2Ind</a>"
                         else imgThumb) // don't use string formatting instead of imgThumb!
                     }
-
                     else -> divHint.format(
                         (if (media is Media) "<a href=\"${media.link()}\">" else "") +
-                                "${if (media.video_versions != null) "Video" else "Image"} file omitted!" +
-                                (if (media is Media) "</a>" else "")
+                            "${if (media.video_versions != null) "Video" else "Image"} file omitted!" +
+                            (if (media is Media) "</a>" else "")
                     )
                 } + (if (nonMedia.isNotBlank()) "\n$div2Ind" else "")
             )
@@ -227,9 +208,9 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             }
             div.append(
                 "\n$div1Ind</div>\n$div1Ind" +
-                        "<p class=\"time\">${z(cal[Calendar.HOUR_OF_DAY])}:" +
-                        "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}</p>\n" +
-                        "    </div>\n"
+                    "<p class=\"time\">${z(cal[Calendar.HOUR_OF_DAY])}:" +
+                    "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}</p>\n" +
+                    "    </div>\n"
             )
             divisions!!.add(div.toString())
             if (limit >= MAX_PER_PAGE) {
@@ -247,11 +228,11 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
         @Suppress("SpellCheckingInspection")
         val bootstrapCss =
             if (dirRtl) "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css\"" +
-                    "      integrity=\"sha384-+qdLaIRZfNu4cVPK/PxJJEy0B0f3Ugv8i482AKY7gwXwhaCroABd086ybrVKTa0q\"" +
-                    "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
+                "      integrity=\"sha384-+qdLaIRZfNu4cVPK/PxJJEy0B0f3Ugv8i482AKY7gwXwhaCroABd086ybrVKTa0q\"" +
+                "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
             else "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\"\n" +
-                    "      integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\"\n" +
-                    "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
+                "      integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\"\n" +
+                "      rel=\"stylesheet\" crossorigin=\"anonymous\">"
         @Suppress("SpellCheckingInspection")
         containers.forEachIndexed { page, divisions ->
             val html = StringBuilder()
@@ -323,8 +304,8 @@ body { background: #FCFCFC; }
             if (!range.contains(containers.size - 1)) range.add(range.size, containers.size - 1)
             for (p in range) html.append(
                 "        <li class=\"page-item${if (p == page) " disabled" else ""}\">" +
-                        "<a class=\"page-link\" href=\"./${p + 1}.html\" target=\"_self\"" +
-                        "${if (p == page) " tabindex=\"-1\"" else ""}>${p + 1}</a></li>\n"
+                    "<a class=\"page-link\" href=\"./${p + 1}.html\" target=\"_self\"" +
+                    "${if (p == page) " tabindex=\"-1\"" else ""}>${p + 1}</a></li>\n"
             )
             val canNext = page == containers.size - 1
             html.append(

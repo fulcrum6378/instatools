@@ -462,7 +462,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     // corruptly over the previous Activity in an ugly way.
                 }
             }
-
             1 -> {
                 bfa?.listPaths()
                 bfa?.folders?.setSelection(uriFolders!!.indexOfFirst { it.toString() == uri.toString() })

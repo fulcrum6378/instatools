@@ -38,7 +38,7 @@ class Exportable(
     class Options(
         var image: Int = DEF_IMAGE, // -1=>NO; 0=>Low; 1=>Med; 2=>High
         var video: Int = DEF_VIDEO, // -1=>NO; 0=>Low; 1=>Med; 2=>High; 3=>Thumb
-        var slide: Int = DEF_SLIDE, // maximum slides
+        @Suppress("unused") var slide: Int = DEF_SLIDE, // maximum slides
         var voice: Int = DEF_VOICE, // -1=>NO; 0=>YES
     ) {
         fun img() = image > -1

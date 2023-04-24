@@ -114,7 +114,7 @@ class PageSvd : BasePageMain(), Selective {
 
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
-                    || selectionGuide != null
+                || selectionGuide != null
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -179,21 +179,18 @@ class PageSvd : BasePageMain(), Selective {
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
-
             R.id.mtDownload -> {
                 if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
                     c, this, tracker!!.selection, unsave = false, download = true
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
-
             R.id.mtUnsave -> {
                 if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
                     c, this, tracker!!.selection, unsave = true, download = false
                 ).also { it.start() }
                 tracker?.clearSelection()
             }
-
             R.id.mtSelectAll -> if (c.mm.saved?.items != null)
                 tracker?.setItemsSelected(c.mm.saved!!.items!!.map { it.media.id }, true)
 

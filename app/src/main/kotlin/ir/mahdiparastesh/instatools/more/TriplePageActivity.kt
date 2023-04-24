@@ -12,7 +12,7 @@ import ir.mahdiparastesh.instatools.R
 import kotlin.reflect.KClass
 
 abstract class TriplePageActivity<A, B, C> : BaseActivity()
-        where A : BasePage<*>, B : BasePage<*>, C : BasePage<*> {
+    where A : BasePage<*>, B : BasePage<*>, C : BasePage<*> {
     protected var page1: A? = null
     protected var page2: B? = null
     protected var page3: C? = null
@@ -77,12 +77,10 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                 page1 = aKlass.java.newInstance()
                 created = true
             }
-
             1 -> if (page2 == null) {
                 page2 = bKlass.java.newInstance()
                 created = true
             }
-
             2 -> if (page3 == null) {
                 page3 = cKlass.java.newInstance()
                 created = true
@@ -156,19 +154,16 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                     transFrag().remove(page1!!).commit()
                 aKlass.java.newInstance().also { page1 = it }
             }
-
             bKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page2 != null && page2?.isAdded == true)
                     transFrag().remove(page2!!).commit()
                 bKlass.java.newInstance().also { page2 = it }
             }
-
             cKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page3 != null && page3?.isAdded == true)
                     transFrag().remove(page3!!).commit()
                 cKlass.java.newInstance().also { page3 = it }
             }
-
             else -> super.instantiate(loader, name)
         }
     }
