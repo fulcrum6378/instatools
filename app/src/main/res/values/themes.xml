@@ -92,6 +92,8 @@
     <style name="Theme.InstaTools.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="colorOnSurface">?attr/colorPrimary</item><!-- title and message-->
         <item name="fontFamily">@font/medium</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.InstaTools.Medium
+        </item><!-- body font -->
     </style>
 
     <style name="Theme.InstaTools.Dialog.Primary" parent="Theme.InstaTools.Dialog">
