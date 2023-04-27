@@ -90,20 +90,19 @@
 
     <!-- AlertDialog -->
     <style name="Theme.InstaTools.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
-        <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:textColorPrimary">?attr/colorPrimary</item>
+        <item name="colorOnSurface">?attr/colorPrimary</item><!-- title and message-->
         <item name="fontFamily">@font/medium</item>
     </style>
 
-    <style name="Theme.InstaTools.Dialog.Primary" parent="@style/Theme.InstaTools.Dialog">
-        <item name="colorPrimary">@color/CP</item>
+    <style name="Theme.InstaTools.Dialog.Primary" parent="Theme.InstaTools.Dialog">
+        <item name="colorPrimary">@color/CP</item><!-- buttons -->
     </style>
 
-    <style name="Theme.InstaTools.Dialog.Secondary" parent="@style/Theme.InstaTools.Dialog">
+    <style name="Theme.InstaTools.Dialog.Secondary" parent="Theme.InstaTools.Dialog">
         <item name="colorPrimary">@color/CS</item>
     </style>
 
-    <style name="Theme.InstaTools.Dialog.Tertiary" parent="@style/Theme.InstaTools.Dialog">
+    <style name="Theme.InstaTools.Dialog.Tertiary" parent="Theme.InstaTools.Dialog">
         <item name="colorPrimary">@color/CT</item>
     </style>
 

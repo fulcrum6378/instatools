@@ -68,6 +68,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     )
 
     val mm: MyModel by viewModels()
+    private var exiting = false
     val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
     lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
@@ -400,9 +401,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         super.switchAcc()
     }
 
-    private var exiting = false
-
-    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (::b.isInitialized && b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START)

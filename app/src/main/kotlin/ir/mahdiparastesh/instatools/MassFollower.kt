@@ -227,7 +227,8 @@ class MassFollower : ServiceOwnerActivity() {
         b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 
-    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         Delay(500L) { mm.fwb.value = null }
         super.onBackPressed()

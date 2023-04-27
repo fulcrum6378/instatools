@@ -77,7 +77,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 when {
                     intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
                         .apply {
-                            cameHereToAuth = true
                             MaterialAlertDialogBuilder(this@Login).apply {
                                 setTitle(R.string.guest)
                                 setMessage(getString(R.string.needAuthentication))
@@ -86,8 +85,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                             val signedOutFrom =
                                 if (this != -1L) accounts.find { it.id == this } else null
                             if (signedOutFrom == null || accounts.size <= 1) {
-                                gonnaAdd = true
-                                browse()
+                                browse(BROWSE_AUTH_REQ)
                             } else selectAccount(signedOutFrom)
                         }
                     else -> welcome()
@@ -105,10 +103,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         bw.accounts.adapter = ListAcc(this)
 
         // Add Account
-        bw.addAccount.setOnClickListener {
-            gonnaAdd = true
-            browse()
-        }
+        bw.addAccount.setOnClickListener { browse(BROWSE_FOR_ADD) }
     }
 
     private fun welcome() {
@@ -118,7 +113,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     fun selectAccount(acc: Account) {
-        gonnaBeGuest = false
         when {
             acc.id == -1L -> MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.guest)
@@ -126,11 +120,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.sContinue) { _, _ ->
                     m.acc = acc
-                    gonnaBeGuest = true
-                    browse()
+                    browse(BROWSE_AS_GUEST)
                 }
             }.show()
-            acc.cook != null -> browse(acc.cook)
+            acc.cook != null -> browse(BROWSE_ACC_EXIST, acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }
                 CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
@@ -140,10 +133,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private var doClearHistory = false
-    private var gonnaAdd = false
-    private var gonnaBeGuest = false
-    var gonnaBrowseWeb = false
-    fun browse(withCookie: String? = "", beginWith: String = loginUrl) {
+    private val BROWSE_FOR_ADD = 0
+    private val BROWSE_AS_GUEST = 1
+    private val BROWSE_ACC_EXIST = 2
+    private val BROWSE_AUTH_REQ = 3
+    val BROWSE_THE_WEB = 4
+    var browsePurpose: Int? = null
+    fun browse(purpose: Int, withCookie: String? = "", beginWith: String = loginUrl) {
+        browsePurpose = purpose
         b.refresher.vis()
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also { cm ->
@@ -181,7 +178,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             b.refresher.isRefreshing = true
-            if (gonnaBeGuest) {
+            if (browsePurpose == BROWSE_AS_GUEST) {
                 id = "-1"
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
                     cookieManager.getCookieOrganised(host)
@@ -198,7 +195,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            if ((url != host && !url.startsWith("$host?")) || gonnaBrowseWeb) return
+            if ((url != host && !url.startsWith("$host?")) || browsePurpose == BROWSE_THE_WEB) return
             try { // Don't remove the explanatory comments
                 view.evaluateJavascript(
                     "document.getElementsByTagName('body')[0].innerHTML"
@@ -278,14 +275,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         return sb.toString().trimEnd()
     }
 
-    @Suppress("OVERRIDE_DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (b.web.canGoBack()) {
             b.web.goBack(); return; }
-        if (gonnaAdd || gonnaBeGuest || gonnaBrowseWeb) {
-            gonnaAdd = false
-            gonnaBeGuest = false
-            gonnaBrowseWeb = false
+        if (browsePurpose != null) {
+            browsePurpose = null
             b.web.loadUrl("")
             welcome()
             return; }

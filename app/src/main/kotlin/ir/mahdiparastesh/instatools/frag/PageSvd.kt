@@ -62,7 +62,6 @@ class PageSvd : BasePageMain(), Selective {
     override fun expanded(): ExpandableBinding = b.expanded
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
 
-    @Suppress("UNCHECKED_CAST")
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
