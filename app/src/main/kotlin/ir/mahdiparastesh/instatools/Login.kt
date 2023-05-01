@@ -46,7 +46,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val spAccount = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong."
-        var cameHereToAuth = false
+        const val BROWSE_FOR_ADD = 0
+        const val BROWSE_AS_GUEST = 1
+        const val BROWSE_ACC_EXIST = 2
+        const val BROWSE_AUTH_REQ = 3
+        const val BROWSE_THE_WEB = 4
+        var browsePurpose: Int? = null
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -133,12 +138,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private var doClearHistory = false
-    private val BROWSE_FOR_ADD = 0
-    private val BROWSE_AS_GUEST = 1
-    private val BROWSE_ACC_EXIST = 2
-    private val BROWSE_AUTH_REQ = 3
-    val BROWSE_THE_WEB = 4
-    var browsePurpose: Int? = null
     fun browse(purpose: Int, withCookie: String? = "", beginWith: String = loginUrl) {
         browsePurpose = purpose
         b.refresher.vis()
@@ -168,7 +167,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     override fun onDestroy() {
-        cameHereToAuth = false
+        browsePurpose = null
         super.onDestroy()
     }
 

@@ -70,7 +70,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                 c.goTo(Main::class, true)
             }
             this[R.id.amBrowseWeb] = {
-                c.browse(c.BROWSE_THE_WEB, acc.cook, Login.host)
+                c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.host)
             }
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)

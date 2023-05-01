@@ -45,7 +45,7 @@ interface Persistent {
 
 
     fun needAuthentication() {
-        if (Login.cameHereToAuth) return
+        if (Login.browsePurpose == Login.BROWSE_AUTH_REQ) return
         ForegroundService.terminateTasks(c)
         gsp.edit { remove(Login.spAccount) }
         m.accountSwitched()

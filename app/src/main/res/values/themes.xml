@@ -33,13 +33,13 @@
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
-        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
+        <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
-        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
+        <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
@@ -47,7 +47,7 @@
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
         <item name="dmFromMe">@color/dmFromMe</item>
-        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
+        <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
@@ -90,6 +90,10 @@
 
     <!-- AlertDialog -->
     <style name="Theme.InstaTools.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <!-- for normal Context initialisation: -->
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textColorPrimary">?attr/colorPrimary</item>
+        <!-- for custom ContextThemeWrapper initialisation -->
         <item name="colorOnSurface">?attr/colorPrimary</item><!-- title and message-->
         <item name="fontFamily">@font/medium</item>
         <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.InstaTools.Medium
