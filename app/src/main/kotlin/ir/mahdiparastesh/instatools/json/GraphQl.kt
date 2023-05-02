@@ -5,7 +5,7 @@ import java.text.DecimalFormat
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
-class GraphQl(val data: GraphQlData) : Rest() {
+class GraphQl(val data: GraphQlData?) : Rest() {
 
     class GraphQlData(
         val user: User?,

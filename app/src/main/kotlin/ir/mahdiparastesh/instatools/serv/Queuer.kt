@@ -160,10 +160,10 @@ class Queuer : ForegroundService() {
                         method = Method.POST, autoQueue = false
                     ) { graphQl ->
                         val med =
-                            graphQl.data.xdt_api__v1__media__shortcode__web_info.items.firstOrNull()
+                            graphQl.data?.xdt_api__v1__media__shortcode__web_info?.items?.firstOrNull()
                         if (med == null) {
-                            handler?.obtainMessage(HANDLE_API_RES_ERROR)
-                                ?.sendToTarget(); return@Api; }
+                            handler?.obtainMessage(HANDLE_API_RES_ERROR)?.sendToTarget()
+                            return@Api; }
                         var found = true
                         val addOns = arrayListOf<Queued>()
                         when {

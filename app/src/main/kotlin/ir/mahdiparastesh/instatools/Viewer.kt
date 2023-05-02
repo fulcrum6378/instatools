@@ -261,7 +261,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
                 handler, autoQueue = false, onError = { interrupt() }
             ) { graphql ->
-                mm.vwUser = graphql.data.user
+                mm.vwUser = graphql.data?.user
                 if (mm.vwUser == null) {
                     Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
                     interrupt(); return@Api

@@ -17,7 +17,6 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 
-@Suppress("UNCHECKED_CAST")
 class Api<JSON>(
     val c: Persistent,
     url: String,
@@ -160,6 +159,7 @@ class Api<JSON>(
         RAW_QUERY("https://www.instagram.com/graphql/query"),
     }
 
+    @Suppress("UNCHECKED_CAST")
     companion object {
         const val HANDLE_ERROR = 100
         const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"

@@ -273,7 +273,7 @@ class PageVwr : BasePageViewer() {
                     c.mm.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
                 ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
             ) { res ->
-                val add = res.data.user?.edge_owner_to_timeline_media
+                val add = res.data?.user?.edge_owner_to_timeline_media
                 if (add == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
