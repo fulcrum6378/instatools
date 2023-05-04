@@ -25,22 +25,20 @@ class ListCar(
     val players: ArrayList<MediaPlayer?>
 
     init {
-        val quality =
-            (if (med.product_type == "story") c.dm.heightPixels
-            else arrayOf(c.dm.widthPixels, c.dm.heightPixels).min()).toFloat()
         if (med.carousel_media != null) for (slide in med.carousel_media!!) slides.add(
             Slide(
-                slide.nearest(quality),
+                slide.nearest(),
                 MediaType.values().find { it.inDb == (slide.media_type).toInt().toByte() }!!
             )
         ) else if (med.image_versions2 != null) slides.add(
             Slide(
-                med.nearest(quality),
+                med.nearest(),
                 MediaType.values().find { it.inDb == (med.media_type).toInt().toByte() }!!
             )
         )
         players = ArrayList(arrayOfNulls<MediaPlayer?>(slides.size).toMutableList())
     }
+    /* Do not use thumbnails for Expandable, they're cropped! */
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
