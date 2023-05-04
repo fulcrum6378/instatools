@@ -215,10 +215,11 @@ class Exporter : ForegroundService() {
     private suspend fun Exportable.fetchMedium() {
         val queueSize: Int
         val dl: MutableMap.MutableEntry<String, Downloadable>?
-        media.entries.filter { !it.value.cache.exists() }.also {
-            queueSize = it.size
-            dl = it.getOrNull(0)
-        }
+        media.entries.filter { !it.value.cache.exists() || it.value.cache.length() == 0L }
+            .also {
+                queueSize = it.size
+                dl = it.getOrNull(0)
+            }
         if (dl == null) {
             withContext(Dispatchers.Main) {
                 threadData?.title()?.also { ntfText = c.getString(R.string.exporterWriting, it) }
