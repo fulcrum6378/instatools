@@ -161,10 +161,11 @@ class PageUnf : BasePageMain() {
      * Notes for debugging:
      * - Even after 10 seconds of delay between each fetch, IG signed me out!
      * - Limiting maximum items to 12 on each fetch made it worse!
+     * - Adding additional invalid random query parameters also didn't help!
      */
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
         companion object : Alive.OfThread() {
-            const val FLW_FETCH_DELAY = 0L
+            const val FLW_FETCH_DELAY = 200L
         }
 
         private lateinit var oldFriends: List<Friend>

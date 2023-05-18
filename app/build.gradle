@@ -12,8 +12,8 @@ android {
     signingConfigs {
         main {
             storeFile file('D:\\Experimental\\mahdiparastesh.jks')
-            keyAlias 'instatools'
             storePassword "${System.getenv("JERK")}"
+            keyAlias 'instatools'
             keyPassword "${System.getenv("JERK")}"
         }
     }

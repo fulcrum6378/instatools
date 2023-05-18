@@ -129,9 +129,8 @@ class Api<JSON>(
         ),*///const val taggedHash = "be13233562af2d229b008d2976b998b5"
 
         // Interactions (always use "?count=" for more accurate results)
-        // https://www.instagram.com/api/v1/friendships/8337021434/followers/?count=12&search_surface=follow_list_page
-        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=12&max_id=%2\$s"),
-        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=12&max_id=%2\$s"),
+        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
+        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
 
         /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/
         FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
@@ -217,14 +216,9 @@ class Api<JSON>(
         }
 
         fun NetworkResponse.apiFailure(c: Persistent) {
-            //var needAuth = false
             if (statusCode == 400) try {
-                val failure = Gson()
-                    .fromJson(String(data), Rest.ApiFailure::class.java)
-                if (failure.lock) {
+                if (Gson().fromJson(String(data), Rest.ApiFailure::class.java).lock)
                     c.needAuthentication()
-                    // needAuth = true
-                }
             } catch (_: JsonSyntaxException) {
             }
         }
@@ -262,7 +256,7 @@ class Api<JSON>(
     class Headers(acc: Account, isImperative: Boolean = false, dm: DisplayMetrics? = null) :
         HashMap<String, String>() {
         init {
-            this["accept-language"] = "en-GB"
+            this["accept-language"] = "en-US"
             this["sec-ch-ua"] = "\" Not;A Brand\";\"InstaTools\""
             this["sec-ch-ua-mobile"] = "?1"
             this["sec-ch-ua-platform"] = "\"InstaTools - Android\""
@@ -295,8 +289,8 @@ class Api<JSON>(
             this["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
             // Added myself
-            this["Access-Control-Allow-Origin"] = "https://www.instagram.com/"
-            this["Access-Control-Allow-Credentials"] = "true"
+            /*this["Access-Control-Allow-Origin"] = "https://www.instagram.com/"
+            this["Access-Control-Allow-Credentials"] = "true"*/
         }
     }
 }
