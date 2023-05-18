@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
+/** Abstract class for all Activity instances in this app and it extends AppCompatActivity. */
 abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuItemClickListener {
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
@@ -56,6 +57,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     override lateinit var gsp: SharedPreferences
     override var sp: SharedPreferences? = null
 
+    /** Abstract class from which all companion objects of BaseActivity subclasses must extend. */
     abstract class ActivityCompanion : Alive()
 
     companion object {
@@ -200,17 +202,21 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(wrapTheme(which))
 
+    /** Helper function for getting a colour from resources. */
     fun color(@ColorRes res: Int) = ContextCompat.getColor(this, res)
 
+    /** Helper function for getting a drawable from resources with an optional colour filter. */
     fun drawable(@DrawableRes res: Int, @ColorRes cf: Int? = null) =
         ContextCompat.getDrawable(this, res)?.apply { cf?.let { colorFilter = pdcf(it) } }
 
+    /** Helper function for making a colour filter for the color resource. */
     fun pdcf(@ColorRes res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(this, res), PorterDuff.Mode.SRC_IN)
 
-    // Only for TextView.textSize
+    /** Only use it for TextView.textSize. */
     fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density
 
+    /** Helper function for starting an Activity. */
     fun goTo(
         activity: KClass<*>,
         finish: Boolean = false, // USE THIS CAREFULLY
@@ -228,11 +234,14 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         return true
     }
 
+    /** @return a weakened version of the colour using an alpha value. */
     fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
 
+    /** Helper function for registering a "startActivityForResult" action. */
     fun launcherForResult(callback: ActivityResultCallback<ActivityResult>) =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
 
+    /** All themes used in this app. */
     @Suppress("unused")
     enum class Theme(val res: Int) {
         DEFAULT(R.style.Theme_InstaTools),

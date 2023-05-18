@@ -8,8 +8,10 @@ import androidx.appcompat.widget.PopupMenu
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.more.BaseActivity
 
+/** Represents a PopupMenu action. */
 typealias Act = HashMap<Int, (item: MenuItem) -> Unit>
 
+/** Helper class for making PopupMenus more quickly. */
 class MaterialMenu(
     c: BaseActivity, v: View, res: Int, actions: Act,
     @StyleRes theme: Int = R.style.Theme_InstaTools_Popup

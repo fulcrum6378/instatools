@@ -3,6 +3,11 @@ package ir.mahdiparastesh.instatools.more
 import android.view.MenuItem
 import ir.mahdiparastesh.instatools.R
 
+/**
+ * Subclass of BaseActivity which controls a Service and switches start/stop buttons.
+ * This activity does NOT use bound services.
+ * @see ForegroundService
+ */
 abstract class ServiceOwnerActivity : BaseActivity() {
     abstract val controllerId: Int
     private var lastEmptinessState = defaultState

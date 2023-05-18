@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
+/** Represents an Instagram account. */
 class Account(
     var id: Long,
     var user: String? = null,

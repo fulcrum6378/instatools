@@ -22,6 +22,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
+/** Abstract RecyclerView adapter that lists any kind of IG post from different API endpoints. */
 abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
     RecyclerView.Adapter<ListPost<C, F>.ViewHolder>() where C : BaseActivity, F : BasePage<C> {
 

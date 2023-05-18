@@ -7,7 +7,7 @@ plugins {
 android {
     namespace 'ir.mahdiparastesh.instatools'
     compileSdk 33
-    buildToolsVersion '34.0.0-rc3'
+    buildToolsVersion '34.0.0 rc4'
 
     signingConfigs {
         main {
@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 68
-        versionName '26.1.5'
+        versionName '26.3.5'
         signingConfig signingConfigs.main
     }
 
@@ -32,6 +32,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = '17' }
+    buildFeatures { viewBinding true }
 
     buildTypes {
         debuggee {
@@ -45,19 +46,16 @@ android {
         }
     }
     android.variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }
-    buildFeatures { viewBinding true }
 }
 
-//noinspection SpellCheckingInspection
 dependencies {
     def room_version = '2.5.1'
-    def glide_version = '4.15.1'
     def media2_version = '1.2.1'
 
     implementation 'androidx.activity:activity-ktx:1.7.1' // only for ActivityResultLauncher
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation "androidx.media2:media2-widget:$media2_version"
     implementation "androidx.media2:media2-player:$media2_version"
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
@@ -69,15 +67,13 @@ dependencies {
     implementation 'com.airbnb.android:lottie:6.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
-    kapt "com.github.bumptech.glide:compiler:$glide_version"
-    implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'com.google.code.gson:gson:2.10.1'
-    //implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     //noinspection GradleDependency
     implementation 'com.tbuonomo:dotsindicator:4.2'
     implementation 'ir.mahdiparastesh:chipslayoutmanager:0.4.5'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
     implementation 'org.apache.commons:commons-text:1.10.0' // StringEscapeUtils
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
 }

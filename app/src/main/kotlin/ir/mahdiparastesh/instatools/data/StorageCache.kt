@@ -16,6 +16,11 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArraySet
 
+/**
+ * Caches the paths of downloaded files for indicating that their related posts are already
+ * downloaded.
+ * @see ir.mahdiparastesh.instatools.list.ListPost.FlexiblePost.isStored
+ */
 class StorageCache {
     @Suppress("RedundantSuspendModifier")
     companion object {

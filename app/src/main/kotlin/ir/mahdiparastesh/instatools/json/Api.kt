@@ -17,6 +17,7 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 
+/** Controls all API interactions with Instagram Web API using Volley and Gson. */
 class Api<JSON>(
     val c: Persistent,
     url: String,
@@ -128,9 +129,11 @@ class Api<JSON>(
         ),*///const val taggedHash = "be13233562af2d229b008d2976b998b5"
 
         // Interactions (always use "?count=" for more accurate results)
-        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
-        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s")
-        /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/,
+        // https://www.instagram.com/api/v1/friendships/8337021434/followers/?count=12&search_surface=follow_list_page
+        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=12&max_id=%2\$s"),
+        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=12&max_id=%2\$s"),
+
+        /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/
         FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
         /*RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
@@ -148,9 +151,10 @@ class Api<JSON>(
 
         // Messaging
         INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d")
+        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),
+
         /* persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
-        // Avoiding "limit" argument will default to 20, but can be more than that. */,
+        // Avoiding "limit" argument will default to 20, but can be more than that. */
         SEEN("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 
         // Logging in/out
@@ -245,6 +249,7 @@ class Api<JSON>(
             return uriBuilder.build().toString()
         }
 
+        /** Helper class for adding a Request to a RequestQueue in Volley. */
         var RequestQueue.adder: Request<*>?
             get() = null
             set(req) {
@@ -252,6 +257,7 @@ class Api<JSON>(
             }
     }
 
+    /** Controls all HTTP headers. */
     @Suppress("SpellCheckingInspection")
     class Headers(acc: Account, isImperative: Boolean = false, dm: DisplayMetrics? = null) :
         HashMap<String, String>() {

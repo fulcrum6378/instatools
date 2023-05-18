@@ -8,6 +8,7 @@ import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+/** Subclass of GridLayoutManager that avoids some app crashes. */
 open class SafeGridManager : GridLayoutManager {
     constructor(
         context: Context, spanCount: Int, @RecyclerView.Orientation orientation: Int,

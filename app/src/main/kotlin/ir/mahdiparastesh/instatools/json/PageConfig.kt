@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
 import org.apache.commons.text.StringEscapeUtils
 
+/** Resolves an HTML from Instagram and collects required data. */
 @Suppress("SpellCheckingInspection")
 class PageConfig(
     val define: HashMap<String, List<Any>>, val require: HashMap<String, List<Any>>

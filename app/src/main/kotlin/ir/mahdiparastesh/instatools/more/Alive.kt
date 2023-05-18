@@ -7,6 +7,16 @@ import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.frag.PageVwr
 
+/**
+ * An abstract class, when implemented gives:
+ * - active : a MutableLiveData<Boolean> which indicates if the object is alive or not,
+ *            and must be changed during onCreate and onDestroy.
+ * - handler : which accepts Messages.
+ * In this app we implemented it on companion objects indirectly.
+ *
+ * @see BaseActivity.ActivityCompanion
+ * @see BasePage.PageCompanion
+ */
 abstract class Alive {
     var active = MutableLiveData(false)
     var handler: Handler? = null
@@ -20,6 +30,7 @@ abstract class Alive {
             BaseActivity.anyActive() || ForegroundService.anyRunning() || anyDbRelatedRunning()
     }
 
+    /** Another version of Alive, specialised for Thread subclasses. */
     abstract class OfThread {
         var active = false
     }

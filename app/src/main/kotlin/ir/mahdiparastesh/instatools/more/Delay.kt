@@ -5,6 +5,7 @@ import android.os.Looper
 import android.os.Message
 import android.os.SystemClock
 
+/** Executes codes with a specified amount of delay. */
 open class Delay(
     private val timeout: Long = 5000L,
     private val looper: Looper = Looper.myLooper()!!,
@@ -22,7 +23,8 @@ open class Delay(
     }
 
     init {
-        mHandler.sendMessage(mHandler.obtainMessage(MSG))
+        if (timeout > 0L) mHandler.sendMessage(mHandler.obtainMessage(MSG))
+        else listener()
     }
 
     companion object {

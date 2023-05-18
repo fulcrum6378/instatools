@@ -13,5 +13,6 @@
 -keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.json.Versioned { <fields>; }
 
+# required for the ChipsLayoutManager library
 -dontwarn ir.mahdiparastesh.chlm.Orientation
 -dontwarn javax.annotation.Nullable

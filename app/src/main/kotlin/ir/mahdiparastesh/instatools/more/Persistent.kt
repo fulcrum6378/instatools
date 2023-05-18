@@ -8,14 +8,18 @@ import android.net.Uri
 import android.os.Process
 import android.os.Process.myPid
 import android.os.Process.myUid
+import android.os.SystemClock
 import androidx.core.content.edit
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
-import java.util.*
 import kotlin.system.exitProcess
 
+/**
+ * An important interface which holds everything for storing data (persistence),
+ * including databases, shared preferences and view models.
+ */
 interface Persistent {
     val c: Context
     val m: Model
@@ -25,25 +29,37 @@ interface Persistent {
     val db: Database
     val dao: Database.DAO
 
+    /** Initialises the global shared preferences. */
     fun initGsp(): SharedPreferences =
         c.getSharedPreferences("global", Context.MODE_PRIVATE)
     // While using MODE_PRIVATE, only this app can access the information within the shared preferences file.
     // GSP MUST NEVER BE DELETED!!!
 
+    /** Initialises the local shared preferences. */
     fun initSp(acc: Account?): SharedPreferences? =
         if (acc != null) c.getSharedPreferences(acc.id.toString(), Context.MODE_PRIVATE)
         else null
 
 
+    /**
+     * Gets a local NON-BOOLEAN preference using a key, if not available uses the global preference.
+     */
     fun sPreference(key: String): String? =
         sp?.getString(key, null) ?: gsp.getString(key, null)
 
+    /**
+     * Gets a local BOOLEAN preference using a key, if not available uses the global preference.
+     */
     fun bPreference(key: String, keyCb: String, def: Boolean): Boolean =
         if (sp?.getBoolean(keyCb, false) == true && sp?.contains(key) == true)
             sp!!.getBoolean(key, true/*IMPOSSIBLE*/)
         else gsp.getBoolean(key, def)
 
 
+    /**
+     * If Instagram detects the app as a robot, this method must be invoked for the proper actions
+     * to be taken right away!
+     */
     fun needAuthentication() {
         if (Login.browsePurpose == Login.BROWSE_AUTH_REQ) return
         ForegroundService.terminateTasks(c)
@@ -61,6 +77,7 @@ interface Persistent {
         }
     }
 
+    /** Switches between Account instances. */
     fun switchAcc() {
         gsp.edit { remove(Login.spAccount) }
         m.acc = null
@@ -70,7 +87,7 @@ interface Persistent {
     }
 
     companion object {
-        fun now() = Calendar.getInstance().timeInMillis
+        fun now() = SystemClock.elapsedRealtime()
 
         fun Context.isPathAccessible(uri: Uri): Boolean =
             checkUriPermission(

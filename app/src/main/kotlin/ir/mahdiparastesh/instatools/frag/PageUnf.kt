@@ -155,9 +155,16 @@ class PageUnf : BasePageMain() {
     }
 
 
+    /**
+     * Fetches lists of followers and following and sorts out the unfollowers.
+     *
+     * Notes for debugging:
+     * - Even after 10 seconds of delay between each fetch, IG signed me out!
+     * - Limiting maximum items to 12 on each fetch made it worse!
+     */
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
         companion object : Alive.OfThread() {
-            const val FLW_FETCH_DELAY = 750L
+            const val FLW_FETCH_DELAY = 0L
         }
 
         private lateinit var oldFriends: List<Friend>
@@ -175,6 +182,11 @@ class PageUnf : BasePageMain() {
             allFollow(theFollowers = true)
         }
 
+        /**
+         * Fetches a list lazily, whether from followers or following.
+         * @next_max_id used for continuing to the next API fetch.
+         * @param theFollowers true for followers, false for following.
+         */
         private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
             if (!active || c.m.acc == null) return
             reqQueue.adder = Api<Rest.Follow>(
@@ -204,6 +216,7 @@ class PageUnf : BasePageMain() {
             }
         }
 
+        /** Updates the database and decides what to do with the new unfollowers. */
         private suspend fun ended() {
             // Update newFriends
             if (!active || c.m.acc == null || !c.db.isOpen) return
@@ -252,6 +265,7 @@ class PageUnf : BasePageMain() {
             interrupt()
         }
 
+        /** Makes a Notification about new unfollowers. */
         private fun gotNewOnes(num: Int) {
             if (!active || c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

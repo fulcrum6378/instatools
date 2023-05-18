@@ -1,5 +1,9 @@
 package ir.mahdiparastesh.instatools.json
 
+/**
+ * Any IG post or reel that contains Audio must implement this in order for the audio file to be
+ * able to be downloaded.
+ */
 @Suppress("PropertyName")
 interface Audible {
     val is_dash_eligible: Any? // sometimes boolean sometimes double(0|1)

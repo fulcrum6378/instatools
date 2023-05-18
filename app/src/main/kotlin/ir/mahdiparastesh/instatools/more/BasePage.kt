@@ -21,8 +21,8 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-abstract class BasePage<C> : Fragment(), BackStackOwner,
-    Toolbar.OnMenuItemClickListener where C : BaseActivity {
+/** Abstract class for all page fragments which reside inside a BaseActivity. */
+abstract class BasePage<C> : Fragment(), Toolbar.OnMenuItemClickListener where C : BaseActivity {
     var ftDetached = false
 
     @Suppress("UNCHECKED_CAST")
@@ -42,6 +42,7 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     open fun loading(): LottieAnimationView? = root?.findViewById(R.id.loading)
     open fun jumper(): ImageView? = root?.findViewById(R.id.jumper)
 
+    /** Abstract class from which all companion objects of BasePage subclasses must extend. */
     abstract class PageCompanion : Alive()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,6 +113,14 @@ abstract class BasePage<C> : Fragment(), BackStackOwner,
     open fun updateJumper() {
         if (bInitialised) (rv()!!.computeVerticalScrollOffset() > c.dm.heightPixels)
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
+    }
+
+    /**
+     * Handle onBackPressed action for this page.
+     * @return false if no action is to be taken.
+     */
+    open fun goBack(): Boolean {
+        return false
     }
 
     override fun onDestroy() {

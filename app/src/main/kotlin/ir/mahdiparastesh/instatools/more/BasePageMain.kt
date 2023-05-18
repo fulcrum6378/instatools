@@ -19,6 +19,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
+/* Subclass of BasePage, from which all pages of Main extend. */
 abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
 

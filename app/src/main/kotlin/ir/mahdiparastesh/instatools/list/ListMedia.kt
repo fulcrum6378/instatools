@@ -6,6 +6,10 @@ import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * Posts in Instagram that use the Media API endpoint.
+ * @see ir.mahdiparastesh.instatools.json.Media
+ */
 abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
     where C : BaseActivity, F : BasePage<C> {
 

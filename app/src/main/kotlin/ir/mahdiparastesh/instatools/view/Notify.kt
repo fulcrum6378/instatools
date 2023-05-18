@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.annotation.StringRes
 import ir.mahdiparastesh.instatools.R
 
+/** Helper class for maintaining Notifications. */
 @SuppressLint("NewApi")
 class Notify {
     companion object {

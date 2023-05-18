@@ -7,6 +7,10 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.thumb
 import java.util.concurrent.CopyOnWriteArrayList
 
+/**
+ * Posts in Instagram that use the GraphQl API endpoint (edge_to_***).
+ * @see ir.mahdiparastesh.instatools.json.GraphQl
+ */
 abstract class ListEdge<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
     where C : BaseActivity, F : BasePage<C> {
 

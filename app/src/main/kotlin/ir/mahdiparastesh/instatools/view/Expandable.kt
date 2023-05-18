@@ -39,6 +39,7 @@ import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import java.util.concurrent.TimeoutException
 
+/** A ViewGroup that pops up and shows an IG post or reel. */
 class Expandable(
     private val c: BaseActivity,
     private val b: ExpandableBinding,

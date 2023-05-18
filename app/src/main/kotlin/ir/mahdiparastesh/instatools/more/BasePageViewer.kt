@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
+/* Subclass of BasePage, from which all pages of Viewer extend. */
 abstract class BasePageViewer : BasePage<Viewer>(), Selective {
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false

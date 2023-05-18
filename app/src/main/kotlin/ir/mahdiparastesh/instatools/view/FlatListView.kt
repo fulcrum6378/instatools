@@ -5,6 +5,10 @@ import android.util.AttributeSet
 import android.widget.ListView
 import androidx.annotation.AttrRes
 
+/**
+ * Customised version of ListView without scrolling.
+ * @see ir.mahdiparastesh.instatools.Settings
+ */
 class FlatListView(
     context: Context, attrs: AttributeSet?, @AttrRes defStyleAttr: Int
 ) : ListView(context, attrs, defStyleAttr) {

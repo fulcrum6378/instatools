@@ -11,22 +11,60 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import kotlin.reflect.KClass
 
+/**
+ * An abstract subclass of BaseActivity which takes three generic types and each one of them is a
+ * subclass BasePage; therefore they'll make a three-paged activity.
+ * This class contains every utility required for a three-paged activity.
+ *
+ * It has 2 modes of switching between fragments:
+ * - TripleMode.FRAGMENT_MANAGER
+ * - TripleMode.VIEW_PAGER which uses ViewPager2.
+ *
+ * In order to implement it, createPages() must be called for rendering the pages.
+ *
+ * @see BasePage
+ */
 abstract class TriplePageActivity<A, B, C> : BaseActivity()
     where A : BasePage<*>, B : BasePage<*>, C : BasePage<*> {
+
+    /** Variable that holds the first page (fragment). */
     protected var page1: A? = null
+
+    /** Variable that holds the second page (fragment). */
     protected var page2: B? = null
+
+    /** Variable that holds the third page (fragment). */
     protected var page3: C? = null
 
-    abstract val currentPage: MutableLiveData<Int> // NON-NULL
+    /** A LiveData whose value indicates the current page and must never be null. */
+    abstract val currentPage: MutableLiveData<Int>
+
+    /** Kotlin class name of the first page. */
     abstract val aKlass: KClass<A>
+
+    /** Kotlin class name of the second page. */
     abstract val bKlass: KClass<B>
+
+    /** Kotlin class name of the third page. */
     abstract val cKlass: KClass<C>
+
+    /** @see TripleMode */
     abstract val mode: TripleMode
+
+    /** Algorithm to select a page as default. */
     abstract fun defPage(): Int
 
+    /** Indicates the index of the last fragment before switching to a new one. */
+    protected var lastPage: Int = 0
+
+    /** @see TriplePageActivity.selective */
+    private var isSelective = false
+
+    /** Holds the BadgeDrawable which enumerates the selected items in RecyclerView. */
     var selectionBadge: BadgeDrawable? = null
 
     companion object {
+        /** Extra value for an intent to turn to a specific page after creation. */
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
     }
 
@@ -35,6 +73,12 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         super.onCreate(savedInstanceState)
     }
 
+    /**
+     * This method must be called for rendering the pages, normally inside onCreate().
+     *
+     * @param pager required only in VIEW_PAGER mode.
+     * @param toDefaultPage true if it's going to switch to the default page.
+     */
     open fun createPages(pager: ViewPager2? = null, toDefaultPage: Boolean = true) {
         if (toDefaultPage) currentPage.value = defPage()
         createCurrentPage()
@@ -70,6 +114,10 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         }
     }
 
+    /**
+     * Creates the fragment attributed to the current page, LAZILY.
+     * @return false if it was created before.
+     */
     private fun createCurrentPage(): Boolean {
         var created = false
         when (currentPage.value!!) {
@@ -89,6 +137,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         return created
     }
 
+    /** @return a FragmentTransaction containing animations. */
     private fun transFrag(from: Int? = null, to: Int? = null) =
         supportFragmentManager.beginTransaction().apply {
             if (from == null || to == null || from == to) return@apply
@@ -105,9 +154,13 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             )
         }
 
+    /** @return an array of variables pointing to each page. */
     protected fun pages(): Array<BasePage<*>?> = arrayOf(page1, page2, page3)
 
-    protected var lastPage: Int = 0
+    /**
+     * Switches to a fragment by index.
+     * @return if switching was successful.
+     */
     open fun turnToPage(i: Int): Boolean {
         if (i == currentPage.value || currentPage.value == null) return false
         lastPage = currentPage.value!!
@@ -124,8 +177,14 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         return true
     }
 
-    private var isSelective = false
-    open fun selective(bb: Boolean): Boolean { // shall pass
+    /**
+     * Changes the "selective" mode;
+     * in this mode the activity shows utilities for selection in RecyclerView.
+     *
+     * @param bb true if you just turned the selection on, false if you turned it off.
+     * @return false if the selective mode was already changed to "bb".
+     */
+    open fun selective(bb: Boolean): Boolean {
         if (isSelective == bb) return false
         isSelective = bb
         toolbar.menu.clear()
@@ -137,6 +196,10 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         return true
     }
 
+    /**
+     * Invokes the current fragment to process the onBackPressed action for its own.
+     * @return false, if the fragment didn't have anything to do with onBackPressed.
+     */
     protected fun pageGoBack() = pages()[currentPage.value!!]?.goBack() ?: false
 
     override fun onDestroy() {
@@ -147,6 +210,10 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         super.onDestroy()
     }
 
+    /**
+     * Creates fragments and assigns them to their variables. Used mostly on a configuration change.
+     * Required for both FRAGMENT_MANAGER and VIEW_PAGER modes.
+     */
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
             aKlass.java.name -> {
@@ -168,6 +235,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         }
     }
 
+    /** An adapter for fragments required for VIEW_PAGER mode. */
     private inner class PageAdapter(c: TriplePageActivity<*, *, *>) : FragmentStateAdapter(c) {
         override fun getItemCount(): Int = 3
         override fun createFragment(i: Int): Fragment = when (i) {
@@ -178,6 +246,13 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         }
     }
 
+    /**
+     * Enumeration used to indicate the method of maintaining the fragments,
+     * used in an abstract variable of TriplePageActivity called "mode", which
+     * must be set during instantiation.
+     *
+     * @see TriplePageActivity.mode
+     */
     @Suppress("unused")
     enum class TripleMode { FRAGMENT_MANAGER, VIEW_PAGER }
 }

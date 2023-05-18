@@ -49,7 +49,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Suppress("SpellCheckingInspection")
 class Queuer : ForegroundService() {
     private var dest: String? = null
     private var handlingLinks = CopyOnWriteArrayList<Link>()
@@ -352,7 +351,7 @@ class Queuer : ForegroundService() {
 
     inner class Download : BaseThread() {
         override fun run() {
-            val queue = ArrayList(dao.readyQueueds()/*.sortedBy { it.addedAt }*/)
+            val queue = ArrayList(dao.readyQueueds())
             if (queue.isEmpty()) {
                 if (!handlingLink) this@Queuer.finish(false)
                 else interrupt()
@@ -441,7 +440,6 @@ class Queuer : ForegroundService() {
         download = Download().also { it.start() }
     }
 
-    @Suppress("SpellCheckingInspection")
     private fun save(q: Queued, ba: ByteArray) {
         val branch: DocumentFile = when {
             q.userName in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
@@ -498,44 +496,6 @@ class Queuer : ForegroundService() {
                                 add(ExifTagConstants.EXIF_TAG_SITE, q.link)
                             }
                         }) // location data is currently not possible with edge post location.
-                    /*2.toByte() -> IsoFile(MemoryDataSourceImpl(ba)).use { isoFile ->
-                        // moov: 1, moov/udta: 0, moov[0]: 1, moov/udta[0]: 0, moov[0]/udta[0]: 0
-                        val userDataBox: UserDataBox = Path.getPath(isoFile, "/moov/udta")
-                            ?: UserDataBox().also { isoFile.movieBox.addBox(it) }
-                        val originalUserDataSize = userDataBox.size
-
-                        val copyrightBox = CopyrightBox()
-                        copyrightBox.copyright = "All Rights Reserved, me, myself and I, 2015"
-                        copyrightBox.language = "eng"
-                        userDataBox.addBox(copyrightBox)
-
-                        val authorBox = AuthorBox()
-                        authorBox.author = "DAYYUTH"
-                        authorBox.language = "eng"
-                        userDataBox.addBox(authorBox)
-
-                        val titleBox = TitleBox()
-                        titleBox.title = "KIR"
-                        titleBox.language = "eng"
-                        userDataBox.addBox(titleBox)
-
-                        val genreBox = GenreBox()
-                        genreBox.genre = "KOS"
-                        genreBox.language = "eng"
-                        userDataBox.addBox(genreBox)
-
-                        //val xtraBox = XtraBox()
-                        //xtraBox.setTagValue("WM/EncodingTime", q.addedAt - 50000000L)
-                        //userDataBox.addBox(xtraBox) // Throws NullPointerException
-
-                        if (needsOffsetCorrection(isoFile))
-                            correctChunkOffsets(isoFile, userDataBox.size - originalUserDataSize)
-
-                        //Log.println(Log.ASSERT, "TRIJNTJE",
-                        //isoFile.writeContainer(fos.channel)
-                        //isoFile.movieBox.getBox(fos.channel)
-                        isoFile.getBox(fos.channel)
-                    }*/
                     else -> fos.write(ba)
                 }
             }
@@ -587,47 +547,6 @@ class Queuer : ForegroundService() {
             super.destroy()
         }
     }
-
-    /*private fun needsOffsetCorrection(isoFile: IsoFile): Boolean {
-        if (Path.getPaths<Box>(isoFile, "mdat").size > 1) throw RuntimeException(
-            "There might be the weird case that a file has two mdats. One before" +
-                    " moov and one after moov. That would need special handling therefore I just throw an " +
-                    "exception here. "
-        )
-        if (Path.getPaths<Box>(isoFile, "moof").size > 0)
-            throw RuntimeException("Fragmented MP4 files need correction, too. (But I would need to look where)")
-        for (box: Box in isoFile.boxes) {
-            if (("mdat" == box.type)) return false
-            if (("moov" == box.type)) return true
-        }
-        throw RuntimeException("Hmmm - shouldn't happen")
-    }
-
-    private fun correctChunkOffsets(tempIsoFile: IsoFile, correction: Long) {
-        val sampleTableBoxes: List<SampleTableBox> =
-            Path.getPaths(tempIsoFile, "/moov[0]/trak/mdia[0]/minf[0]/stbl[0]")
-        for (sampleTableBox: SampleTableBox in sampleTableBoxes) {
-            val stblChildren: MutableList<Box?> = ArrayList(sampleTableBox.boxes)
-            val chunkOffsetBox: ChunkOffsetBox = Path.getPath(sampleTableBox, "stco")
-            stblChildren.remove(Path.getPath(sampleTableBox, "co64"))
-            stblChildren.remove(chunkOffsetBox)
-            val cOffsets = chunkOffsetBox.chunkOffsets
-            for (i in cOffsets.indices) cOffsets[i] += correction
-            val cob = StaticChunkOffsetBox()
-            cob.chunkOffsets = cOffsets
-            stblChildren.add(cob)
-            sampleTableBox.boxes = stblChildren
-        }
-        // OR....
-        var chunkOffsetBoxes: List<ChunkOffsetBox> =
-            Path.getPaths(tempIsoFile, "/moov[0]/trak/mdia[0]/minf[0]/stbl[0]/stco[0]")
-        if (chunkOffsetBoxes.isEmpty()) chunkOffsetBoxes =
-            Path.getPaths(tempIsoFile, "/moov[0]/trak/mdia[0]/minf[0]/stbl[0]/st64[0]")
-        for (chunkOffsetBox in chunkOffsetBoxes) {
-            val cOffsets = chunkOffsetBox.chunkOffsets
-            for (i in cOffsets.indices) cOffsets[i] += correction
-        }
-    }*/
 
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),

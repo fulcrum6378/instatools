@@ -2,6 +2,10 @@ package ir.mahdiparastesh.instatools.json
 
 import kotlin.math.abs
 
+/**
+ * Any media that is versioned by size; this class can find the best, worst, or most compatible
+ * version of its picture or video.
+ */
 @Suppress("UNCHECKED_CAST")
 abstract class Versioned(
     val image_versions2: Media.ImageVersions2?,

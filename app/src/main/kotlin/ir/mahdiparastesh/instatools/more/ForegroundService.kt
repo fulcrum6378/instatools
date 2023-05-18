@@ -23,6 +23,10 @@ import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
+/**
+ * Abstract class for all foreground services in this app.
+ * This is NOT a bound service.
+ */
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     lateinit var handling: HandlerThread
     private var wakeLock: PowerManager.WakeLock? = null
@@ -60,6 +64,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         }
     }
 
+    /**
+     * Abstract class from which all companion objects of ForegroundService subclasses must extend.
+     */
     abstract class ForegroundServiceCompanion : Alive() {
         abstract val klass: Class<*>
         abstract val channel: Notify.Channel

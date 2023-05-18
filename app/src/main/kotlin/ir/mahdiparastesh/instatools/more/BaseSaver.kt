@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/** A Thread which saves or un-saves IG posts. */
 abstract class BaseSaver<C>(c: C, selection: Selection<String>) :
     DbRelatedThread(c) where C : Persistent {
     val list = ArrayList(selection.toList())

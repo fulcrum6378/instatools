@@ -65,6 +65,7 @@ object UiTools {
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
 
+    /** @return TextView instances of a BottomNavigationView for applying custom styles on them. */
     fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
         val list = ArrayList<AppCompatTextView>()
         (bnv[0] as BottomNavigationMenuView).forEach {
@@ -85,6 +86,7 @@ object UiTools {
         visibility = if (bb) View.VISIBLE else View.INVISIBLE
     }
 
+    /** Opens an IG profile in Instagram, if Instagram is installed. */
     fun openProfile(c: Activity, user: String) {
         try {
             c.startActivity(
@@ -96,6 +98,7 @@ object UiTools {
         }
     }
 
+    /** Opens a link without any specifications on which app should handle it. */
     fun openLink(c: Activity, link: String) {
         try {
             c.startActivity(
@@ -105,11 +108,13 @@ object UiTools {
         }
     }
 
+    /** Helper class for turning 1 to "01". */
     fun z(n: Int): String {
         val s = n.toString()
         return if (s.length == 1) "0$s" else s
     }
 
+    /** Helper class for vibrations of any duration. */
     @Suppress("DEPRECATION")
     fun Context.shake(dur: Long = 48L) {
         val vib = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
@@ -120,6 +125,7 @@ object UiTools {
         else vib.vibrate(dur)
     }
 
+    /** Converts a timestamp to a human-readable date. */
     fun date(time: Long): String {
         val cal = time.calendar()
         return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
@@ -127,6 +133,7 @@ object UiTools {
             "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
     }
 
+    /** Linkifies an AppCompatTextView. */
     @Suppress("DEPRECATION")
     fun AppCompatTextView.anchor(text: String?, url: String?) {
         if (text == null || url == null) {
@@ -140,20 +147,26 @@ object UiTools {
         else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
     }
 
+    /** Converts a timestamp to a Calendar instance. */
     fun Long.calendar(): Calendar = // needs milliseconds
         Calendar.getInstance().apply { timeInMillis = this@calendar }
 
+    /** Converts a microseconds timestamp to a milliseconds one. */
     fun Double.xFromMicroseconds() = toLong() / 1000L
 
+    /** Converts a seconds timestamp to a milliseconds one. */
     fun Double.xFromSeconds() = toLong() * 1000L
 
+    /** Gets the IG user name from a link. */
     fun String.accFromUrl(host: String): String? =
         if (startsWith(host)) substringAfter(host).substringBefore("/")
             .substringBefore("?") else null
 
+    /** Position of a "Jump to Top" button. */
     fun jumperTrans(c: BaseActivity) = (c.resources.getDimension(R.dimen.jumperSize) +
         c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
 
+    /** Animation for a "Jump to Top" button. */
     fun anJumper(c: BaseActivity, jumper: View, bb: Boolean): ObjectAnimator =
         ObjectAnimator.ofFloat(
             jumper, View.TRANSLATION_Y, if (bb) 0f else jumperTrans(c)
@@ -163,6 +176,7 @@ object UiTools {
             start()
         }
 
+    /** Opens a Direct Message in Instagram. */
     @Suppress("SpellCheckingInspection")
     fun openDm(c: Activity, threadId: String) {
         try {
@@ -175,6 +189,7 @@ object UiTools {
         }
     }
 
+    /** Makes an easily readable datetime. */
     fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {
         var shrinking = milliseconds / 1000L
         val mon = (shrinking / 2592000L).toInt()
@@ -209,6 +224,7 @@ object UiTools {
         return pairs.joinToString(getString(R.string.inaccurateTimeSep)) { it.first.format(it.second) }
     }
 
+    /** Explains bytes for humans. */
     fun Context.showBytes(length: Long): String {
         val units = resources.getStringArray(R.array.bytes)
         var unit = 0
@@ -221,6 +237,7 @@ object UiTools {
         return units[unit].format(nominalSize)
     }
 
+    /** @return a datetime text to be used in a file name. */
     fun fileDateTime(time: Long): String {
         val cal = Calendar.getInstance().apply { timeInMillis = time }
         return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
@@ -228,22 +245,26 @@ object UiTools {
             "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
     }
 
+    /** @return a colour from a theme using an attribute resource. */
     @ColorInt
     fun ContextThemeWrapper.themeColor(@AttrRes attr: Int = android.R.attr.colorAccent) =
         TypedValue().apply {
             theme.resolveAttribute(attr, this, true)
         }.data
 
+    /** Enables or disables all RadioGroup items and sets an alpha value for each. */
     fun RadioGroup.areEnabled(bb: Boolean) = forEach {
         it.isEnabled = bb
         it.alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
     }
 
+    /** Enables or disables a CompoundButton and sets an alpha value for it. */
     fun CompoundButton.enabled(bb: Boolean) {
         isEnabled = bb
         alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
     }
 
+    /** Finds a thumbnail address from a GraphQl.Post. */
     fun GraphQl.Post.thumb(nearest: Double = 0.0): String {
         if (thumbnail_resources == null) return thumbnail_src
         var selected: GraphQl.Src? = null
@@ -255,6 +276,7 @@ object UiTools {
         return selected?.src ?: thumbnail_src
     }
 
+    /** Helper function for showing a Snackbar. */
     fun snackbar(view: View, text: String, dur: Int, anchor: View? = null) {
         try {
             Snackbar.make(
@@ -266,10 +288,12 @@ object UiTools {
         }
     }
 
+    /** Helper function for showing a Snackbar. */
     fun snackbar(view: View, @StringRes res: Int, dur: Int, anchor: View? = null) {
         snackbar(view, view.context.getString(res), dur, anchor)
     }
 
+    /** Rounds a Bitmap as a circle. */
     fun bmpRound(bmp: Bitmap): Bitmap =
         Bitmap.createBitmap(bmp.width, bmp.height, Bitmap.Config.ARGB_8888).apply {
             val canvas = Canvas(this)
@@ -282,6 +306,7 @@ object UiTools {
             canvas.drawBitmap(bmp, 0f, 0f, paintImage)
         }
 
+    /** Helper function for setting Glide target of an IG profile. */
     fun targetProfile(iv: ImageView) = object : CustomTarget<Bitmap>() {
         override fun onLoadCleared(placeholder: Drawable?) {
             iv.setImageDrawable(null)
