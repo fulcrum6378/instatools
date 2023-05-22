@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Process
 import android.os.Process.myPid
 import android.os.Process.myUid
-import android.os.SystemClock
 import androidx.core.content.edit
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
@@ -87,7 +86,7 @@ interface Persistent {
     }
 
     companion object {
-        fun now() = SystemClock.elapsedRealtime()
+        fun now() = System.currentTimeMillis()
 
         fun Context.isPathAccessible(uri: Uri): Boolean =
             checkUriPermission(

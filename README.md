@@ -117,3 +117,9 @@ I continued the app in 2 Iranian app stores:
 
 Despite Instagram has recently been banned in Iran, but these app stores haven't yet warned me about anything!
 At the end I concluded that a reviewer is either as-hole or reckless!
+
+### License
+
+```
+Copyright © Mahdi Parastesh - All Rights Reserved.
+```
