@@ -65,6 +65,7 @@
     <string name="listClear">پاک کردن همه</string>
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
     <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
+    <string name="change">تغییر</string>
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>

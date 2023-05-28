@@ -65,6 +65,7 @@
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
+    <string name="change">Change</string>
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>

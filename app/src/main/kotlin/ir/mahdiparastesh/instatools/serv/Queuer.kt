@@ -88,8 +88,10 @@ class Queuer : ForegroundService() {
         super.onCreate()
         dest = sPreference(Settings.spStorage)
         CoroutineScope(Dispatchers.IO).launch {
-            Settings.loadAliases(c, gsp).forEach { (k, v) -> aliases[k] = v }
-            sp?.let { sp -> Settings.loadAliases(c, sp).forEach { (k, v) -> aliases[k] = v } }
+            Settings.loadAliases(this@Queuer, true)
+                .forEach { (k, v) -> aliases[k] = v }
+            if (sp != null) Settings.loadAliases(this@Queuer, false)
+                .forEach { (k, v) -> aliases[k] = v }
         }
         if (m.acc == null || dest == null) {
             finish(false); return; }

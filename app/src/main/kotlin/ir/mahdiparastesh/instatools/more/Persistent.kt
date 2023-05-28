@@ -28,11 +28,10 @@ interface Persistent {
     val db: Database
     val dao: Database.DAO
 
-    /** Initialises the global shared preferences. */
+    /** Initialises the global shared preferences. GSP MUST NEVER BE DELETED!!! */
     fun initGsp(): SharedPreferences =
-        c.getSharedPreferences("global", Context.MODE_PRIVATE)
+        c.getSharedPreferences(GSP, Context.MODE_PRIVATE)
     // While using MODE_PRIVATE, only this app can access the information within the shared preferences file.
-    // GSP MUST NEVER BE DELETED!!!
 
     /** Initialises the local shared preferences. */
     fun initSp(acc: Account?): SharedPreferences? =
@@ -86,6 +85,8 @@ interface Persistent {
     }
 
     companion object {
+        const val GSP = "global"
+
         fun now() = System.currentTimeMillis()
 
         fun Context.isPathAccessible(uri: Uri): Boolean =

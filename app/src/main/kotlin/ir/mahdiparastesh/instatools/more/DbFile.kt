@@ -1,13 +1,14 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.annotation.SuppressLint
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import java.io.File
 
 /** Resolves the path to databases. */
 @SuppressLint("SdCardPath")
 open class DbFile(name: String, which: Triple) : File(
-    "/data/data/${Main::class.java.`package`!!.name}/databases/$name.db${which.s}"
+    "/data/data/${BuildConfig.APPLICATION_ID}/databases/$name.db${which.s}"
 ) {
     /** Helps resolve the file names of the triple SQLite database files. */
     enum class Triple(val s: String) {

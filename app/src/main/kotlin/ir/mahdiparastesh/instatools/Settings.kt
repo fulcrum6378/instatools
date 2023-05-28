@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools
 
-import android.content.ContentResolver
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StatFs
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,6 +35,8 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.view.Act
+import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -41,6 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
@@ -153,23 +158,22 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun Int.toBytes() = this * MB
 
-        @Suppress("RedundantSuspendModifier")
-        suspend fun loadAliases(c: Context, sp: SharedPreferences): HashMap<String, String> {
-            val map = sp.getString(spAliases, null)
+        suspend fun loadAliases(c: Persistent, global: Boolean): HashMap<String, String> {
+            val map = (if (global) c.gsp else c.sp!!).getString(spAliases, null)
                 ?.let { Gson().fromJson<HashMap<String, String>>(it, HashMap::class.java) }
                 ?: hashMapOf()
             val removal = arrayListOf<String>()
             map.forEach { (k, v) ->
-                val ex = DocumentFile.fromTreeUri(c, Uri.parse(v))?.exists()
-                val ax = c.isPathAccessible(v)
+                val ex = DocumentFile.fromTreeUri(c.c, Uri.parse(v))?.exists()
+                val ax = c.c.isPathAccessible(v)
                 if (!ax || ex != true) {
-                    if (ex != true && ax) Uri.parse(v).release(c.contentResolver)
+                    if (ex != true && ax) Uri.parse(v).release(c, global)
                     removal.add(k)
                 }
             }
             if (removal.isNotEmpty()) {
                 for (k in removal) map.remove(k)
-                saveAliases(sp, map)
+                saveAliases(if (global) c.gsp else c.sp!!, map)
             }
             return map
         }
@@ -181,13 +185,32 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun Uri.folderName() = path.toString().split("/").last()
 
-        fun Uri.release(cr: ContentResolver) {
-            try {
-                cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                cr.releasePersistableUriPermission(this, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            } catch (e: SecurityException) {
-                // No permission grants found for UID XXX and Uri content://...
+        @SuppressLint("SdCardPath")
+        @Suppress("RedundantSuspendModifier")
+        suspend fun Uri.release(c: Persistent, global: Boolean) {
+            val exc = arrayOf(
+                "${if (global) Persistent.GSP else c.m.acc!!.id}.xml",
+                "AwOriginVisitLoggerPrefs.xml", "WebViewChromiumPrefs.xml"
+            )
+            val f0 = ">$this<"
+            val f1 = "&quot;$this&quot;"
+            File(
+                "/data/data/${BuildConfig.APPLICATION_ID}/shared_prefs"
+            ).listFiles()?.filter { it.name !in exc }?.forEach { sp ->
+                val raw = FileInputStream(sp).use { it.readBytes().toString(Charsets.UTF_8) }
+                Log.println(
+                    Log.ASSERT, "AIMI",
+                    sp.name + " : " + (f0 in raw) + " or " + (f1 in raw)
+                )
+                if (f0 in raw || f1 in raw) return
             }
+            try {
+                c.c.contentResolver.releasePersistableUriPermission(
+                    this,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+            } catch (_: SecurityException) {
+            } // No permission grants found for UID XXX and Uri content://...
         }
 
         fun Persistent.incrementCounter(key: String) {
@@ -219,7 +242,23 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // Main Path
         if (giveLinkBack != null) selectPath()
         updateMainPath()
-        b.stMainPath.setOnClickListener { selectPath() }
+        b.stMainPath.setOnClickListener { v ->
+            if ((v as AppCompatTextView).text.isEmpty()) selectPath()
+            else MaterialMenu(this@Settings, v, R.menu.settings_main_path, Act().apply {
+                this[R.id.smpChange] = { selectPath() }
+                this[R.id.smpRemove] = {
+                    val uri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
+                    if (uri != null) {
+                        prf.edit { remove(spStorage) }
+                        updateMainPath("")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            StorageCache.folderRemoved(this@Settings, uri)
+                            uri.release(this@Settings, globalMode)
+                        }
+                    }
+                }
+            }).show()
+        }
         if (!globalMode) {
             arrayOf(b.stBranchingCb, b.stAutoDeleteEmptyDirsCb).forEach { it.vis(true) }
             arrayOf(b.stBranching, b.stAutoDeleteEmptyDirs).forEach {
@@ -253,7 +292,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         // Alias Paths
         CoroutineScope(Dispatchers.IO).launch {
-            aliases = loadAliases(c, prf)
+            aliases = loadAliases(this@Settings, globalMode)
             withContext(Dispatchers.Main) { showAliases() }
         }
         b.stAddAlias.setOnClickListener { editAlias(null) }
@@ -416,10 +455,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         if (br.root.isChecked) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 StorageCache.folderRemoved(this@Settings, uri)
-                                uri.release(contentResolver)
+                                uri.release(this@Settings, globalMode)
                             }
                             CoroutineScope(Dispatchers.IO).launch {
-                                aliases = loadAliases(c, prf)
+                                aliases = loadAliases(this@Settings, globalMode)
                                 withContext(Dispatchers.Main) { showAliases() }
                             }
                         } else showAliases()
@@ -442,10 +481,19 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
     override fun onActivityResult(result: ActivityResult) {
         val uri = result.data?.data ?: return
-        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        contentResolver.takePersistableUriPermission(
+            uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
         when (selectingPathFor) {
             0 -> {
+                // Remove the previous path if existed
+                val prevUri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
+                if (prevUri != null) CoroutineScope(Dispatchers.IO).launch {
+                    StorageCache.folderRemoved(this@Settings, uri)
+                    uri.release(this@Settings, globalMode)
+                }
+
+                // Set the new path
                 prf.edit { putString(spStorage, uri.toString()) }
                 updateMainPath(uri.toString())
                 if (giveLinkBack != null) {
@@ -472,5 +520,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
         m.files = null
         CoroutineScope(Dispatchers.IO).launch { StorageCache.saveStorageCache(this@Settings) }
+        // this doesn't update the cache, it just clears it, it'll get updated automatically later.
     }
 }
