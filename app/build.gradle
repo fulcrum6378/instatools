@@ -11,10 +11,10 @@ android {
 
     signingConfigs {
         main {
-            storeFile file('D:\\Experimental\\mahdiparastesh.jks')
-            storePassword "${System.getenv("JERK")}"
+            storeFile file("${System.getenv("JKS_PATH")}")
+            storePassword "${System.getenv("JKS_PASS")}"
             keyAlias 'instatools'
-            keyPassword "${System.getenv("JERK")}"
+            keyPassword "${System.getenv("JKS_PASS")}"
         }
     }
 
@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 33
         versionCode 68
-        versionName '26.5.0'
+        versionName '26.5.1'
         signingConfig signingConfigs.main
     }
 
@@ -63,7 +63,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.webkit:webkit:1.6.1'
+    implementation 'androidx.webkit:webkit:1.7.0'
     implementation 'com.airbnb.android:lottie:6.0.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
