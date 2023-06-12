@@ -25,7 +25,6 @@ class Exportable(
     @PrimaryKey
     var addedAt: Long = Persistent.now()
 
-    @Suppress("unused")
     constructor() : this("", "", 0, "")
 
     fun method(): Exporter.Method = when (type) {

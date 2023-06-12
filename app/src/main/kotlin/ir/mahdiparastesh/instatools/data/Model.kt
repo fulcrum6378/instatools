@@ -14,7 +14,7 @@ class Model : ViewModel() {
         fav = null
     }
 
-    /** Shares the ViewModel accross different Activity instances. */
+    /** Shares the ViewModel across different Activity instances. */
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

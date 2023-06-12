@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.more
 
 import android.annotation.SuppressLint
 import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.Main
 import java.io.File
 
 /** Resolves the path to databases. */

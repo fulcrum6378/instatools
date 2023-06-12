@@ -6,8 +6,8 @@ plugins {
 
 android {
     namespace 'ir.mahdiparastesh.instatools'
-    compileSdk 33
-    buildToolsVersion '34.0.0 rc4'
+    compileSdk 34
+    buildToolsVersion '34.0.0'
 
     signingConfigs {
         main {
@@ -21,9 +21,9 @@ android {
     defaultConfig {
         applicationId 'ir.mahdiparastesh.instatools'
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 68
-        versionName '26.5.1'
+        versionName '26.5.4'
         signingConfig signingConfigs.main
     }
 

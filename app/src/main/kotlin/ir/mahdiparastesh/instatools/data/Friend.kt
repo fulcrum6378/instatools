@@ -18,7 +18,6 @@ class Friend(
     @Ignore @Transient var inFav: Boolean = false,
     @Ignore @Transient var unfollowed: Boolean = false,
 ) {
-    @Suppress("unused")
     constructor() : this("", "", "", "", false, false, false)
 
     fun toFavourite() = Favourite(id, user, name, pict, priv)

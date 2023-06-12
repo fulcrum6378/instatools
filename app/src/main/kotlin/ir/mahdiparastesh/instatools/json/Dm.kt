@@ -266,7 +266,6 @@ class Dm(
         //val vc_id: String,
     )
 
-    @Suppress("PropertyName")
     open class PlaceHolder {
         //var is_linked: Boolean? = null // e.g.: false
         var title: String? = null // e.g.: "Post unavailable"

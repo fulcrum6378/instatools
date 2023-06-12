@@ -13,7 +13,6 @@ class Favourite(
     var isPrivate: Boolean,
     @Ignore @Transient var tempDeleted: Boolean = false
 ) {
-    @Suppress("unused")
     constructor() : this("", "", "", "", false)
 
     /* We may later integrate these data with Instagram's own favorites feature, but
