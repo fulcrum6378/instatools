@@ -34,7 +34,6 @@ import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
-import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.*
@@ -164,9 +163,7 @@ class PageUnf : BasePageMain() {
      * - Adding additional invalid random query parameters also didn't help!
      */
     class Inquiry(c: Persistent) : DbRelatedThread(c) {
-        companion object : Alive.OfThread() {
-            const val FLW_FETCH_DELAY = 200L
-        }
+        companion object : Alive.OfThread()
 
         private lateinit var oldFriends: List<Friend>
         private val newFriends = arrayListOf<Friend>()
@@ -211,9 +208,7 @@ class PageUnf : BasePageMain() {
                 if (flw.next_max_id == null) {
                     if (theFollowers) allFollow(theFollowers = false)
                     else CoroutineScope(Dispatchers.IO).launch { ended() }
-                } else Delay(FLW_FETCH_DELAY) {
-                    allFollow(flw.next_max_id, theFollowers)
-                }
+                } else HumanDelay { allFollow(flw.next_max_id, theFollowers) }
             }
         }
 

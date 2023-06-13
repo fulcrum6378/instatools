@@ -122,15 +122,15 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         var created = false
         when (currentPage.value!!) {
             0 -> if (page1 == null) {
-                page1 = aKlass.java.newInstance()
+                page1 = aKlass.java.getDeclaredConstructor().newInstance()
                 created = true
             }
             1 -> if (page2 == null) {
-                page2 = bKlass.java.newInstance()
+                page2 = bKlass.java.getDeclaredConstructor().newInstance()
                 created = true
             }
             2 -> if (page3 == null) {
-                page3 = cKlass.java.newInstance()
+                page3 = cKlass.java.getDeclaredConstructor().newInstance()
                 created = true
             }
         }
@@ -219,17 +219,17 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             aKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page1 != null && page1?.isAdded == true)
                     transFrag().remove(page1!!).commit()
-                aKlass.java.newInstance().also { page1 = it }
+                aKlass.java.getDeclaredConstructor().newInstance().also { page1 = it }
             }
             bKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page2 != null && page2?.isAdded == true)
                     transFrag().remove(page2!!).commit()
-                bKlass.java.newInstance().also { page2 = it }
+                bKlass.java.getDeclaredConstructor().newInstance().also { page2 = it }
             }
             cKlass.java.name -> {
                 if (mode == TripleMode.FRAGMENT_MANAGER && page3 != null && page3?.isAdded == true)
                     transFrag().remove(page3!!).commit()
-                cKlass.java.newInstance().also { page3 = it }
+                cKlass.java.getDeclaredConstructor().newInstance().also { page3 = it }
             }
             else -> super.instantiate(loader, name)
         }
@@ -239,9 +239,9 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     private inner class PageAdapter(c: TriplePageActivity<*, *, *>) : FragmentStateAdapter(c) {
         override fun getItemCount(): Int = 3
         override fun createFragment(i: Int): Fragment = when (i) {
-            0 -> aKlass.java.newInstance().also { page1 = it }
-            1 -> bKlass.java.newInstance().also { page2 = it }
-            2 -> cKlass.java.newInstance().also { page3 = it }
+            0 -> aKlass.java.getDeclaredConstructor().newInstance().also { page1 = it }
+            1 -> bKlass.java.getDeclaredConstructor().newInstance().also { page2 = it }
+            2 -> cKlass.java.getDeclaredConstructor().newInstance().also { page3 = it }
             else -> throw IllegalArgumentException("Page $i?!?")
         }
     }

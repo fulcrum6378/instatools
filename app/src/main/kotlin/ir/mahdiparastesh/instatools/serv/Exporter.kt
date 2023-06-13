@@ -30,8 +30,8 @@ import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.HumanDelay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.Notify
 import kotlinx.coroutines.CoroutineScope
@@ -60,7 +60,6 @@ class Exporter : ForegroundService() {
 
         const val DIR_MIME = "vnd.android.document/directory"
         const val USER_PROFILE_IMG = "user_%s"
-        const val DELAY_FETCH_DATA = 1000L
         val fileTypes = arrayOf(
             "image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a", "image/gif" to "gif"
         )
@@ -92,7 +91,7 @@ class Exporter : ForegroundService() {
                             )
                             updateNotification()
                             // Inbox API has no reference to number of items in a thread.
-                            Delay(DELAY_FETCH_DATA) { exp?.fetchData() }
+                            HumanDelay { exp?.fetchData() }
                         } else CoroutineScope(Dispatchers.IO).launch {
                             exp?.fetchMedia()
                         }

@@ -252,7 +252,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
 
         private fun failed(e: Exception) {
-            Delay { b.web.reload() }
+            Delay(5000L) { b.web.reload() }
             if (improperLoading < 6) improperLoading++
             else {
                 if (BuildConfig.DEBUG) throw e
