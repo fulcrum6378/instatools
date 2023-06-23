@@ -29,6 +29,7 @@ import ir.mahdiparastesh.instatools.json.*
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.HumanDelay
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
@@ -347,7 +348,8 @@ class Queuer : ForegroundService() {
         handlingLinks.removeAt(0)
         handlingLink = false
         if (!active.value!!) return
-        if (handlingLinks.isNotEmpty()) handleLinks()
+        if (handlingLinks.isNotEmpty())
+            HumanDelay(100L..3000L) { handleLinks() }
         if (download?.active != true) download = Download().also { it.start() }
     }
 

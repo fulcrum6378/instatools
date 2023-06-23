@@ -307,13 +307,13 @@ class PageSvd : BasePageMain(), Selective {
     class Saver(
         c: Main, val f: PageSvd,
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
-    ) : BaseSaver<Main>(c, selection) {
+    ) : SelectionHandler<Main>(c, selection) {
         companion object : Alive.OfThread()
 
         override val com: Alive.OfThread = Companion
 
         override fun handle() {
-            val svd = list.getOrNull(0)
+            val svd = next()
             if (svd == null) {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
@@ -334,7 +334,7 @@ class PageSvd : BasePageMain(), Selective {
                     handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
                     c.incrementCounter(Settings.spUnsaveCount)
                 }
-                ended()
+                if (size() != 1) HumanDelay(0L..2000L) { ended() } else ended()
             }
             if (!unsave) ended()
         }

@@ -169,13 +169,13 @@ class PageTag : BasePageViewer() {
         }
     }
 
-    class Saver(c: Viewer, selection: Selection<String>) : BaseSaver<Viewer>(c, selection) {
+    class Saver(c: Viewer, selection: Selection<String>) : SelectionHandler<Viewer>(c, selection) {
         companion object : Alive.OfThread()
 
         override val com: Alive.OfThread = Companion
 
         override fun handle() {
-            val post = list.getOrNull(0)
+            val post = next()
             if (post == null) {
                 Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
