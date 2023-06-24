@@ -163,7 +163,7 @@ class Expandable(
     private fun loaded() {
         if (media == null) return
         b.slider.adapter = ListCar(c, media!!, muteSound)
-        b.indicator.setViewPager2(b.slider)
+        b.indicator.attachTo(b.slider)
         b.buttons.vis()
         b.username.vis()
         val isSlider = media?.carousel_media != null
