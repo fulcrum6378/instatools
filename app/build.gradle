@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 69
-        versionName '26.6.9'
+        versionName '26.7.0'
         signingConfig signingConfigs.main
     }
 
@@ -38,6 +38,7 @@ android {
         debuggee {
             debuggable true
             minifyEnabled false
+            matchingFallbacks = ['debug'] // temporarily for DotsIndicator
         }
         release {
             minifyEnabled true
@@ -70,8 +71,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.15.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'com.google.code.gson:gson:2.10.1'
-    //noinspection GradleDependency
-    implementation 'com.tbuonomo:dotsindicator:4.2'
+    implementation 'com.tbuonomo:dotsindicator:5.0'
     implementation 'ir.mahdiparastesh:chipslayoutmanager:0.5.0'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
     implementation 'org.apache.commons:commons-text:1.10.0' // StringEscapeUtils
