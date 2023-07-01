@@ -2,14 +2,19 @@
   <dictionary name="fulcr">
     <words>
       <w>doctype</w>
+      <w>errored</w>
       <w>favourited</w>
       <w>insta</w>
+      <w>instatools</w>
       <w>mahdiparastesh</w>
       <w>mfrw</w>
       <w>myket</w>
       <w>parastesh</w>
       <w>queuer</w>
+      <w>unfollower</w>
+      <w>unfollowers</w>
       <w>unrestrict</w>
+      <w>unsave</w>
     </words>
   </dictionary>
 </component>
