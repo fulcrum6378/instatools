@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -325,6 +326,7 @@ class PageSvd : BasePageMain(), Selective {
             if (download) try {
                 saved.media.queue(c.dao)
             } catch (e: IllegalStateException) { // DB is closed
+                if (BuildConfig.DEBUG) throw e
             }
             if (unsave) f.reqQueue.adder = Api<Rest>(
                 c, Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, null,

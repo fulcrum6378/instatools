@@ -22,6 +22,7 @@ import androidx.core.content.edit
 import com.android.volley.NetworkResponse
 import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -231,7 +232,9 @@ class PageUnf : BasePageMain() {
                 c.dao.deleteFriends()
                 c.dao.addFriends(newFriends)
             } catch (e: IllegalStateException) { // DB is closed.
+                if (BuildConfig.DEBUG) throw e
             } catch (e: SQLiteDatabaseLockedException) { // perhaps there were heavy transactions then.
+                if (BuildConfig.DEBUG) throw e
             }
 
             // Update the Favourites

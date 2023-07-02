@@ -3,7 +3,11 @@ package ir.mahdiparastesh.instatools.more
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.annotation.MainThread
 import androidx.recyclerview.selection.Selection
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Subclass of Thread with a boolean field named "active" which indicates whether the thread is
@@ -89,9 +93,10 @@ abstract class SelectionHandler<C>(c: C, selection: Selection<String>) :
 
     protected fun size(): Int = list.size
 
+    @MainThread // except when called at the bottom of PageSvd$Saver::handle
     open fun ended() {
         list.removeAt(0)
         if (!active) return
-        handle()
+        CoroutineScope(Dispatchers.IO).launch { handle() }
     }
 }
