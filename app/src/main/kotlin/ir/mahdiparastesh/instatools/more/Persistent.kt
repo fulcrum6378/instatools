@@ -9,6 +9,7 @@ import android.os.Process
 import android.os.Process.myPid
 import android.os.Process.myUid
 import androidx.core.content.edit
+import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Database
@@ -94,7 +95,8 @@ interface Persistent {
                 uri, myPid(), myUid(), Intent.FLAG_GRANT_READ_URI_PERMISSION
             ) == PackageManager.PERMISSION_GRANTED && checkUriPermission(
                 uri, myPid(), myUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED &&
+                DocumentFile.fromTreeUri(this, uri)?.exists() == true
 
         fun Context.isPathAccessible(path: String) = isPathAccessible(Uri.parse(path))
     }

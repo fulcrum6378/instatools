@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 69
-        versionName '26.7.3'
+        versionName '26.7.6'
         signingConfig signingConfigs.main
     }
 
@@ -72,5 +72,5 @@ dependencies {
     implementation 'ir.mahdiparastesh:chipslayoutmanager:0.5.0'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
     implementation 'org.apache.commons:commons-text:1.10.0' // StringEscapeUtils
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2'
 }

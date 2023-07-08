@@ -427,8 +427,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Extension:
   * Use URLConnection to track the percentage of downloads
-  * Add seekbars in Settings for tweaking human-imitating delays
-  * Live unfollower inspector
   * Conditional jump to bottom
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
@@ -437,9 +435,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Extensions which need comprehending Instagram APK file:
   * Live Live downloader
-  * Notification-enabled download
   * Web API sends followers & following irregularly and incompletely, so Inquiry always shows a random number!
   * Export/import blocked accounts lists from/into different accounts of one's
+  * Batch Unsave API
   * -
   * Extensions which are not recommended:
   * Metadata for videos and audios (whose libraries seem to be critically unstable)
