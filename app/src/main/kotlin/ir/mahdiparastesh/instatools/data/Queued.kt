@@ -24,7 +24,7 @@ class Queued(
 
     fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date!!)}_$itemId.$ext"
 
-    fun isMainFile() = mediaType !in arrayOf(3.toByte())
+    fun isMainFile() = mediaType?.toInt() !in arrayOf(3)
 
     fun isFailed() = status == 1.toByte()
 

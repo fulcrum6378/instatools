@@ -30,8 +30,8 @@ class StorageCache {
         fun load(c: Persistent) {
             if (loading) return
             loading = true
-            val stored = Stored(c.c)
             CoroutineScope(Dispatchers.IO).launch {
+                val stored = Stored(c.c)
                 if (stored.exists()) {
                     runCatching {
                         FileInputStream(stored).use { return@use it.readBytes() }

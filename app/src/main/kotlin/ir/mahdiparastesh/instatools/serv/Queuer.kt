@@ -530,10 +530,10 @@ class Queuer : ForegroundService() {
                 for (branch in stem.listFiles())
                     if (branch.isDirectory && branch.listFiles().isEmpty())
                         branch.delete()
-                StorageCache.saveStorageCache(this@Queuer)
             }.onFailure {
                 if (BuildConfig.DEBUG) throw it
             }
+            StorageCache.saveStorageCache(this@Queuer)
             val upToDate = dao.queueds()
             Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET, 1, 0, upToDate)
                 ?.sendToTarget()
