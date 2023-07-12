@@ -435,7 +435,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Extensions which need comprehending Instagram APK file:
   * Live Live downloader
-  * Web API sends followers & following irregularly and incompletely, so Inquiry always shows a random number!
   * Export/import blocked accounts lists from/into different accounts of one's
   * Batch Unsave API
   * -

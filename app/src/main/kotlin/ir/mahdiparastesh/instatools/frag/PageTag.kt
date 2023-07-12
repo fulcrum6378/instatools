@@ -130,10 +130,10 @@ class PageTag : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.vwTagged?.items?.getOrNull(i)?.pk
+        override fun getKey(i: Int): String? = c.mm.vwTagged?.items?.getOrNull(i)?.id
         override fun getPosition(key: String): Int {
             c.mm.vwTagged?.items?.forEachIndexed { i, med ->
-                if (med.pk == key) return@getPosition i
+                if (med.id == key) return@getPosition i
             }
             return -1
         }
