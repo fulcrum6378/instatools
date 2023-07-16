@@ -280,9 +280,18 @@ class Queuer : ForegroundService() {
                             }
                             handleQueued(cur.qud!!, null)
                         }
-                    "PolarisProfileRoot.react" -> CoroutineScope(Dispatchers.IO)
-                        .launch { dao.deleteQueued(cur.qud!!) }
-                        .invokeOnCompletion { linkHandled() }
+                    // Instagram cannot distinguish between contents of a private account and
+                    // link of a public account itself; therefore this case should not be applied.
+                    /*"PolarisProfileRoot.react" -> {
+                        CoroutineScope(Dispatchers.IO)
+                            .launch { dao.deleteQueued(cur.qud!!) }
+                            .invokeOnCompletion { linkHandled() }
+                        // throw Exception(Gson().toJson(root))
+                        // story of private account
+                        // {"params":{"username":"annedarkshirley"},"rootView":{"props":{"media_type":0.0},"resource":{"__dr":"PolarisProfileRoot.react"}}}
+                        // a public account itself
+                        // {"params":{"username":"neurosciencenew"},"rootView":{"props":{"media_type":0.0},"resource":{"__dr":"PolarisProfileRoot.react"}}}
+                    }*/
                     else -> {
                         Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react") {
