@@ -286,11 +286,6 @@ class Queuer : ForegroundService() {
                         CoroutineScope(Dispatchers.IO)
                             .launch { dao.deleteQueued(cur.qud!!) }
                             .invokeOnCompletion { linkHandled() }
-                        // throw Exception(Gson().toJson(root))
-                        // story of private account
-                        // {"params":{"username":"annedarkshirley"},"rootView":{"props":{"media_type":0.0},"resource":{"__dr":"PolarisProfileRoot.react"}}}
-                        // a public account itself
-                        // {"params":{"username":"neurosciencenew"},"rootView":{"props":{"media_type":0.0},"resource":{"__dr":"PolarisProfileRoot.react"}}}
                     }*/
                     else -> {
                         Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
