@@ -289,7 +289,10 @@ class Queuer : ForegroundService() {
                     }*/
                     else -> {
                         Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
-                        if (BuildConfig.DEBUG && root.rootView.resource.__dr != "PolarisErrorRoot.react") {
+                        if (BuildConfig.DEBUG && root.rootView.resource.__dr !in arrayOf(
+                                "PolarisErrorRoot.react", "PolarisProfileRoot.react"
+                            )
+                        ) {
                             openFileOutput("unknown_api_${cur.qud?.addedAt}.json", 0)
                                 .use { it.write(Gson().toJson(cnfWrapper).encodeToByteArray()) }
                             throw Exception(root.rootView.resource.__dr)
