@@ -86,7 +86,7 @@ class PageTag : BasePageViewer() {
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.vwTagged?.items != null)
-                tracker?.setItemsSelected(c.mm.vwTagged!!.items!!.map { it.pk }, true)
+                tracker?.setItemsSelected(c.mm.vwTagged!!.items!!.map { it.id }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -155,9 +155,9 @@ class PageTag : BasePageViewer() {
                     handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
                 } else c.mm.vwTagged?.apply {
                     val lastBefore = items?.size ?: 0
-                    val ids = items?.map { it.pk }
+                    val ids = items?.map { it.id }
                     wrapper.items
-                        ?.let { if (ids != null) it.filter { p -> p.pk !in ids } else it }
+                        ?.let { if (ids != null) it.filter { p -> p.id !in ids } else it }
                         ?.let { items?.addAll(it) }
                     next_max_id = wrapper.next_max_id
                     more_available = wrapper.more_available
@@ -181,7 +181,7 @@ class PageTag : BasePageViewer() {
                 interrupt()
                 return
             }
-            (c as Viewer).mm.vwTagged?.items?.find { it.pk == post }?.queue(c.dao)
+            (c as Viewer).mm.vwTagged?.items?.find { it.id == post }?.queue(c.dao)
             ended()
         }
     }
