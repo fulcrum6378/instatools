@@ -432,6 +432,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Undo for Unsave
   * View post/story in Instatools intent filter
   * Max slides for HtmlExporter
+  * Bring Nth post; navigate through large profiles
   * -
   * Extensions which need comprehending Instagram APK file:
   * Live Live downloader
