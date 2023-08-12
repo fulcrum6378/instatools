@@ -42,7 +42,7 @@ class GraphQl(val data: GraphQlData?) : Rest() {
         //val edge_media_collections: EdgeList?,
         //val edge_mutual_followed_by: Map<String?, *>?,
         val edge_owner_to_timeline_media: EdgeList?, // Main posts
-        //val edge_saved_media: EdgeList?, // Saved Posts
+        val edge_saved_media: EdgeList?, // Saved Posts
         //val external_url: Any?,
         //val external_url_linkshimmed: Any?,
         //val fbid: String?,
@@ -74,7 +74,7 @@ class GraphQl(val data: GraphQlData?) : Rest() {
         //val should_show_public_contacts: Boolean?,
         val username: String
     ) {
-        fun photo() = profile_pic_url_hd ?: profile_pic_url
+        fun hdPhoto() = profile_pic_url_hd ?: profile_pic_url
 
         fun favourite(): Favourite = Favourite(id, username, full_name, profile_pic_url, pv())
 

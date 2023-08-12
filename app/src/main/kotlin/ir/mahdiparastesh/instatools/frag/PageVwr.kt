@@ -131,15 +131,15 @@ class PageVwr : BasePageViewer() {
             height = c.dm.widthPixels
         }
         b.proClick.setOnClickListener { v ->
-            if (c.mm.vwUser?.photo() == null) return@setOnClickListener
+            if (c.mm.vwUser?.hdPhoto() == null) return@setOnClickListener
             MaterialMenu(c, v, R.menu.viewer_pic_more, Act().apply {
                 this[R.id.vpDownload] = {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.dao.addQueued(
                             Queued(
                                 Persistent.now(), "", Persistent.now(), c.mm.vwUser!!.id,
-                                c.user, "profile_photo", c.mm.vwUser!!.photo(),
-                                c.mm.vwUser!!.photo(), 1
+                                c.user, "profile_photo", c.mm.vwUser!!.hdPhoto(),
+                                c.mm.vwUser!!.hdPhoto(), 1
                             )
                         )
                         withContext(Dispatchers.Main) { Downloads.initService(c, "") }
@@ -173,7 +173,7 @@ class PageVwr : BasePageViewer() {
     fun showProfile() {
         if (com.active.value != true || c.mm.vwUser == null || !bInitialised) return
         Glide.with(c.c)
-            .load(c.mm.vwUser!!.photo())
+            .load(c.mm.vwUser!!.hdPhoto())
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(b.proPic, b.proPicIv))
             .into(b.proPicIv)

@@ -4,6 +4,9 @@ import android.content.Context
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Login.Companion.spAccount
 import ir.mahdiparastesh.instatools.more.Persistent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -20,11 +23,11 @@ class Account(
     // var mfrw: Int = 0,
     // keep in mind to update the fields whose data need to persist after another Login
 ) {
-    /*fun saveMe(c: Context) {
+    fun saveMe(c: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
         }
-    }*/
+    }
 
     companion object {
         @Suppress("RedundantSuspendModifier")

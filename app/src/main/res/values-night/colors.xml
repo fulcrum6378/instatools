@@ -17,6 +17,7 @@
 
     <!-- #GLOBAL -->
     <color name="expandableHeaderBg">@android:color/transparent</color>
+    <color name="fastScrollLine">#11FFFFFF</color>
 
     <!-- Main -->
     <color name="unfollowers">@color/defCA</color>

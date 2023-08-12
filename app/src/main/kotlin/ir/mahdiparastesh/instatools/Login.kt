@@ -233,10 +233,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 id = cookieManager.getCookieOrganised(host)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";").toLong().toString()
+                /** It does not contain edge_saved_media! */
                 val u = raw.config.viewer
                 m.acc = Account(
-                    id.toLong(), u.username, u.full_name,
-                    u.profile_pic_url_hd ?: u.profile_pic_url,
+                    id.toLong(), u.username, u.full_name, u.hdPhoto(),
                     cookieManager.getCookieOrganised(host),
                     config.getOrElse("rollout_hash") { raw.rollout_hash } as String,
                     Persistent.now()

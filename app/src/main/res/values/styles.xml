@@ -80,6 +80,12 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">@dimen/jumperListPad</item>
+        <item name="fastScrollEnabled">true</item>
+        <item name="fastScrollHorizontalThumbDrawable">@drawable/fast_scroll_thumb</item>
+        <item name="fastScrollHorizontalTrackDrawable">@drawable/fast_scroll_line</item>
+        <item name="fastScrollVerticalThumbDrawable">@drawable/fast_scroll_thumb</item>
+        <item name="fastScrollVerticalTrackDrawable">@drawable/fast_scroll_line</item>
+        <!-- all 4 are required, even if not used! -->
     </style>
 
     <style name="shimmer">

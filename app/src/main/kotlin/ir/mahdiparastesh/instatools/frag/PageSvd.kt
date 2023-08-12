@@ -68,7 +68,6 @@ class PageSvd : BasePageMain(), Selective {
             if (b.rv.adapter != null && msg.arg2 > 0) {
                 super@PageSvd.onLoaded(c.mm.saved?.items.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-                //c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
             } else onLoaded(c.mm.saved?.items.isNullOrEmpty())
 
             if (c.mm.saved?.more_available == true && !b.rv.canScrollVertically(1)
@@ -86,7 +85,7 @@ class PageSvd : BasePageMain(), Selective {
         },
         HANDLE_UNSAVE_DONE to { msg ->
             //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
-            //c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
+            c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
             c.mm.saved?.items?.find { it.media.id == msg.obj as String }?.let { media ->
                 val x = c.mm.saved!!.items!!.indexOf(media)
                 c.mm.saved!!.items!!.removeAt(x)
@@ -144,11 +143,11 @@ class PageSvd : BasePageMain(), Selective {
         b.empty.vis(false)
         tracker?.clearSelection()
         thread = FetchSome().also { it.start() }
+        c.updateProfile()
     }
 
     override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
         super.onLoaded(isEmpty, asGuest)
-        //if (!asGuest) c.bnvBadge(1, c.mm.saved?.total_count?.toInt() ?: 0)
 
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()

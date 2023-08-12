@@ -90,6 +90,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     class MyModel : ViewModel() {
         var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
         var saved: Media.SavedWrapper? = null
+        val savedCount = MutableLiveData<Int?>(null)
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
         val currentPage = MutableLiveData(Settings.defSpMainPage)
@@ -118,6 +119,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         mm.unfollowers.observe(this) { bnvBadge(0, it?.filter { u -> !u.unfollowed }?.size) }
+        mm.savedCount.observe(this) { bnvBadge(1, it) }
 
         // Theming
         if (night()) colorBG.observe(this) {
@@ -205,6 +207,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         } else bh.root.vis(false)
 
         // Miscellaneous
+        updateProfile()
         if (m.files == null) StorageCache.load(this)
         Favourites.FavLoader(this).start()
     }
@@ -345,6 +348,20 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         return true
     }
 
+    fun updateProfile() {
+        if (m.acc == null) return
+        Api<GraphQl>(
+            this, Api.Endpoint.PROFILE.url.format(m.acc!!.user), GraphQl::class, null
+        ) { graphql ->
+            val u = graphql.data?.user ?: return@Api
+            m.acc!!.user = u.username
+            m.acc!!.name = u.full_name
+            m.acc!!.pict = u.hdPhoto()
+            m.acc!!.saveMe(c)
+            mm.savedCount.value = u.edge_saved_media?.count?.toInt() ?: 0
+        }
+    }
+
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
         sp?.edit { putInt(spMainPage, mm.currentPage.value!!) }
@@ -434,7 +451,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * View post/story in Instatools intent filter
   * Max slides for HtmlExporter
   * Bring Nth post; navigate through large profiles
-  * Count saved posts by triggering the old API
   * Find a way to show muted and restricted statuses in Friends
   * -
   * Extensions which need comprehending Instagram APK file:
