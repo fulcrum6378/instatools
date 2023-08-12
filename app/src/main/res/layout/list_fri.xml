@@ -54,6 +54,7 @@
         android:textAlignment="viewStart"
         android:textDirection="ltr"
         android:textSize="@dimen/userDescFont"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/name"

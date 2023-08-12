@@ -139,6 +139,15 @@
     <string name="dtImportLinks">وارد کردن لینک ها</string>
     <string name="dEmptyQueue">فهرست دانلود خالی است!</string>
 
+    <!-- Friends -->
+    <string name="friends">دوستان</string>
+    <string name="friEmpty">شما نه کسی را دنبال کرده اید، نه کسی شما را دنبال میکند.</string>
+    <string name="friFollows">دنبال کننده</string>
+    <string name="friFollowed">دنبال شونده</string>
+    <!--<string name="friMuted">بی صدا شده</string>
+    <string name="friRestricted">ممنوع شده</string>-->
+    <string name="friSep" translatable="false">،&#160;</string>
+
     <!-- Favourites -->
     <string name="favourites">مورد علاقه</string>
     <string name="favEmpty">یک پروفایل را در اینستاتولز باز کنید و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.</string>

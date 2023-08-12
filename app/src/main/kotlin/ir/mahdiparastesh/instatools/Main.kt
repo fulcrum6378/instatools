@@ -434,6 +434,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * View post/story in Instatools intent filter
   * Max slides for HtmlExporter
   * Bring Nth post; navigate through large profiles
+  * Count saved posts by triggering the old API
+  * Find a way to show muted and restricted statuses in Friends
   * -
   * Extensions which need comprehending Instagram APK file:
   * Live Live downloader

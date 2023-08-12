@@ -77,7 +77,7 @@ class Friends : UserListActivity() {
         override fun run() {
             mm.friends.clear()
             mm.friends.addAll(dao.friends())
-            //mm.friends.sortBy { it.user }
+            mm.friends.sortBy { it.user }
             handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }
     }

@@ -161,8 +161,8 @@
     <string name="friEmpty">You neither follow or are followed by anyone.</string>
     <string name="friFollows">follows</string>
     <string name="friFollowed">followed</string>
-    <string name="friMuted">muted</string>
-    <string name="friRestricted">restricted</string>
+    <!--<string name="friMuted">muted</string>
+    <string name="friRestricted">restricted</string>-->
     <string name="friSep" translatable="false">,&#160;</string>
 
     <!-- Favourites -->
