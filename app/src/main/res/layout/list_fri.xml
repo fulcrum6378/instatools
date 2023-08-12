@@ -41,10 +41,23 @@
         android:textAlignment="viewStart"
         android:textDirection="ltr"
         android:textSize="@dimen/userDescFont"
-        app:layout_constraintBottom_toBottomOf="@id/photo"
+        app:layout_constraintBottom_toTopOf="@id/status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/name"
         app:layout_constraintTop_toBottomOf="@id/name" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:textAlignment="viewStart"
+        android:textDirection="ltr"
+        android:textSize="@dimen/userDescFont"
+        app:layout_constraintBottom_toBottomOf="@id/photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/name"
+        app:layout_constraintTop_toBottomOf="@id/user" />
 
     <View
         android:id="@+id/sep"

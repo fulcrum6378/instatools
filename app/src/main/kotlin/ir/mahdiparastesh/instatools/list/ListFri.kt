@@ -5,6 +5,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Friends
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListFriBinding
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -26,6 +27,14 @@ class ListFri(val c: Friends) : RecyclerView.Adapter<AnyViewHolder<ListFriBindin
         Glide.with(c.c).load(fri.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${fri.name}"
         h.b.user.text = fri.user
+        h.b.status.text = StringBuilder().apply {
+            val sep = c.getString(R.string.friSep)
+            if (fri.follows) append(c.getString(R.string.friFollows)).append(sep)
+            if (fri.followed) append(c.getString(R.string.friFollowed)).append(sep)
+            //if (fri.muted) append(c.getString(R.string.friMuted)).append(sep)
+            //if (fri.restricted) append(c.getString(R.string.friRestricted)).append(sep)
+            delete(length - sep.length, length)
+        }.toString()
         h.b.root.setOnClickListener {
             val u = c.mm.friends.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             Viewer.comeHere(c, u.user)

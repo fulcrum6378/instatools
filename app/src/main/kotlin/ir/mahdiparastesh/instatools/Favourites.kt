@@ -1,29 +1,31 @@
 package ir.mahdiparastesh.instatools
 
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import androidx.lifecycle.MutableLiveData
+import android.view.View
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.more.UserListActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.vish
 
-class Favourites : BaseActivity() {
+class Favourites : UserListActivity() {
     private lateinit var b: FavouritesBinding
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
+    override val bRefresher: SwipeRefreshLayout get() = b.refresher
+    override val bRv: RecyclerView get() = b.rv
+    override val bTbShadow: View get() = b.tbShadow
+    override val bJumper: ImageView get() = b.jumper
 
-    companion object : ActivityCompanion() {
-        const val HANDLE_LOADED = 0
-    }
+    companion object : ActivityCompanion()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,25 +39,13 @@ class Favourites : BaseActivity() {
                     HANDLE_LOADED -> {
                         b.refresher.isRefreshing = false
                         adapt()
+                        updateCount(m.fav?.size ?: 0)
                     }
                 }
             }
         }
 
-        b.refresher.setOnRefreshListener { load() }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
-                updateJumper()
-            }
-        })
-        b.jumper.setOnClickListener { b.rv.smoothScrollToPosition(0) }
-        b.jumper.translationY = UiTools.jumperTrans(this)
-        shouldShowJumper.observe(this) {
-            anJumper?.cancel()
-            anJumper = UiTools.anJumper(this, b.jumper, it)
-        }
-
+        prepare()
         load()
     }
 
@@ -64,7 +54,7 @@ class Favourites : BaseActivity() {
         if (notFirstResume) load()
     }
 
-    private fun load() {
+    override fun load() {
         FavLoader(this).start()
     }
 
@@ -77,13 +67,6 @@ class Favourites : BaseActivity() {
             b.rv.vis(false)
             b.empty.vis(true)
         }
-    }
-
-    private var shouldShowJumper = MutableLiveData(false)
-    private var anJumper: ObjectAnimator? = null
-    private fun updateJumper() {
-        (b.rv.computeVerticalScrollOffset() > dm.heightPixels)
-            .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 
     class FavLoader(private val c: BaseActivity) : Thread() {
