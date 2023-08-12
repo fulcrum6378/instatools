@@ -4,5 +4,5 @@
     <size
         android:width="@dimen/fastScroll"
         android:height="@dimen/fastScroll" />
-    <solid android:color="?colorPrimaryHigh" />
+    <solid android:color="@color/defCAHigh" />
 </shape>

@@ -24,6 +24,7 @@
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="colorPrimaryHigh">@color/CSH</item>
         <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
@@ -33,27 +34,32 @@
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
+        <item name="colorPrimaryHigh">@color/CPH</item>
         <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="colorPrimaryHigh">@color/CSH</item>
         <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
+        <item name="colorPrimaryHigh">@color/CTH</item>
         <item name="defCA">@color/defCA</item>
         <item name="dmFromMe">@color/dmFromMe</item>
         <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
+    <attr name="colorPrimaryHigh" format="reference|color" />
     <attr name="defCA" format="reference|color" />
     <attr name="dmFromMe" format="reference|color" />
 
+    <!-- used for PdfExporter -->
     <style name="Theme.InstaTools.Tertiary.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/CT</item>
         <item name="colorPrimaryDark">?attr/colorPrimary</item>

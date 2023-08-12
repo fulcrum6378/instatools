@@ -15,7 +15,7 @@
     <dimen name="jumperPad">8.5dp</dimen>
     <dimen name="jumperBottom">27dp</dimen>
     <dimen name="jumperListPad">72dp</dimen>
-    <dimen name="fastScroll">20dp</dimen>
+    <dimen name="fastScroll">18dp</dimen>
 
     <!-- Login -->
     <dimen name="welAccountsMarTop">50dp</dimen>
