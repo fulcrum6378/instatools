@@ -6,17 +6,22 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
-import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
-import ir.mahdiparastesh.instatools.list.ListFav
+import ir.mahdiparastesh.instatools.data.Friend
+import ir.mahdiparastesh.instatools.databinding.FriendsBinding
+import ir.mahdiparastesh.instatools.list.ListFri
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
+import java.util.concurrent.CopyOnWriteArrayList
 
-class Favourites : BaseActivity() {
-    private lateinit var b: FavouritesBinding
+class Friends : BaseActivity() {
+    private lateinit var b: FriendsBinding
+    val mm: MyModel by viewModels()
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -25,11 +30,15 @@ class Favourites : BaseActivity() {
         const val HANDLE_LOADED = 0
     }
 
+    class MyModel : ViewModel() {
+        val friends = CopyOnWriteArrayList<Friend>()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = FavouritesBinding.inflate(layoutInflater)
+        b = FriendsBinding.inflate(layoutInflater)
         setContentView(b.root)
-        initToolbar(b.toolbar, R.string.favourites)
+        initToolbar(b.toolbar, R.string.friends)
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -59,19 +68,14 @@ class Favourites : BaseActivity() {
         load()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (notFirstResume) load()
-    }
-
     private fun load() {
-        FavLoader(this).start()
+        FriLoader().start()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun adapt() {
         if (m.fav!!.isNotEmpty()) {
-            if (b.rv.adapter == null) b.rv.adapter = ListFav(this)
+            if (b.rv.adapter == null) b.rv.adapter = ListFri(this)
             else b.rv.adapter?.notifyDataSetChanged()
         } else {
             b.rv.vis(false)
@@ -86,10 +90,11 @@ class Favourites : BaseActivity() {
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 
-    class FavLoader(private val c: BaseActivity) : Thread() {
+    inner class FriLoader : Thread() {
         override fun run() {
-            c.m.fav = ArrayList(c.dao.favourites())
-            c.m.fav?.sortBy { it.user }
+            mm.friends.clear()
+            mm.friends.addAll(dao.friends())
+            //mm.friends.sortBy { it.user }
             handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }
     }

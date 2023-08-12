@@ -81,6 +81,12 @@
         </activity>
 
         <activity
+            android:name=".Friends"
+            android:exported="false"
+            android:parentActivityName=".Main"
+            android:theme="@style/Theme.InstaTools.Primary" />
+
+        <activity
             android:name=".Favourites"
             android:exported="false"
             android:parentActivityName=".Main"

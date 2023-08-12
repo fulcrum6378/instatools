@@ -156,6 +156,10 @@
     <string name="dtImportLinks">Import links</string>
     <string name="dEmptyQueue">The download list is empty!</string>
 
+    <!-- Friends -->
+    <string name="friends">Friends</string>
+    <string name="friEmpty">You neither follow or are followed by anyone.</string>
+
     <!-- Favourites -->
     <string name="favourites">Favourites</string>
     <string name="favEmpty">

@@ -5,6 +5,10 @@
         android:icon="@drawable/download"
         android:title="@string/downloads" />
     <item
+        android:id="@+id/mnFriends"
+        android:icon="@drawable/friends"
+        android:title="@string/friends" />
+    <item
         android:id="@+id/mnFavourites"
         android:icon="@drawable/favourite"
         android:title="@string/favourites" />
