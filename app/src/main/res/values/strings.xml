@@ -111,6 +111,10 @@
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="svdEmpty">You have no saved posts!</string>
+    <string name="reallyHasNoMore">
+        You have had %d more posts saved; but they\'re apparently hidden in any way!
+        (blocked, archived, private or&#8230;)
+    </string>
 
     <!-- PageBox -->
     <string name="boxUntil">Until %s</string>

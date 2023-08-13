@@ -102,9 +102,7 @@ class GraphQl(val data: GraphQlData?) : Rest() {
         var page_info: PageInfo,
         var count: Double,
         var edges: CopyOnWriteArrayList<EdgePost>
-    )/* {
-        fun hiddenItems() = count.toInt() - edges.size
-    }*/
+    )
 
     class PageInfo(/*val has_next_page: Boolean, */val end_cursor: String)
 

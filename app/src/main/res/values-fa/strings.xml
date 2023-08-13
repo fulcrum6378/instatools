@@ -100,6 +100,10 @@
     <string name="downloadOnly">فقط دانلود</string>
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
     <string name="svdEmpty">شما هیچ پستی را ذخیره نکرده اید!</string>
+    <string name="reallyHasNoMore">
+        شما %d پست ذخیره شده دیگر دارید؛ اما ظاهرا آنها یا حذف شده یا به هر دلیل دیگری پنهان شده اند!
+        (بلاک، آرشیو، اکانت خصوصی یا&#8230;)
+    </string>
 
     <!-- PageBox -->
     <string name="boxUntil">تا %s</string>

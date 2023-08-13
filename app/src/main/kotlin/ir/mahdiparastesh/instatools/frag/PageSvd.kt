@@ -53,6 +53,7 @@ class PageSvd : BasePageMain(), Selective {
     var thread: FetchSome? = null
     var saver: Saver? = null
     private var selectionGuide: LottieAnimationView? = null
+    private var reallyHasMore = true
     val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: PageCompanion = Companion
@@ -95,6 +96,13 @@ class PageSvd : BasePageMain(), Selective {
             }
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
+        HANDLE_REALLY_NO_MORE to {
+            val number =
+                c.mm.savedCount.value?.let { a -> c.mm.saved?.items?.size?.let { b -> a - b } }
+            if (number != null && number > 0) UiTools.snackbar(
+                b.root, c.getString(R.string.reallyHasNoMore, number), 10000, c.b.bnv
+            )
+        },
     )
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
@@ -102,6 +110,7 @@ class PageSvd : BasePageMain(), Selective {
     companion object : PageCompanion() {
         const val HANDLE_UNSAVE_DONE = 10
         const val HANDLE_INIT_QUEUER = 11
+        const val HANDLE_REALLY_NO_MORE = 13
     }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -117,7 +126,7 @@ class PageSvd : BasePageMain(), Selective {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1) &&
+                if (!b.rv.canScrollVertically(1) && reallyHasMore &&
                     thread?.active != true && c.mm.saved?.more_available != false
                 ) thread = FetchSome().also { it.start() }
             }
@@ -142,6 +151,7 @@ class PageSvd : BasePageMain(), Selective {
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
         tracker?.clearSelection()
+        reallyHasMore = true
         thread = FetchSome().also { it.start() }
         c.updateProfile()
     }
@@ -287,19 +297,23 @@ class PageSvd : BasePageMain(), Selective {
                 if (wrapper.items == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
-                if (c.mm.saved == null) {
-                    c.mm.saved = wrapper
-                    handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                } else c.mm.saved?.apply {
-                    val lastBefore = items!!.size
-                    items!!.addAll(wrapper.items!!)
-                    more_available = wrapper.more_available
-                    next_max_id = wrapper.next_max_id
-                    num_results = wrapper.num_results
-                    handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
-                        ?.sendToTarget()
+                if (wrapper.items!!.isEmpty()) {
+                    reallyHasMore = false
+                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
+                    if (c.mm.saved == null) {
+                        c.mm.saved = wrapper
+                        handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                    } else c.mm.saved?.apply {
+                        val lastBefore = items!!.size
+                        items!!.addAll(wrapper.items!!)
+                        more_available = wrapper.more_available
+                        next_max_id = wrapper.next_max_id
+                        num_results = wrapper.num_results
+                        handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
+                            ?.sendToTarget()
+                    }
+                    interrupt()
                 }
-                interrupt()
             }
         }
     }
