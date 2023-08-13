@@ -135,6 +135,10 @@ class Api<JSON>(
         /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/
         FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
+        /*MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
+        UNMUTE("https://www.instagram.com/api/v1/friendships/unmute_posts_or_story_from_follow/"),
+        // method = POST, "target_posts_author_id=<USER_ID>" AND(using &)/OR "target_reel_author_id=<USER_ID>",
+        // expect Rest$Friendships*/
         /*RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
         UNRESTRICT("https://www.instagram.com/api/v1/web/restrict_action/unrestrict/"),
         // method = POST, body = "target_user_id=<USER_ID>", expect "{"status":"ok"}" */
