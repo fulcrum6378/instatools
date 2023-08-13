@@ -95,7 +95,11 @@ class Friends : UserListActivity() {
                 this@Friends, Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
                 handler, "user_ids=" + mm.friends.joinToString(",") { it.id },
                 method = Request.Method.POST
-            ) { friendships -> mm.statuses = friendships.friendship_statuses; done() }
+            ) { friendships ->
+                mm.statuses = friendships.friendship_statuses
+                // TODO
+                done()
+            }
         }
 
         private fun done() {

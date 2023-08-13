@@ -24,6 +24,8 @@ class ListFri(val c: Friends) : RecyclerView.Adapter<AnyViewHolder<ListFriBindin
 
     override fun onBindViewHolder(h: AnyViewHolder<ListFriBinding>, i: Int) {
         val fri = c.mm.friends.getOrNull(i) ?: return
+        val status = c.mm.statuses?.get(fri.id)
+
         Glide.with(c.c).load(fri.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${fri.name}"
         h.b.user.text = fri.user
@@ -35,7 +37,9 @@ class ListFri(val c: Friends) : RecyclerView.Adapter<AnyViewHolder<ListFriBindin
                 if (fri.priv) append(" (").append(c.getString(R.string.friPrivate)).append(")")
                 append(sep)
             }
-            if (c.mm.statuses?.get(fri.id)?.is_restricted == true)
+            if (status?.is_bestie == true)
+                append(c.getString(R.string.friBestie)).append(sep)
+            if (status?.is_restricted == true)
                 append(c.getString(R.string.friRestricted)).append(sep)
             //if (fri.muted) append(c.getString(R.string.friMuted)).append(sep)
             delete(length - sep.length, length)

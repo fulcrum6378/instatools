@@ -14,11 +14,26 @@ class Friend(
     var priv: Boolean,
     var follows: Boolean,
     var followed: Boolean,
-    var unfollowedMeAt: Long? = null,
-    @Ignore @Transient var inFav: Boolean = false,
-    @Ignore @Transient var unfollowed: Boolean = false,
+    var unfollowedMeAt: Long? = null
 ) {
     constructor() : this("", "", "", "", false, false, false)
+
+    @Ignore
+    @Transient
+    var inFav: Boolean = false
+    @Ignore
+    @Transient
+    var unfollowed: Boolean = false
+
+    @Ignore
+    @Transient
+    var bestie: Boolean = false
+    @Ignore
+    @Transient
+    var restricted: Boolean = false
+    /*@Ignore
+    @Transient
+    var muted: Boolean = false*/
 
     fun toFavourite() = Favourite(id, user, name, pict, priv)
 
