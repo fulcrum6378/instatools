@@ -7,12 +7,17 @@ import android.os.Looper
 import android.os.Message
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.android.volley.NetworkResponse
+import com.android.volley.Request
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.FriendsBinding
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListFri
 import ir.mahdiparastesh.instatools.more.UserListActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -33,6 +38,7 @@ class Friends : UserListActivity() {
 
     class MyModel : ViewModel() {
         val friends = CopyOnWriteArrayList<Friend>()
+        var statuses: Map<String, Rest.FriendshipStatus>? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +55,14 @@ class Friends : UserListActivity() {
                         b.refresher.isRefreshing = false
                         adapt()
                         updateCount(mm.friends.size)
+                    }
+                    Api.HANDLE_ERROR -> {
+                        val res = msg.obj as? NetworkResponse
+                        Toast.makeText(
+                            this@Friends, res?.statusCode.toString() + ": " +
+                                (res?.data?.toString(Charsets.UTF_8) ?: "null"),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -77,6 +91,14 @@ class Friends : UserListActivity() {
         override fun run() {
             mm.friends.clear()
             mm.friends.addAll(dao.friends())
+            Api<Rest.Friendships>(
+                this@Friends, Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
+                handler, "user_ids=" + mm.friends.joinToString(",") { it.id },
+                method = Request.Method.POST
+            ) { friendships -> mm.statuses = friendships.friendship_statuses; done() }
+        }
+
+        private fun done() {
             mm.friends.sortBy { it.user }
             handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }

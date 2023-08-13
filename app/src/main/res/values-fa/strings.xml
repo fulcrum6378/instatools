@@ -148,8 +148,9 @@
     <string name="friEmpty">شما نه کسی را دنبال کرده اید، نه کسی شما را دنبال میکند.</string>
     <string name="friFollows">دنبال کننده</string>
     <string name="friFollowed">دنبال شونده</string>
-    <!--<string name="friMuted">بی صدا شده</string>
-    <string name="friRestricted">ممنوع شده</string>-->
+    <string name="friPrivate">خصوصی</string>
+    <string name="friRestricted">ممنوع شده</string>
+    <!--<string name="friMuted">بی صدا شده</string>-->
     <string name="friSep" translatable="false">،&#160;</string>
 
     <!-- Favourites -->

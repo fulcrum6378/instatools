@@ -30,9 +30,14 @@ class ListFri(val c: Friends) : RecyclerView.Adapter<AnyViewHolder<ListFriBindin
         h.b.status.text = StringBuilder().apply {
             val sep = c.getString(R.string.friSep)
             if (fri.follows) append(c.getString(R.string.friFollows)).append(sep)
-            if (fri.followed) append(c.getString(R.string.friFollowed)).append(sep)
+            if (fri.followed) {
+                append(c.getString(R.string.friFollowed))
+                if (fri.priv) append(" (").append(c.getString(R.string.friPrivate)).append(")")
+                append(sep)
+            }
+            if (c.mm.statuses?.get(fri.id)?.is_restricted == true)
+                append(c.getString(R.string.friRestricted)).append(sep)
             //if (fri.muted) append(c.getString(R.string.friMuted)).append(sep)
-            //if (fri.restricted) append(c.getString(R.string.friRestricted)).append(sep)
             delete(length - sep.length, length)
         }.toString()
         h.b.root.setOnClickListener {

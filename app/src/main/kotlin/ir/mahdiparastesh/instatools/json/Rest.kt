@@ -56,24 +56,24 @@ open class Rest {
         //val should_limit_list_of_followers: Boolean,
     ) : Rest()
 
-    /*class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()*/
+    class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()
 
-    /*class FriendshipStatus(
-        val blocking: Boolean, // only in mute/unmute
-        val followed_by: Boolean, // only in mute/unmute
+    class FriendshipStatus(
+        //val blocking: Boolean?, // only in mute/unmute
+        //val followed_by: Boolean?, // only in mute/unmute
         val following: Boolean,
-        val incoming_request: Boolean, // only in friendships
+        val incoming_request: Boolean?, // only in friendships
         val is_bestie: Boolean,
-        val is_blocking_reel: Boolean, // only in friendships
-        val is_eligible_to_subscribe: Boolean, // only in mute/unmute
-        val is_feed_favorite: Boolean, // only in friendships
-        val is_muting_reel: Boolean, // only in reels_tray
-        val is_private: Boolean, // only in friendships
-        val is_restricted: Boolean, // only in friendships
-        val muting: Boolean, // only in reels_tray
+        val is_blocking_reel: Boolean?, // only in friendships
+        //val is_eligible_to_subscribe: Boolean?, // only in mute/unmute
+        val is_feed_favorite: Boolean?, // only in friendships
+        val is_muting_reel: Boolean?, // only in reels_tray
+        val is_private: Boolean?, // only in friendships
+        val is_restricted: Boolean?, // only in friendships
+        val muting: Boolean?, // only in reels_tray
         val outgoing_request: Boolean,
-        //val subscribed: Boolean, // only in mute/unmute
-    )*/
+        //val subscribed: Boolean?, // only in mute/unmute
+    )
 
     class InboxPage(
         //val has_pending_top_requests: Boolean,

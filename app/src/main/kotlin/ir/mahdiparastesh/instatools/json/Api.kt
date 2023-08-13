@@ -131,8 +131,8 @@ class Api<JSON>(
         // Interactions (always use "?count=" for more accurate results)
         FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
         FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
-
-        /*FRIENDSHIPS("https://www.instagram.com/api/v1/friendships/show_many/"),*/
+        FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
+        // method = POST, "user_ids=<ids separated by ",">", expect Rest$Friendships
         FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
         /*MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
