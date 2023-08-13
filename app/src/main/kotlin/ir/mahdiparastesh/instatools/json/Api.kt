@@ -131,8 +131,9 @@ class Api<JSON>(
         // Interactions (always use "?count=" for more accurate results)
         FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
         FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
-        FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
-        // method = POST, "user_ids=<ids separated by ",">", expect Rest$Friendships
+        FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"), /*
+        // method = POST, "user_ids=<ids separated by ",">", expect Rest$Friendships *//*
+        FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"), // GET */
         FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
         /*MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
@@ -154,9 +155,8 @@ class Api<JSON>(
 
         // Messaging
         INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),
-
-        /* persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
+        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),/*
+        // persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
         // Avoiding "limit" argument will default to 20, but can be more than that. */
         SEEN("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 

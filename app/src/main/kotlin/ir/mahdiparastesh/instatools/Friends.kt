@@ -38,7 +38,6 @@ class Friends : UserListActivity() {
 
     class MyModel : ViewModel() {
         val friends = CopyOnWriteArrayList<Friend>()
-        var statuses: Map<String, Rest.FriendshipStatus>? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,14 +95,18 @@ class Friends : UserListActivity() {
                 handler, "user_ids=" + mm.friends.joinToString(",") { it.id },
                 method = Request.Method.POST
             ) { friendships ->
-                mm.statuses = friendships.friendship_statuses
-                // TODO
+                for (f in mm.friends) friendships.friendship_statuses[f.id]?.also {
+                    f.bestie = it.is_bestie
+                    f.feedFav = it.is_feed_favorite == true
+                    f.restricted = it.is_restricted == true
+                }
                 done()
             }
         }
 
         private fun done() {
-            mm.friends.sortBy { it.user }
+            //mm.friends.sortBy { it.bestie }
+            //mm.friends.sortBy { it.feedFav }
             handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }
     }

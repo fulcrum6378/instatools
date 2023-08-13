@@ -30,6 +30,9 @@ class Friend(
     var bestie: Boolean = false
     @Ignore
     @Transient
+    var feedFav: Boolean = false
+    @Ignore
+    @Transient
     var restricted: Boolean = false
     /*@Ignore
     @Transient

@@ -156,7 +156,8 @@ class PageUnf : BasePageMain() {
 
 
     /**
-     * Fetches lists of followers and following and sorts out the unfollowers.
+     * Fetches lists of following and then followers, saves them in the database (Friend)
+     * and then sorts out the unfollowers.
      *
      * Notes for debugging:
      * - Even after 10 seconds of delay between each fetch, IG signed me out!
@@ -178,7 +179,7 @@ class PageUnf : BasePageMain() {
         override fun run() {
             super.run()
             runBlocking { oldFriends = c.dao.friends() }
-            allFollow(theFollowers = true)
+            allFollow(theFollowers = false)
         }
 
         /**
@@ -207,7 +208,7 @@ class PageUnf : BasePageMain() {
                     )
                 }
                 if (flw.next_max_id == null) {
-                    if (theFollowers) allFollow(theFollowers = false)
+                    if (!theFollowers) allFollow(theFollowers = true)
                     else CoroutineScope(Dispatchers.IO).launch { ended() }
                 } else HumanDelay { allFollow(flw.next_max_id, theFollowers) }
             }

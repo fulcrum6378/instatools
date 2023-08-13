@@ -438,7 +438,11 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 }
 
 /* TODO:
-  * Problems:
+  * New Problems:
+  * Friendships/show_many hits a limit
+  * Create a loading procedure for Friends
+  * -
+  * Old Problems:
   * Warn or do something in Downloads when using the guest mode
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
@@ -451,10 +455,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * View post/story in Instatools intent filter
   * Max slides for HtmlExporter
   * Bring Nth post; navigate through large profiles
-  * Find a way to show muted and restricted statuses in Friends
+  * Find a way to show muted statuses in Friends
   * -
   * Extensions which need comprehending Instagram APK file:
-  * Live Live downloader
   * Export/import blocked accounts lists from/into different accounts of one's
   * Batch Unsave API
   * -
