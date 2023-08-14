@@ -448,9 +448,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Conditional jump to bottom
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
-  * View post/story in Instatools intent filter
   * Max slides for HtmlExporter
-  * Bring Nth post; navigate through large profiles
   * Find a way to show muted statuses in Friends
   * -
   * Extensions which need comprehending Instagram APK file:

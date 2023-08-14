@@ -64,7 +64,7 @@ class PageUnf : BasePageMain() {
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
                         ?: 0L)) > 86400000
                 ) thread = Inquiry(c).also { it.start() }
-                else onLoaded(isNullOrEmpty())
+                else onLoaded(isNullOrEmpty(), false)
             }
         },
         HANDLE_FETCHED to {
@@ -124,7 +124,7 @@ class PageUnf : BasePageMain() {
         super.onViewCreated(view, savedInstanceState)
         if (Main.guest) return
 
-        if (c.mm.unfollowers.value != null) onLoaded(c.mm.unfollowers.value.isNullOrEmpty())
+        if (c.mm.unfollowers.value != null) onLoaded(c.mm.unfollowers.value.isNullOrEmpty(), false)
         else load(true)
     }
 

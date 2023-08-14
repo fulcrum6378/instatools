@@ -106,6 +106,7 @@ class Api<JSON>(
     enum class Endpoint(val url: String) {
         // Profiles
         PROFILE("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
+        INFO("https://www.instagram.com/api/v1/users/%s/info/"),
         SEARCH(
             "https://www.instagram.com/api/v1/web/search/topsearch/?context=blended&query=%s" +
                 "&include_reel=false&search_surface=web_top_search"

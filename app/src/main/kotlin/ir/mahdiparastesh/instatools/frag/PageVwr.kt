@@ -58,7 +58,7 @@ class PageVwr : BasePageViewer() {
             if (b.rv.adapter != null && msg.arg2 > 0) {
                 super.onLoaded(c.mm.vwUser?.edges().isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
+            } else onLoaded(c.mm.vwUser?.edges().isNullOrEmpty(), false)
 
             if (c.mm.vwUser?.hasMore() == true && thread?.active != true
                 && !b.rv.canScrollVertically(1)

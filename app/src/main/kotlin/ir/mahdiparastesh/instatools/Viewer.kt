@@ -19,7 +19,9 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media2.common.SessionPlayer
+import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
@@ -41,6 +43,7 @@ import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
+import ir.mahdiparastesh.instatools.view.UiTools.snackbar
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +63,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
     val mm: MyModel by viewModels()
+    private var lazyUserName = false
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
@@ -104,20 +108,21 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     }
                     HANDLE_ABORTED -> {
                         b.refresher.isRefreshing = false
-                        UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                        snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
                     }
                     Api.HANDLE_ERROR -> {
                         b.refresher.isRefreshing = false
-                        UiTools.snackbar(
+                        snackbar(
                             b.root, c.getString(
                                 R.string.unknownError,
                                 (msg.obj as NetworkResponse?)?.statusCode.toString()
-                            ), Snackbar.LENGTH_SHORT
+                            ),
+                            Snackbar.LENGTH_SHORT
                         )
                     }
                     PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Expandable.HANDLE_EXPANDABLE_ERROR ->
-                        UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
+                        snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
                 }
             }
         }
@@ -127,11 +132,11 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (thread?.active != true) thread = Initial().also { it.start() }
         }
         b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)?.avoidRefresh()
-                ?: false
+            return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)
+                ?.avoidRefresh() ?: false
         }
 
-        load(true)
+        if (!lazyUserName) load(true)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -139,6 +144,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (!onCreation && user == it) return false
             if (user != it) mm.vwUser = null
             user = it
+            if (!onCreation) gotNewUserName()
         }
         intent.data?.let {
             var newUser: String? = null
@@ -148,20 +154,62 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (newUser == null) return@let
             if (!onCreation && newUser == it.toString()) return false
             user = newUser
+            if (!onCreation) gotNewUserName()
         }
-        if (!onCreation) {
-            load()
-            b.toolbar.title = user
-            if (page1?.bInitialised == true)
-                page1?.rv()?.adapter = null
-            if (page2?.bInitialised == true) {
-                page2?.proPicIv?.setImageDrawable(null)
-                page2?.privateAcc?.vis(false)
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.also { link ->
+            lazyUserName = true
+            reqQueue.adder = object : StringRequest(link, { html ->
+                // HTML contains usernames only in meta tags along with other texts!
+                // PageConfig does not contain username!
+                val userId = html
+                    .substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
+                    .substringBefore("\"")
+                reqQueue.adder = Api<Rest.UserInfo>(
+                    this@Viewer, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
+                    null, autoQueue = false, onError =
+                    { lazyUserNameError(onCreation) }
+                ) { info ->
+                    user = info.user.username
+                    if (onCreation) {
+                        load()
+                        b.toolbar.title = user
+                    } else gotNewUserName()
+                }
+                // In case if you wanna somehow find the media which is so hard:
+                /*PageConfig.findFromHtml(
+                    html, false, { lazyUserNameError(onCreation) }, null, null
+                ) { cnfWrapper -> }*/
+            }, { lazyUserNameError(onCreation) }) {
+                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
+            }.apply {
+                setShouldCache(false)
+                tag = "viewer_handle_link"
+                retryPolicy = DefaultRetryPolicy(
+                    Api.DEFAULT_TIMEOUT, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                )
             }
-            if (page3?.bInitialised == true)
-                page3?.rv()?.adapter = null
         }
         return true
+    }
+
+    @Suppress("DEPRECATION")
+    private fun lazyUserNameError(onCreation: Boolean) {
+        if (BuildConfig.DEBUG) throw Exception()
+        if (onCreation) super.onBackPressed()
+        else snackbar(b.root, R.string.unknownError, Snackbar.LENGTH_LONG)
+    }
+
+    private fun gotNewUserName() {
+        load()
+        b.toolbar.title = user
+        if (page1?.bInitialised == true)
+            page1?.rv()?.adapter = null
+        if (page2?.bInitialised == true) {
+            page2?.proPicIv?.setImageDrawable(null)
+            page2?.privateAcc?.vis(false)
+        }
+        if (page3?.bInitialised == true)
+            page3?.rv()?.adapter = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

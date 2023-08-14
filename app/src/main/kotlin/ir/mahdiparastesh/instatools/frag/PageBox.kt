@@ -81,7 +81,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (c.mm.dmThread == null) {
-                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty(), false)
                 if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
                 ) boxThread = FetchOfInbox().also { it.start() }
             } else if (msg.obj != null) {
@@ -142,7 +142,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             }
         })
 
-        if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+        if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty(), false)
         else if (boxThread?.active != true) boxThread = FetchOfInbox().also { it.start() }
     }
 
@@ -336,7 +336,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 jumper()?.vis(true)
                 expandable.collapse(); return true; }
             c.mm.dmThread = null
-            onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+            onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty(), false)
             return true; }
         return false
     }

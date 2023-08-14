@@ -237,7 +237,7 @@ class Media(
         //var auto_load_more_enabled: Boolean,
         var items: CopyOnWriteArrayList<Saved>?,
         var more_available: Boolean,
-        var next_max_id: String?,
+        var next_max_id: String?, // I couldn't figure out what the heck it means!
         //var num_results: Float, // useless
     ) : Rest()
 }

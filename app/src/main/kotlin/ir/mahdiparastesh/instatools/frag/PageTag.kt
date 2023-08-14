@@ -36,7 +36,7 @@ class PageTag : BasePageViewer() {
             if (b.rv.adapter != null && msg.arg2 > 0) {
                 super@PageTag.onLoaded(c.mm.vwTagged?.items.isNullOrEmpty(), false)
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.vwTagged?.items.isNullOrEmpty())
+            } else onLoaded(c.mm.vwTagged?.items.isNullOrEmpty(), false)
 
             if (c.mm.vwTagged?.more_available == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true

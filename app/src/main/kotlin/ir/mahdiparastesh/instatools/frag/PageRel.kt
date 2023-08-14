@@ -28,7 +28,7 @@ class PageRel : BasePageViewer() {
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty()) },
+        HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty(), false) },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
         Api.HANDLE_ERROR to {
             onFailed(

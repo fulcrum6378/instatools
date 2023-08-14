@@ -65,6 +65,8 @@ class Friends : UserListActivity(), OnlineDataLoader {
             }
         }
 
+
+
         prepareListing(this)
         error()?.setOnClickListener {
             b.refresher.isRefreshing = true

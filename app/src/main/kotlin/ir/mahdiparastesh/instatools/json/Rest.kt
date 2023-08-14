@@ -79,6 +79,11 @@ open class Rest {
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
     )
 
+    class UserInfo(
+        //val recs_from_friends: Map<String, *>?,
+        val user: User,
+    ) : Rest()
+
     class InboxPage(
         //val has_pending_top_requests: Boolean,
         val inbox: Dm.Inbox,

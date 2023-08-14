@@ -90,7 +90,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
             finish()
             return; }
 
-        if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND)) {
+        if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND, Intent.ACTION_VIEW)) {
             incrementCounter(Settings.spOpenAppCount)
             if (!gsp.contains(Settings.spFirstOpenApp))
                 gsp.edit { putLong(Settings.spFirstOpenApp, Persistent.now()) }
