@@ -63,7 +63,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
     val mm: MyModel by viewModels()
-    private var lazyUserName = false
+    private var findUserNameFromLink: String? = null
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
@@ -136,7 +136,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 ?.avoidRefresh() ?: false
         }
 
-        if (!lazyUserName) load(true)
+        if (findUserNameFromLink == null) load(true)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -157,39 +157,49 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (!onCreation) gotNewUserName()
         }
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also { link ->
-            lazyUserName = true
-            reqQueue.adder = object : StringRequest(link, { html ->
-                // HTML contains usernames only in meta tags along with other texts!
-                // PageConfig does not contain username!
-                val userId = html
-                    .substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
-                    .substringBefore("\"")
-                reqQueue.adder = Api<Rest.UserInfo>(
-                    this@Viewer, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
-                    null, autoQueue = false, onError =
-                    { lazyUserNameError(onCreation) }
-                ) { info ->
-                    user = info.user.username
-                    if (onCreation) {
-                        load()
-                        b.toolbar.title = user
-                    } else gotNewUserName()
-                }
-                // In case if you wanna somehow find the media which is so hard:
-                /*PageConfig.findFromHtml(
-                    html, false, { lazyUserNameError(onCreation) }, null, null
-                ) { cnfWrapper -> }*/
-            }, { lazyUserNameError(onCreation) }) {
-                override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
-            }.apply {
-                setShouldCache(false)
-                tag = "viewer_handle_link"
-                retryPolicy = DefaultRetryPolicy(
-                    Api.DEFAULT_TIMEOUT, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-                )
-            }
+            findUserNameFromLink = link
+            if (m.acc != null) findUserName(onCreation)
         }
         return true
+    }
+
+    override fun onAccountSet() {
+        super.onAccountSet()
+        if (findUserNameFromLink != null) findUserName(true)
+    }
+
+    private fun findUserName(onCreation: Boolean) {
+        reqQueue.adder = object : StringRequest(findUserNameFromLink!!, { html ->
+            // HTML contains usernames only in meta tags along with other texts!
+            // PageConfig does not contain username!
+            val userId = html
+                .substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
+                .substringBefore("\"")
+            reqQueue.adder = Api<Rest.UserInfo>(
+                this@Viewer, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
+                null, autoQueue = false, onError =
+                { lazyUserNameError(onCreation) }
+            ) { info ->
+                user = info.user.username
+                findUserNameFromLink = null
+                if (onCreation) {
+                    load()
+                    b.toolbar.title = user
+                } else gotNewUserName()
+            }
+            // In case if you wanna somehow find the media which is so hard:
+            /*PageConfig.findFromHtml(
+                html, false, { lazyUserNameError(onCreation) }, null, null
+            ) { cnfWrapper -> }*/
+        }, { lazyUserNameError(onCreation) }) {
+            override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
+        }.apply {
+            setShouldCache(false)
+            tag = "viewer_handle_link"
+            retryPolicy = DefaultRetryPolicy(
+                Api.DEFAULT_TIMEOUT, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+            )
+        }
     }
 
     @Suppress("DEPRECATION")
