@@ -6,8 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.View
-import android.widget.ImageView
-import androidx.recyclerview.widget.RecyclerView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
@@ -20,10 +19,10 @@ class Favourites : UserListActivity() {
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
+    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
+    override val bInitialised: Boolean get() = ::b.isInitialized
     override val bRefresher: SwipeRefreshLayout get() = b.refresher
-    override val bRv: RecyclerView get() = b.rv
     override val bTbShadow: View get() = b.tbShadow
-    override val bJumper: ImageView get() = b.jumper
 
     companion object : ActivityCompanion()
 
@@ -45,7 +44,7 @@ class Favourites : UserListActivity() {
             }
         }
 
-        prepare()
+        prepareListing(this)
         load()
     }
 

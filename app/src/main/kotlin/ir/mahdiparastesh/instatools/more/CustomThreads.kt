@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
  * Subclass of Thread with a boolean field named "active" which indicates whether the thread is
  * still working or not.
  */
-open class BaseThread : Thread() {
+abstract class BaseThread : Thread() {
     var active = false
 
     override fun run() {

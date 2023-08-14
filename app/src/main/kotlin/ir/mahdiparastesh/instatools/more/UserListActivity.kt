@@ -3,53 +3,44 @@ package ir.mahdiparastesh.instatools.more
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.view.DataLoader
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
-abstract class UserListActivity : BaseActivity() {
+abstract class UserListActivity : BaseActivity(), DataLoader {
     private var countBadge: BadgeDrawable? = null
 
     abstract val bRefresher: SwipeRefreshLayout
-    abstract val bRv: RecyclerView
     abstract val bTbShadow: View
-    abstract val bJumper: ImageView
+    override val heightPixels: Int by lazy { dm.heightPixels }
+    override var shouldShowJumper = MutableLiveData(false)
+    override var anJumper: ObjectAnimator? = null
 
     companion object {
         const val HANDLE_LOADED = 0
     }
 
-    protected fun prepare() {
+    override fun prepareListing(c: BaseActivity) {
         bRefresher.setOnRefreshListener { load() }
-        bRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                bTbShadow.vish(bRv.computeVerticalScrollOffset() > 0)
-                updateJumper()
-            }
-        })
-        bJumper.setOnClickListener { bRv.smoothScrollToPosition(0) }
-        bJumper.translationY = UiTools.jumperTrans(this)
-        shouldShowJumper.observe(this) {
-            anJumper?.cancel()
-            anJumper = UiTools.anJumper(this, bJumper, it)
-        }
+        super.prepareListing(c)
     }
 
     abstract fun load()
 
-    private var shouldShowJumper = MutableLiveData(false)
-    private var anJumper: ObjectAnimator? = null
-    private fun updateJumper() {
-        (bRv.computeVerticalScrollOffset() > dm.heightPixels)
-            .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
+    override fun updateShadow() {
+        if (bInitialised) bTbShadow.vish(rv()!!.computeVerticalScrollOffset() > 0)
+    }
+
+    override fun onRecyclerViewScrolled() {
+        super.onRecyclerViewScrolled()
+        updateShadow()
     }
 
     @SuppressLint("UnsafeOptInUsageError")

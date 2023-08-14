@@ -20,7 +20,6 @@ import ir.mahdiparastesh.instatools.view.UiTools.vish
 abstract class BasePageViewer : BasePage<Viewer>(), Selective {
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
-
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 
     open fun avoidRefresh(): Boolean =

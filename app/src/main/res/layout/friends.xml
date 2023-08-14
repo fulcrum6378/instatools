@@ -31,6 +31,14 @@
         android:text="@string/friEmpty"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/error"
+        style="@style/simpleError" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/loading"
+        style="@style/simpleLoading" />
+
     <View
         android:id="@+id/tbShadow"
         style="@style/tbShadow" />

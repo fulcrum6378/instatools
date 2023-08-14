@@ -166,7 +166,7 @@
     <string name="friFollows">follower</string>
     <string name="friFollowed">following</string>
     <string name="friPrivate">private</string>
-    <string name="friBestie">close</string>
+    <string name="friBestie">close friend</string>
     <string name="friRestricted">restricted</string>
     <!--<string name="friMuted">muted</string>-->
     <string name="friSep" translatable="false">,&#160;</string>

@@ -438,11 +438,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 }
 
 /* TODO:
-  * New Problems:
-  * Friendships/show_many hits a limit
-  * Create a loading procedure for Friends
-  * -
-  * Old Problems:
+  * Problems:
   * Warn or do something in Downloads when using the guest mode
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
