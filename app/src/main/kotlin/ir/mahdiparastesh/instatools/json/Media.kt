@@ -238,6 +238,6 @@ class Media(
         var items: CopyOnWriteArrayList<Saved>?,
         var more_available: Boolean,
         var next_max_id: String?,
-        var num_results: Float,
+        //var num_results: Float, // useless
     ) : Rest()
 }

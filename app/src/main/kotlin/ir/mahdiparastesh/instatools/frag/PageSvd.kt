@@ -300,20 +300,19 @@ class PageSvd : BasePageMain(), Selective {
                 if (wrapper.items!!.isEmpty()) {
                     reallyHasMore = false
                     handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
-                    if (c.mm.saved == null) {
-                        c.mm.saved = wrapper
-                        handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                    } else c.mm.saved?.apply {
-                        val lastBefore = items!!.size
-                        items!!.addAll(wrapper.items!!)
-                        more_available = wrapper.more_available
-                        next_max_id = wrapper.next_max_id
-                        num_results = wrapper.num_results
-                        handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
-                            ?.sendToTarget()
-                    }
-                    interrupt()
+                    interrupt(); return@Api; }
+                if (c.mm.saved == null) {
+                    c.mm.saved = wrapper
+                    handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+                } else c.mm.saved?.apply {
+                    val lastBefore = items!!.size
+                    items!!.addAll(wrapper.items!!)
+                    more_available = wrapper.more_available
+                    next_max_id = wrapper.next_max_id
+                    handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
+                        ?.sendToTarget()
                 }
+                interrupt()
             }
         }
     }
