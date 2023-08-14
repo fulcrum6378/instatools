@@ -142,6 +142,10 @@
     <string name="dtExportLinks">استخراج لینک ها</string>
     <string name="dtImportLinks">وارد کردن لینک ها</string>
     <string name="dEmptyQueue">فهرست دانلود خالی است!</string>
+    <string name="dGuestSure">
+        شما در حالت مهمان هستید و اینستاگرام ممکن است بدون ورود به شما اجازه دانلود ندهد!
+        آیا میخواهید ادامه دهید؟
+    </string>
 
     <!-- Friends -->
     <string name="friends">دوستان</string>

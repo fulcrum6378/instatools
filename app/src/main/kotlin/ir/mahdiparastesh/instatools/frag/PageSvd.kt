@@ -67,9 +67,9 @@ class PageSvd : BasePageMain(), Selective {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super@PageSvd.onLoaded(c.mm.saved?.items.isNullOrEmpty(), false)
+                super@PageSvd.onLoaded(c.mm.saved?.items.isNullOrEmpty())
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.saved?.items.isNullOrEmpty(), false)
+            } else onLoaded(c.mm.saved?.items.isNullOrEmpty())
 
             if (c.mm.saved?.more_available == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
@@ -92,7 +92,7 @@ class PageSvd : BasePageMain(), Selective {
                 c.mm.saved!!.items!!.removeAt(x)
                 b.rv.adapter?.notifyItemRemoved(x)
                 b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items!!.size)
-                if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true, asGuest = false)
+                if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
             }
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
@@ -136,7 +136,7 @@ class PageSvd : BasePageMain(), Selective {
                 super.canScrollVertically() && selectionGuide == null
         }
 
-        if (c.mm.saved != null) onLoaded(c.mm.saved?.items.isNullOrEmpty(), false)
+        if (c.mm.saved != null) onLoaded(c.mm.saved?.items.isNullOrEmpty())
         else if (thread?.active != true) thread = FetchSome().also { it.start() }
     }
 
@@ -156,14 +156,14 @@ class PageSvd : BasePageMain(), Selective {
         c.updateProfile()
     }
 
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        super.onLoaded(isEmpty, asGuest)
+    override fun onLoaded(isEmpty: Boolean) {
+        super.onLoaded(isEmpty)
 
         if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
 
         // Selection Guide
-        if (!asGuest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, false)
+        if (!Main.guest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, false)
             && selectionGuide == null
         ) selectionGuide = LottieAnimationView(c).apply {
             layoutParams = ConstraintLayout.LayoutParams(

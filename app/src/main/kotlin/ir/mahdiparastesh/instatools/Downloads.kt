@@ -164,8 +164,14 @@ class Downloads : ServiceOwnerActivity() {
                 }.show()
                 return@also
             }
-            initService(this, it)
             handledLinks.add(it)
+            if (!Main.guest) initService(this, it)
+            else MaterialAlertDialogBuilder(this).apply {
+                setTitle(R.string.downloads)
+                setMessage(R.string.dGuestSure)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ -> initService(this@Downloads, it) }
+            }.show()
         }
         return super.resolveIntent(intent, false)
     }

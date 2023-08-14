@@ -58,7 +58,7 @@ interface OnlineDataLoader : DataLoader {
     fun loading(): LottieAnimationView? = root?.findViewById(R.id.loading)
     fun error(): ImageView? = root?.findViewById(R.id.error)
 
-    fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
+    fun onLoaded(isEmpty: Boolean) {
         if (loading() != null && root!!.contains(loading()!!)) {
             loading()?.animation?.cancel()
             root!!.removeView(loading())

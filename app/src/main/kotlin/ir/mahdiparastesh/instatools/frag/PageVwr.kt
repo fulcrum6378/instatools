@@ -56,9 +56,9 @@ class PageVwr : BasePageViewer() {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super.onLoaded(c.mm.vwUser?.edges().isNullOrEmpty(), false)
+                super.onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.vwUser?.edges().isNullOrEmpty(), false)
+            } else onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
 
             if (c.mm.vwUser?.hasMore() == true && thread?.active != true
                 && !b.rv.canScrollVertically(1)
@@ -200,8 +200,8 @@ class PageVwr : BasePageViewer() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        super.onLoaded(isEmpty, asGuest)
+    override fun onLoaded(isEmpty: Boolean) {
+        super.onLoaded(isEmpty)
         if (b.rv.adapter == null) b.rv.adapter = ListVwr(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) buildSelection()

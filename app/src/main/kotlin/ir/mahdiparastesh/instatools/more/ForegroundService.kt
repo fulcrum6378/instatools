@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
@@ -83,7 +84,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     // Because "this" is apparently null at the time of instantiation,
     // So you cannot invoke "applicationContext" on it!
     override val c: Context get() = applicationContext
-    final override val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    final override val dbLazy = lazy { Database.build(c, m.acc.dbName()) }
     override val db: Database by dbLazy
     override val dao: Database.DAO by lazy { db.dao() }
     override lateinit var m: Model

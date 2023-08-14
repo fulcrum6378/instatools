@@ -34,9 +34,9 @@ class PageTag : BasePageViewer() {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (b.rv.adapter != null && msg.arg2 > 0) {
-                super@PageTag.onLoaded(c.mm.vwTagged?.items.isNullOrEmpty(), false)
+                super@PageTag.onLoaded(c.mm.vwTagged?.items.isNullOrEmpty())
                 b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.vwTagged?.items.isNullOrEmpty(), false)
+            } else onLoaded(c.mm.vwTagged?.items.isNullOrEmpty())
 
             if (c.mm.vwTagged?.more_available == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
@@ -103,8 +103,8 @@ class PageTag : BasePageViewer() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        super.onLoaded(isEmpty, asGuest)
+    override fun onLoaded(isEmpty: Boolean) {
+        super.onLoaded(isEmpty)
         if (b.rv.adapter == null) b.rv.adapter = ListTag(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) buildSelection()

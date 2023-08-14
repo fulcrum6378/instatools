@@ -81,7 +81,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
         HANDLE_FETCHED to { msg ->
             if (c.mm.dmThread == null) {
-                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty(), false)
+                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
                 if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
                 ) boxThread = FetchOfInbox().also { it.start() }
             } else if (msg.obj != null) {
@@ -142,7 +142,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             }
         })
 
-        if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty(), false)
+        if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
         else if (boxThread?.active != true) boxThread = FetchOfInbox().also { it.start() }
     }
 
@@ -154,8 +154,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        super.onLoaded(isEmpty, asGuest)
+    override fun onLoaded(isEmpty: Boolean) {
+        super.onLoaded(isEmpty)
         if (c.mm.dmThread == null) {
             val prevScrollPos = boxScroll
             if (b.rv.adapter == null || b.rv.adapter !is ListBox)
@@ -170,7 +170,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         updateJumper()
 
         // DM won't be Seen Guide
-        if (!asGuest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
+        if (!Main.guest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
             && !guideDmNotSeenShowing
         ) MaterialAlertDialogBuilder(
             ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
@@ -336,7 +336,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 jumper()?.vis(true)
                 expandable.collapse(); return true; }
             c.mm.dmThread = null
-            onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty(), false)
+            onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
             return true; }
         return false
     }

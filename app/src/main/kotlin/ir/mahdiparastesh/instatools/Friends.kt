@@ -52,7 +52,7 @@ class Friends : UserListActivity(), OnlineDataLoader {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_LOADED -> {
-                        onLoaded(mm.friends.isEmpty(), false)
+                        onLoaded(mm.friends.isEmpty())
                         adapt()
                         updateCount(mm.friends.size)
                     }
@@ -64,8 +64,6 @@ class Friends : UserListActivity(), OnlineDataLoader {
                 }
             }
         }
-
-
 
         prepareListing(this)
         error()?.setOnClickListener {
@@ -79,9 +77,9 @@ class Friends : UserListActivity(), OnlineDataLoader {
         FriLoader().start()
     }
 
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
+    override fun onLoaded(isEmpty: Boolean) {
         b.refresher.isRefreshing = false
-        super.onLoaded(isEmpty, asGuest)
+        super.onLoaded(isEmpty)
     }
 
     override fun onFailed(message: String) {

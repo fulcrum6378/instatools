@@ -8,10 +8,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.view.DataLoader
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
+import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
 abstract class UserListActivity : BaseActivity(), DataLoader {
@@ -28,8 +30,13 @@ abstract class UserListActivity : BaseActivity(), DataLoader {
     }
 
     override fun prepareListing(c: BaseActivity) {
-        bRefresher.setOnRefreshListener { load() }
         super.prepareListing(c)
+        if (!Main.guest) bRefresher.setOnRefreshListener { load() }
+        else {
+            bRefresher.isEnabled = false
+            jumper()?.vis(false)
+            rv()?.vis(false)
+        }
     }
 
     abstract fun load()

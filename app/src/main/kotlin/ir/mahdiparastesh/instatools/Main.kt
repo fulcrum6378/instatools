@@ -40,6 +40,7 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.*
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.list.ListSch
+import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
@@ -50,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
@@ -155,8 +157,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             syncState()
         }
         b.nav.setNavigationItemSelectedListener(this)
-        if (guest) arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
-            .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
 
         // Permissions
         if (UiTools.reqPermissions.isNotEmpty())
@@ -204,12 +204,28 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             bh.ll.setOnClickListener {
                 UiTools.openLink(this, UiTools.PROFILE.format(m.acc!!.user!!))
             }
-        } else bh.root.vis(false)
+        } else {
+            bh.root.vis(false)
+            arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
+                .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
+        }
 
         // Miscellaneous
         updateProfile()
         if (m.files == null) StorageCache.load(this)
-        Favourites.FavLoader(this).start()
+        if (!guest) Favourites.FavLoader(this).start()
+
+        // TODO remove later
+        try {
+            arrayOf(
+                DbFile("-1", DbFile.Triple.MAIN),
+                DbFile("-1", DbFile.Triple.SHARED_MEMORY),
+                DbFile("-1", DbFile.Triple.WRITE_AHEAD_LOG),
+            ).forEach { f ->
+                if (f.exists()) f.renameTo(File(f.path.replace("-1", "guest")))
+            }
+        } catch (_: Exception) {
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -439,7 +455,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * Warn or do something in Downloads when using the guest mode
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -

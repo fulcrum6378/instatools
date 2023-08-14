@@ -64,7 +64,7 @@ class PageUnf : BasePageMain() {
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
                         ?: 0L)) > 86400000
                 ) thread = Inquiry(c).also { it.start() }
-                else onLoaded(isNullOrEmpty(), false)
+                else onLoaded(isNullOrEmpty())
             }
         },
         HANDLE_FETCHED to {
@@ -124,7 +124,7 @@ class PageUnf : BasePageMain() {
         super.onViewCreated(view, savedInstanceState)
         if (Main.guest) return
 
-        if (c.mm.unfollowers.value != null) onLoaded(c.mm.unfollowers.value.isNullOrEmpty(), false)
+        if (c.mm.unfollowers.value != null) onLoaded(c.mm.unfollowers.value.isNullOrEmpty())
         else load(true)
     }
 
@@ -148,8 +148,8 @@ class PageUnf : BasePageMain() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        super.onLoaded(isEmpty, asGuest)
+    override fun onLoaded(isEmpty: Boolean) {
+        super.onLoaded(isEmpty)
         if (b.rv.adapter == null) b.rv.adapter = ListUnf(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
     }

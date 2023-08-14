@@ -28,7 +28,7 @@ class PageRel : BasePageViewer() {
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty(), false) },
+        HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty()) },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
         Api.HANDLE_ERROR to {
             onFailed(
@@ -64,8 +64,8 @@ class PageRel : BasePageViewer() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
-        super.onLoaded(isEmpty, asGuest)
+    override fun onLoaded(isEmpty: Boolean) {
+        super.onLoaded(isEmpty)
         if (b.rv.adapter == null) b.rv.adapter = ListRel(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) buildSelection()

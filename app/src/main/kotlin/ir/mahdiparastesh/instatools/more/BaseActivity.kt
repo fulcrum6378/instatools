@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Account
+import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
@@ -50,7 +51,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
     override val c: Context get() = applicationContext
-    final override val dbLazy = lazy { Database.build(c, (m.acc?.id ?: -1L).toString()) }
+    final override val dbLazy = lazy { Database.build(c, m.acc.dbName()) }
     override val db: Database by dbLazy
     override val dao: Database.DAO by lazy { db.dao() }
     override lateinit var m: Model

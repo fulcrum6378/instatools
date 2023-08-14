@@ -30,7 +30,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
 
     protected open fun guestMode(parent: ConstraintLayout) {
         GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
-        onLoaded(false, asGuest = true)
+        onLoaded(false)
         for (ch in parent) if (ch is RecyclerView) ch.vis(false)
         refresher()?.isEnabled = false
         jumper()?.vis(false)
@@ -51,9 +51,9 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
         }
     }
 
-    override fun onLoaded(isEmpty: Boolean, asGuest: Boolean) {
+    override fun onLoaded(isEmpty: Boolean) {
         refresher()?.isRefreshing = false
-        super.onLoaded(isEmpty, asGuest)
+        super.onLoaded(isEmpty)
     }
 
     override fun onFailed(message: String) {
