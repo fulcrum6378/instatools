@@ -40,7 +40,6 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.*
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
@@ -51,7 +50,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
@@ -214,18 +212,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         updateProfile()
         if (m.files == null) StorageCache.load(this)
         if (!guest) Favourites.FavLoader(this).start()
-
-        // TODO remove later
-        try {
-            arrayOf(
-                DbFile("-1", DbFile.Triple.MAIN),
-                DbFile("-1", DbFile.Triple.SHARED_MEMORY),
-                DbFile("-1", DbFile.Triple.WRITE_AHEAD_LOG),
-            ).forEach { f ->
-                if (f.exists()) f.renameTo(File(f.path.replace("-1", "guest")))
-            }
-        } catch (_: Exception) {
-        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -367,14 +353,16 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     fun updateProfile() {
         if (m.acc == null) return
         Api<GraphQl>(
-            this, Api.Endpoint.PROFILE.url.format(m.acc!!.user), GraphQl::class, null
+            this, Api.Endpoint.PROFILE.url.format(m.acc!!.user), GraphQl::class, null,
+            neverMindIfNeedAuth = true // but it works fine even in guest mode ("status":"ok")!
+            // edge_saved_media.count shows 0.0 when not logged in!
         ) { graphql ->
             val u = graphql.data?.user ?: return@Api
             m.acc!!.user = u.username
             m.acc!!.name = u.full_name
             m.acc!!.pict = u.hdPhoto()
             m.acc!!.saveMe(c)
-            mm.savedCount.value = u.edge_saved_media?.count?.toInt() ?: 0
+            u.edge_saved_media?.count?.toInt()?.also { if (it > 0) mm.savedCount.value = it }
         }
     }
 

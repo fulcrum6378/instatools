@@ -29,16 +29,17 @@ class Api<JSON>(
     private val acc: Account? = c.m.acc,
     private val typeToken: java.lang.reflect.Type? = null,
     autoQueue: Boolean = true,
+    private val neverMindIfNeedAuth: Boolean = false,
     private val onError: ((res: NetworkResponse?) -> Unit)? = null,
     private val onSuccess: (json: JSON) -> Unit
 ) : Request<String>(method, encode(url),
     Response.ErrorListener {
         if (it.networkResponse?.statusCode == 500 && it.networkResponse?.data
                 ?.let { ba -> String(ba) }?.contains(Login.LOGGED_OUT_MSG_500) == true
-            && url != Endpoint.SIGN_OUT.url
+            && url != Endpoint.SIGN_OUT.url && !neverMindIfNeedAuth
         ) {
             c.needAuthentication(); return@ErrorListener; }
-        gotError(c, handleError, onError, it)
+        gotError(c, handleError, onError, it, neverMindIfNeedAuth = neverMindIfNeedAuth)
     }) {
 
     init {
@@ -64,6 +65,7 @@ class Api<JSON>(
             if (response.startsWith("<!DOCTYPE html>")) when {
                 url == Endpoint.SIGN_OUT.url -> gotError()
                 response.contains("Log in • Instagram") -> {
+                    neverMindIfNeedAuth
                     c.needAuthentication()
                     if (c is BaseActivity) gotError()
                 }
@@ -213,9 +215,10 @@ class Api<JSON>(
 
         fun gotError(
             c: Persistent, handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
-            res: VolleyError? = null, msgWhat: Int = HANDLE_ERROR
+            res: VolleyError? = null, msgWhat: Int = HANDLE_ERROR,
+            neverMindIfNeedAuth: Boolean = false
         ) {
-            res?.networkResponse?.apiFailure(c)
+            if (!neverMindIfNeedAuth) res?.networkResponse?.apiFailure(c)
             handleError?.obtainMessage(msgWhat, res?.networkResponse)?.sendToTarget()
             onError?.let { func -> func(res?.networkResponse) }
         }
