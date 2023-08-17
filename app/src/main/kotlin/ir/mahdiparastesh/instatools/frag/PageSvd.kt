@@ -97,11 +97,11 @@ class PageSvd : BasePageMain(), Selective {
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
         HANDLE_REALLY_NO_MORE to {
-            val number =
-                c.mm.savedCount.value?.let { a -> c.mm.saved?.items?.size?.let { b -> a - b } }
-            if (number != null && number > 0) UiTools.snackbar(
-                b.root, c.getString(R.string.reallyHasNoMore, number), 10000, c.b.bnv
+            val n = it.arg1 - it.arg2
+            if (n > 0) UiTools.snackbar(
+                b.root, c.getString(R.string.reallyHasNoMore, n), 10000, c.b.bnv
             )
+            if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
         },
     )
     override var tracker: SelectionTracker<String>? = null
@@ -297,10 +297,18 @@ class PageSvd : BasePageMain(), Selective {
                 if (wrapper.items == null) {
                     handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
                     interrupt(); return@Api; }
-                if (wrapper.items!!.isEmpty()) {
+
+                // check if the user has hidden saves
+                if (wrapper.items!!.isEmpty() && c.mm.savedCount.value.let {
+                        it != null && it > (c.mm.saved?.items?.size ?: 0)
+                    }) {
+                    if (c.mm.saved == null) c.mm.saved = wrapper
                     reallyHasMore = false
-                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
+                    handler?.obtainMessage(
+                        HANDLE_REALLY_NO_MORE, c.mm.savedCount.value!!, c.mm.saved?.items?.size ?: 0
+                    )?.sendToTarget()
                     interrupt(); return@Api; }
+
                 if (c.mm.saved == null) {
                     c.mm.saved = wrapper
                     handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
