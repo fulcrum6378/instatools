@@ -63,7 +63,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
     val mm: MyModel by viewModels()
-    private var findUserNameFromLink: String? = null
+    private var findUserNameFromId: String? = null
+    private var findUserNameFromMediaLink: String? = null
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
@@ -83,9 +84,14 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     companion object : ActivityCompanion() {
         private const val EXTRA_USER = "EXTRA_USER"
+        private const val EXTRA_USER_ID = "EXTRA_USER_ID"
 
         fun comeHere(c: BaseActivity, user: String) {
             c.goTo(Viewer::class) { putExtra(EXTRA_USER, user) }
+        }
+
+        fun comeHereById(c: BaseActivity, userId: String) {
+            c.goTo(Viewer::class) { putExtra(EXTRA_USER_ID, userId) }
         }
     }
 
@@ -136,57 +142,58 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 ?.avoidRefresh() ?: false
         }
 
-        if (findUserNameFromLink == null) load(true)
+        if (findUserNameFromId == null && findUserNameFromMediaLink == null) load(true)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
-        intent.extras?.getString(EXTRA_USER)?.let {
+        intent.extras?.getString(EXTRA_USER)?.also {
             if (!onCreation && user == it) return false
             if (user != it) mm.vwUser = null
             user = it
             if (!onCreation) gotNewUserName()
+            return true
         }
-        intent.data?.let {
+        intent.extras?.getString(EXTRA_USER_ID)?.also {
+            findUserNameFromId = it
+            if (m.acc != null) findUserNameById(it, true) { findUserNameFromId = null }
+            return true
+        }
+        intent.data?.also {
             var newUser: String? = null
             for (host in UiTools.ACC_FROM_URL)
                 it.toString().accFromUrl(host)
                     ?.let { u -> if (newUser == null) newUser = u }
-            if (newUser == null) return@let
+            if (newUser == null) return@also
             if (!onCreation && newUser == it.toString()) return false
             user = newUser
             if (!onCreation) gotNewUserName()
+            return true
         }
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also { link ->
-            findUserNameFromLink = link
-            if (m.acc != null) findUserName(onCreation)
+            findUserNameFromMediaLink = link
+            if (m.acc != null) findUserNameByMediaLink(onCreation)
+            return true
         }
-        return true
+        return false
     }
 
     override fun onAccountSet() {
         super.onAccountSet()
-        if (findUserNameFromLink != null) findUserName(true)
+        when {
+            findUserNameFromId != null ->
+                findUserNameById(findUserNameFromId!!, true) { findUserNameFromId = null }
+            findUserNameFromMediaLink != null -> findUserNameByMediaLink(true)
+        }
     }
 
-    private fun findUserName(onCreation: Boolean) {
-        reqQueue.adder = object : StringRequest(findUserNameFromLink!!, { html ->
+    private fun findUserNameByMediaLink(onCreation: Boolean) {
+        reqQueue.adder = object : StringRequest(findUserNameFromMediaLink!!, { html ->
             // HTML contains usernames only in meta tags along with other texts!
             // PageConfig does not contain username!
-            val userId = html
-                .substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
-                .substringBefore("\"")
-            reqQueue.adder = Api<Rest.UserInfo>(
-                this@Viewer, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
-                null, autoQueue = false, onError =
-                { lazyUserNameError(onCreation) }
-            ) { info ->
-                user = info.user.username
-                findUserNameFromLink = null
-                if (onCreation) {
-                    load()
-                    b.toolbar.title = user
-                } else gotNewUserName()
-            }
+            findUserNameById(
+                html.substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
+                    .substringBefore("\""), onCreation
+            ) { findUserNameFromMediaLink = null }
             // In case if you wanna somehow find the media which is so hard:
             /*PageConfig.findFromHtml(
                 html, false, { lazyUserNameError(onCreation) }, null, null
@@ -199,6 +206,22 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             retryPolicy = DefaultRetryPolicy(
                 Api.DEFAULT_TIMEOUT, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
             )
+        }
+    }
+
+    private fun findUserNameById(
+        userId: String, onCreation: Boolean, onSuccess: (() -> Unit)? = null
+    ) {
+        reqQueue.adder = Api<Rest.UserInfo>(
+            this@Viewer, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
+            null, autoQueue = false, onError = { lazyUserNameError(onCreation) }
+        ) { info ->
+            user = info.user.username
+            onSuccess?.also { it() }
+            if (onCreation) {
+                load()
+                b.toolbar.title = user
+            } else gotNewUserName()
         }
     }
 
