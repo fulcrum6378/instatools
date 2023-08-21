@@ -77,7 +77,9 @@
         (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.)
         So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.
     </string>
-    <string name="needAuthentication">Instagram doesn\'t let us in. You need to login to continue&#8230;</string>
+    <string name="needAuthentication">
+        Instagram doesn\'t let us in. You need to login to continue&#8230;
+    </string>
 
     <!-- Main -->
     <string name="unfollowers">Unfollowers</string>
@@ -177,6 +179,7 @@
 
     <!-- Favourites -->
     <string name="favourites">Favourites</string>
+    <string name="favouritesTb">Favourites (offline)</string>
     <string name="favEmpty">
         Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.
     </string>
@@ -236,7 +239,9 @@
     <string name="stBranching">Divide downloaded files into branches</string>
     <string name="stAliasing">Assign specific folders for profiles</string>
     <string name="stAddAlias">Add new exception</string>
-    <string name="stAliasingDesc">Any file downloaded from this profile will be saved into this folder.</string>
+    <string name="stAliasingDesc">
+        Any file downloaded from this profile will be saved into this folder.
+    </string>
     <string name="stAliasProfile">Enter profile user-name</string>
     <string name="addFolder">Add Folder</string>
     <string name="stCache">Caching (current size: %s)</string>

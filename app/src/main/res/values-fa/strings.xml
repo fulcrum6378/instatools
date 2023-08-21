@@ -71,17 +71,28 @@
     <string name="addAccount">افزودن اکانت جدید</string>
     <string name="enterWithoutAuth">ورود بدون لوگین</string>
     <string name="browseInTheWeb">بازکردن مانند مرورگر</string>
-    <string name="guestSure">متاسفانه اینستاگرام به شما اجازه نمی دهد که بتوانید براحتی در بین پروفایل های مختلف بچرخید بدون اینکه به حساب خود وارد شوید. اینستاگرام شما را مجبور خواهد کرد که یا وارد شده یا ثبت نام کنید. (می توانید در حالت «ناشناس» مرورگر خود از این حقیقت مطمئن شوید.) پس هیچ تضمینی نیست که شما در «حالت مهمان» خیلی زود مجبور به وارد شدن به اکانت خود نشوید.</string>
-    <string name="needAuthentication">اینستاگرام اجازه ورود نمی دهد. برای ادامه نیاز به لوگین دارید&#8230;</string>
+    <string name="guestSure">
+        متاسفانه اینستاگرام به شما اجازه نمی دهد که بتوانید براحتی در بین پروفایل های مختلف بچرخید
+        بدون اینکه به حساب خود وارد شوید. اینستاگرام شما را مجبور خواهد کرد که یا وارد شده یا ثبت نام کنید.
+        (می توانید در حالت «ناشناس» مرورگر خود از این حقیقت مطمئن شوید.)
+        پس هیچ تضمینی نیست که شما در «حالت مهمان» خیلی زود مجبور به وارد شدن به اکانت خود نشوید.
+    </string>
+    <string name="needAuthentication">
+        اینستاگرام اجازه ورود نمی دهد. برای ادامه نیاز به لوگین دارید&#8230;
+    </string>
 
     <!-- Main -->
     <string name="unfollowers">آنفالورها</string>
     <string name="saved">ذخیره شده</string>
     <string name="direct">@string/export</string>
-    <string name="guestDesc">در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.</string>
+    <string name="guestDesc">
+        در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.
+    </string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
-    <string name="terminateBgTasks">تعدادی کار ناتمام در پشت صحنه هنوز در حال انجام هستند. آیا میخواهید تمام آنها را متوقف کنید؟</string>
+    <string name="terminateBgTasks">
+        تعدادی کار ناتمام در پشت صحنه هنوز در حال انجام هستند. آیا میخواهید تمام آنها را متوقف کنید؟
+    </string>
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
 
@@ -93,7 +104,11 @@
     <string name="newUnfNtfChannel">آنفالورهای جدید</string>
     <string name="newUnfNtfChannelDesc">بعضی ها شما را آنفالو کرده اند!</string>
     <string name="newUnfNtfText">%d شخص جدید شما را آنفالو کردند!</string>
-    <string name="unfollowedSoMany">متاسفانه اینستاگرام برای مبارزه با اسپم، اجازه نمی دهد کسی پشت سرهم پروفایل های زیادی را آنفالو کند. لطفا حدود نیم ساعت دیگر دوباره امتحان کنید&#8230;</string>
+    <string name="unfollowedSoMany">
+        متاسفانه اینستاگرام برای مبارزه با اسپم،
+        اجازه نمی دهد کسی پشت سرهم پروفایل های زیادی را آنفالو کند.
+        لطفا حدود نیم ساعت دیگر دوباره امتحان کنید&#8230;
+    </string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">فقط آنسیو</string>
@@ -115,7 +130,9 @@
     <string name="boxEmpty">شما هیچ پیامی ندارید!</string>
     <string name="unfollowedAt">تاریخ آنفالو: %s</string>
     <string name="dmNotSeen">شما مخفی هستید!</string>
-    <string name="dmNotSeenDesc">پیام های دایرکتی که شما در این اپلیکیشن می خوانید، بعنوان «خوانده شده» تیک نخواهند خورد!</string>
+    <string name="dmNotSeenDesc">
+        پیام های دایرکتی که شما در این اپلیکیشن می خوانید، بعنوان «خوانده شده» تیک نخواهند خورد!
+    </string>
     <string name="expOptImage">استخراج تصاویر</string>
     <string name="expOptVideo">استخراج ویدئوها</string>
     <string name="expOptVoice">استخراج وویس ها</string>
@@ -123,8 +140,13 @@
     <string name="expOptMed">کیفیت متوسط</string>
     <string name="expOptHig">کیفیت بالا</string>
     <string name="expOptThm">فقط یک عکس پیش نمایش (اولین فریم)</string>
-    <string name="unsupportedExportUriAuth">با عرض پوزش برای استخراج این نوع فایل، از این نوع محل ذخیره پشتیبانی نمی شود! با این حال می توانید در قالب های دیگر در این محل ذخیره کنید.</string>
-    <string name="exportHtmlDesc">توجه: یک فایل HTML را فقط با کامپیوتر میتوانید بدرستی مشاهده نمایید!</string>
+    <string name="unsupportedExportUriAuth">
+        با عرض پوزش برای استخراج این نوع فایل، از این نوع محل ذخیره پشتیبانی نمی شود!
+        با این حال می توانید در قالب های دیگر در این محل ذخیره کنید.
+    </string>
+    <string name="exportHtmlDesc">
+        توجه: یک فایل HTML را فقط با کامپیوتر میتوانید بدرستی مشاهده نمایید!
+    </string>
     <string name="exportPdfDesc">یک فایل PDF نمی تواند صدا و فیلم در خود جای بدهد.</string>
     <string name="exportTxtDesc">یک فایل TXT فقط می تواند متن را در خود جای دهد.</string>
     <string name="markAsSeen">سین کردن</string>
@@ -133,7 +155,11 @@
     <string name="downloads">دانلودها</string>
     <string name="dwShare">@string/download</string>
     <string name="pasteLink">یک لینک در اینجا بگذارید&#8230;</string>
-    <string name="downloadsHelp1">۱. اینستاگرام را باز کنید،\n۲. یک پست یا استوری را انتخاب کنید،\n۳. آنرا در این اپ به اشتراک بگذارید؛</string>
+    <string name="downloadsHelp1">
+        ۱. اینستاگرام را باز کنید،\n
+        ۲. یک پست یا استوری را انتخاب کنید،\n
+        ۳. آنرا در این اپ به اشتراک بگذارید؛
+    </string>
     <string name="downloadsHelp2">تا بلافاصله دانلود شود!</string>
     <string name="nonInstagramUrl">این اپ فقط از اینستاگرام، محتوا دریافت میکند!</string>
     <string name="dtRetryAll">امتحان دوباره همه</string>
@@ -160,7 +186,11 @@
 
     <!-- Favourites -->
     <string name="favourites">مورد علاقه</string>
-    <string name="favEmpty">یک پروفایل را در اینستاتولز باز کنید و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.</string>
+    <string name="favouritesTb">مورد علاقه (آفلاین)</string>
+    <string name="favEmpty">
+        یک پروفایل را در اینستاتولز باز کنید
+        و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.
+    </string>
 
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
@@ -169,7 +199,10 @@
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
     <string name="followAll">فالو کردن همه</string>
-    <string name="followAllSure">آیا مطمئن هستید که می خواهید تمام این افراد را فالو کنید؟ (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)</string>
+    <string name="followAllSure">
+        آیا مطمئن هستید که می خواهید تمام این افراد را فالو کنید؟
+        (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)
+    </string>
     <string name="alsoRequestPv">همچنین به اکانت های خصوصی درخواست بفرست.</string>
     <string name="mfLimit">محدودیت تعداد اکانت ها:</string>
     <string name="vwStoryReel">استوری های اصلی</string>
@@ -179,13 +212,26 @@
 
     <!-- Mass Follower -->
     <string name="massFollower">دنبال کردن دسته جمعی</string>
-    <string name="mfGuide1">اینستاگرام به شما اجازه نمی دهد که افراد زیادی را در مدت زمان کوتاه یکباره فالو کنید. ممکن است اکانت شما را معلق کرده یا شما را از حسابتان خارج کند.</string>
-    <string name="mfGuide2">اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید بدون اینکه اینستاگرام به شما حساس شود.</string>
-    <string name="mfGuide3">۱. یک پروفایل را در اینستاتولز باز کنید،\n\n۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n۳. «فالو کردن همه» را انتخاب نمایید&#8230;</string>
+    <string name="mfGuide1">
+        اینستاگرام به شما اجازه نمی دهد که افراد زیادی را در مدت زمان کوتاه یکباره فالو کنید.
+        ممکن است اکانت شما را معلق کرده یا شما را از حسابتان خارج کند.
+    </string>
+    <string name="mfGuide2">
+        اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید
+        بدون اینکه اینستاگرام به شما حساس شود.
+    </string>
+    <string name="mfGuide3">
+        ۱. یک پروفایل را در اینستاتولز باز کنید،\n\n
+        ۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n
+        ۳. «فالو کردن همه» را انتخاب نمایید&#8230;
+    </string>
     <string name="mfSeekTitle">%1$s برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
     <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
     <string name="mfUnlockTimes">فعالسازی برای %d دفعه</string>
-    <string name="mfDetectedSpam">متاسفانه اینستاگرام «موقتا» شما را به عنوان «اسپمر» شناسایی کرده است! لطفا مدت تاخیر بین هر فالو را زیاد کرده و بعدا دوباره سرویس را روشن نمایید.</string>
+    <string name="mfDetectedSpam">
+        متاسفانه اینستاگرام «موقتا» شما را به عنوان «اسپمر» شناسایی کرده است!
+        لطفا مدت تاخیر بین هر فالو را زیاد کرده و بعدا دوباره سرویس را روشن نمایید.
+    </string>
     <string name="mfTroubleshoot">کار نمیکنه؟</string>
     <string-array name="mfTroubleshoot">
         <item>بهینه سازی باتری برای این اپ را غیرفعال کنید</item>
@@ -201,20 +247,32 @@
     <string name="addFolder">افزودن فولدر</string>
     <string name="stAliasing">تعیین فولدر های مخصوص برای پروفایل ها</string>
     <string name="stAddAlias">افزودن استثناء</string>
-    <string name="stAliasingDesc">هر چیزی که از این پروفایل دانلود شود، درون این فولدر ذخیره خواهد شد.</string>
+    <string name="stAliasingDesc">
+        هر چیزی که از این پروفایل دانلود شود، درون این فولدر ذخیره خواهد شد.
+    </string>
     <string name="stAliasProfile">آیدی یک پروفایل را وارد کنید</string>
     <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
     <string name="stClearCache">پاک کردن حافظه پنهان</string>
     <string name="stClearCacheWaitExporter">لطفا صبر کنید تا استخراج تمام شود!</string>
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
-    <string name="stResetDataSure">حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد، ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟</string>
+    <string name="stResetDataSure">
+        حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد،
+        ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟
+    </string>
     <string name="stResetSettings">بازنشانی تنظیمات</string>
     <string name="stResetSettingsSure">آیا مطمئن هستید؟ (از حسابتان خارج «نخواهید» شد)</string>
     <string name="stAutoDeleteEmptyDirs">حذف خودکار فولدر های خالی</string>
     <string name="stHelp">راهنما</string>
-    <string name="stHelpMessage">«تنظیمات این اکانت» از «تنظیمات همه اکانت ها» ارث می برد؛ یعنی شما هر تنظیمی را که در «تنظیمات این اکانت» خالی بگذارید، اپلیکیشن در آن مورد بخصوص از «تنظیمات همه اکانت ها» تبعیت می کند.</string>
-    <string name="stAlsoRevokePerm">همچنین مجوز دسترسی به این فولدر را لغو کن. (این کار، تمام استثناهای دیگر که به این فولدر مربوط هستند را نیز حذف میکند)</string>
+    <string name="stHelpMessage">
+        «تنظیمات این اکانت» از «تنظیمات همه اکانت ها» ارث می برد؛
+        یعنی شما هر تنظیمی را که در «تنظیمات این اکانت» خالی بگذارید،
+        اپلیکیشن در آن مورد بخصوص از «تنظیمات همه اکانت ها» تبعیت می کند.
+    </string>
+    <string name="stAlsoRevokePerm">
+        همچنین مجوز دسترسی به این فولدر را لغو کن.
+        (این کار، تمام استثناهای دیگر که به این فولدر مربوط هستند را نیز حذف میکند)
+    </string>
 
 
     <!-- Queuer -->
@@ -237,10 +295,17 @@
     <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>
     <string name="exporterDone">استخراج چت %s به اتمام رسید.</string>
     <string name="exporterFailed">استخراج ناتمام ماند!</string>
-    <string name="exporterFailed429">متاسفانه اینستاگرام برای مبارزه با اسپم، اجازه نمی دهد درخواست های زیاد مشابه به یکباره به سرورهایش ارسال شود. لطفا چند ساعت دیگر مجددا تلاش کنید&#8230;</string>
+    <string name="exporterFailed429">
+        متاسفانه اینستاگرام برای مبارزه با اسپم،
+        اجازه نمی دهد درخواست های زیاد مشابه به یکباره به سرورهایش ارسال شود.
+        لطفا چند ساعت دیگر مجددا تلاش کنید&#8230;
+    </string>
     <string name="exporterAborted">استخراج چت %s ممکن نشد!</string>
     <string name="exporterFailedUnk">خطای ناشناسی رخ داد: %s</string>
-    <string name="exportRescued">مقصدری که برای استخراج انتخاب کرده بودید در دسترس نبود برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.</string>
+    <string name="exportRescued">
+        مقصدی که برای استخراج انتخاب کرده بودید در دسترس نبود؛
+        برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.
+    </string>
 
     <!-- Follower -->
     <string name="followerChannelDesc">فالو کردن دسته جمعی&#8230;</string>
@@ -250,5 +315,7 @@
     <string name="servicesChannelGroup">کارهای طولانی</string>
     <string name="servicesChannelGroupDesc">عملیات های طولانی مانند دانلود و استخراج.</string>
     <string name="taskResultChannel">نتایج عملیات</string>
-    <string name="taskResultChannelDesc">هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.</string>
+    <string name="taskResultChannelDesc">
+        هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.
+    </string>
 </resources>

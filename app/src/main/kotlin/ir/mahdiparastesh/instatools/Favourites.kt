@@ -30,7 +30,7 @@ class Favourites : UserListActivity() {
         super.onCreate(savedInstanceState)
         b = FavouritesBinding.inflate(layoutInflater)
         setContentView(b.root)
-        initToolbar(b.toolbar, R.string.favourites)
+        initToolbar(b.toolbar, R.string.favouritesTb)
 
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {

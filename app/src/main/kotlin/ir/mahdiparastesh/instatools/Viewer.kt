@@ -63,8 +63,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
     val mm: MyModel by viewModels()
-    private var findUserNameFromId: String? = null
-    private var findUserNameFromMediaLink: String? = null
+    private var findUserById: String? = null
+    private var findUserByMediaLink: String? = null
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
@@ -83,8 +83,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     }
 
     companion object : ActivityCompanion() {
-        private const val EXTRA_USER = "EXTRA_USER"
-        private const val EXTRA_USER_ID = "EXTRA_USER_ID"
+        private const val EXTRA_USER = "user"
+        private const val EXTRA_USER_ID = "userId"
 
         fun comeHere(c: BaseActivity, user: String) {
             c.goTo(Viewer::class) { putExtra(EXTRA_USER, user) }
@@ -142,7 +142,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 ?.avoidRefresh() ?: false
         }
 
-        if (findUserNameFromId == null && findUserNameFromMediaLink == null) load(true)
+        if (findUserById == null && findUserByMediaLink == null) load(true)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
@@ -154,8 +154,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             return true
         }
         intent.extras?.getString(EXTRA_USER_ID)?.also {
-            findUserNameFromId = it
-            if (m.acc != null) findUserNameById(it, true) { findUserNameFromId = null }
+            findUserById = it
+            if (m.acc != null) findUserNameById(it, true) { findUserById = null }
             return true
         }
         intent.data?.also {
@@ -170,7 +170,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             return true
         }
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also { link ->
-            findUserNameFromMediaLink = link
+            findUserByMediaLink = link
             if (m.acc != null) findUserNameByMediaLink(onCreation)
             return true
         }
@@ -180,25 +180,25 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun onAccountSet() {
         super.onAccountSet()
         when {
-            findUserNameFromId != null ->
-                findUserNameById(findUserNameFromId!!, true) { findUserNameFromId = null }
-            findUserNameFromMediaLink != null -> findUserNameByMediaLink(true)
+            findUserById != null ->
+                findUserNameById(findUserById!!, true) { findUserById = null }
+            findUserByMediaLink != null -> findUserNameByMediaLink(true)
         }
     }
 
     private fun findUserNameByMediaLink(onCreation: Boolean) {
-        reqQueue.adder = object : StringRequest(findUserNameFromMediaLink!!, { html ->
+        reqQueue.adder = object : StringRequest(findUserByMediaLink!!, { html ->
             // HTML contains usernames only in meta tags along with other texts!
             // PageConfig does not contain username!
             findUserNameById(
                 html.substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
                     .substringBefore("\""), onCreation
-            ) { findUserNameFromMediaLink = null }
+            ) { findUserByMediaLink = null }
             // In case if you wanna somehow find the media which is so hard:
             /*PageConfig.findFromHtml(
-                html, false, { lazyUserNameError(onCreation) }, null, null
+                html, false, { lazyUserNameError(onCreation, null) }, null, null
             ) { cnfWrapper -> }*/
-        }, { lazyUserNameError(onCreation) }) {
+        }, { lazyUserNameError(onCreation, it.networkResponse) }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
         }.apply {
             setShouldCache(false)
@@ -213,22 +213,31 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         userId: String, onCreation: Boolean, onSuccess: (() -> Unit)? = null
     ) {
         reqQueue.adder = Api<Rest.UserInfo>(
-            this@Viewer, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
-            null, autoQueue = false, onError = { lazyUserNameError(onCreation) }
+            this, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class, null,
+            autoQueue = false, onError = { lazyUserNameError(onCreation, it) }
         ) { info ->
             user = info.user.username
-            onSuccess?.also { it() }
-            if (onCreation) {
-                load()
-                b.toolbar.title = user
-            } else gotNewUserName()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    dbFav = dao.favourite(userId)
+                } catch (_: NullPointerException) {
+                }
+                withContext(Dispatchers.Main) {
+                    fixTbMenu()
+                    if (onCreation) {
+                        load(findFav = false)
+                        b.toolbar.title = user
+                    } else gotNewUserName()
+                    onSuccess?.also { it() }
+                }
+            }
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun lazyUserNameError(onCreation: Boolean) {
-        if (BuildConfig.DEBUG) throw Exception()
-        if (onCreation) super.onBackPressed()
+    private fun lazyUserNameError(onCreation: Boolean, res: NetworkResponse? = null) {
+        if (BuildConfig.DEBUG && res?.statusCode != null)
+            throw Exception("${res.statusCode}: ${res.data?.toString(Charsets.UTF_8)}")
+        if (onCreation) @Suppress("DEPRECATION") super.onBackPressed()
         else snackbar(b.root, R.string.unknownError, Snackbar.LENGTH_LONG)
     }
 
@@ -295,17 +304,17 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             ?.setIcon(if (dbFav != null) R.drawable.favourite else R.drawable.non_favourite)
     }
 
-    private fun load(firstLoad: Boolean = false) {
+    private fun load(firstLoad: Boolean = false, findFav: Boolean = true) {
         if (mm.vwUser != null) {
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             return; }
         reset(firstLoad)
-        CoroutineScope(Dispatchers.IO).launch {
+        if (findFav) CoroutineScope(Dispatchers.IO).launch {
             try {
-                dbFav = dao.favouriteByUser(user!!).getOrNull(0)
-                withContext(Dispatchers.Main) { fixTbMenu() }
+                dbFav = dao.favouriteByUser(user!!)
             } catch (_: NullPointerException) {
             }
+            withContext(Dispatchers.Main) { fixTbMenu() }
         }
         if (thread?.active != true) thread = Initial().also { it.start() }
     }

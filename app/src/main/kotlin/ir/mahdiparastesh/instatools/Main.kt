@@ -445,11 +445,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Problems:
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
-  * Favourites (offline) with a guide
   * -
   * Extension:
   * Use URLConnection to track the percentage of downloads
-  * Conditional jump to bottom
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
   * Max slides for HtmlExporter

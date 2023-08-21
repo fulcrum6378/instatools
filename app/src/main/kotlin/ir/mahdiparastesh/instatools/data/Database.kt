@@ -84,11 +84,11 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Favourite")
         fun favourites(): List<Favourite>
 
-        /*@Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
-        fun favourite(id: String): List<Favourite>*/
+        @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
+        fun favourite(id: String): Favourite
 
         @Query("SELECT * FROM Favourite WHERE user = :user LIMIT 1")
-        suspend fun favouriteByUser(user: String): List<Favourite>
+        suspend fun favouriteByUser(user: String): Favourite
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun addFavourite(item: Favourite)
