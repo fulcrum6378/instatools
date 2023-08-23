@@ -10,7 +10,6 @@ import android.os.Looper
 import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.pm.ShortcutInfoCompat
@@ -198,7 +197,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             /*PageConfig.findFromHtml(
                 html, false, { lazyUserNameError(onCreation, null) }, null, null
             ) { cnfWrapper -> }*/
-        }, { lazyUserNameError(onCreation, it.networkResponse) }) {
+        }, { lazyUserNameError(it.networkResponse) }) {
             override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
         }.apply {
             setShouldCache(false)
@@ -214,7 +213,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     ) {
         reqQueue.adder = Api<Rest.UserInfo>(
             this, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class, null,
-            autoQueue = false, onError = { lazyUserNameError(onCreation, it) }
+            autoQueue = false, onError =
+            { if (it?.statusCode == 404) notFound() else lazyUserNameError(it) }
         ) { info ->
             user = info.user.username
             CoroutineScope(Dispatchers.IO).launch {
@@ -234,11 +234,11 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         }
     }
 
-    private fun lazyUserNameError(onCreation: Boolean, res: NetworkResponse? = null) {
-        if (BuildConfig.DEBUG && res?.statusCode != null)
-            throw Exception("${res.statusCode}: ${res.data?.toString(Charsets.UTF_8)}")
-        if (onCreation) @Suppress("DEPRECATION") super.onBackPressed()
-        else snackbar(b.root, R.string.unknownError, Snackbar.LENGTH_LONG)
+    private fun lazyUserNameError(res: NetworkResponse? = null) {
+        snackbar(
+            b.root, getString(R.string.unknownError, "${res?.statusCode}"),
+            Snackbar.LENGTH_LONG
+        )
     }
 
     private fun gotNewUserName() {
@@ -319,6 +319,10 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         if (thread?.active != true) thread = Initial().also { it.start() }
     }
 
+    private fun notFound() {
+        snackbar(b.root, R.string.pageNotExist, Snackbar.LENGTH_LONG)
+    }
+
     private fun reset(firstLoad: Boolean = false) {
         if (!firstLoad) pages().forEach { (it as BasePageViewer?)?.reset() }
         if (expandable.zoomed) expandable.collapse()
@@ -353,7 +357,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             ) { graphql ->
                 mm.vwUser = graphql.data?.user
                 if (mm.vwUser == null) {
-                    Toast.makeText(c, R.string.pageNotExist, Toast.LENGTH_SHORT).show()
+                    notFound()
                     interrupt(); return@Api
                 }
                 handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
