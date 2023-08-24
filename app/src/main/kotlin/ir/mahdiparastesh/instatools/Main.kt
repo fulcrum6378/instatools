@@ -351,17 +351,19 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     }
 
     fun updateProfile() {
-        if (m.acc == null) return
+        val un = m.acc?.user ?: return
         Api<GraphQl>(
-            this, Api.Endpoint.PROFILE.url.format(m.acc!!.user), GraphQl::class, null,
+            this, Api.Endpoint.PROFILE.url.format(un), GraphQl::class, null,
             neverMindIfNeedAuth = true // but it works fine even in guest mode ("status":"ok")!
             // edge_saved_media.count shows 0.0 when not logged in!
         ) { graphql ->
             val u = graphql.data?.user ?: return@Api
-            m.acc!!.user = u.username
-            m.acc!!.name = u.full_name
-            m.acc!!.pict = u.hdPhoto()
-            m.acc!!.saveMe(c)
+            m.acc?.apply {
+                user = u.username
+                name = u.full_name
+                pict = u.hdPhoto()
+                saveMe(c)
+            }
             u.edge_saved_media?.count?.toInt()?.also { if (it > 0) mm.savedCount.value = it }
         }
     }
