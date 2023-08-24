@@ -89,7 +89,7 @@ open class Rest {
         val inbox: Dm.Inbox,
         //val pending_requests_total: Double,
         //val seq_id: Double,
-        val viewer: User,
+        //val viewer: User,
     ) : Rest()
 
     class InboxThread(val thread: Dm.DmThread) : Rest()
@@ -133,7 +133,7 @@ open class Rest {
         //val expiring_at: Double,
         //val has_besties_media: Boolean?,
         //val has_fan_club_media: Boolean?,
-        val id: Double, // User Id is the same as that of the reel!
+        //val id: Double, // User Id is the same as that of the reel!
         items: Array<Media>,
         //val media_count: Float,
         //val media_ids: Array<String>,

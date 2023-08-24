@@ -16,11 +16,10 @@ class Friend(
     var followed: Boolean,
     var unfollowedMeAt: Long? = null
 ) {
-    constructor() : this("", "", "", "", false, false, false)
-
     @Ignore
     @Transient
     var inFav: Boolean = false
+
     @Ignore
     @Transient
     var unfollowed: Boolean = false
@@ -28,12 +27,15 @@ class Friend(
     @Ignore
     @Transient
     var bestie: Boolean = false
+
     @Ignore
     @Transient
     var feedFav: Boolean = false
+
     @Ignore
     @Transient
     var restricted: Boolean = false
+
     /*@Ignore
     @Transient
     var muted: Boolean = false*/

@@ -309,8 +309,7 @@ class Downloads : ServiceOwnerActivity() {
             .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
     }
 
-    @Deprecated("Deprecated in Java")
-    @Suppress("DEPRECATION")
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         super.onBackPressed()
         if (isTaskRoot) goTo(Main::class)

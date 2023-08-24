@@ -274,7 +274,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         return sb.toString().trimEnd()
     }
 
-    @Deprecated("Deprecated in Java")
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.web.canGoBack()) {
             b.web.goBack(); return; }

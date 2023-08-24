@@ -87,9 +87,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         } else onAccountSet()
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
-            @Suppress("DEPRECATION") super.onBackPressed()
-            finish()
-            return; }
+            super.onBackPressed(); finish(); return; }
 
         if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND, Intent.ACTION_VIEW)) {
             incrementCounter(Settings.spOpenAppCount)
@@ -143,9 +141,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
             }
-            toolbar.setNavigationOnClickListener {
-                @Suppress("DEPRECATION") onBackPressed()
-            }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
         }
     }
 

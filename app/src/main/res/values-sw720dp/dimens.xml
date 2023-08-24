@@ -9,7 +9,6 @@
     <dimen name="userFont">22sp</dimen>
     <dimen name="userDescFont">16sp</dimen>
     <dimen name="moreAction">62dp</dimen>
-    <dimen name="menuFont">19sp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">17sp</dimen>

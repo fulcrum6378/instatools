@@ -72,7 +72,7 @@ class Media(
     //val supports_reel_reactions: Boolean?,
     val taken_at: Double, // dm uploaded media are 0.0
     //val thumbnails: Thumbnails?,
-    val title: String?, // dm uploaded media are nullable
+    //val title: String?, // dm uploaded media are nullable
     //val top_likers: Array<Any>,
     val user: Rest.User,
     //val video_codec: String?,
@@ -173,7 +173,7 @@ class Media(
         //val comment_inform_treatment: Map<String, *>,
         //val commerciality_status: Boolean,
         //val fb_user_tags: Map<String, Any?>,
-        val id: String,
+        //val id: String,
         image_versions2: ImageVersions2,
         val media_type: Float,
         original_height: Float?,
@@ -198,11 +198,11 @@ class Media(
     open class Candidate(val width: Float, val height: Float, val url: String)
 
     class VideoVersion(
-        val type: Float,
+        //val type: Float,
         width: Float,
         height: Float,
         url: String,
-        val id: String
+        //val id: String
     ) : Candidate(width, height, url)
 
     class Caption(

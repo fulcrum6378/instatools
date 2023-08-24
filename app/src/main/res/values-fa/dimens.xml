@@ -2,7 +2,6 @@
 <resources>
     <dimen name="tbTitleMain">27sp</dimen>
     <dimen name="tbTitle">19sp</dimen>
-    <dimen name="menuFont">15sp</dimen>
 
     <!-- Main -->
     <dimen name="navFont">14sp</dimen>

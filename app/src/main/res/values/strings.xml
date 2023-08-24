@@ -220,7 +220,6 @@
     </string>
     <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
     <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
-    <string name="mfUnlockTimes">Unlock for %d times</string>
     <string name="mfDetectedSpam">
         Unfortunately Instagram has detected you as a spammer;
         please increase the delay time and try again later!

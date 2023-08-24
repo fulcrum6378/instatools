@@ -10,7 +10,6 @@
     <dimen name="userFont">17sp</dimen>
     <dimen name="userDescFont">13sp</dimen>
     <dimen name="moreAction">50dp</dimen>
-    <dimen name="menuFont">17sp</dimen>
     <dimen name="jumperSize">38dp</dimen>
     <dimen name="jumperPad">8.5dp</dimen>
     <dimen name="jumperBottom">27dp</dimen>
@@ -38,7 +37,6 @@
     <dimen name="searchFont">15sp</dimen>
     <dimen name="simpleLoading">200dp</dimen>
     <dimen name="simpleError">120dp</dimen>
-    <dimen name="dialogItemIv">28sp</dimen>
     <dimen name="dmProfile">40dp</dimen>
 
     <!-- Login -->

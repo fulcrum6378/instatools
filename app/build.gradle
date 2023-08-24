@@ -23,14 +23,14 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 71
-        versionName '28.1.4'
+        versionName '28.2.5'
         signingConfig signingConfigs.main
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_19; targetCompatibility JavaVersion.VERSION_19
+        sourceCompatibility JavaVersion.VERSION_20; targetCompatibility JavaVersion.VERSION_20
     }
-    kotlinOptions { jvmTarget = '19' }
+    kotlinOptions { jvmTarget = '20' }
     buildFeatures { viewBinding true }
 
     buildTypes {
@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    def room_version = '2.5.2'
+    def room_version = '2.6.0-alpha03'
     def media2_version = '1.2.1'
 
     implementation 'androidx.activity:activity-ktx:1.7.2' // only for ActivityResultLauncher
