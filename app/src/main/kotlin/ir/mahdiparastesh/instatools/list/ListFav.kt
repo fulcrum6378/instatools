@@ -39,7 +39,14 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
             val f = c.m.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }
                 ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
-                if (f.tempDeleted) c.dao.deleteFavourite(f) else c.dao.addFavourite(f)
+                val nCache = c.numCache ?: c.m.fav?.size ?: 0
+                if (f.tempDeleted) {
+                    c.dao.deleteFavourite(f)
+                    c.updateCount(nCache - 1)
+                } else {
+                    c.dao.addFavourite(f)
+                    c.updateCount(nCache + 1)
+                }
             }
             h.b.updateIcon(f.tempDeleted)
         }

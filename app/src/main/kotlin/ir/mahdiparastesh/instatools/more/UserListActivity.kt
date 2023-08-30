@@ -18,6 +18,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vish
 
 abstract class UserListActivity : BaseActivity(), DataLoader {
     private var countBadge: BadgeDrawable? = null
+    var numCache: Int? = null
 
     abstract val bRefresher: SwipeRefreshLayout
     abstract val bTbShadow: View
@@ -51,7 +52,7 @@ abstract class UserListActivity : BaseActivity(), DataLoader {
     }
 
     @SuppressLint("UnsafeOptInUsageError")
-    protected fun updateCount(n: Int) {
+    fun updateCount(n: Int) {
         BadgeUtils.detachBadgeDrawable(countBadge, tbTitle!!)
         BadgeUtils.attachBadgeDrawable(
             BadgeDrawable.create(
@@ -66,5 +67,6 @@ abstract class UserListActivity : BaseActivity(), DataLoader {
                 maxCharacterCount = UiTools.MAX_BADGE_CHAR
             }, tbTitle!!
         )
+        numCache = n
     }
 }
