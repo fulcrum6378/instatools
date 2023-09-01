@@ -238,7 +238,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name, u.hdPhoto(),
                     cookieManager.getCookieOrganised(host),
-                    config.getOrElse("rollout_hash") { raw.rollout_hash } as String,
+                    (config["rollout_hash"] as? String)
+                        ?: raw.rollout_hash
+                        ?: (wrapper.define["InstagramWebPushInfo"]?.get(1) as? Map<*, *>)
+                            ?.get("rollout_hash") as String?,
                     Persistent.now()
                 ).apply {
                     accounts.removeAll { it.id == id }
