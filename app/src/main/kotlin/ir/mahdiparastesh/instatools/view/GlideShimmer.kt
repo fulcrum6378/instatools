@@ -14,7 +14,7 @@ class GlideShimmer(
     private val moreover: ((succeeded: Boolean) -> Unit)? = null
 ) : RequestListener<Drawable> {
     override fun onLoadFailed(
-        e: GlideException?, model: Any?, target: Target<Drawable>?,
+        e: GlideException?, model: Any?, target: Target<Drawable>,
         isFirstResource: Boolean
     ): Boolean {
         layout.stopShimmer()
@@ -23,8 +23,8 @@ class GlideShimmer(
     }
 
     override fun onResourceReady(
-        resource: Drawable?, model: Any?, target: Target<Drawable>?,
-        dataSource: DataSource?, isFirstResource: Boolean
+        resource: Drawable, model: Any, target: Target<Drawable>?,
+        dataSource: DataSource, isFirstResource: Boolean
     ): Boolean {
         layout.hideShimmer()
         layout.stopShimmer()
