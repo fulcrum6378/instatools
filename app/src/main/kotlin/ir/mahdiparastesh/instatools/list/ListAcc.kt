@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.ListAccBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -67,10 +68,14 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
         MaterialMenu(c, v, R.menu.acc_more, Act().apply {
             this[R.id.amWithoutAuth] = {
                 c.gsp.edit { putString(Login.spAccount, acc.id.toString()) }
+                acc.last = Persistent.now()
+                acc.saveMe(c)
                 c.goTo(Main::class, true)
             }
             this[R.id.amBrowseWeb] = {
                 c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.host)
+                acc.last = Persistent.now()
+                acc.saveMe(c)
             }
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
