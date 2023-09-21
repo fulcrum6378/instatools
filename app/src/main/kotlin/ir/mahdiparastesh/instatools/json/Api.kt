@@ -198,8 +198,9 @@ class Api<JSON>(
                 "&__s=eiw83y%3Aude3gw%3Ap6j381" /*TODO*/ +
                 "&__hsi=" + siteData["haste_session"] +
                 "&__comet_req=7" +
-                "&fb_dtsg=" + (cnfWrapper.define["DTSGInitialData"]!![1]
-                as Map<String, String>)["token"]!! + // or DTSGInitData and async_get_token
+                "&fb_dtsg=" + ((cnfWrapper.define["DTSGInitialData"]!![1]
+                as Map<String, String>)["token"] ?: "") + // or DTSGInitData and async_get_token
+                // DTSGInitData[1]["token"] is null in guest mode.
                 "&jazoest=26314" /*TODO 26314 or 26301*/ +
                 "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
                 "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
