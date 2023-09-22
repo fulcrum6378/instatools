@@ -214,7 +214,7 @@ class Exporter : ForegroundService() {
     private suspend fun Exportable.fetchMedium() {
         val queueSize: Int
         val dl: MutableMap.MutableEntry<String, Downloadable>?
-        media.entries.filter { !it.value.cache.exists() || it.value.cache.length() == 0L }
+        media.entries.filter { !it.value.cache.exists() } // || it.value.cache.length() == 0L
             .also {
                 queueSize = it.size
                 dl = it.getOrNull(0)

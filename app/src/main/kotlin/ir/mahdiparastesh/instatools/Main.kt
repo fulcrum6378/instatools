@@ -212,6 +212,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         updateProfile()
         if (m.files == null) StorageCache.load(this)
         if (!guest) Favourites.FavLoader(this).start()
+        // c.startService(Intent(c, Exporter::class.java)) // for debugging
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -448,6 +449,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
+  * A button for resuming/restarting the Exporter
   * Use URLConnection to track the percentage of downloads
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
