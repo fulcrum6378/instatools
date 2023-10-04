@@ -66,11 +66,13 @@ class MassFollower : ServiceOwnerActivity() {
                         }
                         val firstPos = (mm.fwb.value?.size ?: 1) - 1
                         b.rv.adapter?.notifyItemRangeInserted(firstPos, firstPos + size)
+                        updateCount((numCache ?: size) + 1)
                     }
-                    HANDLE_DELETED -> find(msg)?.let {
+                    HANDLE_DELETED -> find(msg)?.also {
                         mm.fwb.value!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.fwb.value!!.size)
+                        updateCount((numCache ?: mm.fwb.value!!.size) + 1)
                     }
                     HANDLE_DETECTED_AS_SPAMMER -> MaterialAlertDialogBuilder(this@MassFollower)
                         .apply {
@@ -103,6 +105,7 @@ class MassFollower : ServiceOwnerActivity() {
             }
             updateIfEmpty(mm.fwb.value.isNullOrEmpty())
             estimate()
+            updateCount(mm.fwb.value?.size ?: 0)
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

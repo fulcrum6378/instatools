@@ -1,24 +1,16 @@
 package ir.mahdiparastesh.instatools.more
 
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.view.View
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.MutableLiveData
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.Main
-import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.view.CounterActivity
 import ir.mahdiparastesh.instatools.view.DataLoader
-import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
-abstract class UserListActivity : BaseActivity(), DataLoader {
-    private var countBadge: BadgeDrawable? = null
-    var numCache: Int? = null
+abstract class UserListActivity : CounterActivity(), DataLoader {
 
     abstract val bRefresher: SwipeRefreshLayout
     abstract val bTbShadow: View
@@ -49,24 +41,5 @@ abstract class UserListActivity : BaseActivity(), DataLoader {
     override fun onRecyclerViewScrolled() {
         super.onRecyclerViewScrolled()
         updateShadow()
-    }
-
-    @SuppressLint("UnsafeOptInUsageError")
-    fun updateCount(n: Int) {
-        BadgeUtils.detachBadgeDrawable(countBadge, tbTitle!!)
-        BadgeUtils.attachBadgeDrawable(
-            BadgeDrawable.create(
-                ContextThemeWrapper(this@UserListActivity, UiTools.materialTheme)
-            ).apply {
-                number = n
-                backgroundColor = themeColor(android.R.attr.colorAccent)
-                badgeTextColor =
-                    if (night()) themeColor(android.R.attr.colorPrimary)
-                    else color(R.color.defBG)
-                countBadge = this
-                maxCharacterCount = UiTools.MAX_BADGE_CHAR
-            }, tbTitle!!
-        )
-        numCache = n
     }
 }

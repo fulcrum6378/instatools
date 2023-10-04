@@ -226,13 +226,13 @@ class Queuer : ForegroundService() {
                     return@findFromHtml; }
 
                 when (root.rootView.resource.__dr) {
-                    "PolarisStoriesMediaRoot.react" -> reqQueue.adder =
+                    "PolarisStoriesV3Root.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.StoryReel>>(
-                            this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user.id),
+                            this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user_id),
                             Rest.Reels::class, handler, autoQueue = false, cache = true,
                             typeToken = object : TypeToken<Rest.Reels<Rest.StoryReel>>() {}.type
                         ) { reels ->
-                            val rel = reels.reels.getOrDefault(root.rootView.props.user.id, null)
+                            val rel = reels.reels.getOrDefault(root.rootView.props.user_id, null)
                             val med = rel?.items?.find { it.pk == root.params.initial_media_id }
                             if (med == null) {
                                 handler?.obtainMessage(HANDLE_API_RES_ERROR)
@@ -250,7 +250,7 @@ class Queuer : ForegroundService() {
                             }
                             handleQueued(cur.qud!!, null)
                         }
-                    "PolarisStoriesHighlightsRoot.react" -> reqQueue.adder =
+                    "PolarisStoriesV3HighlightsRoot.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.HighlightReel>>(
                             this, Api.Endpoint.REEL_ITEM.url.format(
                                 "highlight%3A${root.params.highlight_reel_id}"

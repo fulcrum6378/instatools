@@ -101,13 +101,13 @@ class PageConfig(
         val media_owner_id: String,
         val media_type: Float,
         //val page_logging: Map<String, Any>,
-        val user: GraphQl.User,
+        val user_id: String,
     )
 
     data class PolarisRootRes(val __dr: String)
     // post => "PolarisPostRoot.react"
-    // story => "PolarisStoriesMediaRoot.react"
-    // highlight => "PolarisStoriesHighlightsRoot.react"
+    // story => "PolarisStoriesV3Root.react"
+    // highlight => "PolarisStoriesV3HighlightsRoot.react"
 
     // data class PolarisMeta(val title: String/*, val accessory: Any?, val favicon: Any?*/)
 
