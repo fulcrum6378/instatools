@@ -2,7 +2,7 @@ package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
 import com.google.gson.Gson
-import ir.mahdiparastesh.instatools.Login.Companion.spAccount
+import ir.mahdiparastesh.instatools.Login.Companion.SP_ACCOUNT
 import ir.mahdiparastesh.instatools.more.Persistent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +47,7 @@ class Account(
         suspend fun selected(
             c: Persistent, list: List<Account>? = null, guestIfNotExists: Boolean = true
         ): Account? = (list ?: load(c.c)).find {
-            it.id == c.gsp.getString(spAccount, if (guestIfNotExists) "-1" else "-2")
+            it.id == c.gsp.getString(SP_ACCOUNT, if (guestIfNotExists) "-1" else "-2")
                 ?.toLongOrNull()
         }
 

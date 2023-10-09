@@ -500,7 +500,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     Downloads.initService(this, giveLinkBack)
                     giveLinkBack = null
                     try {
-                        onBackPressed()
+                        @Suppress("DEPRECATION") onBackPressed()
                     } catch (e: java.lang.IllegalStateException) {
                         // FragmentManager is already executing transactions.
                     }

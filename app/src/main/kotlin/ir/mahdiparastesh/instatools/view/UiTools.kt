@@ -55,7 +55,7 @@ object UiTools {
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MP = "https://mahdiparastesh.ir/"
     const val APP_NAME = "InstaTools"
-    val ACC_FROM_URL = arrayOf(Login.rawHost, Login.host)
+    val ACC_FROM_URL = arrayOf(Login.RAW_HOST, Login.HOST)
     private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6

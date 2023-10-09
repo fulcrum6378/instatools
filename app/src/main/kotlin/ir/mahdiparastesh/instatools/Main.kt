@@ -109,7 +109,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!gsp.contains(Login.spAccount)) {
+        if (!gsp.contains(Login.SP_ACCOUNT)) {
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
@@ -439,7 +439,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch { clearCacheIfNecessary() }
             return; }
-        super.onBackPressed() // Do NOT kill the process
+        @Suppress("DEPRECATION") super.onBackPressed() // Do NOT kill the process
     }
 }
 
@@ -467,4 +467,5 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * - Media of private accounts as well as DMs are accessible to the public via direct links!!
   * So you don't need to bind cookies to the DownloadManager and perhaps even Queuer!
   * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
+  * - You can get help from here: https://github.com/dilame/instagram-private-api
 */

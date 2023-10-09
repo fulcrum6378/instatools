@@ -9,6 +9,7 @@ import android.os.Process.myPid
 import android.view.View
 import android.view.ViewStub
 import android.webkit.*
+import android.widget.Toast
 import androidx.core.content.edit
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
@@ -40,10 +41,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     override val com: ActivityCompanion get() = Companion
 
     companion object : ActivityCompanion() {
-        const val host = "https://www.instagram.com/"
-        const val rawHost = "https://instagram.com/"
-        const val loginUrl = "${host}accounts/login/"
-        const val spAccount = "account" // String
+        const val HOST = "https://www.instagram.com/"
+        const val RAW_HOST = "https://instagram.com/"
+        const val LOGIN_URL = "${HOST}accounts/login/"
+        const val SP_ACCOUNT = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong."
         const val BROWSE_FOR_ADD = 0
@@ -138,7 +139,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private var doClearHistory = false
-    fun browse(purpose: Int, withCookie: String? = "", beginWith: String = loginUrl) {
+    fun browse(purpose: Int, withCookie: String? = "", beginWith: String = LOGIN_URL) {
         browsePurpose = purpose
         b.refresher.vis()
         if (::bw.isInitialized) bw.root.vis(false)
@@ -153,7 +154,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
 
                 private fun next() {
-                    cm.setCookie(host, settable!![i]) {
+                    cm.setCookie(HOST, settable!![i]) {
                         i++; if (settable!!.size > i) next() else done()
                     }
                 }
@@ -180,9 +181,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             if (browsePurpose == BROWSE_AS_GUEST) {
                 id = "-1"
                 accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
-                    cookieManager.getCookieOrganised(host)
+                    cookieManager.getCookieOrganised(HOST)
                 CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
-                gsp.edit { putString(spAccount, id) }
+                gsp.edit { putString(SP_ACCOUNT, id) }
                 goTo(Main::class, true); return; }
             if (doClearHistory) {
                 b.web.clearHistory()
@@ -194,7 +195,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            if ((url != host && !url.startsWith("$host?")) || browsePurpose == BROWSE_THE_WEB) return
+            if ((url != HOST && !url.startsWith("$HOST?")) || browsePurpose == BROWSE_THE_WEB) return
             try { // Don't remove the explanatory comments
                 view.evaluateJavascript(
                     "document.getElementsByTagName('body')[0].innerHTML"
@@ -230,14 +231,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 val raw = Gson().fromJson(
                     config["raw"] as String, PageConfig.RawSharedData::class.java
                 )
-                id = cookieManager.getCookieOrganised(host)
+                id = cookieManager.getCookieOrganised(HOST)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";").toLong().toString()
                 /** It does not contain edge_saved_media! */
                 val u = raw.config.viewer
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name, u.hdPhoto(),
-                    cookieManager.getCookieOrganised(host),
+                    cookieManager.getCookieOrganised(HOST),
                     (config["rollout_hash"] as? String)
                         ?: raw.rollout_hash
                         ?: (wrapper.define["InstagramWebPushInfo"]?.get(1) as? Map<*, *>)
@@ -248,18 +249,21 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     accounts.add(this)
                     CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
                 }
-                gsp.edit { putString(spAccount, id) }
+                gsp.edit { putString(SP_ACCOUNT, id) }
                 goTo(Main::class, true)
                 improperLoading = 0
             }
         }
 
         private fun failed(e: Exception) {
-            Delay(5000L) { b.web.reload() }
-            if (improperLoading < 6) improperLoading++
+            Delay(3000L) { b.web.reload() }
+            if (improperLoading < 4) improperLoading++
             else {
                 if (BuildConfig.DEBUG) throw e
-                else welcome()
+                else {
+                    Toast.makeText(c, R.string.unknownError, Toast.LENGTH_LONG).show()
+                    welcome()
+                }
             }
         }
     }

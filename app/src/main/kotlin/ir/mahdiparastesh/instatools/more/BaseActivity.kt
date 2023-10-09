@@ -77,7 +77,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         super.onCreate(savedInstanceState)
         m = ViewModelProvider(this, Model.Factory())["Model", Model::class.java]
         gsp = initGsp()
-        if ((gsp.contains(Login.spAccount) || this !is Main) && this !is Login) {
+        if ((gsp.contains(Login.SP_ACCOUNT) || this !is Main) && this !is Login) {
             if (m.acc == null) CoroutineScope(Dispatchers.IO).launch {
                 m.acc = Account.selected(
                     this@BaseActivity, guestIfNotExists = this@BaseActivity !is Main
@@ -87,7 +87,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         } else onAccountSet()
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
-            super.onBackPressed(); finish(); return; }
+            @Suppress("DEPRECATION") super.onBackPressed(); finish(); return; }
 
         if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND, Intent.ACTION_VIEW)) {
             incrementCounter(Settings.spOpenAppCount)
@@ -141,7 +141,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
             }
-            toolbar.setNavigationOnClickListener { onBackPressed() }
+            toolbar.setNavigationOnClickListener { @Suppress("DEPRECATION") onBackPressed() }
         }
     }
 

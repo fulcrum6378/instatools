@@ -28,12 +28,8 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.list.ListQud
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
-import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -224,16 +220,16 @@ class Downloads : ServiceOwnerActivity() {
             R.id.dtExportLinks -> if (!mm.queueds.isNullOrEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = exportLinksMime
+                    type = EXPORT_LINKS_MIME
                     putExtra(
                         Intent.EXTRA_TITLE,
-                        "instatools_links_${UiTools.fileDateTime(Persistent.now())}.$exportLinksExt"
+                        "instatools_links_${UiTools.fileDateTime(Persistent.now())}.$EXPORT_LINKS_EXT"
                     )
                 }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
             R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = exportLinksMime
+                type = EXPORT_LINKS_MIME
             })
 
             R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
@@ -314,7 +310,7 @@ class Downloads : ServiceOwnerActivity() {
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
-        super.onBackPressed()
+        @Suppress("DEPRECATION") super.onBackPressed()
         if (isTaskRoot) goTo(Main::class)
     }
 
@@ -325,8 +321,8 @@ class Downloads : ServiceOwnerActivity() {
 
     companion object : ActivityCompanion() {
         const val HANDLE_429 = 429
-        const val exportLinksMime = "text/plain"
-        const val exportLinksExt = "txt"
+        const val EXPORT_LINKS_MIME = "text/plain"
+        const val EXPORT_LINKS_EXT = "txt"
 
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {

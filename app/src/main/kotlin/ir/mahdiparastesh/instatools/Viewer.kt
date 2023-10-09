@@ -345,7 +345,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         mm.vwReels = null
         mm.vwTagged = null
         mm.vwCurrentPage.value = 1
-        super.onBackPressed()
+        @Suppress("DEPRECATION") super.onBackPressed()
     }
 
     inner class Initial : BaseThread() {

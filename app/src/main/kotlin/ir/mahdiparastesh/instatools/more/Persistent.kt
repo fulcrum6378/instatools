@@ -62,7 +62,7 @@ interface Persistent {
     fun needAuthentication() {
         if (Login.browsePurpose == Login.BROWSE_AUTH_REQ) return
         ForegroundService.terminateTasks(c)
-        gsp.edit { remove(Login.spAccount) }
+        gsp.edit { remove(Login.SP_ACCOUNT) }
         m.accountSwitched()
         if (this is BaseActivity && this !is Login)
             goTo(Login::class, true) { putExtra(Login.EXTRA_NEED_AUTH, m.acc?.id ?: -1L) }
@@ -78,7 +78,7 @@ interface Persistent {
 
     /** Switches between Account instances. */
     fun switchAcc() {
-        gsp.edit { remove(Login.spAccount) }
+        gsp.edit { remove(Login.SP_ACCOUNT) }
         m.acc = null
         if (this is BaseActivity)
             goTo(Login::class, true)

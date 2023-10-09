@@ -233,7 +233,7 @@ class MassFollower : ServiceOwnerActivity() {
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         Delay(500L) { mm.fwb.value = null }
-        super.onBackPressed()
+        @Suppress("DEPRECATION") super.onBackPressed()
     }
 
     companion object : ActivityCompanion() {
