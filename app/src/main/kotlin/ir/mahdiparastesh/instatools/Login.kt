@@ -191,6 +191,34 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
+        override fun onReceivedError(
+            view: WebView?, request: WebResourceRequest?, error: WebResourceError?
+        ) {
+            super.onReceivedError(view, request, error)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+            if (error?.errorCode != null) onError(error.errorCode)
+        }
+
+        @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+        override fun onReceivedError(
+            view: WebView?, errorCode: Int, description: String?, failingUrl: String?
+        ) {
+            super.onReceivedError(view, errorCode, description, failingUrl)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return
+            onError(errorCode)
+        }
+
+        private fun onError(errorCode: Int) {
+            if (errorCode == ERROR_REDIRECT_LOOP) {
+                CookieManager.getInstance().removeAllCookies(null)
+                b.web.loadUrl(LOGIN_URL)
+                failed(
+                    Exception("Removing cookies does not fix it, figure out something else!"),
+                    false
+                )
+            }
+        }
+
         private var improperLoading = 0
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
@@ -255,8 +283,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        private fun failed(e: Exception) {
-            Delay(3000L) { b.web.reload() }
+        private fun failed(e: Exception, reload: Boolean = true) {
+            if (reload) Delay(3000L) { b.web.reload() }
             if (improperLoading < 4) improperLoading++
             else {
                 if (BuildConfig.DEBUG) throw e
@@ -281,6 +309,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         return sb.toString().trimEnd()
     }
 
+    @SuppressLint("MissingSuperCall")
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.web.canGoBack()) {

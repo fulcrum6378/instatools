@@ -4,4 +4,4 @@ plugins {
     id 'org.jetbrains.kotlin.kapt' version '1.9.0' apply false
 }
 
-tasks.register('clean', Delete) { delete "$rootDir/build", "${rootDir}/app/build/" }
+tasks.register('clean', Delete) { delete "$rootDir/build", "$rootDir/app/build/" }
