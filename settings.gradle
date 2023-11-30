@@ -14,7 +14,7 @@ dependencyResolutionManagement {
             url 'https://maven.pkg.github.com/fulcrum6378/ChipsLayoutManager'
             credentials {
                 username 'fulcrum6378'
-                password System.getenv("GHP_TOKEN")
+                password System.getenv("GITHUB_TOKEN")
             }
         }
     }

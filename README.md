@@ -62,7 +62,7 @@ Its theme is the yellow-brown one like *Unfollowers*.
 This activity shows merely locally favourited Instagram profiles (data is only stored in the local database not by
 Instagram). These profiles sink in the *Unfollowers* page and are easily accessible.
 
-### [Settings](app/src/main/kotlin/ir/mahdiparastesh/instatools/Settings.kt)
+### [Settings.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/Settings.kt)
 
 There are different shared preference files related to each account and there is also a global shared preference.
 This activity controls both global settings (gsp) and also settings of the current account (sp).
