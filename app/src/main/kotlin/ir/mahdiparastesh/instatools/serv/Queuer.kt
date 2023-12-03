@@ -20,13 +20,21 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ir.mahdiparastesh.instatools.*
+import ir.mahdiparastesh.instatools.BuildConfig
+import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.StorageCache
-import ir.mahdiparastesh.instatools.json.*
+import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
+import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.json.PageConfig
+import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.HumanDelay
@@ -47,7 +55,7 @@ import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Queuer : ForegroundService() {
@@ -287,6 +295,7 @@ class Queuer : ForegroundService() {
                             .launch { dao.deleteQueued(cur.qud!!) }
                             .invokeOnCompletion { linkHandled() }
                     }*/
+                    "PolarisChallengeRoot.react" -> needAuthentication()
                     else -> {
                         Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr !in arrayOf(
@@ -394,7 +403,7 @@ class Queuer : ForegroundService() {
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                         setDestinationInExternalPublicDir(
                             Environment.DIRECTORY_DOWNLOADS, queue[q].fName(
-                                MediaType.values().find { it.inDb == queue[q].mediaType }!!.ext
+                                MediaType.entries.find { it.inDb == queue[q].mediaType }!!.ext
                             )
                         )
                     }
@@ -461,7 +470,7 @@ class Queuer : ForegroundService() {
                 stem.findFile(q.userName!!) ?: stem.createDirectory(q.userName!!)
             else -> stem
         } ?: return
-        val type = MediaType.values().find { it.inDb == q.mediaType }!!
+        val type = MediaType.entries.find { it.inDb == q.mediaType }!!
         val fName = q.fName(type.ext)
         var leaf = branch.findFile(fName)
         // Never check existence from StorageCache because the file might be deleted anytime and
@@ -562,6 +571,8 @@ class Queuer : ForegroundService() {
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),
         VIDEO("video/mp4", "mp4", 2),
+
+        @Suppress("unused")
         AUDIO("audio/mp4", "m4a", 3),
     }
 

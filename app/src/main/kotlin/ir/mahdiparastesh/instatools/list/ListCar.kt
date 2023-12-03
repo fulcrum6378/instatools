@@ -28,12 +28,12 @@ class ListCar(
         if (med.carousel_media != null) for (slide in med.carousel_media!!) slides.add(
             Slide(
                 slide.nearest(),
-                MediaType.values().find { it.inDb == (slide.media_type).toInt().toByte() }!!
+                MediaType.entries.find { it.inDb == (slide.media_type).toInt().toByte() }!!
             )
         ) else if (med.image_versions2 != null) slides.add(
             Slide(
                 med.nearest(),
-                MediaType.values().find { it.inDb == (med.media_type).toInt().toByte() }!!
+                MediaType.entries.find { it.inDb == (med.media_type).toInt().toByte() }!!
             )
         )
         players = ArrayList(arrayOfNulls<MediaPlayer?>(slides.size).toMutableList())
