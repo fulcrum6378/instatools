@@ -74,10 +74,6 @@ class PageConfig(
         class NeedAuth : Exception()
     }
 
-    data class RawSharedData(val config: SharedDataConfig, val rollout_hash: String?)
-
-    data class SharedDataConfig(val viewer: GraphQl.User)
-
     data class PolarisRoot(
         //val actorID: String,
         val rootView: PolarisView,

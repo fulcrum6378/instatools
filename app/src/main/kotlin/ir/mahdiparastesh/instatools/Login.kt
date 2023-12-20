@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
+import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -252,25 +253,20 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         @Throws(JsonSyntaxException::class, NumberFormatException::class)
         private fun collect(html: String) { // UnicodeUnescaper fucks up!
             PageConfig.findFromHtml(
-                html, true, { failed(it) }, null, null
+                html, true, { failed(it) }, c, c
             ) { wrapper ->
-                @Suppress("UNCHECKED_CAST") val config =
-                    wrapper.define["XIGSharedData"]!![1] as Map<String, Any>
-                val raw = Gson().fromJson(
-                    config["raw"] as String, PageConfig.RawSharedData::class.java
-                )
                 id = cookieManager.getCookieOrganised(HOST)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";").toLong().toString()
-                /** It does not contain edge_saved_media! */
-                val u = raw.config.viewer
+                val u = Gson().fromJson(
+                    Gson().toJson((wrapper.define["PolarisViewer"]!![1] as Map<*, *>)["data"]),
+                    GraphQl.User::class.java
+                ) // it does not contain edge_saved_media!
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name, u.hdPhoto(),
                     cookieManager.getCookieOrganised(HOST),
-                    (config["rollout_hash"] as? String)
-                        ?: raw.rollout_hash
-                        ?: (wrapper.define["InstagramWebPushInfo"]?.get(1) as? Map<*, *>)
-                            ?.get("rollout_hash") as String?,
+                    (wrapper.define["InstagramWebPushInfo"]?.get(1) as? Map<*, *>)
+                        ?.get("rollout_hash") as String?,
                     Persistent.now()
                 ).apply {
                     accounts.removeAll { it.id == id }
