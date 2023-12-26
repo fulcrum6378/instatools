@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 74
-        versionName '28.6.0'
+        versionName '28.6.1'
         signingConfig signingConfigs.main
     }
 
@@ -31,7 +31,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_20; targetCompatibility JavaVersion.VERSION_20
     }
     kotlinOptions { jvmTarget = '20' }
-    buildFeatures { viewBinding true }
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+    }
 
     buildTypes {
         debuggee {
@@ -52,7 +55,7 @@ dependencies {
     def room_version = '2.6.1'
     def media2_version = '1.2.1'
 
-    implementation 'androidx.activity:activity-ktx:1.8.1' // only for ActivityResultLauncher
+    implementation 'androidx.activity:activity-ktx:1.8.2' // only for ActivityResultLauncher
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.12.0'
@@ -69,7 +72,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.tbuonomo:dotsindicator:5.0'
     implementation 'ir.mahdiparastesh:chipslayoutmanager:0.5.0'
