@@ -12,9 +12,11 @@ open class Delay(timeout: Long, listener: Runnable) :
 }
 
 /** Imitates the human behaviour in order to fool the API system of Instagram :D */
-class HumanDelay(range: LongRange = 500L..5000L, runnable: Runnable) :
-    Handler(Looper.myLooper() ?: Looper.getMainLooper()) {
+class HumanDelay(
+    @Suppress("UNUSED_PARAMETER") range: LongRange = 500L..5000L, runnable: Runnable
+) : Handler(Looper.myLooper() ?: Looper.getMainLooper()) {
     init {
-        postDelayed(runnable, range.random())
+        //postDelayed(runnable, range.random())
+        post(runnable)
     }
 }
