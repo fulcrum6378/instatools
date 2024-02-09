@@ -74,6 +74,9 @@ class PageSvd : BasePageMain(), Selective {
             if (c.mm.saved?.more_available == true && !b.rv.canScrollVertically(1)
                 && thread?.active != true
             ) thread = FetchSome().also { it.start() }
+
+            if (c.mm.saved?.more_available == false)
+                c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
         },
         HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
         Api.HANDLE_ERROR to {
@@ -97,11 +100,8 @@ class PageSvd : BasePageMain(), Selective {
         },
         HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
         HANDLE_REALLY_NO_MORE to {
-            val n = it.arg1 - it.arg2
-            if (n > 0) UiTools.snackbar(
-                b.root, c.getString(R.string.reallyHasNoMore, n), 10000, c.b.bnv
-            )
             if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
+            c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
         },
     )
     override var tracker: SelectionTracker<String>? = null
@@ -299,14 +299,10 @@ class PageSvd : BasePageMain(), Selective {
                     interrupt(); return@Api; }
 
                 // check if the user has hidden saves
-                if (wrapper.items!!.isEmpty() && c.mm.savedCount.value.let {
-                        it != null && it > (c.mm.saved?.items?.size ?: 0)
-                    }) {
+                if (wrapper.items!!.isEmpty()) {
                     if (c.mm.saved == null) c.mm.saved = wrapper
                     reallyHasMore = false
-                    handler?.obtainMessage(
-                        HANDLE_REALLY_NO_MORE, c.mm.savedCount.value!!, c.mm.saved?.items?.size ?: 0
-                    )?.sendToTarget()
+                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
                     interrupt(); return@Api; }
 
                 if (c.mm.saved == null) {

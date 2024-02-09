@@ -365,7 +365,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 pict = u.hdPhoto()
                 saveMe(c)
             }
-            u.edge_saved_media?.count?.toInt()?.also { if (it > 0) mm.savedCount.value = it }
         }
     }
 
@@ -447,6 +446,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Problems:
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
+  * Migrate to media3 (media player)
   * -
   * Extension:
   * A button for resuming/restarting the Exporter
