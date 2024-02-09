@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.view
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -66,6 +67,7 @@ object UiTools {
         else arrayOf()
 
     /** @return TextView instances of a BottomNavigationView for applying custom styles on them. */
+    @SuppressLint("RestrictedApi")
     fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
         val list = ArrayList<AppCompatTextView>()
         (bnv[0] as BottomNavigationMenuView).forEach {

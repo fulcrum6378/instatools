@@ -84,6 +84,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
                 if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
                 ) boxThread = FetchOfInbox().also { it.start() }
+                if (c.mm.dmInbox?.has_older == false)
+                    c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
             } else if (msg.obj != null) {
                 val dmThd = msg.obj as Dm.DmThread
                 val bef = c.mm.dmThread!!.items.size

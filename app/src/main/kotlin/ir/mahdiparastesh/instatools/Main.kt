@@ -93,6 +93,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         val savedCount = MutableLiveData<Int?>(null)
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
+        val dmInboxCount = MutableLiveData<Int?>(null)
         val currentPage = MutableLiveData(Settings.defSpMainPage)
 
         fun accountSwitched() {
@@ -120,6 +121,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         mm.unfollowers.observe(this) { bnvBadge(0, it?.filter { u -> !u.unfollowed }?.size) }
         mm.savedCount.observe(this) { bnvBadge(1, it) }
+        mm.dmInboxCount.observe(this) { bnvBadge(2, it) }
 
         // Theming
         if (night()) colorBG.observe(this) {

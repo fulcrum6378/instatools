@@ -155,7 +155,7 @@ class Downloads : ServiceOwnerActivity() {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
             if (it in handledLinks || mm.queueds?.map { q -> q.link }
                     ?.let { qs -> it in qs } == true) return@also
-            if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith("https://instagram.com/")) {
+            if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
