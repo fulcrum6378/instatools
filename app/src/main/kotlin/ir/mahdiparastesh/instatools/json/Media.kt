@@ -39,7 +39,6 @@ class Media(
     //val has_more_comments: Boolean,
     //val hide_view_all_comment_entrypoint: Boolean,
     val id: String,
-    //val igtv_exists_in_viewer_series: Boolean,
     image_versions2: ImageVersions2?,
     //val inline_composer_display_condition: Boolean,
     //val integrity_review_decision: String,
@@ -102,7 +101,6 @@ class Media(
             else -> UiTools.STORY_LINK.format(user.username, pk)
         }
         "clips" -> UiTools.REEL_LINK.format(code)
-        "igtv" -> UiTools.IGTV_LINK.format(code)
         null -> nearest(BEST)
         else -> null
     }

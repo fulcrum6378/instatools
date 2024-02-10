@@ -51,7 +51,6 @@ object UiTools {
     const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s"
     const val HIGHLIGHT_LINK = "https://www.instagram.com/stories/highlights/%s/" // inexact
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
-    const val IGTV_LINK = "https://www.instagram.com/tv/%s/"
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MP = "https://mahdiparastesh.ir/"

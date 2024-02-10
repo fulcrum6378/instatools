@@ -147,6 +147,10 @@ class Queuer : ForegroundService() {
                 ?.sendToTarget()
         }.start()
 
+        /*if (cur.link.contains("/s/")) {
+            return
+        }*/
+
         reqQueue.adder = object : StringRequest(cur.link, { html ->
             PageConfig.findFromHtml(html, false, {
                 if (it is PageConfig.Companion.NeedAuth) needAuthentication()
@@ -155,13 +159,10 @@ class Queuer : ForegroundService() {
                     if (BuildConfig.DEBUG) throw it
                 }
             }, null, null) { cnfWrapper ->
-                if (cur.link.contains("/p/") || cur.link.contains("/reel/")
-                    || cur.link.contains("/tv/")
-                ) {
+                if (cur.link.contains("/p/") || cur.link.contains("/reel/")) {
                     val shortcode = when {
                         cur.link.contains("/p/") -> cur.link.substringAfter("/p/")
                         cur.link.contains("/reel/") -> cur.link.substringAfter("/reel/")
-                        cur.link.contains("/tv/") -> cur.link.substringAfter("/tv/")
                         else -> throw Exception("IMPOSSIBLE")
                     }.substringBefore("/")
                     reqQueue.adder = Api<GraphQl>(
@@ -329,11 +330,13 @@ class Queuer : ForegroundService() {
                 finish(true)
             } else {
                 Api.gotError(this@Queuer, handler, null, it, HANDLE_HTML_ERROR)
-                it.networkResponse?.data?.let { ba -> String(ba) }?.also { html ->
+                if (it.networkResponse?.statusCode != 404
+                ) it.networkResponse?.data?.let { ba -> String(ba) }?.also { html ->
                     if (it.networkResponse?.statusCode == 500 &&
                         html.contains(Login.LOGGED_OUT_MSG_500)
                     ) needAuthentication()
-                    else throw Exception(it.networkResponse?.statusCode?.toString())
+                    else if (BuildConfig.DEBUG)
+                        throw Exception(it.networkResponse?.statusCode?.toString())
                 } // if it.networkResponse == null, just Api.gotError; slow internet connection!
             }
         }) {
