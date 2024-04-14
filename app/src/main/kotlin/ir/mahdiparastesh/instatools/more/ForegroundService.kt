@@ -114,9 +114,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         if (requiresHandling) handling = HandlerThread(com.klass.name).also { it.start() }
         if (waveLockTimeout != null) wakeLock =
             (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
-                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${com.klass.name}::lock").apply {
-                    acquire(waveLockTimeout!! * 60000L)
-                }
+                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${com.klass.name}::lock")
+                    .apply { acquire(waveLockTimeout!! * 60000L) }
             }
     }
 

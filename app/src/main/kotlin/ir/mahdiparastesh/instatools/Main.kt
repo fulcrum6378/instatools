@@ -37,8 +37,12 @@ import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.json.*
+import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
+import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -70,6 +74,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val mm: MyModel by viewModels()
     private var exiting = false
     val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
+
+    @SuppressLint("RestrictedApi")
     lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
     var schRes: Array<Rest.ItemUser>? = null

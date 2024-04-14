@@ -18,17 +18,16 @@ class PageConfig(
         private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
 
         @Suppress("UNCHECKED_CAST")
-        fun create(map: LinkedTreeMap<String, Any>): PageConfig = PageConfig(
-            HashMap<String, List<Any>>().apply {
-                (map["define"] as? ArrayList<ArrayList<Any>>)?.also { arr ->
-                    for (i in arr) this[i[0] as String] = i.subList(1, i.size)
-                }
-            }, HashMap<String, List<Any>>().apply {
-                (map["require"] as? ArrayList<ArrayList<Any>>)?.also { arr ->
-                    for (i in arr) this[i[0] as String] = i.subList(1, i.size)
-                }
+        private fun titledListToMap(list: Any): HashMap<String, List<Any>> {
+            val map = HashMap<String, List<Any>>()
+            (list as? ArrayList<ArrayList<Any>>)?.also { arr ->
+                for (i in arr) map[i[0] as String] = i.subList(1, i.size)
             }
-        )
+            return map
+        }
+
+        fun create(map: LinkedTreeMap<String, Any>): PageConfig =
+            PageConfig(titledListToMap(map["define"]!!), titledListToMap(map["require"]!!))
 
         fun findFromHtml(
             rawHtml: String, isEvaluated: Boolean, onFailure: (e: Exception) -> Unit,

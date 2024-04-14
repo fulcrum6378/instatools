@@ -149,7 +149,7 @@ class Queuer : ForegroundService() {
 
         /*if (cur.link.contains("/s/")) {
             return
-        }*/
+        }*/ // The highlight links are unreachable in the web version!
 
         reqQueue.adder = object : StringRequest(cur.link, { html ->
             PageConfig.findFromHtml(html, false, {
@@ -224,10 +224,12 @@ class Queuer : ForegroundService() {
                     return@findFromHtml; }
                 // ELSE IF IT'S A STORY/HIGHLIGHT or an invalid link...
 
-                val root = (cnfWrapper.require.keys
+                val root = ((cnfWrapper.require.keys
                     .find { it.startsWith("CometPlatformRootClient") }
-                    ?.let { cnfWrapper.require[it] }?.getOrNull(2) as List<Any>?)
-                    ?.getOrNull(3)?.let {
+                    ?.let { cnfWrapper.require[it] }
+                    ?.getOrNull(2) as? List<Any>)
+                    ?.getOrNull(0) as? Map<String, Map<String, Any?>>)
+                    ?.get("initialRouteInfo")?.get("route")?.let {
                         Gson().fromJson(Gson().toJson(it), PageConfig.PolarisRoot::class.java)
                     }
                 if (root == null) {
@@ -299,7 +301,8 @@ class Queuer : ForegroundService() {
                             .launch { dao.deleteQueued(cur.qud!!) }
                             .invokeOnCompletion { linkHandled() }
                     }*/
-                    "PolarisChallengeRoot.react" -> needAuthentication()
+                    "PolarisLoginRoot.react", "PolarisChallengeRoot.react" ->
+                        needAuthentication()
                     else -> {
                         Api.gotError(this@Queuer, handler, null, null, HANDLE_HTML_ERROR)
                         if (BuildConfig.DEBUG && root.rootView.resource.__dr !in arrayOf(
@@ -577,8 +580,6 @@ class Queuer : ForegroundService() {
     enum class MediaType(val mime: String, val ext: String, val inDb: Byte) {
         PHOTO("image/jpg", "jpg", 1),
         VIDEO("video/mp4", "mp4", 2),
-
-        @Suppress("unused")
         AUDIO("audio/mp4", "m4a", 3),
     }
 
