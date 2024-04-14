@@ -101,6 +101,7 @@ class Media(
             else -> UiTools.STORY_LINK.format(user.username, pk)
         }
         "clips" -> UiTools.REEL_LINK.format(code)
+        "igtv" -> UiTools.IGTV_LINK.format(code)
         null -> nearest(BEST)
         else -> null
     }

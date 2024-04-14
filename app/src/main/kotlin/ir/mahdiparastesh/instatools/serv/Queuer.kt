@@ -159,10 +159,13 @@ class Queuer : ForegroundService() {
                     if (BuildConfig.DEBUG) throw it
                 }
             }, null, null) { cnfWrapper ->
-                if (cur.link.contains("/p/") || cur.link.contains("/reel/")) {
+                if (cur.link.contains("/p/") || cur.link.contains("/reel/")
+                    || cur.link.contains("/tv/")
+                ) {
                     val shortcode = when {
                         cur.link.contains("/p/") -> cur.link.substringAfter("/p/")
                         cur.link.contains("/reel/") -> cur.link.substringAfter("/reel/")
+                        cur.link.contains("/tv/") -> cur.link.substringAfter("/tv/")
                         else -> throw Exception("IMPOSSIBLE")
                     }.substringBefore("/")
                     reqQueue.adder = Api<GraphQl>(
