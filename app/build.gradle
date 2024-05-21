@@ -7,7 +7,7 @@ plugins {
 android {
     namespace 'ir.mahdiparastesh.instatools'
     compileSdk 34
-    buildToolsVersion = '35.0.0-rc2'
+    buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     signingConfigs {
         main {
@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 76
-        versionName '28.8.0'
+        versionName '28.8.1'
         signingConfig signingConfigs.main
     }
 
@@ -48,17 +48,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    android.variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }
+    //noinspection GrDeprecatedAPIUsage
+    variantFilter { if (it.buildType.name in ['debug', 'androidTest']) it.setIgnore(true) }
 }
 
 dependencies {
     def room_version = '2.6.1'
     def media2_version = '1.3.0'
 
-    implementation 'androidx.activity:activity-ktx:1.8.2' // only for ActivityResultLauncher
+    implementation 'androidx.activity:activity-ktx:1.9.0' // only for ActivityResultLauncher
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
     implementation "androidx.media2:media2-widget:$media2_version"
     implementation "androidx.media2:media2-player:$media2_version"
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
@@ -67,12 +68,12 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.webkit:webkit:1.10.0'
+    implementation 'androidx.webkit:webkit:1.11.0'
     implementation 'com.airbnb.android:lottie:6.2.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.tbuonomo:dotsindicator:5.0'
     implementation 'ir.mahdiparastesh:chipslayoutmanager:0.5.0'
