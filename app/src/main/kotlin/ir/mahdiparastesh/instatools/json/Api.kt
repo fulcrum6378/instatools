@@ -64,7 +64,7 @@ class Api<JSON>(
         } catch (e: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>")) when {
                 url == Endpoint.SIGN_OUT.url -> gotError()
-                response.contains("Log in • Instagram") -> {
+                response.contains("Login • Instagram") -> {
                     neverMindIfNeedAuth
                     c.needAuthentication()
                     if (c is BaseActivity) gotError()

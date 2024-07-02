@@ -217,17 +217,18 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         }
 
         // Miscellaneous
-        updateProfile()
         if (m.files == null) StorageCache.load(this)
-        if (!guest) Favourites.FavLoader(this).start()
+        if (!guest) {
+            updateProfile()
+            Favourites.FavLoader(this).start()
+        }
         // c.startService(Intent(c, Exporter::class.java)) // for debugging
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent.extras?.getInt(EXTRA_TURN_TO_PAGE)?.let {
-            if (::b.isInitialized) turnToPage(it)
-        }
+        intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+            ?.also { if (::b.isInitialized) turnToPage(it) }
     }
 
     override fun onResume() {

@@ -23,7 +23,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 76
-        versionName '28.8.1'
+        versionName '28.8.4'
         signingConfig signingConfigs.main
     }
 
@@ -57,7 +57,7 @@ dependencies {
     def media2_version = '1.3.0'
 
     implementation 'androidx.activity:activity-ktx:1.9.0' // only for ActivityResultLauncher
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation "androidx.media2:media2-widget:$media2_version"
