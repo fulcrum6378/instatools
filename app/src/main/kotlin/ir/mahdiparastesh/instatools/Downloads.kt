@@ -28,8 +28,12 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.list.ListQud
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.more.Delay
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -270,7 +274,9 @@ class Downloads : ServiceOwnerActivity() {
                         .split("\n")
                 }
             }.onSuccess { links ->
-                dao.addQueueds(links.map { l -> Queued(Persistent.now(), l) })
+                val curLinks = mm.queueds?.map { it.link } ?: listOf()
+                for (l in links) if (l !in curLinks)
+                    dao.addQueued(Queued(Persistent.now(), l))
                 handler?.obtainMessage(HANDLE_RESET, 1, 0, dao.queueds())?.sendToTarget()
             }.onFailure {
                 withContext(Dispatchers.Main) {
@@ -379,6 +385,7 @@ class Downloads : ServiceOwnerActivity() {
                         if (mm.queueds == null) return@let
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size - 1)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
+                        updateCount((numCache ?: mm.queueds!!.size) - 1)
                     }
                 }
                 handler?.obtainMessage(-1)?.sendToTarget()

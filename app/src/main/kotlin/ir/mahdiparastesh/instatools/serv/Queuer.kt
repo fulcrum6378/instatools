@@ -240,7 +240,8 @@ class Queuer : ForegroundService() {
                     return@findFromHtml; }
 
                 when (root.rootView.resource.__dr) {
-                    "PolarisStoriesV3Root.react" -> reqQueue.adder =
+                    "PolarisStoriesV3Root.react",
+                    "PolarisStoriesMediaRoot.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.StoryReel>>(
                             this, Api.Endpoint.REEL_ITEM.url.format(root.rootView.props.user_id),
                             Rest.Reels::class, handler, autoQueue = false, cache = true,
@@ -264,7 +265,8 @@ class Queuer : ForegroundService() {
                             }
                             handleQueued(cur.qud!!, null)
                         }
-                    "PolarisStoriesV3HighlightsRoot.react" -> reqQueue.adder =
+                    "PolarisStoriesV3HighlightsRoot.react",
+                    "PolarisStoriesMediaHighlightsRoot.react" -> reqQueue.adder =
                         Api<Rest.Reels<Rest.HighlightReel>>(
                             this, Api.Endpoint.REEL_ITEM.url.format(
                                 "highlight%3A${root.params.highlight_reel_id}"
