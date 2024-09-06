@@ -274,7 +274,7 @@ class Downloads : ServiceOwnerActivity() {
                         .split("\n")
                 }
             }.onSuccess { links ->
-                val curLinks = mm.queueds?.map { it.link } ?: listOf()
+                val curLinks = mm.queueds?.map { q -> q.link } ?: listOf()
                 for (l in links) if (l !in curLinks)
                     dao.addQueued(Queued(Persistent.now(), l))
                 handler?.obtainMessage(HANDLE_RESET, 1, 0, dao.queueds())?.sendToTarget()
