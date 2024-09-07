@@ -66,8 +66,8 @@ class Expandable(
         b.volume.setOnClickListener { muteSound.value = !(muteSound.value ?: false) }
         muteSound.observe(c) { bb ->
             b.volume.setImageResource(if (bb) R.drawable.volume_off else R.drawable.volume_up)
-            (b.slider.adapter as ListCar?)?.players
-                ?.forEach { it?.playerVolume = if (bb) 0f else 1f }
+            (b.slider.adapter as ListCar?)?.sessions
+                ?.forEach { it?.player?.volume = if (bb) 0f else 1f }
         }
         b.download.setOnClickListener {
             media?.apply {

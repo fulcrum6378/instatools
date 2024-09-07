@@ -3,10 +3,11 @@ package ir.mahdiparastesh.instatools.list
 import android.net.Uri
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
-import androidx.media.AudioAttributesCompat
-import androidx.media2.common.MediaMetadata
-import androidx.media2.common.UriMediaItem
-import androidx.media2.player.MediaPlayer
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C.USAGE_MEDIA
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaSession
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.databinding.ListCarBinding
@@ -22,7 +23,7 @@ class ListCar(
     private val muteSound: MutableLiveData<Boolean>
 ) : RecyclerView.Adapter<AnyViewHolder<ListCarBinding>>() {
     private val slides = arrayListOf<Slide>()
-    val players: ArrayList<MediaPlayer?>
+    val sessions: ArrayList<MediaSession?>
 
     init {
         if (med.carousel_media != null) for (slide in med.carousel_media!!) slides.add(
@@ -36,7 +37,7 @@ class ListCar(
                 MediaType.entries.find { it.inDb == (med.media_type).toInt().toByte() }!!
             )
         )
-        players = ArrayList(arrayOfNulls<MediaPlayer?>(slides.size).toMutableList())
+        sessions = ArrayList(arrayOfNulls<MediaSession?>(slides.size).toMutableList())
     }
     /* Do not use thumbnails for Expandable, they're cropped! */
 
@@ -49,9 +50,10 @@ class ListCar(
         h.b.image.vis(false)
         h.b.video.vis(false)
         h.b.image.setImageDrawable(null)
-        players[i]?.close()
-        players[i] = null
-        players.forEachIndexed { ii, mp -> if (i != ii) mp?.pause() }
+        sessions[i]?.player?.release()
+        sessions[i]?.release()
+        sessions[i] = null
+        sessions.forEachIndexed { ii, ms -> if (i != ii) ms?.player?.pause() }
 
         when (slides[i].type) {
             MediaType.PHOTO -> slides[i].url?.let {
@@ -60,23 +62,17 @@ class ListCar(
             }
             MediaType.VIDEO -> slides[i].url?.let {
                 h.b.video.vis()
-                players[i] = MediaPlayer(c).apply {
-                    setAudioAttributes(
-                        AudioAttributesCompat.Builder()
-                            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-                            .build()
-                    )
-                    setMediaItem(
-                        UriMediaItem.Builder(Uri.parse(it)).setMetadata(
-                            MediaMetadata.Builder()
-                                .putString(MediaMetadata.METADATA_KEY_TITLE, "")
-                                .build()
-                        ).build()
-                    )
-                    playerVolume = if (muteSound.value == true) 0f else 1f
-                    h.b.video.setPlayer(this)
-                    prepare()
+                sessions[i] = MediaSession.Builder(
+                    c, ExoPlayer.Builder(c).setAudioAttributes(
+                        AudioAttributes.Builder().setUsage(USAGE_MEDIA).build(), false
+                    ).build()
+                ).build().apply {
+                    player.setMediaItem(MediaItem.fromUri(Uri.parse(it)))
+                    player.volume = if (muteSound.value == true) 0f else 1f
+                    h.b.video.setPlayer(player)
+                    player.prepare()
                 }
+
             }
             else -> { // IMPOSSIBLE
             }
@@ -86,7 +82,10 @@ class ListCar(
     override fun getItemCount() = slides.size
 
     override fun onDetachedFromRecyclerView(rv: RecyclerView) {
-        players.forEach { it?.close() }
+        sessions.forEach {
+            it?.player?.release()
+            it?.release()
+        }
     }
 
     data class Slide(val url: String?, val type: MediaType)

@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.iterator
-import androidx.media2.common.SessionPlayer
+import androidx.media3.common.Player
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.Main
@@ -72,7 +72,7 @@ abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshList
 
     override fun onPause() {
         super.onPause()
-        (expanded()?.slider?.adapter as ListCar?)?.players
-            ?.forEach { if (it?.playerState == SessionPlayer.PLAYER_STATE_PLAYING) it.pause() }
+        (expanded()?.slider?.adapter as ListCar?)?.sessions
+            ?.forEach { if (it?.player?.playbackState == Player.STATE_READY) it.player.pause() }
     }
 }

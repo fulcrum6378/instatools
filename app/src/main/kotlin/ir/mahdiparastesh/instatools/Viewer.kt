@@ -17,7 +17,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.media2.common.SessionPlayer
+import androidx.media3.common.Player
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.NetworkResponse
 import com.android.volley.toolbox.StringRequest
@@ -36,9 +36,12 @@ import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListCar
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
 import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
+import ir.mahdiparastesh.instatools.more.BasePageViewer
+import ir.mahdiparastesh.instatools.more.BaseThread
+import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
@@ -330,8 +333,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     override fun onPause() {
         super.onPause()
-        (b.expanded.slider.adapter as ListCar?)?.players
-            ?.forEach { if (it?.playerState == SessionPlayer.PLAYER_STATE_PLAYING) it.pause() }
+        (b.expanded.slider.adapter as ListCar?)?.sessions
+            ?.forEach { if (it?.player?.playbackState == Player.STATE_READY) it.player.pause() }
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
