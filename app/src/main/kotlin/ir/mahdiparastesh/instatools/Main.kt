@@ -133,8 +133,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (night()) colorBG.observe(this) {
             if (it == null) return@observe
             window.decorView.setBackgroundColor(it)
-            window.statusBarColor = it
-            window.navigationBarColor = it
+            @Suppress("DEPRECATION")
+            window.statusBarColor = it // FIXME won't affect Android 15+
+            @Suppress("DEPRECATION")
+            window.navigationBarColor = it // FIX ME won't affect Android 15+
             styliseToolbar()
             onPrepareOptionsMenu(b.toolbar.menu)
             b.nav.setBackgroundColor(it)

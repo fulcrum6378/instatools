@@ -27,8 +27,8 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Friend WHERE followed = 1 AND follows = 0")
         fun unfollowers(): List<Friend>
 
-        @Query("SELECT * FROM Friend WHERE id LIKE :id LIMIT 1")
-        suspend fun friend(id: String): Friend
+        /*@Query("SELECT * FROM Friend WHERE id LIKE :id LIMIT 1")
+        suspend fun friend(id: String): Friend*/
 
         /*@Insert
         suspend fun addFriend(item: Friend)*/
