@@ -11,13 +11,13 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven {
-            url 'https://maven.pkg.github.com/fulcrum6378/ChipsLayoutManager'
+            url = uri("https://maven.pkg.github.com/fulcrum6378/ChipsLayoutManager")
             credentials {
-                username 'fulcrum6378'
-                password System.getenv("GITHUB_TOKEN")
+                username = "fulcrum6378"
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
 }
 rootProject.name = "InstaTools"
-include ':app'
+include(":app")
