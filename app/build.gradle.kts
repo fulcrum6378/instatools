@@ -22,11 +22,15 @@ android {
         applicationId = "ir.mahdiparastesh.instatools"
         minSdk = 21
         targetSdk = 35
-        versionCode = 76
-        versionName = "28.9.8"
+        versionCode = 77
+        versionName = "29.0.0"
         signingConfig = signingConfigs.getByName("main")
     }
-
+    sourceSets.getByName("main") {
+        manifest.srcFile("src/AndroidManifest.xml")
+        kotlin.setSrcDirs(listOf("src/kotlin"))
+        res.setSrcDirs(listOf("src/res"))
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21
     }
