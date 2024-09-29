@@ -23,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 77
-        versionName = "29.0.0"
+        versionName = "29.0.1"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -32,9 +32,9 @@ android {
         res.setSrcDirs(listOf("src/res"))
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_22; targetCompatibility = JavaVersion.VERSION_22
     }
-    kotlinOptions { jvmTarget = "21" }
+    kotlinOptions { jvmTarget = "22" }
 
     buildFeatures {
         buildConfig = true
