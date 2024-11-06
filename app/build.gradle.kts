@@ -1,7 +1,7 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -23,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 77
-        versionName = "29.0.1"
+        versionName = "29.1.5"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -32,7 +32,8 @@ android {
         res.setSrcDirs(listOf("src/res"))
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_22; targetCompatibility = JavaVersion.VERSION_22
+        sourceCompatibility = JavaVersion.VERSION_22
+        targetCompatibility = JavaVersion.VERSION_22
     }
     kotlinOptions { jvmTarget = "22" }
 
@@ -61,31 +62,25 @@ androidComponents.beforeVariants { variantBuilder ->
 }
 
 dependencies {
-    val roomVersion = "2.6.1"
-    val media3Version = "1.4.1"
-
-    implementation("androidx.activity:activity-ktx:1.9.2") // only for ActivityResultLauncher
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.media3:media3-exoplayer:$media3Version")
-    implementation("androidx.media3:media3-session:$media3Version")
-    implementation("androidx.media3:media3-ui:$media3Version")
-    implementation("androidx.recyclerview:recyclerview-selection:1.1.0")
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.webkit:webkit:1.12.0")
-    implementation("com.airbnb.android:lottie:6.2.0")
-    implementation("com.android.volley:volley:1.2.1")
-    implementation("com.facebook.shimmer:shimmer:0.5.0")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.tbuonomo:dotsindicator:5.0")
-    implementation("ir.mahdiparastesh:chipslayoutmanager:0.5.0")
-    implementation("org.apache.commons:commons-imaging:1.0-alpha3")
-    implementation("org.apache.commons:commons-text:1.11.0") // StringEscapeUtils
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(libs.activity.ktx) // only for ActivityResultLauncher
+    implementation(libs.core.ktx)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.session)
+    implementation(libs.media3.ui)
+    implementation(libs.recyclerview.selection)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    implementation(libs.swiperefreshlayout)
+    implementation(libs.webkit)
+    implementation(libs.lottie)
+    implementation(libs.volley)
+    implementation(libs.shimmer)
+    implementation(libs.glide)
+    implementation(libs.material)
+    implementation(libs.gson)
+    implementation(libs.dotsindicator)
+    implementation(libs.chipslayoutmanager)
+    implementation(libs.commons.imaging)
+    implementation(libs.commons.text) // StringEscapeUtils
 }
