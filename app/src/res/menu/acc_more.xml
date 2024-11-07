@@ -7,6 +7,9 @@
         android:id="@+id/amBrowseWeb"
         android:title="@string/browseInTheWeb" />
     <item
+        android:id="@+id/amInjectCookies"
+        android:title="@string/injectCookies" />
+    <item
         android:id="@+id/amSignOut"
         android:title="@string/signOut" />
 </menu>

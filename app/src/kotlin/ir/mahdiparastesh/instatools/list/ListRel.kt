@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.json.Rest.StoryReel
 import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
+import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
@@ -119,7 +120,7 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
                 cache = true, typeToken = object : TypeToken<Rest.Reels<HighlightReel>>() {}.type,
                 autoQueue = false
             ) { reels ->
-                items = reels.reels.getOrDefault(id, null)?.items
+                items = reels.reels.getOrNull(id)?.items
                 onEnd()
             }
         }

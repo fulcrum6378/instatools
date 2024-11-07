@@ -83,7 +83,7 @@ class GraphQl(val data: GraphQlData?) : Rest() {
         fun edges() = edge_owner_to_timeline_media?.edges
 
         fun hasMore(): Boolean =
-            edge_owner_to_timeline_media?.let { it.edges.size < it.count.toInt() } ?: false
+            edge_owner_to_timeline_media?.let { it.edges.size < it.count.toInt() } == true
     }
 
     open class EdgeFollow(val count: Double) {

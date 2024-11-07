@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.instatools.Downloads.Companion.EXPORT_LINKS_MIME
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -76,6 +78,13 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                 c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.HOST)
                 acc.last = Persistent.now()
                 acc.saveMe(c)
+            }
+            this[R.id.amInjectCookies] = {
+                c.injectingCookieForAccIndex = i
+                c.injectCookies.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = EXPORT_LINKS_MIME
+                })
             }
             this[R.id.amSignOut] = {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)

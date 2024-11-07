@@ -115,7 +115,7 @@ class PageRel : BasePageViewer() {
             if (!storyFetched || !highlightsFetched) return
             try {
                 c.mm.vwReels?.sortByDescending { it is Rest.StoryReel }
-            } catch (e: java.lang.UnsupportedOperationException) {
+            } catch (_: java.lang.UnsupportedOperationException) {
                 // Mysterious error by CopyOnWriteArrayList$COWIterator.set  while sorting
             }
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()

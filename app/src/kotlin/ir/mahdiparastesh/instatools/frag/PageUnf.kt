@@ -97,7 +97,7 @@ class PageUnf : BasePageMain() {
             Friend.find(id!!, c.mm.unfollowers.value)?.also { before ->
                 c.mm.unfollowers.value?.getOrNull(before)?.inFav = favNow
                 c.mm.unfollowers.value?.specialSort()
-                Friend.find(id!!, c.mm.unfollowers.value)?.also { after ->
+                Friend.find(id, c.mm.unfollowers.value)?.also { after ->
                     b.rv.adapter?.notifyItemMoved(before, after)
                     when {
                         before > after -> b.rv.adapter

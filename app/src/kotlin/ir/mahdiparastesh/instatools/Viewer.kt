@@ -141,7 +141,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         }
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)
-                ?.avoidRefresh() ?: false
+                ?.avoidRefresh() == true
         }
 
         if (findUserById == null && findUserByMediaLink == null) load(true)

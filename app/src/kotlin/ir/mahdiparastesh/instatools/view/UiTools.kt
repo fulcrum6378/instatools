@@ -57,7 +57,7 @@ object UiTools {
     const val MP = "https://mahdiparastesh.ir/"
     const val APP_NAME = "InstaTools"
     val ACC_FROM_URL = arrayOf(Login.RAW_HOST, Login.HOST)
-    private const val maxInaccurateTimeItems = 2
+    //private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6
     private const val OPTION_DISABLED_ALPHA = 0.5f
@@ -192,7 +192,7 @@ object UiTools {
     }
 
     /** Makes an easily readable datetime. */
-    fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {
+    /*fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {
         var shrinking = milliseconds / 1000L
         val mon = (shrinking / 2592000L).toInt()
         shrinking -= mon * 86400L
@@ -214,17 +214,17 @@ object UiTools {
         else {
             while (pairs.isNotEmpty())
                 if (pairs.first().second == 0)
-                    pairs.removeFirst()
+                    pairs.removeAt(0)
                 else break
             if (pairs.size > maxInaccurateTimeItems)
                 pairs = pairs.subList(0, maxInaccurateTimeItems)
             while (pairs.isNotEmpty())
                 if (pairs.last().second == 0)
-                    pairs.removeLast()
+                    pairs.removeAt(pairs.lastIndex)
                 else break
         }
         return pairs.joinToString(getString(R.string.inaccurateTimeSep)) { it.first.format(it.second) }
-    }
+    }*/
 
     /** Explains bytes for humans. */
     fun Context.showBytes(length: Long): String {
@@ -285,7 +285,7 @@ object UiTools {
                 ContextThemeWrapper(view.context, R.style.Theme_InstaTools_Snackbar),
                 view, text, dur
             ).setAnchorView(anchor).setTextMaxLines(5).show()
-        } catch (ignored: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             // No suitable parent found from the given view. Please provide a valid view.
         }
     }
@@ -323,4 +323,6 @@ object UiTools {
             iv.setImageDrawable(null)
         }
     }
+
+    fun <T> Map<String, T>.getOrNull(key: String): T? = if (containsKey(key)) this[key] else null
 }

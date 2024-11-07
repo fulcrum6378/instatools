@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -129,7 +128,7 @@ class Downloads : ServiceOwnerActivity() {
             mm.queueds = CopyOnWriteArrayList(dao.queueds())
             try {
                 mm.queueds!!.sortBy { it.addedAt }
-            } catch (e: java.lang.UnsupportedOperationException) {
+            } catch (_: java.lang.UnsupportedOperationException) {
                 // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
             }
             handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
@@ -181,7 +180,7 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onResume() {
         super.onResume()
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
             .cancel(Notify.ID_QUEUER_SOME_FAILED)
     }
 

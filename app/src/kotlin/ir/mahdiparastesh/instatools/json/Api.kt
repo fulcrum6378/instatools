@@ -61,7 +61,7 @@ class Api<JSON>(
     override fun deliverResponse(response: String) {
         val data: JSON? = try {
             Gson().fromJson(response, typeToken ?: clazz.java) as JSON
-        } catch (e: JsonSyntaxException) {
+        } catch (_: JsonSyntaxException) {
             if (response.startsWith("<!DOCTYPE html>")) when {
                 url == Endpoint.SIGN_OUT.url -> gotError()
                 response.contains("Login • Instagram") -> {
@@ -80,7 +80,7 @@ class Api<JSON>(
                 else gotError()
             }
             null
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
             else gotError()
             null

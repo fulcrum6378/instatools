@@ -63,7 +63,7 @@ class Expandable(
     }
 
     init {
-        b.volume.setOnClickListener { muteSound.value = !(muteSound.value ?: false) }
+        b.volume.setOnClickListener { muteSound.value = muteSound.value != true }
         muteSound.observe(c) { bb ->
             b.volume.setImageResource(if (bb) R.drawable.volume_off else R.drawable.volume_up)
             (b.slider.adapter as ListCar?)?.sessions

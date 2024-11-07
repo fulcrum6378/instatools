@@ -42,6 +42,7 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -247,7 +248,7 @@ class Queuer : ForegroundService() {
                             Rest.Reels::class, handler, autoQueue = false, cache = true,
                             typeToken = object : TypeToken<Rest.Reels<Rest.StoryReel>>() {}.type
                         ) { reels ->
-                            val rel = reels.reels.getOrDefault(root.rootView.props.user_id, null)
+                            val rel = reels.reels.getOrNull(root.rootView.props.user_id)
                             val med = rel?.items?.find { it.pk == root.params.initial_media_id }
                             if (med == null) {
                                 handler?.obtainMessage(HANDLE_API_RES_ERROR)
@@ -273,8 +274,8 @@ class Queuer : ForegroundService() {
                             ), Rest.Reels::class, handler, autoQueue = false, cache = true,
                             typeToken = object : TypeToken<Rest.Reels<Rest.HighlightReel>>() {}.type
                         ) { reels ->
-                            val rel = reels.reels.getOrDefault(
-                                "highlight:${root.params.highlight_reel_id}", null
+                            val rel = reels.reels.getOrNull(
+                                "highlight:${root.params.highlight_reel_id}"
                             )
                             val med = rel?.items?.find {
                                 it.id == cur.link.substringAfter("story_media_id=")
@@ -407,7 +408,7 @@ class Queuer : ForegroundService() {
             ntfSmallText = queue[q].userName
             updateNotification()
             if (queue[q].dur?.let { it > 600L } == true) {
-                (getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager).enqueue(
+                (getSystemService(DOWNLOAD_SERVICE) as DownloadManager).enqueue(
                     DownloadManager.Request(Uri.parse(queue[q].url)).apply {
                         setTitle(queue[q].userName)
                         setDescription(queue[q].caption)

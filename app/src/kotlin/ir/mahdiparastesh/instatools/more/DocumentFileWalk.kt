@@ -32,7 +32,6 @@ class DocFileTreeWalk private constructor(
         }
     }
 
-    @Suppress("KotlinConstantConditions")
     private inner class DocFileTreeWalkIterator : AbstractIterator<DocumentFile>() {
         private val state = ArrayDeque<WalkState>()
 

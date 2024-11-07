@@ -42,7 +42,7 @@ class SafeLinkMovementMethod : LinkMovementMethod() {
                         )
                     } catch (_: ActivityNotFoundException) {
                     } else link.onClick(widget)
-                } else if (action == MotionEvent.ACTION_DOWN) Selection.setSelection(
+                } else Selection.setSelection(
                     buffer, buffer.getSpanStart(link), buffer.getSpanEnd(link)
                 )
                 return true

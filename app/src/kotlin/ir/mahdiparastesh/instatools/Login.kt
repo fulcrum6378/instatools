@@ -30,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.FileInputStream
 import kotlin.system.exitProcess
 
 class Login : BaseActivity(), ViewStub.OnInflateListener {
@@ -37,6 +38,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var bw: WelcomeBinding
     lateinit var accounts: ArrayList<Account>
     private lateinit var cookieManager: CookieManager
+    var injectingCookieForAccIndex: Int? = null
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -119,6 +121,33 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         else bw.root.vis()
     }
 
+    val injectCookies = launcherForResult {
+        val acc = injectingCookieForAccIndex?.let { accounts.getOrNull(it) }
+        if (it.resultCode != RESULT_OK || acc == null) return@launcherForResult
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
+                    FileInputStream(des!!.fileDescriptor).readBytes().toString(Charsets.UTF_8)
+                }
+            }.onSuccess { cookies ->
+                acc.cook = cookies
+                acc.saveMe(c)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        c, R.string.cookieInjectionSuccess, Toast.LENGTH_LONG
+                    ).show()
+                }
+            }.onFailure {
+                injectingCookieForAccIndex = null
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        c, R.string.importReadError, Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
     fun selectAccount(acc: Account) {
         when {
             acc.id == -1L -> MaterialAlertDialogBuilder(this).apply {
@@ -166,11 +195,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             })
         }
         doClearHistory = true
-    }
-
-    override fun onDestroy() {
-        browsePurpose = null
-        super.onDestroy()
     }
 
     private val myClient = object : WebViewClient() {
@@ -238,7 +262,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                         failed(e)
                     } catch (e: IllegalStateException) {
                         failed(e) // The page may have failed to load properly.
-                    } catch (e: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         // This happens when you go to, for example, the profiles/hashtags page,
                         // tap on the pretty "Instagram" title in the header, then you go to
                         // another page, e.g. sign up page, then you come back to the same
@@ -318,5 +342,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         moveTaskToBack(true)
         killProcess(myPid())
         exitProcess(0)
+    }
+
+    override fun onDestroy() {
+        browsePurpose = null
+        super.onDestroy()
     }
 }

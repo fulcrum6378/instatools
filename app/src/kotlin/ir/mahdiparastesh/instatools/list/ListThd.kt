@@ -29,6 +29,7 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.anchor
 import ir.mahdiparastesh.instatools.view.UiTools.calendar
+import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.UiTools.z
@@ -126,7 +127,7 @@ class ListThd(val c: Main, private val f: PageBox) :
                     .load(thread.users.find { it.pk == userId }?.profile_pic_url)
                     .into(UiTools.targetProfile(profile))
                 else Glide.with(c).clear(profile)
-            } else downloaded.getOrDefault(Exporter.USER_PROFILE_IMG.format(userId), null)
+            } else downloaded.getOrNull(Exporter.USER_PROFILE_IMG.format(userId))
                 ?.cache?.also {
                     FileInputStream(it).use { fis ->
                         val data = fis.readBytes()
@@ -189,14 +190,16 @@ class ListThd(val c: Main, private val f: PageBox) :
                 dm.voice_media != null ->
                     msgIvHint.apply { text = "Voice message omitted!"; vis() }
                 else ->
-                    if (BuildConfig.DEBUG) throw Exception("NEW DM TYPE \"${dm.item_type}\" with id: ${dm.item_id}")
+                    if (BuildConfig.DEBUG) throw Exception(
+                        "NEW DM TYPE \"${dm.item_type}\" with id: ${dm.item_id}"
+                    )
                     else msgIvHint.apply { text = "Unknown DM type \"${dm.item_type}\"!!"; vis() }
             }
             msgIvCl.vis(media != null)
             Glide.with(c).clear(msgIv)
             msgIv.setImageDrawable(null)
             media?.apply {
-                downloaded?.getOrDefault(dm.item_id, null)?.cache?.also {
+                downloaded?.getOrNull(dm.item_id)?.cache?.also {
                     FileInputStream(it).use { fis ->
                         val data = fis.readBytes()
                         if (data.isNotEmpty()) {

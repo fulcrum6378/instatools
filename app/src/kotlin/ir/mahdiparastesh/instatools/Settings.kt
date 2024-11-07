@@ -37,6 +37,7 @@ import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -121,7 +122,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         @Suppress("RedundantSuspendModifier")
         suspend fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
-            File(c.getDir("shared_prefs", Context.MODE_PRIVATE), "${acc.id}.xml")
+            File(c.getDir("shared_prefs", MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }
         }
 
@@ -441,7 +442,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             }
             setNegativeButton(R.string.cancel, null)
             setNeutralButton(R.string.remove) { _, _ ->
-                val uri = u?.let { aliases?.getOrElse(it) { null } }?.let { Uri.parse(it) }
+                val uri = u?.let { aliases?.getOrNull(it) }?.let { Uri.parse(it) }
                     ?: return@setNeutralButton
                 val br = AlsoRevokePermBinding.inflate(layoutInflater)
                 MaterialAlertDialogBuilder(this@Settings).apply {
@@ -499,7 +500,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     giveLinkBack = null
                     try {
                         @Suppress("DEPRECATION") onBackPressed()
-                    } catch (e: java.lang.IllegalStateException) {
+                    } catch (_: java.lang.IllegalStateException) {
                         // FragmentManager is already executing transactions.
                     }
                     goTo(Downloads::class, animate = false)

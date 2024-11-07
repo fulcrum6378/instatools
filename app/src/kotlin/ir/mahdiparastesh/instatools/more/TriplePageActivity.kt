@@ -107,7 +107,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
                 try {
                     pages()[it]?.updateShadow()
                     pages()[it]?.updateJumper()
-                } catch (e: NullPointerException) {
+                } catch (_: NullPointerException) {
                     // getC() might cause it!
                 }
             }
@@ -200,7 +200,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
      * Invokes the current fragment to process the onBackPressed action for its own.
      * @return false, if the fragment didn't have anything to do with onBackPressed.
      */
-    protected fun pageGoBack() = pages()[currentPage.value!!]?.goBack() ?: false
+    protected fun pageGoBack() = pages()[currentPage.value!!]?.goBack() == true
 
     override fun onDestroy() {
         // don't call transFrag().remove() here: Can not perform this action after onSaveInstanceState!

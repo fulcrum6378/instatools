@@ -36,7 +36,7 @@ open class SafeGridManager : GridLayoutManager {
     ): View? {
         return try {
             super.onFocusSearchFailed(focused, focusDirection, recycler, state)
-        } catch (e: IndexOutOfBoundsException) {
+        } catch (_: IndexOutOfBoundsException) {
             null
         }
     }

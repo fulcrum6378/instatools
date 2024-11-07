@@ -347,7 +347,6 @@ class Exporter : ForegroundService() {
 
         fun fileName(dmId: String) = "${dmId}.${fileTypes[type.toInt()].second}"
 
-        @Suppress("BlockingMethodInNonBlockingContext")
         suspend fun write(ba: ByteArray, then: suspend () -> Unit) {
             FileOutputStream(cache).use { fos -> fos.write(ba) }
             then()

@@ -224,7 +224,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             updateProfile()
             Favourites.FavLoader(this).start()
         }
-        sp?.edit()?.remove("follower_delay")?.apply()
+        sp?.edit { remove("follower_delay") }
         // c.startService(Intent(c, Exporter::class.java)) // for debugging
     }
 

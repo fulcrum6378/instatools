@@ -32,14 +32,14 @@
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
     <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
     <string name="sContinue">ادامه</string>
-    <string-array name="inaccurateTime">
+    <!--<string-array name="inaccurateTime">
         <item>%d ماه</item>
         <item>%d هفته</item>
         <item>%d روز</item>
         <item>%d ساعت</item>
         <item>%d دقیقه</item>
         <item>%d ثانیه</item>
-    </string-array>
+    </string-array>-->
     <string name="inaccurateTimeSep">،&#160;</string>
     <string name="downloadAll">دانلود تمام اسلایدها</string>
     <string name="downloadThis">دانلود این اسلاید</string>
@@ -70,6 +70,10 @@
     <string name="addAccount">افزودن اکانت جدید</string>
     <string name="enterWithoutAuth">ورود بدون لوگین</string>
     <string name="browseInTheWeb">بازکردن مانند مرورگر</string>
+    <string name="injectCookies">تزریق کوکی (TXT)</string>
+    <string name="cookieInjectionSuccess">
+        کوکی های جدید ذخیره شدند. حالا میتوانید وارد اکانت خود شوید.
+    </string>
     <string name="guestSure">
         متاسفانه اینستاگرام به شما اجازه نمی دهد که بتوانید براحتی در بین پروفایل های مختلف بچرخید
         بدون اینکه به حساب خود وارد شوید. اینستاگرام شما را مجبور خواهد کرد که یا وارد شده یا ثبت نام کنید.

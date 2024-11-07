@@ -32,14 +32,14 @@
     <string name="openDmInInsta">Open Chat in Instagram</string>
     <string name="pageNotExist">This page doesn\'t exist!</string>
     <string name="sContinue">Continue</string>
-    <string-array name="inaccurateTime">
+    <!--<string-array name="inaccurateTime">
         <item>%d months</item>
         <item>%d weeks</item>
         <item>%d days</item>
         <item>%d hours</item>
         <item>%d minutes</item>
         <item>%d seconds</item>
-    </string-array>
+    </string-array>-->
     <string name="inaccurateTimeSep">,&#160;</string>
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
@@ -70,6 +70,10 @@
     <string name="addAccount">Add Account</string>
     <string name="enterWithoutAuth">Enter without Authentication</string>
     <string name="browseInTheWeb">Browse in the Web</string>
+    <string name="injectCookies">Inject Cookies (TXT)</string>
+    <string name="cookieInjectionSuccess">
+        New cookies were saved. You may enter your account now.
+    </string>
     <string name="guestSure">
         Unfortunately Instagram won\'t let you view people in its website so frequently without signing in.
         It\'ll force you sign in or sign up to do that.

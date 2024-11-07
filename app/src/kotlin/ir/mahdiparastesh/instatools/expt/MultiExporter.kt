@@ -69,7 +69,7 @@ abstract class MultiExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp
                     // Uri authorities must be the same in order for this code to work;
                     // otherwise it'll throw SecurityException.
                     // It's too difficult or perhaps impossible to delete that test file!
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     // IllegalStateException when moving from Internal Storage to SD Card!!
                     val folderName = folder.name ?: exp.threadData!!.exported()
                     rescueFolder = DocumentFile.fromTreeUri(

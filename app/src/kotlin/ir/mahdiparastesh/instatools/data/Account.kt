@@ -30,7 +30,6 @@ class Account(
     }
 
     companion object {
-        @Suppress("RedundantSuspendModifier")
         suspend fun load(c: Context): ArrayList<Account> {
             val secured = Secured(c)
             return if (secured.exists()) {
