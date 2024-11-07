@@ -44,9 +44,6 @@
     <!-- Favourites -->
     <dimen name="favEmpty">20sp</dimen>
 
-    <!-- MassFollower -->
-    <dimen name="mfGuideTv">25sp</dimen>
-
     <!-- Settings -->
     <dimen name="stPadH">48dp</dimen>
     <dimen name="stItemName">17sp</dimen>

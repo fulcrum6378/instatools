@@ -214,7 +214,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             }
         } else {
             bh.root.vis(false)
-            arrayOf(R.id.mnMassFollower, R.id.mnSettings, R.id.mnSignOut)
+            arrayOf(R.id.mnSettings, R.id.mnSignOut)
                 .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
         }
 
@@ -224,6 +224,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             updateProfile()
             Favourites.FavLoader(this).start()
         }
+        sp?.edit()?.remove("follower_delay")?.apply()
         // c.startService(Intent(c, Exporter::class.java)) // for debugging
     }
 
@@ -244,7 +245,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         R.id.mnDownloads -> goTo(Downloads::class)
         R.id.mnFriends -> goTo(Friends::class)
         R.id.mnFavourites -> goTo(Favourites::class)
-        R.id.mnMassFollower -> goTo(MassFollower::class)
         R.id.mnGSettings -> goTo(Settings::class)
         R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {

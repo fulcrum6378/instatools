@@ -62,9 +62,8 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     abstract class ActivityCompanion : Alive()
 
     companion object {
-        fun anyActive() = arrayOf(
-            Main, Login, Downloads, Viewer, Favourites, MassFollower, Settings
-        ).any { it.active.value!! }
+        fun anyActive() = arrayOf(Main, Login, Downloads, Viewer, Favourites, Settings)
+            .any { it.active.value!! }
 
         fun Context.night(): Boolean = resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES

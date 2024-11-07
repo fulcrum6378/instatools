@@ -16,13 +16,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/fulcrum6378/ChipsLayoutManager")
-            credentials {
-                username = "fulcrum6378"
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
     }
 }
 

@@ -6,9 +6,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @androidx.room.Database(
-    entities = [
-        Friend::class, Queued::class, Exportable::class, Favourite::class, Followable::class
-    ], version = 9, exportSchema = false
+    entities = [Friend::class, Queued::class, Exportable::class, Favourite::class],
+    version = 10, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -101,34 +100,14 @@ abstract class Database : RoomDatabase() {
 
         @Query("DELETE FROM Favourite WHERE id = :id")
         suspend fun deleteFavouriteById(id: String)
-
-
-        @Query("SELECT * FROM Followable")
-        suspend fun followables(): List<Followable>
-
-        @Query("SELECT * FROM Followable LIMIT 1")
-        fun aFollowable(): List<Followable>
-
-        @Query("SELECT COUNT(id) FROM Followable")
-        fun countFollowables(): Int
-
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addFollowables(items: List<Followable>): List<Long>
-
-        @Delete
-        fun deleteFollowable(item: Followable)
-
-        @Query("DELETE FROM Followable")
-        suspend fun deleteFollowables()
     }
 
     companion object {
         fun build(c: Context, user: String) = Room
             .databaseBuilder(c, Database::class.java, "$user.db")
-            .addMigrations(object : Migration(8, 9) {
+            .addMigrations(object : Migration(9, 10) {
                 override fun migrate(db: SupportSQLiteDatabase) {
-                    db.execSQL("ALTER TABLE Queued ADD COLUMN dur INTEGER DEFAULT NULL")
-                    db.execSQL("ALTER TABLE Queued ADD COLUMN caption TEXT DEFAULT NULL")
+                    db.execSQL("DROP TABLE Followable")
                 }
             })
             .fallbackToDestructiveMigration()

@@ -61,7 +61,6 @@
     <string name="tryAgain">تلاش دوباره</string>
     <string name="openFolder">بازکردن در فولدر</string>
     <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
-    <string name="listExport">استخراج لیست</string>
     <string name="listClear">پاک کردن همه</string>
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
     <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
@@ -194,44 +193,10 @@
     <string name="vwFollowers">دنبال کننده</string>
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
-    <string name="followAll">فالو کردن همه</string>
-    <string name="followAllSure">
-        آیا مطمئن هستید که می خواهید تمام این افراد را فالو کنید؟
-        (این کار به آرامی و یکی یکی انجام خواهد شد تا اینستاگرام حساس نشود!)
-    </string>
-    <string name="alsoRequestPv">همچنین به اکانت های خصوصی درخواست بفرست.</string>
-    <string name="mfLimit">محدودیت تعداد اکانت ها:</string>
     <string name="vwStoryReel">استوری های اصلی</string>
     <string name="vwReelDesc">دارای %d آیتم</string>
     <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
     <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
-
-    <!-- Mass Follower -->
-    <string name="massFollower">دنبال کردن دسته جمعی</string>
-    <string name="mfGuide1">
-        اینستاگرام به شما اجازه نمی دهد که افراد زیادی را در مدت زمان کوتاه یکباره فالو کنید.
-        ممکن است اکانت شما را معلق کرده یا شما را از حسابتان خارج کند.
-    </string>
-    <string name="mfGuide2">
-        اما با استفاده از این ربات شما می توانید افراد زیادی را آرام آرام و یکی یکی فالو کنید
-        بدون اینکه اینستاگرام به شما حساس شود.
-    </string>
-    <string name="mfGuide3">
-        ۱. یک پروفایل را در اینستاتولز باز کنید،\n\n
-        ۲. روی تعداد دنبال کننده ها یا دنبال شونده ها بزنید،\n\n
-        ۳. «فالو کردن همه» را انتخاب نمایید&#8230;
-    </string>
-    <string name="mfSeekTitle">%1$s برای %2$d اکانت.\nتاخیر بین هر عمل فالو:</string>
-    <string name="mfExportSubject">لیست فالو دسته جمعی (%d مورد)</string>
-    <string name="mfDetectedSpam">
-        متاسفانه اینستاگرام «موقتا» شما را به عنوان «اسپمر» شناسایی کرده است!
-        لطفا مدت تاخیر بین هر فالو را زیاد کرده و بعدا دوباره سرویس را روشن نمایید.
-    </string>
-    <string name="mfTroubleshoot">کار نمیکنه؟</string>
-    <string-array name="mfTroubleshoot">
-        <item>بهینه سازی باتری برای این اپ را غیرفعال کنید</item>
-        <item>مصرف داده پشت صحنه را فعال کنید</item>
-    </string-array>
 
     <!-- Settings -->
     <string name="settings">تنظیمات</string>
@@ -301,10 +266,6 @@
         مقصدی که برای استخراج انتخاب کرده بودید در دسترس نبود؛
         برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.
     </string>
-
-    <!-- Follower -->
-    <string name="followerChannelDesc">فالو کردن دسته جمعی&#8230;</string>
-    <string name="followerTitle">در حال یواشکی فالو کردن&#8230;</string>
 
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">کارهای طولانی</string>

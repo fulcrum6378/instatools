@@ -15,9 +15,6 @@
     <dimen name="downloadsHelp1">25sp</dimen>
     <dimen name="downloadsHelp2">18sp</dimen>
 
-    <!-- MassFollower -->
-    <dimen name="mfGuideTv">23sp</dimen>
-
     <!-- Settings -->
     <dimen name="stSubItemFont">21sp</dimen>
 </resources>

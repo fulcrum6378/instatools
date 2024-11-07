@@ -19,11 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.databinding.FollowerOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
@@ -32,7 +30,6 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -147,8 +144,6 @@ class PageVwr : BasePageViewer() {
                 }
             }).show()
         }
-        b.followers.setOnClickListener { flwClick(true, it) }
-        b.following.setOnClickListener { flwClick(false, it) }
         showProfile()
 
         // Pagination
@@ -215,35 +210,6 @@ class PageVwr : BasePageViewer() {
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
-    private fun flwClick(isItFollowers: Boolean, v: View) {
-        if (c.mm.vwUser?.access() != true || c.mm.vwUser?.id == null || Main.guest ||
-            c.mm.vwUser?.id == c.m.acc?.id.toString()
-        ) return
-        MaterialMenu(c, v, R.menu.vwr_flw_more, Act().apply {
-            this[R.id.vfFollowAll] = {
-                val bo = FollowerOptionsBinding.inflate(layoutInflater)
-                var flwLimit = ((if (isItFollowers) c.mm.vwUser?.edge_followed_by?.count
-                else c.mm.vwUser?.edge_follow?.count) ?: 0.0).toInt()
-                if (flwLimit > MassFollower.FOLLOW_LIMIT) flwLimit = MassFollower.FOLLOW_LIMIT
-                bo.limit.setText(flwLimit.toString())
-                MaterialAlertDialogBuilder(c).apply {
-                    setTitle(R.string.followAll)
-                    setMessage(c.getString(R.string.followAllSure))
-                    setView(bo.root)
-                    setNegativeButton(R.string.no, null)
-                    setPositiveButton(R.string.yes) { _, _ ->
-                        MassFollower.initService(
-                            c, Follower.ToBeEnqueued(
-                                c.mm.vwUser!!.id, isItFollowers,
-                                bo.alsoRequestPv.isChecked, bo.limit.text.toString().toInt()
-                            )
-                        ) { c.goTo(MassFollower::class) }
-                    }
-                }.show()
-            }
-        }).show()
-    }
-
     override fun avoidRefresh(): Boolean = if (::b.isInitialized)
         b.nsv.canScrollVertically(-1) || tracker?.hasSelection() == true
     else false
@@ -298,7 +264,7 @@ class PageVwr : BasePageViewer() {
         override fun handle() {
             val edg = next()
             if (edg == null) {
-                Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
+                handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return
             }

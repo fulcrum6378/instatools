@@ -63,10 +63,6 @@
     <dimen name="vwReelWidth">140dp</dimen>
     <dimen name="vwReelHeight">250dp</dimen><!-- /= 1.7765625 => WIDTH -->
 
-    <!-- MassFollower -->
-    <dimen name="mfPadV">15dp</dimen>
-    <dimen name="mfGuideTv">19sp</dimen>
-
     <!-- Settings -->
     <dimen name="stPadH">36dp</dimen>
     <dimen name="stItemName">13.5sp</dimen>

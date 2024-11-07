@@ -11,7 +11,4 @@
     <!-- Downloads -->
     <dimen name="downloadsHelp1">18sp</dimen>
     <dimen name="downloadsHelp2">15sp</dimen>
-
-    <!-- MassFollower -->
-    <dimen name="mfGuideTv">17sp</dimen>
 </resources>

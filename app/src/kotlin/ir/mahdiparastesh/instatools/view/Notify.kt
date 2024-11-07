@@ -15,7 +15,6 @@ class Notify {
     companion object {
         const val ID_QUEUER = 1
         const val ID_EXPORTER = 2
-        const val ID_FOLLOWER = 3
         const val ID_QUEUER_SOME_FAILED = 10
         const val ID_QUEUER_429 = 11
         const val ID_EXPORTER_UNK_FETCH_ERROR = 20
@@ -33,10 +32,6 @@ class Notify {
     ) {
         EXPORTER(
             "exporting", R.string.exporterChannel, R.string.exporterChannelDesc,
-            groupId = ChannelGroup.SERVICES.id
-        ),
-        FOLLOWER(
-            "following", R.string.followerChannel, R.string.followerChannelDesc,
             groupId = ChannelGroup.SERVICES.id
         ),
         QUEUER(

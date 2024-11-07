@@ -16,7 +16,6 @@ glide = "4.16.0"
 material = "1.12.0"
 gson = "2.10.1"
 dotsIndicator = "5.0"
-chipsLayoutManager = "0.5.0"
 commonsImaging = "1.0-alpha3"
 commonsText = "1.11.0"
 
@@ -44,6 +43,5 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 dotsindicator = { group = "com.tbuonomo", name = "dotsindicator", version.ref = "dotsIndicator" }
-chipslayoutmanager = { group = "ir.mahdiparastesh", name = "chipslayoutmanager", version.ref = "chipsLayoutManager" }
 commons-imaging = { group = "org.apache.commons", name = "commons-imaging", version.ref = "commonsImaging" }
 commons-text = { group = "org.apache.commons", name = "commons-text", version.ref = "commonsText" }

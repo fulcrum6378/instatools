@@ -7,10 +7,6 @@
     <!-- Main -->
     <integer name="transFrag">120</integer>
 
-    <!-- Mass Follower -->
-    <integer name="mfMin">5</integer>
-    <integer name="mfMaxNominal">295</integer><!--actually 300-->
-
     <!-- Settings -->
     <integer name="stCacheMin">5</integer>
     <integer name="stCacheMaxNominal">496</integer><!--actually 500 (+1 => unlimited)-->

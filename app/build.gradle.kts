@@ -23,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 77
-        versionName = "29.1.5"
+        versionName = "29.3.0"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -80,7 +80,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.gson)
     implementation(libs.dotsindicator)
-    implementation(libs.chipslayoutmanager)
     implementation(libs.commons.imaging)
     implementation(libs.commons.text) // StringEscapeUtils
 }

@@ -51,12 +51,6 @@ This activity VIEWs any Instagram profile, it uses the pink theme of Downloads a
 3. [PageTag](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageTag.kt)
    shows their tagged posts.
 
-### [MassFollower.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/MassFollower.kt)
-
-This activity is a tool together with [Follower.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/serv/Follower.kt),
-this help you follow large groups of people very slowly and one by one so Instagram won't detect it as a robot!
-Its theme is the yellow-brown one like *Unfollowers*.
-
 ### [Favourites.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/Favourites.kt)
 
 This activity shows merely locally favourited Instagram profiles (data is only stored in the local database not by

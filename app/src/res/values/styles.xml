@@ -214,24 +214,11 @@
     </style>
 
 
-    <!-- Mass Follower -->
-    <style name="mfGuideTv">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:justificationMode" tools:ignore="NewApi">inter_word</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:layout_marginTop">36sp</item>
-        <item name="android:lineSpacingMultiplier">1.1</item>
-        <item name="android:textSize">@dimen/mfGuideTv</item>
-    </style>
-
-
     <!-- Viewer -->
     <style name="vwFlwCl">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">0.5</item>
-        <item name="android:background">@drawable/button</item>
     </style>
 
     <style name="vwFlwLl" parent="parentConstraint">

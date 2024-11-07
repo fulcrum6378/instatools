@@ -19,7 +19,6 @@ import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.serv.Follower
 import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
@@ -45,9 +44,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
-        private val services = arrayOf(Queuer::class, Exporter::class, Follower::class)
+        private val services = arrayOf(Queuer::class, Exporter::class)
 
-        fun anyRunning() = arrayOf(Queuer, Exporter, Follower).any { it.active.value!! }
+        fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active.value!! }
         // Never reference "Queuer"'s Companion in a static variable
 
         fun terminateTasks(c: Context) {
@@ -110,13 +109,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         gsp = initGsp()
         sp = initSp(m.acc)
 
-        ntfManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        ntfManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (requiresHandling) handling = HandlerThread(com.klass.name).also { it.start() }
-        if (waveLockTimeout != null) wakeLock =
-            (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
-                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${com.klass.name}::lock")
-                    .apply { acquire(waveLockTimeout!! * 60000L) }
-            }
     }
 
     private lateinit var ntfCom: ForegroundServiceCompanion

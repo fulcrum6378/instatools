@@ -61,7 +61,6 @@
     <string name="tryAgain">Try Again</string>
     <string name="openFolder">Open in Folder</string>
     <string name="deleteItemSure">Are you sure you want to delete this item?</string>
-    <string name="listExport">Export the list</string>
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
@@ -187,44 +186,10 @@
     <string name="vwFollowing">Following</string>
     <string name="vwFlwZero" translatable="false">0</string>
     <string name="vwPrivate">This account is private!</string>
-    <string name="followAll">Follow All</string>
-    <string name="followAllSure">
-        Are you sure you want to follow all of these accounts?
-        (They will be followed slowly and one by one so that Instagram won\'t get sensitive!)
-    </string>
-    <string name="alsoRequestPv">Also send request to the private accounts.</string>
-    <string name="mfLimit">Limit their number to:</string>
     <string name="vwStoryReel">Main Stories</string>
     <string name="vwReelDesc">Contains %d items</string>
     <string name="vwNoReels">This profile has no stories!</string>
     <string name="vwNoTagged">This profile has no tagged posts!</string>
-
-    <!-- Mass Follower -->
-    <string name="massFollower">Mass Follower</string>
-    <string name="mfGuide1">
-        Instagram won\'t let you follow a large number of people so frequently.
-        It may block your account or sign you out of your session.
-    </string>
-    <string name="mfGuide2">
-        But using this tool, you can follow numerous people slowly and one by one,
-        so that Instagram won\'t suspect it is a robot or a spammer.
-    </string>
-    <string name="mfGuide3">
-        1. Open a profile in InstaTools,
-        \n\n2. Tap on the number of their followers or following,
-        \n\n3. Select \"Follow All\"&#8230;
-    </string>
-    <string name="mfSeekTitle">It\'ll take %1$s for %2$d items.\nDelay between each follow action:</string>
-    <string name="mfExportSubject">Mass Follower Queue (%d items)</string>
-    <string name="mfDetectedSpam">
-        Unfortunately Instagram has detected you as a spammer;
-        please increase the delay time and try again later!
-    </string>
-    <string name="mfTroubleshoot">Not Working?</string>
-    <string-array name="mfTroubleshoot">
-        <item>Disable battery optimisation for this app</item>
-        <item>Allow background data usage</item>
-    </string-array>
 
     <!-- Settings -->
     <string name="settings">Settings</string>
@@ -293,12 +258,6 @@
         The exported files were unable to be transferred to the destination folder which you specified!
         So we moved them into an alternative destination which can be opened using the button below.
     </string>
-
-    <!-- Follower -->
-    <string name="followerChannel" translatable="false">@string/massFollower</string>
-    <string name="followerChannelDesc">Follow a large number of accounts slowly&#8230;</string>
-    <string name="followerTitle">Following furtively&#8230;</string>
-    <string name="followerStop" translatable="false">@string/stop</string>
 
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">Progressing Tasks</string>

@@ -137,7 +137,7 @@ class Api<JSON>(
         FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"), /*
         // method = POST, "user_ids=<ids separated by ",">", expect Rest$Friendships *//*
         FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"), // GET */
-        FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
+        //FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
         /*MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
         UNMUTE("https://www.instagram.com/api/v1/friendships/unmute_posts_or_story_from_follow/"),

@@ -82,8 +82,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // Hidden Preferences
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
-        const val spFollowerDelay = "follower_delay"
-        const val defSpFollowerDelay = 60 * 1000L
         const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
         const val spUnfLastChecked = "unf_last_checked" // def: 0L
         const val spExpOptions = "export_options"
@@ -108,7 +106,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         private const val MB = 1048576L
         val allSps = arrayOf(
             spStorage, spBranching, spBranchingCb, spAutoDeleteEmptyDirs, spAutoDeleteEmptyDirsCb,
-            spAliases, spCacheLimit, spMainPage, spFollowerDelay, spExpOptions
+            spAliases, spCacheLimit, spMainPage, spExpOptions
         )
         var recreateMain = false
 
