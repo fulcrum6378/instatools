@@ -23,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 77
-        versionName = "29.4.0"
+        versionName = "29.4.1"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -45,7 +45,6 @@ android {
         create("debuggee") {
             isDebuggable = true
             isMinifyEnabled = false
-            matchingFallbacks.add("debug") // temporarily for DotsIndicator
         }
         release {
             isMinifyEnabled = true
