@@ -23,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 77
-        versionName = "29.4.1"
+        versionName = "29.4.2"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -61,8 +61,8 @@ androidComponents.beforeVariants { variantBuilder ->
 }
 
 dependencies {
-    implementation(libs.activity.ktx) // only for ActivityResultLauncher
-    implementation(libs.core.ktx)
+    implementation(libs.ktx.activity) // only for ActivityResultLauncher
+    implementation(libs.ktx.core)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
     implementation(libs.media3.ui)

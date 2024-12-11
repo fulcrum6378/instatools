@@ -86,10 +86,9 @@ It currently supports these languages:
 
 - English (en-GB)
 - Persian (fa)
-- French (fr)
 
-It used to support Arabic, German, Spanish, Portuguese, Russian and Turkish,
-before I stopped growing it and customise it for my family and friends!
+It used to support Arabic, French, German, Spanish, Portuguese, Russian and Turkish,
+before I stopped growing it and customised it for my family and friends!
 
 ### Unlucky Publishing Story
 
@@ -104,13 +103,13 @@ and published it with an app ID suffix *.beth*, it was fu-king suspended again b
 the app title. So I was disappointed. Similar things happened in Galaxy Store for perhaps tens of times with those
 as-hole reviewers!
 
-I continued the app in 2 Iranian app stores:
+I continued the app in the 2 Iranian app stores { Bazaar & Myket }.
+Then Instagram was banned in Iran and people had to use VPN to access it.
+Unfortunately after a while I realised that people cannot log in to Instagram
+and that Instagram becomes so suspicious of session logged in via VPN...
+So eventually I was convinced to disable this precious app from those 2 stores as well!
 
-- [Bazaar](https://cafebazaar.ir/app/ir.mahdiparastesh.instatools)
-- [Myket](https://myket.ir/app/ir.mahdiparastesh.instatools)
-
-Despite Instagram has recently been banned in Iran, but these app stores haven't yet warned me about anything!
-At the end I concluded that a reviewer is either as-hole or reckless!
+This project was archived at 11th December 2024, END OF LIFE!!!
 
 ### License
 
