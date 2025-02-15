@@ -433,8 +433,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         page1?.thread?.interrupt()
         page2?.thread?.interrupt()
         page2?.saver?.interrupt()
-        page3?.boxThread?.interrupt()
-        page3?.thdThread?.interrupt()
+        page3?.boxThread?.cancel()
+        page3?.thdThread?.cancel()
         mm.accountSwitched()
         super.switchAcc()
     }

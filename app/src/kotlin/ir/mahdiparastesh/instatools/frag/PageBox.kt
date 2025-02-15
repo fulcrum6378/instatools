@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.os.Message
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -21,7 +20,6 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
-import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
@@ -44,8 +42,6 @@ import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.more.BasePageMain
-import ir.mahdiparastesh.instatools.more.BaseThread
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -55,13 +51,14 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
-    var boxThread: FetchOfInbox? = null
-    var thdThread: FetchOfThread? = null
+    var boxThread: Job? = null
+    var thdThread: Job? = null
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
     private var boxScroll: Int? = null
@@ -79,28 +76,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override val emptyIcon: Int = R.drawable.done_box
     override val selectiveMenuRes: Int? = null
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { msg ->
-            if (c.mm.dmThread == null) {
-                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
-                if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1)
-                ) boxThread = FetchOfInbox().also { it.start() }
-                if (c.mm.dmInbox?.has_older == false)
-                    c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
-            } else if (msg.obj != null) {
-                val dmThd = msg.obj as Dm.DmThread
-                val bef = c.mm.dmThread!!.items.size
-                c.mm.dmThread!!.items.removeAll { it.item_id in dmThd.items.map { t -> t.item_id } }
-                c.mm.dmThread!!.items.addAll(dmThd.items)
-                c.mm.dmThread!!.has_older = dmThd.has_older
-                c.mm.dmThread!!.items.sortBy { it.timestamp }
-                val dif = c.mm.dmThread!!.items.size - bef
-                b.rv.adapter?.let {
-                    it.notifyItemRangeInserted(0, dif)
-                    it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
-                }
-            }
-        },
-        HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
         Api.HANDLE_ERROR to {
             onFailed(
                 c.getString(
@@ -129,30 +104,27 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (c.mm.dmThread == null) {
                     if (!b.rv.canScrollVertically(1) &&
-                        boxThread?.active != true && c.mm.dmInbox?.has_older != false
-                    ) boxThread = FetchOfInbox().also { it.start() }
+                        boxThread?.isActive != true && c.mm.dmInbox?.has_older != false
+                    ) fetchOfInbox()
                     boxScroll = (b.rv.layoutManager as LinearLayoutManager)
                         .findFirstCompletelyVisibleItemPosition()
                 } else {
-                    if (thdThread?.active != true &&
+                    if (thdThread?.isActive != true &&
                         c.mm.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
-                    ) thdThread = FetchOfThread(
-                        c, c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id,
-                        handler, reqQueue
-                    ).also { it.start() }
+                    ) fetchOfThread()
                 }
             }
         })
 
         if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
-        else if (boxThread?.active != true) boxThread = FetchOfInbox().also { it.start() }
+        else if (boxThread?.isActive != true) fetchOfInbox()
     }
 
     override fun onRefresh() {
-        if (boxThread?.active == true) return
+        if (boxThread?.isActive == true) return
         b.rv.adapter = null
         c.mm.dmInbox = null
-        boxThread = FetchOfInbox().also { it.start() }
+        fetchOfInbox()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -196,6 +168,59 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override fun updateJumper() {
         if (c.mm.dmThread == null) super.updateJumper()
         else if (shouldShowJumper.value == true) shouldShowJumper.value = false
+    }
+
+    private fun fetchOfInbox() {
+        boxThread = CoroutineScope(Dispatchers.IO).launch {
+            reqQueue.adder = Api<InboxPage>(
+                c, Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
+                InboxPage::class, handler, autoQueue = false, onError = {
+                    if (c.mm.dmInbox == null) onFailed(c.getString(R.string.loadFailed))
+                }
+            ) { page ->
+                if (!active) return@Api
+                if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
+                else c.mm.dmInbox?.apply {
+                    threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
+                    threads.addAll(page.inbox.threads)
+                    threads.sortByDescending { it.last_activity_at }
+                    oldest_cursor = page.inbox.oldest_cursor
+                    has_older = page.inbox.has_older
+                }
+                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+                if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1))
+                    fetchOfInbox()
+                if (c.mm.dmInbox?.has_older == false)
+                    c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
+            }
+        }
+    }
+
+    fun fetchOfThread() {
+        thdThread = CoroutineScope(Dispatchers.IO).launch {
+            reqQueue.adder = Api<Rest.InboxThread>(
+                c, Api.Endpoint.DIRECT.url.format(
+                    c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20
+                ), Rest.InboxThread::class, handler, autoQueue = false
+            ) { inbox ->
+                if (!active) return@Api
+                if (inbox.status != "ok") {
+                    if (BuildConfig.DEBUG) throw Exception(inbox.status)
+                    return@Api; }
+
+                val dmThd = inbox.thread
+                val bef = c.mm.dmThread!!.items.size
+                c.mm.dmThread!!.items.removeAll { it.item_id in dmThd.items.map { t -> t.item_id } }
+                c.mm.dmThread!!.items.addAll(dmThd.items)
+                c.mm.dmThread!!.has_older = dmThd.has_older
+                c.mm.dmThread!!.items.sortBy { it.timestamp }
+                val dif = c.mm.dmThread!!.items.size - bef
+                b.rv.adapter?.let {
+                    it.notifyItemRangeInserted(0, dif)
+                    it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
+                }
+            }
+        }
     }
 
     fun expOptions(method: Exporter.Method, thread: Dm.DmThread) {
@@ -341,46 +366,5 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
             return true; }
         return false
-    }
-
-    inner class FetchOfInbox : BaseThread() {
-        override fun run() {
-            super.run()
-            reqQueue.adder = Api<InboxPage>(
-                c, Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
-                InboxPage::class, handler, autoQueue = false, onError = { interrupt() }
-            ) { page ->
-                if (!active) return@Api
-                if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
-                else c.mm.dmInbox?.apply {
-                    threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
-                    threads.addAll(page.inbox.threads)
-                    threads.sortByDescending { it.last_activity_at }
-                    oldest_cursor = page.inbox.oldest_cursor
-                    has_older = page.inbox.has_older
-                }
-                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                interrupt()
-            }
-        }
-    }
-
-    class FetchOfThread(
-        val c: Persistent, private val threadId: String, private val oldestId: String,
-        val handler: Handler?, private val queue: RequestQueue, private val limit: Int = 20
-    ) : BaseThread() {
-        override fun run() {
-            super.run()
-            queue.adder = Api<Rest.InboxThread>(
-                c, Api.Endpoint.DIRECT.url.format(threadId, oldestId, limit),
-                Rest.InboxThread::class, handler, autoQueue = false, onError = { interrupt() }
-            ) { inbox ->
-                if (!active) return@Api
-                if (inbox.status == "ok")
-                    handler?.obtainMessage(HANDLE_FETCHED, inbox.thread)?.sendToTarget()
-                else if (BuildConfig.DEBUG) throw Exception(inbox.status)
-                interrupt()
-            }
-        }
     }
 }

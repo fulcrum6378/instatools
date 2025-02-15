@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.serv
 
 import android.app.DownloadManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
@@ -55,8 +54,6 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Queuer : ForegroundService() {
@@ -67,7 +64,6 @@ class Queuer : ForegroundService() {
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
     private val reqQueue by lazy { Volley.newRequestQueue(c) }
-    private val tiffDate = SimpleDateFormat("yyyy:MM:dd kk:mm:ss", Locale.getDefault())
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String

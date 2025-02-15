@@ -155,7 +155,7 @@ class PageVwr : BasePageViewer() {
         when (item.itemId) {
             R.id.vtDownload -> {
                 if (tracker != null && c.mm.vwUser?.edges() != null)
-                    Saver(c, tracker!!.selection).start()
+                    Saver(tracker!!.selection).start()
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.vwUser?.edges() != null)
@@ -256,10 +256,7 @@ class PageVwr : BasePageViewer() {
         }
     }
 
-    class Saver(c: Viewer, selection: Selection<String>) : SelectionHandler<Viewer>(c, selection) {
-        companion object : Alive.OfThread()
-
-        override val com: Alive.OfThread = Companion
+    inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
 
         override fun handle() {
             val edg = next()
@@ -268,7 +265,7 @@ class PageVwr : BasePageViewer() {
                 interrupt()
                 return
             }
-            (c as Viewer).mm.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
+            c.mm.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
                 c.dao.addQueued(
                     Queued(Persistent.now(), UiTools.POST_LINK.format(edge.node.shortcode))
                 )

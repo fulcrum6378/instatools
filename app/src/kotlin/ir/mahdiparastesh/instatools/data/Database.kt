@@ -2,12 +2,10 @@ package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
 import androidx.room.*
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 @androidx.room.Database(
     entities = [Friend::class, Queued::class, Exportable::class, Favourite::class],
-    version = 10, exportSchema = false
+    version = 1, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
     abstract fun dao(): DAO
@@ -105,11 +103,11 @@ abstract class Database : RoomDatabase() {
     companion object {
         fun build(c: Context, user: String) = Room
             .databaseBuilder(c, Database::class.java, "$user.db")
-            .addMigrations(object : Migration(9, 10) {
+            /*.addMigrations(object : Migration(9, 10) {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     db.execSQL("DROP TABLE Followable")
                 }
-            })
+            })*/
             .fallbackToDestructiveMigration()
             .build()
     }

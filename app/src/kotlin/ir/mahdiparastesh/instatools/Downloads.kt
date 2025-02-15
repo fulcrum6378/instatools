@@ -196,7 +196,7 @@ class Downloads : ServiceOwnerActivity() {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
-                if (Queuer.active.value!!) stopService(Intent(c, Queuer::class.java)
+                if (Queuer.active) stopService(Intent(c, Queuer::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
@@ -335,7 +335,7 @@ class Downloads : ServiceOwnerActivity() {
             if (uri == null || !c.c.isPathAccessible(uri)) {
                 c.goTo(Settings::class) { putExtra(Settings.EXTRA_GIVE_LINK_BACK, link) }
                 return; }
-            if (Queuer.active.value!!) {
+            if (Queuer.active) {
                 if (!link.isNullOrBlank())
                     Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()
                 return

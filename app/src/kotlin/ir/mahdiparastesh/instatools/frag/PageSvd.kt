@@ -183,21 +183,21 @@ class PageSvd : BasePageMain(), Selective {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mtUnsaveDownload -> {
-                if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
-                    c, this, tracker!!.selection, unsave = true, download = true
-                ).also { it.start() }
+                if (tracker != null && c.mm.saved != null && saver?.active != true)
+                    saver = Saver(tracker!!.selection, unsave = true, download = true)
+                        .also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtDownload -> {
-                if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
-                    c, this, tracker!!.selection, unsave = false, download = true
-                ).also { it.start() }
+                if (tracker != null && c.mm.saved != null && saver?.active != true)
+                    saver = Saver(tracker!!.selection, unsave = false, download = true)
+                        .also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtUnsave -> {
-                if (tracker != null && c.mm.saved != null && saver?.active != true) saver = Saver(
-                    c, this, tracker!!.selection, unsave = true, download = false
-                ).also { it.start() }
+                if (tracker != null && c.mm.saved != null && saver?.active != true)
+                    saver = Saver(tracker!!.selection, unsave = true, download = false)
+                        .also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtSelectAll -> if (c.mm.saved?.items != null)
@@ -321,13 +321,9 @@ class PageSvd : BasePageMain(), Selective {
         }
     }
 
-    class Saver(
-        c: Main, val f: PageSvd,
+    inner class Saver(
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
-    ) : SelectionHandler<Main>(c, selection) {
-        companion object : Alive.OfThread()
-
-        override val com: Alive.OfThread = Companion
+    ) : SelectionHandler(selection) {
 
         override fun handle() {
             val svd = next()
@@ -335,7 +331,7 @@ class PageSvd : BasePageMain(), Selective {
                 if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return; }
-            val saved = (c as Main).mm.saved?.items?.find { it.media.id == svd }
+            val saved = c.mm.saved?.items?.find { it.media.id == svd }
             if (saved == null) {
                 ended(); return; }
 
@@ -344,7 +340,7 @@ class PageSvd : BasePageMain(), Selective {
             } catch (e: IllegalStateException) { // DB is closed
                 if (BuildConfig.DEBUG) throw e
             }
-            if (unsave) f.reqQueue.adder = Api<Rest>(
+            if (unsave) reqQueue.adder = Api<Rest>(
                 c, Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, null,
                 method = Request.Method.POST, autoQueue = false, onError = { ended() }
             ) { rest ->

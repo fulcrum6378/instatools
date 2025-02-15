@@ -15,7 +15,6 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
@@ -82,7 +81,7 @@ class PageTag : BasePageViewer() {
         when (item.itemId) {
             R.id.vtDownload -> {
                 if (tracker != null && c.mm.vwTagged?.items != null)
-                    Saver(c, tracker!!.selection).start()
+                    Saver(tracker!!.selection).start()
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.vwTagged?.items != null)
@@ -169,19 +168,16 @@ class PageTag : BasePageViewer() {
         }
     }
 
-    class Saver(c: Viewer, selection: Selection<String>) : SelectionHandler<Viewer>(c, selection) {
-        companion object : Alive.OfThread()
-
-        override val com: Alive.OfThread = Companion
+    inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
 
         override fun handle() {
             val post = next()
             if (post == null) {
-                Viewer.handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
+                handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
                 interrupt()
                 return
             }
-            (c as Viewer).mm.vwTagged?.items?.find { it.id == post }?.queue(c.dao)
+            c.mm.vwTagged?.items?.find { it.id == post }?.queue(c.dao)
             ended()
         }
     }

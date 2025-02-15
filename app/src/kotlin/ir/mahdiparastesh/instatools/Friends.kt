@@ -52,7 +52,6 @@ class Friends : UserListActivity(), OnlineDataLoader {
         initToolbar(b.toolbar, R.string.friends)
 
         handler = object : Handler(Looper.getMainLooper()) {
-            @SuppressLint("UnsafeOptInUsageError")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     Api.HANDLE_ERROR -> onFailed(

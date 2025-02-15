@@ -17,6 +17,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -25,11 +26,10 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.expt.HtmlExporter
 import ir.mahdiparastesh.instatools.expt.PdfExporter
 import ir.mahdiparastesh.instatools.expt.TxtExporter
-import ir.mahdiparastesh.instatools.frag.PageBox.FetchOfThread
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.json.Api.Companion.adder
+import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Versioned
-import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.HumanDelay
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -77,25 +77,6 @@ class Exporter : ForegroundService() {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    BasePage.HANDLE_FETCHED -> {
-                        val dmThd = msg.obj as Dm.DmThread
-                        if (exp?.threadData == null || dmThd.items.isNotEmpty()) {
-                            if (exp?.threadData == null)
-                                exp?.threadData = dmThd
-                            else // if (dmThd.items.isNotEmpty()) obviously true
-                                exp?.threadData?.items?.addAll(dmThd.items)
-                            ntfText = c.getString(
-                                R.string.exporterFetchTexts,
-                                exp?.threadData?.items?.size ?: 0,
-                                dmThd.title()
-                            )
-                            updateNotification()
-                            // Inbox API has no reference to number of items in a thread.
-                            HumanDelay { exp?.fetchData() }
-                        } else CoroutineScope(Dispatchers.IO).launch {
-                            exp?.fetchMedia()
-                        }
-                    }
                     Api.HANDLE_ERROR -> {
                         when (val code = (msg.obj as NetworkResponse?)?.statusCode) {
                             429 -> eventNotification(Notify.ID_EXPORTER_429) {
@@ -139,10 +120,33 @@ class Exporter : ForegroundService() {
 
     private fun Exportable.fetchData() {
         threadData?.items?.sortBy { it.timestamp }
-        FetchOfThread(
-            this@Exporter, thread, threadData?.items?.firstOrNull()?.item_id ?: "",
-            handler, reqQueue, 75
-        ).start()
+        reqQueue.adder = Api<Rest.InboxThread>(
+            this@Exporter, Api.Endpoint.DIRECT.url.format(
+                thread, threadData?.items?.firstOrNull()?.item_id ?: "", 75
+            ), Rest.InboxThread::class, handler, autoQueue = false
+        ) { inbox ->
+            if (inbox.status != "ok") {
+                if (BuildConfig.DEBUG) throw Exception(inbox.status)
+                return@Api; }
+
+            val dmThd = inbox.thread
+            if (exp?.threadData == null || dmThd.items.isNotEmpty()) {
+                if (exp?.threadData == null)
+                    exp?.threadData = dmThd
+                else // if (dmThd.items.isNotEmpty()) obviously true
+                    exp?.threadData?.items?.addAll(dmThd.items)
+                ntfText = c.getString(
+                    R.string.exporterFetchTexts,
+                    exp?.threadData?.items?.size ?: 0,
+                    dmThd.title()
+                )
+                updateNotification()
+                // Inbox API has no reference to number of items in a thread.
+                HumanDelay { exp?.fetchData() }
+            } else CoroutineScope(Dispatchers.IO).launch {
+                exp?.fetchMedia()
+            }
+        }
     }
 
     private suspend fun Exportable.fetchMedia() {

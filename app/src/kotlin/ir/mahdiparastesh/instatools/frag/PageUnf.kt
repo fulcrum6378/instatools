@@ -164,13 +164,10 @@ class PageUnf : BasePageMain() {
      * - Limiting maximum items to 12 on each fetch made it worse!
      * - Adding additional invalid random query parameters also didn't help!
      */
-    class Inquiry(c: Persistent) : DbRelatedThread(c) {
-        companion object : Alive.OfThread()
-
+    class Inquiry(private val c: Persistent) : BaseThread() {
         private lateinit var oldFriends: List<Friend>
         private val newFriends = arrayListOf<Friend>()
         private val reqQueue by lazy { Volley.newRequestQueue(c.c) }
-        override val com: Alive.OfThread = Companion
 
         init {
             (c as Main).mm.unfollowers.value = null
@@ -188,7 +185,7 @@ class PageUnf : BasePageMain() {
          * @param theFollowers true for followers, false for following.
          */
         private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
-            if (!active || c.m.acc == null) return
+            if (c.m.acc == null) return
             reqQueue.adder = Api<Rest.Follow>(
                 c, (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
@@ -217,7 +214,7 @@ class PageUnf : BasePageMain() {
         /** Updates the database and decides what to do with the new unfollowers. */
         private suspend fun ended() {
             // Update newFriends
-            if (!active || c.m.acc == null || !c.db.isOpen) return
+            if (c.m.acc == null || !c.db.isOpen) return
             newFriends.forEach { newer ->
                 if (newer.follows) newer.unfollowedMeAt = null
                 else oldFriends.find { it.id == newer.id }.also { before ->
@@ -228,7 +225,7 @@ class PageUnf : BasePageMain() {
             }
 
             // Replace Friends
-            if (!active || c.m.acc == null || !c.db.isOpen) return
+            if (c.m.acc == null || !c.db.isOpen) return
             try {
                 c.dao.deleteFriends()
                 c.dao.addFriends(newFriends)
@@ -239,7 +236,7 @@ class PageUnf : BasePageMain() {
             }
 
             // Update the Favourites
-            if (!active || c.m.acc == null || !c.db.isOpen) return
+            if (c.m.acc == null || !c.db.isOpen) return
             c.m.fav?.forEach { fav ->
                 newFriends.find { fav.id == it.id }?.also { friend ->
                     fav.user = friend.user
@@ -251,7 +248,7 @@ class PageUnf : BasePageMain() {
             }
 
             // Notify the results
-            if (!active || c.m.acc == null) return
+            if (c.m.acc == null) return
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
             val newUnf = newFriends.filter {
                 (it.unfollowedMeAt != null
@@ -267,7 +264,7 @@ class PageUnf : BasePageMain() {
 
         /** Makes a Notification about new unfollowers. */
         private fun gotNewOnes(num: Int) {
-            if (!active || c.m.acc == null) return
+            if (c.m.acc == null) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 (c.c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .createNotificationChannel(Notify.Channel.UNF_NEW_ITEMS.create(c.c))

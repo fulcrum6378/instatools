@@ -37,10 +37,7 @@ import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_ABORTED
-import ir.mahdiparastesh.instatools.more.BasePage.Companion.HANDLE_FETCHED
 import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.more.BaseThread
 import ir.mahdiparastesh.instatools.more.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -49,6 +46,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.snackbar
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CopyOnWriteArrayList
@@ -57,7 +55,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     lateinit var b: ViewerBinding
     var user: String? = null
     var dbFav: Favourite? = null
-    private var thread: Initial? = null
+    private var thread: Job? = null
     val reqQueue by lazy { Volley.newRequestQueue(c) }
     val expandable: Expandable by lazy {
         Expandable(
@@ -108,16 +106,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_FETCHED -> {
-                        b.refresher.isRefreshing = false
-                        page1?.load()
-                        page2?.showProfile()
-                        page3?.load()
-                    }
-                    HANDLE_ABORTED -> {
-                        b.refresher.isRefreshing = false
-                        snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
-                    }
                     Api.HANDLE_ERROR -> {
                         b.refresher.isRefreshing = false
                         snackbar(
@@ -137,7 +125,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
         b.refresher.setOnRefreshListener {
             reset()
-            if (thread?.active != true) thread = Initial().also { it.start() }
+            if (thread?.isActive != true) initialLoad()
         }
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback (pages()[currentPage.value!!] as BasePageViewer?)
@@ -309,7 +297,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     private fun load(firstLoad: Boolean = false, findFav: Boolean = true) {
         if (mm.vwUser != null) {
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            loaded()
             return; }
         reset(firstLoad)
         if (findFav) CoroutineScope(Dispatchers.IO).launch {
@@ -319,7 +307,33 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             }
             withContext(Dispatchers.Main) { fixTbMenu() }
         }
-        if (thread?.active != true) thread = Initial().also { it.start() }
+        if (thread?.isActive != true) initialLoad()
+    }
+
+    fun initialLoad() {
+        thread = CoroutineScope(Dispatchers.IO).launch {
+            reqQueue.adder = Api<GraphQl>(
+                this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
+                handler, autoQueue = false, onError = {
+                    b.refresher.isRefreshing = false
+                    snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                }
+            ) { graphql ->
+                mm.vwUser = graphql.data?.user
+                if (mm.vwUser == null) {
+                    notFound()
+                    return@Api
+                }
+                loaded()
+            }
+        }
+    }
+
+    private fun loaded() {
+        b.refresher.isRefreshing = false
+        page1?.load()
+        page2?.showProfile()
+        page3?.load()
     }
 
     private fun notFound() {
@@ -349,22 +363,5 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         mm.vwTagged = null
         mm.vwCurrentPage.value = 1
         @Suppress("DEPRECATION") super.onBackPressed()
-    }
-
-    inner class Initial : BaseThread() {
-        override fun run() {
-            reqQueue.adder = Api<GraphQl>(
-                this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
-                handler, autoQueue = false, onError = { interrupt() }
-            ) { graphql ->
-                mm.vwUser = graphql.data?.user
-                if (mm.vwUser == null) {
-                    notFound()
-                    interrupt(); return@Api
-                }
-                handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                interrupt()
-            }
-        }
     }
 }
