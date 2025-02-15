@@ -186,10 +186,10 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
-        Queuer.active.observe(this) {
+        /*Queuer.active.observe(this) { FIXME
             updateControlButton(it)
             if (it) handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
-        }
+        }*/
         return ret
     }
 

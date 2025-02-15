@@ -15,7 +15,7 @@ abstract class Database : RoomDatabase() {
     @Dao
     interface DAO {
         @Query("SELECT * FROM Friend")
-        fun friends(): List<Friend>
+        suspend fun friends(): List<Friend>
 
         /*@Query("SELECT * FROM Friend WHERE follows = 1")
         fun followers(): List<Friend>*/
@@ -81,7 +81,7 @@ abstract class Database : RoomDatabase() {
 
 
         @Query("SELECT * FROM Favourite")
-        fun favourites(): List<Favourite>
+        suspend fun favourites(): List<Favourite>
 
         @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
         fun favourite(id: String): Favourite

@@ -166,7 +166,7 @@ class PageVwr : BasePageViewer() {
     }
 
     fun showProfile() {
-        if (com.active.value != true || c.mm.vwUser == null || !bInitialised) return
+        if (!com.active || c.mm.vwUser == null || !bInitialised) return
         Glide.with(c.c)
             .load(c.mm.vwUser!!.hdPhoto())
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)

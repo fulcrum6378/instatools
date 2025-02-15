@@ -63,14 +63,14 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     companion object {
         fun anyActive() = arrayOf(Main, Login, Downloads, Viewer, Favourites, Settings)
-            .any { it.active.value!! }
+            .any { it.active }
 
         fun Context.night(): Boolean = resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        com.active.value = true
+        com.active = true
         resolvedIntent = null
         notFirstResume = false
         super.onCreate(savedInstanceState)
@@ -188,7 +188,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     override fun onDestroy() {
         com.handler = null
-        com.active.value = false
+        com.active = false
         if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
         super.onDestroy()
     }

@@ -148,7 +148,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         } ?: defSpCacheLimit
 
         suspend fun Persistent.clearCacheIfNecessary() {
-            if (Exporter.active.value == true) return
+            if (Exporter.active) return
             if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
                 c.clearCache()
         }
@@ -314,7 +314,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             b.stCache.vis(false)
             b.stSepCache.vis(false)
         } else b.stClearCache.setOnClickListener {
-            if (Exporter.active.value == true) {
+            if (Exporter.active) {
                 Toast.makeText(c, R.string.stClearCacheWaitExporter, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

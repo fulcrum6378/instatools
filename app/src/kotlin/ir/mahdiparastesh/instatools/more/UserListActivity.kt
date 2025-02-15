@@ -18,10 +18,6 @@ abstract class UserListActivity : CounterActivity(), DataLoader {
     override var shouldShowJumper = MutableLiveData(false)
     override var anJumper: ObjectAnimator? = null
 
-    companion object {
-        const val HANDLE_LOADED = 0
-    }
-
     override fun prepareListing(c: BaseActivity) {
         super.prepareListing(c)
         if (!Main.guest) bRefresher.setOnRefreshListener { load() }

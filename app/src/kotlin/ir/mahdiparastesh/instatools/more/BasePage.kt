@@ -33,7 +33,7 @@ abstract class BasePage<C> : Fragment(), Toolbar.OnMenuItemClickListener, Online
     abstract class PageCompanion : Alive()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        com.active.value = true
+        com.active = true
         super.onViewCreated(view, savedInstanceState)
         com.handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -61,7 +61,7 @@ abstract class BasePage<C> : Fragment(), Toolbar.OnMenuItemClickListener, Online
 
     override fun onDestroy() {
         com.handler = null
-        com.active.value = false
+        com.active = false
         super.onDestroy()
     }
 

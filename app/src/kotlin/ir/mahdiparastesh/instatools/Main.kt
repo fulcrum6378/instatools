@@ -222,7 +222,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         if (m.files == null) StorageCache.load(this)
         if (!guest) {
             updateProfile()
-            Favourites.FavLoader(this).start()
+            CoroutineScope(Dispatchers.IO).launch {
+                m.fav = ArrayList(dao.favourites())
+                m.fav?.sortBy { it.user }
+            }
         }
         sp?.edit { remove("follower_delay") }
         // c.startService(Intent(c, Exporter::class.java)) // for debugging

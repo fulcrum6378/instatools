@@ -2,17 +2,17 @@ package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
-import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.UserListActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Favourites : UserListActivity() {
     private lateinit var b: FavouritesBinding
@@ -32,18 +32,6 @@ class Favourites : UserListActivity() {
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.favouritesTb)
 
-        handler = object : Handler(Looper.getMainLooper()) {
-            override fun handleMessage(msg: Message) {
-                when (msg.what) {
-                    HANDLE_LOADED -> {
-                        b.refresher.isRefreshing = false
-                        adapt()
-                        updateCount(m.fav?.size ?: 0)
-                    }
-                }
-            }
-        }
-
         prepareListing(this)
         load()
     }
@@ -54,7 +42,16 @@ class Favourites : UserListActivity() {
     }
 
     override fun load() {
-        FavLoader(this).start()
+        CoroutineScope(Dispatchers.IO).launch {
+            m.fav = ArrayList(dao.favourites())
+            m.fav?.sortBy { it.user }
+
+            withContext(Dispatchers.Main) {
+                b.refresher.isRefreshing = false
+                adapt()
+                updateCount(m.fav?.size ?: 0)
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -65,14 +62,6 @@ class Favourites : UserListActivity() {
         } else {
             b.rv.vis(false)
             b.empty.vis(true)
-        }
-    }
-
-    class FavLoader(private val c: BaseActivity) : Thread() {
-        override fun run() {
-            c.m.fav = ArrayList(c.dao.favourites())
-            c.m.fav?.sortBy { it.user }
-            handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
         }
     }
 }

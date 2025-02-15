@@ -38,7 +38,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         else h.b.status.setAnimation(
             when {
                 qud.isFailed() -> R.raw.failed
-                !Queuer.active.value!! -> R.raw.pending
+                !Queuer.active -> R.raw.pending
                 else -> R.raw.download
             }
         )

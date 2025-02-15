@@ -56,7 +56,7 @@ class PageRel : BasePageViewer() {
     }
 
     fun load() {
-        if (com.active.value != true) return
+        if (!com.active) return
         if (c.mm.vwReels != null)
             handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
         else if (thread?.active != true)

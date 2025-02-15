@@ -69,7 +69,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         // WebView
         b.web.settings.javaScriptEnabled = true
         b.web.settings.domStorageEnabled = true
-        //b.web.settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        b.web.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         b.web.settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
             "AppleWebKit/537.36 (KHTML, like Gecko) " +
             "Chrome/133.0.0.0 Safari/537.36"

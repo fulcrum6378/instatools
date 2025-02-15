@@ -321,7 +321,7 @@ class Queuer : ForegroundService() {
             }
         }, {
             if (it.networkResponse?.statusCode == 429) {
-                if (Downloads.active.value == true)
+                if (Downloads.active == true)
                     Downloads.handler?.obtainMessage(Downloads.HANDLE_429)?.sendToTarget()
                 else eventNotification(Notify.ID_QUEUER_429) {
                     setContentTitle(getString(R.string.downloads))
@@ -375,7 +375,7 @@ class Queuer : ForegroundService() {
     private fun linkHandled() {
         handlingLinks.removeAt(0)
         handlingLink = false
-        if (!active.value!!) return
+        if (!active) return
         if (handlingLinks.isNotEmpty())
             HumanDelay(100L..3000L) { handleLinks() }
         if (download?.active != true) download = Download().also { it.start() }
@@ -468,7 +468,7 @@ class Queuer : ForegroundService() {
 
     private fun downloaded() {
         download?.interrupt()
-        if (!active.value!!) return
+        if (!active) return
         download = Download().also { it.start() }
     }
 
@@ -514,10 +514,10 @@ class Queuer : ForegroundService() {
                             }
                             orCreateExifDirectory.apply {
                                 removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL)
-                                add( // Date taken
+                                /*add( // Date taken
                                     ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
                                     tiffDate.format(q.addedAt)
-                                )
+                                )*/
 
                                 q.caption?.also {
                                     removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)

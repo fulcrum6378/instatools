@@ -17,16 +17,20 @@ import ir.mahdiparastesh.instatools.databinding.FriendsBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListFri
-import ir.mahdiparastesh.instatools.more.LongThread
 import ir.mahdiparastesh.instatools.more.UserListActivity
 import ir.mahdiparastesh.instatools.view.OnlineDataLoader
 import ir.mahdiparastesh.instatools.view.UiTools.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Integer.min
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Friends : UserListActivity(), OnlineDataLoader {
     private lateinit var b: FriendsBinding
     val mm: MyModel by viewModels()
+    private val friendshipsDataLimit = 500 // no more no less
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
@@ -51,11 +55,6 @@ class Friends : UserListActivity(), OnlineDataLoader {
             @SuppressLint("UnsafeOptInUsageError")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_LOADED -> {
-                        onLoaded(mm.friends.isEmpty())
-                        adapt()
-                        updateCount(mm.friends.size)
-                    }
                     Api.HANDLE_ERROR -> onFailed(
                         c.getString(
                             R.string.unknownError, "${(msg.obj as? NetworkResponse)?.statusCode}"
@@ -74,7 +73,38 @@ class Friends : UserListActivity(), OnlineDataLoader {
     }
 
     override fun load() {
-        FriLoader().start()
+        CoroutineScope(Dispatchers.IO).launch {
+            mm.friends.clear()
+            mm.friends.addAll(dao.friends())
+            friendships(0)
+        }
+    }
+
+    private suspend fun friendships(index: Int) {
+        if (index >= mm.friends.size) {
+            withContext(Dispatchers.Main) {
+                onLoaded(mm.friends.isEmpty())
+                adapt()
+                updateCount(mm.friends.size)
+            }
+            return;}
+
+        Api<Rest.Friendships>(
+            this@Friends, Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
+            handler, "user_ids=" + mm.friends
+                .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
+                .joinToString(",") { it.id }, method = Request.Method.POST
+        ) {
+            for (f in mm.friends) it.friendship_statuses[f.id]?.also {
+                f.bestie = it.is_bestie
+                f.feedFav = it.is_feed_favorite == true
+                f.restricted = it.is_restricted == true
+            }
+            handler?.obtainMessage(0, index, 0, it)?.sendToTarget()
+            CoroutineScope(Dispatchers.IO).launch {
+                friendships(index + friendshipsDataLimit)
+            }
+        }
     }
 
     override fun onLoaded(isEmpty: Boolean) {
@@ -95,46 +125,6 @@ class Friends : UserListActivity(), OnlineDataLoader {
         } else {
             b.rv.vis(false)
             b.empty.vis(true)
-        }
-    }
-
-    inner class FriLoader : LongThread(Looper.getMainLooper()) {
-        private val dataLimit = 500 // no more no less
-
-        override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-            0 to { msg ->
-                for (f in mm.friends) (msg.obj as Rest.Friendships).friendship_statuses[f.id]?.also {
-                    f.bestie = it.is_bestie
-                    f.feedFav = it.is_feed_favorite == true
-                    f.restricted = it.is_restricted == true
-                }
-                statuses(msg.arg1 + dataLimit)
-            }
-        )
-
-        override fun run() {
-            super.run()
-            mm.friends.clear()
-            mm.friends.addAll(dao.friends())
-            statuses(0)
-        }
-
-        private fun statuses(n: Int) {
-            if (n >= mm.friends.size) {
-                interrupt(); return; }
-            Api<Rest.Friendships>(
-                this@Friends, Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
-                Friends.handler, "user_ids=" + mm.friends
-                    .subList(n, min(n + dataLimit, mm.friends.size))
-                    .joinToString(",") { it.id }, method = Request.Method.POST
-            ) { handler?.obtainMessage(0, n, 0, it)?.sendToTarget() }
-        }
-
-        override fun interrupt() {
-            //mm.friends.sortBy { it.bestie }
-            //mm.friends.sortBy { it.feedFav }
-            Friends.handler?.obtainMessage(HANDLE_LOADED)?.sendToTarget()
-            super.interrupt()
         }
     }
 }
