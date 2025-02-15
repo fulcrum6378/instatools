@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.frag
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,7 +15,6 @@ import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.NetworkResponse
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
@@ -24,7 +22,6 @@ import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
@@ -38,61 +35,18 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageVwr : BasePageViewer() {
     private lateinit var b: PageVwrBinding
-    private var thread: FetchSome? = null
+    private var thread: Job? = null
     val proPicIv: ImageView? get() = if (bInitialised) b.proPicIv else null
     val privateAcc: AppCompatTextView? get() = if (bInitialised) b.privateAcc else null
 
-    override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
-    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { msg ->
-            if (b.rv.adapter != null && msg.arg2 > 0) {
-                super.onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
-                b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
-
-            if (c.mm.vwUser?.hasMore() == true && thread?.active != true
-                && !b.rv.canScrollVertically(1)
-            ) thread = FetchSome().also { it.start() }
-
-            val showPv = c.mm.vwUser?.pv() == true && c.mm.vwUser?.followed_by_viewer == false
-                && c.mm.vwUser?.username != c.m.acc?.user
-            b.privateAcc.vis(showPv)
-            b.rv.vis(!showPv)
-            if (showPv) {
-                b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
-                    null, c.drawable(
-                        R.drawable.private_account, if (c.night()) R.color.defCA else null
-                    )!!, null, null
-                )
-                b.privateAcc.layoutParams =
-                    (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        val vPad = ((c.dm.heightPixels.toFloat()
-                            - c.dm.widthPixels.toFloat()) * 0.19f).toInt()
-                        topMargin = vPad
-                        bottomMargin = vPad
-                    }
-            }
-        },
-        HANDLE_ABORTED to {
-            UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
-        },
-        Api.HANDLE_ERROR to {
-            UiTools.snackbar(
-                b.root, c.getString(
-                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
-                ), Snackbar.LENGTH_SHORT
-            )
-        }
-    )
-
-    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageVwrBinding.inflate(inf, parent, false).let { b = it; it.root }
@@ -112,9 +66,7 @@ class PageVwr : BasePageViewer() {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1) && thread?.active != true &&
-                    c.mm.vwUser?.hasMore() == true
-                ) thread = FetchSome().also { it.start() }
+                if (!b.rv.canScrollVertically(1)) fetchSome()
             }
         })
         c.b.refresher.setOnChildScrollUpCallback { _, _ ->
@@ -155,7 +107,7 @@ class PageVwr : BasePageViewer() {
         when (item.itemId) {
             R.id.vtDownload -> {
                 if (tracker != null && c.mm.vwUser?.edges() != null)
-                    Saver(tracker!!.selection).start()
+                    Saver(tracker!!.selection)
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.vwUser?.edges() != null)
@@ -166,7 +118,7 @@ class PageVwr : BasePageViewer() {
     }
 
     fun showProfile() {
-        if (!com.active || c.mm.vwUser == null || !bInitialised) return
+        if (c.mm.vwUser == null || !bInitialised) return
         Glide.with(c.c)
             .load(c.mm.vwUser!!.hdPhoto())
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -174,7 +126,7 @@ class PageVwr : BasePageViewer() {
             .into(b.proPicIv)
         b.followersNum.text = c.mm.vwUser!!.edge_followed_by.toString()
         b.followingNum.text = c.mm.vwUser!!.edge_follow.toString()
-        handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+        fetched()
 
         if (c.mm.vwUser != null) c.dbFav?.apply {
             var changed = false
@@ -191,6 +143,71 @@ class PageVwr : BasePageViewer() {
                 changed = true
             }
             if (changed) CoroutineScope(Dispatchers.IO).launch { c.dao.updateFavourite(this@apply) }
+        }
+    }
+
+    private fun fetchSome() {
+        if (thread != null || c.mm.vwUser == null || c.mm.vwUser?.hasMore() == false)
+            return
+        thread = CoroutineScope(Dispatchers.IO).launch {
+            val res = Api.call<GraphQl>(
+                Api.Endpoint.POSTS.url.format(
+                    c.mm.vwUser!!.id,
+                    c.mm.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
+                ), GraphQl::class, onError = { code ->
+                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                }
+            )
+            if (res == null) {
+                thread = null
+                return@launch; }
+
+            val add = res.data?.user?.edge_owner_to_timeline_media
+            if (add == null) {
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                }
+                thread = null
+                return@launch; }
+
+            c.mm.vwUser?.edge_owner_to_timeline_media?.apply {
+                page_info = add.page_info
+                count = add.count
+                val lastBefore = edges.size
+                val ids = edges.map { it.node.id }
+                edges.addAll(add.edges.filter { it.node.id !in ids })
+                withContext(Dispatchers.Main) {
+                    fetched(lastBefore, add.edges.size)
+                }
+            }
+            thread = null
+        }
+    }
+
+    private fun fetched(arg1: Int = 0, arg2: Int = 0) {
+        if (b.rv.adapter != null && arg2 > 0)
+            b.rv.adapter?.notifyItemRangeInserted(arg1, arg2)
+        onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
+
+        if (!b.rv.canScrollVertically(1)) fetchSome()
+
+        val showPv = c.mm.vwUser?.pv() == true && c.mm.vwUser?.followed_by_viewer == false
+            && c.mm.vwUser?.username != c.m.acc?.user
+        b.privateAcc.vis(showPv)
+        b.rv.vis(!showPv)
+        if (showPv) {
+            b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
+                null, c.drawable(
+                    R.drawable.private_account, if (c.night()) R.color.defCA else null
+                )!!, null, null
+            )
+            b.privateAcc.layoutParams =
+                (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                    val vPad = ((c.dm.heightPixels.toFloat()
+                        - c.dm.widthPixels.toFloat()) * 0.19f).toInt()
+                    topMargin = vPad
+                    bottomMargin = vPad
+                }
         }
     }
 
@@ -228,37 +245,9 @@ class PageVwr : BasePageViewer() {
         }
     }
 
-    inner class FetchSome : BaseThread() {
-        override fun run() {
-            if (c.mm.vwUser == null) {
-                interrupt()
-                return; }
-            c.reqQueue.adder = Api<GraphQl>(
-                c, Api.Endpoint.POSTS.url.format(
-                    c.mm.vwUser!!.id,
-                    c.mm.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
-                ), GraphQl::class, handler, autoQueue = false, onError = { interrupt() }
-            ) { res ->
-                val add = res.data?.user?.edge_owner_to_timeline_media
-                if (add == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
-                    interrupt(); return@Api; }
-                c.mm.vwUser?.edge_owner_to_timeline_media?.apply {
-                    page_info = add.page_info
-                    count = add.count
-                    val lastBefore = edges.size
-                    val ids = edges.map { it.node.id }
-                    edges.addAll(add.edges.filter { it.node.id !in ids })
-                    handler?.obtainMessage(HANDLE_FETCHED, lastBefore, add.edges.size)
-                        ?.sendToTarget()
-                }
-            }
-        }
-    }
-
     inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
 
-        override fun handle() {
+        override suspend fun handle() {
             val edg = next()
             if (edg == null) {
                 Downloads.initService(c)

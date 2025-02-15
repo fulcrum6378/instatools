@@ -21,8 +21,6 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.android.volley.Request
-import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -38,7 +36,6 @@ import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media
@@ -79,7 +76,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
     var schRes: Array<Rest.ItemUser>? = null
-    private val schQueue by lazy { Volley.newRequestQueue(c) }
     var searchErrored = false
 
     override val menuRes = R.menu.main_tlb
@@ -431,8 +427,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun switchAcc() {
         page1?.thread?.interrupt()
-        page2?.thread?.interrupt()
-        page2?.saver?.interrupt()
+        page2?.thread?.cancel()
+        page2?.saver?.cancel()
         page3?.boxThread?.cancel()
         page3?.thdThread?.cancel()
         mm.accountSwitched()

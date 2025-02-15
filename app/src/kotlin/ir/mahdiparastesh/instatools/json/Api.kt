@@ -3,11 +3,14 @@ package ir.mahdiparastesh.instatools.json
 import android.net.Uri
 import android.text.TextUtils
 import android.util.DisplayMetrics
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.data.Account
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.URI
@@ -22,9 +25,7 @@ object Api {
     /**
      * @return JSON on success, null if the procedure fails
      */
-    @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    @Throws(FailureException::class)
     suspend fun <JSON> call(
         url: String,
         clazz: KClass<*>,
@@ -33,7 +34,7 @@ object Api {
         body: String? = null,
         retry: Int = 1, // TODO implement retrying
         cache: Boolean = false,
-        onError: (suspend (code: Int) -> Unit)? = null,
+        @MainThread onError: ((code: Int) -> Unit)? = null,
     ): JSON? {
         if (cookies == "") return null
 
@@ -57,7 +58,7 @@ object Api {
         try {
             con.connect()
         } catch (_: SocketTimeoutException) {
-            if (onError != null) onError(-1)
+            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
             return null
         }
 
@@ -67,7 +68,7 @@ object Api {
         val text = try {
             con.inputStream.bufferedReader().readText()
         } catch (_: IOException) {
-            if (onError != null) onError(-2)
+            if (onError != null) withContext(Dispatchers.Main) { onError(-2) }
             return null
         }
 
@@ -79,11 +80,10 @@ object Api {
                 ).type else clazz.java
             ) as JSON
         } catch (_: JsonSyntaxException) {
-            throw FailureException(-3)
-            if (onError != null) onError(-3)
+            if (onError != null) withContext(Dispatchers.Main) { onError(-3) }
             null
         } else {
-            if (onError != null) onError(con.responseCode)
+            if (onError != null) withContext(Dispatchers.Main) { onError(con.responseCode) }
             null
         }
     }

@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.list
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.Request
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -10,7 +9,6 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.Act
@@ -19,6 +17,9 @@ import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ListBox(val c: Main, private val f: PageBox) :
     RecyclerView.Adapter<AnyViewHolder<ListBoxBinding>>() {
@@ -55,11 +56,13 @@ class ListBox(val c: Main, private val f: PageBox) :
                     this[R.id.bmOpenDmInInsta] = { UiTools.openDm(c, thd.thread_id) }
                     this[R.id.bmMarkAsSeen] = {
                         val last = thd.items.lastOrNull()
-                        if (last != null) f.reqQueue.adder = Api<Rest.Seen>(
-                            c, Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id),
-                            Rest.Seen::class, null, method = Request.Method.POST,
-                            autoQueue = false /*, onError = {}*/
-                        ) { rest -> if (rest.status_code == "200") thd.read_state = 0.0 }
+                        if (last != null) CoroutineScope(Dispatchers.IO).launch {
+                            val rest = Api.call<Rest.Seen>(
+                                Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id),
+                                Rest.Seen::class, isPost = true
+                            )
+                            if (rest?.status_code == "200") thd.read_state = 0.0
+                        }
                     }
                     this[R.id.bmView] = {
                         thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }

@@ -44,7 +44,6 @@ import java.io.FileOutputStream
 class Exporter : ForegroundService() {
     private var exp: Exportable? = null
     private val cache: File by lazy { Cache(c) }
-    private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String

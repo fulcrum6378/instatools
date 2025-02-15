@@ -8,7 +8,7 @@ import androidx.core.animation.addListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.gson.reflect.TypeToken
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -16,13 +16,13 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
 import ir.mahdiparastesh.instatools.json.Rest.StoryReel
 import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
@@ -115,13 +115,17 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
     private fun loadHlItems(i: Int, onEnd: () -> Unit) {
         (c.mm.vwReels?.getOrNull(i) as HighlightReel?)?.apply {
             if (items != null) return@loadHlItems
-            c.reqQueue.adder = Api<Rest.Reels<HighlightReel>>(
-                c, Api.Endpoint.REEL_ITEM.url.format(id), Rest.Reels::class, PageRel.handler,
-                cache = true, typeToken = object : TypeToken<Rest.Reels<HighlightReel>>() {}.type,
-                autoQueue = false
-            ) { reels ->
+            CoroutineScope(Dispatchers.IO).launch {
+                val reels = Api.call<Rest.Reels<HighlightReel>>(
+                    Api.Endpoint.REEL_ITEM.url.format(id),
+                    Rest.Reels::class, arrayOf(HighlightReel::class),
+                    cache = true, onError = { code ->
+                        UiTools.snackbar(f.b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    }
+                )
+                if (reels == null) return@launch
                 items = reels.reels.getOrNull(id)?.items
-                onEnd()
+                withContext(Dispatchers.Main) { onEnd() }
             }
         }
     }

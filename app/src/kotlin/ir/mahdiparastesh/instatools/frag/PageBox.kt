@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Message
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +18,6 @@ import androidx.core.view.get
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.NetworkResponse
-import com.android.volley.toolbox.Volley
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
@@ -33,7 +30,6 @@ import ir.mahdiparastesh.instatools.databinding.DmNotSeenBinding
 import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.InboxPage
@@ -62,33 +58,17 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
     private var boxScroll: Int? = null
-    val reqQueue by lazy { Volley.newRequestQueue(c) }
     val expandable: Expandable by lazy {
         Expandable(
-            c, b.expanded, handler, reqQueue, c.color(if (!c.night()) R.color.defBG else R.color.CT)
+            c, b.expanded, c.color(if (!c.night()) R.color.defBG else R.color.CT)
         ) { updateShadow() }
     }
 
-    override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.TERTIARY
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout get() = b.root
     override val emptyIcon: Int = R.drawable.done_box
     override val selectiveMenuRes: Int? = null
-    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        Api.HANDLE_ERROR to {
-            onFailed(
-                c.getString(
-                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
-                )
-            )
-        },
-        Expandable.HANDLE_EXPANDABLE_ERROR to {
-            UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
-        },
-    )
-
-    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageBoxBinding.inflate(inflater, parent, false).let { b = it; it.root }
@@ -118,6 +98,70 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
 
         if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
         else if (boxThread?.isActive != true) fetchOfInbox()
+    }
+
+    private fun fetchOfInbox() {
+        boxThread = CoroutineScope(Dispatchers.IO).launch {
+            val page = Api.call<InboxPage>(
+                Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
+                InboxPage::class, onError = { code ->
+                    b.refresher.isRefreshing = false
+                    if (c.mm.dmInbox == null) onFailed(Api.error(code))
+                    else UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                }
+            )
+            if (page == null) {
+                boxThread = null
+                return@launch; }
+
+            if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
+            else c.mm.dmInbox?.apply {
+                threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
+                threads.addAll(page.inbox.threads)
+                threads.sortByDescending { it.last_activity_at }
+                oldest_cursor = page.inbox.oldest_cursor
+                has_older = page.inbox.has_older
+            }
+            withContext(Dispatchers.Main) {
+                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+                if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1))
+                    fetchOfInbox()
+                if (c.mm.dmInbox?.has_older == false)
+                    c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
+            }
+            boxThread = null
+        }
+    }
+
+    fun fetchOfThread() {
+        thdThread = CoroutineScope(Dispatchers.IO).launch {
+            val inbox = Api.call<Rest.InboxThread>(
+                Api.Endpoint.DIRECT.url.format(
+                    c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20
+                ), Rest.InboxThread::class, onError = { code ->
+                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                }
+            )
+            if (inbox?.status != "ok") {
+                if (BuildConfig.DEBUG) throw Exception(inbox?.status)
+                thdThread = null
+                return@launch; }
+
+            val dmThd = inbox.thread
+            val bef = c.mm.dmThread!!.items.size
+            c.mm.dmThread!!.items.removeAll { it.item_id in dmThd.items.map { t -> t.item_id } }
+            c.mm.dmThread!!.items.addAll(dmThd.items)
+            c.mm.dmThread!!.has_older = dmThd.has_older
+            c.mm.dmThread!!.items.sortBy { it.timestamp }
+            val dif = c.mm.dmThread!!.items.size - bef
+            withContext(Dispatchers.Main) {
+                b.rv.adapter?.let {
+                    it.notifyItemRangeInserted(0, dif)
+                    it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
+                }
+            }
+            thdThread = null
+        }
     }
 
     override fun onRefresh() {
@@ -168,59 +212,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override fun updateJumper() {
         if (c.mm.dmThread == null) super.updateJumper()
         else if (shouldShowJumper.value == true) shouldShowJumper.value = false
-    }
-
-    private fun fetchOfInbox() {
-        boxThread = CoroutineScope(Dispatchers.IO).launch {
-            reqQueue.adder = Api<InboxPage>(
-                c, Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
-                InboxPage::class, handler, autoQueue = false, onError = {
-                    if (c.mm.dmInbox == null) onFailed(c.getString(R.string.loadFailed))
-                }
-            ) { page ->
-                if (!active) return@Api
-                if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
-                else c.mm.dmInbox?.apply {
-                    threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
-                    threads.addAll(page.inbox.threads)
-                    threads.sortByDescending { it.last_activity_at }
-                    oldest_cursor = page.inbox.oldest_cursor
-                    has_older = page.inbox.has_older
-                }
-                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
-                if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1))
-                    fetchOfInbox()
-                if (c.mm.dmInbox?.has_older == false)
-                    c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
-            }
-        }
-    }
-
-    fun fetchOfThread() {
-        thdThread = CoroutineScope(Dispatchers.IO).launch {
-            reqQueue.adder = Api<Rest.InboxThread>(
-                c, Api.Endpoint.DIRECT.url.format(
-                    c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20
-                ), Rest.InboxThread::class, handler, autoQueue = false
-            ) { inbox ->
-                if (!active) return@Api
-                if (inbox.status != "ok") {
-                    if (BuildConfig.DEBUG) throw Exception(inbox.status)
-                    return@Api; }
-
-                val dmThd = inbox.thread
-                val bef = c.mm.dmThread!!.items.size
-                c.mm.dmThread!!.items.removeAll { it.item_id in dmThd.items.map { t -> t.item_id } }
-                c.mm.dmThread!!.items.addAll(dmThd.items)
-                c.mm.dmThread!!.has_older = dmThd.has_older
-                c.mm.dmThread!!.items.sortBy { it.timestamp }
-                val dif = c.mm.dmThread!!.items.size - bef
-                b.rv.adapter?.let {
-                    it.notifyItemRangeInserted(0, dif)
-                    it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
-                }
-            }
-        }
     }
 
     fun expOptions(method: Exporter.Method, thread: Dm.DmThread) {

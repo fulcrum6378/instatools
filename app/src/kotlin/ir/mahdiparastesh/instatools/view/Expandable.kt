@@ -10,31 +10,31 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
-import android.os.Handler
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.lifecycle.MutableLiveData
-import com.android.volley.RequestQueue
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.view.UiTools.snackbar
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import java.util.concurrent.TimeoutException
@@ -43,8 +43,6 @@ import java.util.concurrent.TimeoutException
 class Expandable(
     private val c: BaseActivity,
     private val b: ExpandableBinding,
-    private val handler: Handler?,
-    private val queue: RequestQueue,
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
@@ -56,11 +54,7 @@ class Expandable(
     private var startScale: Float? = null
     private var startBounds: RectF? = null
     private val muteSound = MutableLiveData(false)
-
-    companion object {
-        const val HANDLE_EXPANDABLE_ERROR = 55
-        const val zoomDur = 200L
-    }
+    private val zoomDur = 200L
 
     init {
         b.volume.setOnClickListener { muteSound.value = muteSound.value != true }
@@ -186,13 +180,17 @@ class Expandable(
         onZoomChanged(true)
         currentAnimator?.cancel()
         b.username.text = ""
-        if (media == null) queue.adder = Api<Media.Wrapper>(
-            c, Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.Wrapper::class,
-            handler, autoQueue = false, cache = true
-        ) { wrapper ->
+        if (media == null) runBlocking {
+            val wrapper = Api.call<Media.Wrapper>(
+                Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.Wrapper::class,
+                cache = true, onError = { code ->
+                    snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                }
+            )
+            if (wrapper == null) return@runBlocking
             media = wrapper.items?.getOrNull(0)
             if (media == null)
-                handler?.obtainMessage(HANDLE_EXPANDABLE_ERROR)?.sendToTarget()
+                snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
             else loaded()
         } else loaded()
         val startBoundsInt = Rect()

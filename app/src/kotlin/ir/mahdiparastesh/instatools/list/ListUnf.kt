@@ -7,16 +7,16 @@ import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.Request
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Friend
+import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListUnf(val c: Main, private val f: PageUnf) :
     RecyclerView.Adapter<AnyViewHolder<ListUnfBinding>>() {
@@ -53,11 +54,9 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             else AppCompatTextView.TEXT_ALIGNMENT_VIEW_START
         // Presumably after invoking "notifyItemMoved()" the alpha value of the root is animated;
         // so if you change it statically here, your changes won't survive the animation.
-        val alpha = when {
-            unf.unfollowed -> OFF_ALPHA
-            unf.inFav -> OFF_ALPHA
-            else -> 1f
-        }
+        val alpha =
+            if (unf.unfollowed || unf.inFav) 0.5f
+            else 1f
         arrayOf(h.b.photo, h.b.name, h.b.user, h.b.unfollow).forEach { it.alpha = alpha }
 
         Glide.with(c.c).load(unf.pict).into(h.b.photo)
@@ -98,31 +97,36 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     override fun getItemCount() = c.mm.unfollowers.value?.size ?: 0
 
     private fun unfollow(unf: Friend) {
-        f.reqQueue.adder = Api<Rest.DoFollow>(
-            c, Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class, null,
-            method = Request.Method.POST, autoQueue = false, onError = { res ->
-                if (res?.statusCode == 429) try {
-                    MaterialAlertDialogBuilder(
-                        ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
-                    ).apply {
-                        setTitle(R.string.unfollow)
-                        setMessage(R.string.unfollowedSoMany)
-                        setNeutralButton(R.string.ok, null)
-                    }.show()
-                } catch (_: WindowManager.BadTokenException) { // activity is not running!!
-                } else {
-                    PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
-                    if (BuildConfig.DEBUG)
-                        Toast.makeText(c.c, "1: " + res?.statusCode.toString(), Toast.LENGTH_SHORT)
-                            .show()
+        CoroutineScope(Dispatchers.IO).launch {
+            val rest = Api.call<Rest.DoFollow>(
+                Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class,
+                isPost = true,
+                onError = { code ->
+                    if (code == 429) try {
+                        MaterialAlertDialogBuilder(
+                            ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
+                        ).apply {
+                            setTitle(R.string.unfollow)
+                            setMessage(R.string.unfollowedSoMany)
+                            setNeutralButton(R.string.ok, null)
+                        }.show()
+                    } catch (_: WindowManager.BadTokenException) { // activity is not running!!
+                    } else {
+                        UiTools.snackbar(
+                            f.b.root, R.string.unfCouldNot, Snackbar.LENGTH_LONG, c.b.bnv
+                        )
+                        if (BuildConfig.DEBUG)
+                            Toast.makeText(c.c, "1: $code", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-        ) {
-            if (it.status != "ok" || it.spam == true) {
-                PageUnf.handler?.obtainMessage(PageUnf.HANDLE_COULD_NOT)?.sendToTarget()
-                if (BuildConfig.DEBUG) Toast.makeText(c.c, "2: " + it.status, Toast.LENGTH_SHORT)
+            )
+            if (rest?.status != "ok" || rest.spam == true) {
+                UiTools.snackbar(
+                    f.b.root, R.string.unfCouldNot, Snackbar.LENGTH_LONG, c.b.bnv
+                )
+                if (BuildConfig.DEBUG) Toast.makeText(c.c, "2: ${rest?.status}", Toast.LENGTH_SHORT)
                     .show()
-                return@Api; }
+                return@launch; }
             c.incrementCounter(Settings.spUnfollowCount)
             CoroutineScope(Dispatchers.IO).launch {
                 if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
@@ -142,13 +146,33 @@ class ListUnf(val c: Main, private val f: PageUnf) :
             val fav = u.toFavourite()
             if (!u.inFav) c.dao.addFavourite(fav)
             else c.dao.deleteFavouriteById(u.id)
-            PageUnf.handler?.obtainMessage(
-                PageUnf.HANDLE_FAV_CHANGED, if (!u.inFav) fav else u.id
-            )?.sendToTarget()
-        }
-    }
 
-    companion object {
-        const val OFF_ALPHA = 0.5f
+            withContext(Dispatchers.Main) {
+                var id: String? = null
+                var favNow = false
+                if (!u.inFav) {
+                    c.m.fav?.add(fav)
+                    id = fav.id
+                    favNow = true
+                } else {
+                    c.m.fav?.removeAll { f -> f.id == u.id }
+                    id = u.id
+                }
+                Friend.find(id, c.mm.unfollowers.value)?.also { before ->
+                    c.mm.unfollowers.value?.getOrNull(before)?.inFav = favNow
+                    c.mm.unfollowers.value?.specialSort()
+                    Friend.find(id, c.mm.unfollowers.value)?.also { after ->
+                        f.b.rv.adapter?.notifyItemMoved(before, after)
+                        when {
+                            before > after -> f.b.rv.adapter
+                                ?.notifyItemRangeChanged(after, (before - after) + 1)
+                            after > before -> f.b.rv.adapter
+                                ?.notifyItemRangeChanged(before, (after - before) + 1)
+                            else -> f.b.rv.adapter?.notifyItemChanged(after)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

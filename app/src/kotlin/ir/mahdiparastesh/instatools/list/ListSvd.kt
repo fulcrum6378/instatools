@@ -20,7 +20,7 @@ class ListSvd(c: Main, f: PageSvd) : ListMedia<Main, PageSvd>(c, f) {
     override val handler: Handler? get() = PageSvd.handler
     override val expandable: Expandable by lazy {
         Expandable(
-            c, expanded, handler, f.reqQueue, c.color(if (!c.night()) R.color.defBG else R.color.CS)
+            c, expanded, c.color(if (!c.night()) R.color.defBG else R.color.CS)
         ) { f.updateShadow() }
     }
     override val expanded: ExpandableBinding = f.b.expanded

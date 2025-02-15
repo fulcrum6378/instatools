@@ -10,8 +10,6 @@ import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.android.volley.NetworkResponse
-import com.android.volley.Request
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.FriendsBinding
 import ir.mahdiparastesh.instatools.json.Api

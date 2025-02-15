@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -34,7 +33,6 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -56,23 +54,14 @@ class PageSvd : BasePageMain(), Selective {
     private var selectionGuide: LottieAnimationView? = null
     private var reallyHasMore = true
 
-    override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.SECONDARY
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val emptyIcon: Int = R.drawable.done_svd
     override fun expanded(): ExpandableBinding = b.expanded
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
-
-    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        Expandable.HANDLE_EXPANDABLE_ERROR to {
-            UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
-        },
-    )
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
-
-    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageSvdBinding.inflate(inflater, parent, false).let { b = it; it.root }
@@ -103,6 +92,68 @@ class PageSvd : BasePageMain(), Selective {
     override fun onStart() {
         super.onStart()
         if (bInitialised && b.rv.adapter != null && ftDetached) buildSelection()
+    }
+
+    private fun fetchSome() {
+        if (thread != null || c.mm.saved?.more_available == false) return
+        thread = CoroutineScope(Dispatchers.IO).launch {
+            val wrapper = Api.call<Media.SavedWrapper>(
+                Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
+                Media.SavedWrapper::class,
+                onError = { code ->
+                    b.refresher.isRefreshing = false
+                    if (c.mm.saved == null)
+                        onFailed(c.getString(R.string.unknownError, "$code"))
+                }
+            )
+            if (wrapper == null) {
+                thread = null
+                return@launch; }
+
+            if (wrapper.items == null) {
+                withContext(Dispatchers.Main) {
+                    b.refresher.isRefreshing = false
+                    onFailed(c.getString(R.string.loadFailed))
+                }
+                thread = null
+                return@launch; }
+
+            // check if the user has hidden saves
+            if (wrapper.items!!.isEmpty()) {
+                if (c.mm.saved == null) c.mm.saved = wrapper
+                reallyHasMore = false
+                withContext(Dispatchers.Main) {
+                    if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
+                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+                }
+                thread = null
+                return@launch; }
+
+            // update the data model
+            var lastBefore: Int? = null
+            if (c.mm.saved == null) {
+                c.mm.saved = wrapper
+            } else c.mm.saved?.apply {
+                lastBefore = items!!.size
+                items!!.addAll(wrapper.items!!)
+                more_available = wrapper.more_available
+                next_max_id = wrapper.next_max_id
+            }
+
+            withContext(Dispatchers.Main) {
+                if (b.rv.adapter == null)
+                    onLoaded(c.mm.saved?.items.isNullOrEmpty())
+                else
+                    b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, wrapper.items!!.size)
+
+                if (!b.rv.canScrollVertically(1))
+                    fetchSome()
+
+                if (c.mm.saved?.more_available == false)
+                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+            }
+            thread = null
+        }
     }
 
     override fun onRefresh() {
@@ -176,7 +227,8 @@ class PageSvd : BasePageMain(), Selective {
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(
-            rv()!!.computeVerticalScrollOffset() > 0 && (b.rv.adapter as ListSvd?)?.expandable?.zoomed != true
+            rv()!!.computeVerticalScrollOffset() > 0 &&
+                (b.rv.adapter as ListSvd?)?.expandable?.zoomed != true
         )
     }
 
@@ -242,60 +294,6 @@ class PageSvd : BasePageMain(), Selective {
         }
     }
 
-    fun fetchSome() {
-        if (thread != null || c.mm.saved?.more_available == false) return
-        thread = CoroutineScope(Dispatchers.IO).launch {
-            val wrapper = Api.call<Media.SavedWrapper>(
-                Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-                Media.SavedWrapper::class,
-                onError = { code -> onFailed(c.getString(R.string.unknownError, "$code")) }
-            )
-            if (wrapper == null) return@launch
-
-            if (wrapper.items == null) {
-                withContext(Dispatchers.Main) {
-                    onFailed(c.getString(R.string.loadFailed))
-                }
-                return@launch; }
-
-            // check if the user has hidden saves
-            if (wrapper.items!!.isEmpty()) {
-                if (c.mm.saved == null) c.mm.saved = wrapper
-                reallyHasMore = false
-                withContext(Dispatchers.Main) {
-                    if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
-                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
-                }
-                return@launch; }
-
-            // update the data model
-            var lastBefore: Int? = null
-            if (c.mm.saved == null) {
-                c.mm.saved = wrapper
-            } else c.mm.saved?.apply {
-                lastBefore = items!!.size
-                items!!.addAll(wrapper.items!!)
-                more_available = wrapper.more_available
-                next_max_id = wrapper.next_max_id
-            }
-
-            withContext(Dispatchers.Main) {
-                if (b.rv.adapter == null)
-                    onLoaded(c.mm.saved?.items.isNullOrEmpty())
-                else
-                    b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, wrapper.items!!.size)
-
-                if (!b.rv.canScrollVertically(1))
-                    fetchSome()
-
-                if (c.mm.saved?.more_available == false)
-                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
-            }
-
-            thread = null
-        }
-    }
-
     inner class Saver(
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
     ) : SelectionHandler(selection) {
@@ -319,9 +317,7 @@ class PageSvd : BasePageMain(), Selective {
             val rest = Api.call<Rest>(
                 Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, isPost = true,
                 onError = { code ->
-                    withContext(Dispatchers.Main) {
-                        UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
-                    }
+                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
             )
             if (rest?.status != "ok") return

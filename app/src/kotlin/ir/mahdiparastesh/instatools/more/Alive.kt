@@ -10,7 +10,6 @@ import android.os.Handler
  * In this app we implemented it on companion objects indirectly.
  *
  * @see BaseActivity.ActivityCompanion
- * @see BasePage.PageCompanion
  */
 abstract class Alive {
     var active = false

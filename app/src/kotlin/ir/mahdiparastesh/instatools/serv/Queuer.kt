@@ -10,13 +10,6 @@ import android.os.Looper
 import android.os.Message
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
-import com.android.volley.DefaultRetryPolicy
-import com.android.volley.NetworkResponse
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.HttpHeaderParser
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.BuildConfig
@@ -29,7 +22,6 @@ import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.PageConfig
 import ir.mahdiparastesh.instatools.json.Rest
@@ -63,7 +55,6 @@ class Queuer : ForegroundService() {
     private var download: BaseThread? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
-    private val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String

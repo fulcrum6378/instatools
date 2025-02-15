@@ -2,44 +2,32 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.android.volley.NetworkResponse
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.json.Rest.Highlights
 import ir.mahdiparastesh.instatools.json.Rest.Story
 import ir.mahdiparastesh.instatools.list.ListRel
 import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.more.BaseThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.CopyOnWriteArrayList
 
 class PageRel : BasePageViewer() {
-    private lateinit var b: PageRelBinding
-    private var thread: FetchAll? = null
+    lateinit var b: PageRelBinding
+    private var thread: Job? = null
+    private var storyFetched = false
+    private var highlightsFetched = false
 
-    override val com: PageCompanion = Companion
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
-    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { onLoaded(c.mm.vwReels.isNullOrEmpty()) },
-        HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
-        Api.HANDLE_ERROR to {
-            onFailed(
-                c.getString(
-                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
-                )
-            )
-        },
-    )
-
-    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageRelBinding.inflate(inf, parent, false).let { b = it; it.root }
@@ -51,16 +39,14 @@ class PageRel : BasePageViewer() {
         // Error
         b.error.setOnClickListener {
             c.b.refresher.isRefreshing = true
-            thread = FetchAll().also { it.start() }
+            fetchAll()
         }
     }
 
     fun load() {
-        if (!com.active) return
         if (c.mm.vwReels != null)
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-        else if (thread?.active != true)
-            thread = FetchAll().also { it.start() }
+            onLoaded(c.mm.vwReels.isNullOrEmpty())
+        else fetchAll()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -85,41 +71,39 @@ class PageRel : BasePageViewer() {
         updateShadow()
     }
 
-    inner class FetchAll : BaseThread() {
-        private var storyFetched = false
-        private var highlightsFetched = false
+    private fun fetchAll() {
+        if (c.mm.vwUser == null) {
+            c.mm.vwReels = null
+            return; }
+        if (thread != null) {
+            return; }
 
-        override fun run() {
-            if (c.mm.vwUser == null) {
-                c.mm.vwReels = null
-                interrupt()
-                return; }
+        thread = CoroutineScope(Dispatchers.IO).launch {
             c.mm.vwReels = CopyOnWriteArrayList()
-            c.reqQueue.adder = Api<Story>(
-                c, Api.Endpoint.STORY.url.format(c.mm.vwUser?.id ?: ""), Story::class,
-                handler, autoQueue = false, onError = { interrupt() }) { story ->
-                if (!story.reel?.items.isNullOrEmpty()) c.mm.vwReels?.add(story.reel)
-                storyFetched = true
-                interrupt()
-            }
-            c.reqQueue.adder = Api<Highlights>(
-                c, Api.Endpoint.HIGHLIGHTS.url.format(c.mm.vwUser?.id ?: ""), Highlights::class,
-                handler, autoQueue = false, onError = { interrupt() }) { highlights ->
-                c.mm.vwReels?.addAll(highlights.tray)
-                highlightsFetched = true
-                interrupt()
-            }
-        }
+            val story = Api.call<Story>(
+                Api.Endpoint.STORY.url.format(c.mm.vwUser?.id ?: ""), Story::class,
+                onError = { code -> onFailed(Api.error(code)) }
+            )
+            if (story == null) return@launch
+            if (!story.reel?.items.isNullOrEmpty()) c.mm.vwReels?.add(story.reel)
+            storyFetched = true
 
-        override fun interrupt() {
-            if (!storyFetched || !highlightsFetched) return
+            val highlights = Api.call<Highlights>(
+                Api.Endpoint.HIGHLIGHTS.url.format(c.mm.vwUser?.id ?: ""), Highlights::class,
+                onError = { code -> onFailed(Api.error(code)) }
+            )
+            if (highlights == null) return@launch
+            c.mm.vwReels?.addAll(highlights.tray)
+            highlightsFetched = true
+
             try {
                 c.mm.vwReels?.sortByDescending { it is Rest.StoryReel }
             } catch (_: java.lang.UnsupportedOperationException) {
                 // Mysterious error by CopyOnWriteArrayList$COWIterator.set  while sorting
             }
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-            super.interrupt()
+            withContext(Dispatchers.Main) {
+                onLoaded(c.mm.vwReels.isNullOrEmpty())
+            }
         }
     }
 }

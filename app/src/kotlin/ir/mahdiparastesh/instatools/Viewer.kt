@@ -18,20 +18,14 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
-import com.android.volley.DefaultRetryPolicy
-import com.android.volley.NetworkResponse
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
-import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Rest
@@ -56,10 +50,9 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     var user: String? = null
     var dbFav: Favourite? = null
     private var thread: Job? = null
-    val reqQueue by lazy { Volley.newRequestQueue(c) }
     val expandable: Expandable by lazy {
         Expandable(
-            this, b.expanded, handler, reqQueue, color(if (!night()) R.color.defBG else R.color.CS)
+            this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
     val mm: MyModel by viewModels()
@@ -116,8 +109,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                             Snackbar.LENGTH_SHORT
                         )
                     }
-                    Expandable.HANDLE_EXPANDABLE_ERROR ->
-                        snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
                 }
             }
         }
@@ -311,20 +302,21 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     fun initialLoad() {
         thread = CoroutineScope(Dispatchers.IO).launch {
-            reqQueue.adder = Api<GraphQl>(
-                this@Viewer, Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
-                handler, autoQueue = false, onError = {
+            val graphql = Api.call<GraphQl>(
+                Api.Endpoint.PROFILE.url.format(user), GraphQl::class,
+                onError = { code ->
                     b.refresher.isRefreshing = false
                     snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
                 }
-            ) { graphql ->
-                mm.vwUser = graphql.data?.user
-                if (mm.vwUser == null) {
-                    notFound()
-                    return@Api
-                }
-                loaded()
-            }
+            )
+            if (graphql == null) {
+                return@launch; }
+
+            mm.vwUser = graphql.data?.user
+            if (mm.vwUser == null) {
+                notFound()
+                return@launch; }
+            loaded()
         }
     }
 

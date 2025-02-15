@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabaseLockedException
 import android.os.Build
 import android.os.Bundle
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,103 +18,29 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
-import com.android.volley.NetworkResponse
-import com.android.volley.toolbox.Volley
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Notify
-import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.*
 
 class PageUnf : BasePageMain() {
     lateinit var b: PageUnfBinding
     var thread: Inquiry? = null
-    val reqQueue by lazy { Volley.newRequestQueue(c) }
 
-    override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.PRIMARY
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val emptyIcon: Int = R.drawable.done_unf
     override val selectiveMenuRes: Int? = null
-
-    @Suppress("UNCHECKED_CAST")
-    override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_LOADED to { msg ->
-            (msg.obj as List<Friend>).apply {
-                c.mm.unfollowers.value = ArrayList(this).apply {
-                    val favIds = (c.m.fav ?: listOf()).map { it.id }
-                    for (f in 0 until size) this[f].inFav = this[f].id in favIds
-                    specialSort()
-                }
-                if (isNullOrEmpty() && msg.arg1 == 1 &&
-                    (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L)
-                        ?: 0L)) > 86400000
-                ) thread = Inquiry(c).also { it.start() }
-                else onLoaded(isNullOrEmpty())
-            }
-        },
-        HANDLE_FETCHED to {
-            load(false)
-            b.refresher.isRefreshing = false
-            c.sp?.edit { putLong(Settings.spUnfLastChecked, Persistent.now()) }
-        },
-        Api.HANDLE_ERROR to {
-            onFailed(
-                c.getString(
-                    R.string.unknownError, (it.obj as NetworkResponse?)?.statusCode.toString()
-                )
-            )
-        },
-        HANDLE_COULD_NOT to {
-            UiTools.snackbar(b.root, R.string.unfCouldNot, Snackbar.LENGTH_SHORT, c.b.bnv)
-        },
-        HANDLE_FAV_CHANGED to { msg ->
-            var id: String? = null
-            var favNow = false
-            if (msg.obj is Favourite) (msg.obj as Favourite).also {
-                c.m.fav?.add(it)
-                id = it.id
-                favNow = true
-            }
-            if (msg.obj is String) (msg.obj as String).also {
-                c.m.fav?.removeAll { f -> f.id == it }
-                id = it
-            }
-            Friend.find(id!!, c.mm.unfollowers.value)?.also { before ->
-                c.mm.unfollowers.value?.getOrNull(before)?.inFav = favNow
-                c.mm.unfollowers.value?.specialSort()
-                Friend.find(id, c.mm.unfollowers.value)?.also { after ->
-                    b.rv.adapter?.notifyItemMoved(before, after)
-                    when {
-                        before > after -> b.rv.adapter
-                            ?.notifyItemRangeChanged(after, (before - after) + 1)
-                        after > before -> b.rv.adapter
-                            ?.notifyItemRangeChanged(before, (after - before) + 1)
-                        else -> b.rv.adapter?.notifyItemChanged(after)
-                    }
-                }
-            }
-        }
-    )
-
-    companion object : PageCompanion() {
-        const val HANDLE_LOADED = 2
-        const val HANDLE_COULD_NOT = 3
-        const val HANDLE_FAV_CHANGED = 4
-    }
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageUnfBinding.inflate(inflater, parent, false).let { b = it; it.root }
@@ -141,10 +66,21 @@ class PageUnf : BasePageMain() {
     }
 
     private fun load(initial: Boolean) {
-        Thread {
-            handler?.obtainMessage(HANDLE_LOADED, if (initial) 1 else 0, 0, c.dao.unfollowers())
-                ?.sendToTarget()
-        }.start()
+        CoroutineScope(Dispatchers.IO).launch {
+            c.mm.unfollowers.value = ArrayList(c.dao.unfollowers()).apply {
+                val favIds = (c.m.fav ?: listOf()).map { it.id }
+                for (f in 0 until size) this[f].inFav = this[f].id in favIds
+                specialSort()
+
+                if (isNullOrEmpty() && initial &&
+                    (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L) ?: 0L)
+                        ) > 86400000
+                ) thread = Inquiry(c).also { it.start() }
+                else withContext(Dispatchers.Main) {
+                    onLoaded(isNullOrEmpty())
+                }
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -164,10 +100,9 @@ class PageUnf : BasePageMain() {
      * - Limiting maximum items to 12 on each fetch made it worse!
      * - Adding additional invalid random query parameters also didn't help!
      */
-    class Inquiry(private val c: Persistent) : BaseThread() {
+    inner class Inquiry(private val c: Persistent) : BaseThread() {
         private lateinit var oldFriends: List<Friend>
         private val newFriends = arrayListOf<Friend>()
-        private val reqQueue by lazy { Volley.newRequestQueue(c.c) }
 
         init {
             (c as Main).mm.unfollowers.value = null
@@ -175,8 +110,10 @@ class PageUnf : BasePageMain() {
 
         override fun run() {
             super.run()
-            runBlocking { oldFriends = c.dao.friends() }
-            allFollow(theFollowers = false)
+            runBlocking {
+                oldFriends = c.dao.friends()
+                allFollow(theFollowers = false)
+            }
         }
 
         /**
@@ -184,30 +121,32 @@ class PageUnf : BasePageMain() {
          * @next_max_id used for continuing to the next API fetch.
          * @param theFollowers true for followers, false for following.
          */
-        private fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
+        private suspend fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
             if (c.m.acc == null) return
-            reqQueue.adder = Api<Rest.Follow>(
-                c, (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
+            val flw = Api.call<Rest.Follow>(
+                (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
-                handler, autoQueue = false, onError = { interrupt() }
-            ) { flw ->
-                if (c.m.acc == null || flw.users == null) return@Api
-                for (u in flw.users) {
-                    val already = newFriends.indexOfFirst { it.id == u.pk }
-                    if (already > -1) newFriends[already].apply {
-                        if (theFollowers) follows = true
-                        else followed = true
-                    } else newFriends.add(
-                        Friend(
-                            u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
-                            theFollowers, !theFollowers
-                        )
+                onError = { code -> onFailed(Api.error(code)) }
+            )
+            if (c.m.acc == null || flw?.users == null) return
+            for (u in flw.users) {
+                val already = newFriends.indexOfFirst { it.id == u.pk }
+                if (already > -1) newFriends[already].apply {
+                    if (theFollowers) follows = true
+                    else followed = true
+                } else newFriends.add(
+                    Friend(
+                        u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
+                        theFollowers, !theFollowers
                     )
-                }
-                if (flw.next_max_id == null) {
-                    if (!theFollowers) allFollow(theFollowers = true)
-                    else CoroutineScope(Dispatchers.IO).launch { ended() }
-                } else HumanDelay { allFollow(flw.next_max_id, theFollowers) }
+                )
+            }
+            if (flw.next_max_id == null) {
+                if (!theFollowers) allFollow(theFollowers = true)
+                else ended()
+            } else {
+                delay(7000)
+                allFollow(flw.next_max_id, theFollowers)
             }
         }
 
@@ -249,7 +188,11 @@ class PageUnf : BasePageMain() {
 
             // Notify the results
             if (c.m.acc == null) return
-            handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
+            withContext(Dispatchers.Main) {
+                load(false)
+                b.refresher.isRefreshing = false
+            }
+            c.sp?.edit { putLong(Settings.spUnfLastChecked, Persistent.now()) }
             val newUnf = newFriends.filter {
                 (it.unfollowedMeAt != null
                     && it.unfollowedMeAt!! > (c.sp?.getLong(Settings.spNotifiedUnfTill, 0L)

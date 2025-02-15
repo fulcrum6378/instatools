@@ -7,24 +7,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Subclass of Thread with a boolean field named "active" which indicates whether the thread is
- * still working or not.
- */
-abstract class BaseThread : Thread() {
-    var active = false
-
-    override fun run() {
-        active = true
-    }
-
-    override fun interrupt() {
-        if (!active) return
-        active = false
-        super.interrupt()
-    }
-}
-
-/**
  * Subclass of DbRelatedThread, it queues the selected IG posts coming from
  * androidx.recyclerview.selection and performs the abstract handle() function on the first item in
  * "list" and deletes it immediately. The first item is available using the function "next()".
