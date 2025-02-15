@@ -105,8 +105,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
             }
         }
-
-        // TODO HttpClient
     }
 
     override fun onAccountSet() {}

@@ -16,14 +16,10 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieDrawable.INFINITE
-import com.android.volley.NetworkResponse
-import com.android.volley.Request
-import com.android.volley.toolbox.Volley
+import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -32,7 +28,6 @@ import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Api.Companion.adder
 import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Rest
 import ir.mahdiparastesh.instatools.list.ListPost
@@ -46,15 +41,20 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("NotifyDataSetChanged")
 class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
-    var thread: FetchSome? = null
+    var thread: Job? = null
     var saver: Saver? = null
     private var selectionGuide: LottieAnimationView? = null
     private var reallyHasMore = true
-    val reqQueue by lazy { Volley.newRequestQueue(c) }
 
     override val com: PageCompanion = Companion
     override val theme: BaseActivity.Theme = BaseActivity.Theme.SECONDARY
@@ -65,53 +65,14 @@ class PageSvd : BasePageMain(), Selective {
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
 
     override val messages: Array<Pair<Int, (msg: Message) -> Unit>> = arrayOf(
-        HANDLE_FETCHED to { msg ->
-            if (b.rv.adapter != null && msg.arg2 > 0) {
-                super@PageSvd.onLoaded(c.mm.saved?.items.isNullOrEmpty())
-                b.rv.adapter?.notifyItemRangeInserted(msg.arg1, msg.arg2)
-            } else onLoaded(c.mm.saved?.items.isNullOrEmpty())
-
-            if (c.mm.saved?.more_available == true && !b.rv.canScrollVertically(1)
-                && thread?.active != true
-            ) thread = FetchSome().also { it.start() }
-
-            if (c.mm.saved?.more_available == false)
-                c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
-        },
-        HANDLE_ABORTED to { onFailed(c.getString(R.string.loadFailed)) },
-        Api.HANDLE_ERROR to {
-            onFailed(
-                c.getString(R.string.unknownError, "${(it.obj as? NetworkResponse)?.statusCode}")
-            )
-        },
         Expandable.HANDLE_EXPANDABLE_ERROR to {
             UiTools.snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG, c.b.bnv)
-        },
-        HANDLE_UNSAVE_DONE to { msg ->
-            //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
-            c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
-            c.mm.saved?.items?.find { it.media.id == msg.obj as String }?.let { media ->
-                val x = c.mm.saved!!.items!!.indexOf(media)
-                c.mm.saved!!.items!!.removeAt(x)
-                b.rv.adapter?.notifyItemRemoved(x)
-                b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items!!.size)
-                if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
-            }
-        },
-        HANDLE_INIT_QUEUER to { Downloads.initService(c, "") },
-        HANDLE_REALLY_NO_MORE to {
-            if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
-            c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
         },
     )
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
 
-    companion object : PageCompanion() {
-        const val HANDLE_UNSAVE_DONE = 10
-        const val HANDLE_INIT_QUEUER = 11
-        const val HANDLE_REALLY_NO_MORE = 13
-    }
+    companion object : PageCompanion()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageSvdBinding.inflate(inflater, parent, false).let { b = it; it.root }
@@ -126,9 +87,8 @@ class PageSvd : BasePageMain(), Selective {
         }
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1) && reallyHasMore &&
-                    thread?.active != true && c.mm.saved?.more_available != false
-                ) thread = FetchSome().also { it.start() }
+                if (!b.rv.canScrollVertically(1) && reallyHasMore)
+                    fetchSome()
             }
         })
         b.rv.layoutManager = object : SafeGridManager(c, 3) {
@@ -137,7 +97,7 @@ class PageSvd : BasePageMain(), Selective {
         }
 
         if (c.mm.saved != null) onLoaded(c.mm.saved?.items.isNullOrEmpty())
-        else if (thread?.active != true) thread = FetchSome().also { it.start() }
+        else fetchSome()
     }
 
     override fun onStart() {
@@ -146,13 +106,13 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     override fun onRefresh() {
-        if (thread?.active == true) return
+        if (thread != null) return
         c.mm.saved = null
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
         tracker?.clearSelection()
         reallyHasMore = true
-        thread = FetchSome().also { it.start() }
+        fetchSome()
         c.updateProfile()
     }
 
@@ -169,7 +129,7 @@ class PageSvd : BasePageMain(), Selective {
             layoutParams = ConstraintLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { topToTop = ConstraintLayout.LayoutParams.PARENT_ID }
-            repeatCount = INFINITE
+            repeatCount = LottieDrawable.INFINITE
             setAnimation(R.raw.guide_selection)
             playAnimation()
             translationX = c.dm.widthPixels * -0.12f
@@ -185,19 +145,16 @@ class PageSvd : BasePageMain(), Selective {
             R.id.mtUnsaveDownload -> {
                 if (tracker != null && c.mm.saved != null && saver?.active != true)
                     saver = Saver(tracker!!.selection, unsave = true, download = true)
-                        .also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtDownload -> {
                 if (tracker != null && c.mm.saved != null && saver?.active != true)
                     saver = Saver(tracker!!.selection, unsave = false, download = true)
-                        .also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtUnsave -> {
                 if (tracker != null && c.mm.saved != null && saver?.active != true)
                     saver = Saver(tracker!!.selection, unsave = true, download = false)
-                        .also { it.start() }
                 tracker?.clearSelection()
             }
             R.id.mtSelectAll -> if (c.mm.saved?.items != null)
@@ -285,39 +242,57 @@ class PageSvd : BasePageMain(), Selective {
         }
     }
 
-    inner class FetchSome : BaseThread() {
-        override fun run() {
-            if (c.m.acc == null || c.mm.saved?.more_available == false) return
-            super.run()
-            reqQueue.adder = Api<Media.SavedWrapper>(
-                c, Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-                Media.SavedWrapper::class, handler, autoQueue = false, onError = { interrupt() }
-            ) { wrapper ->
-                if (!active) return@Api
-                if (wrapper.items == null) {
-                    handler?.obtainMessage(HANDLE_ABORTED)?.sendToTarget()
-                    interrupt(); return@Api; }
+    fun fetchSome() {
+        if (thread != null || c.mm.saved?.more_available == false) return
+        thread = CoroutineScope(Dispatchers.IO).launch {
+            val wrapper = Api.call<Media.SavedWrapper>(
+                Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
+                Media.SavedWrapper::class,
+                onError = { code -> onFailed(c.getString(R.string.unknownError, "$code")) }
+            )
+            if (wrapper == null) return@launch
 
-                // check if the user has hidden saves
-                if (wrapper.items!!.isEmpty()) {
-                    if (c.mm.saved == null) c.mm.saved = wrapper
-                    reallyHasMore = false
-                    handler?.obtainMessage(HANDLE_REALLY_NO_MORE)?.sendToTarget()
-                    interrupt(); return@Api; }
-
-                if (c.mm.saved == null) {
-                    c.mm.saved = wrapper
-                    handler?.obtainMessage(HANDLE_FETCHED)?.sendToTarget()
-                } else c.mm.saved?.apply {
-                    val lastBefore = items!!.size
-                    items!!.addAll(wrapper.items!!)
-                    more_available = wrapper.more_available
-                    next_max_id = wrapper.next_max_id
-                    handler?.obtainMessage(HANDLE_FETCHED, lastBefore, wrapper.items!!.size)
-                        ?.sendToTarget()
+            if (wrapper.items == null) {
+                withContext(Dispatchers.Main) {
+                    onFailed(c.getString(R.string.loadFailed))
                 }
-                interrupt()
+                return@launch; }
+
+            // check if the user has hidden saves
+            if (wrapper.items!!.isEmpty()) {
+                if (c.mm.saved == null) c.mm.saved = wrapper
+                reallyHasMore = false
+                withContext(Dispatchers.Main) {
+                    if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
+                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+                }
+                return@launch; }
+
+            // update the data model
+            var lastBefore: Int? = null
+            if (c.mm.saved == null) {
+                c.mm.saved = wrapper
+            } else c.mm.saved?.apply {
+                lastBefore = items!!.size
+                items!!.addAll(wrapper.items!!)
+                more_available = wrapper.more_available
+                next_max_id = wrapper.next_max_id
             }
+
+            withContext(Dispatchers.Main) {
+                if (b.rv.adapter == null)
+                    onLoaded(c.mm.saved?.items.isNullOrEmpty())
+                else
+                    b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, wrapper.items!!.size)
+
+                if (!b.rv.canScrollVertically(1))
+                    fetchSome()
+
+                if (c.mm.saved?.more_available == false)
+                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+            }
+
+            thread = null
         }
     }
 
@@ -325,32 +300,48 @@ class PageSvd : BasePageMain(), Selective {
         selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
     ) : SelectionHandler(selection) {
 
-        override fun handle() {
+        override suspend fun handle() {
             val svd = next()
             if (svd == null) {
-                if (download) handler?.obtainMessage(HANDLE_INIT_QUEUER)?.sendToTarget()
-                interrupt()
+                if (download)
+                    withContext(Dispatchers.Main) { Downloads.initService(c, "") }
                 return; }
-            val saved = c.mm.saved?.items?.find { it.media.id == svd }
+            val saved = c.mm.saved?.items?.find { it.media.id == svd } // TODO make it a HashMap
             if (saved == null) {
                 ended(); return; }
 
-            if (download) try {
-                saved.media.queue(c.dao)
-            } catch (e: IllegalStateException) { // DB is closed
-                if (BuildConfig.DEBUG) throw e
-            }
-            if (unsave) reqQueue.adder = Api<Rest>(
-                c, Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, null,
-                method = Request.Method.POST, autoQueue = false, onError = { ended() }
-            ) { rest ->
-                if (rest.status == "ok") {
-                    handler?.obtainMessage(HANDLE_UNSAVE_DONE, svd)?.sendToTarget()
-                    c.incrementCounter(Settings.spUnsaveCount)
+            if (download) saved.media.queue(c.dao)
+
+            if (!unsave) {
+                ended()
+                return; }
+
+            val rest = Api.call<Rest>(
+                Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, isPost = true,
+                onError = { code ->
+                    withContext(Dispatchers.Main) {
+                        UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    }
                 }
-                if (size() != 1) HumanDelay(0L..2000L) { ended() } else ended()
+            )
+            if (rest?.status != "ok") return
+
+            c.incrementCounter(Settings.spUnsaveCount)
+            withContext(Dispatchers.Main) {
+                //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
+                c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
+                c.mm.saved?.items?.find { it.media.id == svd }?.let { media ->
+                    val x = c.mm.saved!!.items!!.indexOf(media)
+                    c.mm.saved!!.items!!.removeAt(x)
+                    b.rv.adapter?.notifyItemRemoved(x)
+                    b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items!!.size)
+                    if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
+                }
             }
-            if (!unsave) ended()
+            if (size() > 1) {
+                delay(500)
+                ended()
+            } else ended()
         }
     }
 }

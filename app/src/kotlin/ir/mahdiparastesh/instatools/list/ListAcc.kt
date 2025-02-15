@@ -94,8 +94,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                     setView(bd.root)
                     setNegativeButton(R.string.no, null)
                     setPositiveButton(R.string.yes) { _, _ ->
-                        Api<Rest.Signing>(
-                            c, Api.Endpoint.SIGN_OUT.url, Rest.Signing::class, null,
+                        Api.call<Rest.Signing>(
+                            Api.Endpoint.SIGN_OUT.url, Rest.Signing::class, null,
                             "one_tap_app_login=1&user_id=${acc.id}",
                             method = Request.Method.POST,
                             acc = acc,

@@ -23,7 +23,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 77
-        versionName = "29.6.2"
+        versionName = "29.7.5"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -73,7 +73,6 @@ dependencies {
     implementation(libs.swiperefreshlayout)
     implementation(libs.webkit)
     implementation(libs.lottie)
-    implementation(libs.volley)
     implementation(libs.shimmer)
     implementation(libs.glide)
     implementation(libs.material)

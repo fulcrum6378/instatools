@@ -14,7 +14,9 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.Api.Companion.adder
@@ -173,8 +175,7 @@ class PageTag : BasePageViewer() {
         override fun handle() {
             val post = next()
             if (post == null) {
-                handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
-                interrupt()
+                Downloads.initService(c)
                 return
             }
             c.mm.vwTagged?.items?.find { it.id == post }?.queue(c.dao)

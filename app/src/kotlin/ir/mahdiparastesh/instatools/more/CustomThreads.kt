@@ -1,9 +1,9 @@
 package ir.mahdiparastesh.instatools.more
 
-import androidx.annotation.MainThread
 import androidx.recyclerview.selection.Selection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
@@ -31,24 +31,23 @@ abstract class BaseThread : Thread() {
  *
  * Do not automate the ended() function, it needs to be called by the implementer of handle().
  */
-abstract class SelectionHandler(selection: Selection<String>) : BaseThread() {
+abstract class SelectionHandler(selection: Selection<String>) {
     private val list = ArrayList(selection.toList())
+    var job: Job? = null
+    val active: Boolean get() = job?.isActive == true
 
-    override fun run() {
-        super.run()
-        handle()
+    init {
+        CoroutineScope(Dispatchers.IO).launch { handle() }
     }
 
-    abstract fun handle()
+    abstract suspend fun handle()
 
     protected fun next(): String? = list.firstOrNull()
 
     protected fun size(): Int = list.size
 
-    @MainThread // except when called at the bottom of PageSvd$Saver::handle
-    open fun ended() {
+    open suspend fun ended() {
         list.removeAt(0)
-        if (!active) return
-        CoroutineScope(Dispatchers.IO).launch { handle() }
+        handle()
     }
 }

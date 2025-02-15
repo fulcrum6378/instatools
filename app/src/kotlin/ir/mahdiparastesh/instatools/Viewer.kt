@@ -116,7 +116,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                             Snackbar.LENGTH_SHORT
                         )
                     }
-                    PageSvd.HANDLE_INIT_QUEUER -> Downloads.initService(this@Viewer)
                     Expandable.HANDLE_EXPANDABLE_ERROR ->
                         snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
                 }

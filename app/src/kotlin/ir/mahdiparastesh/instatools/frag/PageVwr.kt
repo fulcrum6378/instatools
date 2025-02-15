@@ -261,8 +261,7 @@ class PageVwr : BasePageViewer() {
         override fun handle() {
             val edg = next()
             if (edg == null) {
-                handler?.obtainMessage(PageSvd.HANDLE_INIT_QUEUER)?.sendToTarget()
-                interrupt()
+                Downloads.initService(c)
                 return
             }
             c.mm.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->

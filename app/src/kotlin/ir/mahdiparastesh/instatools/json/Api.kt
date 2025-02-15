@@ -1,109 +1,128 @@
 package ir.mahdiparastesh.instatools.json
 
 import android.net.Uri
-import android.os.Handler
 import android.text.TextUtils
 import android.util.DisplayMetrics
-import com.android.volley.*
-import com.android.volley.toolbox.HttpHeaderParser
-import com.android.volley.toolbox.Volley
+import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import ir.mahdiparastesh.instatools.BuildConfig
-import ir.mahdiparastesh.instatools.Login
+import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Persistent
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.URI
 import java.util.regex.Pattern
+import javax.net.ssl.HttpsURLConnection
 import kotlin.reflect.KClass
 
 /** Controls all API interactions with Instagram Web API using Volley and Gson. */
-class Api<JSON>(
-    val c: Persistent,
-    url: String,
-    private val clazz: KClass<*>,
-    private val handleError: Handler?,
-    private val body: String? = null,
-    cache: Boolean = false,
-    method: Int = Method.GET,
-    private val acc: Account? = c.m.acc,
-    private val typeToken: java.lang.reflect.Type? = null,
-    autoQueue: Boolean = true,
-    private val neverMindIfNeedAuth: Boolean = false,
-    private val onError: ((res: NetworkResponse?) -> Unit)? = null,
-    private val onSuccess: (json: JSON) -> Unit
-) : Request<String>(method, encode(url),
-    Response.ErrorListener {
-        if (it.networkResponse?.statusCode == 500 && it.networkResponse?.data
-                ?.let { ba -> String(ba) }?.contains(Login.LOGGED_OUT_MSG_500) == true
-            && url != Endpoint.SIGN_OUT.url && !neverMindIfNeedAuth
-        ) {
-            c.needAuthentication(); return@ErrorListener; }
-        gotError(c, handleError, onError, it, neverMindIfNeedAuth = neverMindIfNeedAuth)
-    }) {
+object Api {
+    var cookies = ""
 
-    init {
-        if (acc != null) {
-            setShouldCache(cache)
-            tag = "fetch"
-            retryPolicy = DefaultRetryPolicy(
-                DEFAULT_TIMEOUT, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-            )
-            if (autoQueue) Volley.newRequestQueue(c.c).add(this)
-        } else gotError()
-    }
+    /**
+     * @return JSON on success, null if the procedure fails
+     */
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    @Throws(FailureException::class)
+    suspend fun <JSON> call(
+        url: String,
+        clazz: KClass<*>,
+        generics: Array<KClass<*>>? = null,
+        isPost: Boolean = false, // TODO merge with `body` if possible
+        body: String? = null,
+        retry: Int = 1, // TODO implement retrying
+        cache: Boolean = false,
+        onError: (suspend (code: Int) -> Unit)? = null,
+    ): JSON? {
+        if (cookies == "") return null
 
-    override fun getHeaders(): Map<String, String> =
-        Headers(acc!!, method == Method.POST, if (c is BaseActivity) c.dm else null)
+        val con = URI(url).toURL().openConnection() as HttpsURLConnection
+        con.requestMethod = if (isPost) "POST" else "GET"
+        con.setRequestProperty("x-asbd-id", "129477")
+        if (cookies.contains("csrftoken=")) con.setRequestProperty(
+            "x-csrftoken",
+            cookies.substringAfter("csrftoken=").substringBefore(";")
+        )
+        con.setRequestProperty("x-ig-app-id", "936619743392459")
+        con.setRequestProperty("cookie", cookies)
+        if (isPost && body != null) {
+            con.doOutput = true
+            con.setRequestProperty("content-type", "application/x-www-form-urlencoded")
+        }
+        con.useCaches = cache
+        con.connectTimeout = 8000
+        con.doInput = true
+        con.readTimeout = 10000
+        try {
+            con.connect()
+        } catch (_: SocketTimeoutException) {
+            if (onError != null) onError(-1)
+            return null
+        }
 
-    override fun getBody(): ByteArray? = encode(body)?.encodeToByteArray() ?: super.getBody()
+        if (isPost && body != null)
+            con.outputStream.bufferedWriter().use { it.write(body) }
 
-    override fun deliverResponse(response: String) {
-        val data: JSON? = try {
-            Gson().fromJson(response, typeToken ?: clazz.java) as JSON
+        val text = try {
+            con.inputStream.bufferedReader().readText()
+        } catch (_: IOException) {
+            if (onError != null) onError(-2)
+            return null
+        }
+
+        return if (con.responseCode == 200) try {
+            Gson().fromJson(
+                text,
+                if (generics != null) TypeToken.getParameterized(
+                    clazz.java, *generics.map { it.java }.toTypedArray()
+                ).type else clazz.java
+            ) as JSON
         } catch (_: JsonSyntaxException) {
-            if (response.startsWith("<!DOCTYPE html>")) when {
-                url == Endpoint.SIGN_OUT.url -> gotError()
-                response.contains("Login • Instagram") -> {
-                    neverMindIfNeedAuth
-                    c.needAuthentication()
-                    if (c is BaseActivity) gotError()
-                }
-                response.contains("Content unavailable &bull; Instagram") ->
-                    gotError()
-                else -> {
-                    if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
-                    else gotError()
-                }
-            } else {
+            throw FailureException(-3)
+            if (onError != null) onError(-3)
+            null
+        } else {
+            if (onError != null) onError(con.responseCode)
+            null
+        }
+    }
+    /*Response.ErrorListener {
+    if (it.networkResponse?.statusCode == 500 && it.networkResponse?.data
+            ?.let { ba -> String(ba) }?.contains(Login.LOGGED_OUT_MSG_500) == true
+        && url != Endpoint.SIGN_OUT.url && !neverMindIfNeedAuth
+    ) {
+        c.needAuthentication(); return@ErrorListener; }
+    gotError(c, handleError, onError, it, neverMindIfNeedAuth = neverMindIfNeedAuth)
+}*/
+    /*if (response.startsWith("<!DOCTYPE html>")) when {
+            url == Endpoint.SIGN_OUT.url -> gotError()
+            response.contains("Login • Instagram") -> {
+                neverMindIfNeedAuth
+                c.needAuthentication()
+                if (c is BaseActivity) gotError()
+            }
+            response.contains("Content unavailable &bull; Instagram") ->
+                gotError()
+            else -> {
                 if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
                 else gotError()
             }
-            null
-        } catch (_: Exception) {
+        } else {
             if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
             else gotError()
-            null
-        }
-        try {
-            data?.let(onSuccess)
-        } catch (e: Exception) {
-            if (BuildConfig.DEBUG) throw e
-            else gotError()
-        }
-    }
+        }*/
 
-    private var nwRes: NetworkResponse? = null
-    override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
-        nwRes = response
-        return Response.success(String(response.data), HttpHeaderParser.parseCacheHeaders(response))
-    }
-
-    private fun gotError() {
-        nwRes?.apiFailure(c)
-        handleError?.obtainMessage(HANDLE_ERROR, nwRes)?.sendToTarget()
-        onError?.let { func -> func(nwRes) }
-    }
+    fun error(status: Int) = when (status) {
+        -1 -> "Couldn't connect to Instagram!"
+        -2 -> "Connection was broken!"
+        -3 -> "Invalid response from Instagram!"
+        302 -> "Found redirection!"
+        401 -> "You've been logged out!"
+        404 -> "Not found!"
+        429 -> "Too many requests!"
+        else -> "HTTP error code $status!"
+    } // TODO create string resources
 
     enum class Endpoint(val url: String) {
         // Profiles
@@ -137,6 +156,7 @@ class Api<JSON>(
         FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"), /*
         // method = POST, "user_ids=<ids separated by ",">", expect Rest$Friendships *//*
         FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"), // GET */
+
         //FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
         UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
         /*MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
@@ -170,94 +190,27 @@ class Api<JSON>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    companion object {
-        const val HANDLE_ERROR = 100
-        const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
-        const val DEFAULT_TIMEOUT = 15000
+    const val HANDLE_ERROR = 100
+    const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
 
-        @Suppress("SpellCheckingInspection")
-        fun graphQlBody(cnfWrapper: PageConfig, shortcode: String): String {
-            val siteData = cnfWrapper.define["SiteData"]!![1] as Map<String, Any>
-            return "access_token=" +
-                "&__d=" + siteData["haste_site"] +
-                "&__user=0" +
-                "&__a=1" +
-                "&__dyn=7xeUmwlE7ibwKBWo2vwAxu13w8CewSwMwNw9G2S0lW4o0B-q1ew65xO0F" +
-                "E2awt81sbzoaEd82lwv89k2C1Fwc61uwZx-0z8jwae4UaEW0D888cobEaU2eUlwh" +
-                "E2Lx_w4HwJwSyES1Twoob82ZwiU8UdUbGwbO1pw" /*TODO*/ +
-                "&__csr=glhcrillJsB9N5GL8F6LV9lGm4oSAZUOVoCimE8ideXGXAgynCF5KEy2y" +
-                "00gc905eyRc02JG3C4m4o7y0zyw4Za2ye3ywXm3O6204pjgYwKoEy2u7u1RwjlG0" +
-                "j10PwbZ0ww15Kbm0oK0YU" /*TODO*/ +
-                "&__req=3" /*TODO d or 3?*/ +
-                "&__hs=" + siteData["haste_session"] +
-                "&dpr=1" +
-                "&__ccg=" + (cnfWrapper.define["WebConnectionClassServerGuess"]!![1]
-                as Map<String, String>)["connectionClass"]!! +
-                "&__rev=" + (siteData["client_revision"] as Double)
-                .toInt().toString() +
-                "&__s=eiw83y%3Aude3gw%3Ap6j381" /*TODO*/ +
-                "&__hsi=" + siteData["haste_session"] +
-                "&__comet_req=7" +
-                "&fb_dtsg=" + ((cnfWrapper.define["DTSGInitialData"]!![1]
-                as Map<String, String>)["token"] ?: "") + // or DTSGInitData and async_get_token
-                // DTSGInitData[1]["token"] is null in guest mode.
-                "&jazoest=26314" /*TODO 26314 or 26301*/ +
-                "&lsd=" + (cnfWrapper.define["LSD"]!![1] as Map<String, String>)["token"]!! +
-                "&__spin_r=" + (siteData["__spin_r"] as Double).toInt() +
-                "&__spin_b=" + siteData["__spin_b"] +
-                "&__spin_t=" + (siteData["__spin_t"] as Double).toInt() +
-                "&fb_api_caller_class=RelayModern" +
-                "&fb_api_req_friendly_name=PolarisPostRootQuery" +
-                /*TODO usePolarisSaveMediaSaveMutation or PolarisPostRootQuery*/
-                "&variables=%7B%22shortcode%22%3A%22$shortcode%22%7D" /*TODO shortcode or media id?!?*/ +
-                "&server_timestamps=true" +
-                "&doc_id=18086740648321782" /*TODO*/
-        }
+    fun encode(uriString: String?): String? {
+        if (uriString == null) return null
+        if (TextUtils.isEmpty(uriString)) return uriString
+        val allowedUrlCharacters = Pattern.compile(
+            "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[\\da-fA-F]{2})+"
+        )
+        val matcher = allowedUrlCharacters.matcher(uriString)
+        var validUri: String? = null
+        if (matcher.find()) validUri = matcher.group()
+        if (TextUtils.isEmpty(validUri) || uriString.length == validUri!!.length)
+            return uriString
 
-        fun gotError(
-            c: Persistent, handleError: Handler?, onError: ((res: NetworkResponse?) -> Unit)?,
-            res: VolleyError? = null, msgWhat: Int = HANDLE_ERROR,
-            neverMindIfNeedAuth: Boolean = false
-        ) {
-            if (!neverMindIfNeedAuth) res?.networkResponse?.apiFailure(c)
-            handleError?.obtainMessage(msgWhat, res?.networkResponse)?.sendToTarget()
-            onError?.let { func -> func(res?.networkResponse) }
-        }
-
-        fun NetworkResponse.apiFailure(c: Persistent) {
-            if (statusCode == 400) try {
-                if (Gson().fromJson(String(data), Rest.ApiFailure::class.java).lock)
-                    c.needAuthentication()
-            } catch (_: JsonSyntaxException) {
-            }
-        }
-
-        fun encode(uriString: String?): String? {
-            if (uriString == null) return null
-            if (TextUtils.isEmpty(uriString)) return uriString
-            val allowedUrlCharacters = Pattern.compile(
-                "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[\\da-fA-F]{2})+"
-            )
-            val matcher = allowedUrlCharacters.matcher(uriString)
-            var validUri: String? = null
-            if (matcher.find()) validUri = matcher.group()
-            if (TextUtils.isEmpty(validUri) || uriString.length == validUri!!.length)
-                return uriString
-
-            val uri = Uri.parse(uriString)
-            val uriBuilder = Uri.Builder().scheme(uri.scheme).authority(uri.authority)
-            for (path in uri.pathSegments) uriBuilder.appendPath(path)
-            for (key in uri.queryParameterNames)
-                uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
-            return uriBuilder.build().toString()
-        }
-
-        /** Helper class for adding a Request to a RequestQueue in Volley. */
-        var RequestQueue.adder: Request<*>?
-            get() = null
-            set(req) {
-                add(req)
-            }
+        val uri = Uri.parse(uriString)
+        val uriBuilder = Uri.Builder().scheme(uri.scheme).authority(uri.authority)
+        for (path in uri.pathSegments) uriBuilder.appendPath(path)
+        for (key in uri.queryParameterNames)
+            uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
+        return uriBuilder.build().toString()
     }
 
     /** Controls all HTTP headers. */
