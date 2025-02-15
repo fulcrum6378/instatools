@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.Request
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.Downloads.Companion.EXPORT_LINKS_MIME
@@ -94,13 +93,15 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                     setView(bd.root)
                     setNegativeButton(R.string.no, null)
                     setPositiveButton(R.string.yes) { _, _ ->
-                        Api.call<Rest.Signing>(
-                            Api.Endpoint.SIGN_OUT.url, Rest.Signing::class, null,
-                            "one_tap_app_login=1&user_id=${acc.id}",
-                            method = Request.Method.POST,
-                            acc = acc,
-                            onError = { signOut(acc, i, bd.root.isChecked) }
-                        ) { signOut(acc, i, bd.root.isChecked) }
+                        if (acc.cook != null) CoroutineScope(Dispatchers.IO).launch {
+                            Api.cookies = acc.cook ?: ""
+                            Api.call<Rest.Signing>(
+                                Api.Endpoint.SIGN_OUT.url, Rest.Signing::class,
+                                isPost = true, body = "one_tap_app_login=1&user_id=${acc.id}"
+                            )
+                            Api.cookies = ""
+                        }
+                        signOut(acc, i, bd.root.isChecked)
                     }
                 }.show()
             }

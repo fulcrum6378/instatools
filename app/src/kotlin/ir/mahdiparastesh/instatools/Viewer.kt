@@ -5,9 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -96,23 +93,6 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         initToolbar(b.toolbar, R.string.vwTitle, user)
         createPages(toDefaultPage = false)
 
-        handler = object : Handler(Looper.getMainLooper()) {
-            override fun handleMessage(msg: Message) {
-                when (msg.what) {
-                    Api.HANDLE_ERROR -> {
-                        b.refresher.isRefreshing = false
-                        snackbar(
-                            b.root, c.getString(
-                                R.string.unknownError,
-                                (msg.obj as NetworkResponse?)?.statusCode.toString()
-                            ),
-                            Snackbar.LENGTH_SHORT
-                        )
-                    }
-                }
-            }
-        }
-
         b.refresher.setOnRefreshListener {
             reset()
             if (thread?.isActive != true) initialLoad()
@@ -167,59 +147,46 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     }
 
     private fun findUserNameByMediaLink(onCreation: Boolean) {
-        reqQueue.adder = object : StringRequest(findUserByMediaLink!!, { html ->
-            // HTML contains usernames only in meta tags along with other texts!
-            // PageConfig does not contain username!
+        CoroutineScope(Dispatchers.IO).launch {
+            val html = Api.page(findUserByMediaLink!!) { code ->
+                b.refresher.isRefreshing = false
+                snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+            } ?: return@launch
+
             findUserNameById(
                 html.substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
                     .substringBefore("\""), onCreation
             ) { findUserByMediaLink = null }
-            // In case if you wanna somehow find the media which is so hard:
-            /*PageConfig.findFromHtml(
-                html, false, { lazyUserNameError(onCreation, null) }, null, null
-            ) { cnfWrapper -> }*/
-        }, { lazyUserNameError(it.networkResponse) }) {
-            override fun getHeaders(): Map<String, String> = Api.Headers(m.acc!!, false)
-        }.apply {
-            setShouldCache(false)
-            tag = "viewer_handle_link"
-            retryPolicy = DefaultRetryPolicy(
-                Api.DEFAULT_TIMEOUT, 2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-            )
         }
     }
 
     private fun findUserNameById(
         userId: String, onCreation: Boolean, onSuccess: (() -> Unit)? = null
     ) {
-        reqQueue.adder = Api<Rest.UserInfo>(
-            this, Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class, null,
-            autoQueue = false, onError =
-            { if (it?.statusCode == 404) notFound() else lazyUserNameError(it) }
-        ) { info ->
+        CoroutineScope(Dispatchers.IO).launch {
+            val info = Api.call<Rest.UserInfo>(
+                Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class, onError = { code ->
+                    if (code == 404) notFound()
+                    else {
+                        b.refresher.isRefreshing = false
+                        snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    }
+                }
+            ) ?: return@launch
             user = info.user.username
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    dbFav = dao.favourite(userId)
-                } catch (_: NullPointerException) {
-                }
-                withContext(Dispatchers.Main) {
-                    fixTbMenu()
-                    if (onCreation) {
-                        load(findFav = false)
-                        b.toolbar.title = user
-                    } else gotNewUserName()
-                    onSuccess?.also { it() }
-                }
+            try {
+                dbFav = dao.favourite(userId)
+            } catch (_: NullPointerException) {
+            }
+            withContext(Dispatchers.Main) {
+                fixTbMenu()
+                if (onCreation) {
+                    load(findFav = false)
+                    b.toolbar.title = user
+                } else gotNewUserName()
+                onSuccess?.also { it() }
             }
         }
-    }
-
-    private fun lazyUserNameError(res: NetworkResponse? = null) {
-        snackbar(
-            b.root, getString(R.string.unknownError, "${res?.statusCode}"),
-            Snackbar.LENGTH_LONG
-        )
     }
 
     private fun gotNewUserName() {

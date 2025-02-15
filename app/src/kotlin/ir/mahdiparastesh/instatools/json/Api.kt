@@ -34,7 +34,7 @@ object Api {
         body: String? = null,
         retry: Int = 1, // TODO implement retrying
         cache: Boolean = false,
-        @MainThread onError: ((code: Int) -> Unit)? = null,
+        @MainThread onError: ((code: Int) -> Unit)? = null
     ): JSON? {
         if (cookies == "") return null
 
@@ -112,6 +112,45 @@ object Api {
             if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
             else gotError()
         }*/
+
+    /**
+     * @return String (HTML) on success, null if the procedure fails
+     */
+    @WorkerThread
+    suspend fun page(
+        url: String,
+        @MainThread onError: ((code: Int) -> Unit)? = null
+    ): String? {
+        val con = URI(url).toURL().openConnection() as HttpsURLConnection
+        con.requestMethod = "GET"
+        con.setRequestProperty("accept", "text/html")
+        con.setRequestProperty(
+            "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/133.0.0.0 Safari/537.36"
+        )
+        con.setRequestProperty("cookie", cookies)
+        con.useCaches = false
+        con.connectTimeout = 8000
+        con.doInput = true
+        con.readTimeout = 12000
+        try {
+            con.connect()
+        } catch (_: SocketTimeoutException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
+            return null
+        }
+
+        return if (con.responseCode == 200) try {
+            con.inputStream.bufferedReader().readText()
+        } catch (_: IOException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-2) }
+            null
+        } else {
+            if (onError != null) withContext(Dispatchers.Main) { onError(con.responseCode) }
+            null
+        }
+    }
 
     fun error(status: Int) = when (status) {
         -1 -> "Couldn't connect to Instagram!"

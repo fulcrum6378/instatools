@@ -2,9 +2,6 @@ package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.view.View
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -49,18 +46,6 @@ class Friends : UserListActivity(), OnlineDataLoader {
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.friends)
 
-        handler = object : Handler(Looper.getMainLooper()) {
-            override fun handleMessage(msg: Message) {
-                when (msg.what) {
-                    Api.HANDLE_ERROR -> onFailed(
-                        c.getString(
-                            R.string.unknownError, "${(msg.obj as? NetworkResponse)?.statusCode}"
-                        )
-                    )
-                }
-            }
-        }
-
         prepareListing(this)
         error()?.setOnClickListener {
             b.refresher.isRefreshing = true
@@ -84,24 +69,22 @@ class Friends : UserListActivity(), OnlineDataLoader {
                 adapt()
                 updateCount(mm.friends.size)
             }
-            return;}
+            return; }
 
-        Api<Rest.Friendships>(
-            this@Friends, Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
-            handler, "user_ids=" + mm.friends
+        val rest = Api.call<Rest.Friendships>(
+            Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
+            isPost = true, body = "user_ids=" + mm.friends
                 .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
-                .joinToString(",") { it.id }, method = Request.Method.POST
-        ) {
-            for (f in mm.friends) it.friendship_statuses[f.id]?.also {
-                f.bestie = it.is_bestie
-                f.feedFav = it.is_feed_favorite == true
-                f.restricted = it.is_restricted == true
-            }
-            handler?.obtainMessage(0, index, 0, it)?.sendToTarget()
-            CoroutineScope(Dispatchers.IO).launch {
-                friendships(index + friendshipsDataLimit)
-            }
+                .joinToString(",") { it.id },
+            onError = { code -> onFailed(Api.error(code)) }
+        ) ?: return
+
+        for (f in mm.friends) rest.friendship_statuses[f.id]?.also {
+            f.bestie = it.is_bestie
+            f.feedFav = it.is_feed_favorite == true
+            f.restricted = it.is_restricted == true
         }
+        friendships(index + friendshipsDataLimit)
     }
 
     override fun onLoaded(isEmpty: Boolean) {

@@ -178,6 +178,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             return; }
         super.onAccountSet()
         guest = m.acc!!.id == -1L
+        Api.cookies = m.acc!!.cook ?: ""
         onBuildUiBasedOnAccount()
     }
 
@@ -274,12 +275,13 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     if (m.acc == null) return@setPositiveButton
-                    Api<Rest.Signing>(
-                        this@Main, Api.Endpoint.SIGN_OUT.url, Rest.Signing::class, null,
-                        method = Request.Method.POST,
-                        body = "one_tap_app_login=1&user_id=${m.acc?.id}",
-                        onError = { signOut(bd.root.isChecked) }
-                    ) { signOut(bd.root.isChecked) }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        Api.call<Rest.Signing>(
+                            Api.Endpoint.SIGN_OUT.url, Rest.Signing::class,
+                            isPost = true, body = "one_tap_app_login=1&user_id=${m.acc?.id}",
+                        )
+                    }
+                    signOut(bd.root.isChecked)
                 }
             }.show(); true; }
         else -> super.onOptionsItemSelected(item)
@@ -363,12 +365,14 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     fun updateProfile() {
         val un = m.acc?.user ?: return
-        Api<GraphQl>(
-            this, Api.Endpoint.PROFILE.url.format(un), GraphQl::class, null,
-            neverMindIfNeedAuth = true // but it works fine even in guest mode ("status":"ok")!
-            // edge_saved_media.count shows 0.0 when not logged in!
-        ) { graphql ->
-            val u = graphql.data?.user ?: return@Api
+        CoroutineScope(Dispatchers.IO).launch {
+            val graphQl = Api.call<GraphQl>(
+                Api.Endpoint.PROFILE.url.format(un), GraphQl::class
+                // TODO neverMindIfNeedAuth = true
+                // but it works fine even in guest mode ("status":"ok")!
+                // edge_saved_media.count shows 0.0 when not logged in!
+            )
+            val u = graphQl?.data?.user ?: return@launch
             m.acc?.apply {
                 user = u.username
                 name = u.full_name
@@ -428,7 +432,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override fun switchAcc() {
         page1?.thread?.interrupt()
         page2?.thread?.cancel()
-        page2?.saver?.cancel()
+        page2?.saver?.job?.cancel()
         page3?.boxThread?.cancel()
         page3?.thdThread?.cancel()
         mm.accountSwitched()
