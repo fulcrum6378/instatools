@@ -46,8 +46,11 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Queued")
         suspend fun queueds(): List<Queued>
 
-        @Query("SELECT * FROM Queued WHERE status = 0")
-        fun readyQueueds(): List<Queued>
+        @Query("SELECT * FROM Queued WHERE status = 0 LIMIT 1")
+        suspend fun firstQueued(): Queued?
+
+        @Query("SELECT COUNT(*) FROM Queued WHERE status = 0")
+        fun countReadyQueueds(): Int
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addQueued(item: Queued): Long

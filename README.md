@@ -33,7 +33,7 @@ plus a few other miscellaneous things that will be mentioned later.
    [Downloads.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/Downloads.kt)
    can download any Instagram content, including post, story, reels, TV and profile picture.
    Their theme is the pink one called Theme.InstaTools.Secondary.
-   [Queuer.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/serv/Queuer.kt)
+   [Downloader.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/serv/Downloader.kt)
    is the service implemented mainly by Downloads (or it can run from anywhere).
    It queues the download items and downloads them one by one.
 3. **DM Export** ([PageBox.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageBox.kt)):

@@ -231,7 +231,7 @@
     </string>
 
 
-    <!-- Queuer -->
+    <!-- Downloader -->
     <string name="queuerChannel">Download queue</string>
     <string name="queuerChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>

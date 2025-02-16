@@ -10,12 +10,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Suppress("SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 class Media(
     //val can_reply: Boolean?,
-    //val can_reshare: Boolean?,
-    //val can_see_insights_as_brand: Boolean,
-    //val can_send_custom_emojis: Boolean?,
-    //val can_view_more_preview_comments: Boolean,
-    //val can_viewer_reshare: Boolean,
-    //val can_viewer_save: Boolean,
     val caption: Caption?,
     //val caption_is_edited: Boolean,
     carousel_media: Array<CarouselMedia>?,
@@ -121,19 +115,28 @@ class Media(
                 Queued(
                     Persistent.now(), link,
                     if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                    user.pk, user.username, car.pk, car.nearest(BEST),
-                    car.thumb(), car.media_type.toInt().toByte(),
-                    dur = car.video_duration?.toLong(), caption = caption?.text
+                    user.pk,
+                    user.username,
+                    car.pk,
+                    car.nearest(BEST),
+                    car.thumb(),
+                    car.media_type.toInt().toByte(),
+                    car.video_duration?.toLong(),
+                    caption?.text
                 )
             )
             image_versions2 != null -> dao.addQueued(
                 Queued(
                     Persistent.now(), link,
                     if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                    user.pk, user.username,
-                    pk ?: id, nearest(BEST),
-                    thumb(), media_type.toInt().toByte(),
-                    dur = video_duration?.toLong(), caption = caption?.text
+                    user.pk,
+                    user.username,
+                    pk ?: id,
+                    nearest(BEST),
+                    thumb(),
+                    media_type.toInt().toByte(),
+                    video_duration?.toLong(),
+                    caption?.text
                 )
             )
         }
@@ -239,4 +242,11 @@ class Media(
         var next_max_id: String?, // I couldn't figure out what the heck it means!
         //var num_results: Float, // useless
     ) : Rest()
+
+
+    enum class Type(val mime: String, val ext: String, val num: Byte) {
+        IMAGE("image/jpg", "jpg", 1),
+        VIDEO("video/mp4", "mp4", 2),
+        AUDIO("audio/mp4", "m4a", 3),
+    }
 }

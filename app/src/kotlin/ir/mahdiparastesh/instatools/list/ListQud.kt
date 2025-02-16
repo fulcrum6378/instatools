@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.serv.Downloader
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -27,7 +27,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         val qud = c.mm.queueds?.getOrNull(i) ?: return
 
         // Main
-        if (qud.mediaType != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
+        if (qud.type != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
         else h.b.thumb.setImageResource(R.drawable.audio)
         h.b.user.text = "${i + 1}. ${qud.userName ?: "..."}"
         h.b.date.text = UiTools.date(qud.addedAt)
@@ -38,7 +38,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         else h.b.status.setAnimation(
             when {
                 qud.isFailed() -> R.raw.failed
-                !Queuer.active -> R.raw.pending
+                !Downloader.active -> R.raw.pending
                 else -> R.raw.download
             }
         )

@@ -40,7 +40,6 @@ class Exporter : ForegroundService() {
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String
-    override val requiresHandling = false
 
     companion object : ForegroundServiceCompanion() {
         override val klass = Exporter::class.java

@@ -7,24 +7,24 @@ import ir.mahdiparastesh.instatools.view.UiTools
 @Entity
 class Queued(
     val addedAt: Long,
-    val link: String,
-    var date: Long? = null,
-    var userId: String? = null,
-    var userName: String? = null,
-    var itemId: String? = null,
-    var url: String? = null,
-    var thumb: String? = null,
-    var mediaType: Byte? = null,
-    var status: Byte = 0, // 0=>Pending, 1=>Failed, 2=>Suspended
-    var dur: Long? = null, // in seconds
-    var caption: String? = null,
+    val link: String?,
+    var date: Long,
+    var userId: String,
+    var userName: String,
+    var itemId: String,
+    var url: String,
+    var thumb: String?,
+    var type: Byte,
+    var dur: Int?, // in seconds
+    var caption: String?,
+    var status: Byte = 0 // 0=>Pending, 1=>Failed, 2=>Suspended
 ) {
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
-    fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date!!)}_$itemId.$ext"
+    fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date)}_$itemId.$ext"
 
-    fun isMainFile() = mediaType?.toInt() !in arrayOf(3)
+    fun isMainFile() = type.toInt() !in arrayOf(3)
 
     fun isFailed() = status == 1.toByte()
 

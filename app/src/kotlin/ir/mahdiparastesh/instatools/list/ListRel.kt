@@ -136,10 +136,14 @@ class ListRel(private val c: Viewer, private val f: PageRel) :
                 Queued(
                     Persistent.now(), rli.link() ?: "",
                     if (rli.taken_at > 0.0) rli.taken_at.xFromSeconds() else Persistent.now(),
-                    rli.user.pk, rel.user.username,
-                    rli.pk ?: rli.id, rli.nearest(Versioned.BEST),
-                    rli.thumb(), rli.media_type.toInt().toByte(),
-                    dur = rli.video_duration?.toLong(), caption = rli.caption?.text
+                    rli.user.pk,
+                    rel.user.username,
+                    rli.pk ?: rli.id,
+                    rli.nearest(Versioned.BEST),
+                    rli.thumb(),
+                    rli.media_type.toInt().toByte(),
+                    rli.video_duration?.toLong(),
+                    rli.caption?.text
                 )
             )
             withContext(Dispatchers.Main) { Downloads.initService(c, "") }

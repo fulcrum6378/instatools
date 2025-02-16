@@ -1,0 +1,233 @@
+package ir.mahdiparastesh.instatools.serv
+
+import android.app.PendingIntent
+import android.content.Intent
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
+import ir.mahdiparastesh.instatools.BuildConfig
+import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
+import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
+import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.StorageCache
+import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
+import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.UiTools
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.apache.commons.imaging.Imaging
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
+import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
+import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.net.SocketTimeoutException
+import java.net.URI
+import javax.net.ssl.HttpsURLConnection
+
+class Downloader : ForegroundService() {
+    private var dest: String? = null
+    private var download: Job? = null
+    private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
+    private val aliases = HashMap<String, String>()
+
+    override val com: ForegroundServiceCompanion get() = Companion
+    override lateinit var ntfTitle: String
+
+    companion object : ForegroundServiceCompanion() {
+        override val klass = Downloader::class.java
+        override val channel = Notify.Channel.QUEUER
+        override val ntfId = Notify.ID_QUEUER
+        override val ntfActions: Array<Pair<String, Int>> = arrayOf(
+            ACTION_STOP to R.string.stop
+        )
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        dest = sPreference(Settings.spStorage)
+        CoroutineScope(Dispatchers.IO).launch {
+            Settings.loadAliases(this@Downloader, true) // TODO move to Model
+                .forEach { (k, v) -> aliases[k] = v }
+            if (sp != null) Settings.loadAliases(this@Downloader, false)
+                .forEach { (k, v) -> aliases[k] = v }
+        }
+        if (m.acc == null || dest == null) {
+            finish(false); return; }
+
+        ntfManager.cancel(Notify.ID_QUEUER_SOME_FAILED)
+        ntfTitle = getString(R.string.queuerTitle)
+        initialNotification(Companion, Downloads::class)
+        if (download?.isActive != true)
+            download = CoroutineScope(Dispatchers.IO).launch { download() }
+    }
+
+    suspend fun download() {
+        var q: Queued? = null
+        var queueSize: Int
+        var binary: InputStream?
+        while (dao.firstQueued().also { q = it } != null) {
+            q!!
+
+            // update the notification
+            queueSize = dao.countReadyQueueds()
+            ntfTitle = getString(
+                if (queueSize > 1) R.string.queuerTitleCount else R.string.queuerTitleCount1,
+                queueSize
+            )
+            ntfSmallText = q.userName
+            updateNotification()
+
+            // prepare a path
+            val branch: DocumentFile = when {
+                q.userName in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
+                    ?.exists() == true ->
+                    DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
+                !q.isMainFile() -> stem
+                bPreference(
+                    Settings.spBranching, Settings.spBranchingCb, Settings.defSpBranching
+                ) -> stem.findFile(q.userName) ?: stem.createDirectory(q.userName)
+                else -> stem
+            } ?: return
+            val type = Media.Type.entries.find { it.num == q.type }!!
+            val fName = q.fName(type.ext)
+            var leaf = branch.findFile(fName)
+            // Never check existence from StorageCache because the file might be deleted anytime
+            // and the user might want to re-download it!
+            if (leaf != null) return
+            leaf = branch.createFile(type.mime, fName) ?: return
+            // Nevertheless files are RARELY duplicated with a " (1)" suffix.
+            // It presumably happens during slow connections.
+            // It could be because of simultaneous writing.
+            val des = c.contentResolver.openFileDescriptor(leaf.uri, "w") ?: return
+
+            // download the file
+            binary = null
+            var retry = -1
+            while (binary == null) {
+                retry++
+                if (retry > 5) {
+                    q.status = 0b1
+                    Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, q)
+                        ?.sendToTarget()
+                    dao.updateQueued(q)
+                    incrementCounter(Settings.spDlErrorCount)
+                }
+
+                val con = URI(q.url).toURL().openConnection() as HttpsURLConnection
+                con.requestMethod = "GET"
+                con.useCaches = false
+                con.connectTimeout = Api.DEFAULT_CONNECT_TIMEOUT
+                con.doInput = true
+                con.readTimeout = when (q.type) {
+                    Media.Type.IMAGE.num -> 15000
+                    else -> q.dur?.let { it * 1000 } ?: (2 * 60000)
+                }
+                try {
+                    con.connect()
+                } catch (_: SocketTimeoutException) {
+                    continue
+                }
+
+                if (con.responseCode == 200) try {
+                    binary = con.inputStream
+                } catch (_: IOException) {
+                }
+            }
+
+            // save the file
+            val fos = FileOutputStream(des.fileDescriptor)
+            when (type.ext) {
+                "jpg" -> {
+                    val ba = binary.readBytes()
+                    val outputSet = (Imaging.getMetadata(ba) as JpegImageMetadata?)?.exif?.outputSet
+                        ?: TiffOutputSet()
+                    outputSet.orCreateRootDirectory.apply {
+                        removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+                        add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+                        removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
+                        add(ExifTagConstants.EXIF_TAG_SOFTWARE, UiTools.APP_NAME)
+                        removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
+                        add(TiffTagConstants.TIFF_TAG_ARTIST, q.userName)
+                        removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
+                        add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.userName}")
+                    }
+                    outputSet.orCreateExifDirectory.apply {
+                        /*removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL)
+                        add( // Date taken
+                            ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
+                            tiffDate.format(q.addedAt)
+                        )*/
+                        q.caption?.also {
+                            removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
+                            add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
+                        }
+                        removeField(ExifTagConstants.EXIF_TAG_SITE)
+                        add(ExifTagConstants.EXIF_TAG_SITE, q.link)
+                    }
+                    ExifRewriter().updateExifMetadataLossless(ba, fos, outputSet)
+                } // TODO location data?
+
+                else -> binary.copyTo(fos) // TODO metadata for videos, PNG, WEBP, etc?
+            }
+            fos.close()
+            des.close()
+            if (q.isMainFile()) m.files?.add(fName)
+            incrementCounter(Settings.spDownloadCount)
+
+
+            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, q)?.sendToTarget()
+            dao.deleteQueued(q)
+        }
+
+        finish(false)
+    }
+
+    override fun destroy() {
+        download?.cancel()
+        ntfTitle = getString(R.string.queuerTitle)
+        ntfSmallText = null
+        updateNotification()
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                clearCacheIfNecessary()
+                if (dest == null || !bPreference(
+                        Settings.spAutoDeleteEmptyDirs, Settings.spAutoDeleteEmptyDirsCb,
+                        Settings.defSpAutoDeleteEmptyDirs
+                    )
+                ) return@runCatching
+                val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
+                for (branch in stem.listFiles())
+                    if (branch.isDirectory && branch.listFiles().isEmpty())
+                        branch.delete()
+            }.onFailure {
+                if (BuildConfig.DEBUG) throw it
+            }
+            StorageCache.saveStorageCache(this@Downloader)
+            val upToDate = dao.queueds()
+            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET, 1, 0, upToDate)
+                ?.sendToTarget()
+            val failedSum = upToDate.filter { it.isFailed() }.size
+            download() // double check in between
+            if (failedSum > 0) eventNotification(Notify.ID_QUEUER_SOME_FAILED) {
+                setContentTitle(getString(R.string.queuerFailed, failedSum))
+                setContentIntent(
+                    PendingIntent.getActivity(
+                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                    )
+                )
+            }
+            super.destroy()
+        }
+    }
+}

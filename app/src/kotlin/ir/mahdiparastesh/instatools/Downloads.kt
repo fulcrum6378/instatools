@@ -33,7 +33,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
-import ir.mahdiparastesh.instatools.serv.Queuer
+import ir.mahdiparastesh.instatools.serv.Downloader
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -186,7 +186,7 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
-        /*Queuer.active.observe(this) { FIXME
+        /*Downloader.active.observe(this) { FIXME
             updateControlButton(it)
             if (it) handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
         }*/
@@ -196,7 +196,7 @@ class Downloads : ServiceOwnerActivity() {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
-                if (Queuer.active) stopService(Intent(c, Queuer::class.java)
+                if (Downloader.active) stopService(Intent(c, Downloader::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
@@ -335,14 +335,14 @@ class Downloads : ServiceOwnerActivity() {
             if (uri == null || !c.c.isPathAccessible(uri)) {
                 c.goTo(Settings::class) { putExtra(Settings.EXTRA_GIVE_LINK_BACK, link) }
                 return; }
-            if (Queuer.active) {
+            if (Downloader.active) {
                 if (!link.isNullOrBlank())
-                    Queuer.handler?.obtainMessage(Queuer.HANDLE_LINK, link)?.sendToTarget()
+                    Downloader.handler?.obtainMessage(Downloader.HANDLE_LINK, link)?.sendToTarget()
                 return
             }
-            c.startService(Intent(c, Queuer::class.java).apply {
+            c.startService(Intent(c, Downloader::class.java).apply {
                 action = ForegroundService.ACTION_START
-                if (!link.isNullOrBlank()) putExtra(Queuer.EXTRA_LINK, link)
+                if (!link.isNullOrBlank()) putExtra(Downloader.EXTRA_LINK, link)
             })
         }
     }

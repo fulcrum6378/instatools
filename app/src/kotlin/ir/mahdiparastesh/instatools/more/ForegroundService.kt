@@ -7,9 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
-import android.os.HandlerThread
 import android.os.IBinder
-import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
@@ -18,18 +16,13 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
+import ir.mahdiparastesh.instatools.serv.Downloader
 import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.serv.Queuer
 import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
-/**
- * Abstract class for all foreground services in this app.
- * This is NOT a bound service.
- */
+/** Abstract class for all foreground services in this app. */
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
-    lateinit var handling: HandlerThread
-    private var wakeLock: PowerManager.WakeLock? = null
     protected lateinit var ntfManager: NotificationManager
 
     override val viewModelStore = ViewModelStore()
@@ -38,16 +31,14 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     abstract var ntfTitle: String
     protected open var ntfText: String? = null
     protected open var ntfSmallText: String? = null
-    abstract val requiresHandling: Boolean
-    open val waveLockTimeout: Int? = null // in minutes
 
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
-        private val services = arrayOf(Queuer::class, Exporter::class)
+        private val services = arrayOf(Downloader::class, Exporter::class)
 
-        fun anyRunning() = arrayOf(Queuer, Exporter).any { it.active }
-        // Never reference "Queuer"'s Companion in a static variable
+        fun anyRunning() = arrayOf(Downloader, Exporter).any { it.active }
+        // Never reference "Downloader"'s Companion in a static variable
 
         fun terminateTasks(c: Context) {
             services.forEach { service ->
@@ -110,7 +101,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         sp = initSp(m.acc)
 
         ntfManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if (requiresHandling) handling = HandlerThread(com.klass.name).also { it.start() }
     }
 
     private lateinit var ntfCom: ForegroundServiceCompanion
@@ -184,9 +174,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
-        if (waveLockTimeout != null) wakeLock?.let { if (it.isHeld) it.release() }
-        if (requiresHandling) handling.quitSafely()
-
         com.handler = null
         com.active = false
         if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()

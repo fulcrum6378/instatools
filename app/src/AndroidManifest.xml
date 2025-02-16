@@ -67,7 +67,10 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.InstaTools.Secondary">
 
-            <intent-filter android:label="@string/vwShare">
+            <intent-filter
+                android:autoVerify="false"
+                android:label="@string/vwShare">
+
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -107,7 +110,7 @@
             android:theme="@style/Theme.InstaTools.Tertiary" />
 
         <service
-            android:name=".serv.Queuer"
+            android:name=".serv.Downloader"
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:stopWithTask="false" />

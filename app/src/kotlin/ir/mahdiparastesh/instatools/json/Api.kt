@@ -20,6 +20,7 @@ import kotlin.reflect.KClass
 
 /** Controls all API interactions with Instagram Web API using Volley and Gson. */
 object Api {
+    const val DEFAULT_CONNECT_TIMEOUT = 8000
     var cookies = ""
 
     /**
@@ -52,7 +53,7 @@ object Api {
             con.setRequestProperty("content-type", "application/x-www-form-urlencoded")
         }
         con.useCaches = cache
-        con.connectTimeout = 8000
+        con.connectTimeout = DEFAULT_CONNECT_TIMEOUT
         con.doInput = true
         con.readTimeout = 10000
         try {
@@ -131,7 +132,7 @@ object Api {
         )
         con.setRequestProperty("cookie", cookies)
         con.useCaches = false
-        con.connectTimeout = 8000
+        con.connectTimeout = DEFAULT_CONNECT_TIMEOUT
         con.doInput = true
         con.readTimeout = 12000
         try {

@@ -70,13 +70,17 @@ class Expandable(
                         Queued(
                             Persistent.now(), link() ?: "",
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk, mahdi_reel_user_name ?: user.username,
-                            pk ?: id, nearest(Versioned.BEST),
-                            thumb(), media_type.toInt().toByte(),
-                            dur = video_duration?.toLong(), caption = caption?.text
+                            user.pk,
+                            mahdi_reel_user_name ?: user.username,
+                            pk ?: id,
+                            nearest(Versioned.BEST),
+                            thumb(),
+                            media_type.toInt().toByte(),
+                            video_duration?.toLong(),
+                            caption?.text
                         )
                     )
-                    initQueuer()
+                    initDownloader()
                 }
             }
         }
@@ -90,13 +94,17 @@ class Expandable(
                         Queued(
                             Persistent.now(), link() ?: "",
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk, mahdi_reel_user_name ?: user.username,
-                            car.pk, car.nearest(Versioned.BEST),
-                            car.thumb(), car.media_type.toInt().toByte(),
-                            dur = car.video_duration?.toLong(), caption = caption?.text
+                            user.pk,
+                            mahdi_reel_user_name ?: user.username,
+                            car.pk,
+                            car.nearest(Versioned.BEST),
+                            car.thumb(),
+                            car.media_type.toInt().toByte(),
+                            car.video_duration?.toLong(),
+                            caption?.text
                         )
                     )
-                    initQueuer()
+                    initDownloader()
                 }
             }
         }
@@ -109,13 +117,17 @@ class Expandable(
                         Queued(
                             Persistent.now(), link() ?: "",
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk, mahdi_reel_user_name ?: user.username,
-                            car.pk, car.nearest(Versioned.BEST),
-                            car.thumb(), car.media_type.toInt().toByte(),
-                            dur = car.video_duration?.toLong(), caption = caption?.text
+                            user.pk,
+                            mahdi_reel_user_name ?: user.username,
+                            car.pk,
+                            car.nearest(Versioned.BEST),
+                            car.thumb(),
+                            car.media_type.toInt().toByte(),
+                            car.video_duration?.toLong(),
+                            caption?.text
                         )
                     )
-                    initQueuer()
+                    initDownloader()
                 }
             }
         }
@@ -129,11 +141,16 @@ class Expandable(
                         Queued(
                             Persistent.now(), link() ?: audioUrl,
                             if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk, mahdi_reel_user_name ?: user.username,
-                            car?.pk ?: pk, audioUrl, car?.thumb() ?: thumb(), 3.toByte()
+                            user.pk,
+                            mahdi_reel_user_name ?: user.username,
+                            car?.pk ?: pk,
+                            audioUrl, car?.thumb() ?: thumb(),
+                            3.toByte(),
+                            car?.video_duration?.toLong(),
+                            caption?.text
                         )
                     )
-                    initQueuer()
+                    initDownloader()
                 }
             }
         }
@@ -298,7 +315,7 @@ class Expandable(
         }
     }
 
-    private suspend fun initQueuer() {
+    private suspend fun initDownloader() {
         withContext(Dispatchers.Main) { Downloads.initService(c, "") }
     }
 }

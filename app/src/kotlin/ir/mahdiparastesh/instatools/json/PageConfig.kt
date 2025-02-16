@@ -10,7 +10,6 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import org.apache.commons.text.StringEscapeUtils
 
 /** Resolves an HTML from Instagram and collects required data. */
-@Suppress("SpellCheckingInspection")
 class PageConfig(
     val define: HashMap<String, List<Any>>, val require: HashMap<String, List<Any>>
 ) {
@@ -72,43 +71,4 @@ class PageConfig(
 
         class NeedAuth : Exception()
     }
-
-    data class PolarisRoot(
-        //val actorID: String,
-        val rootView: PolarisView,
-        //val tracePolicy: String,
-        //val meta: PolarisMeta,
-        //val prefetchable: Boolean,
-        //val entityKeyConfig: Map<String, Any?>,
-        //val hostableView: Map<String, Any?>,
-        //val url: String "\/p\/CeyIexyDcYd\/"
-        val params: PolarisRootParams,
-        //val routePath: String,
-    )
-
-    data class PolarisView(
-        val props: PolarisViewProps,
-        val resource: PolarisRootRes,
-    )
-
-    data class PolarisViewProps(
-        val media_id: String,
-        val media_owner_id: String,
-        val media_type: Float,
-        //val page_logging: Map<String, Any>,
-        val user_id: String,
-    )
-
-    data class PolarisRootRes(val __dr: String)
-    // post => "PolarisPostRoot.react"
-    // story => "PolarisStoriesV3Root.react"
-    // highlight => "PolarisStoriesV3HighlightsRoot.react"
-
-    // data class PolarisMeta(val title: String/*, val accessory: Any?, val favicon: Any?*/)
-
-    data class PolarisRootParams(
-        val highlight_reel_id: String?,
-        val initial_media_id: String?,
-        val username: String?,
-    )
 }
