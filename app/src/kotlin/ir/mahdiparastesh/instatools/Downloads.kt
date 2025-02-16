@@ -329,6 +329,8 @@ class Downloads : ServiceOwnerActivity() {
         const val EXPORT_LINKS_MIME = "text/plain"
         const val EXPORT_LINKS_EXT = "txt"
 
+        var handler: Handler? = null
+
         @MainThread
         fun initService(c: BaseActivity, link: String? = null) {
             val uri = c.sPreference(Settings.spStorage)

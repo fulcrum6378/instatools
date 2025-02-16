@@ -42,6 +42,8 @@ class Exporter : ForegroundService() {
     override lateinit var ntfTitle: String
 
     companion object : ForegroundServiceCompanion() {
+        var handler: Handler? = null
+
         override val klass = Exporter::class.java
         override val channel = Notify.Channel.EXPORTER
         override val ntfId = Notify.ID_EXPORTER

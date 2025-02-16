@@ -14,7 +14,6 @@ class ListTag(c: Viewer, f: PageTag) : ListMedia<Viewer, PageTag>(c, f) {
     override val media: CopyOnWriteArrayList<Media>? get() = c.mm.vwTagged?.items
     override val inflater: LayoutInflater by lazy { c.layoutInflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
-    override val handler: Handler? get() = Viewer.handler
     override val expandable: Expandable get() = c.expandable
     override val expanded: ExpandableBinding = c.b.expanded
 }

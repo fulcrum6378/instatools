@@ -174,7 +174,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
-        com.handler = null
         com.active = false
         if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
         super.onDestroy()

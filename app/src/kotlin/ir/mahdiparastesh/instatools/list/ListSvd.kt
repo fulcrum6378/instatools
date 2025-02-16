@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.os.Handler
 import android.view.LayoutInflater
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.Main
@@ -17,7 +16,6 @@ class ListSvd(c: Main, f: PageSvd) : ListMedia<Main, PageSvd>(c, f) {
         get() = c.mm.saved?.items?.let { CopyOnWriteArrayList(it.map { s -> s.media }) }
     override val inflater: LayoutInflater by lazy { f.inflater }
     override val tracker: SelectionTracker<String>? get() = f.tracker
-    override val handler: Handler? get() = PageSvd.handler
     override val expandable: Expandable by lazy {
         Expandable(
             c, expanded, c.color(if (!c.night()) R.color.defBG else R.color.CS)

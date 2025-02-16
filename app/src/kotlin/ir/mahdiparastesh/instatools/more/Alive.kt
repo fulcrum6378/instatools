@@ -1,7 +1,5 @@
 package ir.mahdiparastesh.instatools.more
 
-import android.os.Handler
-
 /**
  * An abstract class, when implemented gives:
  * - active : a Boolean which indicates if the object is alive or not,
@@ -13,7 +11,6 @@ import android.os.Handler
  */
 abstract class Alive {
     var active = false
-    var handler: Handler? = null
 
     companion object {
         fun anyLiving() = BaseActivity.anyActive() || ForegroundService.anyRunning()

@@ -19,7 +19,6 @@ import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.json.Dm
 import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
@@ -60,7 +59,7 @@ class ListThd(val c: Main, private val f: PageBox) :
 
         @SuppressLint("CheckResult", "SetTextI18n")
         fun ListThdBinding.onBind(
-            c: Context, thread: Dm.DmThread, i: Int, idealW: Float = Versioned.BEST,
+            c: Context, thread: Dm.DmThread, i: Int, idealW: Float = Media.Version.BEST,
             f: PageBox? = null, h: AnyViewHolder<ListThdBinding>? = null,
             downloaded: HashMap<String, Downloadable>? = null,
         ): ListThdBinding {
@@ -140,7 +139,7 @@ class ListThd(val c: Main, private val f: PageBox) :
             // Message
             msgTv.anchor(null, null)
             msgIvHint.vis(false)
-            var media: Versioned? = null
+            var media: Media? = null
             when {
                 dm.animated_media != null ->
                     msgIvHint.apply { text = "Sent a sticker"; vis() }
@@ -207,7 +206,7 @@ class ListThd(val c: Main, private val f: PageBox) :
                             return@apply; }
                     }
                 }
-                if (downloaded != null || (carousel_media == null && image_versions2 == null)) return@apply
+                if (downloaded != null) return@apply
 
                 msgLoading.apply {
                     setAnimation(if (!c.night()) R.raw.pending_tertiary else R.raw.pending)

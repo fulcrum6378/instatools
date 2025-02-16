@@ -76,7 +76,7 @@ class Expandable(
                             nearest(Versioned.BEST),
                             thumb(),
                             media_type.toInt().toByte(),
-                            video_duration?.toLong(),
+                            video_duration?.toInt(),
                             caption?.text
                         )
                     )

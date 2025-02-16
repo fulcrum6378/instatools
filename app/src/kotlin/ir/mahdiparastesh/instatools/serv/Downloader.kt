@@ -94,6 +94,7 @@ class Downloader : ForegroundService() {
                     ?.exists() == true ->
                     DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.userName]))
                 !q.isMainFile() -> stem
+                @Suppress("KotlinConstantConditions")
                 bPreference(
                     Settings.spBranching, Settings.spBranchingCb, Settings.defSpBranching
                 ) -> stem.findFile(q.userName) ?: stem.createDirectory(q.userName)
@@ -201,6 +202,7 @@ class Downloader : ForegroundService() {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 clearCacheIfNecessary()
+                @Suppress("KotlinConstantConditions")
                 if (dest == null || !bPreference(
                         Settings.spAutoDeleteEmptyDirs, Settings.spAutoDeleteEmptyDirsCb,
                         Settings.defSpAutoDeleteEmptyDirs

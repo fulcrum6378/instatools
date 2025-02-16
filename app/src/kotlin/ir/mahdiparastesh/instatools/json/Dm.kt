@@ -4,14 +4,11 @@ import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
 
 @Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")
-class Dm(
-    //val client_context: String,
-    //val hide_in_thread: Float,
-    val is_sent_by_viewer: Boolean,
-    //val is_shh_mode: Boolean,
+data class Dm(
     val item_id: String,
+    //val message_id: String,
     val item_type: String,
-    //val preview_medias: Array<Any?>,
+    val is_sent_by_viewer: Boolean,
     val reactions: Reactions?,
     //val show_forward_attribution: Boolean,
     val timestamp: Double,
@@ -19,22 +16,22 @@ class Dm(
     //val uq_seq_id: Double,
     val user_id: Double,
 
-    // Item Types
+    // Data Types
     val action_log: ActionLog?,
     val animated_media: AnimatedMedia?,
     val clip: ClipShare?, // shared some kinda video post
     val direct_media_share: DirectMediaShare?, // tagged you in a post (item_type == "media_share")
     val felix_share: FelixShare?, // shared some kinda video post
-    val like: String?, // Amin and Maryam's love: "❤️", not shown anymore though without VPN
+    val like: String?,
     val link: Link?,
     val live_viewer_invite: LiveViewerInvite?,
     val media: Media?, // uploaded a picture or video
     val media_share: Media?, // shared a picture or some kinda video post
     val placeholder: PlaceHolder?,
-    val profile: Rest.User?,
-    val raven_media: RavenMedia?, // captured and uploaded by the blue button or direct story
+    val profile: User?,
+    val raven_media: Media?, // captured and uploaded by the blue button or direct story
     val reel_share: ReelShare?, // the user's own reel which was story once and now is in the archive
-    val story_share: StoryShare?, // shared a normal or highlighted story story
+    val story_share: StoryShare?, // shared a normal or highlighted story
     val text: String?, // no different if is a saved reply
     val video_call_event: VideoCallEvent?, // plus audio call
     val voice_media: Voice?,
@@ -273,22 +270,6 @@ class Dm(
     }
     // When someone shares a profile, if the viewer has blocked that profile, the Placeholder is
     // shown instead of the Rest.User; indicating no reference to that profile's username or id!
-
-    class RavenMedia(
-        //val url_expire_at_secs: Double?,
-        //val playback_duration_secs: Float?,
-        //val creative_config: Any?,
-        //val story_app_attribution: Any?,
-        //val create_mode_attribution: Any?,
-        //val id: String?,
-        val media_type: Float,
-        original_height: Float?,
-        original_width: Float?,
-        //val user: Rest.User?,
-        //val organic_tracking_token: String,
-        image_versions2: Media.ImageVersions2?,
-        //val media_id: String?,
-    ) : Versioned(image_versions2, original_height, original_width, null, null)
 
     class LiveViewerInvite(
         val broadcast: LiveBroadcast?,

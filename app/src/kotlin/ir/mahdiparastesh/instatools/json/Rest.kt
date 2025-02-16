@@ -157,7 +157,7 @@ open class Rest {
         user: User
     ) : Reel(items, user, false)
 
-    class HighlightCover(val cropped_image_version: Media.Candidate/*, val crop_rect: Any?*/)
+    class HighlightCover(val cropped_image_version: Media.Version/*, val crop_rect: Any?*/)
 
     class Search(
         //val places: Array<HashMap<String, *>>,

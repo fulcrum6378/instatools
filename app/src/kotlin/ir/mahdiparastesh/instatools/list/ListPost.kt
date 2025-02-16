@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
 import android.graphics.drawable.Drawable
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -32,7 +31,6 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
 
     abstract val inflater: LayoutInflater
     abstract val tracker: SelectionTracker<String>?
-    abstract val handler: Handler?
     abstract val expandable: Expandable
     abstract val expanded: ExpandableBinding
 

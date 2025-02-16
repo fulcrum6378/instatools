@@ -55,8 +55,8 @@ abstract class Database : RoomDatabase() {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun addQueued(item: Queued): Long
 
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun addQueueds(item: List<Queued>)
+        /*@Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun addQueueds(item: List<Queued>)*/
 
         @Update
         suspend fun updateQueued(item: Queued)
