@@ -37,12 +37,9 @@ data class Media(
     val taken_at: Double,
     val user: User?,
     val video_dash_manifest: String?,
+    val video_duration: Float?, // in seconds
     val video_versions: List<Version>?,
-    //val view_count: Double?,
-
-    var mahdi_reel_type: String? = null,
-    var mahdi_reel_id: String? = null,
-    var mahdi_reel_user_name: String? = null,
+    //val view_count: Double?
 ) {
 
     fun pk() = pk ?: id.substringBefore("_")
@@ -85,39 +82,38 @@ data class Media(
             .substringBefore("</BaseURL>")
     }
 
-    fun queue(dao: Database.DAO, idealSize: Float = Version.BEST) {
-        val link = UiTools.POST_LINK.format(code)
-        when {
-            carousel_media != null -> for (car in carousel_media) dao.addQueued(
-                Queued(
-                    Persistent.now(),
-                    link,
-                    if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                    user.pk,
-                    user.username,
-                    car.pk,
-                    car.nearest(idealSize)!!,
-                    car.thumb(),
-                    car.media_type.toInt().toByte(),
-                    car.video_duration?.toInt(),
-                    caption?.text
-                )
+    suspend fun queue(dao: Database.DAO, idealSize: Float = Version.BEST, link: String? = null) {
+        val u = owner()
+        val now = Persistent.now()
+        if (carousel_media != null) for (car in carousel_media) dao.addQueued(
+            Queued(
+                now,
+                link ?: link(),
+                car.taken_at.xFromSeconds(),
+                u.id(),
+                u.username!!,
+                car.pk(),
+                car.nearest(idealSize)!!,
+                car.thumb(),
+                car.media_type.toInt().toByte(),
+                car.video_duration,
+                caption?.text,
             )
-            image_versions2 != null -> dao.addQueued(
-                Queued(
-                    Persistent.now(), link,
-                    if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                    user.pk,
-                    user.username,
-                    pk ?: id,
-                    nearest(idealSize)!!,
-                    thumb(),
-                    media_type.toInt().toByte(),
-                    video_duration?.toInt(),
-                    caption?.text
-                )
+        ) else dao.addQueued(
+            Queued(
+                now,
+                link ?: link(),
+                taken_at.xFromSeconds(),
+                u.id(),
+                u.username!!,
+                pk(),
+                nearest(idealSize)!!,
+                thumb(),
+                media_type.toInt().toByte(),
+                video_duration,
+                caption?.text,
             )
-        }
+        )
     }
 
 

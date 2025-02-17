@@ -29,7 +29,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         // Main
         if (qud.type != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
         else h.b.thumb.setImageResource(R.drawable.audio)
-        h.b.user.text = "${i + 1}. ${qud.userName ?: "..."}"
+        h.b.user.text = "${i + 1}. ${qud.userName}"
         h.b.date.text = UiTools.date(qud.addedAt)
 
         // Status
@@ -50,7 +50,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         // Clicks
         h.b.root.setOnClickListener {
             c.mm.queueds?.getOrNull(h.layoutPosition)?.let {
-                if (it.link.isNotBlank()) UiTools.openLink(c, it.link)
+                if (it.link.isNotEmpty()) UiTools.openLink(c, it.link)
             }
         }
         h.b.status.setOnClickListener {

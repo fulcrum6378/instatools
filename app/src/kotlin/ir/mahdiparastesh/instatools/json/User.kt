@@ -22,10 +22,10 @@ data class User(
 
     fun visName() = full_name?.ifBlank { username } ?: username
 
-    fun picture() = hd_profile_pic_url_info?.url
+    fun picture(): String = hd_profile_pic_url_info?.url
         ?: hd_profile_pic_versions?.let { list -> Media.Version.best(list) }
         ?: profile_pic_url_hd
-        ?: profile_pic_url
+        ?: profile_pic_url!!
 
 
     /*data class BioLink(val title: String, val url: String)*/

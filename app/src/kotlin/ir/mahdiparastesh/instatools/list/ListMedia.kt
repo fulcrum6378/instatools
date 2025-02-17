@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Posts in Instagram that use the Media API endpoint.
- * @see ir.mahdiparastesh.instatools.json.Media
+ * @see [Media]
  */
 abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
     where C : BaseActivity, F : BasePage<C> {
@@ -25,11 +25,11 @@ abstract class ListMedia<C, F>(c: C, f: F) : ListPost<C, F>(c, f)
             }
 
             override fun isStored(): Boolean {
-                val theirs = c.m.files?.filter { it.startsWith("${med.user.username}_") }
+                val theirs = c.m.files?.filter { it.startsWith("${med.owner().username}_") }
                     ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
                     ?: return false
                 return if (med.carousel_media != null)
-                    med.carousel_media!!.all { it.pk in theirs }
+                    med.carousel_media.all { it.pk in theirs }
                 else med.id in theirs
             }
         }

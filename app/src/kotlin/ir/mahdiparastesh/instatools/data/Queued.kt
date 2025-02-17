@@ -7,22 +7,22 @@ import ir.mahdiparastesh.instatools.view.UiTools
 @Entity
 class Queued(
     val addedAt: Long,
-    val link: String?,
+    val link: String, // can be empty
     var date: Long,
     var userId: String,
     var userName: String,
-    var itemId: String,
+    var mediaId: String,
     var url: String,
     var thumb: String?,
     var type: Byte,
-    var dur: Int?, // in seconds
+    var dur: Float?, // in seconds
     var caption: String?,
     var status: Byte = 0 // 0=>Pending, 1=>Failed, 2=>Suspended
 ) {
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
-    fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date)}_$itemId.$ext"
+    fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date)}_$mediaId.$ext"
 
     fun isMainFile() = type.toInt() !in arrayOf(3)
 

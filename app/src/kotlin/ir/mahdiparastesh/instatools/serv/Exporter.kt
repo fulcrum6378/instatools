@@ -21,8 +21,8 @@ import ir.mahdiparastesh.instatools.expt.HtmlExporter
 import ir.mahdiparastesh.instatools.expt.PdfExporter
 import ir.mahdiparastesh.instatools.expt.TxtExporter
 import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.json.Media
 import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.HumanDelay
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -159,7 +159,7 @@ class Exporter : ForegroundService() {
         val actVid = opt?.actVid() == true
         if (img) for (user in threadData!!.users) {
             val key = USER_PROFILE_IMG.format(user.pk)
-            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key, 0)
+            media[key] = Downloadable(user.picture(), 0, cacheDir!!, key, 0)
         }
         for (dm in threadData!!.items) {
             if (actVid && dm.animated_media != null) continue
@@ -191,11 +191,10 @@ class Exporter : ForegroundService() {
                 dm.story_share != null -> if (img || vid) dm.story_share.media else null
                 else -> null
             })?.apply {
-                if (carousel_media == null && image_versions2 == null) return@apply
                 val theVer = carousel_media?.getOrNull(0) ?: this
                 val quality = when {
                     theVer.video_versions != null && opt!!.video == 3 ->
-                        if (img) -opt!!.image.toFloat() else Versioned.MEDIUM
+                        if (img) -opt!!.image.toFloat() else Media.Version.MEDIUM
                     theVer.video_versions != null -> -opt!!.video.toFloat()
                     else -> -opt!!.image.toFloat()
                 }

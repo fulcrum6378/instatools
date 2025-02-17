@@ -5,7 +5,6 @@ import android.provider.DocumentsContract
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.calendar
@@ -73,7 +72,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             if (dm.action_log != null) continue
 
             // Media
-            var media: Versioned? = null
+            var media: Media? = null
             val nonMedia = when {
                 dm.animated_media != null -> {
                     limit += 2

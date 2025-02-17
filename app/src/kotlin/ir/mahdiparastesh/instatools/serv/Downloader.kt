@@ -132,7 +132,7 @@ class Downloader : ForegroundService() {
                 con.doInput = true
                 con.readTimeout = when (q.type) {
                     Media.Type.IMAGE.num -> 15000
-                    else -> q.dur?.let { it * 1000 } ?: (2 * 60000)
+                    else -> q.dur?.let { (it * 2000f).toInt() } ?: (2 * 60000)
                 }
                 try {
                     con.connect()

@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.expt
 import android.net.Uri
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.json.User
 import ir.mahdiparastesh.instatools.serv.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
@@ -14,7 +14,19 @@ import java.util.*
 abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {
     private var ink = StringBuilder()
     private val allUsers = exp.threadData?.users?.plusElement(
-        Rest.User(c.m.acc?.name, false, c.m.acc?.id.toString(), "", c.m.acc?.user.toString())
+        User(
+            null,
+            c.m.acc?.name,
+            null,
+            null,
+            c.m.acc?.id.toString(),
+            false,
+            null,
+            null,
+            null,
+            null,
+            c.m.acc?.user.toString()
+        )
     )
 
     override fun run() {

@@ -23,7 +23,6 @@ import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.json.Api
 import ir.mahdiparastesh.instatools.json.GraphQl
 import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Versioned
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
@@ -64,69 +63,25 @@ class Expandable(
                 ?.forEach { it?.player?.volume = if (bb) 0f else 1f }
         }
         b.download.setOnClickListener {
-            media?.apply {
+            media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.dao.addQueued(
-                        Queued(
-                            Persistent.now(), link() ?: "",
-                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk,
-                            mahdi_reel_user_name ?: user.username,
-                            pk ?: id,
-                            nearest(Versioned.BEST),
-                            thumb(),
-                            media_type.toInt().toByte(),
-                            video_duration?.toInt(),
-                            caption?.text
-                        )
-                    )
+                    med.queue(c.dao)
                     initDownloader()
                 }
             }
         }
         b.downloadThis.setOnClickListener {
-            if (media == null) return@setOnClickListener
             val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
                 ?: return@setOnClickListener
-            media?.apply {
-                CoroutineScope(Dispatchers.IO).launch {
-                    c.dao.addQueued(
-                        Queued(
-                            Persistent.now(), link() ?: "",
-                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk,
-                            mahdi_reel_user_name ?: user.username,
-                            car.pk,
-                            car.nearest(Versioned.BEST),
-                            car.thumb(),
-                            car.media_type.toInt().toByte(),
-                            car.video_duration?.toLong(),
-                            caption?.text
-                        )
-                    )
-                    initDownloader()
-                }
+            CoroutineScope(Dispatchers.IO).launch {
+                car.queue(c.dao)
+                initDownloader()
             }
         }
         b.downloadAll.setOnClickListener {
-            if (media == null) return@setOnClickListener
-            val cars = media?.carousel_media ?: return@setOnClickListener
-            media?.apply {
+            media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    for (car in cars) c.dao.addQueued(
-                        Queued(
-                            Persistent.now(), link() ?: "",
-                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk,
-                            mahdi_reel_user_name ?: user.username,
-                            car.pk,
-                            car.nearest(Versioned.BEST),
-                            car.thumb(),
-                            car.media_type.toInt().toByte(),
-                            car.video_duration?.toLong(),
-                            caption?.text
-                        )
-                    )
+                    med.queue(c.dao)
                     initDownloader()
                 }
             }
@@ -137,17 +92,20 @@ class Expandable(
                 ?: return@setOnClickListener
             media?.apply {
                 CoroutineScope(Dispatchers.IO).launch {
+                    val u = owner()
                     c.dao.addQueued(
                         Queued(
-                            Persistent.now(), link() ?: audioUrl,
-                            if (taken_at > 0.0) taken_at.xFromSeconds() else Persistent.now(),
-                            user.pk,
-                            mahdi_reel_user_name ?: user.username,
-                            car?.pk ?: pk,
-                            audioUrl, car?.thumb() ?: thumb(),
-                            3.toByte(),
-                            car?.video_duration?.toLong(),
-                            caption?.text
+                            Persistent.now(),
+                            link() ?: audioUrl,
+                            taken_at.xFromSeconds(),
+                            u.id(),
+                            u.username!!,
+                            pk(),
+                            audioUrl,
+                            thumb(),
+                            0x03,
+                            video_duration,
+                            caption?.text,
                         )
                     )
                     initDownloader()
@@ -185,9 +143,9 @@ class Expandable(
         val hasAudio = media?.hasAudio() == true
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
-        if (c !is Viewer) media?.user?.also { user ->
+        if (c !is Viewer) media?.owner()?.also { user ->
             b.username.text = "@${user.username}"
-            b.username.setOnClickListener { UiTools.openProfile(c, user.username) }
+            b.username.setOnClickListener { UiTools.openProfile(c, user.username!!) }
         }
     }
 

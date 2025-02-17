@@ -12,18 +12,6 @@ class GraphQl(val data: GraphQlData?) : Rest() {
         val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo,
     )
 
-    /*class Profile(
-        //val always_show_message_button_to_pro_account: Boolean,
-        //val graphql: GraphQlData?,
-        //val logging_page_id: String,
-        //val profile_pic_edit_sync_props: Map<String, *>,
-        //val seo_category_infos: Array<Array<String>>,
-        //val show_follow_dialog: Boolean,
-        //val show_suggested_profiles: Boolean,
-        //val show_view_shop: Boolean,
-        //val toast_content_on_load: Any?,
-    )*/
-
     class User(
         //val biography: String?,
         //val blocked_by_viewer: Boolean?,

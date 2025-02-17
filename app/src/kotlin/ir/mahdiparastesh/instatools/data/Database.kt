@@ -16,10 +16,10 @@ abstract class Database : RoomDatabase() {
         suspend fun friends(): List<Friend>
 
         /*@Query("SELECT * FROM Friend WHERE follows = 1")
-        fun followers(): List<Friend>*/
+        suspend fun followers(): List<Friend>*/
 
         @Query("SELECT * FROM Friend WHERE followed = 1")
-        fun following(): List<Friend>
+        suspend fun following(): List<Friend>
 
         @Query("SELECT * FROM Friend WHERE followed = 1 AND follows = 0")
         suspend fun unfollowers(): List<Friend>
@@ -50,10 +50,10 @@ abstract class Database : RoomDatabase() {
         suspend fun firstQueued(): Queued?
 
         @Query("SELECT COUNT(*) FROM Queued WHERE status = 0")
-        fun countReadyQueueds(): Int
+        suspend fun countReadyQueueds(): Int
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        fun addQueued(item: Queued): Long
+        suspend fun addQueued(item: Queued): Long
 
         /*@Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun addQueueds(item: List<Queued>)*/
@@ -65,7 +65,7 @@ abstract class Database : RoomDatabase() {
         suspend fun deleteQueued(item: Queued)
 
         @Query("DELETE FROM Queued")
-        fun deleteQueueds(): Int
+        suspend fun deleteQueueds(): Int
 
 
         @Query("SELECT * FROM Exportable")
@@ -78,14 +78,14 @@ abstract class Database : RoomDatabase() {
         suspend fun deleteExportable(item: Exportable)
 
         /*@Query("DELETE FROM Exportable")
-        fun deleteExportables()*/
+        suspend fun deleteExportables()*/
 
 
         @Query("SELECT * FROM Favourite")
         suspend fun favourites(): List<Favourite>
 
         @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
-        fun favourite(id: String): Favourite
+        suspend fun favourite(id: String): Favourite
 
         @Query("SELECT * FROM Favourite WHERE user = :user LIMIT 1")
         suspend fun favouriteByUser(user: String): Favourite
@@ -97,7 +97,7 @@ abstract class Database : RoomDatabase() {
         suspend fun updateFavourite(item: Favourite)
 
         @Delete
-        fun deleteFavourite(item: Favourite)
+        suspend fun deleteFavourite(item: Favourite)
 
         @Query("DELETE FROM Favourite WHERE id = :id")
         suspend fun deleteFavouriteById(id: String)

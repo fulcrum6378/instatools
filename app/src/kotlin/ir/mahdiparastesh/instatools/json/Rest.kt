@@ -6,38 +6,6 @@ import android.animation.ObjectAnimator
 open class Rest {
     lateinit var status: String
 
-    class User(
-        //val account_badges: Array<Map<String, *>>?,
-        //val all_media_count: Float?,
-        //val allowed_commenter_type: String?,
-        //val fbid_v2: String?,
-        //val friendship_status: Friendship?,
-        val full_name: String?,
-        //val has_anonymous_profile_picture: Boolean?,
-        //val has_highlight_reels: Boolean?,
-        //val interop_messaging_user_fbid: Double?,
-        //val is_favorite: Boolean?,
-        //val is_possible_bad_actor: Map<String, *>?,
-        //val is_possible_scammer: Boolean?,
-        //val is_potential_business: Boolean?,
-        val is_private: Boolean,
-        //val is_verified: Boolean,
-        //val latest_reel_media: Double?,
-        //val mutual_followers_count: Float?,
-        //val open_external_url_with_in_app_browser: Boolean?,
-        val pk: String,
-        //val pk_id: String?,
-        val profile_pic_url: String,
-        //val profile_pic_id: String,
-        //val reel_auto_archive: String?,
-        //val text_post_app_joiner_number: Float?, // e.g. 47258519 (for @gracexglenn)
-        //val text_post_app_joiner_number_label: String?, // e.g. "47,258,519"
-        //val third_party_downloads_enabled: Float?,
-        val username: String,
-    ) {
-        fun visName() = full_name?.ifBlank { username } ?: username
-    }
-
     /** Both following and followers receive this API. */
     class Follow(
         val users: Array<User>? = null,
@@ -167,7 +135,7 @@ open class Rest {
         val users: Array<ItemUser>,
     ) : Rest()
 
-    class ItemUser(val position: Float, val user: User)
+    class ItemUser(/*val position: Float, */val user: User)
 
     class Signing/*(val login_nonce: String?)*/ : Rest()
 
@@ -184,11 +152,4 @@ open class Rest {
     ) : Rest()
 
     class Seen(val status_code: String /* must be "200" */)
-
-    class ApiFailure(
-        //val message: String, // e.g.: "checkpoint_required"
-        //val checkpoint_url: String, // e.g.: "https://www.instagram.com/challenge/?next=<THE_API_ENDPOINT>"
-        val lock: Boolean,
-        //val flow_render_type: Float, // e.g.: 0
-    ) : Rest() // was "fail"
 }
