@@ -6,10 +6,10 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
-import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
-import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
+import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -47,26 +47,24 @@ class ListBox(val c: Main, private val f: PageBox) :
         }
         h.b.more.setOnClickListener {
             thd = c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            MaterialMenu(
-                c, it, R.menu.box_more, Act().apply {
-                    this[R.id.bmHtml] = { f.expOptions(Exporter.Method.HTML, thd) }
-                    this[R.id.bmPdf] = { f.expOptions(Exporter.Method.PDF, thd) }
-                    this[R.id.bmTxt] = { f.expOptions(Exporter.Method.TXT, thd) }
-                    this[R.id.bmOpenDmInInsta] = { UiTools.openDm(c, thd.thread_id) }
-                    this[R.id.bmMarkAsSeen] = {
-                        val last = thd.items.lastOrNull()
-                        if (last != null) CoroutineScope(Dispatchers.IO).launch {
-                            val rest = Api.call<Rest.Seen>(
-                                Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id),
-                                Rest.Seen::class, isPost = true
-                            )
-                            if (rest?.status_code == "200") thd.read_state = 0.0
-                        }
+            MaterialMenu(c, it, R.menu.box_more,
+                R.id.bmHtml to { f.expOptions(Exporter.Method.HTML, thd) },
+                R.id.bmPdf to { f.expOptions(Exporter.Method.PDF, thd) },
+                R.id.bmTxt to { f.expOptions(Exporter.Method.TXT, thd) },
+                R.id.bmOpenDmInInsta to { UiTools.openDm(c, thd.thread_id) },
+                R.id.bmMarkAsSeen to {
+                    val last = thd.items.lastOrNull()
+                    if (last != null) CoroutineScope(Dispatchers.IO).launch {
+                        val rest = Api.call<Rest.Seen>(
+                            Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id),
+                            Rest.Seen::class, isPost = true
+                        )
+                        if (rest?.status_code == "200") thd.read_state = 0.0
                     }
-                    this[R.id.bmView] = {
-                        thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username) }
-                    }
-                }, R.style.Theme_InstaTools_Popup_Tertiary
+                },
+                R.id.bmView to {
+                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username!!) }
+                }, theme = R.style.Theme_InstaTools_Popup_Tertiary
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }

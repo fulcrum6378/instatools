@@ -29,12 +29,12 @@ import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
+import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.DbFile
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
-import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
@@ -241,10 +241,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         if (giveLinkBack != null) selectPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { v ->
-            if ((v as AppCompatTextView).text.isEmpty()) selectPath()
-            else MaterialMenu(this@Settings, v, R.menu.settings_main_path, Act().apply {
-                this[R.id.smpChange] = { selectPath() }
-                this[R.id.smpRemove] = {
+            if ((v as AppCompatTextView).text.isEmpty())
+                selectPath()
+            else MaterialMenu(this@Settings, v, R.menu.settings_main_path,
+                R.id.smpChange to { selectPath() },
+                R.id.smpRemove to {
                     val uri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
                     if (uri != null) {
                         prf.edit { remove(spStorage) }
@@ -255,7 +256,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         }
                     }
                 }
-            }).show()
+            ).show()
         }
         if (!globalMode) {
             arrayOf(b.stBranchingCb, b.stAutoDeleteEmptyDirsCb).forEach { it.vis(true) }

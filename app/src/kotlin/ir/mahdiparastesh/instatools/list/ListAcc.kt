@@ -12,13 +12,12 @@ import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.ListAccBinding
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -66,26 +65,26 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
     override fun getItemCount() = c.accounts.size
 
     private fun more(v: View, acc: Account, i: Int): Boolean {
-        MaterialMenu(c, v, R.menu.acc_more, Act().apply {
-            this[R.id.amWithoutAuth] = {
+        MaterialMenu(c, v, R.menu.acc_more,
+            R.id.amWithoutAuth to {
                 c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
                 acc.last = Persistent.now()
                 acc.saveMe(c)
                 c.goTo(Main::class, true)
-            }
-            this[R.id.amBrowseWeb] = {
+            },
+            R.id.amBrowseWeb to {
                 c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.HOST)
                 acc.last = Persistent.now()
                 acc.saveMe(c)
-            }
-            this[R.id.amInjectCookies] = {
+            },
+            R.id.amInjectCookies to {
                 c.injectingCookieForAccIndex = i
                 c.injectCookies.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = EXPORT_LINKS_MIME
                 })
-            }
-            this[R.id.amSignOut] = {
+            },
+            R.id.amSignOut to {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
                 MaterialAlertDialogBuilder(c).apply {
                     setTitle(R.string.signOut)
@@ -105,7 +104,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                     }
                 }.show()
             }
-        }).show()
+        ).show()
         return true
     }
 

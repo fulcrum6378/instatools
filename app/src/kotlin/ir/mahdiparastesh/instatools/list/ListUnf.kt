@@ -12,12 +12,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -60,18 +60,19 @@ class ListUnf(val c: Main, private val f: PageUnf) :
 
         Glide.with(c.c).load(unf.pict).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${unf.name}"
-        h.b.user.text = if (unf.unfollowedMeAt != null && !unf.unfollowed) c.getString(
-            R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!)
-        ) else unf.user
+        h.b.user.text =
+            if (unf.unfollowedMeAt != null && !unf.unfollowed)
+                c.getString(R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!))
+            else unf.user
 
         h.b.root.setOnClickListener {
             val u = c.mm.unfollowers.value?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
-                c, it, R.menu.unf_more, Act().apply {
-                    this[R.id.umViewInApp] = { Viewer.comeHere(c, u.user) }
-                    this[R.id.umViewInInsta] = { UiTools.openProfile(c, u.user) }
-                    this[R.id.umToFav] = { toggleFav(u) }
-                }, R.style.Theme_InstaTools_Popup_Primary
+                c, it, R.menu.unf_more,
+                R.id.umViewInApp to { Viewer.comeHere(c, u.user) },
+                R.id.umViewInInsta to { UiTools.openProfile(c, u.user) },
+                R.id.umToFav to { toggleFav(u) },
+                theme = R.style.Theme_InstaTools_Popup_Primary
             ).apply {
                 if (!u.unfollowed) menu.findItem(R.id.umToFav)
                     .setTitle(if (u.inFav) R.string.removeFav else R.string.addToFav)

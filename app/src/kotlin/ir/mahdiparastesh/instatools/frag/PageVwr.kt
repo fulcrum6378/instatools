@@ -19,10 +19,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
-import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
@@ -79,21 +79,29 @@ class PageVwr : BasePageViewer() {
             height = c.dm.widthPixels
         }
         b.proClick.setOnClickListener { v ->
-            if (c.mm.vwUser?.hdPhoto() == null) return@setOnClickListener
-            MaterialMenu(c, v, R.menu.viewer_pic_more, Act().apply {
-                this[R.id.vpDownload] = {
+            val picture = c.mm.vwUser?.picture() ?: return@setOnClickListener
+            MaterialMenu(c, v, R.menu.viewer_pic_more,
+                R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.dao.addQueued(
                             Queued(
-                                Persistent.now(), "", Persistent.now(), c.mm.vwUser!!.id,
-                                c.user, "profile_photo", c.mm.vwUser!!.hdPhoto(),
-                                c.mm.vwUser!!.hdPhoto(), 1
+                                Persistent.now(),
+                                UiTools.PROFILE.format(c.user!!),
+                                Persistent.now(),
+                                c.mm.vwUser!!.id(),
+                                c.user!!,
+                                "profile_photo",
+                                picture,
+                                c.mm.vwUser!!.profile_pic_url,
+                                0x1,
+                                null,
+                                c.mm.vwUser!!.biography
                             )
                         )
                         withContext(Dispatchers.Main) { Downloads.initService(c, "") }
                     }
                 }
-            }).show()
+            ).show()
         }
         showProfile()
 
