@@ -48,7 +48,7 @@ import kotlinx.coroutines.withContext
 @SuppressLint("NotifyDataSetChanged")
 class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
-    var thread: Job? = null
+    var loader: Job? = null
     var saver: Saver? = null
     private var selectionGuide: LottieAnimationView? = null
     private var reallyHasMore = true
@@ -94,8 +94,8 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     private fun fetchSome() {
-        if (thread != null || c.mm.saved?.more_available == false) return
-        thread = CoroutineScope(Dispatchers.IO).launch {
+        if (loader != null || c.mm.saved?.more_available == false) return
+        loader = CoroutineScope(Dispatchers.IO).launch {
             val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
                 Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
                 Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
@@ -106,7 +106,7 @@ class PageSvd : BasePageMain(), Selective {
                 }
             )
             if (lazyList == null) {
-                thread = null
+                loader = null
                 return@launch; }
 
             // check if the user has hidden saves
@@ -117,7 +117,7 @@ class PageSvd : BasePageMain(), Selective {
                     if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
                 }
-                thread = null
+                loader = null
                 return@launch; }
 
             // update the data model
@@ -143,12 +143,12 @@ class PageSvd : BasePageMain(), Selective {
                 if (c.mm.saved?.more_available == false)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
             }
-            thread = null
+            loader = null
         }
     }
 
     override fun onRefresh() {
-        if (thread != null) return
+        if (loader != null) return
         c.mm.saved = null
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)

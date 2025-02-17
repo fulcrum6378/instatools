@@ -7,8 +7,9 @@ import java.text.DecimalFormat
 data class User(
     //val bio_links: List<BioLink>?,
     val biography: String?,
-    val edge_follow: EdgeFollow?,
-    val edge_followed_by: EdgeFollow?,
+    val edge_follow: EdgeFollow?, // available via PROFILE_INFO
+    val edge_followed_by: EdgeFollow?, // available via PROFILE_INFO
+    val followed_by_viewer: Boolean?, // available via PROFILE_INFO
     //val friendship_status: Map<String, Any?>?,
     val full_name: String?,
     val hd_profile_pic_url_info: Media.Version?, // available via USER_INFO (highest quality)
@@ -16,7 +17,7 @@ data class User(
     val id: String?,
     val is_private: Boolean?,
     //val is_unpublished: Boolean?,
-    val pk: String?,
+    val pk: String?, // missing in PROFILE_INFO
     val profile_pic_url: String?,
     val profile_pic_url_hd: String?, // available via PROFILE_INFO
     val pronouns: List<String>?,

@@ -85,10 +85,7 @@ abstract class Database : RoomDatabase() {
         suspend fun favourites(): List<Favourite>
 
         @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
-        suspend fun favourite(id: String): Favourite
-
-        @Query("SELECT * FROM Favourite WHERE user = :user LIMIT 1")
-        suspend fun favouriteByUser(user: String): Favourite
+        suspend fun favourite(id: String): Favourite?
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun addFavourite(item: Favourite)

@@ -430,7 +430,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun switchAcc() {
         page1?.thread?.interrupt()
-        page2?.thread?.cancel()
+        page2?.loader?.cancel()
         page2?.saver?.job?.cancel()
         page3?.boxThread?.cancel()
         page3?.thdThread?.cancel()

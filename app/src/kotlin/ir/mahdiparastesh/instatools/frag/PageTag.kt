@@ -59,34 +59,34 @@ class PageTag : BasePageViewer() {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload -> {
-                if (tracker != null && c.mm.vwTagged?.items != null)
+                if (tracker != null && c.mm.tagged?.items != null)
                     Saver(tracker!!.selection)
                 tracker?.clearSelection()
             }
-            R.id.vtSelectAll -> if (c.mm.vwTagged?.items != null)
-                tracker?.setItemsSelected(c.mm.vwTagged!!.items!!.map { it.id }, true)
+            R.id.vtSelectAll -> if (c.mm.tagged?.items != null)
+                tracker?.setItemsSelected(c.mm.tagged!!.items!!.map { it.id }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
     }
 
     fun load() {
-        if (c.mm.vwTagged != null)
-            onLoaded(c.mm.vwTagged?.items.isNullOrEmpty())
+        if (c.mm.tagged != null)
+            onLoaded(c.mm.tagged?.items.isNullOrEmpty())
         else fetchSome()
     }
 
     private fun fetchSome() {
-        if (c.mm.vwUser == null) {
-            c.mm.vwTagged = null
+        if (c.mm.user == null) {
+            c.mm.tagged = null
             return; }
-        if (thread != null || c.mm.vwTagged?.more_available == false) {
+        if (thread != null || c.mm.tagged?.more_available == false) {
             return; }
 
         thread = CoroutineScope(Dispatchers.IO).launch {
             val wrapper = Api.call<Wrapper>(
                 Api.Endpoint.TAGGED.url.format(
-                    c.mm.vwUser?.id ?: "", c.mm.vwTagged?.next_max_id ?: ""
+                    c.mm.user?.id ?: "", c.mm.tagged?.next_max_id ?: ""
                 ), Wrapper::class, onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
@@ -95,13 +95,13 @@ class PageTag : BasePageViewer() {
                 thread = null
                 return@launch; }
 
-            if (c.mm.vwTagged == null) {
-                c.mm.vwTagged = wrapper
+            if (c.mm.tagged == null) {
+                c.mm.tagged = wrapper
                 withContext(Dispatchers.Main) {
-                    onLoaded(c.mm.vwTagged?.items.isNullOrEmpty())
+                    onLoaded(c.mm.tagged?.items.isNullOrEmpty())
                     if (!b.rv.canScrollVertically(1)) fetchSome()
                 }
-            } else c.mm.vwTagged?.apply {
+            } else c.mm.tagged?.apply {
                 val lastBefore = items?.size ?: 0
                 val ids = items?.map { it.id }
                 wrapper.items
@@ -145,9 +145,9 @@ class PageTag : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.vwTagged?.items?.getOrNull(i)?.id
+        override fun getKey(i: Int): String? = c.mm.tagged?.items?.getOrNull(i)?.id
         override fun getPosition(key: String): Int {
-            c.mm.vwTagged?.items?.forEachIndexed { i, med ->
+            c.mm.tagged?.items?.forEachIndexed { i, med ->
                 if (med.id == key) return@getPosition i
             }
             return -1
@@ -162,7 +162,7 @@ class PageTag : BasePageViewer() {
                 Downloads.initService(c)
                 return
             }
-            c.mm.vwTagged?.items?.find { it.id == post }?.queue(c.dao)
+            c.mm.tagged?.items?.find { it.id == post }?.queue(c.dao)
             ended()
         }
     }

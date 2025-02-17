@@ -33,7 +33,7 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
         h.b.user.text = fav.user
         h.b.root.setOnClickListener {
             val u = c.m.fav?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            Viewer.comeHereById(c, u.id)
+            Viewer.comeHere(c, u.id)
         }
         h.b.unFav.setOnClickListener {
             val f = c.m.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }

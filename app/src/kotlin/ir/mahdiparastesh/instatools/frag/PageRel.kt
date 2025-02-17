@@ -72,7 +72,7 @@ class PageRel : BasePageViewer() {
     }
 
     private fun fetchAll() {
-        if (c.mm.vwUser == null) {
+        if (c.mm.user == null) {
             c.mm.vwReels = null
             return; }
         if (thread != null) {
@@ -81,7 +81,7 @@ class PageRel : BasePageViewer() {
         thread = CoroutineScope(Dispatchers.IO).launch {
             c.mm.vwReels = CopyOnWriteArrayList()
             val story = Api.call<Story>(
-                Api.Endpoint.STORY.url.format(c.mm.vwUser?.id ?: ""), Story::class,
+                Api.Endpoint.STORY.url.format(c.mm.user?.id ?: ""), Story::class,
                 onError = { code -> onFailed(Api.error(code)) }
             )
             if (story == null) return@launch
@@ -89,7 +89,7 @@ class PageRel : BasePageViewer() {
             storyFetched = true
 
             val highlights = Api.call<Highlights>(
-                Api.Endpoint.HIGHLIGHTS.url.format(c.mm.vwUser?.id ?: ""), Highlights::class,
+                Api.Endpoint.HIGHLIGHTS.url.format(c.mm.user?.id ?: ""), Highlights::class,
                 onError = { code -> onFailed(Api.error(code)) }
             )
             if (highlights == null) return@launch

@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
@@ -39,10 +37,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageVwr : BasePageViewer() {
-    private lateinit var b: PageVwrBinding
-    private var thread: Job? = null
-    val proPicIv: ImageView? get() = if (bInitialised) b.proPicIv else null
-    val privateAcc: AppCompatTextView? get() = if (bInitialised) b.privateAcc else null
+    lateinit var b: PageVwrBinding
+    private var fetcher: Job? = null
 
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
@@ -79,23 +75,23 @@ class PageVwr : BasePageViewer() {
             height = c.dm.widthPixels
         }
         b.proClick.setOnClickListener { v ->
-            val picture = c.mm.vwUser?.picture() ?: return@setOnClickListener
+            val picture = c.mm.user?.picture() ?: return@setOnClickListener
             MaterialMenu(c, v, R.menu.viewer_pic_more,
                 R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.dao.addQueued(
                             Queued(
                                 Persistent.now(),
-                                UiTools.PROFILE.format(c.user!!),
+                                UiTools.PROFILE.format(c.mm.user!!.username!!),
                                 Persistent.now(),
-                                c.mm.vwUser!!.id(),
-                                c.user!!,
+                                c.mm.user!!.id(),
+                                c.mm.user!!.username!!,
                                 "profile_photo",
                                 picture,
-                                c.mm.vwUser!!.profile_pic_url,
+                                c.mm.user!!.profile_pic_url,
                                 0x1,
                                 null,
-                                c.mm.vwUser!!.biography
+                                c.mm.user!!.biography
                             )
                         )
                         withContext(Dispatchers.Main) { Downloads.initService(c, "") }
@@ -110,96 +106,23 @@ class PageVwr : BasePageViewer() {
         b.toPageTag.setOnClickListener { c.turnToPage(2) }
     }
 
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.vtDownload -> {
-                if (tracker != null && c.mm.vwUser?.edges() != null)
-                    Saver(tracker!!.selection)
-                tracker?.clearSelection()
-            }
-            R.id.vtSelectAll -> if (c.mm.vwUser?.edges() != null)
-                tracker?.setItemsSelected(c.mm.vwUser!!.edges()!!.map { it.node.id }, true)
-            R.id.vtDeselectAll -> tracker?.clearSelection()
-        }
-        return super.onMenuItemClick(item)
-    }
-
     fun showProfile() {
-        if (c.mm.vwUser == null || !bInitialised) return
+        if (c.mm.user == null || c.mm.profile == null || !bInitialised) return
+
+        // profile picture
         Glide.with(c.c)
-            .load(c.mm.vwUser!!.hdPhoto())
+            .load(c.mm.user!!.picture())
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(b.proPic, b.proPicIv))
             .into(b.proPicIv)
-        b.followersNum.text = c.mm.vwUser!!.edge_followed_by.toString()
-        b.followingNum.text = c.mm.vwUser!!.edge_follow.toString()
-        fetched()
 
-        if (c.mm.vwUser != null) c.dbFav?.apply {
-            var changed = false
-            if (user != c.mm.vwUser!!.username) {
-                user = c.mm.vwUser!!.username
-                changed = true
-            }
-            if (name != c.mm.vwUser!!.full_name) {
-                name = c.mm.vwUser!!.full_name
-                changed = true
-            }
-            if (photo != c.mm.vwUser!!.profile_pic_url_hd) {
-                photo = c.mm.vwUser!!.profile_pic_url_hd
-                changed = true
-            }
-            if (changed) CoroutineScope(Dispatchers.IO).launch { c.dao.updateFavourite(this@apply) }
-        }
-    }
+        // followers & following
+        b.followersNum.text = c.mm.profile!!.edge_followed_by.toString()
+        b.followingNum.text = c.mm.profile!!.edge_follow.toString()
 
-    private fun fetchSome() {
-        if (thread != null || c.mm.vwUser == null || c.mm.vwUser?.hasMore() == false)
-            return
-        thread = CoroutineScope(Dispatchers.IO).launch {
-            val res = Api.call<GraphQl>(
-                Api.Endpoint.POSTS.url.format(
-                    c.mm.vwUser!!.id,
-                    c.mm.vwUser!!.edge_owner_to_timeline_media!!.page_info.end_cursor
-                ), GraphQl::class, onError = { code ->
-                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
-                }
-            )
-            if (res == null) {
-                thread = null
-                return@launch; }
-
-            val add = res.data?.user?.edge_owner_to_timeline_media
-            if (add == null) {
-                withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
-                }
-                thread = null
-                return@launch; }
-
-            c.mm.vwUser?.edge_owner_to_timeline_media?.apply {
-                page_info = add.page_info
-                count = add.count
-                val lastBefore = edges.size
-                val ids = edges.map { it.node.id }
-                edges.addAll(add.edges.filter { it.node.id !in ids })
-                withContext(Dispatchers.Main) {
-                    fetched(lastBefore, add.edges.size)
-                }
-            }
-            thread = null
-        }
-    }
-
-    private fun fetched(arg1: Int = 0, arg2: Int = 0) {
-        if (b.rv.adapter != null && arg2 > 0)
-            b.rv.adapter?.notifyItemRangeInserted(arg1, arg2)
-        onLoaded(c.mm.vwUser?.edges().isNullOrEmpty())
-
-        if (!b.rv.canScrollVertically(1)) fetchSome()
-
-        val showPv = c.mm.vwUser?.pv() == true && c.mm.vwUser?.followed_by_viewer == false
-            && c.mm.vwUser?.username != c.m.acc?.user
+        // is the page private and not followed?
+        val showPv = c.mm.user?.pv() == true && c.mm.profile?.followed_by_viewer == false
+            && c.mm.user?.username != c.m.acc?.user
         b.privateAcc.vis(showPv)
         b.rv.vis(!showPv)
         if (showPv) {
@@ -215,7 +138,72 @@ class PageVwr : BasePageViewer() {
                     topMargin = vPad
                     bottomMargin = vPad
                 }
+        } else
+            fetchSome()
+
+        // update Favourite
+        c.mm.fav?.apply {
+            var changed = false
+            if (user != c.mm.user!!.username) {
+                user = c.mm.user!!.username!!
+                changed = true
+            }
+            if (name != c.mm.user!!.full_name) {
+                name = c.mm.user!!.full_name!!
+                changed = true
+            }
+            if (photo != c.mm.user!!.profile_pic_url_hd) {
+                photo = c.mm.user!!.profile_pic_url_hd
+                changed = true
+            }
+            if (changed) CoroutineScope(Dispatchers.IO).launch { c.dao.updateFavourite(this@apply) }
         }
+    }
+
+    private fun fetchSome() {
+        if (fetcher != null || c.mm.user == null || c.mm.posts?.page_info?.has_next_page == false)
+            return
+        fetcher = CoroutineScope(Dispatchers.IO).launch {
+            val res = Api.call<GraphQl>(
+                Api.Endpoint.POSTS.url.format(
+                    c.mm.user!!.id,
+                    c.mm.user!!.edge_owner_to_timeline_media!!.page_info.end_cursor
+                ), GraphQl::class, onError = { code ->
+                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                }
+            )
+            if (res == null) {
+                fetcher = null
+                return@launch; }
+
+            val add = res.data?.user?.edge_owner_to_timeline_media
+            if (add == null) {
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                }
+                fetcher = null
+                return@launch; }
+
+            c.mm.user?.edge_owner_to_timeline_media?.apply {
+                page_info = add.page_info
+                count = add.count
+                val lastBefore = edges.size
+                val ids = edges.map { it.node.id }
+                edges.addAll(add.edges.filter { it.node.id !in ids })
+                withContext(Dispatchers.Main) {
+                    fetched(lastBefore, add.edges.size)
+                }
+            }
+            fetcher = null
+        }
+    }
+
+    private fun fetched(arg1: Int = 0, arg2: Int = 0) {
+        if (b.rv.adapter != null && arg2 > 0)
+            b.rv.adapter?.notifyItemRangeInserted(arg1, arg2)
+        onLoaded(c.mm.user?.edges().isNullOrEmpty())
+
+        if (!b.rv.canScrollVertically(1)) fetchSome()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -224,6 +212,20 @@ class PageVwr : BasePageViewer() {
         if (b.rv.adapter == null) b.rv.adapter = ListVwr(c, this)
         else b.rv.adapter?.notifyDataSetChanged()
         if (tracker == null) buildSelection()
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.vtDownload -> {
+                if (tracker != null && c.mm.user?.edges() != null)
+                    Saver(tracker!!.selection)
+                tracker?.clearSelection()
+            }
+            R.id.vtSelectAll -> if (c.mm.user?.edges() != null)
+                tracker?.setItemsSelected(c.mm.user!!.edges()!!.map { it.node.id }, true)
+            R.id.vtDeselectAll -> tracker?.clearSelection()
+        }
+        return super.onMenuItemClick(item)
     }
 
     override fun buildSelection() {
@@ -243,9 +245,9 @@ class PageVwr : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.vwUser?.edges()?.getOrNull(i)?.node?.id
+        override fun getKey(i: Int): String? = c.mm.user?.edges()?.getOrNull(i)?.node?.id
         override fun getPosition(key: String): Int {
-            c.mm.vwUser?.edges()?.forEachIndexed { i, edge ->
+            c.mm.user?.edges()?.forEachIndexed { i, edge ->
                 if (edge.node.id == key) return@getPosition i
             }
             return -1
@@ -260,7 +262,7 @@ class PageVwr : BasePageViewer() {
                 Downloads.initService(c)
                 return
             }
-            c.mm.vwUser?.edges()?.find { it.node.id == edg }?.let { edge ->
+            c.mm.user?.edges()?.find { it.node.id == edg }?.let { edge ->
                 c.dao.addQueued(
                     Queued(Persistent.now(), UiTools.POST_LINK.format(edge.node.shortcode))
                 )
