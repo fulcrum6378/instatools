@@ -19,8 +19,8 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.PageConfig
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
@@ -288,10 +288,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     .substringBefore(";").toLong().toString()
                 val u = Gson().fromJson(
                     Gson().toJson((wrapper.define["PolarisViewer"]!![1] as Map<*, *>)["data"]),
-                    GraphQl.User::class.java
+                    User::class.java
                 ) // it does not contain edge_saved_media!
                 m.acc = Account(
-                    id.toLong(), u.username, u.full_name, u.hdPhoto(),
+                    id.toLong(), u.username, u.full_name, u.picture(),
                     cookieManager.getCookieOrganised(HOST),
                     (wrapper.define["InstagramWebPushInfo"]?.get(1) as? Map<*, *>)
                         ?.get("rollout_hash") as String?,

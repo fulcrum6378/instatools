@@ -31,7 +31,7 @@ object Api {
         url: String,
         clazz: KClass<*>,
         generics: Array<KClass<*>>? = null,
-        isPost: Boolean = false, // TODO merge with `body` if possible
+        isPost: Boolean = false,
         body: String? = null,
         retry: Int = 1, // TODO implement retrying
         cache: Boolean = false,

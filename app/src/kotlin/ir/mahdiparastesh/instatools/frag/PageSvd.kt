@@ -24,11 +24,10 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.more.*
@@ -97,30 +96,22 @@ class PageSvd : BasePageMain(), Selective {
     private fun fetchSome() {
         if (thread != null || c.mm.saved?.more_available == false) return
         thread = CoroutineScope(Dispatchers.IO).launch {
-            val wrapper = Api.call<Media.SavedWrapper>(
+            val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
                 Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-                Media.SavedWrapper::class,
+                Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
                 onError = { code ->
                     b.refresher.isRefreshing = false
                     if (c.mm.saved == null)
                         onFailed(c.getString(R.string.unknownError, "$code"))
                 }
             )
-            if (wrapper == null) {
-                thread = null
-                return@launch; }
-
-            if (wrapper.items == null) {
-                withContext(Dispatchers.Main) {
-                    b.refresher.isRefreshing = false
-                    onFailed(c.getString(R.string.loadFailed))
-                }
+            if (lazyList == null) {
                 thread = null
                 return@launch; }
 
             // check if the user has hidden saves
-            if (wrapper.items!!.isEmpty()) {
-                if (c.mm.saved == null) c.mm.saved = wrapper
+            if (lazyList.items.isEmpty()) {
+                if (c.mm.saved == null) c.mm.saved = lazyList
                 reallyHasMore = false
                 withContext(Dispatchers.Main) {
                     if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
@@ -132,19 +123,19 @@ class PageSvd : BasePageMain(), Selective {
             // update the data model
             var lastBefore: Int? = null
             if (c.mm.saved == null) {
-                c.mm.saved = wrapper
+                c.mm.saved = lazyList
             } else c.mm.saved?.apply {
-                lastBefore = items!!.size
-                items!!.addAll(wrapper.items!!)
-                more_available = wrapper.more_available
-                next_max_id = wrapper.next_max_id
+                lastBefore = items.size
+                items.addAll(lazyList.items)
+                more_available = lazyList.more_available
+                next_max_id = lazyList.next_max_id
             }
 
             withContext(Dispatchers.Main) {
                 if (b.rv.adapter == null)
                     onLoaded(c.mm.saved?.items.isNullOrEmpty())
                 else
-                    b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, wrapper.items!!.size)
+                    b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, lazyList.items.size)
 
                 if (!b.rv.canScrollVertically(1))
                     fetchSome()
@@ -208,8 +199,8 @@ class PageSvd : BasePageMain(), Selective {
                     saver = Saver(tracker!!.selection, unsave = true, download = false)
                 tracker?.clearSelection()
             }
-            R.id.mtSelectAll -> if (c.mm.saved?.items != null)
-                tracker?.setItemsSelected(c.mm.saved!!.items!!.map { it.media.id }, true)
+            R.id.mtSelectAll -> if (c.mm.saved != null)
+                tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id }, true)
 
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
@@ -304,7 +295,7 @@ class PageSvd : BasePageMain(), Selective {
                 if (download)
                     withContext(Dispatchers.Main) { Downloads.initService(c, "") }
                 return; }
-            val saved = c.mm.saved?.items?.find { it.media.id == svd } // TODO make it a HashMap
+            val saved = c.mm.saved?.items?.find { it.media.id == svd }
             if (saved == null) {
                 ended(); return; }
 
@@ -314,9 +305,9 @@ class PageSvd : BasePageMain(), Selective {
                 ended()
                 return; }
 
-            val rest = Api.call<Rest>(
-                Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest::class, isPost = true,
-                onError = { code ->
+            val rest = Api.call<Rest.QuickResponse>(
+                Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest.QuickResponse::class,
+                isPost = true, onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
             )
@@ -327,10 +318,10 @@ class PageSvd : BasePageMain(), Selective {
                 //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
                 c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
                 c.mm.saved?.items?.find { it.media.id == svd }?.let { media ->
-                    val x = c.mm.saved!!.items!!.indexOf(media)
-                    c.mm.saved!!.items!!.removeAt(x)
+                    val x = c.mm.saved!!.items.indexOf(media)
+                    c.mm.saved!!.items.removeAt(x)
                     b.rv.adapter?.notifyItemRemoved(x)
-                    b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items!!.size)
+                    b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items.size)
                     if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
                 }
             }

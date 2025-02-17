@@ -18,6 +18,7 @@ import ir.mahdiparastesh.instatools.databinding.ListAccBinding
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -94,8 +95,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                     setPositiveButton(R.string.yes) { _, _ ->
                         if (acc.cook != null) CoroutineScope(Dispatchers.IO).launch {
                             Api.cookies = acc.cook ?: ""
-                            Api.call<Rest.Signing>(
-                                Api.Endpoint.SIGN_OUT.url, Rest.Signing::class,
+                            Api.call<Rest.QuickResponse>(
+                                Api.Endpoint.SIGN_OUT.url, Rest.QuickResponse::class,
                                 isPost = true, body = "one_tap_app_login=1&user_id=${acc.id}"
                             )
                             Api.cookies = ""

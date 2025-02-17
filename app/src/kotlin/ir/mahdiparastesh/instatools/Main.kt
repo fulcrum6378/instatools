@@ -38,7 +38,6 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.GraphQl
-import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
@@ -91,7 +90,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     class MyModel : ViewModel() {
         var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
-        var saved: Media.SavedWrapper? = null
+        var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
         var dmInbox: Dm.Inbox? = null
         var dmThread: Dm.DmThread? = null
@@ -276,8 +275,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setPositiveButton(R.string.yes) { _, _ ->
                     if (m.acc == null) return@setPositiveButton
                     CoroutineScope(Dispatchers.IO).launch {
-                        Api.call<Rest.Signing>(
-                            Api.Endpoint.SIGN_OUT.url, Rest.Signing::class,
+                        Api.call<Rest.QuickResponse>(
+                            Api.Endpoint.SIGN_OUT.url, Rest.QuickResponse::class,
                             isPost = true, body = "one_tap_app_login=1&user_id=${m.acc?.id}",
                         )
                     }

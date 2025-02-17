@@ -12,6 +12,8 @@
 -keep class ir.mahdiparastesh.instatools.api.Rest$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.api.User { <fields>; }
 -keep class ir.mahdiparastesh.instatools.api.User$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Story { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Story$* { <fields>; }
 
 # required for JavaScript interface of WebView
 -keepclassmembers class * { @android.webkit.JavascriptInterface <methods>; }

@@ -1,9 +1,14 @@
 package ir.mahdiparastesh.instatools.api
 
+import ir.mahdiparastesh.instatools.data.Favourite
+import java.text.DecimalFormat
+
 @Suppress("PropertyName")
 data class User(
     //val bio_links: List<BioLink>?,
     val biography: String?,
+    val edge_follow: EdgeFollow?,
+    val edge_followed_by: EdgeFollow?,
     //val friendship_status: Map<String, Any?>?,
     val full_name: String?,
     val hd_profile_pic_url_info: Media.Version?, // available via USER_INFO (highest quality)
@@ -26,6 +31,10 @@ data class User(
         ?: hd_profile_pic_versions?.let { list -> Media.Version.best(list) }
         ?: profile_pic_url_hd
         ?: profile_pic_url!!
+
+    fun pv() = is_private == true
+
+    fun favourite(): Favourite = Favourite(id(), username!!, full_name!!, picture(), pv())
 
 
     /*data class BioLink(val title: String, val url: String)*/
@@ -50,4 +59,14 @@ data class User(
         //val status: Boolean?, // as Rest, only in show(one)
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
     )*/
+
+    open class EdgeFollow(val count: Double) {
+        override fun toString(): String = when {
+            count > 1000000.0 -> DecimalFormat("#.##").format(count / 1000000.0) + "M"
+            count > 1000.0 -> DecimalFormat("#.##").format(count / 1000.0) + "K"
+            else -> count.toInt().toString()
+        } // Cannot move to strings.xml without Context
+    }
+
+    //class EdgeFollowMutual(count: Double, val edges: Array<Any>) : EdgeFollow(count)
 }

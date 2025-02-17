@@ -17,20 +17,22 @@ import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl.Page
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
-import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.snackbar
@@ -66,8 +68,8 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override fun defPage(): Int = 1
 
     class MyModel : ViewModel() {
-        var vwUser: GraphQl.User? = null
-        var vwTagged: Media.Wrapper? = null
+        var vwUser: User? = null
+        var vwTagged: Page<Media>? = null
         var vwReels: CopyOnWriteArrayList<Rest.Reel>? = null
         var vwCurrentPage = MutableLiveData(1)
     }
@@ -228,7 +230,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
             R.id.vtShortcut -> mm.vwUser?.also { u ->
                 val bmp = (page2?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
-                    c, ShortcutInfoCompat.Builder(c, u.username).apply {
+                    c, ShortcutInfoCompat.Builder(c, u.username!!).apply {
                         setIntent(
                             Intent(Intent.ACTION_VIEW, Uri.parse(UiTools.PROFILE.format(user)))
                                 .setPackage(UiTools.INSTA_PACKAGE)
@@ -238,7 +240,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
                                 Bitmap.createScaledBitmap(bmp, 128, 128, true)
                             )
                         )
-                        setShortLabel(u.full_name.ifBlank { u.username })
+                        setShortLabel(u.full_name!!.ifBlank { u.username })
                     }.build(), null
                 )
                 incrementCounter(Settings.spShortcutCount)

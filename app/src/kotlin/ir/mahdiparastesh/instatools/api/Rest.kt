@@ -3,8 +3,41 @@ package ir.mahdiparastesh.instatools.api
 import android.animation.ObjectAnimator
 
 @Suppress("SpellCheckingInspection")
-open class Rest {
-    lateinit var status: String
+interface Rest {
+    val status: String
+
+    data class QuickResponse(override val status: String) : Rest
+
+    data class LazyList<N>(
+        //val auto_load_more_enabled: Boolean,
+        val items: ArrayList<N>,
+        var more_available: Boolean,
+        var next_max_id: String?,
+        //val num_results: Float, // in current fetch, not real total
+        override val status: String,
+    ) : Rest
+
+    data class SavedItem(val media: Media)
+
+    data class UserInfo(
+        val user: User,
+        override val status: String
+    ) : Rest
+
+    class InboxPage(
+        //val has_pending_top_requests: Boolean,
+        val inbox: Dm.Inbox,
+        //val pending_requests_total: Double,
+        //val seq_id: Double,
+        //val viewer: User,
+        override val status: String
+    ) : Rest
+
+    class InboxThread(
+        val thread: Dm.DmThread,
+        override val status: String
+    ) : Rest
+
 
     /** Both following and followers receive this API. */
     class Follow(
@@ -22,9 +55,13 @@ open class Rest {
         //val more_groups_available: Boolean,
         //val has_more: Boolean, always returns false incorrectly!
         //val should_limit_list_of_followers: Boolean,
-    ) : Rest()
+        override val status: String
+    ) : Rest
 
-    class Friendships(val friendship_statuses: Map<String, FriendshipStatus>) : Rest()
+    class Friendships(
+        val friendship_statuses: Map<String, FriendshipStatus>,
+        override val status: String
+    ) : Rest
 
     class FriendshipStatus(
         //val blocking: Boolean?, // only in mute/unmute and show(one)
@@ -47,23 +84,9 @@ open class Rest {
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
     )
 
-    class UserInfo(
-        //val recs_from_friends: Map<String, *>?,
-        val user: User,
-    ) : Rest()
-
-    class InboxPage(
-        //val has_pending_top_requests: Boolean,
-        val inbox: Dm.Inbox,
-        //val pending_requests_total: Double,
-        //val seq_id: Double,
-        //val viewer: User,
-    ) : Rest()
-
-    class InboxThread(val thread: Dm.DmThread) : Rest()
-
-    open class DynamicReelsList : Rest() {
+    open class DynamicReelsList : Rest {
         //var broadcast: Array<Any?>? = null
+        override val status: String
     }
 
     class Story(val reel: StoryReel?) : DynamicReelsList()
@@ -75,12 +98,14 @@ open class Rest {
     class Highlights(
         override val tray: Array<HighlightReel>,
         //val show_empty_state: Boolean,
-    ) : Rest(), TrayWrapper<HighlightReel>
+        override val status: String
+    ) : Rest, TrayWrapper<HighlightReel>
 
     class Reels<R>(
         val reels: Map<String, R>,
         //val reels_media: Array<R>,
-    ) : Rest() where R : Reel
+        override val status: String
+    ) : Rest where R : Reel
 
     abstract class Reel(
         //val ad_expiry_timestamp_in_millis: Any?,
@@ -133,11 +158,10 @@ open class Rest {
         //val rank_token: String,
         //val has_more: Boolean,
         val users: Array<ItemUser>,
-    ) : Rest()
+        override val status: String
+    ) : Rest
 
     class ItemUser(/*val position: Float, */val user: User)
-
-    class Signing/*(val login_nonce: String?)*/ : Rest()
 
     class DoFollow(
         //val feedback_title: String?, // e.g.: "Try again later"
@@ -149,7 +173,8 @@ open class Rest {
         //val previous_following: Boolean?,
         //val result: String?,
         val spam: Boolean?,
-    ) : Rest()
+        override val status: String
+    ) : Rest
 
     class Seen(val status_code: String /* must be "200" */)
 }

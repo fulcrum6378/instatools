@@ -5,7 +5,6 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -88,7 +87,7 @@ data class Media(
         if (carousel_media != null) for (car in carousel_media) dao.addQueued(
             Queued(
                 now,
-                link ?: link(),
+                link ?: link()!!,
                 car.taken_at.xFromSeconds(),
                 u.id(),
                 u.username!!,
@@ -102,7 +101,7 @@ data class Media(
         ) else dao.addQueued(
             Queued(
                 now,
-                link ?: link(),
+                link ?: link()!!,
                 taken_at.xFromSeconds(),
                 u.id(),
                 u.username!!,
@@ -210,29 +209,6 @@ data class Media(
             }
         }
     }
-
-
-    class Wrapper(
-        //var auto_load_more_enabled: Boolean,
-        var items: CopyOnWriteArrayList<Media>?,
-        var more_available: Boolean,
-        //var new_photos: Array<Any?>?,
-        var next_max_id: String?,
-        //var num_results: Float,
-        //var requires_review: Boolean
-        //var total_count: Float?
-    ) : Rest()
-
-    class Saved(val media: Media)
-
-    class SavedWrapper(
-        //var auto_load_more_enabled: Boolean,
-        var items: CopyOnWriteArrayList<Saved>?,
-        var more_available: Boolean,
-        var next_max_id: String?, // I couldn't figure out what the heck it means!
-        //var num_results: Float, // useless
-    ) : Rest()
-
 
     enum class Type(val mime: String, val ext: String, val num: Byte) {
         IMAGE("image/jpg", "jpg", 1),
