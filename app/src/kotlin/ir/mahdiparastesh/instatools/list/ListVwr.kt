@@ -5,7 +5,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageVwr
-import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 

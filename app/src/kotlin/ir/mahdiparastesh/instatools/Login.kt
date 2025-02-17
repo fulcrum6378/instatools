@@ -19,8 +19,8 @@ import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
-import ir.mahdiparastesh.instatools.json.GraphQl
-import ir.mahdiparastesh.instatools.json.PageConfig
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.PageConfig
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay

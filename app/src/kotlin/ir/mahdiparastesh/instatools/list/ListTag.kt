@@ -1,12 +1,11 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.os.Handler
 import android.view.LayoutInflater
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageTag
-import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList
 

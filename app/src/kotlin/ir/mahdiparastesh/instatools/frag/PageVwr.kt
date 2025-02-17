@@ -21,13 +21,12 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.view.Act
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools

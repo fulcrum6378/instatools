@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.json
+package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued

@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.json
+package ir.mahdiparastesh.instatools.api
 
 import android.animation.ObjectAnimator
 

@@ -110,13 +110,13 @@
             android:theme="@style/Theme.InstaTools.Tertiary" />
 
         <service
-            android:name=".serv.Downloader"
+            android:name=".job.Downloader"
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:stopWithTask="false" />
 
         <service
-            android:name=".serv.Exporter"
+            android:name=".job.Exporter"
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:stopWithTask="false" />

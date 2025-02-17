@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.serv
+package ir.mahdiparastesh.instatools.job
 
 import android.app.PendingIntent
 import android.content.Context
@@ -20,9 +20,9 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.expt.HtmlExporter
 import ir.mahdiparastesh.instatools.expt.PdfExporter
 import ir.mahdiparastesh.instatools.expt.TxtExporter
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Media
-import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.HumanDelay
 import ir.mahdiparastesh.instatools.more.Persistent

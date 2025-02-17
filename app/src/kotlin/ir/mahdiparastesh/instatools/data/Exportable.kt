@@ -5,9 +5,9 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.json.Dm
+import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.job.Exporter
 import java.io.File
 
 @Entity

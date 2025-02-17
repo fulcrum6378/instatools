@@ -16,9 +16,10 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
-import ir.mahdiparastesh.instatools.serv.Downloader
-import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.job.Downloader
+import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import kotlin.reflect.KClass
 
 /** Abstract class for all foreground services in this app. */
@@ -138,7 +139,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                 PendingIntent.getActivity(
                     c, 0, Intent(c, ntfAct.java).apply {
                         if (ntfPage != null)
-                            putExtra(TriplePageActivity.EXTRA_TURN_TO_PAGE, ntfPage)
+                            putExtra(TriplePageActivity.Companion.EXTRA_TURN_TO_PAGE, ntfPage)
                     }, ntfMutability()
                 )
             )

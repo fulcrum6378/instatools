@@ -6,8 +6,8 @@ import android.provider.DocumentsContract
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.job.Exporter
 import java.io.FileInputStream
 import java.io.FileOutputStream
 

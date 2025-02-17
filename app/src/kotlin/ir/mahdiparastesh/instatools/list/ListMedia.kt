@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePage
 import ir.mahdiparastesh.instatools.view.Expandable

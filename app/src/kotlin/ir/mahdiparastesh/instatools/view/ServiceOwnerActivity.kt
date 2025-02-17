@@ -1,8 +1,7 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.view
 
 import android.view.MenuItem
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.view.CounterActivity
 
 /**
  * Subclass of BaseActivity which controls a Service and switches start/stop buttons.

@@ -11,9 +11,9 @@ import androidx.media3.session.MediaSession
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.databinding.ListCarBinding
-import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.serv.Downloader.MediaType
+import ir.mahdiparastesh.instatools.job.Downloader.MediaType
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 

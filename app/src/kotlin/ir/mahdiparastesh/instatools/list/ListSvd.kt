@@ -6,7 +6,7 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import java.util.concurrent.CopyOnWriteArrayList

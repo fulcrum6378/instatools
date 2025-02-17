@@ -14,11 +14,11 @@ import android.widget.LinearLayout
 import androidx.core.view.get
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
-import ir.mahdiparastesh.instatools.json.Api
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.job.Exporter
 import java.io.FileOutputStream
 
 abstract class PdfExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) {

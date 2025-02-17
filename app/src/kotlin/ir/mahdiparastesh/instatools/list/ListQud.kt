@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
-import ir.mahdiparastesh.instatools.serv.Downloader
+import ir.mahdiparastesh.instatools.job.Downloader
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis

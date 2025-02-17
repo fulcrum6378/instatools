@@ -17,11 +17,11 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
-import ir.mahdiparastesh.instatools.json.Dm
-import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.api.Dm
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.serv.Exporter
-import ir.mahdiparastesh.instatools.serv.Exporter.Downloadable
+import ir.mahdiparastesh.instatools.job.Exporter
+import ir.mahdiparastesh.instatools.job.Exporter.Downloadable
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.FastCustomGlide
 import ir.mahdiparastesh.instatools.view.UiTools

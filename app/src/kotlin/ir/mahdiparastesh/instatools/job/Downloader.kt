@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.serv
+package ir.mahdiparastesh.instatools.job
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -12,10 +12,10 @@ import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.StorageCache
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Media
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
+import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope

@@ -32,8 +32,8 @@ import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
-import ir.mahdiparastesh.instatools.more.ServiceOwnerActivity
-import ir.mahdiparastesh.instatools.serv.Downloader
+import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
+import ir.mahdiparastesh.instatools.job.Downloader
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis

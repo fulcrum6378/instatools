@@ -1,21 +1,17 @@
 -keep class ir.mahdiparastesh.instatools.data.Account { <fields>; }
 -keep class ir.mahdiparastesh.instatools.data.Exportable$Options { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Audible { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Dm { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Dm$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.GraphQl { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.GraphQl$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Media { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Media$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.PageConfig { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.PageConfig$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Rest { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Rest$* { <fields>; }
--keep class ir.mahdiparastesh.instatools.json.Versioned { <fields>; }
-
-# Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
--keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
--keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+-keep class ir.mahdiparastesh.instatools.api.Dm { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Dm$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.GraphQl { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.GraphQl$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Media { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Media$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.PageConfig { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.PageConfig$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Rest { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.Rest$* { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.User { <fields>; }
+-keep class ir.mahdiparastesh.instatools.api.User$* { <fields>; }
 
 # required for JavaScript interface of WebView
 -keepclassmembers class * { @android.webkit.JavascriptInterface <methods>; }

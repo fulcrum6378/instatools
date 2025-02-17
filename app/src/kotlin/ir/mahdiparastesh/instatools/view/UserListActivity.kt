@@ -1,12 +1,11 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.view
 
 import android.animation.ObjectAnimator
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.Main
-import ir.mahdiparastesh.instatools.view.CounterActivity
-import ir.mahdiparastesh.instatools.view.DataLoader
+import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 

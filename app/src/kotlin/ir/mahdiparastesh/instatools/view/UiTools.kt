@@ -38,7 +38,7 @@ import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.json.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
 import kotlin.math.abs

@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.json.Rest.Highlights
-import ir.mahdiparastesh.instatools.json.Rest.Story
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.Rest.Highlights
+import ir.mahdiparastesh.instatools.api.Rest.Story
 import ir.mahdiparastesh.instatools.list.ListRel
 import ir.mahdiparastesh.instatools.more.BasePageViewer
 import kotlinx.coroutines.CoroutineScope

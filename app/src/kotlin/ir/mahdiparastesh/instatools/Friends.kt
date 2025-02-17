@@ -9,10 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.FriendsBinding
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Rest
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.list.ListFri
-import ir.mahdiparastesh.instatools.more.UserListActivity
+import ir.mahdiparastesh.instatools.view.UserListActivity
 import ir.mahdiparastesh.instatools.view.OnlineDataLoader
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope

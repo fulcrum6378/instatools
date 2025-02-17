@@ -7,8 +7,8 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListRliBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
-import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.json.Rest.Reel
+import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.Rest.Reel
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 

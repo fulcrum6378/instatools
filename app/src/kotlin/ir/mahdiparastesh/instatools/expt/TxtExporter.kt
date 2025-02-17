@@ -2,9 +2,9 @@ package ir.mahdiparastesh.instatools.expt
 
 import android.net.Uri
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.User
-import ir.mahdiparastesh.instatools.serv.Exporter
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.User
+import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
 import java.io.FileOutputStream

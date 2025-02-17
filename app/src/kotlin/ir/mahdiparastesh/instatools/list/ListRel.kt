@@ -15,11 +15,11 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
 import ir.mahdiparastesh.instatools.frag.PageRel
-import ir.mahdiparastesh.instatools.json.Api
-import ir.mahdiparastesh.instatools.json.Rest
-import ir.mahdiparastesh.instatools.json.Rest.HighlightReel
-import ir.mahdiparastesh.instatools.json.Rest.StoryReel
-import ir.mahdiparastesh.instatools.json.Versioned
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.Rest.HighlightReel
+import ir.mahdiparastesh.instatools.api.Rest.StoryReel
+import ir.mahdiparastesh.instatools.api.Versioned
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
