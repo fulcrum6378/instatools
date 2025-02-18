@@ -17,9 +17,6 @@
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
     <string name="backgroundTasks">Background Tasks</string>
-    <string name="unknownError">Sorry, an unknown error occurred: %s</string>
-    <string name="unknownMyError">Sorry, an unknown error occurred!</string>
-    <string name="loadFailed">Loading failed!</string>
     <string name="selectAll">Select All</string>
     <string name="deselectAll">Deselect All</string>
     <string name="viewProfile">View Profile</string>
@@ -66,6 +63,18 @@
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="change">Change</string>
 
+    <!-- #API -->
+    <string name="connectionFailure">Couldn\'t connect to Instagram!</string>
+    <string name="connectionBroken">Connection was broken!</string>
+    <string name="invalidResponse">Invalid response from Instagram!</string>
+    <string name="loggedOut">You\'ve been logged out!</string>
+    <string name="loggedOut401">You\'ve been logged out! (HTTP error code %s)</string>
+    <string name="notFound">Not found!</string>
+    <string name="manyRequests">
+        Instagram gave a \"too many requests\" error; you can try again a few hours later! Sorry!!
+    </string>
+    <string name="httpError">HTTP error code %s!</string>
+
     <!-- Login -->
     <string name="addAccount">Add Account</string>
     <string name="enterWithoutAuth">Enter without Authentication</string>
@@ -80,6 +89,7 @@
         (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.)
         So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.
     </string>
+    <string name="unknownError">Sorry, an unknown error occurred: %s</string>
     <string name="needAuthentication">
         Instagram doesn\'t let us in. You need to login to continue&#8230;
     </string>
@@ -238,10 +248,6 @@
     <string name="queuerTitleCount">Downloading %d items&#8230;</string>
     <string name="queuerTitleCount1" translatable="false">Downloading %d item&#8230;</string>
     <string name="queuerFailed">Couldn\'t download %d items!</string>
-    <string name="queuer429">
-        Unfortunately Instagram gave a \"too many requests\" error!
-        You can try again a few hours later! Sorry!!
-    </string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Exporter</string>
@@ -256,7 +262,6 @@
         Unfortunately Instagram blocked these requests because they were too many and were done so frequently,
         in order to combat spam. Please try again a few hours later&#8230;
     </string>
-    <string name="exporterFailedUnk">An unknown error occurred: %s</string>
     <string name="exporterAborted">Could not export %s\'s chat!</string>
     <string name="exportRescued">
         The exported files were unable to be transferred to the destination folder which you specified!

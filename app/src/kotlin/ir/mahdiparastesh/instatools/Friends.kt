@@ -7,14 +7,14 @@ import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ir.mahdiparastesh.instatools.data.Friend
-import ir.mahdiparastesh.instatools.databinding.FriendsBinding
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.data.Friend
+import ir.mahdiparastesh.instatools.databinding.FriendsBinding
 import ir.mahdiparastesh.instatools.list.ListFri
-import ir.mahdiparastesh.instatools.view.UserListActivity
 import ir.mahdiparastesh.instatools.view.OnlineDataLoader
 import ir.mahdiparastesh.instatools.view.UiTools.vis
+import ir.mahdiparastesh.instatools.view.UserListActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,7 +76,7 @@ class Friends : UserListActivity(), OnlineDataLoader {
             isPost = true, body = "user_ids=" + mm.friends
                 .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
                 .joinToString(",") { it.id },
-            onError = { code -> onFailed(Api.error(code)) }
+            onError = { code -> onFailed(getString(Api.error(code), code)) }
         ) ?: return
 
         for (f in mm.friends) rest.friendship_statuses[f.id]?.also {

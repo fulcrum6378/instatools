@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -105,8 +104,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
                 InboxPage::class, onError = { code ->
                     b.refresher.isRefreshing = false
-                    if (c.mm.dmInbox == null) onFailed(Api.error(code))
-                    else UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    if (c.mm.dmInbox == null) onFailed(getString(Api.error(code), code))
+                    else UiTools.snackbar(b.root, getString(Api.error(code), code))
                 }
             )
             if (page == null) {
@@ -137,9 +136,8 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             val inbox = Api.call<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
                     .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20),
-                Rest.InboxThread::class, onError = { code ->
-                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
-                }
+                Rest.InboxThread::class,
+                onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
             if (inbox == null) {
                 thdThread = null
@@ -147,7 +145,7 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
             val dmThd = inbox.thread
             if (dmThd == null) {
                 withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                    UiTools.snackbar(b.root, R.string.invalidResponse)
                 }
                 thdThread = null
                 return@launch; }

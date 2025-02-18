@@ -43,8 +43,6 @@ object DownloadHistory {
             } else checkStorage(c)
         }
     }
-    // CoroutineScope(Dispatchers.Main).launch { StorageCache.checkStorage(this@Main) }
-    // This terrible algorithm blocked UI for more than a minute.
 
     private suspend fun checkStorage(c: Persistent) {
         c.m.files = CopyOnWriteArraySet()
@@ -55,7 +53,7 @@ object DownloadHistory {
             for (path in paths) if (path != null) (if (path.uri.toString() != mainPath) path.listFiles()
                 .toList() else path.walk().toList())
                 .filterMedia().also { c.m.files?.addAll(it) }
-            saveStorageCache(c)
+            saveCache(c)
         }
         loading = false
     }
@@ -64,17 +62,17 @@ object DownloadHistory {
         if (c.m.files == null) return
         DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
             ?.also { c.m.files?.addAll(it) }
-        saveStorageCache(c)
+        saveCache(c)
     }
 
     suspend fun folderRemoved(c: Persistent, uri: Uri) {
         if (c.m.files == null) return
         DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
             ?.forEach { c.m.files?.remove(it) }
-        saveStorageCache(c)
+        saveCache(c)
     }
 
-    suspend fun saveStorageCache(c: Persistent) {
+    suspend fun saveCache(c: Persistent) {
         runCatching {
             FileOutputStream(Stored(c.c)).use {
                 it.write(Gson().toJson(c.m.files).encodeToByteArray())

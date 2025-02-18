@@ -17,9 +17,6 @@
     <string name="yes">آره</string>
     <string name="unsave">Unsave</string>
     <string name="backgroundTasks">کار های پشت صحنه</string>
-    <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
-    <string name="unknownMyError">متاسفانه خطایی ناشناخته رخ داد!</string>
-    <string name="loadFailed">بارگذاری نشد!</string>
     <string name="selectAll">انتخاب همه</string>
     <string name="deselectAll">انتخاب هیچ کدام</string>
     <string name="viewProfile">باز کردن پروفایل</string>
@@ -66,6 +63,19 @@
     <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
     <string name="change">تغییر</string>
 
+    <!-- #API -->
+    <string name="connectionFailure">اتصال برقرار نشد!</string>
+    <string name="connectionBroken">اتصال قطع شد!</string>
+    <string name="invalidResponse">جواب غیرمنتظره ای از اینستاگرام دریافت شد!</string>
+    <string name="loggedOut">شما از حسابتان خارج شده اید!</string>
+    <string name="loggedOut401">شما از حسابتان خارج شده اید! (خطای %s)</string>
+    <string name="notFound">یافت نشد!</string>
+    <string name="manyRequests">
+        اینستاگرام خطای «درخواست های مکرر» داد!
+        شما می توانید چند ساعت دیگر دوباره امتحان کنید! با عرض پوزش!!
+    </string>
+    <string name="httpError">خطای %s!</string>
+
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
     <string name="enterWithoutAuth">ورود بدون لوگین</string>
@@ -80,6 +90,7 @@
         (می توانید در حالت «ناشناس» مرورگر خود از این حقیقت مطمئن شوید.)
         پس هیچ تضمینی نیست که شما در «حالت مهمان» خیلی زود مجبور به وارد شدن به اکانت خود نشوید.
     </string>
+    <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
     <string name="needAuthentication">
         اینستاگرام اجازه ورود نمی دهد. برای ادامه نیاز به لوگین دارید&#8230;
     </string>
@@ -245,10 +256,6 @@
     <string name="queuerTitle">در حال دانلود&#8230;</string>
     <string name="queuerTitleCount">در حال دانلود %d مورد&#8230;</string>
     <string name="queuerFailed">دانلود %d مورد ممکن نشد!</string>
-    <string name="queuer429">
-        متاسفانه اینستاگرام خطای «درخواست های مکرر» داد!
-        شما می توانید چند ساعت دیگر دوباره امتحان کنید! شرمنده!!
-    </string>
 
     <!-- Exporter -->
     <string name="exporterChannel">استخراجگر</string>
@@ -265,7 +272,6 @@
         لطفا چند ساعت دیگر مجددا تلاش کنید&#8230;
     </string>
     <string name="exporterAborted">استخراج چت %s ممکن نشد!</string>
-    <string name="exporterFailedUnk">خطای ناشناسی رخ داد: %s</string>
     <string name="exportRescued">
         مقصدی که برای استخراج انتخاب کرده بودید در دسترس نبود؛
         برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.

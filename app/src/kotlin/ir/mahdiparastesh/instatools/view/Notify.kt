@@ -13,12 +13,10 @@ import ir.mahdiparastesh.instatools.R
 @SuppressLint("NewApi")
 class Notify {
     companion object {
-        const val ID_QUEUER = 1
+        const val ID_DOWNLOADER = 1
         const val ID_EXPORTER = 2
-        const val ID_QUEUER_SOME_FAILED = 10
-        const val ID_QUEUER_429 = 11
-        const val ID_EXPORTER_UNK_FETCH_ERROR = 20
-        const val ID_EXPORTER_429 = 21
+        const val ID_DOWNLOADER_ERROR = 10
+        const val ID_EXPORTER_ERROR = 20
         const val ID_EXPORTER_DONE = 25 // incremental
         const val ID_UNF_NEW_ITEMS = 101
     }

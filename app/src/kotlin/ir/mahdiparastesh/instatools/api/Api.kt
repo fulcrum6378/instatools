@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.api
 import android.net.Uri
 import android.text.TextUtils
 import androidx.annotation.MainThread
+import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -10,11 +11,13 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.net.ProtocolException
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.util.regex.Pattern
 import javax.net.ssl.HttpsURLConnection
 import kotlin.reflect.KClass
+import ir.mahdiparastesh.instatools.R
 
 /** Controls all API interactions with Instagram Web API using Volley and Gson. */
 object Api {
@@ -64,14 +67,24 @@ object Api {
         if (isPost && body != null)
             con.outputStream.bufferedWriter().use { it.write(body) }
 
-        val text = try {
+        val responseCode = try {
+            con.responseCode
+        } catch (_: ProtocolException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-4) }
+            return null
+        }
+
+        val text = if (responseCode == 200) try {
             con.inputStream.bufferedReader().readText()
         } catch (_: IOException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-2) }
             return null
+        } else {
+            if (onError != null) withContext(Dispatchers.Main) { onError(responseCode) }
+            null
         }
 
-        return if (con.responseCode == 200) try {
+        return try {
             Gson().fromJson(
                 text,
                 if (generics != null) TypeToken.getParameterized(
@@ -81,36 +94,8 @@ object Api {
         } catch (_: JsonSyntaxException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-3) }
             null
-        } else {
-            if (onError != null) withContext(Dispatchers.Main) { onError(con.responseCode) }
-            null
         }
     }
-    /*Response.ErrorListener {
-    if (it.networkResponse?.statusCode == 500 && it.networkResponse?.data
-            ?.let { ba -> String(ba) }?.contains(Login.LOGGED_OUT_MSG_500) == true
-        && url != Endpoint.SIGN_OUT.url && !neverMindIfNeedAuth
-    ) {
-        c.needAuthentication(); return@ErrorListener; }
-    gotError(c, handleError, onError, it, neverMindIfNeedAuth = neverMindIfNeedAuth)
-}*/
-    /*if (response.startsWith("<!DOCTYPE html>")) when {
-            url == Endpoint.SIGN_OUT.url -> gotError()
-            response.contains("Login • Instagram") -> {
-                neverMindIfNeedAuth
-                c.needAuthentication()
-                if (c is BaseActivity) gotError()
-            }
-            response.contains("Content unavailable &bull; Instagram") ->
-                gotError()
-            else -> {
-                if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
-                else gotError()
-            }
-        } else {
-            if (BuildConfig.DEBUG) throw Exception("Couldn't parse $response")
-            else gotError()
-        }*/
 
     /**
      * @return String (HTML) on success, null if the procedure fails
@@ -151,16 +136,18 @@ object Api {
         }
     }
 
-    fun error(status: Int) = when (status) {
-        -1 -> "Couldn't connect to Instagram!"
-        -2 -> "Connection was broken!"
-        -3 -> "Invalid response from Instagram!"
-        302 -> "Found redirection!"
-        401 -> "You've been logged out!"
-        404 -> "Not found!"
-        429 -> "Too many requests!"
-        else -> "HTTP error code $status!"
-    } // TODO create string resources
+    @StringRes
+    fun error(code: Int): Int = when (code) {
+        -1 -> R.string.connectionFailure
+        -2 -> R.string.connectionBroken
+        -3 -> R.string.invalidResponse
+        -4 -> R.string.loggedOut
+        //302 -> "Found redirection!"
+        401 -> R.string.loggedOut401
+        404 -> R.string.notFound
+        429 -> R.string.manyRequests
+        else -> R.string.httpError
+    }
 
     enum class Endpoint(val url: String) {
         QUERY("https://www.instagram.com/graphql/query"),

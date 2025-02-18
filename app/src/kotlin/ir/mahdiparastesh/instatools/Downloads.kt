@@ -95,11 +95,6 @@ class Downloads : ServiceOwnerActivity() {
                         else b.rv.adapter?.notifyDataSetChanged()
                         updateCount(mm.queueds!!.size)
                     }
-                    /*TODO HANDLE_429 -> MaterialAlertDialogBuilder(this@Downloads).apply {
-                        setTitle(R.string.downloads)
-                        setMessage(R.string.queuer429)
-                        setNeutralButton(R.string.ok, null)
-                    }.show()*/
                 }
                 updateIfEmpty(mm.queueds.isNullOrEmpty())
             }
@@ -183,7 +178,7 @@ class Downloads : ServiceOwnerActivity() {
     override fun onResume() {
         super.onResume()
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-            .cancel(Notify.ID_QUEUER_SOME_FAILED)
+            .cancel(Notify.ID_DOWNLOADER_ERROR)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

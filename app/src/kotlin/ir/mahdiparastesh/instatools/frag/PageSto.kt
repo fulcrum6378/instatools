@@ -56,7 +56,7 @@ class PageSto : BasePageViewer() {
             val graphQl1 = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
                 isPost = true, body = GraphQlQuery.STORY.body(uid),
-                onError = { code -> onFailed(Api.error(code)) }
+                onError = { code -> onFailed(getString(Api.error(code), code)) }
             )
             if (graphQl1 == null) {
                 fetcher = null
@@ -67,7 +67,7 @@ class PageSto : BasePageViewer() {
             val graphQl2 = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
                 isPost = true, body = GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
-                onError = { code -> onFailed(Api.error(code)) }
+                onError = { code -> onFailed(getString(Api.error(code), code)) }
             )
             if (graphQl2 == null) {
                 fetcher = null

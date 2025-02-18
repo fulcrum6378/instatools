@@ -51,6 +51,7 @@ object UiTools {
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MP = "https://mahdiparastesh.ir/"
     const val APP_NAME = "InstaTools"
+
     //private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6
@@ -224,7 +225,7 @@ object UiTools {
     }
 
     /** Helper function for showing a Snackbar. */
-    fun snackbar(view: View, text: String, dur: Int, anchor: View? = null) {
+    fun snackbar(view: View, text: String, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG) {
         try {
             Snackbar.make(
                 ContextThemeWrapper(view.context, R.style.Theme_InstaTools_Snackbar),
@@ -236,8 +237,10 @@ object UiTools {
     }
 
     /** Helper function for showing a Snackbar. */
-    fun snackbar(view: View, @StringRes res: Int, dur: Int, anchor: View? = null) {
-        snackbar(view, view.context.getString(res), dur, anchor)
+    fun snackbar(
+        view: View, @StringRes res: Int, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG
+    ) {
+        snackbar(view, view.context.getString(res), anchor, dur)
     }
 
     /** Rounds a Bitmap as a circle. */

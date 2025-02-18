@@ -470,8 +470,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
+  * Percentage of downloads
   * A button for resuming/restarting the Exporter
-  * Use URLConnection to track the percentage of downloads
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
   * Max slides for HtmlExporter

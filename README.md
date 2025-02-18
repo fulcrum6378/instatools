@@ -33,7 +33,7 @@ plus a few other miscellaneous things that will be mentioned later.
    [Downloads.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/Downloads.kt)
    can download any Instagram content, including post, story, reels, TV and profile picture.
    Their theme is the pink one called Theme.InstaTools.Secondary.
-   [Downloader.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/serv/Downloader.kt)
+   [Downloader.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/job/Downloader.kt)
    is the service implemented mainly by Downloads (or it can run from anywhere).
    It queues the download items and downloads them one by one.
 3. **DM Export** ([PageBox.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageBox.kt)):
@@ -41,14 +41,14 @@ plus a few other miscellaneous things that will be mentioned later.
    those messages and exports them all into HTML, PDF or TXT file types.
    Its theme is the blue one called Theme.InstaTools.Tertiary.
    The fragment shows conversations and messages, and the export work is on
-   [Exporter.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/serv/Exporter.kt)
+   [Exporter.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/job/Exporter.kt)
 
 ### [Viewer.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/Viewer.kt)
 
 This activity VIEWs any Instagram profile,
 it uses the pink theme of Downloads and has 3 fragments like Main.kt:
 
-1. [PageRel](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageRel.kt)
+1. [PageSto](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageSto.kt)
    shows their main story on top and then their highlighted stories.
 2. [PageVwr](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageVwr.kt)
    shows their profile (which can be downloaded) picture and their posts.
@@ -69,22 +69,17 @@ This activity controls both global settings (gsp) and also settings of the curre
 
 ### Subpackages
 
+- [**api**](app/src/main/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
+  including back-end data models, endpoint addresses and their related utilities.
 - [**data**](app/src/main/kotlin/ir/mahdiparastesh/instatools/data) :
   data models used for storing in databases or other local files.
 - [**expt**](app/src/main/kotlin/ir/mahdiparastesh/instatools/expt) :
-  utilities that help exporting conversations.
-- [**frag**](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag) :
-  all Fragments.
-- [**json**](app/src/main/kotlin/ir/mahdiparastesh/instatools/json) :
-  everything related to API, including back-end data models, endpoint addresses and their related utilities.
-- [**list**](app/src/main/kotlin/ir/mahdiparastesh/instatools/list) :
-  all RecyclerView adapters.
-- [**more**](app/src/main/kotlin/ir/mahdiparastesh/instatools/more) :
-  miscellaneous utilities, mostly related to UX.
-- [**serv**](app/src/main/kotlin/ir/mahdiparastesh/instatools/serv) :
-  the three services.
-- [**view**](app/src/main/kotlin/ir/mahdiparastesh/instatools/view) :
-  miscellaneous utilities, mostly related to UI.
+  utilities that help exporting direct messages.
+- [**frag**](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
+- [**job**](app/src/main/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
+- [**list**](app/src/main/kotlin/ir/mahdiparastesh/instatools/list) : all RecyclerView adapters
+- [**util**](app/src/main/kotlin/ir/mahdiparastesh/instatools/util) : UX-related utilities
+- [**view**](app/src/main/kotlin/ir/mahdiparastesh/instatools/view) : UI-related utilities
 
 ### Localisation
 

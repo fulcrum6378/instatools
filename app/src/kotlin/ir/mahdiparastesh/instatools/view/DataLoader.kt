@@ -8,7 +8,6 @@ import androidx.core.view.contains
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -69,7 +68,7 @@ interface OnlineDataLoader : DataLoader {
 
     fun onFailed(message: String) {
         if (root != null)
-            UiTools.snackbar(root!!, message, Snackbar.LENGTH_LONG)
+            UiTools.snackbar(root!!, message)
         if (loading() != null && root!!.contains(loading()!!)) {
             loading()?.animation?.cancel()
             root?.removeView(loading())

@@ -16,11 +16,11 @@ import androidx.webkit.WebViewFeature
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import ir.mahdiparastesh.instatools.api.PageConfig
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
-import ir.mahdiparastesh.instatools.api.PageConfig
-import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
@@ -49,7 +49,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val LOGIN_URL = "${HOST}accounts/login/"
         const val SP_ACCOUNT = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
-        const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong." // FIXME
         const val BROWSE_FOR_ADD = 0
         const val BROWSE_AS_GUEST = 1
         const val BROWSE_ACC_EXIST = 2
@@ -293,8 +292,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name, u.picture(),
                     cookieManager.getCookieOrganised(HOST),
-                    (wrapper.define["InstagramWebPushInfo"]?.get(1) as? Map<*, *>)
-                        ?.get("rollout_hash") as String?,
                     Persistent.now()
                 ).apply {
                     accounts.removeAll { it.id == id }

@@ -12,7 +12,6 @@ import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
@@ -76,7 +75,8 @@ class PageTag : BasePageViewer() {
                 else
                     GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),
                 onError = { code ->
-                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    if (cursor == null) onFailed(getString(Api.error(code), code))
+                    else UiTools.snackbar(b.root, getString(Api.error(code), code))
                 }
             )
             if (graphQl == null) {
@@ -85,7 +85,7 @@ class PageTag : BasePageViewer() {
             val page = graphQl.data?.xdt_api__v1__usertags__user_id__feed_connection
             if (page == null) {
                 withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                    UiTools.snackbar(b.root, R.string.invalidResponse)
                 }
                 fetcher = null
                 return@launch; }

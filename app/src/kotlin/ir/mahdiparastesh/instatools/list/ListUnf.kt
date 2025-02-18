@@ -9,7 +9,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
@@ -112,18 +111,14 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                         }.show()
                     } catch (_: WindowManager.BadTokenException) { // activity is not running!!
                     } else {
-                        UiTools.snackbar(
-                            f.b.root, R.string.unfCouldNot, Snackbar.LENGTH_LONG, c.b.bnv
-                        )
+                        UiTools.snackbar(f.b.root, R.string.unfCouldNot, c.b.bnv)
                         if (BuildConfig.DEBUG)
                             Toast.makeText(c.c, "1: $code", Toast.LENGTH_SHORT).show()
                     }
                 }
             )
             if (rest?.status != "ok" || rest.spam == true) {
-                UiTools.snackbar(
-                    f.b.root, R.string.unfCouldNot, Snackbar.LENGTH_LONG, c.b.bnv
-                )
+                UiTools.snackbar(f.b.root, R.string.unfCouldNot, c.b.bnv)
                 if (BuildConfig.DEBUG) Toast.makeText(c.c, "2: ${rest?.status}", Toast.LENGTH_SHORT)
                     .show()
                 return@launch; }

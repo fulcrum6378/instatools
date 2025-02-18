@@ -16,7 +16,6 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -166,7 +165,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (mediaLink != null) {
                 val html = Api.page(mediaLink) { code ->
                     b.refresher.isRefreshing = false
-                    snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    snackbar(b.root, getString(Api.error(code), code))
                 }
                 if (html == null) { // got an API error
                     loader = null
@@ -239,7 +238,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
             onError = { code ->
                 b.refresher.isRefreshing = false
-                snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                snackbar(b.root, getString(Api.error(code), code))
             }
         )?.user
 
@@ -248,7 +247,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             Api.Endpoint.PROFILE.url.format(userName), GraphQl::class,
             onError = { code ->
                 b.refresher.isRefreshing = false
-                snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                snackbar(b.root, getString(Api.error(code), code))
             }
         )?.data?.user
 

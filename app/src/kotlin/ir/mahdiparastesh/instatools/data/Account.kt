@@ -18,7 +18,6 @@ class Account(
     var name: String? = null,
     var pict: String? = null,
     var cook: String? = null,
-    var roll: String? = null,
     var last: Long = 0L,
     // var mfrw: Int = 0,
     // keep in mind to update the fields whose data need to persist after another Login

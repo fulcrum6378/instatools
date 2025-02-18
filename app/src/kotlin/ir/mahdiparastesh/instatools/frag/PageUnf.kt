@@ -128,7 +128,7 @@ class PageUnf : BasePageMain() {
             val flw = Api.call<Rest.Follow>(
                 (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
                     .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
-                onError = { code -> onFailed(Api.error(code)) }
+                onError = { code -> onFailed(getString(Api.error(code), code)) }
             )
             if (c.m.acc == null || flw?.users == null) return
             for (u in flw.users) {

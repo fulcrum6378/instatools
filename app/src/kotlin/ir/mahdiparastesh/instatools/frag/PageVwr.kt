@@ -15,7 +15,6 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -173,9 +172,7 @@ class PageVwr : BasePageViewer() {
                 Api.Endpoint.QUERY.url, GraphQl::class,
                 isPost = true, body = GraphQlQuery.PROFILE_POSTS
                     .body(c.mm.user!!.username!!, "33", c.mm.posts!!.edges.last().node.pk()),
-                onError = { code ->
-                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
-                }
+                onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
             if (graphQl == null) {
                 fetcher = null
@@ -183,7 +180,7 @@ class PageVwr : BasePageViewer() {
             val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
             if (page == null) {
                 withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                    UiTools.snackbar(b.root, R.string.invalidResponse)
                 }
                 fetcher = null
                 return@launch; }

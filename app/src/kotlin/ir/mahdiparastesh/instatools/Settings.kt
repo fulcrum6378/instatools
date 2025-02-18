@@ -514,7 +514,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             }
         }
         m.files = null
-        CoroutineScope(Dispatchers.IO).launch { DownloadHistory.saveStorageCache(this@Settings) }
+        CoroutineScope(Dispatchers.IO).launch { DownloadHistory.saveCache(this@Settings) }
         // this doesn't update the cache, it just clears it, it'll get updated automatically later.
     }
 }

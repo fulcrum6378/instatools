@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
@@ -13,8 +14,8 @@ import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.data.DownloadHistory
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
@@ -48,7 +49,7 @@ class Downloader : ForegroundService() {
     companion object : ForegroundServiceCompanion() {
         override val klass = Downloader::class.java
         override val channel = Notify.Channel.QUEUER
-        override val ntfId = Notify.ID_QUEUER
+        override val ntfId = Notify.ID_DOWNLOADER
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.stop
         )
@@ -66,7 +67,7 @@ class Downloader : ForegroundService() {
         if (m.acc == null || dest == null) {
             finish(false); return; }
 
-        ntfManager.cancel(Notify.ID_QUEUER_SOME_FAILED)
+        ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
         ntfTitle = getString(R.string.queuerTitle)
         initialNotification(Companion, Downloads::class)
         if (job?.isActive != true)
@@ -140,13 +141,14 @@ class Downloader : ForegroundService() {
                 try {
                     con.connect()
                 } catch (_: SocketTimeoutException) {
-                    continue
-                }
+                    error(con.responseCode)
+                    return; }
 
                 if (con.responseCode == 200) try {
                     binary = con.inputStream
                 } catch (_: IOException) {
-                }
+                    error(con.responseCode)
+                    return; }
             }
 
             // save the file
@@ -196,6 +198,17 @@ class Downloader : ForegroundService() {
         finish(false)
     }
 
+    private fun error(code: Int) {
+        eventNotification(Notify.ID_DOWNLOADER_ERROR) {
+            setContentTitle(getString(R.string.downloads))
+            setStyle(NotificationCompat.BigTextStyle().bigText(getString(Api.error(code), code)))
+            setContentIntent(
+                PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
+            )
+        }
+        finish(false)
+    }
+
     override fun destroy() {
         job?.cancel()
         ntfTitle = getString(R.string.queuerTitle)
@@ -217,20 +230,8 @@ class Downloader : ForegroundService() {
             }.onFailure {
                 if (BuildConfig.DEBUG) throw it
             }
-            DownloadHistory.saveStorageCache(this@Downloader)
-            val upToDate = dao.queueds()
-            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET, 1, 0, upToDate)
-                ?.sendToTarget()
-            val failedSum = upToDate.filter { it.isFailed() }.size
+            DownloadHistory.saveCache(this@Downloader)
             download() // double check in between
-            if (failedSum > 0) eventNotification(Notify.ID_QUEUER_SOME_FAILED) {
-                setContentTitle(getString(R.string.queuerFailed, failedSum))
-                setContentIntent(
-                    PendingIntent.getActivity(
-                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
-                    )
-                )
-            }
             super.destroy()
         }
     }

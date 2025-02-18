@@ -8,7 +8,6 @@ import androidx.core.animation.addListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -123,7 +122,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                     Api.Endpoint.QUERY.url, GraphQl::class,
                     isPost = true, body = GraphQlQuery.HIGHLIGHTS.body(apiId, apiId),
                     cache = true, onError = { code ->
-                        UiTools.snackbar(f.b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                        UiTools.snackbar(f.b.root, c.getString(Api.error(code), code))
                     }
                 )
                 if (graphQl == null) return@launch
@@ -131,7 +130,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                     ?.edges?.firstOrNull()?.node
                 if (newStory == null) {
                     withContext(Dispatchers.Main) {
-                        UiTools.snackbar(f.b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                        UiTools.snackbar(f.b.root, R.string.invalidResponse)
                     }
                     return@launch; }
                 story.items = newStory.items

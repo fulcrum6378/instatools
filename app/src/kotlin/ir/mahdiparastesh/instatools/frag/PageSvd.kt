@@ -18,7 +18,6 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -102,8 +101,8 @@ class PageSvd : BasePageMain(), Selective {
                 Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
                 onError = { code ->
                     b.refresher.isRefreshing = false
-                    if (c.mm.saved == null)
-                        onFailed(Api.error(code))
+                    if (c.mm.saved == null) onFailed(getString(Api.error(code), code))
+                    else UiTools.snackbar(b.root, getString(Api.error(code), code))
                 }
             )
             if (lazyList == null) {
@@ -308,7 +307,7 @@ class PageSvd : BasePageMain(), Selective {
             val rest = Api.call<Rest.QuickResponse>(
                 Api.Endpoint.UNSAVE.url.format(saved.media.pk()), Rest.QuickResponse::class,
                 isPost = true, onError = { code ->
-                    UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    UiTools.snackbar(b.root, getString(Api.error(code), code))
                 }
             )
             if (rest?.status != "ok") return

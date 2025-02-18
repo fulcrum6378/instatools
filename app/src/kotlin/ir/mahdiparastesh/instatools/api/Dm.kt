@@ -181,8 +181,8 @@ data class Dm(
         //val is_reel_persisted: Boolean?,
         val media: Media?,
         //val reason: Double?,
-        val reel_id: String?,
-        val reel_type: String?,
+        //val reel_id: String?,
+        //val reel_type: String?,
         //val story_share_type: String?,
         val text: String, // the person's message
     ) : PlaceHolder()
@@ -192,7 +192,7 @@ data class Dm(
         val media: Media?,
         //val reaction_info: ReactionInfo?,
         //val reel_owner_id: Double,
-        val reel_type: String,
+        //val reel_type: String,
         val text: String, // the person's message
         //val type: String, // e.g.: "reply"
     ) : PlaceHolder()
@@ -247,7 +247,7 @@ data class Dm(
     //val waveform_sampling_frequency_hz: Float,
 
     class VideoCallEvent(
-        val action: String, // e.g.: "video_call_started" or "video_call_ended"; the same for audio calls
+        //val action: String, // e.g.: "video_call_started" or "video_call_ended"; the same for audio calls
         //val call_duration: Double,
         //val call_start_time: Double,
         //val call_end_time: Double,

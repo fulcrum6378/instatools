@@ -99,7 +99,7 @@ class Exporter : ForegroundService() {
             if (inbox == null) return
             val dmThd = inbox.thread
             if (dmThd == null) {
-                error(-1)
+                error(-3)
                 return; }
 
             if (threadData == null || dmThd.items.isNotEmpty()) {
@@ -254,25 +254,12 @@ class Exporter : ForegroundService() {
     }
 
     private fun error(code: Int) {
-        when (code) {
-            429 -> eventNotification(Notify.ID_EXPORTER_429) {
-                setContentTitle(getString(R.string.exporterFailed))
-                setStyle(
-                    NotificationCompat.BigTextStyle().bigText(
-                        getString(R.string.exporterFailed429)
-                    )
-                )
-                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
-            }
-            else -> eventNotification(Notify.ID_EXPORTER_UNK_FETCH_ERROR) {
-                setContentTitle(getString(R.string.exporterFailed))
-                setStyle(
-                    NotificationCompat.BigTextStyle().bigText(
-                        getString(R.string.exporterFailedUnk, code.toString())
-                    )
-                )
-                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
-            }
+        eventNotification(Notify.ID_EXPORTER_ERROR) {
+            setContentTitle(getString(R.string.exporterFailed))
+            setStyle(
+                NotificationCompat.BigTextStyle().bigText(getString(Api.error(code), code))
+            )
+            addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
         }
         finish(false)
     }
