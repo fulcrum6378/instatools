@@ -32,7 +32,7 @@ data class GraphQl(
 
     data class PageInfo(
         //val end_cursor: String,
-        val has_next_page: Boolean,
+        var has_next_page: Boolean,
         //val has_previous_page: Boolean,
         //val start_cursor: String?,
     )

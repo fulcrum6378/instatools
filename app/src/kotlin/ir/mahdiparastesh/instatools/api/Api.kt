@@ -2,13 +2,11 @@ package ir.mahdiparastesh.instatools.api
 
 import android.net.Uri
 import android.text.TextUtils
-import android.util.DisplayMetrics
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import ir.mahdiparastesh.instatools.data.Account
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -165,6 +163,8 @@ object Api {
     } // TODO create string resources
 
     enum class Endpoint(val url: String) {
+        QUERY("https://www.instagram.com/graphql/query"),
+
         // Profiles
         PROFILE("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
         INFO("https://www.instagram.com/api/v1/users/%s/info/"),
@@ -175,12 +175,6 @@ object Api {
 
         // Posts & Stories
         MEDIA_ITEM("https://www.instagram.com/api/v1/media/%s/info/"),
-        POSTS(
-            "https://www.instagram.com/graphql/query/?query_hash=$postHash" +
-                "&variables={\"id\":\"%1\$s\",\"first\":12,\"after\":\"%2\$s\"}"
-        ),
-        TAGGED("https://www.instagram.com/api/v1/usertags/%1\$s/feed/?count=12&max_id=%2\$s"),
-        STORY("https://www.instagram.com/api/v1/feed/user/%s/story/"),
         HIGHLIGHTS("https://www.instagram.com/api/v1/highlights/%s/highlights_tray/"),
         REEL_ITEM("https://www.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
         // StoryReel = "Full-Screen Video"; Story { reel, reel, ... }, Highlights { reel, reel, ... }
@@ -225,13 +219,10 @@ object Api {
 
         // Logging in/out
         SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/"),// MEDIA_ITEM
-
-        RAW_QUERY("https://www.instagram.com/graphql/query"),
     }
 
     @Suppress("UNCHECKED_CAST")
     const val HANDLE_ERROR = 100
-    const val postHash = "8c2a529969ee035a5063f2fc8602a0fd"
 
     fun encode(uriString: String?): String? {
         if (uriString == null) return null
@@ -251,48 +242,5 @@ object Api {
         for (key in uri.queryParameterNames)
             uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
         return uriBuilder.build().toString()
-    }
-
-    /** Controls all HTTP headers. */
-    @Suppress("SpellCheckingInspection")
-    class Headers(acc: Account, isImperative: Boolean = false, dm: DisplayMetrics? = null) :
-        HashMap<String, String>() {
-        init {
-            this["accept-language"] = "en-US"
-            this["sec-ch-ua"] = "\" Not;A Brand\";\"InstaTools\""
-            this["sec-ch-ua-mobile"] = "?1"
-            this["sec-ch-ua-platform"] = "\"InstaTools - Android\""
-            this["sec-fetch-dest"] = "empty"
-            this["sec-fetch-mode"] = "cors"
-            this["sec-fetch-site"] = "same-origin"
-            if (dm != null) this["viewport-width"] =
-                (dm.widthPixels / dm.density).toInt().toString()
-            // "cache-control": "max-age=0" // SET THIS IN ORDER TO DISABLE CACHE
-
-            val cookies = acc.cook ?: ""
-            if (isImperative) {
-                this["content-type"] = "application/x-www-form-urlencoded"
-                this["x-requested-with"] = "XMLHttpRequest"
-                if (acc.roll != null) this["x-instagram-ajax"] = acc.roll!!
-                /*"x-fb-friendly-name": "usePolarisSaveMediaSaveMutation",
-    "x-fb-lsd": "4XmgR5VLJlf9HL7hUQOtwn",*/// IS IT NECESSARY FOR RAW_QUERY?!?
-            } else { // Cookie "rur" is different between MEDIA_ITEM and GET but the same between themselves
-                this["accept"] = "*/*"
-            }
-            if (cookies.contains("csrftoken=")) this["x-csrftoken"] =
-                cookies.substringAfter("csrftoken=").substringBefore(";")
-            /* For this, load "https://www.instagram.com/static/bundles/es6/ConsumerLibCommons.js/5bb0ab377d4d.js"
-             * Substring after "e.ASBD_ID='", substring before "'" */
-            this["x-asbd-id"] = "198387" // STATIC
-            // this["x-ig-www-claim"] = "hmac.AR1HhBJvtNorxBvZdmf8jZXs1JfsT2WhmwcKgtdyoYXsHCws"
-            this["x-ig-app-id"] = "936619743392459" // STATIC
-            this["cookie"] = cookies
-            this["Referer"] = "https://www.instagram.com/"
-            this["Referrer-Policy"] = "strict-origin-when-cross-origin"
-
-            // Added myself
-            /*this["Access-Control-Allow-Origin"] = "https://www.instagram.com/"
-            this["Access-Control-Allow-Credentials"] = "true"*/
-        }
     }
 }

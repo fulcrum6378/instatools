@@ -20,10 +20,10 @@ android {
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.instatools"
-        minSdk = 21
+        minSdk = 21 // TODO make it 26
         targetSdk = 35
         versionCode = 77
-        versionName = "30.8.0"
+        versionName = "30.8.5"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {

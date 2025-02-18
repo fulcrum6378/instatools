@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.list.ListPost
@@ -49,7 +50,7 @@ class PageVwr : BasePageViewer() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // List
+        // list
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             b.nsv.setOnScrollChangeListener { v, _, _, _, _ ->
                 updateShadow()
@@ -70,7 +71,7 @@ class PageVwr : BasePageViewer() {
         b.rv.setHasFixedSize(true)
         Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
-        // Profile
+        // profile
         b.proPic.layoutParams = b.proPic.layoutParams.apply {
             height = c.dm.widthPixels
         }
@@ -101,7 +102,7 @@ class PageVwr : BasePageViewer() {
         }
         showProfile()
 
-        // Pagination
+        // pagination
         b.toPageRel.setOnClickListener { c.turnToPage(0) }
         b.toPageTag.setOnClickListener { c.turnToPage(2) }
     }
@@ -164,46 +165,41 @@ class PageVwr : BasePageViewer() {
         if (fetcher != null || c.mm.user == null || c.mm.posts?.page_info?.has_next_page == false)
             return
         fetcher = CoroutineScope(Dispatchers.IO).launch {
-            val res = Api.call<GraphQl>(
-                Api.Endpoint.POSTS.url.format(
-                    c.mm.user!!.id,
-                    c.mm.user!!.edge_owner_to_timeline_media!!.page_info.end_cursor
-                ), GraphQl::class, onError = { code ->
+            val graphQl = Api.call<GraphQl>(
+                Api.Endpoint.QUERY.url, GraphQl::class,
+                isPost = true, body = GraphQlQuery.PROFILE_POSTS
+                    .body(c.mm.user!!.username!!, "33", c.mm.posts!!.edges.last().node.id),
+                onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
             )
-            if (res == null) {
+            if (graphQl == null) {
                 fetcher = null
                 return@launch; }
-
-            val add = res.data?.user?.edge_owner_to_timeline_media
-            if (add == null) {
+            val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
+            if (page == null) {
                 withContext(Dispatchers.Main) {
                     UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
                 }
                 fetcher = null
                 return@launch; }
 
-            c.mm.user?.edge_owner_to_timeline_media?.apply {
-                page_info = add.page_info
-                count = add.count
+            if (c.mm.posts == null)
+                c.mm.posts = page
+            else c.mm.posts?.apply {
                 val lastBefore = edges.size
-                val ids = edges.map { it.node.id }
-                edges.addAll(add.edges.filter { it.node.id !in ids })
+                edges.addAll(page.edges)
                 withContext(Dispatchers.Main) {
-                    fetched(lastBefore, add.edges.size)
+                    if (b.rv.adapter != null && page.edges.isNotEmpty())
+                        b.rv.adapter?.notifyItemRangeInserted(lastBefore, page.edges.size)
+                    onLoaded(c.mm.posts?.edges.isNullOrEmpty())
+
+                    if (!b.rv.canScrollVertically(1)) fetchSome()
                 }
+                page_info.has_next_page = page.page_info.has_next_page
             }
             fetcher = null
         }
-    }
-
-    private fun fetched(arg1: Int = 0, arg2: Int = 0) {
-        if (b.rv.adapter != null && arg2 > 0)
-            b.rv.adapter?.notifyItemRangeInserted(arg1, arg2)
-        onLoaded(c.mm.user?.edges().isNullOrEmpty())
-
-        if (!b.rv.canScrollVertically(1)) fetchSome()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -217,12 +213,12 @@ class PageVwr : BasePageViewer() {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload -> {
-                if (tracker != null && c.mm.user?.edges() != null)
+                if (tracker != null && c.mm.posts?.edges != null)
                     Saver(tracker!!.selection)
                 tracker?.clearSelection()
             }
-            R.id.vtSelectAll -> if (c.mm.user?.edges() != null)
-                tracker?.setItemsSelected(c.mm.user!!.edges()!!.map { it.node.id }, true)
+            R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
+                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -245,9 +241,9 @@ class PageVwr : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.user?.edges()?.getOrNull(i)?.node?.id
+        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id
         override fun getPosition(key: String): Int {
-            c.mm.user?.edges()?.forEachIndexed { i, edge ->
+            c.mm.posts?.edges?.forEachIndexed { i, edge ->
                 if (edge.node.id == key) return@getPosition i
             }
             return -1
@@ -255,18 +251,13 @@ class PageVwr : BasePageViewer() {
     }
 
     inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
-
         override suspend fun handle() {
             val edg = next()
             if (edg == null) {
                 Downloads.initService(c)
-                return
-            }
-            c.mm.user?.edges()?.find { it.node.id == edg }?.let { edge ->
-                c.dao.addQueued(
-                    Queued(Persistent.now(), UiTools.POST_LINK.format(edge.node.shortcode))
-                )
-            }
+                return; }
+            c.mm.posts?.edges?.find { it.node.id == edg }
+                ?.also { edge -> edge.node.queue(c.dao) } // TODO handle all posts in one search
             ended()
         }
     }
