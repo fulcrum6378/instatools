@@ -173,15 +173,12 @@ class ListThd(val c: Main, private val f: PageBox) :
                     if (dm.reel_share.message != null)
                         msgIvHint.apply { text = dm.reel_share.message; vis() }
                     msgTv.text = dm.reel_share.text
-                    media?.mahdi_reel_type = dm.reel_share.reel_type
                 }
                 dm.story_share != null -> {
                     media = dm.story_share.media
                     if (dm.story_share.message != null)
                         msgIvHint.apply { text = dm.story_share.message; vis() }
                     msgTv.text = dm.story_share.text
-                    media?.mahdi_reel_type = dm.story_share.reel_type
-                    media?.mahdi_reel_id = dm.story_share.reel_id
                 }
                 dm.text != null -> msgTv.text = dm.text
                 dm.video_call_event != null ->

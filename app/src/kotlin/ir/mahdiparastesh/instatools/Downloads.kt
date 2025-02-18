@@ -26,31 +26,28 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
+import ir.mahdiparastesh.instatools.job.Downloader
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
-import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
-import ir.mahdiparastesh.instatools.job.Downloader
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 
 @SuppressLint("NotifyDataSetChanged")
 class Downloads : ServiceOwnerActivity() {
     lateinit var b: DownloadsBinding
+    val mm: MyModel by viewModels()
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
-    val mm: MyModel by viewModels()
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
 
@@ -115,7 +112,8 @@ class Downloads : ServiceOwnerActivity() {
         // Paste link
         b.linkButton.setOnClickListener {
             if (b.pasteLink.text.toString() == "") return@setOnClickListener
-            initService(this, b.pasteLink.text.toString())
+            // TODO handle link `b.pasteLink.text.toString()`
+            initService(this)
             b.pasteLink.setText("")
         }
         if (!night()) color(R.color.CS).apply {
@@ -167,12 +165,17 @@ class Downloads : ServiceOwnerActivity() {
                 return@also
             }
             handledLinks.add(it)
-            if (!Main.guest) initService(this, it)
-            else MaterialAlertDialogBuilder(this).apply {
+            if (!Main.guest) {
+                // TODO handle link `it`
+                initService(this)
+            } else MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.downloads)
                 setMessage(R.string.dGuestSure)
                 setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ -> initService(this@Downloads, it) }
+                setPositiveButton(R.string.yes) { _, _ ->
+                    // TODO handle link `it`
+                    initService(this@Downloads)
+                }
             }.show()
         }
         return super.resolveIntent(intent, false)
@@ -216,11 +219,11 @@ class Downloads : ServiceOwnerActivity() {
                     }
                     if (any) withContext(Dispatchers.Main) {
                         b.rv.adapter?.notifyDataSetChanged()
-                        if (item.itemId != R.id.dtPauseAll) initService(this@Downloads, "")
+                        if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
                 } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
-            R.id.dtExportLinks -> if (!mm.queueds.isNullOrEmpty())
+            R.id.dtExportLinks -> {}/*if (!mm.queueds.isNullOrEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = EXPORT_LINKS_MIME
@@ -228,12 +231,12 @@ class Downloads : ServiceOwnerActivity() {
                         Intent.EXTRA_TITLE,
                         "instatools_links_${UiTools.fileDateTime(Persistent.now())}.$EXPORT_LINKS_EXT"
                     )
-                }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()*/
 
-            R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            R.id.dtImportLinks -> {}/*importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = EXPORT_LINKS_MIME
-            })
+            })*/
 
             R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
                 MaterialAlertDialogBuilder(this).apply {
@@ -252,7 +255,7 @@ class Downloads : ServiceOwnerActivity() {
         return super.onMenuItemClick(item)
     }
 
-    private val exportLinks = launcherForResult {
+    /*private val exportLinks = launcherForResult {
         if (it.resultCode == RESULT_OK && mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
             try {
                 contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
@@ -285,7 +288,7 @@ class Downloads : ServiceOwnerActivity() {
                 }
             }
         }
-    }
+    }*/
 
     private var isSwipeDeleteInflated: Boolean? = false
     override fun onStateChanged(hasContent: Boolean) {
@@ -327,25 +330,19 @@ class Downloads : ServiceOwnerActivity() {
     companion object : ActivityCompanion() {
         const val HANDLE_429 = 429
         const val EXPORT_LINKS_MIME = "text/plain"
-        const val EXPORT_LINKS_EXT = "txt"
+        //const val EXPORT_LINKS_EXT = "txt"
 
         var handler: Handler? = null
 
         @MainThread
-        fun initService(c: BaseActivity, link: String? = null) {
+        fun initService(c: BaseActivity) {
             val uri = c.sPreference(Settings.spStorage)
             if (uri == null || !c.c.isPathAccessible(uri)) {
-                c.goTo(Settings::class) { putExtra(Settings.EXTRA_GIVE_LINK_BACK, link) }
+                c.goTo(Settings::class) { putExtra(Settings.EXTRA_SELECT_PATH, 1) }
                 return; }
-            if (Downloader.active) {
-                if (!link.isNullOrBlank())
-                    Downloader.handler?.obtainMessage(Downloader.HANDLE_LINK, link)?.sendToTarget()
-                return
-            }
-            c.startService(Intent(c, Downloader::class.java).apply {
-                action = ForegroundService.ACTION_START
-                if (!link.isNullOrBlank()) putExtra(Downloader.EXTRA_LINK, link)
-            })
+            c.startService(
+                Intent(c, Downloader::class.java).setAction(ForegroundService.ACTION_START)
+            )
         }
     }
 

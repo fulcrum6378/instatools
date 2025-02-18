@@ -68,8 +68,8 @@ abstract class Database : RoomDatabase() {
         suspend fun deleteQueueds(): Int
 
 
-        @Query("SELECT * FROM Exportable")
-        suspend fun exportables(): List<Exportable>
+        @Query("SELECT * FROM Exportable LIMIT 1")
+        suspend fun firstExportable(): Exportable?
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun addExportable(item: Exportable): Long

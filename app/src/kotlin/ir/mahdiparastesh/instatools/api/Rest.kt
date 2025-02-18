@@ -33,7 +33,7 @@ interface Rest {
     ) : Rest
 
     class InboxThread(
-        val thread: Dm.DmThread,
+        val thread: Dm.DmThread?,
         override val status: String
     ) : Rest
 
@@ -92,7 +92,7 @@ interface Rest {
         override val status: String
     ) : Rest
 
-    class ItemUser(/*val position: Float, */val user: User)
+    class ItemUser(val position: Float, val user: User)
 
     class DoFollow(
         //val feedback_title: String?, // e.g.: "Try again later"

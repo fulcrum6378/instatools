@@ -26,6 +26,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Dm
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.StorageCache
@@ -35,10 +39,6 @@ import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Dm
-import ir.mahdiparastesh.instatools.api.GraphQl
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
@@ -48,14 +48,20 @@ import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
+    val mm: MyModel by viewModels()
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
+    val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
+    private var exiting = false
+
+    // theming
     private var anTheme: ValueAnimator? = null
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
@@ -67,15 +73,13 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         R.style.Theme_InstaTools_Popup_Tertiary
     )
 
-    val mm: MyModel by viewModels()
-    private var exiting = false
-    val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
-
+    // searching
     @SuppressLint("RestrictedApi")
     lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
     var schRes: Array<Rest.ItemUser>? = null
     var searchErrored = false
+    var searcher: Job? = null
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
@@ -320,17 +324,19 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     searchErrored = false
                     b.searchStatus.playAnimation()
                     b.searchStatus.vis()
-                    schQueue.cancelAll { true }
-                    schQueue.adder = Api<Rest.Search>(
-                        this@Main, Api.Endpoint.SEARCH.url.format(newText), Rest.Search::class,
-                        null, cache = true, autoQueue = false, onError = {
-                            searchErrored = true
-                            b.searchStatus.setAnimation(R.raw.failed)
-                        }
-                    ) { res ->
+
+                    searcher?.cancel()
+                    searcher = CoroutineScope(Dispatchers.IO).launch {
+                        val rest = Api.call<Rest.Search>(
+                            Api.Endpoint.SEARCH.url.format(newText), Rest.Search::class,
+                            cache = true, onError = {
+                                searchErrored = true
+                                b.searchStatus.setAnimation(R.raw.failed)
+                            }
+                        )
                         b.searchStatus.vis(false)
                         b.searchStatus.pauseAnimation()
-                        schRes = res.users.sortedBy { it.position }.toTypedArray()
+                        schRes = rest?.users?.sortedBy { it.position }?.toTypedArray()
                         b.searchRes.adapter?.notifyDataSetChanged()
                     }
                     return true
@@ -375,7 +381,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             m.acc?.apply {
                 user = u.username
                 name = u.full_name
-                pict = u.hdPhoto()
+                pict = u.picture()
                 saveMe(c)
             }
         }

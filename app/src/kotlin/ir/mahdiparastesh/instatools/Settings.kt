@@ -51,7 +51,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
     private lateinit var prf: SharedPreferences
     private var globalMode = true
-    private var giveLinkBack: String? = null
     private val saveLauncher = launcherForResult(this)
     private var aliases: HashMap<String, String>? = null
     private var cacheLimit: Long = defSpCacheLimit
@@ -102,7 +101,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
-        const val EXTRA_GIVE_LINK_BACK = "giveLinkBack"
+        const val EXTRA_SELECT_PATH = "selectPath"
         private const val MB = 1048576L
         val allSps = arrayOf(
             spStorage, spBranching, spBranchingCb, spAutoDeleteEmptyDirs, spAutoDeleteEmptyDirsCb,
@@ -226,7 +225,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             changeTitleTo = getString(if (globalMode) R.string.gSettings else R.string.aSettings)
         )
         prf = if (globalMode || sp == null) gsp else sp!!
-        intent.getStringExtra(EXTRA_GIVE_LINK_BACK)?.let { giveLinkBack = it }
 
         // Beauty
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -238,7 +236,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         }
 
         // Main Path
-        if (giveLinkBack != null) selectPath()
+        if (intent.hasExtra(EXTRA_SELECT_PATH)) selectPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { v ->
             if ((v as AppCompatTextView).text.isEmpty())
@@ -495,16 +493,15 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 // Set the new path
                 prf.edit { putString(spStorage, uri.toString()) }
                 updateMainPath(uri.toString())
-                if (giveLinkBack != null) {
-                    Downloads.initService(this, giveLinkBack)
-                    giveLinkBack = null
+                if (intent.hasExtra(EXTRA_SELECT_PATH)) {
+                    Downloads.initService(this)
                     try {
                         @Suppress("DEPRECATION") onBackPressed()
                     } catch (_: java.lang.IllegalStateException) {
                         // FragmentManager is already executing transactions.
                     }
                     goTo(Downloads::class, animate = false)
-                    // If you call finish() here, Downloads will be loaded without a background
+                    // if you call finish() here, Downloads will be loaded without a background
                     // corruptly over the previous Activity in an ugly way.
                 }
             }

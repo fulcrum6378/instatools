@@ -16,6 +16,9 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
     private val allUsers = exp.threadData?.users?.plusElement(
         User(
             null,
+            null,
+            null,
+            null,
             c.m.acc?.name,
             null,
             null,
@@ -41,7 +44,7 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                 ).format(Date(dm.timestamp.xFromMicroseconds()))
             ).append(" - ")
             val user = if (dm.user_id == c.m.acc?.id?.toDouble()) "${c.m.acc?.user}"
-            else exp.threadData!!.users.find { it.pk.toDouble() == dm.user_id }?.username
+            else exp.threadData!!.users.find { it.id().toDouble() == dm.user_id }?.username
             ink.append("$user : ")
             ink.append(
                 when {
@@ -82,7 +85,7 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             )
             if (dm.reactions != null) for (r in dm.reactions.emojis) ink.append("\n")
                 .append(r.emoji)
-                .append(" by ${allUsers?.find { it.pk.toDouble() == r.sender_id }?.username} at ")
+                .append(" by ${allUsers?.find { it.id().toDouble() == r.sender_id }?.username} at ")
                 .append(
                     SimpleDateFormat(
                         "${UiTools.DATE_FORMAT} - ${UiTools.TIME_FORMAT}", Locale.getDefault()

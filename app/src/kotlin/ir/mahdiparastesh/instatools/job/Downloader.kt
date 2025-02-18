@@ -37,7 +37,7 @@ import javax.net.ssl.HttpsURLConnection
 
 class Downloader : ForegroundService() {
     private var dest: String? = null
-    private var download: Job? = null
+    private var job: Job? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
 
@@ -57,7 +57,7 @@ class Downloader : ForegroundService() {
         super.onCreate()
         dest = sPreference(Settings.spStorage)
         CoroutineScope(Dispatchers.IO).launch {
-            Settings.loadAliases(this@Downloader, true) // TODO move to Model
+            Settings.loadAliases(this@Downloader, true)
                 .forEach { (k, v) -> aliases[k] = v }
             if (sp != null) Settings.loadAliases(this@Downloader, false)
                 .forEach { (k, v) -> aliases[k] = v }
@@ -68,8 +68,8 @@ class Downloader : ForegroundService() {
         ntfManager.cancel(Notify.ID_QUEUER_SOME_FAILED)
         ntfTitle = getString(R.string.queuerTitle)
         initialNotification(Companion, Downloads::class)
-        if (download?.isActive != true)
-            download = CoroutineScope(Dispatchers.IO).launch { download() }
+        if (job?.isActive != true)
+            job = CoroutineScope(Dispatchers.IO).launch { download() }
     }
 
     suspend fun download() {
@@ -195,7 +195,7 @@ class Downloader : ForegroundService() {
     }
 
     override fun destroy() {
-        download?.cancel()
+        job?.cancel()
         ntfTitle = getString(R.string.queuerTitle)
         ntfSmallText = null
         updateNotification()

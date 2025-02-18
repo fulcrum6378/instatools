@@ -21,24 +21,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.databinding.DmNotSeenBinding
-import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
-import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Rest.InboxPage
+import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.databinding.DmNotSeenBinding
+import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
+import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
+import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.more.BasePageMain
-import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.areEnabled
@@ -136,20 +135,27 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     fun fetchOfThread() {
         thdThread = CoroutineScope(Dispatchers.IO).launch {
             val inbox = Api.call<Rest.InboxThread>(
-                Api.Endpoint.DIRECT.url.format(
-                    c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20
-                ), Rest.InboxThread::class, onError = { code ->
+                Api.Endpoint.DIRECT.url
+                    .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20),
+                Rest.InboxThread::class, onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
             )
-            if (inbox?.status != "ok") {
-                if (BuildConfig.DEBUG) throw Exception(inbox?.status)
+            if (inbox == null) {
+                thdThread = null
+                return@launch; }
+            val dmThd = inbox.thread
+            if (dmThd == null) {
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                }
                 thdThread = null
                 return@launch; }
 
-            val dmThd = inbox.thread
             val bef = c.mm.dmThread!!.items.size
-            c.mm.dmThread!!.items.removeAll { it.item_id in dmThd.items.map { t -> t.item_id } }
+            c.mm.dmThread!!.items.removeAll { // TODO costly operation
+                it.item_id in dmThd.items.map { t -> t.item_id }
+            }
             c.mm.dmThread!!.items.addAll(dmThd.items)
             c.mm.dmThread!!.has_older = dmThd.has_older
             c.mm.dmThread!!.items.sortBy { it.timestamp }

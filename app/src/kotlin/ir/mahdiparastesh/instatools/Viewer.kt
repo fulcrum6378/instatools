@@ -46,13 +46,13 @@ import kotlinx.coroutines.withContext
 
 class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
+    val mm: MyModel by viewModels()
     private var loader: Job? = null
     val expandable: Expandable by lazy {
         Expandable(
             this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)
         ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
-    val mm: MyModel by viewModels()
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
