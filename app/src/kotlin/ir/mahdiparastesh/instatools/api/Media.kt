@@ -4,7 +4,7 @@ import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
+import ir.mahdiparastesh.instatools.more.Utils.xFromSeconds
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -210,9 +210,9 @@ data class Media(
         }
     }
 
-    enum class Type(val mime: String, val ext: String, val num: Byte) {
-        IMAGE("image/jpg", "jpg", 1),
-        VIDEO("video/mp4", "mp4", 2),
-        AUDIO("audio/mp4", "m4a", 3),
+    enum class Type(val num: Byte) {
+        IMAGE(1),
+        VIDEO(2),
+        AUDIO(3),
     }
 }

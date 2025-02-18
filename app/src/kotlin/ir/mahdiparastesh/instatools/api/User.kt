@@ -1,6 +1,13 @@
 package ir.mahdiparastesh.instatools.api
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Favourite
+import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.view.UiTools.INSTA_PACKAGE
+import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import java.text.DecimalFormat
 
 @Suppress("PropertyName")
@@ -36,6 +43,19 @@ data class User(
     fun pv() = is_private == true
 
     fun favourite(): Favourite = Favourite(id(), username!!, full_name!!, picture(), pv())
+
+    /** Opens an IG profile in Instagram, if Instagram is installed. */
+    fun openProfile(c: BaseActivity) {
+        try {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(username!!)))
+                    .setPackage(INSTA_PACKAGE)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (_: ActivityNotFoundException) {
+            Viewer.comeHere(c, id())
+        }
+    }
 
 
     /*data class BioLink(val title: String, val url: String)*/

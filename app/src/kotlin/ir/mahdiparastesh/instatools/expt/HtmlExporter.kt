@@ -7,9 +7,9 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.calendar
-import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
-import ir.mahdiparastesh.instatools.view.UiTools.z
+import ir.mahdiparastesh.instatools.more.Utils.calendar
+import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
+import ir.mahdiparastesh.instatools.more.Utils.z
 import kotlinx.coroutines.runBlocking
 import java.io.FileOutputStream
 import java.util.*
@@ -73,6 +73,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
 
             // Media
             var media: Media? = null
+            var raven = false
             val nonMedia = when {
                 dm.animated_media != null -> {
                     limit += 2
@@ -109,6 +110,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     " <i>[User ID: ${dm.profile.pk}]</i>"
                 )
                 dm.raven_media != null -> {
+                    raven = true
                     media = dm.raven_media
                     ""
                 }
@@ -173,7 +175,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                 when {
                     media.video_versions != null && exp.opt?.actVid() == true -> {
                         limit += 6
-                        (if (media is Media)
+                        (if (!raven)
                             "<a href=\"${media.link()}\">\n$div2Ind  %s\n$div2Ind</a>" else "%s").format(
                             "<video width=\"500\" height=\"500\" controls class=\"media\">\n" +
                                 "$div2Ind    <source src=\"./${subFolderNames[1]}/${dm.item_id}.mp4\"" +
@@ -186,14 +188,14 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                         limit += 4
                         val imgThumb =
                             "<img src=\"./${subFolderNames[0]}/${dm.item_id}.jpg\" class=\"media\">"
-                        (if (media is Media)
+                        (if (!raven)
                             "<a href=\"${media.link()}\">\n$div2Ind  $imgThumb\n$div2Ind</a>"
                         else imgThumb) // don't use string formatting instead of imgThumb!
                     }
                     else -> divHint.format(
-                        (if (media is Media) "<a href=\"${media.link()}\">" else "") +
+                        (if (!raven) "<a href=\"${media.link()}\">" else "") +
                             "${if (media.video_versions != null) "Video" else "Image"} file omitted!" +
-                            (if (media is Media) "</a>" else "")
+                            (if (!raven) "</a>" else "")
                     )
                 } + (if (nonMedia.isNotBlank()) "\n$div2Ind" else "")
             )

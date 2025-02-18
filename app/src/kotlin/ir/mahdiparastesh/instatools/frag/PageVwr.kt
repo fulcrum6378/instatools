@@ -95,7 +95,7 @@ class PageVwr : BasePageViewer() {
                                 c.mm.user!!.biography
                             )
                         )
-                        withContext(Dispatchers.Main) { Downloads.initService(c, "") }
+                        Downloads.initService(c)
                     }
                 }
             ).show()

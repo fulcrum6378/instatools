@@ -18,6 +18,7 @@ import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
+import ir.mahdiparastesh.instatools.more.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -62,7 +63,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
         h.b.name.text = "${i + 1}. ${unf.name}"
         h.b.user.text =
             if (unf.unfollowedMeAt != null && !unf.unfollowed)
-                c.getString(R.string.unfollowedAt, UiTools.date(unf.unfollowedMeAt!!))
+                c.getString(R.string.unfollowedAt, Utils.date(unf.unfollowedMeAt!!))
             else unf.user
 
         h.b.root.setOnClickListener {

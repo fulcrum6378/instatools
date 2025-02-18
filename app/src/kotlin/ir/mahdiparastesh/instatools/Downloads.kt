@@ -13,7 +13,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.MainThread
 import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -96,11 +95,11 @@ class Downloads : ServiceOwnerActivity() {
                         else b.rv.adapter?.notifyDataSetChanged()
                         updateCount(mm.queueds!!.size)
                     }
-                    HANDLE_429 -> MaterialAlertDialogBuilder(this@Downloads).apply {
+                    /*TODO HANDLE_429 -> MaterialAlertDialogBuilder(this@Downloads).apply {
                         setTitle(R.string.downloads)
                         setMessage(R.string.queuer429)
                         setNeutralButton(R.string.ok, null)
-                    }.show()
+                    }.show()*/
                 }
                 updateIfEmpty(mm.queueds.isNullOrEmpty())
             }
@@ -109,7 +108,7 @@ class Downloads : ServiceOwnerActivity() {
                 if (mm.queueds != null) Queued.find(msg.obj as Queued, mm.queueds!!) else null
         }
 
-        // Paste link
+        // paste link
         b.linkButton.setOnClickListener {
             if (b.pasteLink.text.toString() == "") return@setOnClickListener
             // TODO handle link `b.pasteLink.text.toString()`
@@ -121,7 +120,7 @@ class Downloads : ServiceOwnerActivity() {
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
 
-        // Load data
+        // load data
         CoroutineScope(Dispatchers.IO).launch {
             mm.queueds = CopyOnWriteArrayList(dao.queueds())
             try {
@@ -135,7 +134,7 @@ class Downloads : ServiceOwnerActivity() {
             }
         }
 
-        // Jumper
+        // jumper
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateJumper()
@@ -148,7 +147,7 @@ class Downloads : ServiceOwnerActivity() {
             anJumper = UiTools.anJumper(this, b.jumper, it)
         }
 
-        // More
+        // miscellaneous
         ItemTouchHelper(SwipeToRemove()).attachToRecyclerView(b.rv)
     }
 
@@ -189,17 +188,17 @@ class Downloads : ServiceOwnerActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val ret = super.onCreateOptionsMenu(menu)
-        /*Downloader.active.observe(this) { FIXME
+        Downloader.active.observe(this) {
             updateControlButton(it)
             if (it) handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
-        }*/
+        }
         return ret
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
-                if (Downloader.active) stopService(Intent(c, Downloader::class.java)
+                if (Downloader.active.value == true) stopService(Intent(c, Downloader::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
@@ -217,8 +216,8 @@ class Downloads : ServiceOwnerActivity() {
                         dao.updateQueued(it)
                         any = true
                     }
-                    if (any) withContext(Dispatchers.Main) {
-                        b.rv.adapter?.notifyDataSetChanged()
+                    if (any) {
+                        withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
                 } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
@@ -229,7 +228,7 @@ class Downloads : ServiceOwnerActivity() {
                     type = EXPORT_LINKS_MIME
                     putExtra(
                         Intent.EXTRA_TITLE,
-                        "instatools_links_${UiTools.fileDateTime(Persistent.now())}.$EXPORT_LINKS_EXT"
+                        "instatools_links_${Utils.fileDateTime(Persistent.now())}.$EXPORT_LINKS_EXT"
                     )
                 }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()*/
 
@@ -295,7 +294,7 @@ class Downloads : ServiceOwnerActivity() {
         super.onStateChanged(hasContent)
         b.empty.vis(mm.queueds.isNullOrEmpty())
 
-        // Swipe to Delete Guide
+        // teach users that they can swipe items in order to delete them
         if (isSwipeDeleteInflated == null) return
         if (!gsp.getBoolean(Settings.spLearntSwipeDelete, false)) when {
             isSwipeDeleteInflated == false && hasContent -> {
@@ -312,8 +311,8 @@ class Downloads : ServiceOwnerActivity() {
     private var shouldShowJumper = MutableLiveData(false)
     private var anJumper: ObjectAnimator? = null
     private fun updateJumper() {
-        (b.rv.computeVerticalScrollOffset() > dm.heightPixels)
-            .apply { if (this != shouldShowJumper.value) shouldShowJumper.value = this }
+        (b.rv.computeVerticalScrollOffset() > dm.heightPixels && isSwipeDeleteInflated == null)
+            .also { if (it != shouldShowJumper.value) shouldShowJumper.value = it }
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
@@ -328,13 +327,13 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
-        const val HANDLE_429 = 429
+        //const val HANDLE_429 = 429
         const val EXPORT_LINKS_MIME = "text/plain"
         //const val EXPORT_LINKS_EXT = "txt"
 
         var handler: Handler? = null
 
-        @MainThread
+        /** It can be called from any kind of thread. */
         fun initService(c: BaseActivity) {
             val uri = c.sPreference(Settings.spStorage)
             if (uri == null || !c.c.isPathAccessible(uri)) {

@@ -137,12 +137,13 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                 story.items = newStory.items
             }
 
-            if (downloadAll)
+            if (downloadAll) {
                 for (reel in story.items!!) reel.queue(c.dao)
+                Downloads.initService(c)
+            }
 
             withContext(Dispatchers.Main) {
                 listRel.notifyDataSetChanged()
-                if (downloadAll) Downloads.initService(c, "")
             }
         }
     }

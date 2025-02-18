@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.job
 import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
@@ -10,13 +11,13 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
-import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.StorageCache
 import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,13 +101,15 @@ class Downloader : ForegroundService() {
                 ) -> stem.findFile(q.userName) ?: stem.createDirectory(q.userName)
                 else -> stem
             } ?: return
-            val type = Media.Type.entries.find { it.num == q.type }!!
-            val fName = q.fName(type.ext)
+            val ext = q.extension()
+            val fName = q.fName(ext)
             var leaf = branch.findFile(fName)
             // Never check existence from StorageCache because the file might be deleted anytime
             // and the user might want to re-download it!
             if (leaf != null) return
-            leaf = branch.createFile(type.mime, fName) ?: return
+            leaf = branch.createFile(
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)!!, fName
+            ) ?: return
             // Nevertheless files are RARELY duplicated with a " (1)" suffix.
             // It presumably happens during slow connections.
             // It could be because of simultaneous writing.
@@ -148,7 +151,7 @@ class Downloader : ForegroundService() {
 
             // save the file
             val fos = FileOutputStream(des.fileDescriptor)
-            when (type.ext) {
+            when (ext) {
                 "jpg" -> {
                     val ba = binary.readBytes()
                     val outputSet = (Imaging.getMetadata(ba) as JpegImageMetadata?)?.exif?.outputSet
@@ -185,7 +188,6 @@ class Downloader : ForegroundService() {
             des.close()
             if (q.isMainFile()) m.files?.add(fName)
             incrementCounter(Settings.spDownloadCount)
-
 
             Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, q)?.sendToTarget()
             dao.deleteQueued(q)

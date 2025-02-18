@@ -59,7 +59,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     override var sp: SharedPreferences? = null
 
     /** Abstract class from which all companion objects of BaseActivity subclasses must extend. */
-    abstract class ActivityCompanion : Alive()
+    abstract class ActivityCompanion {
+        var active = false
+    }
 
     companion object {
         fun anyActive() = arrayOf(Main, Login, Downloads, Viewer, Favourites, Settings)
@@ -188,7 +190,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     override fun onDestroy() {
         com.active = false
-        if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
+        if (dbLazy.isInitialized() && !Utils.anyoneAlive()) db.close()
         super.onDestroy()
     }
 

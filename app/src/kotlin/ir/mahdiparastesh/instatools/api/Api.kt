@@ -173,17 +173,6 @@ object Api {
                 "&include_reel=false&search_surface=web_top_search"
         ), // &rank_token=0.9366187585704904
 
-        // Posts & Stories
-        MEDIA_ITEM("https://www.instagram.com/api/v1/media/%s/info/"),
-        HIGHLIGHTS("https://www.instagram.com/api/v1/highlights/%s/highlights_tray/"),
-        REEL_ITEM("https://www.instagram.com/api/v1/feed/reels_media/?reel_ids=%s"),
-        // StoryReel = "Full-Screen Video"; Story { reel, reel, ... }, Highlights { reel, reel, ... }
-        // Adding "media_id=" parameter is of no use, the results are the same!!
-        /*NEW_TAGGED( // Requires edges again
-            "https://www.instagram.com/graphql/query/?query_hash=$taggedHash" +
-                    "&variables={\"id\":\"%1\$s\",\"first\":12,\"after\":\"%2\$s\"}"
-        ),*///const val taggedHash = "be13233562af2d229b008d2976b998b5"
-
         // Interactions (always use "?count=" for more accurate results)
         FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
         FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
@@ -220,9 +209,6 @@ object Api {
         // Logging in/out
         SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/"),// MEDIA_ITEM
     }
-
-    @Suppress("UNCHECKED_CAST")
-    const val HANDLE_ERROR = 100
 
     fun encode(uriString: String?): String? {
         if (uriString == null) return null

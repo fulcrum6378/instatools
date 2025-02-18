@@ -36,7 +36,7 @@ import ir.mahdiparastesh.instatools.more.ForegroundService
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
+import ir.mahdiparastesh.instatools.more.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -146,7 +146,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         } ?: defSpCacheLimit
 
         suspend fun Persistent.clearCacheIfNecessary() {
-            if (Exporter.active) return
+            if (Exporter.active.value == true) return
             if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
                 c.clearCache()
         }
@@ -312,7 +312,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             b.stCache.vis(false)
             b.stSepCache.vis(false)
         } else b.stClearCache.setOnClickListener {
-            if (Exporter.active) {
+            if (Exporter.active.value == true) {
                 Toast.makeText(c, R.string.stClearCacheWaitExporter, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

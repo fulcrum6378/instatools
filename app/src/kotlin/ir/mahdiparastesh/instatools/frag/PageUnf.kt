@@ -63,23 +63,27 @@ class PageUnf : BasePageMain() {
     override fun onRefresh() {
         if (thread?.active == true) return
         b.rv.adapter = null
+        c.mm.unfollowers.value = null
         thread = Inquiry(c).also { it.start() }
     }
 
     private fun load(initial: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            c.mm.unfollowers.value = ArrayList(c.dao.unfollowers()).apply {
+            val unf = ArrayList(c.dao.unfollowers()).apply {
                 val favIds = (c.m.fav ?: listOf()).map { it.id }
                 for (f in 0 until size) this[f].inFav = this[f].id in favIds
                 specialSort()
+            }
 
-                if (isNullOrEmpty() && initial &&
+            withContext(Dispatchers.Main) {
+                c.mm.unfollowers.value = unf
+                if (unf.isEmpty() && initial &&
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L) ?: 0L)
                         ) > 86400000
-                ) thread = Inquiry(c).also { it.start() }
-                else withContext(Dispatchers.Main) {
-                    onLoaded(isNullOrEmpty())
-                }
+                )
+                    thread = Inquiry(c).also { it.start() }
+                else
+                    onLoaded(unf.isEmpty())
             }
         }
     }
@@ -105,10 +109,6 @@ class PageUnf : BasePageMain() {
         var active = false
         private lateinit var oldFriends: List<Friend>
         private val newFriends = arrayListOf<Friend>()
-
-        init {
-            (c as Main).mm.unfollowers.value = null
-        }
 
         override fun run() {
             active = true

@@ -27,11 +27,11 @@ import ir.mahdiparastesh.instatools.view.FastCustomGlide
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.anchor
-import ir.mahdiparastesh.instatools.view.UiTools.calendar
-import ir.mahdiparastesh.instatools.view.UiTools.getOrNull
+import ir.mahdiparastesh.instatools.more.Utils.calendar
+import ir.mahdiparastesh.instatools.more.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
-import ir.mahdiparastesh.instatools.view.UiTools.z
+import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
+import ir.mahdiparastesh.instatools.more.Utils.z
 import java.io.FileInputStream
 import java.util.*
 

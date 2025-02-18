@@ -25,11 +25,10 @@ import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
-import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
+import ir.mahdiparastesh.instatools.more.Utils.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import java.util.concurrent.TimeoutException
 
@@ -60,7 +59,7 @@ class Expandable(
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
                     med.queue(c.dao)
-                    initDownloader()
+                    Downloads.initService(c)
                 }
             }
         }
@@ -69,14 +68,14 @@ class Expandable(
                 ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
                 car.queue(c.dao)
-                initDownloader()
+                Downloads.initService(c)
             }
         }
         b.downloadAll.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
                     med.queue(c.dao)
-                    initDownloader()
+                    Downloads.initService(c)
                 }
             }
         }
@@ -102,7 +101,7 @@ class Expandable(
                             caption?.text,
                         )
                     )
-                    initDownloader()
+                    Downloads.initService(c)
                 }
             }
         }
@@ -144,7 +143,10 @@ class Expandable(
         b.volume.vis(hasAudio)
         if (c !is Viewer) media?.owner()?.also { user ->
             b.username.text = "@${user.username}"
-            b.username.setOnClickListener { UiTools.openProfile(c, user.username!!) }
+            b.username.setOnClickListener {
+                if (!UiTools.openProfile(c, user.username!!))
+                    Viewer.comeHere(c, user.id())
+            }
         }
 
         val startBoundsInt = Rect()
@@ -250,9 +252,5 @@ class Expandable(
             })
             start()
         }
-    }
-
-    private suspend fun initDownloader() {
-        withContext(Dispatchers.Main) { Downloads.initService(c, "") }
     }
 }

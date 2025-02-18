@@ -6,7 +6,7 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
+import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*

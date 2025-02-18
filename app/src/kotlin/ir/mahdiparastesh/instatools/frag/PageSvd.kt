@@ -102,7 +102,7 @@ class PageSvd : BasePageMain(), Selective {
                 onError = { code ->
                     b.refresher.isRefreshing = false
                     if (c.mm.saved == null)
-                        onFailed(c.getString(R.string.unknownError, "$code"))
+                        onFailed(Api.error(code))
                 }
             )
             if (lazyList == null) {
@@ -292,8 +292,7 @@ class PageSvd : BasePageMain(), Selective {
         override suspend fun handle() {
             val svd = next()
             if (svd == null) {
-                if (download)
-                    withContext(Dispatchers.Main) { Downloads.initService(c, "") }
+                if (download) Downloads.initService(c)
                 return; }
             val saved = c.mm.saved?.items?.find { it.media.pk() == svd }
             if (saved == null) {

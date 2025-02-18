@@ -2,7 +2,8 @@ package ir.mahdiparastesh.instatools.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.more.Utils
+import java.net.URI
 
 @Entity
 class Queued(
@@ -22,7 +23,9 @@ class Queued(
     @PrimaryKey(autoGenerate = true)
     var id = 0L
 
-    fun fName(ext: String) = "${userName}_${UiTools.fileDateTime(date)}_$mediaId.$ext"
+    fun fName(ext: String) = "${userName}_${Utils.fileDateTime(date)}_$mediaId.$ext"
+
+    fun extension() = URI(url).path.split(".").last()
 
     fun isMainFile() = type.toInt() !in arrayOf(3)
 

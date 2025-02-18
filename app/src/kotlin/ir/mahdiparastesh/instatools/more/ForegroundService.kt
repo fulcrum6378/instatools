@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -38,7 +39,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         const val ACTION_STOP = "ACTION_STOP"
         private val services = arrayOf(Downloader::class, Exporter::class)
 
-        fun anyRunning() = arrayOf(Downloader, Exporter).any { it.active }
+        fun anyRunning() = arrayOf(Downloader, Exporter).any { it.active.value == true }
         // Never reference "Downloader"'s Companion in a static variable
 
         fun terminateTasks(c: Context) {
@@ -59,7 +60,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     /**
      * Abstract class from which all companion objects of ForegroundService subclasses must extend.
      */
-    abstract class ForegroundServiceCompanion : Alive() {
+    abstract class ForegroundServiceCompanion {
+        val active = MutableLiveData(false)
+
         abstract val klass: Class<*>
         abstract val channel: Notify.Channel
         open val ntfSmallIcon: Int = R.drawable.notification
@@ -86,7 +89,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
             ACTION_START -> resolveIntent(intent)
-            ACTION_STOP -> if (com.active) onCancel()
+            ACTION_STOP -> if (com.active.value == true) onCancel()
         }
         return START_NOT_STICKY
     }
@@ -96,7 +99,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     override fun onCreate() {
         super.onCreate()
-        com.active = true
+        com.active.value = true
         m = ViewModelProvider(viewModelStore, Model.Factory())["Model", Model::class.java]
         gsp = initGsp()
         sp = initSp(m.acc)
@@ -175,8 +178,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     override fun onDestroy() {
-        com.active = false
-        if (dbLazy.isInitialized() && !Alive.anyLiving()) db.close()
+        com.active.value = false
+        if (dbLazy.isInitialized() && !Utils.anyoneAlive()) db.close()
         super.onDestroy()
     }
 

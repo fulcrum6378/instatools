@@ -42,9 +42,10 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.more.Delay
 import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.more.Utils
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
+import ir.mahdiparastesh.instatools.more.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -311,7 +312,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                         else b.searchRes.adapter?.notifyDataSetChanged()
                         return true
                     }
-                    UiTools.ACC_FROM_URL.forEach { host ->
+                    Utils.ACC_FROM_URL.forEach { host ->
                         newText.accFromUrl(host)?.also {
                             searchInput.setText(it)
                             return true // onQueryTextChange will be invoked again by setText!
@@ -463,7 +464,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * Highlighted stories cannot be downloaded via sharing anymore
+  * Large heap?!?
+  * Friends is empty if Inquiry hasn't been triggered yet
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -

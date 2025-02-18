@@ -33,10 +33,11 @@ import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.BasePageViewer
+import ir.mahdiparastesh.instatools.more.Utils
+import ir.mahdiparastesh.instatools.more.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +130,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         }
         intent.data?.also { data ->
             var userName: String? = null
-            for (host in UiTools.ACC_FROM_URL)
+            for (host in Utils.ACC_FROM_URL)
                 data.toString().accFromUrl(host)
                     ?.also { u -> if (userName == null) userName = u }
             if (userName == null) return@also
@@ -153,11 +154,11 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         mm.user?.also { u ->
             if (!refresh && (userId == u.id || userName == u.username)) return@load
         }
-        if (expandable.zoomed) expandable.collapse()
+        if (::b.isInitialized && expandable.zoomed) expandable.collapse()
 
         loader?.cancel()
         loader = CoroutineScope(Dispatchers.IO).launch {
-            var userId_: String? = userId
+            var userId_: String? = if (!refresh) userId else mm.user!!.id()
             var userName_: String? = userName
             var userReplaced = false
 
@@ -189,7 +190,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     return@launch; }
                 userId_ = mm.profile!!.id!!
                 mm.user?.also { u ->
-                    if (!refresh && userId_ == u.id) {
+                    if (userId_ == u.id) { // !refresh &&
                         loader = null
                         return@launch; }
                     userReplaced = true

@@ -36,7 +36,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
@@ -52,7 +51,6 @@ object UiTools {
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MP = "https://mahdiparastesh.ir/"
     const val APP_NAME = "InstaTools"
-    val ACC_FROM_URL = arrayOf(Login.RAW_HOST, Login.HOST)
     //private const val maxInaccurateTimeItems = 2
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     const val MAX_BADGE_CHAR = 6
@@ -85,15 +83,15 @@ object UiTools {
     }
 
     /** Opens an IG profile in Instagram, if Instagram is installed. */
-    fun openProfile(c: Activity, user: String) {
-        try {
-            c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
-                    .setPackage(INSTA_PACKAGE)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        } catch (_: ActivityNotFoundException) {
-        }
+    fun openProfile(c: Activity, user: String): Boolean = try {
+        c.startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
+                .setPackage(INSTA_PACKAGE)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+        true
+    } catch (_: ActivityNotFoundException) {
+        false
     }
 
     /** Opens a link without any specifications on which app should handle it. */
@@ -106,12 +104,6 @@ object UiTools {
         }
     }
 
-    /** Helper class for turning 1 to "01". */
-    fun z(n: Int): String {
-        val s = n.toString()
-        return if (s.length == 1) "0$s" else s
-    }
-
     /** Helper class for vibrations of any duration. */
     @Suppress("DEPRECATION")
     fun Context.shake(dur: Long = 48L) {
@@ -121,14 +113,6 @@ object UiTools {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             vib.vibrate(VibrationEffect.createOneShot(dur, VibrationEffect.DEFAULT_AMPLITUDE))
         else vib.vibrate(dur)
-    }
-
-    /** Converts a timestamp to a human-readable date. */
-    fun date(time: Long): String {
-        val cal = time.calendar()
-        return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
-            "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
-            "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
     }
 
     /** Linkifies an AppCompatTextView. */
@@ -144,21 +128,6 @@ object UiTools {
             setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
         else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
     }
-
-    /** Converts a timestamp to a Calendar instance. */
-    fun Long.calendar(): Calendar = // needs milliseconds
-        Calendar.getInstance().apply { timeInMillis = this@calendar }
-
-    /** Converts a microseconds timestamp to a milliseconds one. */
-    fun Double.xFromMicroseconds() = toLong() / 1000L
-
-    /** Converts a seconds timestamp to a milliseconds one. */
-    fun Double.xFromSeconds() = toLong() * 1000L
-
-    /** Gets the IG user name from a link. */
-    fun String.accFromUrl(host: String): String? =
-        if (startsWith(host)) substringAfter(host).substringBefore("/")
-            .substringBefore("?") else null
 
     /** Position of a "Jump to Top" button. */
     fun jumperTrans(c: BaseActivity) = (c.resources.getDimension(R.dimen.jumperSize) +
@@ -235,14 +204,6 @@ object UiTools {
         return units[unit].format(nominalSize.toInt())
     }
 
-    /** @return a datetime text to be used in a file name. */
-    fun fileDateTime(time: Long): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = time }
-        return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
-            "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
-            "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
-    }
-
     /** @return a colour from a theme using an attribute resource. */
     @ColorInt
     fun ContextThemeWrapper.themeColor(@AttrRes attr: Int = android.R.attr.colorAccent) =
@@ -307,6 +268,4 @@ object UiTools {
             iv.setImageDrawable(null)
         }
     }
-
-    fun <T> Map<String, T>.getOrNull(key: String): T? = if (containsKey(key)) this[key] else null
 }

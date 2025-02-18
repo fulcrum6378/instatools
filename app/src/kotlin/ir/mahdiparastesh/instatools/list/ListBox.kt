@@ -11,11 +11,12 @@ import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.job.Exporter
+import ir.mahdiparastesh.instatools.more.Utils
+import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.xFromMicroseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +38,7 @@ class ListBox(val c: Main, private val f: PageBox) :
         h.b.name.text = thd.title()
 
         h.b.last.text =
-            c.getString(R.string.boxUntil, UiTools.date(thd.last_activity_at.xFromMicroseconds()))
+            c.getString(R.string.boxUntil, Utils.date(thd.last_activity_at.xFromMicroseconds()))
         h.b.root.setOnClickListener {
             c.mm.dmThread =
                 c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
