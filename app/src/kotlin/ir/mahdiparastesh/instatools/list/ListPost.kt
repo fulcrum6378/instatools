@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -12,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
@@ -21,9 +21,11 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-/** Abstract RecyclerView adapter that lists any kind of IG post from different API endpoints. */
-abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
-    RecyclerView.Adapter<ListPost<C, F>.ViewHolder>() where C : BaseActivity, F : BasePage<C> {
+/** Abstract RecyclerView adapter that lists IG posts. */
+abstract class ListPost<Activity, Fragment>(
+    protected val c: Activity, protected val f: Fragment
+) : RecyclerView.Adapter<ListPost<Activity, Fragment>.ViewHolder>()
+    where Activity : BaseActivity, Fragment : BasePage<Activity> {
 
     protected val typeVideo = c.drawable(R.drawable.video)!!
     protected val typeStack = c.drawable(R.drawable.stack)!!
@@ -38,7 +40,7 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
             object : ItemDetailsLookup.ItemDetails<String>() {
                 override fun getPosition(): Int = layoutPosition
-                override fun getSelectionKey(): String? = flexible(position)?.id
+                override fun getSelectionKey(): String? = this@ListPost[position]?.pk()
             }
     }
 
@@ -51,26 +53,36 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
         return ViewHolder(b)
     }
 
-    abstract class FlexiblePost(val id: String, val thumb: String?) {
-        abstract fun typeDrw(): Drawable?
-        abstract fun isStored(): Boolean
-    }
-
-    abstract fun flexible(i: Int): FlexiblePost?
+    abstract operator fun get(position: Int): Media?
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
-        val flex = flexible(i) ?: return
-        val norm = tracker?.isSelected(flex.id) != true
+        val med = this[i] ?: return
+        val norm = tracker?.isSelected(med.pk()) != true
 
-        if (flex.thumb != null) Glide.with(c.c)
-            .load(flex.thumb)
+        if (med.thumb() != null) Glide.with(c.c)
+            .load(med.thumb())
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
-        h.b.type.setImageDrawable(flex.typeDrw())
-        h.b.stored.vis(flex.isStored())
+        h.b.type.setImageDrawable(
+            when {
+                med.carousel_media != null -> typeStack
+                med.video_versions != null -> typeVideo
+                else -> null
+            }
+        )
+        val theirs = c.m.files?.filter { it.startsWith("${med.owner().username}_") }
+            ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
+        h.b.stored.vis(
+            if (theirs == null)
+                false
+            else if (med.carousel_media != null)
+                med.carousel_media.all { it.pk() in theirs }
+            else
+                med.pk() in theirs
+        )
         h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
         h.b.click.setOnClickListener { expand(it, h.layoutPosition) }
         h.b.click.setOnLongClickListener {
@@ -94,7 +106,9 @@ abstract class ListPost<C, F>(protected val c: C, protected val f: F) :
         }
     }
 
-    abstract fun Expandable.settings(pos: Int)
+    fun Expandable.settings(position: Int) {
+        media = this@ListPost[position]
+    }
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {
         override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {

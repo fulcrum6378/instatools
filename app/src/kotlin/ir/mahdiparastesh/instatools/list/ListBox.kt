@@ -47,7 +47,8 @@ class ListBox(val c: Main, private val f: PageBox) :
         }
         h.b.more.setOnClickListener {
             thd = c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            MaterialMenu(c, it, R.menu.box_more,
+            MaterialMenu(
+                c, it, R.menu.box_more,
                 R.id.bmHtml to { f.expOptions(Exporter.Method.HTML, thd) },
                 R.id.bmPdf to { f.expOptions(Exporter.Method.PDF, thd) },
                 R.id.bmTxt to { f.expOptions(Exporter.Method.TXT, thd) },

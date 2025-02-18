@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.api
 
 import android.animation.ObjectAnimator
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("SpellCheckingInspection")
 interface Rest {
@@ -10,7 +11,7 @@ interface Rest {
 
     data class LazyList<N>(
         //val auto_load_more_enabled: Boolean,
-        val items: ArrayList<N>,
+        val items: CopyOnWriteArrayList<N>,
         var more_available: Boolean,
         var next_max_id: String?,
         //val num_results: Float, // in current fetch, not real total

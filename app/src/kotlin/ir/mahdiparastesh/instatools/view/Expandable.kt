@@ -14,26 +14,21 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.lifecycle.MutableLiveData
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
-import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.view.UiTools.snackbar
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import ir.mahdiparastesh.instatools.view.UiTools.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import java.util.concurrent.TimeoutException
@@ -45,7 +40,6 @@ class Expandable(
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
-    var node: GraphQl.Post? = null
     var media: Media? = null
     var thumb: View? = null
     var zoomed = false
@@ -129,8 +123,13 @@ class Expandable(
         }
     }
 
-    private fun loaded() {
-        if (media == null) return
+    fun expand() {
+        if (thumb == null || media == null || zoomed) return
+        zoomed = true
+        onZoomChanged(true)
+        currentAnimator?.cancel()
+        b.username.text = ""
+
         b.slider.adapter = ListCar(c, media!!, muteSound)
         b.indicator.attachTo(b.slider)
         b.buttons.vis()
@@ -147,27 +146,7 @@ class Expandable(
             b.username.text = "@${user.username}"
             b.username.setOnClickListener { UiTools.openProfile(c, user.username!!) }
         }
-    }
 
-    fun expand() {
-        if (thumb == null || (node == null && media == null) || zoomed) return
-        zoomed = true
-        onZoomChanged(true)
-        currentAnimator?.cancel()
-        b.username.text = ""
-        if (media == null) runBlocking {
-            val wrapper = Api.call<Media.Wrapper>(
-                Api.Endpoint.MEDIA_ITEM.url.format(node!!.id), Media.Wrapper::class,
-                cache = true, onError = { code ->
-                    snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
-                }
-            )
-            if (wrapper == null) return@runBlocking
-            media = wrapper.items?.getOrNull(0)
-            if (media == null)
-                snackbar(b.root, R.string.unknownMyError, Snackbar.LENGTH_LONG)
-            else loaded()
-        } else loaded()
         val startBoundsInt = Rect()
         val finalBoundsInt = Rect()
         val globalOffset = Point()

@@ -168,7 +168,7 @@ class PageVwr : BasePageViewer() {
             val graphQl = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
                 isPost = true, body = GraphQlQuery.PROFILE_POSTS
-                    .body(c.mm.user!!.username!!, "33", c.mm.posts!!.edges.last().node.id),
+                    .body(c.mm.user!!.username!!, "33", c.mm.posts!!.edges.last().node.pk()),
                 onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
@@ -184,16 +184,18 @@ class PageVwr : BasePageViewer() {
                 fetcher = null
                 return@launch; }
 
-            if (c.mm.posts == null)
+            if (c.mm.posts == null) {
                 c.mm.posts = page
-            else c.mm.posts?.apply {
+                withContext(Dispatchers.Main) {
+                    onLoaded(c.mm.posts?.edges.isNullOrEmpty())
+                    if (!b.rv.canScrollVertically(1)) fetchSome()
+                }
+            } else c.mm.posts?.apply {
                 val lastBefore = edges.size
                 edges.addAll(page.edges)
                 withContext(Dispatchers.Main) {
                     if (b.rv.adapter != null && page.edges.isNotEmpty())
                         b.rv.adapter?.notifyItemRangeInserted(lastBefore, page.edges.size)
-                    onLoaded(c.mm.posts?.edges.isNullOrEmpty())
-
                     if (!b.rv.canScrollVertically(1)) fetchSome()
                 }
                 page_info.has_next_page = page.page_info.has_next_page
@@ -218,7 +220,7 @@ class PageVwr : BasePageViewer() {
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
-                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id }, true)
+                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.pk() }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -241,10 +243,10 @@ class PageVwr : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id
+        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.pk()
         override fun getPosition(key: String): Int {
             c.mm.posts?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.id == key) return@getPosition i
+                if (edge.node.pk() == key) return@getPosition i
             }
             return -1
         }
@@ -256,7 +258,7 @@ class PageVwr : BasePageViewer() {
             if (edg == null) {
                 Downloads.initService(c)
                 return; }
-            c.mm.posts?.edges?.find { it.node.id == edg }
+            c.mm.posts?.edges?.find { it.node.pk() == edg }
                 ?.also { edge -> edge.node.queue(c.dao) } // TODO handle all posts in one search
             ended()
         }

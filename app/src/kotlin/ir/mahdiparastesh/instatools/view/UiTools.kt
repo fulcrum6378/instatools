@@ -38,10 +38,8 @@ import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.more.BaseActivity
 import java.util.*
-import kotlin.math.abs
 
 object UiTools {
     const val DATE_FORMAT = "yyyy.MM.dd"
@@ -262,18 +260,6 @@ object UiTools {
     fun CompoundButton.enabled(bb: Boolean) {
         isEnabled = bb
         alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
-    }
-
-    /** Finds a thumbnail address from a GraphQl.Post. */
-    fun GraphQl.Post.thumb(nearest: Double = 0.0): String {
-        if (thumbnail_resources == null) return thumbnail_src
-        var selected: GraphQl.Src? = null
-        for (src in thumbnail_resources)
-            if (selected == null)
-                selected = src
-            else if (abs(selected.config_width - nearest) < abs(src.config_width - nearest))
-                selected = src
-        return selected?.src ?: thumbnail_src
     }
 
     /** Helper function for showing a Snackbar. */

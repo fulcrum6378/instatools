@@ -22,11 +22,11 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.list.ListUnf
 import ir.mahdiparastesh.instatools.more.*
 import ir.mahdiparastesh.instatools.view.Notify
@@ -101,7 +101,8 @@ class PageUnf : BasePageMain() {
      * - Limiting maximum items to 12 on each fetch made it worse!
      * - Adding additional invalid random query parameters also didn't help!
      */
-    inner class Inquiry(private val c: Persistent) : BaseThread() {
+    inner class Inquiry(private val c: Persistent) : Thread() {
+        var active = false
         private lateinit var oldFriends: List<Friend>
         private val newFriends = arrayListOf<Friend>()
 
@@ -110,7 +111,7 @@ class PageUnf : BasePageMain() {
         }
 
         override fun run() {
-            super.run()
+            active = true
             runBlocking {
                 oldFriends = c.dao.friends()
                 allFollow(theFollowers = false)
@@ -137,7 +138,7 @@ class PageUnf : BasePageMain() {
                     else followed = true
                 } else newFriends.add(
                     Friend(
-                        u.pk, u.username, u.full_name!!, u.profile_pic_url, u.is_private,
+                        u.id(), u.username!!, u.full_name!!, u.picture(), u.pv(),
                         theFollowers, !theFollowers
                     )
                 )
@@ -226,7 +227,12 @@ class PageUnf : BasePageMain() {
                     setContentIntent(
                         PendingIntent.getActivity(
                             c.c, 0, Intent(c.c, Main::class.java)
-                                .apply { putExtra(TriplePageActivity.Companion.EXTRA_TURN_TO_PAGE, 0) },
+                                .apply {
+                                    putExtra(
+                                        TriplePageActivity.Companion.EXTRA_TURN_TO_PAGE,
+                                        0
+                                    )
+                                },
                             ForegroundService.ntfMutability()
                         )
                     )
@@ -235,5 +241,11 @@ class PageUnf : BasePageMain() {
             )
             c.sp?.edit { putLong(Settings.spNotifiedUnfTill, Persistent.now()) }
         } // Never use Fragment::getString()
+
+        override fun interrupt() {
+            if (!active) return
+            active = false
+            super.interrupt()
+        }
     }
 }

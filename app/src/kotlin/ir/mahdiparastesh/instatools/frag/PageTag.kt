@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.more.*
@@ -29,7 +31,7 @@ import kotlinx.coroutines.withContext
 
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
-    private var thread: Job? = null
+    private var fetcher: Job? = null
 
     override val bInitialised: Boolean get() = ::b.isInitialized
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
@@ -40,39 +42,21 @@ class PageTag : BasePageViewer() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // List
+        // list
         b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (!b.rv.canScrollVertically(1)) fetchSome()
             }
         })
 
-        // Error
+        // error
         b.error.setOnClickListener {
             c.b.refresher.isRefreshing = true
             fetchSome()
         }
 
-        load()
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.vtDownload -> {
-                if (tracker != null && c.mm.tagged?.items != null)
-                    Saver(tracker!!.selection)
-                tracker?.clearSelection()
-            }
-            R.id.vtSelectAll -> if (c.mm.tagged?.items != null)
-                tracker?.setItemsSelected(c.mm.tagged!!.items!!.map { it.id }, true)
-            R.id.vtDeselectAll -> tracker?.clearSelection()
-        }
-        return super.onMenuItemClick(item)
-    }
-
-    fun load() {
         if (c.mm.tagged != null)
-            onLoaded(c.mm.tagged?.items.isNullOrEmpty())
+            onLoaded(c.mm.tagged?.edges.isNullOrEmpty())
         else fetchSome()
     }
 
@@ -80,37 +64,44 @@ class PageTag : BasePageViewer() {
         if (c.mm.user == null) {
             c.mm.tagged = null
             return; }
-        if (thread != null || c.mm.tagged?.more_available == false) {
+        if (fetcher != null || c.mm.tagged?.page_info?.has_next_page == false) {
             return; }
 
-        thread = CoroutineScope(Dispatchers.IO).launch {
-            val wrapper = Api.call<Wrapper>(
-                Api.Endpoint.TAGGED.url.format(
-                    c.mm.user?.id ?: "", c.mm.tagged?.next_max_id ?: ""
-                ), Wrapper::class, onError = { code ->
+        fetcher = CoroutineScope(Dispatchers.IO).launch {
+            val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.pk()
+            val graphQl = Api.call<GraphQl>(
+                Api.Endpoint.QUERY.url, GraphQl::class,
+                isPost = true, body = if (cursor == null)
+                    GraphQlQuery.PROFILE_TAGGED.body(c.mm.user!!.id!!, "36")
+                else
+                    GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),
+                onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
             )
-            if (wrapper == null) {
-                thread = null
+            if (graphQl == null) {
+                fetcher = null
+                return@launch; }
+            val page = graphQl.data?.xdt_api__v1__usertags__user_id__feed_connection
+            if (page == null) {
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                }
+                fetcher = null
                 return@launch; }
 
             if (c.mm.tagged == null) {
-                c.mm.tagged = wrapper
+                c.mm.tagged = page
                 withContext(Dispatchers.Main) {
-                    onLoaded(c.mm.tagged?.items.isNullOrEmpty())
+                    onLoaded(c.mm.tagged?.edges.isNullOrEmpty())
                     if (!b.rv.canScrollVertically(1)) fetchSome()
                 }
             } else c.mm.tagged?.apply {
-                val lastBefore = items?.size ?: 0
-                val ids = items?.map { it.id }
-                wrapper.items
-                    ?.let { if (ids != null) it.filter { p -> p.id !in ids } else it }
-                    ?.let { items?.addAll(it) }
-                next_max_id = wrapper.next_max_id
-                more_available = wrapper.more_available
+                val lastBefore = edges.size
+                edges.addAll(page.edges)
+                page_info.has_next_page = page.page_info.has_next_page
                 withContext(Dispatchers.Main) {
-                    b.rv.adapter?.notifyItemRangeInserted(lastBefore, items?.size ?: 0)
+                    b.rv.adapter?.notifyItemRangeInserted(lastBefore, edges.size)
                     if (!b.rv.canScrollVertically(1)) fetchSome()
                 }
             }
@@ -131,6 +122,20 @@ class PageTag : BasePageViewer() {
         c.b.refresher.isRefreshing = false
     }
 
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.vtDownload -> {
+                if (tracker != null && c.mm.tagged?.edges != null)
+                    Saver(tracker!!.selection)
+                tracker?.clearSelection()
+            }
+            R.id.vtSelectAll -> if (c.mm.tagged?.edges != null)
+                tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.pk() }, true)
+            R.id.vtDeselectAll -> tracker?.clearSelection()
+        }
+        return super.onMenuItemClick(item)
+    }
+
     override fun buildSelection() {
         tracker = SelectionTracker.Builder(
             "viewer_tagged", b.rv,
@@ -145,24 +150,23 @@ class PageTag : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.tagged?.items?.getOrNull(i)?.id
+        override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.pk()
         override fun getPosition(key: String): Int {
-            c.mm.tagged?.items?.forEachIndexed { i, med ->
-                if (med.id == key) return@getPosition i
+            c.mm.tagged?.edges?.forEachIndexed { i, edge ->
+                if (edge.node.pk() == key) return@getPosition i
             }
             return -1
         }
     }
 
     inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
-
         override suspend fun handle() {
-            val post = next()
-            if (post == null) {
+            val edg = next()
+            if (edg == null) {
                 Downloads.initService(c)
                 return
             }
-            c.mm.tagged?.items?.find { it.id == post }?.queue(c.dao)
+            c.mm.tagged?.edges?.find { it.node.pk() == edg }?.node?.queue(c.dao)
             ended()
         }
     }

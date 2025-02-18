@@ -200,7 +200,7 @@ class PageSvd : BasePageMain(), Selective {
                 tracker?.clearSelection()
             }
             R.id.mtSelectAll -> if (c.mm.saved != null)
-                tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id }, true)
+                tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.pk() }, true)
 
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
@@ -237,10 +237,10 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.id
+        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.pk()
         override fun getPosition(key: String): Int {
             c.mm.saved?.items?.forEachIndexed { i, item ->
-                if (item.media.id == key) return@getPosition i
+                if (item.media.pk() == key) return@getPosition i
             }
             return -1
         }
@@ -295,7 +295,7 @@ class PageSvd : BasePageMain(), Selective {
                 if (download)
                     withContext(Dispatchers.Main) { Downloads.initService(c, "") }
                 return; }
-            val saved = c.mm.saved?.items?.find { it.media.id == svd }
+            val saved = c.mm.saved?.items?.find { it.media.pk() == svd }
             if (saved == null) {
                 ended(); return; }
 
@@ -306,7 +306,7 @@ class PageSvd : BasePageMain(), Selective {
                 return; }
 
             val rest = Api.call<Rest.QuickResponse>(
-                Api.Endpoint.UNSAVE.url.format(saved.media.id), Rest.QuickResponse::class,
+                Api.Endpoint.UNSAVE.url.format(saved.media.pk()), Rest.QuickResponse::class,
                 isPost = true, onError = { code ->
                     UiTools.snackbar(b.root, Api.error(code), Snackbar.LENGTH_LONG)
                 }
@@ -317,7 +317,7 @@ class PageSvd : BasePageMain(), Selective {
             withContext(Dispatchers.Main) {
                 //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
                 c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
-                c.mm.saved?.items?.find { it.media.id == svd }?.let { media ->
+                c.mm.saved?.items?.find { it.media.pk() == svd }?.let { media ->
                     val x = c.mm.saved!!.items.indexOf(media)
                     c.mm.saved!!.items.removeAt(x)
                     b.rv.adapter?.notifyItemRemoved(x)

@@ -4,7 +4,6 @@ package ir.mahdiparastesh.instatools.more
  * An abstract class, when implemented gives:
  * - active : a Boolean which indicates if the object is alive or not,
  *            and must be changed during onCreate and onDestroy.
- * - handler : which accepts Messages.
  * In this app we implemented it on companion objects indirectly.
  *
  * @see BaseActivity.ActivityCompanion

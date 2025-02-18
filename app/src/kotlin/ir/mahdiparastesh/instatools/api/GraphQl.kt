@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 data class GraphQl(
@@ -24,7 +25,7 @@ data class GraphQl(
     )
 
     data class Page<Node>(
-        val edges: ArrayList<Edge<Node>>,
+        val edges: CopyOnWriteArrayList<Edge<Node>>,
         val page_info: PageInfo,
     )
 

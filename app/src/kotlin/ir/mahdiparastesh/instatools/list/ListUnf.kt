@@ -99,8 +99,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     private fun unfollow(unf: Friend) {
         CoroutineScope(Dispatchers.IO).launch {
             val rest = Api.call<Rest.DoFollow>(
-                Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class,
-                isPost = true,
+                Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class, isPost = true,
                 onError = { code ->
                     if (code == 429) try {
                         MaterialAlertDialogBuilder(

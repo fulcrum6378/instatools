@@ -19,7 +19,7 @@ data class Media(
     //val comment_count: Float?,
     val has_audio: Boolean?,
     val has_liked: Boolean?,
-    val id: String, // <media ID>_<user ID>
+    private val id: String, // <media ID>_<user ID>
     //val invited_coauthor_producers: List<User>?,
     val image_versions2: ImageVersions2,
     //val like_count: Double?,
@@ -31,7 +31,7 @@ data class Media(
     val original_width: Float?, // nullable in tagged carousel items
     val owner: User?,
     //val photo_of_you: Boolean?,
-    val pk: String?, // nullable in tagged carousel items
+    private val pk: String?, // nullable in tagged carousel items
     val product_type: String?,
     val taken_at: Double,
     val user: User?,

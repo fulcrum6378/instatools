@@ -49,7 +49,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val LOGIN_URL = "${HOST}accounts/login/"
         const val SP_ACCOUNT = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
-        const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong."
+        const val LOGGED_OUT_MSG_500 = "Sorry, something went wrong." // FIXME
         const val BROWSE_FOR_ADD = 0
         const val BROWSE_AS_GUEST = 1
         const val BROWSE_ACC_EXIST = 2

@@ -6,7 +6,7 @@ import ir.mahdiparastesh.instatools.R
 /**
  * Subclass of BaseActivity which controls a Service and switches start/stop buttons.
  * This activity does NOT use bound services.
- * @see ForegroundService
+ * @see [ir.mahdiparastesh.instatools.more.ForegroundService]
  */
 abstract class ServiceOwnerActivity : CounterActivity() {
     abstract val controllerId: Int

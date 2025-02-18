@@ -26,13 +26,13 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
         val qud = c.mm.queueds?.getOrNull(i) ?: return
 
-        // Main
+        // main
         if (qud.type != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
         else h.b.thumb.setImageResource(R.drawable.audio)
         h.b.user.text = "${i + 1}. ${qud.userName}"
         h.b.date.text = UiTools.date(qud.addedAt)
 
-        // Status
+        // status
         if (qud.status == 2.toByte())
             h.b.status.setImageResource(R.drawable.play)
         else h.b.status.setAnimation(
@@ -47,7 +47,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             if (!qud.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
         h.b.status.setPadding(pad, pad, pad, pad)
 
-        // Clicks
+        // clicks
         h.b.root.setOnClickListener {
             c.mm.queueds?.getOrNull(h.layoutPosition)?.let {
                 if (it.link.isNotEmpty()) UiTools.openLink(c, it.link)
@@ -71,7 +71,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             }
         }
 
-        // Separator
+        // separator
         h.b.sep.vis(i < itemCount - 1)
     }
 

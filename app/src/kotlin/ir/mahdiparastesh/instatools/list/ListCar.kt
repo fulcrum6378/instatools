@@ -10,10 +10,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ir.mahdiparastesh.instatools.databinding.ListCarBinding
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.databinding.ListCarBinding
 import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.job.Downloader.MediaType
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
@@ -26,15 +25,15 @@ class ListCar(
     val sessions: ArrayList<MediaSession?>
 
     init {
-        if (med.carousel_media != null) for (slide in med.carousel_media!!) slides.add(
+        if (med.carousel_media != null) for (slide in med.carousel_media) slides.add(
             Slide(
                 slide.nearest(),
-                MediaType.entries.find { it.inDb == (slide.media_type).toInt().toByte() }!!
+                Media.Type.entries.find { it.num == (slide.media_type).toInt().toByte() }!!
             )
-        ) else if (med.image_versions2 != null) slides.add(
+        ) else slides.add(
             Slide(
                 med.nearest(),
-                MediaType.entries.find { it.inDb == (med.media_type).toInt().toByte() }!!
+                Media.Type.entries.find { it.num == (med.media_type).toInt().toByte() }!!
             )
         )
         sessions = ArrayList(arrayOfNulls<MediaSession?>(slides.size).toMutableList())
@@ -56,11 +55,11 @@ class ListCar(
         sessions.forEachIndexed { ii, ms -> if (i != ii) ms?.player?.pause() }
 
         when (slides[i].type) {
-            MediaType.PHOTO -> slides[i].url?.let {
+            Media.Type.IMAGE -> slides[i].url?.let {
                 h.b.image.vis()
                 Glide.with(c.c).load(it).into(h.b.image)
             }
-            MediaType.VIDEO -> slides[i].url?.let {
+            Media.Type.VIDEO -> slides[i].url?.let {
                 h.b.video.vis()
                 sessions[i] = MediaSession.Builder(
                     c, ExoPlayer.Builder(c).setAudioAttributes(
@@ -88,5 +87,5 @@ class ListCar(
         }
     }
 
-    data class Slide(val url: String?, val type: MediaType)
+    data class Slide(val url: String?, val type: Media.Type)
 }
