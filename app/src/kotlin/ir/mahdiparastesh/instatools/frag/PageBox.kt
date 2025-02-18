@@ -35,9 +35,9 @@ import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.list.ListBox
 import ir.mahdiparastesh.instatools.list.ListThd
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
-import ir.mahdiparastesh.instatools.more.BasePageMain
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.BasePageMain
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.areEnabled

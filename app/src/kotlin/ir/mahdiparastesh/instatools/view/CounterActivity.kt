@@ -5,7 +5,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 
 abstract class CounterActivity : BaseActivity() {

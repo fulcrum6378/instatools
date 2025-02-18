@@ -11,7 +11,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.list.ListSto
-import ir.mahdiparastesh.instatools.more.BasePageViewer
+import ir.mahdiparastesh.instatools.util.BasePageViewer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

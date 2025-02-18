@@ -18,7 +18,7 @@ import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
 import ir.mahdiparastesh.instatools.frag.PageUnf
-import ir.mahdiparastesh.instatools.more.Utils
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools

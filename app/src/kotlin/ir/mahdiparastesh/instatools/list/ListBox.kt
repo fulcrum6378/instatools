@@ -11,8 +11,8 @@ import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.job.Exporter
-import ir.mahdiparastesh.instatools.more.Utils
-import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
+import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools

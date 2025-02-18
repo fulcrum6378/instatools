@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.util
 
 import androidx.documentfile.provider.DocumentFile
 import java.io.IOException

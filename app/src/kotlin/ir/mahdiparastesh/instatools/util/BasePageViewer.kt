@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.util
 
 import android.annotation.SuppressLint
 import androidx.appcompat.view.ContextThemeWrapper
@@ -9,7 +9,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListPost
-import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake

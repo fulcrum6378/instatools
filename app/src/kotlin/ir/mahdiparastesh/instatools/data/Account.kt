@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import android.content.Context
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Login.Companion.SP_ACCOUNT
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.util.Persistent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

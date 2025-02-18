@@ -2,9 +2,9 @@ package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.more.Utils.xFromSeconds
+import ir.mahdiparastesh.instatools.util.Utils.xFromSeconds
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")

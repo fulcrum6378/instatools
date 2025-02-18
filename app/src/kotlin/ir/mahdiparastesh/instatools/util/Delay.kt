@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.util
 
 import android.os.Handler
 import android.os.Looper

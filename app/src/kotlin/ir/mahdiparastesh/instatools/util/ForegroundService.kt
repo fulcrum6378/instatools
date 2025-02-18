@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.util
 
 import android.app.NotificationManager
 import android.app.PendingIntent

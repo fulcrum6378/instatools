@@ -24,19 +24,19 @@ import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.StorageCache
+import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.job.Exporter
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.DbFile
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.Persistent.Companion.isPathAccessible
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.DbFile
+import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Persistent
+import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.more.Utils.getOrNull
+import ir.mahdiparastesh.instatools.util.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -249,7 +249,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         prf.edit { remove(spStorage) }
                         updateMainPath("")
                         CoroutineScope(Dispatchers.IO).launch {
-                            StorageCache.folderRemoved(this@Settings, uri)
+                            DownloadHistory.folderRemoved(this@Settings, uri)
                             uri.release(this@Settings, globalMode)
                         }
                     }
@@ -451,7 +451,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         saveAliases(prf, aliases)
                         if (br.root.isChecked) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                StorageCache.folderRemoved(this@Settings, uri)
+                                DownloadHistory.folderRemoved(this@Settings, uri)
                                 uri.release(this@Settings, globalMode)
                             }
                             CoroutineScope(Dispatchers.IO).launch {
@@ -486,7 +486,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 // Remove the previous path if existed
                 val prevUri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
                 if (prevUri != null) CoroutineScope(Dispatchers.IO).launch {
-                    StorageCache.folderRemoved(this@Settings, uri)
+                    DownloadHistory.folderRemoved(this@Settings, uri)
                     uri.release(this@Settings, globalMode)
                 }
 
@@ -509,12 +509,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 bfa?.listPaths()
                 bfa?.folders?.setSelection(uriFolders!!.indexOfFirst { it.toString() == uri.toString() })
                 CoroutineScope(Dispatchers.IO).launch {
-                    StorageCache.folderAdded(this@Settings, uri)
+                    DownloadHistory.folderAdded(this@Settings, uri)
                 }
             }
         }
         m.files = null
-        CoroutineScope(Dispatchers.IO).launch { StorageCache.saveStorageCache(this@Settings) }
+        CoroutineScope(Dispatchers.IO).launch { DownloadHistory.saveStorageCache(this@Settings) }
         // this doesn't update the cache, it just clears it, it'll get updated automatically later.
     }
 }

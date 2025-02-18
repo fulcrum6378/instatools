@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.util
 
 import ir.mahdiparastesh.instatools.Login
 import java.util.Calendar

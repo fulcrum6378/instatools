@@ -21,7 +21,8 @@ import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.util.*
+import ir.mahdiparastesh.instatools.view.SelectionHandler
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

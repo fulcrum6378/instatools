@@ -17,7 +17,7 @@ import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onBind
 import ir.mahdiparastesh.instatools.list.ListThd.Companion.onCreate
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.job.Exporter
 import java.io.FileOutputStream
 

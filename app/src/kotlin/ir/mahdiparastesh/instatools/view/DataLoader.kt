@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
 interface DataLoader {

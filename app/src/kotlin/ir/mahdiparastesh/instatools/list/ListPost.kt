@@ -14,8 +14,8 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.BasePage
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer

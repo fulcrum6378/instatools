@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.more
+package ir.mahdiparastesh.instatools.view
 
 import androidx.recyclerview.selection.Selection
 import kotlinx.coroutines.CoroutineScope

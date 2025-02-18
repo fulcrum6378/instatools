@@ -31,10 +31,10 @@ import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListCar
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePageViewer
-import ir.mahdiparastesh.instatools.more.Utils
-import ir.mahdiparastesh.instatools.more.Utils.accFromUrl
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.BasePageViewer
+import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools

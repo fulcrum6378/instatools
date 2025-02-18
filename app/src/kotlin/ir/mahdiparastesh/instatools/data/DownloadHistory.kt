@@ -6,8 +6,8 @@ import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.walk
+import ir.mahdiparastesh.instatools.util.Persistent
+import ir.mahdiparastesh.instatools.util.walk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,10 +19,10 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  * Caches the paths of downloaded files for indicating that their related posts are already
  * downloaded.
- * @see ir.mahdiparastesh.instatools.list.ListPost.FlexiblePost.isStored
+ * @see [ir.mahdiparastesh.instatools.list.ListPost]
  */
 @Suppress("RedundantSuspendModifier")
-object StorageCache {
+object DownloadHistory {
     private var loading = false
 
     @MainThread
@@ -83,7 +83,9 @@ object StorageCache {
     }
 
     private fun List<DocumentFile>.filterMedia() = filter {
-        it.isFile && it.name?.let { n -> n.endsWith(".jpg") || n.endsWith(".mp4") } == true
+        it.isFile && it.name?.let { n ->
+            n.endsWith(".jpg") || n.endsWith(".png") || n.endsWith(".webp") || n.endsWith(".mp4")
+        } == true
     }.map { it.name!! }.toSet()
 
     class Stored(c: Context) : File(c.cacheDir, "storage.json")

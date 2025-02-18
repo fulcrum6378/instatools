@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.data.Favourite
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.view.UiTools.INSTA_PACKAGE
 import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import java.text.DecimalFormat

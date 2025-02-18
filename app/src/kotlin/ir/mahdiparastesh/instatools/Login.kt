@@ -22,9 +22,9 @@ import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.api.PageConfig
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.list.ListAcc
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -14,8 +14,8 @@ import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.data.StorageCache
-import ir.mahdiparastesh.instatools.more.ForegroundService
+import ir.mahdiparastesh.instatools.data.DownloadHistory
+import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -217,7 +217,7 @@ class Downloader : ForegroundService() {
             }.onFailure {
                 if (BuildConfig.DEBUG) throw it
             }
-            StorageCache.saveStorageCache(this@Downloader)
+            DownloadHistory.saveStorageCache(this@Downloader)
             val upToDate = dao.queueds()
             Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_RESET, 1, 0, upToDate)
                 ?.sendToTarget()

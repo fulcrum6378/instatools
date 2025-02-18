@@ -1,7 +1,7 @@
 package ir.mahdiparastesh.instatools.api
 
-import ir.mahdiparastesh.instatools.more.Persistent
-import ir.mahdiparastesh.instatools.more.Utils
+import ir.mahdiparastesh.instatools.util.Persistent
+import ir.mahdiparastesh.instatools.util.Utils
 
 @Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")
 data class Dm(

@@ -28,7 +28,7 @@ import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.PageUnfBinding
 import ir.mahdiparastesh.instatools.list.ListUnf
-import ir.mahdiparastesh.instatools.more.*
+import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import kotlinx.coroutines.*

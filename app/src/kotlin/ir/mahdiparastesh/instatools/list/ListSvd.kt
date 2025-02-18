@@ -7,7 +7,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 
 class ListSvd(c: Main, f: PageSvd) : ListPost<Main, PageSvd>(c, f) {

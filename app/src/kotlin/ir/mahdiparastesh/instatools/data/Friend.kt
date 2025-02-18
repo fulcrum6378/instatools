@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import ir.mahdiparastesh.instatools.more.Utils.calendar
+import ir.mahdiparastesh.instatools.util.Utils.calendar
 
 @Entity
 class Friend(

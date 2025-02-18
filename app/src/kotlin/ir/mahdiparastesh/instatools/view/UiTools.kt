@@ -37,7 +37,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.more.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
 import java.util.*
 
 object UiTools {

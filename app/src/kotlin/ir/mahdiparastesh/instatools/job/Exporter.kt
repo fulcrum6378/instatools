@@ -19,8 +19,8 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.expt.HtmlExporter
 import ir.mahdiparastesh.instatools.expt.PdfExporter
 import ir.mahdiparastesh.instatools.expt.TxtExporter
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Persistent
+import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.view.Notify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

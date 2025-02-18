@@ -7,9 +7,9 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.more.Utils.calendar
-import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
-import ir.mahdiparastesh.instatools.more.Utils.z
+import ir.mahdiparastesh.instatools.util.Utils.calendar
+import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
+import ir.mahdiparastesh.instatools.util.Utils.z
 import kotlinx.coroutines.runBlocking
 import java.io.FileOutputStream
 import java.util.*

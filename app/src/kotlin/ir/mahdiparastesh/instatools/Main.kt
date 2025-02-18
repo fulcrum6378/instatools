@@ -32,7 +32,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Friend
-import ir.mahdiparastesh.instatools.data.StorageCache
+import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
@@ -40,12 +40,12 @@ import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.more.Delay
-import ir.mahdiparastesh.instatools.more.ForegroundService
-import ir.mahdiparastesh.instatools.more.Utils
+import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.more.Utils.accFromUrl
+import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -220,7 +220,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         }
 
         // Miscellaneous
-        if (m.files == null) StorageCache.load(this)
+        if (m.files == null) DownloadHistory.load(this)
         if (!guest) {
             updateProfile()
             CoroutineScope(Dispatchers.IO).launch {

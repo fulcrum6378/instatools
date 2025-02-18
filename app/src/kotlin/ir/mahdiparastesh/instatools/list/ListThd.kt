@@ -19,7 +19,7 @@ import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.more.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.job.Exporter.Downloadable
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -27,11 +27,11 @@ import ir.mahdiparastesh.instatools.view.FastCustomGlide
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.anchor
-import ir.mahdiparastesh.instatools.more.Utils.calendar
-import ir.mahdiparastesh.instatools.more.Utils.getOrNull
+import ir.mahdiparastesh.instatools.util.Utils.calendar
+import ir.mahdiparastesh.instatools.util.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.more.Utils.xFromMicroseconds
-import ir.mahdiparastesh.instatools.more.Utils.z
+import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
+import ir.mahdiparastesh.instatools.util.Utils.z
 import java.io.FileInputStream
 import java.util.*
 

@@ -9,9 +9,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.badge.BadgeDrawable
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.more.BaseActivity
-import ir.mahdiparastesh.instatools.more.BasePage
-import ir.mahdiparastesh.instatools.more.Delay
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.BasePage
+import ir.mahdiparastesh.instatools.util.Delay
 import kotlin.reflect.KClass
 
 /**
