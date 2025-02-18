@@ -27,7 +27,7 @@ import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
-import ir.mahdiparastesh.instatools.frag.PageRel
+import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListCar
@@ -44,7 +44,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
+class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     private var loader: Job? = null
     val expandable: Expandable by lazy {
@@ -57,7 +57,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = mm.currentPage
-    override val aKlass = PageRel::class
+    override val aKlass = PageSto::class
     override val bKlass = PageVwr::class
     override val cKlass = PageTag::class
     override val mode = TripleMode.FRAGMENT_MANAGER
@@ -67,7 +67,7 @@ class Viewer : TriplePageActivity<PageRel, PageVwr, PageTag>(), Toolbar.OnMenuIt
         var user: User? = null
         var profile: User? = null
         var posts: Page<Media>? = null
-        var story: Story.Wrapper? = null
+        var story: Story? = null
         var highlights: Page<Story>? = null
         var tagged: Page<Media>? = null
         var currentPage = MutableLiveData(1)

@@ -32,7 +32,7 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun reset() {
+    open fun reset() {
         if (bInitialised) rv()?.adapter?.notifyDataSetChanged()
     }
 

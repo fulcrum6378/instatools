@@ -1,8 +1,10 @@
 package ir.mahdiparastesh.instatools.api
 
+import android.animation.ObjectAnimator
+
 @Suppress("PropertyName")
 data class Story(
-    //val cover_media: Cover?, // null in stories
+    val cover_media: Cover?, // null in stories
     val id: String, // user id
     var items: List<Media>?, // null in highlights tray
     //val latest_reel_media: Double, // time in seconds
@@ -10,7 +12,10 @@ data class Story(
     val reel_type: String?, // "user_reel" or "highlight_reel", null in highlights tray
     //val seen: Float?, // null in highlights
     val title: String?, // null in stories
-    val user: User
+    val user: User,
+
+    @Transient var opened: Boolean,
+    @Transient var anSlide: ObjectAnimator? = null
 ) {
 
     fun link(): String = when (reel_type) {
@@ -24,12 +29,12 @@ data class Story(
     fun highlightId(): String = id.substring(10)
 
 
-    /*data class Cover(
+    data class Cover(
         val cropped_image_version: Url,
         val full_image_version: Any?
-    )*/
+    )
 
-    /*data class Url(val url: String)*/
+    data class Url(val url: String)
 
     data class Wrapper(val reels_media: List<Story>)
 }

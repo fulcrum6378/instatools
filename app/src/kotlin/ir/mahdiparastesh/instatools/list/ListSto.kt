@@ -1,0 +1,149 @@
+package ir.mahdiparastesh.instatools.list
+
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.animation.addListener
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Story
+import ir.mahdiparastesh.instatools.databinding.ListRelBinding
+import ir.mahdiparastesh.instatools.frag.PageSto
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
+import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.vis
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class ListSto(private val c: Viewer, private val f: PageSto) :
+    RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
+    private val begHigh: Int by lazy { if (c.mm.story != null) 0 else 1 }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup, viewType: Int
+    ): AnyViewHolder<ListRelBinding> =
+        AnyViewHolder(ListRelBinding.inflate(c.layoutInflater, parent, false))
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
+        var isHL = true
+        val story = when {
+            i == 0 && c.mm.story != null -> {
+                isHL = false
+                c.mm.story
+            }
+            i == 0 && c.mm.story == null -> c.mm.highlights?.edges?.getOrNull(i)?.node
+            else -> c.mm.highlights?.edges?.getOrNull(i + 1)?.node
+        } ?: return
+
+        // details
+        h.b.title.text =
+            if (!isHL) c.getString(R.string.vwStoryReel)
+            else "${i + begHigh}. ${story.title}"
+        if (!isHL) h.b.desc.text = c.getString(R.string.vwReelDesc, story.items!!.size)
+        if (!isHL) h.b.icon.setImageResource(R.drawable.instagram)
+        else story.cover_media?.cropped_image_version.apply {
+            if (this != null) Glide.with(c.c)
+                .load(url)
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .into(h.b.icon)
+            else h.b.icon.setImageDrawable(null)
+        }
+
+        // actions
+        h.b.downloadAll.setOnClickListener {
+            fetchHighlights(story, h.b.reel.adapter!! as ListRel, true)
+        }
+
+        // ListRel: initiation
+        if (h.b.reel.adapter == null)
+            h.b.reel.adapter = ListRel(c, f)
+        (h.b.reel.adapter!! as ListRel).story = story
+
+        // ListRel: open/close
+        h.b.reel.scaleY = if (story.opened) 1f else 0f
+        h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
+            height = if (story.opened) c.resources.getDimension(R.dimen.vwReelHeight).toInt() else 0
+        }
+        h.b.reel.vis(story.opened)
+        if (story.opened && isHL)
+            fetchHighlights(story, h.b.reel.adapter!! as ListRel)
+        h.b.header.setOnClickListener {
+            story.anSlide?.cancel()
+            story.opened = !story.opened
+            if (story.opened && isHL)
+                fetchHighlights(story, h.b.reel.adapter!! as ListRel)
+            story.anSlide =
+                ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f)
+            story.anSlide!!.addUpdateListener {
+                h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
+                    height = (c.resources.getDimension(R.dimen.vwReelHeight)
+                        * it.animatedValue as Float).toInt()
+                }
+            }
+            story.anSlide!!.addListener(
+                onStart = {
+                    h.b.reel.vis(true)
+                    if (story.opened) h.b.shadow.vis()
+                }, onEnd = {
+                    h.b.reel.vis(story.opened)
+                    if (!story.opened) h.b.shadow.vis(false)
+                }
+            )
+            story.anSlide!!.start()
+        }
+
+        h.b.line.vis(i < itemCount - 1)
+    }
+
+    override fun getItemCount(): Int =
+        (if (c.mm.story != null) 1 else 0) +
+            (c.mm.highlights?.edges?.size ?: 0)
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun fetchHighlights(story: Story, listRel: ListRel, downloadAll: Boolean = false) {
+        if (story.items != null && !downloadAll) return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            if (story.items == null) {
+                val apiId = "\"${story.id}\""
+                val graphQl = Api.call<GraphQl>(
+                    Api.Endpoint.QUERY.url, GraphQl::class,
+                    isPost = true, body = GraphQlQuery.HIGHLIGHTS.body(apiId, apiId),
+                    cache = true, onError = { code ->
+                        UiTools.snackbar(f.b.root, Api.error(code), Snackbar.LENGTH_LONG)
+                    }
+                )
+                if (graphQl == null) return@launch
+                val newStory = graphQl.data?.xdt_api__v1__feed__reels_media__connection
+                    ?.edges?.firstOrNull()?.node
+                if (newStory == null) {
+                    withContext(Dispatchers.Main) {
+                        UiTools.snackbar(f.b.root, R.string.loadFailed, Snackbar.LENGTH_LONG)
+                    }
+                    return@launch; }
+                story.items = newStory.items
+            }
+
+            if (downloadAll)
+                for (reel in story.items!!) reel.queue(c.dao)
+
+            withContext(Dispatchers.Main) {
+                listRel.notifyDataSetChanged()
+                if (downloadAll) Downloads.initService(c, "")
+            }
+        }
+    }
+}

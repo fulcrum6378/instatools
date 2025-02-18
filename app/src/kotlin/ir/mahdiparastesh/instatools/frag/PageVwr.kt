@@ -162,8 +162,11 @@ class PageVwr : BasePageViewer() {
     }
 
     private fun fetchSome() {
-        if (fetcher != null || c.mm.user == null || c.mm.posts?.page_info?.has_next_page == false)
-            return
+        if (c.mm.user == null) {
+            c.mm.posts = null
+            return; }
+        if (fetcher != null || c.mm.posts?.page_info?.has_next_page == false) return
+
         fetcher = CoroutineScope(Dispatchers.IO).launch {
             val graphQl = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,

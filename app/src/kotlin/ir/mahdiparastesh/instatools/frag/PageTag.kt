@@ -64,8 +64,7 @@ class PageTag : BasePageViewer() {
         if (c.mm.user == null) {
             c.mm.tagged = null
             return; }
-        if (fetcher != null || c.mm.tagged?.page_info?.has_next_page == false) {
-            return; }
+        if (fetcher != null || c.mm.tagged?.page_info?.has_next_page == false) return
 
         fetcher = CoroutineScope(Dispatchers.IO).launch {
             val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.pk()
