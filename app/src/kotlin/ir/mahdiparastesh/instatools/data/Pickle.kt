@@ -1,60 +1,48 @@
 package ir.mahdiparastesh.instatools.data
 
-import android.annotation.SuppressLint
 import android.content.Context
-import androidx.annotation.MainThread
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Story
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import ir.mahdiparastesh.instatools.util.Persistent
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class Pickle(c: Context) {
-    private val tree = File(c.cacheDir, "pickle")
+/** Caches data models in order to reduce the number of API requests. */
+@Suppress("RedundantSuspendModifier")
+class Pickle(c: Context, private val type: Type, id: String?) {
+    private val branch: File
+    private val file: File
 
     init {
-        if (!tree.exists()) tree.mkdirs()
+        val tree = File(c.cacheDir, "pickle")
+        branch = if (type.single) tree else File(tree, type.file)
+        file = File(branch, if (type.single) type.file else "$id.json")
     }
 
-    @SuppressLint("SdCardPath")
-    @MainThread
-    fun save(data: Any, type: Type, id: String?) {
-        val data = Gson().toJson(data).encodeToByteArray()
-        CoroutineScope(Dispatchers.IO).launch {
-            FileOutputStream(
-                if (type.single) {
-                    File(tree, type.file)
-                } else {
-                    val branch = File(tree, type.file)
-                    if (!branch.exists()) branch.mkdir()
-                    File(branch, "$id.json")
-                }
-            ).use { it.write(data) }
+    suspend fun save(data: Any) {
+        if (!branch.exists()) branch.mkdirs()
+        FileOutputStream(file).use {
+            it.write(Gson().toJson(data).encodeToByteArray())
         }
     }
 
-    @Suppress("RedundantSuspendModifier")
-    suspend fun <DATA> restore(type: Type, id: String?): DATA? {
-        val file = if (type.single) {
-            File(tree, type.file)
-        } else {
-            File(File(tree, type.file), "$id.json")
-        }
-        if (!file.exists()) return null
-        // TODO expiration
-
-        return Gson().fromJson<DATA>(
-            FileInputStream(file).use { it.readBytes().toString(Charsets.UTF_8) },
-            type.javaType
-        )
-    }
+    suspend fun <DATA> restore(): DATA? =
+        if (file.exists() && (Persistent.now() - file.lastModified()) < 2 * 86400000L) try {
+            Gson().fromJson<DATA>(
+                FileInputStream(file).use { it.readBytes().toString(Charsets.UTF_8) },
+                type.javaType
+            )
+        } catch (e: JsonSyntaxException) {
+            if (BuildConfig.DEBUG) throw e
+            else null
+        } else null
 
     enum class Type(
         val javaType: java.lang.reflect.Type,

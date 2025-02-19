@@ -103,11 +103,12 @@ class PageVwr : BasePageViewer() {
                 }
             ).show()
         }
-        showProfile()
 
-        // pagination
+        // buttons for other pages
         b.toPageRel.setOnClickListener { c.turnToPage(0) }
         b.toPageTag.setOnClickListener { c.turnToPage(2) }
+
+        showProfile()
     }
 
     fun showProfile() {
@@ -164,7 +165,7 @@ class PageVwr : BasePageViewer() {
         }
     }
 
-    private fun fetchSome() {
+    private fun fetchSome(reset: Boolean = false) { // TODO reset using its own SwipeRefreshLayout
         if (c.mm.user == null) {
             c.mm.posts = null
             return; }
@@ -173,11 +174,11 @@ class PageVwr : BasePageViewer() {
         fetcher = CoroutineScope(Dispatchers.IO).launch {
 
             // first read from cache if available
-            if (c.mm.posts == null) {
-                val pickle = Pickle(c.c)
-                    .restore<Page<Media>>(Pickle.Type.POSTS, c.mm.user!!.id)
-                if (pickle != null) {
-                    c.mm.posts = pickle
+            val pickle = Pickle(c.c, Pickle.Type.POSTS, c.mm.user!!.id!!)
+            if (c.mm.posts == null && !reset) {
+                val cache = pickle.restore<Page<Media>>()
+                if (cache != null) {
+                    c.mm.posts = cache
                     withContext(Dispatchers.Main) { onLoaded(c.mm.posts?.edges.isNullOrEmpty()) }
                     fetcher = null
                     return@launch; }
@@ -186,8 +187,10 @@ class PageVwr : BasePageViewer() {
             // fetch online posts
             val graphQl = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.PROFILE_POSTS
-                    .body(c.mm.user!!.username!!, "33", c.mm.posts!!.edges.last().node.pk()),
+                isPost = true, body = GraphQlQuery.PROFILE_POSTS.body(
+                    c.mm.user!!.username!!, "33",
+                    c.mm.posts?.edges?.lastOrNull()?.node?.pk().toString()
+                ),
                 onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
             if (graphQl == null) {
@@ -195,7 +198,9 @@ class PageVwr : BasePageViewer() {
                 return@launch; }
             val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
             if (page == null) {
-                withContext(Dispatchers.Main) { UiTools.snackbar(b.root, R.string.invalidResponse) }
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(b.root, R.string.invalidResponse)
+                }
                 fetcher = null
                 return@launch; }
 
@@ -216,6 +221,10 @@ class PageVwr : BasePageViewer() {
                 }
                 page_info.has_next_page = page.page_info.has_next_page
             }
+
+            // cache the data model
+            c.mm.posts?.also { pickle.save(it) }
+
             fetcher = null
         }
     }
@@ -256,15 +265,6 @@ class PageVwr : BasePageViewer() {
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(b.nsv.scrollY > 0)
-    }
-
-    override fun onDestroy() {
-        c.mm.user?.id?.also { uid ->
-            c.mm.posts?.also { data ->
-                Pickle(c.c).save(data, Pickle.Type.POSTS, uid)
-            }
-        }
-        super.onDestroy()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

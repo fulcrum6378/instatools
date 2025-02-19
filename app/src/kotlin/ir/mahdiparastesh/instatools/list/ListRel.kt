@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -12,16 +11,8 @@ import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-class ListRel(private val c: Viewer, private val f: PageSto) :
+class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
     RecyclerView.Adapter<AnyViewHolder<ListRliBinding>>() {
-
-    var story: Story
-        get() = story
-        @SuppressLint("NotifyDataSetChanged")
-        set(story_) {
-            notifyDataSetChanged()
-            story = story_
-        }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -40,6 +31,7 @@ class ListRel(private val c: Viewer, private val f: PageSto) :
             c.expandable.media = story.items?.getOrNull(h.layoutPosition)
                 ?: return@setOnClickListener
             c.expandable.thumb = h.b.root
+            c.expandable.mediaOwner = c.mm.user // these Medias do not contains User information!
             try {
                 c.expandable.expand()
                 f.jumper()?.vis(false)

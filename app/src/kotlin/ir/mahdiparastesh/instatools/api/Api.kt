@@ -125,13 +125,20 @@ object Api {
             return null
         }
 
-        return if (con.responseCode == 200) try {
+        val responseCode = try {
+            con.responseCode
+        } catch (_: ProtocolException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-4) }
+            return null
+        }
+
+        return if (responseCode == 200) try {
             con.inputStream.bufferedReader().readText()
         } catch (_: IOException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-2) }
             null
         } else {
-            if (onError != null) withContext(Dispatchers.Main) { onError(con.responseCode) }
+            if (onError != null) withContext(Dispatchers.Main) { onError(responseCode) }
             null
         }
     }

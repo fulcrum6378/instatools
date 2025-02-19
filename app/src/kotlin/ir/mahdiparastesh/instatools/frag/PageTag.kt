@@ -72,11 +72,11 @@ class PageTag : BasePageViewer() {
         fetcher = CoroutineScope(Dispatchers.IO).launch {
 
             // first read from cache if available
+            val pickle = Pickle(c.c, Pickle.Type.TAGGED, c.mm.user!!.id!!)
             if (c.mm.tagged == null) {
-                val pickle = Pickle(c.c)
-                    .restore<Page<Media>>(Pickle.Type.TAGGED, c.mm.user!!.id)
-                if (pickle != null) {
-                    c.mm.tagged = pickle
+                val cache = pickle.restore<Page<Media>>()
+                if (cache != null) {
+                    c.mm.tagged = cache
                     withContext(Dispatchers.Main) { onLoaded(c.mm.tagged?.edges.isNullOrEmpty()) }
                     fetcher = null
                     return@launch; }
@@ -122,6 +122,11 @@ class PageTag : BasePageViewer() {
                     if (!b.rv.canScrollVertically(1)) fetchSome()
                 }
             }
+
+            // cache the data model
+            c.mm.tagged?.also { pickle.save(it) }
+
+            fetcher = null
         }
     }
 
@@ -164,15 +169,6 @@ class PageTag : BasePageViewer() {
     override fun onRecyclerViewScrolled() {
         super.onRecyclerViewScrolled()
         updateShadow()
-    }
-
-    override fun onDestroy() {
-        c.mm.user?.id?.also { uid ->
-            c.mm.tagged?.also { data ->
-                Pickle(c.c).save(data, Pickle.Type.TAGGED, uid)
-            }
-        }
-        super.onDestroy()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

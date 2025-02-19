@@ -6,6 +6,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.Exporter
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.util.Utils.calendar
 import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
@@ -320,7 +321,7 @@ body { background: #FCFCFC; }
   </main>
   <p id="copyright">
     Created by <a href="https://www.instagram.com/instatools.apk/">InstaTools</a>
-    app from <a href="${UiTools.MP}">Mahdi Parastesh</a>
+    app from <a href="${Utils.MAHDI_PARASTESH}">Mahdi Parastesh</a>
   </p>
 </body>
 </html>"""

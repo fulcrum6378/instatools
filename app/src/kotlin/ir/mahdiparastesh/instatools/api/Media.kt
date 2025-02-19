@@ -3,8 +3,8 @@ package ir.mahdiparastesh.instatools.api
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.Persistent
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.util.Utils.xFromSeconds
+import ir.mahdiparastesh.instatools.view.UiTools
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -81,8 +81,20 @@ data class Media(
             .substringBefore("</BaseURL>")
     }
 
-    suspend fun queue(dao: Database.DAO, idealSize: Float = Version.BEST, link: String? = null) {
-        val u = owner()
+    /**
+     * Adds this item to the download queue.
+     * @param owner must be specified in stories and highlights.
+     *
+     * @see [ir.mahdiparastesh.instatools.data.Queued]
+     * @see [ir.mahdiparastesh.instatools.job.Downloader]
+     */
+    suspend fun queue(
+        dao: Database.DAO,
+        idealSize: Float = Version.BEST,
+        link: String? = null,
+        owner: User? = null
+    ) {
+        val u = owner ?: owner()
         val now = Persistent.now()
         if (carousel_media != null) for (car in carousel_media) dao.addQueued(
             Queued(

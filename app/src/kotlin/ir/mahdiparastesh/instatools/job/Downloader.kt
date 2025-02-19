@@ -17,9 +17,9 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
-import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -162,7 +162,7 @@ class Downloader : ForegroundService() {
                         removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
                         add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
                         removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
-                        add(ExifTagConstants.EXIF_TAG_SOFTWARE, UiTools.APP_NAME)
+                        add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
                         removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
                         add(TiffTagConstants.TIFF_TAG_ARTIST, q.userName)
                         removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)

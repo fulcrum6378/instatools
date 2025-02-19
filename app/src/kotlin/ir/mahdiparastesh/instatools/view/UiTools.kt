@@ -38,6 +38,7 @@ import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.Utils
 import java.util.*
 
 object UiTools {
@@ -45,17 +46,13 @@ object UiTools {
     const val TIME_FORMAT = "hh:mm:ss"
     const val PROFILE = "https://www.instagram.com/%s/"
     const val POST_LINK = "https://www.instagram.com/p/%s/"
-    const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
-    const val IG_OPENABLE = "https://www.instagram.com/"
-    const val INSTA_PACKAGE = "com.instagram.android"
-    const val MP = "https://mahdiparastesh.ir/"
-    const val APP_NAME = "InstaTools"
-
-    //private const val maxInaccurateTimeItems = 2
-    val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
+    const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s"
     const val MAX_BADGE_CHAR = 6
     private const val OPTION_DISABLED_ALPHA = 0.5f
+    //private const val maxInaccurateTimeItems = 2
+
+    val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     val reqPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
@@ -87,7 +84,7 @@ object UiTools {
     fun openProfile(c: Activity, user: String): Boolean = try {
         c.startActivity(
             Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
-                .setPackage(INSTA_PACKAGE)
+                .setPackage(Utils.INSTA_PACKAGE)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
         true
@@ -150,7 +147,7 @@ object UiTools {
         try {
             c.startActivity(
                 Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
-                    ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
+                    ComponentName(Utils.INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } catch (_: ActivityNotFoundException) {

@@ -18,14 +18,16 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Persistent
+import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.util.Utils.xFromSeconds
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
-import ir.mahdiparastesh.instatools.util.Utils.xFromSeconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +42,7 @@ class Expandable(
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
     var media: Media? = null
+    var mediaOwner: User? = null // used only for stories and highlights
     var thumb: View? = null
     var zoomed = false
     private var currentAnimator: Animator? = null
@@ -58,7 +61,7 @@ class Expandable(
         b.download.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    med.queue(c.dao)
+                    med.queue(c.dao, owner = mediaOwner)
                     Downloads.initService(c)
                 }
             }
@@ -67,14 +70,14 @@ class Expandable(
             val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
                 ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
-                car.queue(c.dao)
+                car.queue(c.dao, owner = mediaOwner)
                 Downloads.initService(c)
             }
         }
         b.downloadAll.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    med.queue(c.dao)
+                    med.queue(c.dao, owner = mediaOwner)
                     Downloads.initService(c)
                 }
             }
@@ -110,9 +113,9 @@ class Expandable(
                 try {
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
-                            if (it.startsWith(UiTools.IG_OPENABLE) &&
+                            if (it.startsWith(Utils.IG_OPENABLE) &&
                                 !it.startsWith("https://www.instagram.com/stories/highlights/")
-                            ) setPackage(UiTools.INSTA_PACKAGE)
+                            ) setPackage(Utils.INSTA_PACKAGE)
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     )
@@ -213,6 +216,7 @@ class Expandable(
     fun collapse() {
         if (startBounds == null || startScale == null || !zoomed) return
         media = null
+        mediaOwner = null
         b.indicator.vis(false)
         b.buttons.vis(false)
         b.username.vis(false)

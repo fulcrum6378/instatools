@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -37,7 +38,6 @@ import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -128,12 +128,16 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             return true
         }
         intent.data?.also { data ->
-            var userName: String? = null
-            for (host in Utils.ACC_FROM_URL)
-                data.toString().accFromUrl(host)
-                    ?.also { u -> if (userName == null) userName = u }
-            if (userName == null) return@also
-            load(userName = userName)
+            val url = data.toString()
+            if (arrayOf("/p/", "/reel/", "/stories/").any { it in url })
+                load(mediaLink = url)
+            else {
+                var userName: String? = null
+                for (host in Utils.ACC_FROM_URL)
+                    url.accFromUrl(host)?.also { u -> if (userName == null) userName = u }
+                if (userName == null) return@also
+                load(userName = userName)
+            }
             return true
         }
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also { mediaLink ->
@@ -165,7 +169,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             if (mediaLink != null) {
                 val html = Api.page(mediaLink) { code ->
                     b.refresher.isRefreshing = false
-                    snackbar(b.root, getString(Api.error(code), code))
+                    UiTools.snackbar(b.root, getString(Api.error(code), code))
                 }
                 if (html == null) { // got an API error
                     loader = null
@@ -173,7 +177,14 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
                 userName_ = html
                     .substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
-                    .substringBefore("\"")
+                    .substringBefore("\"") // TODO this doesn't work
+                Log.println(Log.ASSERT, "AIMI", "Viewer::load userName_ => $userName_")
+                if (userName_.startsWith("<!DOCTYPE html>")) {
+                    withContext(Dispatchers.Main) {
+                        UiTools.snackbar(b.root, getString(Api.error(-3), -3))
+                    }
+                    loader = null
+                    return@launch; }
                 mm.user?.also { u ->
                     if (!refresh && userName_ == u.username) {
                         loader = null
@@ -195,17 +206,12 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     userReplaced = true
                 }
             } else {
+                mm.user?.also { oldUser -> userReplaced = oldUser.id!! != userId_ }
                 mm.user = userInfo(userId_)
                 if (mm.user == null) { // got an API error
                     loader = null
                     return@launch; }
                 userName_ = mm.user!!.username!!
-                mm.user?.also { u ->
-                    if (!refresh && userName_ == u.username) {
-                        loader = null
-                        return@launch; }
-                    userReplaced = true
-                }
             }
 
             mm.profile = userProfile(userName_)
@@ -222,9 +228,9 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 mm.fav = dao.favourite(mm.user!!.id!!)
 
             withContext(Dispatchers.Main) {
-                page2?.showProfile()
                 if (userReplaced)
                     pages().forEach { (it as BasePageViewer?)?.reset() }
+                page2?.showProfile()
                 b.toolbar.title = mm.user?.username
                 b.refresher.isRefreshing = false
                 fixTbMenu()
@@ -238,7 +244,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
             onError = { code ->
                 b.refresher.isRefreshing = false
-                snackbar(b.root, getString(Api.error(code), code))
+                UiTools.snackbar(b.root, getString(Api.error(code), code))
             }
         )?.user
 
@@ -247,7 +253,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             Api.Endpoint.PROFILE.url.format(userName), GraphQl::class,
             onError = { code ->
                 b.refresher.isRefreshing = false
-                snackbar(b.root, getString(Api.error(code), code))
+                UiTools.snackbar(b.root, getString(Api.error(code), code))
             }
         )?.data?.user
 
@@ -276,7 +282,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                             Intent(
                                 Intent.ACTION_VIEW,
                                 Uri.parse(UiTools.PROFILE.format(u.username))
-                            ).setPackage(UiTools.INSTA_PACKAGE)
+                            ).setPackage(Utils.INSTA_PACKAGE)
                         )
                         setIcon(
                             IconCompat.createWithBitmap(

@@ -31,8 +31,8 @@ import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.DownloadHistory
+import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
@@ -43,9 +43,9 @@ import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -459,6 +459,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
+  * Favourites -> Bookmarks
   * Large heap?!?
   * Friends is empty if Inquiry hasn't been triggered yet
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable

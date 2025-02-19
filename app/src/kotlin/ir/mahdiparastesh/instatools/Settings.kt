@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StatFs
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -35,8 +34,8 @@ import ir.mahdiparastesh.instatools.util.DbFile
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
-import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.util.Utils.getOrNull
+import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -195,10 +194,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 "/data/data/${BuildConfig.APPLICATION_ID}/shared_prefs"
             ).listFiles()?.filter { it.name !in exc }?.forEach { sp ->
                 val raw = FileInputStream(sp).use { it.readBytes().toString(Charsets.UTF_8) }
-                Log.println(
-                    Log.ASSERT, "AIMI",
-                    sp.name + " : " + (f0 in raw) + " or " + (f1 in raw)
-                )
+                /*Log.println(
+                    Log.ASSERT, "AIMI", sp.name + " : " + (f0 in raw) + " or " + (f1 in raw)
+                )*/
                 if (f0 in raw || f1 in raw) return
             }
             try {

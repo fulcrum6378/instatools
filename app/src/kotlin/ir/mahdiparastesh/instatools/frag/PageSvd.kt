@@ -51,6 +51,7 @@ class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
     var fetcher: Job? = null
     var saver: Saver? = null
+    private val pickle: Pickle by lazy { Pickle(c.c, Pickle.Type.SAVED, null) }
     private var selectionGuide: LottieAnimationView? = null
     private var reallyHasMore = true
 
@@ -94,19 +95,19 @@ class PageSvd : BasePageMain(), Selective {
         if (bInitialised && b.rv.adapter != null && ftDetached) buildSelection()
     }
 
-    private fun fetchSome() {
+    private fun fetchSome(reset: Boolean = false) {
         if (fetcher != null || c.mm.saved?.more_available == false) return
         fetcher = CoroutineScope(Dispatchers.IO).launch {
 
             // first read from cache if available
-            if (c.mm.saved == null) {
-                val pickle = Pickle(c.c)
-                    .restore<Rest.LazyList<Rest.SavedItem>>(Pickle.Type.SAVED, null)
-                if (pickle != null) {
-                    c.mm.saved = pickle
+            if (c.mm.saved == null && !reset) {
+                val cache = pickle.restore<Rest.LazyList<Rest.SavedItem>>()
+                if (cache != null) {
+                    c.mm.saved = cache
                     withContext(Dispatchers.Main) {
                         onLoaded(c.mm.saved?.items.isNullOrEmpty())
-                        c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+                        if (c.mm.saved?.more_available == false)
+                            c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
                     }
                     fetcher = null
                     return@launch; }
@@ -150,7 +151,7 @@ class PageSvd : BasePageMain(), Selective {
 
             // update the UI
             withContext(Dispatchers.Main) {
-                if (b.rv.adapter == null)
+                if (lastBefore == null)
                     onLoaded(c.mm.saved?.items.isNullOrEmpty())
                 else
                     b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, lazyList.items.size)
@@ -161,6 +162,10 @@ class PageSvd : BasePageMain(), Selective {
                 if (c.mm.saved?.more_available == false)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
             }
+
+            // cache the data model
+            c.mm.saved?.also { pickle.save(it) }
+
             fetcher = null
         }
     }
@@ -172,7 +177,7 @@ class PageSvd : BasePageMain(), Selective {
         b.empty.vis(false)
         tracker?.clearSelection()
         reallyHasMore = true
-        fetchSome()
+        fetchSome(true)
         c.updateProfile()
     }
 
@@ -254,13 +259,6 @@ class PageSvd : BasePageMain(), Selective {
         return false
     }
 
-    override fun onDestroy() {
-        c.mm.saved?.also { data ->
-            Pickle(c.c).save(data, Pickle.Type.SAVED, null)
-        }
-        super.onDestroy()
-    }
-
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
         override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.pk()
         override fun getPosition(key: String): Int {
@@ -318,6 +316,7 @@ class PageSvd : BasePageMain(), Selective {
             val svd = next()
             if (svd == null) {
                 if (download) Downloads.initService(c)
+                if (unsave) c.mm.saved?.also { pickle.save(it) }
                 return; }
             val saved = c.mm.saved?.items?.find { it.media.pk() == svd }
             if (saved == null) {

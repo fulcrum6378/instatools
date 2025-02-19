@@ -56,10 +56,10 @@ class PageSto : BasePageViewer() {
             val uid = c.mm.user!!.id()
 
             // load their story into the data model
-            val pickle1 = Pickle(c.c)
-                .restore<Story>(Pickle.Type.STORY, c.mm.user!!.id)
-            if (pickle1 != null) // read from cache
-                c.mm.story = pickle1
+            val pickle1 = Pickle(c.c, Pickle.Type.STORY, c.mm.user!!.id!!)
+            val cache1 = pickle1.restore<Story>()
+            if (cache1 != null) // read from cache
+                c.mm.story = cache1
             else {
                 // fetch their story
                 val graphQl1 = Api.call<GraphQl>(
@@ -72,13 +72,14 @@ class PageSto : BasePageViewer() {
                     return@launch; }
                 c.mm.story =
                     graphQl1.data?.xdt_api__v1__feed__reels_media?.reels_media?.firstOrNull()
+                c.mm.story?.also { pickle1.save(it) }
             }
 
             // load their highlights into the data model
-            val pickle2 = Pickle(c.c)
-                .restore<Page<Story>>(Pickle.Type.HIGHLIGHTS, c.mm.user!!.id)
-            if (pickle2 != null) // read from cache
-                c.mm.highlights = pickle2
+            val pickle2 = Pickle(c.c, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
+            val cache2 = pickle2.restore<Page<Story>>()
+            if (cache2 != null) // read from cache
+                c.mm.highlights = cache2
             else {
                 // fetch their highlights
                 val graphQl2 = Api.call<GraphQl>(
@@ -90,6 +91,7 @@ class PageSto : BasePageViewer() {
                     fetcher = null
                     return@launch; }
                 c.mm.highlights = graphQl2.data?.highlights
+                c.mm.highlights?.also { pickle2.save(it) }
             }
 
             // update the UI
@@ -122,17 +124,5 @@ class PageSto : BasePageViewer() {
 
     override fun reset() {
         if (bInitialised) b.rv.adapter = ListSto(c, this)
-    }
-
-    override fun onDestroy() {
-        c.mm.user?.id?.also { uid ->
-            c.mm.story?.also { data ->
-                Pickle(c.c).save(data, Pickle.Type.STORY, uid)
-            }
-            c.mm.highlights?.also { data ->
-                Pickle(c.c).save(data, Pickle.Type.HIGHLIGHTS, uid)
-            }
-        }
-        super.onDestroy()
     }
 }

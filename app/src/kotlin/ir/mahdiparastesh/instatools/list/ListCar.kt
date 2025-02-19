@@ -65,7 +65,7 @@ class ListCar(
                     c, ExoPlayer.Builder(c).setAudioAttributes(
                         AudioAttributes.Builder().setUsage(USAGE_MEDIA).build(), false
                     ).build()
-                ).build().apply {
+                ).setId(med.pk()).build().apply {
                     player.setMediaItem(MediaItem.fromUri(Uri.parse(it)))
                     player.volume = if (muteSound.value == true) 0f else 1f
                     h.b.video.setPlayer(player)

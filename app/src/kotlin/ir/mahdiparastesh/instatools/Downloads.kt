@@ -31,6 +31,7 @@ import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -150,7 +151,7 @@ class Downloads : ServiceOwnerActivity() {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
             if (it in handledLinks || mm.queueds?.map { q -> q.link }
                     ?.let { qs -> it in qs } == true) return@also
-            if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
+            if (!it.startsWith(Utils.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)

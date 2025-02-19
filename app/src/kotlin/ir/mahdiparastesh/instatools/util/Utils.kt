@@ -4,6 +4,10 @@ import ir.mahdiparastesh.instatools.Login
 import java.util.Calendar
 
 object Utils {
+    const val MAHDI_PARASTESH = "https://mahdiparastesh.ir/"
+    const val INSTATOOLS = "InstaTools"
+    const val INSTA_PACKAGE = "com.instagram.android"
+    const val IG_OPENABLE = "https://www.instagram.com/"
     val ACC_FROM_URL = arrayOf(Login.RAW_HOST, Login.HOST)
 
     /** Are any Activities or Services alive? */
