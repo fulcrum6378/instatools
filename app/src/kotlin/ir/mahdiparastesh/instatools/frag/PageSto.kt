@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Story
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
 import ir.mahdiparastesh.instatools.list.ListSto
 import ir.mahdiparastesh.instatools.util.BasePageViewer
@@ -52,28 +55,44 @@ class PageSto : BasePageViewer() {
         fetcher = CoroutineScope(Dispatchers.IO).launch {
             val uid = c.mm.user!!.id()
 
-            // fetch their story
-            val graphQl1 = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.STORY.body(uid),
-                onError = { code -> onFailed(getString(Api.error(code), code)) }
-            )
-            if (graphQl1 == null) {
-                fetcher = null
-                return@launch; }
-            c.mm.story = graphQl1.data?.xdt_api__v1__feed__reels_media?.reels_media?.firstOrNull()
+            // load their story into the data model
+            val pickle1 = Pickle(c.c)
+                .restore<Story>(Pickle.Type.STORY, c.mm.user!!.id)
+            if (pickle1 != null) // read from cache
+                c.mm.story = pickle1
+            else {
+                // fetch their story
+                val graphQl1 = Api.call<GraphQl>(
+                    Api.Endpoint.QUERY.url, GraphQl::class,
+                    isPost = true, body = GraphQlQuery.STORY.body(uid),
+                    onError = { code -> onFailed(getString(Api.error(code), code)) }
+                )
+                if (graphQl1 == null) {
+                    fetcher = null
+                    return@launch; }
+                c.mm.story =
+                    graphQl1.data?.xdt_api__v1__feed__reels_media?.reels_media?.firstOrNull()
+            }
 
-            // fetch their highlights
-            val graphQl2 = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
-                onError = { code -> onFailed(getString(Api.error(code), code)) }
-            )
-            if (graphQl2 == null) {
-                fetcher = null
-                return@launch; }
-            c.mm.highlights = graphQl2.data?.highlights
+            // load their highlights into the data model
+            val pickle2 = Pickle(c.c)
+                .restore<Page<Story>>(Pickle.Type.HIGHLIGHTS, c.mm.user!!.id)
+            if (pickle2 != null) // read from cache
+                c.mm.highlights = pickle2
+            else {
+                // fetch their highlights
+                val graphQl2 = Api.call<GraphQl>(
+                    Api.Endpoint.QUERY.url, GraphQl::class,
+                    isPost = true, body = GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
+                    onError = { code -> onFailed(getString(Api.error(code), code)) }
+                )
+                if (graphQl2 == null) {
+                    fetcher = null
+                    return@launch; }
+                c.mm.highlights = graphQl2.data?.highlights
+            }
 
+            // update the UI
             withContext(Dispatchers.Main) {
                 onLoaded(c.mm.story != null && c.mm.highlights?.edges.isNullOrEmpty())
             }
@@ -103,5 +122,17 @@ class PageSto : BasePageViewer() {
 
     override fun reset() {
         if (bInitialised) b.rv.adapter = ListSto(c, this)
+    }
+
+    override fun onDestroy() {
+        c.mm.user?.id?.also { uid ->
+            c.mm.story?.also { data ->
+                Pickle(c.c).save(data, Pickle.Type.STORY, uid)
+            }
+            c.mm.highlights?.also { data ->
+                Pickle(c.c).save(data, Pickle.Type.HIGHLIGHTS, uid)
+            }
+        }
+        super.onDestroy()
     }
 }

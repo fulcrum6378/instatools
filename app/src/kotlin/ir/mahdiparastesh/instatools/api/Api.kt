@@ -21,7 +21,7 @@ import ir.mahdiparastesh.instatools.R
 
 /** Controls all API interactions with Instagram Web API using Volley and Gson. */
 object Api {
-    const val DEFAULT_CONNECT_TIMEOUT = 8000
+    const val DEFAULT_CONNECT_TIMEOUT = 5000
     var cookies = ""
 
     /**

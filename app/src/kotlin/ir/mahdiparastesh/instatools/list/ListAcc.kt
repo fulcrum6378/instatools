@@ -69,13 +69,13 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
             R.id.amWithoutAuth to {
                 c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
                 acc.last = Persistent.now()
-                acc.saveMe(c)
+                acc.saveMeInIO(c)
                 c.goTo(Main::class, true)
             },
             R.id.amBrowseWeb to {
                 c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.HOST)
                 acc.last = Persistent.now()
-                acc.saveMe(c)
+                acc.saveMeInIO(c)
             },
             R.id.amInjectCookies to {
                 c.injectingCookieForAccIndex = i

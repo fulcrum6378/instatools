@@ -16,7 +16,10 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
@@ -64,9 +67,22 @@ class PageTag : BasePageViewer() {
         if (c.mm.user == null) {
             c.mm.tagged = null
             return; }
-        if (fetcher != null || c.mm.tagged?.page_info?.has_next_page == false) return
-
+        if (fetcher != null || c.mm.tagged?.page_info?.has_next_page == false)
+            return
         fetcher = CoroutineScope(Dispatchers.IO).launch {
+
+            // first read from cache if available
+            if (c.mm.tagged == null) {
+                val pickle = Pickle(c.c)
+                    .restore<Page<Media>>(Pickle.Type.TAGGED, c.mm.user!!.id)
+                if (pickle != null) {
+                    c.mm.tagged = pickle
+                    withContext(Dispatchers.Main) { onLoaded(c.mm.tagged?.edges.isNullOrEmpty()) }
+                    fetcher = null
+                    return@launch; }
+            }
+
+            // fetch online tagged posts
             val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.pk()
             val graphQl = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
@@ -90,6 +106,7 @@ class PageTag : BasePageViewer() {
                 fetcher = null
                 return@launch; }
 
+            // update the data model and the UI
             if (c.mm.tagged == null) {
                 c.mm.tagged = page
                 withContext(Dispatchers.Main) {
@@ -147,6 +164,15 @@ class PageTag : BasePageViewer() {
     override fun onRecyclerViewScrolled() {
         super.onRecyclerViewScrolled()
         updateShadow()
+    }
+
+    override fun onDestroy() {
+        c.mm.user?.id?.also { uid ->
+            c.mm.tagged?.also { data ->
+                Pickle(c.c).save(data, Pickle.Type.TAGGED, uid)
+            }
+        }
+        super.onDestroy()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

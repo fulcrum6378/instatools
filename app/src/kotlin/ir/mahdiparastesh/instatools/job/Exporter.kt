@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.job
 
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -38,7 +37,7 @@ import kotlin.collections.set
 
 class Exporter : ForegroundService() {
     private var job: Job? = null
-    private val cache: File by lazy { Cache(c) }
+    private val cacheTree: File by lazy { File(c.cacheDir, "exporter") }
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String
@@ -66,7 +65,6 @@ class Exporter : ForegroundService() {
         super.onCreate()
         ntfTitle = getString(R.string.exporterTitle)
         initialNotification(Companion, Main::class, 2)
-        if (!cache.exists()) cache.mkdir()
 
         if (job?.isActive != true)
             job = CoroutineScope(Dispatchers.IO).launch { export() }
@@ -117,15 +115,15 @@ class Exporter : ForegroundService() {
         media = hashMapOf()
         if (opt?.img() != false || opt?.vid() != false || opt?.voi() != false) {
             threadData?.thread_id?.also {
-                cacheDir = File(Cache(c), it)
-                if (!cacheDir!!.exists()) cacheDir!!.mkdir()
+                cacheBranch = File(cacheTree, it)
+                if (!cacheBranch!!.exists()) cacheBranch!!.mkdirs()
             }
             val img = opt?.img() == true
             val vid = opt?.vid() == true
             val actVid = opt?.actVid() == true
             if (img) for (user in threadData!!.users) {
                 val key = USER_PROFILE_IMG.format(user.pk)
-                media[key] = Downloadable(user.picture(), 0, cacheDir!!, key, 0)
+                media[key] = Downloadable(user.picture(), 0, cacheBranch!!, key, 0)
             }
             for (dm in threadData!!.items) {
                 if (actVid && dm.animated_media != null) continue
@@ -133,7 +131,7 @@ class Exporter : ForegroundService() {
                 if (dm.voice_media != null) {
                     if (opt?.voice == 0 && dm.voice_media.media != null)
                         media[dm.item_id] = Downloadable(
-                            dm.voice_media.media.audio.audio_src, 2, cacheDir!!, dm.item_id, -2
+                            dm.voice_media.media.audio.audio_src, 2, cacheBranch!!, dm.item_id, -2
                         )
                     continue; }
                 if (opt?.img() == true || opt?.vid() == true) (when {
@@ -168,7 +166,7 @@ class Exporter : ForegroundService() {
                     theVer.nearest(quality, justImage = opt?.actVid() != true)?.also { url ->
                         media[dm.item_id] = Downloadable(
                             url, if (opt?.actVid() == true && video_versions != null) 1 else 0,
-                            cacheDir!!, dm.item_id, quality.toInt()
+                            cacheBranch!!, dm.item_id, quality.toInt()
                         )
                     }
                 }
@@ -333,6 +331,4 @@ class Exporter : ForegroundService() {
             FileOutputStream(cache).use { fos -> fos.write(ba) }
         }
     }
-
-    class Cache(c: Context) : File(c.cacheDir, "exporter")
 }

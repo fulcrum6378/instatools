@@ -372,13 +372,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     fun updateProfile() {
         val un = m.acc?.user ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            val graphQl = Api.call<GraphQl>(
-                Api.Endpoint.PROFILE.url.format(un), GraphQl::class
-                // TODO neverMindIfNeedAuth = true
-                // but it works fine even in guest mode ("status":"ok")!
-                // edge_saved_media.count shows 0.0 when not logged in!
-            )
-            val u = graphQl?.data?.user ?: return@launch
+            val u = Api.call<GraphQl>(Api.Endpoint.PROFILE.url.format(un), GraphQl::class)
+                ?.data?.user ?: return@launch
             m.acc?.apply {
                 user = u.username
                 name = u.full_name
@@ -437,7 +432,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun switchAcc() {
         page1?.thread?.interrupt()
-        page2?.loader?.cancel()
+        page2?.fetcher?.cancel()
         page2?.saver?.job?.cancel()
         page3?.boxThread?.cancel()
         page3?.thdThread?.cancel()

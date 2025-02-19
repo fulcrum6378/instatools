@@ -20,7 +20,7 @@ class Exportable(
     @Ignore @Transient var threadData: Dm.DmThread? = null,
     @Ignore @Transient var opt: Options? = null,
     @Ignore @Transient var media: HashMap<String, Exporter.Downloadable> = hashMapOf(),
-    @Ignore @Transient var cacheDir: File? = null,
+    @Ignore @Transient var cacheBranch: File? = null,
 ) {
     @PrimaryKey
     var addedAt: Long = Persistent.now()

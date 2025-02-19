@@ -86,5 +86,5 @@ object DownloadHistory {
         } == true
     }.map { it.name!! }.toSet()
 
-    class Stored(c: Context) : File(c.cacheDir, "storage.json")
+    class Stored(c: Context) : File(c.cacheDir, "download_history.json")
 }

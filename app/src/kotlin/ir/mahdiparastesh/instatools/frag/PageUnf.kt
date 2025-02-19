@@ -76,14 +76,15 @@ class PageUnf : BasePageMain() {
             }
 
             withContext(Dispatchers.Main) {
-                c.mm.unfollowers.value = unf
                 if (unf.isEmpty() && initial &&
                     (Persistent.now() - (c.sp?.getLong(Settings.spUnfLastChecked, 0L) ?: 0L)
                         ) > 86400000
                 )
                     thread = Inquiry(c).also { it.start() }
-                else
+                else {
+                    c.mm.unfollowers.value = unf
                     onLoaded(unf.isEmpty())
+                }
             }
         }
     }

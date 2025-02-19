@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.instatools.data
 
 import android.content.Context
+import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Login.Companion.SP_ACCOUNT
 import ir.mahdiparastesh.instatools.util.Persistent
@@ -22,10 +24,14 @@ class Account(
     // var mfrw: Int = 0,
     // keep in mind to update the fields whose data need to persist after another Login
 ) {
-    fun saveMe(c: Context) {
-        CoroutineScope(Dispatchers.IO).launch {
-            save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
-        }
+    @MainThread
+    fun saveMeInIO(c: Context) {
+        CoroutineScope(Dispatchers.IO).launch { saveMe(c) }
+    }
+
+    @WorkerThread
+    suspend fun saveMe(c: Context) {
+        save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
     }
 
     companion object {

@@ -25,6 +25,7 @@ import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.list.ListPost
@@ -48,7 +49,7 @@ import kotlinx.coroutines.withContext
 @SuppressLint("NotifyDataSetChanged")
 class PageSvd : BasePageMain(), Selective {
     lateinit var b: PageSvdBinding
-    var loader: Job? = null
+    var fetcher: Job? = null
     var saver: Saver? = null
     private var selectionGuide: LottieAnimationView? = null
     private var reallyHasMore = true
@@ -94,8 +95,24 @@ class PageSvd : BasePageMain(), Selective {
     }
 
     private fun fetchSome() {
-        if (loader != null || c.mm.saved?.more_available == false) return
-        loader = CoroutineScope(Dispatchers.IO).launch {
+        if (fetcher != null || c.mm.saved?.more_available == false) return
+        fetcher = CoroutineScope(Dispatchers.IO).launch {
+
+            // first read from cache if available
+            if (c.mm.saved == null) {
+                val pickle = Pickle(c.c)
+                    .restore<Rest.LazyList<Rest.SavedItem>>(Pickle.Type.SAVED, null)
+                if (pickle != null) {
+                    c.mm.saved = pickle
+                    withContext(Dispatchers.Main) {
+                        onLoaded(c.mm.saved?.items.isNullOrEmpty())
+                        c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+                    }
+                    fetcher = null
+                    return@launch; }
+            }
+
+            // fetch online saved posts
             val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
                 Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
                 Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
@@ -106,7 +123,7 @@ class PageSvd : BasePageMain(), Selective {
                 }
             )
             if (lazyList == null) {
-                loader = null
+                fetcher = null
                 return@launch; }
 
             // check if the user has hidden saves
@@ -117,7 +134,7 @@ class PageSvd : BasePageMain(), Selective {
                     if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
                 }
-                loader = null
+                fetcher = null
                 return@launch; }
 
             // update the data model
@@ -131,6 +148,7 @@ class PageSvd : BasePageMain(), Selective {
                 next_max_id = lazyList.next_max_id
             }
 
+            // update the UI
             withContext(Dispatchers.Main) {
                 if (b.rv.adapter == null)
                     onLoaded(c.mm.saved?.items.isNullOrEmpty())
@@ -143,12 +161,12 @@ class PageSvd : BasePageMain(), Selective {
                 if (c.mm.saved?.more_available == false)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
             }
-            loader = null
+            fetcher = null
         }
     }
 
     override fun onRefresh() {
-        if (loader != null) return
+        if (fetcher != null) return
         c.mm.saved = null
         b.rv.adapter?.notifyDataSetChanged()
         b.empty.vis(false)
@@ -234,6 +252,13 @@ class PageSvd : BasePageMain(), Selective {
             return true
         }
         return false
+    }
+
+    override fun onDestroy() {
+        c.mm.saved?.also { data ->
+            Pickle(c.c).save(data, Pickle.Type.SAVED, null)
+        }
+        super.onDestroy()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

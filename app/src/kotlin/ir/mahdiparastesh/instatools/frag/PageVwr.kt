@@ -18,7 +18,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.list.ListPost
@@ -85,7 +88,7 @@ class PageVwr : BasePageViewer() {
                                 Persistent.now(),
                                 UiTools.PROFILE.format(c.mm.user!!.username!!),
                                 Persistent.now(),
-                                c.mm.user!!.id(),
+                                c.mm.user!!.id!!,
                                 c.mm.user!!.username!!,
                                 "profile_photo",
                                 picture,
@@ -165,9 +168,22 @@ class PageVwr : BasePageViewer() {
         if (c.mm.user == null) {
             c.mm.posts = null
             return; }
-        if (fetcher != null || c.mm.posts?.page_info?.has_next_page == false) return
-
+        if (fetcher != null || c.mm.posts?.page_info?.has_next_page == false)
+            return
         fetcher = CoroutineScope(Dispatchers.IO).launch {
+
+            // first read from cache if available
+            if (c.mm.posts == null) {
+                val pickle = Pickle(c.c)
+                    .restore<Page<Media>>(Pickle.Type.POSTS, c.mm.user!!.id)
+                if (pickle != null) {
+                    c.mm.posts = pickle
+                    withContext(Dispatchers.Main) { onLoaded(c.mm.posts?.edges.isNullOrEmpty()) }
+                    fetcher = null
+                    return@launch; }
+            }
+
+            // fetch online posts
             val graphQl = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
                 isPost = true, body = GraphQlQuery.PROFILE_POSTS
@@ -179,12 +195,11 @@ class PageVwr : BasePageViewer() {
                 return@launch; }
             val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
             if (page == null) {
-                withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.invalidResponse)
-                }
+                withContext(Dispatchers.Main) { UiTools.snackbar(b.root, R.string.invalidResponse) }
                 fetcher = null
                 return@launch; }
 
+            // update the data model and the UI
             if (c.mm.posts == null) {
                 c.mm.posts = page
                 withContext(Dispatchers.Main) {
@@ -241,6 +256,15 @@ class PageVwr : BasePageViewer() {
 
     override fun updateShadow() {
         if (bInitialised) c.b.tbShadow.vish(b.nsv.scrollY > 0)
+    }
+
+    override fun onDestroy() {
+        c.mm.user?.id?.also { uid ->
+            c.mm.posts?.also { data ->
+                Pickle(c.c).save(data, Pickle.Type.POSTS, uid)
+            }
+        }
+        super.onDestroy()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
