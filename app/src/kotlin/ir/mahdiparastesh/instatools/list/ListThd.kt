@@ -230,7 +230,7 @@ class ListThd(val c: Main, private val f: PageBox) :
                 f.expandable.thumb = root
                 try {
                     f.expandable.expand()
-                    f.jumper()?.vis(false)
+                    f.b.jumper.vis(false)
                 } catch (e: Exception) {
                     if (BuildConfig.DEBUG) throw e
                 }

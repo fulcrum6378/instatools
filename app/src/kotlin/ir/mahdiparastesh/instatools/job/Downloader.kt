@@ -19,7 +19,6 @@ import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
-import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -99,7 +98,8 @@ class Downloader : ForegroundService() {
                 !q.isMainFile() -> stem
                 @Suppress("KotlinConstantConditions")
                 bPreference(
-                    Settings.spBranching, Settings.spBranchingCb, Settings.defSpBranching
+                    Settings.spBranching, Settings.defSpBranching,
+                    Settings.spBranchingCb, Settings.defSpBranchingCb
                 ) -> stem.findFile(q.userName) ?: stem.createDirectory(q.userName)
                 else -> stem
             } ?: return
@@ -115,7 +115,6 @@ class Downloader : ForegroundService() {
             // Nevertheless files are RARELY duplicated with a " (1)" suffix.
             // It presumably happens during slow connections.
             // It could be because of simultaneous writing.
-            val des = c.contentResolver.openFileDescriptor(leaf.uri, "w") ?: return
 
             // download the file
             binary = null
@@ -124,8 +123,7 @@ class Downloader : ForegroundService() {
                 retry++
                 if (retry > 5) {
                     q.status = 0b1
-                    Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_CHANGED, q)
-                        ?.sendToTarget()
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, q)?.sendToTarget()
                     dao.updateQueued(q)
                     incrementCounter(Settings.spDlErrorCount)
                 }
@@ -160,6 +158,7 @@ class Downloader : ForegroundService() {
             }
 
             // save the file
+            val des = c.contentResolver.openFileDescriptor(leaf.uri, "w") ?: return
             val fos = FileOutputStream(des.fileDescriptor)
             when (ext) {
                 "jpg" -> {
@@ -199,7 +198,7 @@ class Downloader : ForegroundService() {
             if (q.isMainFile()) m.files?.add(fName)
             incrementCounter(Settings.spDownloadCount)
 
-            Downloads.handler?.obtainMessage(ServiceOwnerActivity.HANDLE_DELETED, q)?.sendToTarget()
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, q)?.sendToTarget()
             dao.deleteQueued(q)
         }
 
@@ -227,8 +226,8 @@ class Downloader : ForegroundService() {
                 clearCacheIfNecessary()
                 @Suppress("KotlinConstantConditions")
                 if (dest == null || !bPreference(
-                        Settings.spAutoDeleteEmptyDirs, Settings.spAutoDeleteEmptyDirsCb,
-                        Settings.defSpAutoDeleteEmptyDirs
+                        Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
+                        Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
                     )
                 ) return@runCatching
                 val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!

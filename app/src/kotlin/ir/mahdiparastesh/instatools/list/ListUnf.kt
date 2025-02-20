@@ -132,7 +132,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 f.b.rv.adapter?.notifyItemChanged(index)
             }
             c.mm.unfollowers.value = c.mm.unfollowers.value
-            if (c.mm.unfollowers.value.isNullOrEmpty()) f.emptied(true)
+            if (c.mm.unfollowers.value.isNullOrEmpty()) f.onLoaded()
         }
     }
 

@@ -55,7 +55,7 @@ class Pickle(c: Context, private val type: Type, id: String?) {
             "saved.json", true
         ),
         PROFILE(
-            TypeToken.getParameterized(Array::class.java, User::class.java).type, "profile"
+            Array<User>::class.java, "profile"
         ),
         POSTS(
             TypeToken.getParameterized(Page::class.java, Media::class.java).type, "posts"

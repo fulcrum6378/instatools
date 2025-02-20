@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
 import androidx.lifecycle.MutableLiveData
@@ -31,7 +30,7 @@ interface Lister {
     var anJumper: ObjectAnimator?
 
     val rv: RecyclerView? get() = root?.findViewById(R.id.rv)
-    val empty: AppCompatTextView? get() = root?.findViewById(R.id.empty)
+    val empty: View? get() = root?.findViewById(R.id.empty)
     val jumper: ImageView? get() = root?.findViewById(R.id.jumper)
 
     fun isBInitialised(): Boolean
@@ -57,7 +56,7 @@ interface Lister {
         }
 
         if (shouldLoadOnPrepare()) {
-            if (isModelEmpty()) onLoaded()
+            if (isModelLoaded()) onLoaded()
             else load()
         }
     }
@@ -113,17 +112,17 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     override fun onScroll() {
         super.onScroll()
-        if (rv?.canScrollVertically(1) == false && canLoadMore())
-            load()
+        if (rv?.canScrollVertically(1) == false) load()
     }
 
     fun canRefresh(): Boolean =
         !rv!!.canScrollVertically(-1) && !(this is Selective && tracker?.hasSelection() == true)
 
     override fun load(reset: Boolean) {
-        if (job?.isActive == true) return
+        if ((!canLoadMore() && !reset) || job?.isActive == true) return
         job = CoroutineScope(Dispatchers.IO).launch {
             fetch(reset)
+            job = null
         }
     }
 
@@ -131,6 +130,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     suspend fun fetch(reset: Boolean)
 
     override fun onLoaded() {
+        job = null
         super.onLoaded()
         refresher?.isRefreshing = false
         if (loading != null && root!!.contains(loading!!)) {
@@ -138,20 +138,19 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
             root!!.removeView(loading)
         }
         error?.vis(false)
-        if (isModelEmpty() && canLoadMore() == true && !rv!!.canScrollVertically(1))
-            load()
+        if (isModelEmpty() && !rv!!.canScrollVertically(1)) load()
     }
 
     @MainThread
     fun onLazilyLoaded(start: Int, size: Int) {
-        if (size > 0)
-            rv?.adapter?.notifyItemRangeInserted(start, size)
-        if (isModelEmpty() && canLoadMore() == true && !rv!!.canScrollVertically(1))
-            load()
+        job = null
+        if (size > 0) rv?.adapter?.notifyItemRangeInserted(start, size)
+        if (isModelEmpty() && !rv!!.canScrollVertically(1)) load()
     }
 
     @MainThread
     fun onFailed(statusCode: Int) {
+        job = null
         refresher?.isRefreshing = false
         UiTools.snackbar(root!!, root!!.context.getString(Api.error(statusCode), statusCode))
         error?.vis()
@@ -168,6 +167,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     @MainThread
     fun onLazilyFailed(statusCode: Int) {
+        job = null
         UiTools.snackbar(root!!, root!!.context.getString(Api.error(statusCode), statusCode))
     }
 

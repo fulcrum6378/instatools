@@ -80,7 +80,6 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
                 c.mm.unfollowers.value = unf
                 onLoaded()
             }
-            job = null
             return; }
 
         oldFriends = c.dao.friends()

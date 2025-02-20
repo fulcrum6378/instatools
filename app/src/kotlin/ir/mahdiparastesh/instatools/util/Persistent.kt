@@ -49,7 +49,7 @@ interface Persistent {
     /**
      * Gets a local BOOLEAN preference using a key, if not available uses the global preference.
      */
-    fun bPreference(key: String, keyCb: String, def: Boolean): Boolean =
+    fun bPreference(key: String, def: Boolean, keyCb: String, keyCBDef: Boolean): Boolean =
         if (sp?.getBoolean(keyCb, false) == true && sp?.contains(key) == true)
             sp!!.getBoolean(key, true/*IMPOSSIBLE*/)
         else gsp.getBoolean(key, def)

@@ -11,7 +11,7 @@ import ir.mahdiparastesh.instatools.R
  */
 abstract class ServiceOwnerActivity : CounterActivity() {
     abstract val controllerId: Int
-    private var lastEmptinessState = defaultState
+    private var lastEmptinessState = true
 
     private val controller: MenuItem? get() = toolbar.menu.findItem(controllerId)
 
@@ -32,13 +32,5 @@ abstract class ServiceOwnerActivity : CounterActivity() {
 
     open fun onStateChanged(hasContent: Boolean) {
         controller?.isEnabled = hasContent
-    }
-
-    companion object {
-        const val HANDLE_INSERTED = 0
-        const val HANDLE_DELETED = 1
-        const val HANDLE_CHANGED = 2
-        const val HANDLE_RESET = 3
-        const val defaultState = true
     }
 }

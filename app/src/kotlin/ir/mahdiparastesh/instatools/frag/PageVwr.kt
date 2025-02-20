@@ -147,7 +147,8 @@ class PageVwr : BasePageViewer() {
                     topMargin = vPad
                     bottomMargin = vPad
                 }
-        }
+        } else
+            load()
 
         // update Favourite
         c.mm.fav?.apply {
@@ -175,7 +176,6 @@ class PageVwr : BasePageViewer() {
         if (cache != null) {
             c.mm.posts = cache
             withContext(Dispatchers.Main) { onLoaded() }
-            job = null
             return; }
 
         // fetch online posts
@@ -185,17 +185,14 @@ class PageVwr : BasePageViewer() {
                 c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.pk().toString()
             ), onError = { code -> onFailed(code) }
         )
-        if (graphQl == null) {
-            job = null
-            return; }
+        if (graphQl == null) return
         val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
         if (page == null) {
             withContext(Dispatchers.Main) { onLazilyFailed(-3) }
-            job = null
             return; }
 
         // update the data model and the UI
-        if (c.mm.posts == null) {
+        if (c.mm.posts == null || reset) {
             c.mm.posts = page
             withContext(Dispatchers.Main) { onLoaded() }
         } else c.mm.posts?.apply {
@@ -207,8 +204,6 @@ class PageVwr : BasePageViewer() {
 
         // cache the data model
         c.mm.posts?.also { pickle.save(it) }
-
-        job = null
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -223,6 +218,10 @@ class PageVwr : BasePageViewer() {
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
+    }
+
+    override fun onRefresh() {
+        c.load(reset = true)
     }
 
     override fun buildSelection() {

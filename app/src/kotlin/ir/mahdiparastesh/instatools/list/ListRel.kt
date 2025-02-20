@@ -34,7 +34,7 @@ class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
             c.expandable.mediaOwner = c.mm.user // these Medias do not contains User information!
             try {
                 c.expandable.expand()
-                f.jumper()?.vis(false)
+                f.b.jumper.vis(false)
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) throw e
             }

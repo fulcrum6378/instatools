@@ -47,7 +47,6 @@ class PageTag : BasePageViewer() {
         if (cache != null) {
             c.mm.tagged = cache
             withContext(Dispatchers.Main) { onLoaded() }
-            job = null
             return; }
 
         // fetch online tagged posts
@@ -60,17 +59,14 @@ class PageTag : BasePageViewer() {
                 GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),
             onError = { code -> if (cursor == null) onFailed(code) else onLazilyFailed(code) }
         )
-        if (graphQl == null) {
-            job = null
-            return; }
+        if (graphQl == null) return
         val page = graphQl.data?.xdt_api__v1__usertags__user_id__feed_connection
         if (page == null) {
             withContext(Dispatchers.Main) { onLazilyFailed(-3) }
-            job = null
             return; }
 
         // update the data model and the UI
-        if (c.mm.tagged == null) {
+        if (c.mm.tagged == null || reset) {
             c.mm.tagged = page
             withContext(Dispatchers.Main) { onLoaded() }
         } else c.mm.tagged?.apply {
@@ -82,8 +78,6 @@ class PageTag : BasePageViewer() {
 
         // cache the data model
         c.mm.tagged?.also { pickle.save(it) }
-
-        job = null
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

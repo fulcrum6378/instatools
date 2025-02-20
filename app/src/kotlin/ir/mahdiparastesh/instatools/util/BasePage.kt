@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -26,7 +25,7 @@ abstract class BasePage<Activity> : Fragment(), OnlineLister, Toolbar.OnMenuItem
 
     override var job: Job? = null
     override val rv: RecyclerView? get() = root?.findViewById(R.id.rv)
-    override val empty: AppCompatTextView? get() = root?.findViewById(R.id.empty)
+    override val empty: View? get() = root?.findViewById(R.id.empty)
     override val jumper: ImageView? get() = root?.findViewById(R.id.jumper)
     override var shouldShowJumper = MutableLiveData(false)
     override var anJumper: ObjectAnimator? = null

@@ -24,7 +24,7 @@ class PageSto : BasePageViewer() {
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.mm.story != null && c.mm.highlights != null
-    override fun isModelEmpty(): Boolean = c.mm.story != null && c.mm.highlights?.isEmpty() == false
+    override fun isModelEmpty(): Boolean = c.mm.story != null && c.mm.highlights?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c, this)
     override fun canLoadMore(): Boolean = false
 
@@ -46,9 +46,7 @@ class PageSto : BasePageViewer() {
                 isPost = true, body = GraphQlQuery.STORY.body(uid),
                 onError = { code -> onFailed(code) }
             )
-            if (graphQl1 == null) {
-                job = null
-                return; }
+            if (graphQl1 == null) return
             c.mm.story =
                 graphQl1.data?.xdt_api__v1__feed__reels_media?.reels_media?.firstOrNull()
             c.mm.story?.also { pickle1.save(it) }
@@ -66,9 +64,7 @@ class PageSto : BasePageViewer() {
                 isPost = true, body = GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
                 onError = { code -> onFailed(code) }
             )
-            if (graphQl2 == null) {
-                job = null
-                return; }
+            if (graphQl2 == null) return
             c.mm.highlights = graphQl2.data?.highlights
             c.mm.highlights?.also { pickle2.save(it) }
         }

@@ -71,10 +71,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback tracker?.hasSelection() == true
-                || selectionGuide != null
-        }
         b.rv.layoutManager = object : SafeGridManager(c, 3) {
             override fun canScrollVertically(): Boolean =
                 super.canScrollVertically() && selectionGuide == null
@@ -96,7 +92,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 if (c.mm.saved?.more_available == false)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
             }
-            job = null
             return; }
 
         // fetch online saved posts
@@ -105,13 +100,11 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
             onError = { code -> if (c.mm.saved == null) onFailed(code) else onLazilyFailed(code) }
         )
-        if (lazyList == null) {
-            job = null
-            return; }
+        if (lazyList == null) return
 
         // update the data model
         var lastBefore: Int? = null
-        if (c.mm.saved == null) {
+        if (c.mm.saved == null || reset) {
             c.mm.saved = lazyList
         } else c.mm.saved?.apply {
             lastBefore = items.size
@@ -130,8 +123,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
 
         // cache the data model
         c.mm.saved?.also { pickle.save(it) }
-
-        job = null
     }
 
     override fun onLoaded() {

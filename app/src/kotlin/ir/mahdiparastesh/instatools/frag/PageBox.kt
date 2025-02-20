@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallback<ActivityResult> {
-    private lateinit var b: PageBoxBinding
+    lateinit var b: PageBoxBinding
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
     private var boxScroll: Int? = null
@@ -90,16 +90,13 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
             val page = Api.call<InboxPage>(
                 Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
                 InboxPage::class, onError = { code ->
-                    b.refresher.isRefreshing = false
-                    if (c.mm.dmInbox == null) onFailed(code)
-                    else UiTools.snackbar(b.root, getString(Api.error(code), code))
+                    if (c.mm.dmInbox == null) onFailed(code) else onLazilyFailed(code)
                 }
             )
-            if (page == null) {
-                job = null
-                return; }
+            if (page == null) return
 
-            if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
+            if (c.mm.dmInbox == null || reset)
+                c.mm.dmInbox = page.inbox
             else c.mm.dmInbox?.apply {
                 threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
                 threads.addAll(page.inbox.threads)
@@ -109,9 +106,8 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
             }
             withContext(Dispatchers.Main) {
                 onLoaded()
-                if (canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
+                if (!canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
             }
-            job = null
         } else {
             val inbox = Api.call<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
@@ -119,15 +115,10 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
                 Rest.InboxThread::class,
                 onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
-            if (inbox == null) {
-                job = null
-                return; }
+            if (inbox == null) return
             val dmThd = inbox.thread
             if (dmThd == null) {
-                withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.invalidResponse)
-                }
-                job = null
+                withContext(Dispatchers.Main) { onLazilyFailed(-3) }
                 return; }
 
             val bef = c.mm.dmThread!!.items.size
@@ -139,12 +130,12 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
             c.mm.dmThread!!.items.sortBy { it.timestamp }
             val dif = c.mm.dmThread!!.items.size - bef
             withContext(Dispatchers.Main) {
+                job = null
                 b.rv.adapter?.let {
                     it.notifyItemRangeInserted(0, dif)
                     it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
                 }
             }
-            job = null
         }
     }
 

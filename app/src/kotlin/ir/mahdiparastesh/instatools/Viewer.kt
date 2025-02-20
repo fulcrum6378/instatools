@@ -135,7 +135,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     }
 
     @MainThread
-    private fun load(userId: String? = null, userName: String? = null, reset: Boolean = false) {
+    fun load(userId: String? = null, userName: String? = null, reset: Boolean = false) {
         mm.user?.also { u ->
             if (!reset && (userId == u.id || userName == u.username)) return@load
         }
@@ -147,22 +147,28 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             var userName_: String? = userName
             var userReplaced = false
 
-            val pickle: Pickle
+            var pickle: Pickle? = null
             if (userId_ != null) { // if the parameter `userId` is used
                 mm.user?.also { oldUser ->
                     userReplaced = oldUser.id!! != userId_
                 }
                 pickle = Pickle(c, Pickle.Type.PROFILE, userId_)
-                mm.user = userInfo(userId_)
-                if (mm.user == null) { // got an API error
-                    loader = null
-                    return@launch; }
-                userName_ = mm.user!!.username!!
+                val cache = if (!userReplaced && !reset) pickle.restore<Array<User>>() else null
+                if (cache != null && cache.size == 2) {
+                    mm.user = cache[0]
+                    mm.profile = cache[1]
+                } else {
+                    mm.user = userInfo(userId_)
+                    if (mm.user == null) { // got an API error
+                        loader = null
+                        return@launch; }
+                    userName_ = mm.user!!.username!!
 
-                mm.profile = userProfile(userName_)
-                if (mm.profile == null) {
-                    loader = null
-                    return@launch; }
+                    mm.profile = userProfile(userName_)
+                    if (mm.profile == null) {
+                        loader = null
+                        return@launch; }
+                }
 
             } else { // if the parameter `userName` is used
                 mm.user?.also { oldUser ->
@@ -181,6 +187,9 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 }
             }
 
+            if (pickle == null) pickle = Pickle(c, Pickle.Type.PROFILE, userId_)
+            pickle.save(arrayOf(mm.user!!, mm.profile!!))
+
             if (userReplaced) {
                 mm.posts = null
                 mm.story = null
@@ -194,7 +203,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     pages().forEach { (it as BasePageViewer?)?.clear() }
                 page2?.showProfile()
                 b.toolbar.title = mm.user?.username
-                b.refresher.isRefreshing = false
                 fixTbMenu()
                 loader = null
             }
@@ -204,19 +212,13 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     suspend fun userInfo(userId: String): User? =
         Api.call<Rest.UserInfo>(
             Api.Endpoint.INFO.url.format(userId), Rest.UserInfo::class,
-            onError = { code ->
-                b.refresher.isRefreshing = false
-                UiTools.snackbar(b.root, getString(Api.error(code), code))
-            }
+            onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
         )?.user
 
     suspend fun userProfile(userName: String): User? =
         Api.call<GraphQl>(
             Api.Endpoint.PROFILE.url.format(userName), GraphQl::class,
-            onError = { code ->
-                b.refresher.isRefreshing = false
-                UiTools.snackbar(b.root, getString(Api.error(code), code))
-            }
+            onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
         )?.data?.user
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

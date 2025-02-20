@@ -5,6 +5,7 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.media3.common.Player
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.list.ListCar
@@ -20,7 +21,7 @@ abstract class BasePageMain(private val theme: BaseActivity.Theme) : BasePage<Ma
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        empty?.compoundDrawables?.getOrNull(1)?.colorFilter =
+        (empty as AppCompatTextView).compoundDrawables.getOrNull(1)?.colorFilter =
             PorterDuffColorFilter(c.wrapTheme(theme).themeColor(), PorterDuff.Mode.SRC_IN)
     }
 

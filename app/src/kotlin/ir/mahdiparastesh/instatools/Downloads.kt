@@ -52,18 +52,45 @@ class Downloads : ServiceOwnerActivity(), Lister {
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
 
-    override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
-    override val controllerId = R.id.dtControl
     override val root: ConstraintLayout? by lazy { b.root }
-    override val bInitialised: Boolean get() = ::b.isInitialized
+    override val menuRes = R.menu.downloads_tlb
+    override val controllerId = R.id.dtControl
+    override val tbShadow = null
     override var shouldShowJumper = MutableLiveData(false)
     override var anJumper: ObjectAnimator? = null
-    override val heightPixels: Int by lazy { dm.heightPixels }
+    override val expandable = null
+
+    override fun isBInitialised(): Boolean = ::b.isInitialized
+    override fun isModelLoaded(): Boolean = mm.queueds != null
+    override fun isModelEmpty(): Boolean = mm.queueds?.isEmpty() == true
+    override fun createAdapter(): RecyclerView.Adapter<*> = ListQud(this)
+    override fun screenHeight(): Int = dm.heightPixels
 
     class MyModel : ViewModel() {
         var queueds: CopyOnWriteArrayList<Queued>? = null
         var askedForDelete = false
+    }
+
+    companion object : ActivityCompanion() {
+        const val HANDLE_INSERTED = 0
+        const val HANDLE_CHANGED = 1
+        const val HANDLE_DELETED = 2
+        const val EXPORT_LINKS_MIME = "text/plain"
+        //const val EXPORT_LINKS_EXT = "txt"
+
+        var handler: Handler? = null
+
+        /** It can be called from any kind of thread. */
+        fun initService(c: BaseActivity) {
+            val uri = c.sPreference(Settings.spStorage)
+            if (uri == null || !c.c.isPathAccessible(uri)) {
+                c.goTo(Settings::class) { putExtra(Settings.EXTRA_SELECT_PATH, 1) }
+                return; }
+            c.startService(
+                Intent(c, Downloader::class.java).setAction(ForegroundService.ACTION_START)
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,24 +110,17 @@ class Downloads : ServiceOwnerActivity(), Lister {
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                         updateCount((numCache ?: mm.queueds!!.size) + 1)
                     }
+                    HANDLE_CHANGED -> find(msg)?.let {
+                        if (it == -1) return@let
+                        mm.queueds!![it] = msg.obj as Queued
+                        b.rv.adapter?.notifyItemChanged(it)
+                    }
                     HANDLE_DELETED -> find(msg)?.let {
                         mm.queueds!!.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         updateCount((numCache ?: mm.queueds!!.size) - 1)
-                    }
-                    HANDLE_CHANGED -> find(msg)?.let {
-                        if (it == -1) return@let
-                        mm.queueds!![it] = msg.obj as Queued
-                        b.rv.adapter?.notifyItemChanged(it)
-                    }
-                    HANDLE_RESET -> {
-                        if (msg.arg1 == 1) mm.queueds =
-                            CopyOnWriteArrayList(msg.obj as List<Queued>)
-                        if (b.rv.adapter == null) b.rv.adapter = ListQud(this@Downloads)
-                        else b.rv.adapter?.notifyDataSetChanged()
-                        updateCount(mm.queueds!!.size)
                     }
                 }
                 updateIfEmpty(mm.queueds.isNullOrEmpty())
@@ -122,20 +142,6 @@ class Downloads : ServiceOwnerActivity(), Lister {
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }
 
-        // load data
-        CoroutineScope(Dispatchers.IO).launch {
-            mm.queueds = CopyOnWriteArrayList(dao.queueds())
-            try {
-                mm.queueds!!.sortBy { it.addedAt }
-            } catch (_: java.lang.UnsupportedOperationException) {
-                // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
-            }
-            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
-            withContext(Dispatchers.Main) {
-                if (mm.queueds!!.isNotEmpty() == defaultState) onStateChanged(true)
-            }
-        }
-
         // list
         prepareListing(this)
         ItemTouchHelper(SwipeToRemove()).attachToRecyclerView(b.rv)
@@ -154,7 +160,8 @@ class Downloads : ServiceOwnerActivity(), Lister {
                 return@also
             }
             handledLinks.add(it)
-            if (!Main.guest) {
+            // TODO Api.cookies
+            if (m.acc != null) {
                 // TODO handle link `it`
                 initService(this)
             } else MaterialAlertDialogBuilder(this).apply {
@@ -170,6 +177,24 @@ class Downloads : ServiceOwnerActivity(), Lister {
         return super.resolveIntent(intent, false)
     }
 
+    override fun load(reset: Boolean) {
+        CoroutineScope(Dispatchers.IO).launch {
+            mm.queueds = CopyOnWriteArrayList(dao.queueds())
+            try {
+                mm.queueds!!.sortBy { it.addedAt }
+            } catch (_: java.lang.UnsupportedOperationException) {
+                // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
+            }
+            withContext(Dispatchers.Main) { onLoaded() }
+        }
+    }
+
+    override fun onLoaded() {
+        super.onLoaded()
+        if (!isModelEmpty()) onStateChanged(true)
+        updateCount(mm.queueds!!.size)
+    }
+
     override fun onResume() {
         super.onResume()
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
@@ -180,7 +205,8 @@ class Downloads : ServiceOwnerActivity(), Lister {
         val ret = super.onCreateOptionsMenu(menu)
         Downloader.active.observe(this) {
             updateControlButton(it)
-            if (it) handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+            b.rv.adapter?.notifyDataSetChanged()
+            updateCount(mm.queueds!!.size)
         }
         return ret
     }
@@ -236,7 +262,8 @@ class Downloads : ServiceOwnerActivity(), Lister {
                         CoroutineScope(Dispatchers.IO).launch {
                             dao.deleteQueueds()
                             mm.queueds?.clear()
-                            handler?.obtainMessage(HANDLE_RESET)?.sendToTarget()
+                            b.rv.adapter?.notifyDataSetChanged()
+                            updateCount(mm.queueds!!.size)
                         }
                     }
                 }.show() else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
@@ -282,7 +309,6 @@ class Downloads : ServiceOwnerActivity(), Lister {
     private var isSwipeDeleteInflated: Boolean? = false
     override fun onStateChanged(hasContent: Boolean) {
         super.onStateChanged(hasContent)
-        b.empty.vis(mm.queueds.isNullOrEmpty())
 
         // teach users that they can swipe items in order to delete them
         if (isSwipeDeleteInflated == null) return
@@ -310,24 +336,6 @@ class Downloads : ServiceOwnerActivity(), Lister {
     override fun onDestroy() {
         mm.queueds = null
         super.onDestroy()
-    }
-
-    companion object : ActivityCompanion() {
-        const val EXPORT_LINKS_MIME = "text/plain"
-        //const val EXPORT_LINKS_EXT = "txt"
-
-        var handler: Handler? = null
-
-        /** It can be called from any kind of thread. */
-        fun initService(c: BaseActivity) {
-            val uri = c.sPreference(Settings.spStorage)
-            if (uri == null || !c.c.isPathAccessible(uri)) {
-                c.goTo(Settings::class) { putExtra(Settings.EXTRA_SELECT_PATH, 1) }
-                return; }
-            c.startService(
-                Intent(c, Downloader::class.java).setAction(ForegroundService.ACTION_START)
-            )
-        }
     }
 
     inner class SwipeToRemove : ItemTouchHelper.Callback() {
