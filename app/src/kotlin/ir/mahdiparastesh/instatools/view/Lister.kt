@@ -1,21 +1,29 @@
 package ir.mahdiparastesh.instatools.view
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -107,8 +115,12 @@ interface Lister {
     @MainThread
     fun onLoaded() {
         rv?.adapter = createAdapter()
-        empty?.vis(isModelEmpty())
+        onListResized()
         if (this is Selective && tracker == null) buildSelection()
+    }
+
+    fun onListResized() {
+        empty?.vis(isModelEmpty())
     }
 }
 
@@ -178,7 +190,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
             loading?.animation?.cancel()
             root?.removeView(loading)
         }
-        empty?.vis(isModelEmpty())
+        onListResized()
     }
 
     @MainThread
@@ -192,10 +204,58 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     }
 }
 
+/**
+ * Observes the lifecycle a [ir.mahdiparastesh.instatools.util.ForegroundService]
+ * and switches start and stop buttons accordingly.
+ */
+interface ServiceOwner : Lister {
+    val serviceActive: MutableLiveData<Boolean>
+    val controller: MenuItem?
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun prepareListing(c: BaseActivity) {
+        super.prepareListing(c)
+
+        serviceActive.observe(c) { bb ->
+            controller?.apply {
+                setIcon(if (bb) R.drawable.pause else R.drawable.play)
+                setTitle(if (bb) R.string.stop else R.string.start)
+            }
+            rv?.adapter?.notifyDataSetChanged()
+            onListResized()
+        }
+    }
+
+    override fun onListResized() {
+        super.onListResized()
+        controller?.isEnabled = !isModelEmpty()
+    }
+}
+
 /** Helper interface for selection mode of [RecyclerView]. */
 interface Selective {
     var tracker: SelectionTracker<String>?
     var selectivity: Boolean
 
     fun buildSelection()
+}
+
+interface Counter {
+    var countBadge: BadgeDrawable?
+
+    @SuppressLint("UnsafeOptInUsageError")
+    fun updateCount(c: BaseActivity, n: Int) {
+        BadgeUtils.detachBadgeDrawable(countBadge, c.tbTitle!!)
+        BadgeUtils.attachBadgeDrawable(
+            BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
+                number = n
+                backgroundColor = c.themeColor(android.R.attr.colorAccent)
+                badgeTextColor =
+                    if (c.night()) c.themeColor(android.R.attr.colorPrimary)
+                    else c.color(R.color.defBG)
+                countBadge = this
+                maxCharacterCount = UiTools.MAX_BADGE_CHAR
+            }, c.tbTitle!!
+        )
+    }
 }

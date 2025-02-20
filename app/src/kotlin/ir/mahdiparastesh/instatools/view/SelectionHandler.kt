@@ -7,9 +7,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Subclass of DbRelatedThread, it queues the selected IG posts coming from
- * androidx.recyclerview.selection and performs the abstract handle() function on the first item in
- * "list" and deletes it immediately. The first item is available using the function "next()".
+ * Queues selected IG posts coming from androidx.recyclerview.selection and
+ * executes the abstract handle() function on the first item in "list" and deletes it immediately.
+ * The first item is available using the function "next()".
  *
  * Do not automate the ended() function, it needs to be called by the implementer of handle().
  */

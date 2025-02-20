@@ -6,16 +6,18 @@ import android.view.View
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.badge.BadgeDrawable
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
-import ir.mahdiparastesh.instatools.view.CounterActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.view.Counter
 import ir.mahdiparastesh.instatools.view.Lister
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Favourites : CounterActivity(), Lister {
+class Favourites : BaseActivity(), Lister, Counter {
     private lateinit var b: FavouritesBinding
 
     override val com: ActivityCompanion get() = Companion
@@ -28,6 +30,7 @@ class Favourites : CounterActivity(), Lister {
     override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
     override val expandable = null
+    override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = m.fav != null
@@ -60,6 +63,6 @@ class Favourites : CounterActivity(), Lister {
 
     override fun onLoaded() {
         super.onLoaded()
-        updateCount(m.fav?.size ?: 0)
+        updateCount(this, m.fav?.size ?: 0)
     }
 }

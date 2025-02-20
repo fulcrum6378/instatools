@@ -92,25 +92,30 @@ data class Media(
         dao: Database.DAO,
         idealSize: Float = Version.BEST,
         link: String? = null,
-        owner: User? = null
+        owner: User? = null,
+        onlyOneSlide: Int? = null
     ) {
         val u = owner ?: owner()
         val now = Persistent.now()
-        if (carousel_media != null) for (car in carousel_media) dao.addQueued(
-            Queued(
-                now,
-                link ?: link()!!,
-                car.taken_at.xFromSeconds(),
-                u.id(),
-                u.username!!,
-                car.pk(),
-                car.nearest(idealSize)!!,
-                car.thumb(),
-                car.media_type.toInt().toByte(),
-                car.video_duration,
-                caption?.text,
+        if (carousel_media != null) for (slide in carousel_media.indices) {
+            if (onlyOneSlide != null && onlyOneSlide != slide) continue
+            val car = carousel_media[slide]
+            dao.addQueued(
+                Queued(
+                    now,
+                    link ?: link()!!,
+                    car.taken_at.xFromSeconds(),
+                    u.id(),
+                    u.username!!,
+                    car.pk(),
+                    car.nearest(idealSize)!!,
+                    car.thumb(),
+                    car.media_type.toInt().toByte(),
+                    car.video_duration,
+                    caption?.text,
+                )
             )
-        ) else dao.addQueued(
+        } else dao.addQueued(
             Queued(
                 now,
                 link ?: link()!!,

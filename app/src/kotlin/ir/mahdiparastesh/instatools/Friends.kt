@@ -8,12 +8,14 @@ import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.badge.BadgeDrawable
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.FriendsBinding
 import ir.mahdiparastesh.instatools.list.ListFri
-import ir.mahdiparastesh.instatools.view.CounterActivity
+import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.view.Counter
 import ir.mahdiparastesh.instatools.view.OnlineLister
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,7 +23,7 @@ import kotlinx.coroutines.withContext
 import java.lang.Integer.min
 import java.util.concurrent.CopyOnWriteArrayList
 
-class Friends : CounterActivity(), OnlineLister {
+class Friends : BaseActivity(), OnlineLister, Counter {
     private lateinit var b: FriendsBinding
     val mm: MyModel by viewModels()
     private val friendshipsDataLimit = 500 // no more no less
@@ -37,6 +39,7 @@ class Friends : CounterActivity(), OnlineLister {
     override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
     override val expandable = null
+    override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = mm.friends != null
@@ -88,6 +91,6 @@ class Friends : CounterActivity(), OnlineLister {
 
     override fun onLoaded() {
         super.onLoaded()
-        updateCount(mm.friends.size)
+        updateCount(this, mm.friends.size)
     }
 }

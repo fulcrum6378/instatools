@@ -67,17 +67,18 @@ class Expandable(
             }
         }
         b.downloadThis.setOnClickListener {
-            val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
-                ?: return@setOnClickListener
-            CoroutineScope(Dispatchers.IO).launch {
-                car.queue(c.dao, owner = mediaOwner)
-                Downloads.initService(c)
+            media?.also { med ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    med.queue(c.dao, onlyOneSlide = b.slider.currentItem)
+                    Downloads.initService(c)
+                }
             }
+
         }
         b.downloadAll.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    med.queue(c.dao, owner = mediaOwner)
+                    med.queue(c.dao)
                     Downloads.initService(c)
                 }
             }

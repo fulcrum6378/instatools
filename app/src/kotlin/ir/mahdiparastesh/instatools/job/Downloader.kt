@@ -6,7 +6,6 @@ import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -23,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apache.commons.imaging.Imaging
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
@@ -47,7 +47,7 @@ class Downloader : ForegroundService() {
 
     companion object : ForegroundServiceCompanion() {
         override val klass = Downloader::class.java
-        override val channel = Notify.Channel.QUEUER
+        override val channel = Notify.Channel.DOWNLOADER
         override val ntfId = Notify.ID_DOWNLOADER
         override val ntfActions: Array<Pair<String, Int>> = arrayOf(
             ACTION_STOP to R.string.stop
@@ -217,28 +217,21 @@ class Downloader : ForegroundService() {
 
     override fun destroy() {
         job?.cancel()
-        ntfTitle = getString(R.string.queuerTitle)
-        ntfSmallText = null
-        updateNotification()
         CoroutineScope(Dispatchers.IO).launch {
-            runCatching {
-                clearCacheIfNecessary()
-                @Suppress("KotlinConstantConditions")
-                if (dest == null || !bPreference(
-                        Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
-                        Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
-                    )
-                ) return@runCatching
-                val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
-                for (branch in stem.listFiles())
-                    if (branch.isDirectory && branch.listFiles().isEmpty())
-                        branch.delete()
-            }.onFailure {
-                if (BuildConfig.DEBUG) throw it
-            }
+            clearCacheIfNecessary()
+            @Suppress("KotlinConstantConditions")
+            if (dest == null || !bPreference(
+                    Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
+                    Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
+                )
+            ) return@launch
+            val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
+            for (branch in stem.listFiles())
+                if (branch.isDirectory && branch.listFiles().isEmpty())
+                    branch.delete()
             DownloadHistory.saveCache(this@Downloader)
-            download() // double check in between
-            super.destroy()
+
+            withContext(Dispatchers.IO) { super.destroy() }
         }
     }
 }

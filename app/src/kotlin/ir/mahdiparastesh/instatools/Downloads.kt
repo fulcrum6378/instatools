@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
@@ -23,6 +22,7 @@ import androidx.core.graphics.red
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
@@ -34,9 +34,9 @@ import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.view.Lister
+import ir.mahdiparastesh.instatools.view.Counter
 import ir.mahdiparastesh.instatools.view.Notify
-import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
+import ir.mahdiparastesh.instatools.view.ServiceOwner
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,12 +44,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CopyOnWriteArrayList
 
-@SuppressLint("NotifyDataSetChanged")
-class Downloads : ServiceOwnerActivity(), Lister {
+class Downloads : BaseActivity(), ServiceOwner, Counter {
     lateinit var b: DownloadsBinding
     val mm: MyModel by viewModels()
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
+    private var isSwipeDeleteInflated: Boolean? = false
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
 
@@ -59,11 +59,13 @@ class Downloads : ServiceOwnerActivity(), Lister {
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
     override val menuRes = R.menu.downloads_tlb
-    override val controllerId = R.id.dtControl
     override val tbShadow = null
     override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
     override val expandable = null
+    override val serviceActive = Downloader.active
+    override val controller: MenuItem? get() = b.toolbar.menu.findItem(R.id.dtControl)
+    override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = mm.queueds != null
@@ -112,7 +114,7 @@ class Downloads : ServiceOwnerActivity(), Lister {
                         val pos = mm.queueds?.size ?: 1
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
-                        updateCount((numCache ?: mm.queueds!!.size) + 1)
+                        onListResized()
                     }
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
@@ -124,10 +126,9 @@ class Downloads : ServiceOwnerActivity(), Lister {
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
-                        updateCount((numCache ?: mm.queueds!!.size) - 1)
+                        onListResized()
                     }
                 }
-                updateIfEmpty(mm.queueds.isNullOrEmpty())
             }
 
             fun find(msg: Message): Int? =
@@ -181,13 +182,23 @@ class Downloads : ServiceOwnerActivity(), Lister {
         return super.resolveIntent(intent, false)
     }
 
+    override fun onResume() {
+        super.onResume()
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+            .cancel(Notify.ID_DOWNLOADER_ERROR)
+    }
+
+    override fun shouldShowJumper(): Boolean =
+        super.shouldShowJumper() && isSwipeDeleteInflated != true
+
     override fun load(reset: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
             mm.queueds = CopyOnWriteArrayList(dao.queueds())
             try {
                 mm.queueds!!.sortBy { it.addedAt }
-            } catch (_: java.lang.UnsupportedOperationException) {
-                // Mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
+            } catch (e: java.lang.UnsupportedOperationException) {
+                // mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
+                if (BuildConfig.DEBUG) throw e
             }
             withContext(Dispatchers.Main) { onLoaded() }
         }
@@ -195,26 +206,28 @@ class Downloads : ServiceOwnerActivity(), Lister {
 
     override fun onLoaded() {
         super.onLoaded()
-        if (!isModelEmpty()) onStateChanged(true)
-        updateCount(mm.queueds!!.size)
+
+        // teach users that they can swipe items in order to delete them
+        val hasContent = !isModelEmpty()
+        if (isSwipeDeleteInflated == null) return
+        if (!gsp.getBoolean(Settings.spLearntSwipeDelete, false)) when {
+            isSwipeDeleteInflated == false && hasContent -> {
+                b.guideSwipeDeleteStub.setOnInflateListener { _, inflated ->
+                    bd = GuideSwipeDeleteBinding.bind(inflated)
+                }
+                b.guideSwipeDeleteStub.inflate()
+                isSwipeDeleteInflated = true
+            }
+            isSwipeDeleteInflated == true -> bd.root.vis(hasContent)
+        } else isSwipeDeleteInflated = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-            .cancel(Notify.ID_DOWNLOADER_ERROR)
+    override fun onListResized() {
+        super.onListResized()
+        updateCount(this, mm.queueds?.size ?: 0)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val ret = super.onCreateOptionsMenu(menu)
-        Downloader.active.observe(this) {
-            updateControlButton(it)
-            b.rv.adapter?.notifyDataSetChanged()
-            updateCount(mm.queueds!!.size)
-        }
-        return ret
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
@@ -267,7 +280,7 @@ class Downloads : ServiceOwnerActivity(), Lister {
                             dao.deleteQueueds()
                             mm.queueds?.clear()
                             b.rv.adapter?.notifyDataSetChanged()
-                            updateCount(mm.queueds!!.size)
+                            onListResized()
                         }
                     }
                 }.show() else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
@@ -309,24 +322,6 @@ class Downloads : ServiceOwnerActivity(), Lister {
             }
         }
     }*/
-
-    private var isSwipeDeleteInflated: Boolean? = false
-    override fun onStateChanged(hasContent: Boolean) {
-        super.onStateChanged(hasContent)
-
-        // teach users that they can swipe items in order to delete them
-        if (isSwipeDeleteInflated == null) return
-        if (!gsp.getBoolean(Settings.spLearntSwipeDelete, false)) when {
-            isSwipeDeleteInflated == false && hasContent -> {
-                b.guideSwipeDeleteStub.setOnInflateListener { _, inflated ->
-                    bd = GuideSwipeDeleteBinding.bind(inflated)
-                }
-                b.guideSwipeDeleteStub.inflate()
-                isSwipeDeleteInflated = true
-            }
-            isSwipeDeleteInflated == true -> bd.root.vis(hasContent)
-        } else isSwipeDeleteInflated = null
-    }
 
     override fun updateShadow() {
     }
@@ -379,7 +374,7 @@ class Downloads : ServiceOwnerActivity(), Lister {
                         if (mm.queueds == null) return@let
                         b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size - 1)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
-                        updateCount((numCache ?: mm.queueds!!.size) - 1)
+                        onListResized()
                     }
                 }
                 handler?.obtainMessage(-1)?.sendToTarget()

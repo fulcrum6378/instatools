@@ -82,9 +82,7 @@
 
     <ImageView
         android:id="@+id/jumper"
-        style="@style/jumper"
-        app:layout_constraintBottom_toBottomOf="@null"
-        app:layout_constraintBottom_toTopOf="@id/guideSwipeDeleteStub" />
+        style="@style/jumper" />
 
     <ViewStub
         android:id="@+id/guideSwipeDeleteStub"

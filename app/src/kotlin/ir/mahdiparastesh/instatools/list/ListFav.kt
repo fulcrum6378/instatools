@@ -13,6 +13,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBinding>>() {
 
@@ -39,13 +40,13 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
             val f = c.m.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }
                 ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
-                val nCache = c.numCache ?: c.m.fav?.size ?: 0
-                if (f.tempDeleted) {
-                    c.dao.deleteFavourite(f)
-                    c.updateCount(nCache - 1)
-                } else {
-                    c.dao.addFavourite(f)
-                    c.updateCount(nCache + 1)
+                if (f.tempDeleted) c.dao.deleteFavourite(f)
+                else c.dao.addFavourite(f)
+
+                val listSize = c.m.fav?.size ?: 0
+                withContext(Dispatchers.Main) {
+                    if (f.tempDeleted) c.updateCount(c, listSize - 1)
+                    else c.updateCount(c, listSize + 1)
                 }
             }
             h.b.updateIcon(f.tempDeleted)

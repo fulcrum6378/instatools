@@ -32,8 +32,8 @@ class Notify {
             "exporting", R.string.exporterChannel, R.string.exporterChannelDesc,
             groupId = ChannelGroup.SERVICES.id
         ),
-        QUEUER(
-            "downloading", R.string.queuerChannel, R.string.queuerChannelDesc,
+        DOWNLOADER(
+            "downloading", R.string.downloaderChannel, R.string.downloaderChannelDesc,
             groupId = ChannelGroup.SERVICES.id
         ),
 

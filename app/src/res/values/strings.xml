@@ -243,8 +243,8 @@
 
 
     <!-- Downloader -->
-    <string name="queuerChannel">Download queue</string>
-    <string name="queuerChannelDesc">Downloads the queued media</string>
+    <string name="downloaderChannel">Download queue</string>
+    <string name="downloaderChannelDesc">Downloads the queued media</string>
     <string name="queuerTitle">Downloading&#8230;</string>
     <string name="queuerTitleCount">Downloading %d items&#8230;</string>
     <string name="queuerTitleCount1" translatable="false">Downloading %d item&#8230;</string>

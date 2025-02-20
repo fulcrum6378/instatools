@@ -6,7 +6,7 @@ import android.widget.ListView
 import androidx.annotation.AttrRes
 
 /**
- * Customised version of ListView without scrolling.
+ * Customised version of [ListView] without scrolling.
  * @see ir.mahdiparastesh.instatools.Settings
  */
 class FlatListView(
