@@ -5,74 +5,28 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.iterator
 import androidx.media3.common.Player
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.Main
-import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
-import ir.mahdiparastesh.instatools.databinding.GuestModeBinding
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
-import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.vish
 
-/* Subclass of BasePage, from which all pages of Main extend. */
-abstract class BasePageMain : BasePage<Main>(), SwipeRefreshLayout.OnRefreshListener {
+/** Subclass of [BasePage], from which all pages of [Main] extend. */
+abstract class BasePageMain(private val theme: BaseActivity.Theme) : BasePage<Main>() {
+
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
-
-    abstract val theme: BaseActivity.Theme
+    override val tbShadow: View? by lazy { c.b.tbShadow }
     abstract val emptyIcon: Int
-    private fun refresher(): SwipeRefreshLayout? = root?.findViewById(R.id.refresher)
-    open fun expanded(): ExpandableBinding? = null
-
-    protected open fun guestMode(parent: ConstraintLayout) {
-        GuestModeBinding.inflate(c.themeInflater(theme, c.layoutInflater), parent, true)
-        onLoaded(false)
-        for (ch in parent) if (ch is RecyclerView) ch.vis(false)
-        refresher()?.isEnabled = false
-        jumper()?.vis(false)
-        rv()?.vis(false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        refresher()?.setOnRefreshListener(this)
         super.onViewCreated(view, savedInstanceState)
-        if (Main.guest) {
-            guestMode(view as ConstraintLayout); return; }
 
-        empty()?.compoundDrawables?.getOrNull(1)?.colorFilter =
+        empty?.compoundDrawables?.getOrNull(1)?.colorFilter =
             PorterDuffColorFilter(c.wrapTheme(theme).themeColor(), PorterDuff.Mode.SRC_IN)
-        error()?.setOnClickListener {
-            refresher()?.isRefreshing = true
-            onRefresh()
-        }
-    }
-
-    override fun onLoaded(isEmpty: Boolean) {
-        refresher()?.isRefreshing = false
-        super.onLoaded(isEmpty)
-    }
-
-    override fun onFailed(message: String) {
-        refresher()?.isRefreshing = false
-        super.onFailed(message)
-    }
-
-    override fun onRecyclerViewScrolled() {
-        super.onRecyclerViewScrolled()
-        updateShadow()
-    }
-
-    override fun updateShadow() {
-        if (bInitialised) c.b.tbShadow.vish(rv()!!.computeVerticalScrollOffset() > 0)
     }
 
     override fun onPause() {
         super.onPause()
-        (expanded()?.slider?.adapter as ListCar?)?.sessions
+        (expandable?.b?.slider?.adapter as ListCar?)?.sessions
             ?.forEach { if (it?.player?.playbackState == Player.STATE_READY) it.player.pause() }
     }
 }

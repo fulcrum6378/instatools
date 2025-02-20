@@ -100,7 +100,7 @@ abstract class ListPost<Activity, Fragment>(
         expandable.thumb = v
         try {
             expandable.expand()
-            f.jumper()?.vis(false)
+            f.jumper?.vis(false)
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) throw e
         }

@@ -27,7 +27,9 @@ data class GraphQl(
     data class Page<Node>(
         val edges: CopyOnWriteArrayList<Edge<Node>>,
         val page_info: PageInfo,
-    )
+    ) {
+        fun isEmpty(): Boolean = edges.isEmpty()
+    }
 
     data class Edge<Node>(val node: Node)
 

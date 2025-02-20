@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.util
 
 import android.annotation.SuppressLint
+import android.view.View
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.selection.SelectionTracker
 import com.google.android.material.badge.BadgeDrawable
@@ -10,30 +11,24 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
-import ir.mahdiparastesh.instatools.view.UiTools.vish
 
-/* Subclass of BasePage, from which all pages of Viewer extend. */
+/** Subclass of [BasePage], from which all pages of [Viewer] extend. */
 abstract class BasePageViewer : BasePage<Viewer>(), Selective {
+
+    override val tbShadow: View? by lazy { c.b.tbShadow }
+    override val expandable: Expandable? get() = c.expandable
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
     override val selectiveMenuRes = R.menu.viewer_tlb_select
 
-    open fun avoidRefresh(): Boolean =
-        rv()?.canScrollVertically(-1) == true || tracker?.hasSelection() == true
-
-    override fun updateShadow() {
-        if (bInitialised) c.b.tbShadow.vish(
-            rv()!!.computeVerticalScrollOffset() > 0 && !c.expandable.zoomed
-        )
-    }
-
     @SuppressLint("NotifyDataSetChanged")
-    open fun reset() {
-        if (bInitialised) rv()?.adapter?.notifyDataSetChanged()
+    open fun clear() {
+        if (isBInitialised()) rv?.adapter?.notifyDataSetChanged()
     }
 
     override fun goBack(): Boolean {
@@ -73,8 +68,8 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
             c.b.toolbar.inflateMenu(if (status) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
             c.fixTbMenu()
             c.shake()
-            if (this@BasePageViewer is PageVwr) rv()?.isNestedScrollingEnabled = status
-            if (status) (rv()?.adapter as ListPost<*, *>?)?.firstLongClickSelect = true
+            if (this@BasePageViewer is PageVwr) rv?.isNestedScrollingEnabled = status
+            if (status) (rv?.adapter as ListPost<*, *>?)?.firstLongClickSelect = true
             else {
                 BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
                 c.selectionBadge = null

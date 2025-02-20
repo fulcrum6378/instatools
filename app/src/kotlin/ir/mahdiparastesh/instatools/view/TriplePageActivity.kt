@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.MutableLiveData
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.badge.BadgeDrawable
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -15,17 +13,10 @@ import ir.mahdiparastesh.instatools.util.Delay
 import kotlin.reflect.KClass
 
 /**
- * An abstract subclass of BaseActivity which takes three generic types and each one of them is a
- * subclass BasePage; therefore they'll make a three-paged activity.
+ * An abstract subclass of [BaseActivity] which takes three generic types and each one of them is a
+ * subclass of [BasePage]; therefore they'll make a three-paged activity.
  * This class contains every utility required for a three-paged activity.
- *
- * It has 2 modes of switching between fragments:
- * - TripleMode.FRAGMENT_MANAGER
- * - TripleMode.VIEW_PAGER which uses ViewPager2.
- *
  * In order to implement it, createPages() must be called for rendering the pages.
- *
- * @see BasePage
  */
 abstract class TriplePageActivity<A, B, C> : BaseActivity()
     where A : BasePage<*>, B : BasePage<*>, C : BasePage<*> {
@@ -50,9 +41,6 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
 
     /** Kotlin class name of the third page. */
     abstract val cKlass: KClass<C>
-
-    /** @see TripleMode */
-    abstract val mode: TripleMode
 
     /** Algorithm to select a page as default. */
     abstract fun defPage(): Int
@@ -79,31 +67,22 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     /**
      * This method must be called for rendering the pages, normally inside onCreate().
      *
-     * @param pager required only in VIEW_PAGER mode.
      * @param toDefaultPage true if it's going to switch to the default page.
      */
-    open fun createPages(pager: ViewPager2? = null, toDefaultPage: Boolean = true) {
+    open fun createPages(toDefaultPage: Boolean = true) {
         if (toDefaultPage) currentPage.value = defPage()
         createCurrentPage()
-        if (pager == null) {
-            val pages = pages()
-            for (i in pages.indices) if (pages[i] != null) transFrag().apply {
-                if (pages[i]!!.isAdded) remove(pages[i]!!)
-                add(R.id.frame, pages[i]!!)
-                if (i != currentPage.value) {
-                    detach(pages[i]!!)
-                    (pages[i] as BasePage).ftDetached = true
-                }
+        val pages = pages()
+        for (i in pages.indices) if (pages[i] != null) transFrag().apply {
+            if (pages[i]!!.isAdded) remove(pages[i]!!)
+            add(R.id.frame, pages[i]!!)
+            if (i != currentPage.value)
+                detach(pages[i]!!)
+            try {
                 commit()
+            } catch (_: IllegalStateException) {
+                // Can not perform this action after onSaveInstanceState
             }
-        } else {
-            pager.adapter = PageAdapter(this)
-            pager.setCurrentItem(currentPage.value!!, false)
-            pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(i: Int) {
-                    currentPage.value = i
-                }
-            })
         }
         Delay(100) {
             currentPage.observe(this) {
@@ -176,7 +155,6 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             }
             commit()
         }
-        pages()[lastPage]?.ftDetached = true
         return true
     }
 
@@ -214,48 +192,18 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     }
 
     /**
-     * Creates fragments and assigns them to their variables. Used mostly on a configuration change.
-     * Required for both FRAGMENT_MANAGER and VIEW_PAGER modes.
+     * Creates fragments and assigns them to their variables.
+     * Used mostly on a configuration change.
      */
     private inner class PageFactory : FragmentFactory() {
         override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
-            aKlass.java.name -> {
-                if (mode == TripleMode.FRAGMENT_MANAGER && page1 != null && page1?.isAdded == true)
-                    transFrag().remove(page1!!).commit()
+            aKlass.java.name ->
                 aKlass.java.getDeclaredConstructor().newInstance().also { page1 = it }
-            }
-            bKlass.java.name -> {
-                if (mode == TripleMode.FRAGMENT_MANAGER && page2 != null && page2?.isAdded == true)
-                    transFrag().remove(page2!!).commit()
+            bKlass.java.name ->
                 bKlass.java.getDeclaredConstructor().newInstance().also { page2 = it }
-            }
-            cKlass.java.name -> {
-                if (mode == TripleMode.FRAGMENT_MANAGER && page3 != null && page3?.isAdded == true)
-                    transFrag().remove(page3!!).commit()
+            cKlass.java.name ->
                 cKlass.java.getDeclaredConstructor().newInstance().also { page3 = it }
-            }
             else -> super.instantiate(loader, name)
         }
     }
-
-    /** An adapter for fragments required for VIEW_PAGER mode. */
-    private inner class PageAdapter(c: TriplePageActivity<*, *, *>) : FragmentStateAdapter(c) {
-        override fun getItemCount(): Int = 3
-        override fun createFragment(i: Int): Fragment = when (i) {
-            0 -> aKlass.java.getDeclaredConstructor().newInstance().also { page1 = it }
-            1 -> bKlass.java.getDeclaredConstructor().newInstance().also { page2 = it }
-            2 -> cKlass.java.getDeclaredConstructor().newInstance().also { page3 = it }
-            else -> throw IllegalArgumentException("Page $i?!?")
-        }
-    }
-
-    /**
-     * Enumeration used to indicate the method of maintaining the fragments,
-     * used in an abstract variable of TriplePageActivity called "mode", which
-     * must be set during instantiation.
-     *
-     * @see TriplePageActivity.mode
-     */
-    @Suppress("unused")
-    enum class TripleMode { FRAGMENT_MANAGER, VIEW_PAGER }
 }

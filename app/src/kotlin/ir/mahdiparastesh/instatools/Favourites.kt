@@ -1,28 +1,31 @@
 package ir.mahdiparastesh.instatools
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
-import ir.mahdiparastesh.instatools.view.UserListActivity
+import ir.mahdiparastesh.instatools.view.CounterActivity
+import ir.mahdiparastesh.instatools.view.Lister
 import ir.mahdiparastesh.instatools.view.UiTools.vis
+import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Favourites : UserListActivity() {
+class Favourites : CounterActivity(), Lister {
     private lateinit var b: FavouritesBinding
 
     override val menuRes: Int? = null
     override val com: ActivityCompanion get() = Companion
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val bRefresher: SwipeRefreshLayout get() = b.refresher
-    override val bTbShadow: View get() = b.tbShadow
+    override var shouldShowJumper = MutableLiveData(false)
+    override var anJumper: ObjectAnimator? = null
+    override val heightPixels: Int by lazy { dm.heightPixels }
 
     companion object : ActivityCompanion()
 
@@ -32,7 +35,12 @@ class Favourites : UserListActivity() {
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.favouritesTb)
 
-        prepareListing(this)
+        if (!Main.guest)
+            prepareListing(this)
+        else {
+            jumper?.vis(false)
+            rv?.vis(false)
+        }
         load()
     }
 
@@ -41,13 +49,12 @@ class Favourites : UserListActivity() {
         if (notFirstResume) load()
     }
 
-    override fun load() {
+    fun load() {
         CoroutineScope(Dispatchers.IO).launch {
             m.fav = ArrayList(dao.favourites())
             m.fav?.sortBy { it.user }
 
             withContext(Dispatchers.Main) {
-                b.refresher.isRefreshing = false
                 adapt()
                 updateCount(m.fav?.size ?: 0)
             }
@@ -63,5 +70,9 @@ class Favourites : UserListActivity() {
             b.rv.vis(false)
             b.empty.vis(true)
         }
+    }
+
+    override fun updateShadow() {
+        if (::b.isInitialized) b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 }

@@ -204,6 +204,7 @@
     <string name="vwReelDesc">Contains %d items</string>
     <string name="vwNoReels">This profile has no stories!</string>
     <string name="vwNoTagged">This profile has no tagged posts!</string>
+    <string name="vwLinkNotProfile">This link doesn\'t represent an IG profile!</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

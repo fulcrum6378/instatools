@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -36,16 +35,20 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageVwr : BasePageViewer() {
     lateinit var b: PageVwrBinding
-    private var fetcher: Job? = null
+    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
 
-    override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
+    override fun isBInitialised(): Boolean = ::b.isInitialized
+    override fun shouldLoadOnPrepare(): Boolean = c.mm.user != null || c.mm.profile != null
+    override fun isModelLoaded(): Boolean = c.mm.posts != null
+    override fun isModelEmpty(): Boolean = c.mm.posts?.edges?.isEmpty() == true
+    override fun createAdapter(): RecyclerView.Adapter<*> = ListVwr(c, this)
+    override fun screenHeight(): Int = c.dm.heightPixels
+    override fun canLoadMore(): Boolean = c.mm.posts?.page_info?.has_next_page != false
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageVwrBinding.inflate(inf, parent, false).let { b = it; it.root }
@@ -54,23 +57,6 @@ class PageVwr : BasePageViewer() {
         super.onViewCreated(view, savedInstanceState)
 
         // list
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            b.nsv.setOnScrollChangeListener { v, _, _, _, _ ->
-                updateShadow()
-                b.rv.isNestedScrollingEnabled = !v.canScrollVertically(1)
-            }
-        else b.nsv.viewTreeObserver.addOnScrollChangedListener {
-            updateShadow()
-            b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
-        }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1)) fetchSome()
-            }
-        })
-        c.b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback b.nsv.canScrollVertically(-1)
-        }
         b.rv.setHasFixedSize(true)
         Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
@@ -111,8 +97,26 @@ class PageVwr : BasePageViewer() {
         showProfile()
     }
 
+    override fun setOnScrollListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            b.nsv.setOnScrollChangeListener { v, _, _, _, _ -> onScroll() }
+        else
+            b.nsv.viewTreeObserver.addOnScrollChangedListener { onScroll() }
+    }
+
+    override fun onScroll() {
+        b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
+    }
+
+    override fun updateShadow() {
+        if (isBInitialised()) c.b.tbShadow.vish(b.nsv.scrollY > 0)
+    }
+
+    override fun canRefresh(): Boolean =
+        super.canRefresh() && !b.nsv.canScrollVertically(-1)
+
     fun showProfile() {
-        if (c.mm.user == null || c.mm.profile == null || !bInitialised) return
+        if (c.mm.user == null || c.mm.profile == null || !isBInitialised()) return
 
         // profile picture
         Glide.with(c.c)
@@ -143,8 +147,7 @@ class PageVwr : BasePageViewer() {
                     topMargin = vPad
                     bottomMargin = vPad
                 }
-        } else
-            fetchSome()
+        }
 
         // update Favourite
         c.mm.fav?.apply {
@@ -165,76 +168,47 @@ class PageVwr : BasePageViewer() {
         }
     }
 
-    private fun fetchSome(reset: Boolean = false) { // TODO reset using its own SwipeRefreshLayout
-        if (c.mm.user == null) {
-            c.mm.posts = null
+    override suspend fun fetch(reset: Boolean) {
+        // first read from cache if available
+        val pickle = Pickle(c.c, Pickle.Type.POSTS, c.mm.user!!.id!!)
+        val cache = if (c.mm.posts == null && !reset) pickle.restore<Page<Media>>() else null
+        if (cache != null) {
+            c.mm.posts = cache
+            withContext(Dispatchers.Main) { onLoaded() }
+            job = null
             return; }
-        if (fetcher != null || c.mm.posts?.page_info?.has_next_page == false)
-            return
-        fetcher = CoroutineScope(Dispatchers.IO).launch {
 
-            // first read from cache if available
-            val pickle = Pickle(c.c, Pickle.Type.POSTS, c.mm.user!!.id!!)
-            if (c.mm.posts == null && !reset) {
-                val cache = pickle.restore<Page<Media>>()
-                if (cache != null) {
-                    c.mm.posts = cache
-                    withContext(Dispatchers.Main) { onLoaded(c.mm.posts?.edges.isNullOrEmpty()) }
-                    fetcher = null
-                    return@launch; }
-            }
+        // fetch online posts
+        val graphQl = Api.call<GraphQl>(
+            Api.Endpoint.QUERY.url, GraphQl::class,
+            isPost = true, body = GraphQlQuery.PROFILE_POSTS.body(
+                c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.pk().toString()
+            ), onError = { code -> onFailed(code) }
+        )
+        if (graphQl == null) {
+            job = null
+            return; }
+        val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
+        if (page == null) {
+            withContext(Dispatchers.Main) { onLazilyFailed(-3) }
+            job = null
+            return; }
 
-            // fetch online posts
-            val graphQl = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.PROFILE_POSTS.body(
-                    c.mm.user!!.username!!, "33",
-                    c.mm.posts?.edges?.lastOrNull()?.node?.pk().toString()
-                ),
-                onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
-            )
-            if (graphQl == null) {
-                fetcher = null
-                return@launch; }
-            val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
-            if (page == null) {
-                withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.invalidResponse)
-                }
-                fetcher = null
-                return@launch; }
-
-            // update the data model and the UI
-            if (c.mm.posts == null) {
-                c.mm.posts = page
-                withContext(Dispatchers.Main) {
-                    onLoaded(c.mm.posts?.edges.isNullOrEmpty())
-                    if (!b.rv.canScrollVertically(1)) fetchSome()
-                }
-            } else c.mm.posts?.apply {
-                val lastBefore = edges.size
-                edges.addAll(page.edges)
-                withContext(Dispatchers.Main) {
-                    if (b.rv.adapter != null && page.edges.isNotEmpty())
-                        b.rv.adapter?.notifyItemRangeInserted(lastBefore, page.edges.size)
-                    if (!b.rv.canScrollVertically(1)) fetchSome()
-                }
-                page_info.has_next_page = page.page_info.has_next_page
-            }
-
-            // cache the data model
-            c.mm.posts?.also { pickle.save(it) }
-
-            fetcher = null
+        // update the data model and the UI
+        if (c.mm.posts == null) {
+            c.mm.posts = page
+            withContext(Dispatchers.Main) { onLoaded() }
+        } else c.mm.posts?.apply {
+            val lastBefore = edges.size
+            edges.addAll(page.edges)
+            withContext(Dispatchers.Main) { onLazilyLoaded(lastBefore, page.edges.size) }
+            page_info.has_next_page = page.page_info.has_next_page
         }
-    }
 
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean) {
-        super.onLoaded(isEmpty)
-        if (b.rv.adapter == null) b.rv.adapter = ListVwr(c, this)
-        else b.rv.adapter?.notifyDataSetChanged()
-        if (tracker == null) buildSelection()
+        // cache the data model
+        c.mm.posts?.also { pickle.save(it) }
+
+        job = null
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -257,14 +231,6 @@ class PageVwr : BasePageViewer() {
             PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
             StorageStrategy.createStringStorage()
         ).build().also { it.addObserver(SelectObserver()) }
-    }
-
-    override fun avoidRefresh(): Boolean = if (::b.isInitialized)
-        b.nsv.canScrollVertically(-1) || tracker?.hasSelection() == true
-    else false
-
-    override fun updateShadow() {
-        if (bInitialised) c.b.tbShadow.vish(b.nsv.scrollY > 0)
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

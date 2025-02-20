@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -32,9 +33,9 @@ import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.view.Lister
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwnerActivity
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +44,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.CopyOnWriteArrayList
 
 @SuppressLint("NotifyDataSetChanged")
-class Downloads : ServiceOwnerActivity() {
+class Downloads : ServiceOwnerActivity(), Lister {
     lateinit var b: DownloadsBinding
     val mm: MyModel by viewModels()
     private lateinit var bd: GuideSwipeDeleteBinding
@@ -54,6 +55,11 @@ class Downloads : ServiceOwnerActivity() {
     override val menuRes = R.menu.downloads_tlb
     override val com: ActivityCompanion get() = Companion
     override val controllerId = R.id.dtControl
+    override val root: ConstraintLayout? by lazy { b.root }
+    override val bInitialised: Boolean get() = ::b.isInitialized
+    override var shouldShowJumper = MutableLiveData(false)
+    override var anJumper: ObjectAnimator? = null
+    override val heightPixels: Int by lazy { dm.heightPixels }
 
     class MyModel : ViewModel() {
         var queueds: CopyOnWriteArrayList<Queued>? = null
@@ -130,20 +136,8 @@ class Downloads : ServiceOwnerActivity() {
             }
         }
 
-        // jumper
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateJumper()
-            }
-        })
-        b.jumper.setOnClickListener { b.rv.smoothScrollToPosition(0) }
-        b.jumper.translationY = UiTools.jumperTrans(this)
-        shouldShowJumper.observe(this) {
-            anJumper?.cancel()
-            anJumper = UiTools.anJumper(this, b.jumper, it)
-        }
-
-        // miscellaneous
+        // list
+        prepareListing(this)
         ItemTouchHelper(SwipeToRemove()).attachToRecyclerView(b.rv)
     }
 
@@ -304,11 +298,7 @@ class Downloads : ServiceOwnerActivity() {
         } else isSwipeDeleteInflated = null
     }
 
-    private var shouldShowJumper = MutableLiveData(false)
-    private var anJumper: ObjectAnimator? = null
-    private fun updateJumper() {
-        (b.rv.computeVerticalScrollOffset() > dm.heightPixels && isSwipeDeleteInflated == null)
-            .also { if (it != shouldShowJumper.value) shouldShowJumper.value = it }
+    override fun updateShadow() {
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
@@ -323,7 +313,6 @@ class Downloads : ServiceOwnerActivity() {
     }
 
     companion object : ActivityCompanion() {
-        //const val HANDLE_429 = 429
         const val EXPORT_LINKS_MIME = "text/plain"
         //const val EXPORT_LINKS_EXT = "txt"
 

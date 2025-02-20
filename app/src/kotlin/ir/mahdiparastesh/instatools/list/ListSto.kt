@@ -28,7 +28,7 @@ import kotlinx.coroutines.withContext
 
 class ListSto(private val c: Viewer, private val f: PageSto) :
     RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
-    private val begHigh: Int by lazy { if (c.mm.story != null) 0 else 1 }
+    private val hlNumAdd: Int by lazy { if (c.mm.story != null) 0 else 1 }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -43,14 +43,14 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                 isHL = false
                 c.mm.story
             }
-            i == 0 && c.mm.story == null -> c.mm.highlights?.edges?.getOrNull(i)?.node
-            else -> c.mm.highlights?.edges?.getOrNull(i + 1)?.node
+            c.mm.story != null -> c.mm.highlights?.edges?.getOrNull(i + 1)?.node
+            else -> c.mm.highlights?.edges?.getOrNull(i)?.node
         } ?: return
 
         // details
         h.b.title.text =
             if (!isHL) c.getString(R.string.vwStoryReel)
-            else "${i + begHigh}. ${story.title}"
+            else "${i + hlNumAdd}. ${story.title}"
         if (!isHL) h.b.desc.text = c.getString(R.string.vwReelDesc, story.items!!.size)
         if (!isHL) h.b.icon.setImageResource(R.drawable.instagram)
         else story.cover_media?.cropped_image_version.apply {

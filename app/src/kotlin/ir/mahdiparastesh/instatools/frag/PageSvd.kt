@@ -19,176 +19,126 @@ import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.Downloads
-import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.SelectionHandler
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.vish
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @SuppressLint("NotifyDataSetChanged")
-class PageSvd : BasePageMain(), Selective {
+class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     lateinit var b: PageSvdBinding
-    var fetcher: Job? = null
     var saver: Saver? = null
     private val pickle: Pickle by lazy { Pickle(c.c, Pickle.Type.SAVED, null) }
     private var selectionGuide: LottieAnimationView? = null
-    private var reallyHasMore = true
 
-    override val theme: BaseActivity.Theme = BaseActivity.Theme.SECONDARY
-    override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
+    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
     override val emptyIcon: Int = R.drawable.done_svd
-    override fun expanded(): ExpandableBinding = b.expanded
+    override val expandable: Expandable by lazy {
+        Expandable(
+            c, b.expanded, c.color(if (!c.night()) R.color.defBG else R.color.CS)
+        ) { updateShadow() }
+    }
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
+
+    override fun isBInitialised(): Boolean = ::b.isInitialized
+    override fun isModelLoaded(): Boolean = c.mm.saved != null
+    override fun isModelEmpty(): Boolean = c.mm.saved?.items?.isEmpty() == true
+    override fun createAdapter(): RecyclerView.Adapter<*> = ListSvd(c, this)
+    override fun canLoadMore(): Boolean = c.mm.saved?.more_available != false
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageSvdBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (Main.guest) return
 
         b.refresher.setOnChildScrollUpCallback { _, _ ->
             return@setOnChildScrollUpCallback tracker?.hasSelection() == true
                 || selectionGuide != null
         }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1) && reallyHasMore)
-                    fetchSome()
-            }
-        })
         b.rv.layoutManager = object : SafeGridManager(c, 3) {
             override fun canScrollVertically(): Boolean =
                 super.canScrollVertically() && selectionGuide == null
         }
-
-        if (c.mm.saved != null) onLoaded(c.mm.saved?.items.isNullOrEmpty())
-        else fetchSome()
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (bInitialised && b.rv.adapter != null && ftDetached) buildSelection()
-    }
+    override fun canRefresh(): Boolean =
+        super.canRefresh() && selectionGuide == null
 
-    private fun fetchSome(reset: Boolean = false) {
-        if (fetcher != null || c.mm.saved?.more_available == false) return
-        fetcher = CoroutineScope(Dispatchers.IO).launch {
-
-            // first read from cache if available
-            if (c.mm.saved == null && !reset) {
-                val cache = pickle.restore<Rest.LazyList<Rest.SavedItem>>()
-                if (cache != null) {
-                    c.mm.saved = cache
-                    withContext(Dispatchers.Main) {
-                        onLoaded(c.mm.saved?.items.isNullOrEmpty())
-                        if (c.mm.saved?.more_available == false)
-                            c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
-                    }
-                    fetcher = null
-                    return@launch; }
-            }
-
-            // fetch online saved posts
-            val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
-                Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-                Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
-                onError = { code ->
-                    b.refresher.isRefreshing = false
-                    if (c.mm.saved == null) onFailed(getString(Api.error(code), code))
-                    else UiTools.snackbar(b.root, getString(Api.error(code), code))
-                }
-            )
-            if (lazyList == null) {
-                fetcher = null
-                return@launch; }
-
-            // check if the user has hidden saves
-            if (lazyList.items.isEmpty()) {
-                if (c.mm.saved == null) c.mm.saved = lazyList
-                reallyHasMore = false
-                withContext(Dispatchers.Main) {
-                    if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
-                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
-                }
-                fetcher = null
-                return@launch; }
-
-            // update the data model
-            var lastBefore: Int? = null
-            if (c.mm.saved == null) {
-                c.mm.saved = lazyList
-            } else c.mm.saved?.apply {
-                lastBefore = items.size
-                items.addAll(lazyList.items)
-                more_available = lazyList.more_available
-                next_max_id = lazyList.next_max_id
-            }
-
-            // update the UI
+    override suspend fun fetch(reset: Boolean) {
+        // first read from cache if available
+        val cache =
+            if (c.mm.saved == null && !reset) pickle.restore<Rest.LazyList<Rest.SavedItem>>()
+            else null
+        if (cache != null) {
+            c.mm.saved = cache
             withContext(Dispatchers.Main) {
-                if (lastBefore == null)
-                    onLoaded(c.mm.saved?.items.isNullOrEmpty())
-                else
-                    b.rv.adapter?.notifyItemRangeInserted(lastBefore!!, lazyList.items.size)
-
-                if (!b.rv.canScrollVertically(1))
-                    fetchSome()
-
+                onLoaded()
                 if (c.mm.saved?.more_available == false)
                     c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
             }
+            job = null
+            return; }
 
-            // cache the data model
-            c.mm.saved?.also { pickle.save(it) }
+        // fetch online saved posts
+        val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
+            Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
+            Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
+            onError = { code -> if (c.mm.saved == null) onFailed(code) else onLazilyFailed(code) }
+        )
+        if (lazyList == null) {
+            job = null
+            return; }
 
-            fetcher = null
+        // update the data model
+        var lastBefore: Int? = null
+        if (c.mm.saved == null) {
+            c.mm.saved = lazyList
+        } else c.mm.saved?.apply {
+            lastBefore = items.size
+            items.addAll(lazyList.items)
+            more_available = lazyList.more_available
+            next_max_id = lazyList.next_max_id
         }
+
+        // update the UI
+        withContext(Dispatchers.Main) {
+            if (lastBefore == null) onLoaded()
+            else onLazilyLoaded(lastBefore, lazyList.items.size)
+            if (c.mm.saved?.more_available == false)
+                c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+        }
+
+        // cache the data model
+        c.mm.saved?.also { pickle.save(it) }
+
+        job = null
     }
 
-    override fun onRefresh() {
-        if (fetcher != null) return
-        c.mm.saved = null
-        b.rv.adapter?.notifyDataSetChanged()
-        b.empty.vis(false)
-        tracker?.clearSelection()
-        reallyHasMore = true
-        fetchSome(true)
-        c.updateProfile()
-    }
+    override fun onLoaded() {
+        super.onLoaded()
 
-    override fun onLoaded(isEmpty: Boolean) {
-        super.onLoaded(isEmpty)
-
-        if (b.rv.adapter == null) b.rv.adapter = ListSvd(c, this)
-        else b.rv.adapter?.notifyDataSetChanged()
-
-        // Selection Guide
-        if (!Main.guest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntSelection, false)
+        // teach the user how to select items
+        if (!isModelEmpty() && !c.gsp.getBoolean(Settings.spLearntSelection, false)
             && selectionGuide == null
         ) selectionGuide = LottieAnimationView(c).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -201,8 +151,6 @@ class PageSvd : BasePageMain(), Selective {
             translationY = c.dm.widthPixels * -0.01f // TODO both cause inconsistencies
             b.root.addView(this, 1)
         }
-
-        if (tracker == null) buildSelection()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -239,17 +187,10 @@ class PageSvd : BasePageMain(), Selective {
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
-    override fun updateShadow() {
-        if (bInitialised) c.b.tbShadow.vish(
-            rv()!!.computeVerticalScrollOffset() > 0 &&
-                (b.rv.adapter as ListSvd?)?.expandable?.zoomed != true
-        )
-    }
-
     override fun goBack(): Boolean {
-        if (bInitialised) (b.rv.adapter as ListSvd?)?.also {
+        (b.rv.adapter as? ListSvd)?.also {
             if (it.expandable.zoomed) {
-                jumper()?.vis(true)
+                b.jumper.vis(true)
                 it.expandable.collapse(); return@goBack true; }
         }
         if (tracker?.hasSelection() == true) {
@@ -338,14 +279,12 @@ class PageSvd : BasePageMain(), Selective {
 
             c.incrementCounter(Settings.spUnsaveCount)
             withContext(Dispatchers.Main) {
-                //c.mm.saved?.apply { if (total_count != null && total_count > 0.0) total_count -= 1.0 }
                 c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
                 c.mm.saved?.items?.find { it.media.pk() == svd }?.let { media ->
                     val x = c.mm.saved!!.items.indexOf(media)
                     c.mm.saved!!.items.removeAt(x)
                     b.rv.adapter?.notifyItemRemoved(x)
                     b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items.size)
-                    if (c.mm.saved?.items.isNullOrEmpty()) onLoaded(true)
                 }
             }
             if (size() > 1) {

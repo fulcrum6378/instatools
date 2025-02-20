@@ -28,7 +28,6 @@ import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Dm
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
@@ -88,7 +87,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val aKlass = PageUnf::class
     override val bKlass = PageSvd::class
     override val cKlass = PageBox::class
-    override val mode = TripleMode.FRAGMENT_MANAGER
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
         ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
         ?: Settings.defSpMainPage
@@ -110,9 +108,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         }
     }
 
-    companion object : ActivityCompanion() {
-        var guest = false
-    }
+    companion object : ActivityCompanion()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,7 +138,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             b.nav.setBackgroundColor(it)
             b.searchRes.setBackgroundColor(it)
             b.bnv.setBackgroundColor(it)
-            if (page2?.bInitialised == true)
+            if (page2?.isBInitialised() == true)
                 page2?.b?.expanded?.root?.setBackgroundColor(it)
         } else colorAc.observe(this) {
             if (it == null) return@observe
@@ -181,7 +177,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             goTo(Login::class, true)
             return; }
         super.onAccountSet()
-        guest = m.acc!!.id == -1L
         Api.cookies = m.acc!!.cook ?: ""
         onBuildUiBasedOnAccount()
     }
@@ -194,42 +189,32 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Bottom Navigation Bar
         b.bnv.selectedItemId = bnvButtons[mm.currentPage.value!!]
 
-        // Theming
+        // theming
         if (night()) colorBG.value = bg[mm.currentPage.value!!]
         else colorAc.value = ca[mm.currentPage.value!!]
         b.toolbar.popupTheme = popupThemes[mm.currentPage.value!!]
 
-        // Navigation
+        // navigation
         bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
-        if (!guest) {
-            Glide.with(c)
-                .load(m.acc!!.pict)
-                .placeholder(drawable(R.drawable.transparent_square))
-                .into(bh.pict)
-            bh.user.text = m.acc!!.user
-            if (!m.acc!!.name.isNullOrBlank())
-                bh.name.text = m.acc!!.name
-            else bh.name.vis(false)
-            bh.ll.setOnClickListener {
-                UiTools.openLink(this, UiTools.PROFILE.format(m.acc!!.user!!))
-            }
-        } else {
-            bh.root.vis(false)
-            arrayOf(R.id.mnSettings, R.id.mnSignOut)
-                .forEach { b.nav.menu.findItem(it)?.isEnabled = false }
+        Glide.with(c)
+            .load(m.acc!!.pict)
+            .placeholder(drawable(R.drawable.transparent_square))
+            .into(bh.pict)
+        bh.user.text = m.acc!!.user
+        if (!m.acc!!.name.isNullOrBlank())
+            bh.name.text = m.acc!!.name
+        else bh.name.vis(false)
+        bh.ll.setOnClickListener {
+            UiTools.openLink(this, UiTools.PROFILE.format(m.acc!!.user!!))
         }
 
-        // Miscellaneous
+        // miscellaneous
         if (m.files == null) DownloadHistory.load(this)
-        if (!guest) {
-            updateProfile()
-            CoroutineScope(Dispatchers.IO).launch {
-                m.fav = ArrayList(dao.favourites())
-                m.fav?.sortBy { it.user }
-            }
+        updateProfile()
+        CoroutineScope(Dispatchers.IO).launch {
+            m.fav = ArrayList(dao.favourites())
+            m.fav?.sortBy { it.user }
         }
-        sp?.edit { remove("follower_delay") }
-        // c.startService(Intent(c, Exporter::class.java)) // for debugging
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -370,7 +355,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     }
 
     fun updateProfile() {
-        val un = m.acc?.user ?: return
+        /*FIXME val un = m.acc?.user ?: return
         CoroutineScope(Dispatchers.IO).launch {
             val u = Api.call<GraphQl>(Api.Endpoint.PROFILE.url.format(un), GraphQl::class)
                 ?.data?.user ?: return@launch
@@ -380,7 +365,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 pict = u.picture()
                 saveMe(c)
             }
-        }
+        }*/
     }
 
     override fun turnToPage(i: Int): Boolean {
@@ -431,11 +416,10 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     }
 
     override fun switchAcc() {
-        page1?.thread?.interrupt()
-        page2?.fetcher?.cancel()
+        page1?.job?.cancel()
+        page2?.job?.cancel()
         page2?.saver?.job?.cancel()
-        page3?.boxThread?.cancel()
-        page3?.thdThread?.cancel()
+        page3?.job?.cancel()
         mm.accountSwitched()
         super.switchAcc()
     }

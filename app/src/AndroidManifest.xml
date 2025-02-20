@@ -81,14 +81,6 @@
                 <data android:host="instagram.com" />
                 <data android:host="www.instagram.com" />
             </intent-filter>
-
-            <intent-filter android:label="@string/vwShare">
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
         </activity>
 
         <activity

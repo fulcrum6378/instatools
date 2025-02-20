@@ -81,7 +81,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
         const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
-        const val spUnfLastChecked = "unf_last_checked" // def: 0L
+
+        // FIXME delete const val spUnfLastChecked = "unf_last_checked" // def: 0L
         const val spExpOptions = "export_options"
 
         // Mere-Global Hidden Preferences

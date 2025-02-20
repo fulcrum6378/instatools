@@ -9,6 +9,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Story
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.util.Persistent
 import java.io.File
 import java.io.FileInputStream
@@ -52,6 +53,9 @@ class Pickle(c: Context, private val type: Type, id: String?) {
         SAVED(
             TypeToken.getParameterized(Rest.LazyList::class.java, Rest.SavedItem::class.java).type,
             "saved.json", true
+        ),
+        PROFILE(
+            TypeToken.getParameterized(Array::class.java, User::class.java).type, "profile"
         ),
         POSTS(
             TypeToken.getParameterized(Page::class.java, Media::class.java).type, "posts"

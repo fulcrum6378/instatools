@@ -5,9 +5,9 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.MainThread
 import androidx.appcompat.widget.Toolbar
@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Favourite
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.frag.PageTag
@@ -60,7 +61,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     override val aKlass = PageSto::class
     override val bKlass = PageVwr::class
     override val cKlass = PageTag::class
-    override val mode = TripleMode.FRAGMENT_MANAGER
     override fun defPage(): Int = 1
 
     class MyModel : ViewModel() {
@@ -100,14 +100,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.vwTitle)
         createPages(toDefaultPage = false)
-
-        b.refresher.setOnRefreshListener {
-            load(refresh = true)
-        }
-        b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback (pages()[mm.currentPage.value!!] as BasePageViewer?)
-                ?.avoidRefresh() == true
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -128,96 +120,66 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             return true
         }
         intent.data?.also { data ->
-            val url = data.toString()
-            if (arrayOf("/p/", "/reel/", "/stories/").any { it in url })
-                load(mediaLink = url)
-            else {
-                var userName: String? = null
-                for (host in Utils.ACC_FROM_URL)
-                    url.accFromUrl(host)?.also { u -> if (userName == null) userName = u }
-                if (userName == null) return@also
-                load(userName = userName)
-            }
-            return true
-        }
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.also { mediaLink ->
-            load(mediaLink = mediaLink)
+            var userName: String? = null
+            for (host in Utils.ACC_FROM_URL)
+                data.toString().accFromUrl(host)
+                    ?.also { u -> if (userName == null) userName = u }
+            if (userName == null) {
+                Toast.makeText(c, R.string.vwLinkNotProfile, Toast.LENGTH_LONG).show()
+                onBackPressed()
+                return@also; }
+            load(userName = userName)
             return true
         }
         return false
     }
 
     @MainThread
-    private fun load(
-        userId: String? = null,
-        userName: String? = null,
-        mediaLink: String? = null,
-        refresh: Boolean = false
-    ) {
+    private fun load(userId: String? = null, userName: String? = null, reset: Boolean = false) {
         mm.user?.also { u ->
-            if (!refresh && (userId == u.id || userName == u.username)) return@load
+            if (!reset && (userId == u.id || userName == u.username)) return@load
         }
         if (::b.isInitialized && expandable.zoomed) expandable.collapse()
 
         loader?.cancel()
         loader = CoroutineScope(Dispatchers.IO).launch {
-            var userId_: String? = if (!refresh) userId else mm.user!!.id()
+            var userId_: String? = if (!reset) userId else mm.user!!.id()
             var userName_: String? = userName
             var userReplaced = false
 
-            // get user name via media link if shared
-            if (mediaLink != null) {
-                val html = Api.page(mediaLink) { code ->
-                    b.refresher.isRefreshing = false
-                    UiTools.snackbar(b.root, getString(Api.error(code), code))
+            val pickle: Pickle
+            if (userId_ != null) { // if the parameter `userId` is used
+                mm.user?.also { oldUser ->
+                    userReplaced = oldUser.id!! != userId_
                 }
-                if (html == null) { // got an API error
-                    loader = null
-                    return@launch; }
-
-                userName_ = html
-                    .substringAfter("<meta property=\"instapp:owner_user_id\" content=\"")
-                    .substringBefore("\"") // TODO this doesn't work
-                Log.println(Log.ASSERT, "AIMI", "Viewer::load userName_ => $userName_")
-                if (userName_.startsWith("<!DOCTYPE html>")) {
-                    withContext(Dispatchers.Main) {
-                        UiTools.snackbar(b.root, getString(Api.error(-3), -3))
-                    }
-                    loader = null
-                    return@launch; }
-                mm.user?.also { u ->
-                    if (!refresh && userName_ == u.username) {
-                        loader = null
-                        return@launch; }
-                    userReplaced = true
-                }
-            }
-
-            if (userId_ == null) {
-                mm.profile = userProfile(userName_!!)
-                if (mm.profile == null) { // got an API error
-                    loader = null
-                    return@launch; }
-                userId_ = mm.profile!!.id!!
-                mm.user?.also { u ->
-                    if (userId_ == u.id) { // !refresh &&
-                        loader = null
-                        return@launch; }
-                    userReplaced = true
-                }
-            } else {
-                mm.user?.also { oldUser -> userReplaced = oldUser.id!! != userId_ }
+                pickle = Pickle(c, Pickle.Type.PROFILE, userId_)
                 mm.user = userInfo(userId_)
                 if (mm.user == null) { // got an API error
                     loader = null
                     return@launch; }
                 userName_ = mm.user!!.username!!
-            }
 
-            mm.profile = userProfile(userName_)
-            if (mm.profile == null) {
-                loader = null
-                return@launch; }
+                mm.profile = userProfile(userName_)
+                if (mm.profile == null) {
+                    loader = null
+                    return@launch; }
+
+            } else { // if the parameter `userName` is used
+                mm.user?.also { oldUser ->
+                    userReplaced = oldUser.username!! != userName_
+                }
+                mm.profile = userProfile(userName_!!)
+                if (mm.profile == null) { // got an API error
+                    loader = null
+                    return@launch; }
+                userId_ = mm.profile!!.id!!
+                if (mm.user == null) {
+                    mm.user = userInfo(userId_)
+                    if (mm.user == null) { // got an API error
+                        loader = null
+                        return@launch; }
+                }
+            }
 
             if (userReplaced) {
                 mm.posts = null
@@ -229,7 +191,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
             withContext(Dispatchers.Main) {
                 if (userReplaced)
-                    pages().forEach { (it as BasePageViewer?)?.reset() }
+                    pages().forEach { (it as BasePageViewer?)?.clear() }
                 page2?.showProfile()
                 b.toolbar.title = mm.user?.username
                 b.refresher.isRefreshing = false

@@ -212,6 +212,7 @@
     <string name="vwReelDesc">دارای %d آیتم</string>
     <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
     <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
+    <string name="vwLinkNotProfile">این لینک یک پروفایل اینستاگرام نیست!</string>
 
     <!-- Settings -->
     <string name="settings">تنظیمات</string>

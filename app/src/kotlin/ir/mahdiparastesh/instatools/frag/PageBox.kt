@@ -16,11 +16,9 @@ import androidx.core.content.edit
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.documentfile.provider.DocumentFile
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
-import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.api.Api
@@ -42,75 +40,64 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.areEnabled
 import ir.mahdiparastesh.instatools.view.UiTools.enabled
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
+class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallback<ActivityResult> {
     private lateinit var b: PageBoxBinding
-    var boxThread: Job? = null
-    var thdThread: Job? = null
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
     private var boxScroll: Int? = null
-    val expandable: Expandable by lazy {
+    private var dirFileProblem = false
+
+    override val root: ConstraintLayout get() = b.root
+    override val emptyIcon: Int = R.drawable.done_box
+    override val expandable: Expandable by lazy {
         Expandable(
             c, b.expanded, c.color(if (!c.night()) R.color.defBG else R.color.CT)
         ) { updateShadow() }
     }
-
-    override val theme: BaseActivity.Theme = BaseActivity.Theme.TERTIARY
-    override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout get() = b.root
-    override val emptyIcon: Int = R.drawable.done_box
     override val selectiveMenuRes: Int? = null
+
+    override fun isBInitialised(): Boolean = ::b.isInitialized
+    override fun isModelLoaded(): Boolean = c.mm.dmInbox?.threads.isNullOrEmpty()
+    override fun isModelEmpty(): Boolean =
+        if (c.mm.dmThread == null) c.mm.dmInbox?.threads?.isEmpty() == true
+        else c.mm.dmThread?.items?.isEmpty() == true
+
+    override fun createAdapter(): RecyclerView.Adapter<*> =
+        if (c.mm.dmThread == null) ListBox(c, this) else ListThd(c, this)
+
+    override fun canLoadMore(): Boolean =
+        if (c.mm.dmThread == null) c.mm.dmInbox?.has_older != false
+        else c.mm.dmThread!!.has_older
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageBoxBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (Main.guest) return
-
-        b.refresher.setOnChildScrollUpCallback { _, _ ->
-            return@setOnChildScrollUpCallback c.mm.dmThread != null
-        }
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (c.mm.dmThread == null) {
-                    if (!b.rv.canScrollVertically(1) &&
-                        boxThread?.isActive != true && c.mm.dmInbox?.has_older != false
-                    ) fetchOfInbox()
-                    boxScroll = (b.rv.layoutManager as LinearLayoutManager)
-                        .findFirstCompletelyVisibleItemPosition()
-                } else {
-                    if (thdThread?.isActive != true &&
-                        c.mm.dmThread!!.has_older && !b.rv.canScrollVertically(-1)
-                    ) fetchOfThread()
-                }
-            }
-        })
-
-        if (c.mm.dmInbox != null) onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
-        else if (boxThread?.isActive != true) fetchOfInbox()
+    override fun updateJumper() {
+        if (c.mm.dmThread == null) super.updateJumper()
+        else if (shouldShowJumper.value == true) shouldShowJumper.value = false
     }
 
-    private fun fetchOfInbox() {
-        boxThread = CoroutineScope(Dispatchers.IO).launch {
+    override fun canRefresh(): Boolean =
+        super.canRefresh() && c.mm.dmThread == null
+
+    override suspend fun fetch(reset: Boolean) {
+        if (c.mm.dmThread == null) {
             val page = Api.call<InboxPage>(
                 Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
                 InboxPage::class, onError = { code ->
                     b.refresher.isRefreshing = false
-                    if (c.mm.dmInbox == null) onFailed(getString(Api.error(code), code))
+                    if (c.mm.dmInbox == null) onFailed(code)
                     else UiTools.snackbar(b.root, getString(Api.error(code), code))
                 }
             )
             if (page == null) {
-                boxThread = null
-                return@launch; }
+                job = null
+                return; }
 
             if (c.mm.dmInbox == null) c.mm.dmInbox = page.inbox
             else c.mm.dmInbox?.apply {
@@ -121,18 +108,11 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 has_older = page.inbox.has_older
             }
             withContext(Dispatchers.Main) {
-                onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
-                if (c.mm.dmInbox?.has_older == true && !b.rv.canScrollVertically(1))
-                    fetchOfInbox()
-                if (c.mm.dmInbox?.has_older == false)
-                    c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
+                onLoaded()
+                if (canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
             }
-            boxThread = null
-        }
-    }
-
-    fun fetchOfThread() {
-        thdThread = CoroutineScope(Dispatchers.IO).launch {
+            job = null
+        } else {
             val inbox = Api.call<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
                     .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20),
@@ -140,15 +120,15 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
             if (inbox == null) {
-                thdThread = null
-                return@launch; }
+                job = null
+                return; }
             val dmThd = inbox.thread
             if (dmThd == null) {
                 withContext(Dispatchers.Main) {
                     UiTools.snackbar(b.root, R.string.invalidResponse)
                 }
-                thdThread = null
-                return@launch; }
+                job = null
+                return; }
 
             val bef = c.mm.dmThread!!.items.size
             c.mm.dmThread!!.items.removeAll { // TODO costly operation
@@ -164,35 +144,19 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                     it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
                 }
             }
-            thdThread = null
+            job = null
         }
-    }
-
-    override fun onRefresh() {
-        if (boxThread?.isActive == true) return
-        b.rv.adapter = null
-        c.mm.dmInbox = null
-        fetchOfInbox()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean) {
-        super.onLoaded(isEmpty)
-        if (c.mm.dmThread == null) {
-            val prevScrollPos = boxScroll
-            if (b.rv.adapter == null || b.rv.adapter !is ListBox)
-                b.rv.adapter = ListBox(c, this)
-            else b.rv.adapter?.notifyDataSetChanged()
+    override fun onLoaded() {
+        val prevScrollPos = boxScroll
+        super.onLoaded()
+        if (c.mm.dmThread == null)
             prevScrollPos?.also { b.rv.scrollToPosition(it) }
-        } else {
-            if (b.rv.adapter == null || b.rv.adapter !is ListThd)
-                b.rv.adapter = ListThd(c, this)
-            else b.rv.adapter?.notifyDataSetChanged()
-        }
-        updateJumper()
 
-        // DM won't be Seen Guide
-        if (!Main.guest && !isEmpty && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
+        // teach the user that they can view messages without them being marked as seen
+        if (!isModelEmpty() && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
             && !guideDmNotSeenShowing
         ) MaterialAlertDialogBuilder(
             ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Tertiary)
@@ -206,16 +170,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
                 c.gsp.edit { putBoolean(Settings.spLearntDmNotSeen, true) }
             }
         }.show()
-    }
-
-    override fun updateShadow() {
-        if (bInitialised)
-            c.b.tbShadow.vish(rv()!!.computeVerticalScrollOffset() > 0 && !expandable.zoomed)
-    }
-
-    override fun updateJumper() {
-        if (c.mm.dmThread == null) super.updateJumper()
-        else if (shouldShowJumper.value == true) shouldShowJumper.value = false
     }
 
     fun expOptions(method: Exporter.Method, thread: Dm.DmThread) {
@@ -322,7 +276,6 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
         }.show()
     }
 
-    private var dirFileProblem = false
     override fun onActivityResult(result: ActivityResult) {
         if (result.data?.data == null || exportable == null) { // "action" and "type" are null!
             exportable = null; return; }
@@ -355,10 +308,10 @@ class PageBox : BasePageMain(), ActivityResultCallback<ActivityResult> {
     override fun goBack(): Boolean {
         if (c.mm.dmThread != null) {
             if (expandable.zoomed) {
-                jumper()?.vis(true)
+                b.jumper.vis(true)
                 expandable.collapse(); return true; }
             c.mm.dmThread = null
-            onLoaded(c.mm.dmInbox?.threads.isNullOrEmpty())
+            onLoaded()
             return true; }
         return false
     }

@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -25,123 +24,66 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.view.SelectionHandler
-import ir.mahdiparastesh.instatools.view.UiTools
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
-    private var fetcher: Job? = null
+    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
 
-    override val bInitialised: Boolean get() = ::b.isInitialized
-    override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
+    override fun isBInitialised(): Boolean = ::b.isInitialized
+    override fun isModelLoaded(): Boolean = c.mm.tagged != null
+    override fun isModelEmpty(): Boolean = c.mm.tagged?.edges?.isEmpty() == true
+    override fun createAdapter(): RecyclerView.Adapter<*> = ListTag(c, this)
+    override fun canLoadMore(): Boolean = c.mm.tagged?.page_info?.has_next_page != false
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageTagBinding.inflate(inf, parent, false).let { b = it; it.root }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // list
-        b.rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (!b.rv.canScrollVertically(1)) fetchSome()
-            }
-        })
-
-        // error
-        b.error.setOnClickListener {
-            c.b.refresher.isRefreshing = true
-            fetchSome()
-        }
-
-        if (c.mm.tagged != null)
-            onLoaded(c.mm.tagged?.edges.isNullOrEmpty())
-        else fetchSome()
-    }
-
-    private fun fetchSome() {
-        if (c.mm.user == null) {
-            c.mm.tagged = null
+    override suspend fun fetch(reset: Boolean) {
+        // first read from cache if available
+        val pickle = Pickle(c.c, Pickle.Type.TAGGED, c.mm.user!!.id!!)
+        val cache = if (c.mm.tagged == null && !reset) pickle.restore<Page<Media>>() else null
+        if (cache != null) {
+            c.mm.tagged = cache
+            withContext(Dispatchers.Main) { onLoaded() }
+            job = null
             return; }
-        if (fetcher != null || c.mm.tagged?.page_info?.has_next_page == false)
-            return
-        fetcher = CoroutineScope(Dispatchers.IO).launch {
 
-            // first read from cache if available
-            val pickle = Pickle(c.c, Pickle.Type.TAGGED, c.mm.user!!.id!!)
-            if (c.mm.tagged == null) {
-                val cache = pickle.restore<Page<Media>>()
-                if (cache != null) {
-                    c.mm.tagged = cache
-                    withContext(Dispatchers.Main) { onLoaded(c.mm.tagged?.edges.isNullOrEmpty()) }
-                    fetcher = null
-                    return@launch; }
-            }
+        // fetch online tagged posts
+        val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.pk()
+        val graphQl = Api.call<GraphQl>(
+            Api.Endpoint.QUERY.url, GraphQl::class,
+            isPost = true, body = if (cursor == null)
+                GraphQlQuery.PROFILE_TAGGED.body(c.mm.user!!.id!!, "36")
+            else
+                GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),
+            onError = { code -> if (cursor == null) onFailed(code) else onLazilyFailed(code) }
+        )
+        if (graphQl == null) {
+            job = null
+            return; }
+        val page = graphQl.data?.xdt_api__v1__usertags__user_id__feed_connection
+        if (page == null) {
+            withContext(Dispatchers.Main) { onLazilyFailed(-3) }
+            job = null
+            return; }
 
-            // fetch online tagged posts
-            val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.pk()
-            val graphQl = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = if (cursor == null)
-                    GraphQlQuery.PROFILE_TAGGED.body(c.mm.user!!.id!!, "36")
-                else
-                    GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),
-                onError = { code ->
-                    if (cursor == null) onFailed(getString(Api.error(code), code))
-                    else UiTools.snackbar(b.root, getString(Api.error(code), code))
-                }
-            )
-            if (graphQl == null) {
-                fetcher = null
-                return@launch; }
-            val page = graphQl.data?.xdt_api__v1__usertags__user_id__feed_connection
-            if (page == null) {
-                withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.invalidResponse)
-                }
-                fetcher = null
-                return@launch; }
-
-            // update the data model and the UI
-            if (c.mm.tagged == null) {
-                c.mm.tagged = page
-                withContext(Dispatchers.Main) {
-                    onLoaded(c.mm.tagged?.edges.isNullOrEmpty())
-                    if (!b.rv.canScrollVertically(1)) fetchSome()
-                }
-            } else c.mm.tagged?.apply {
-                val lastBefore = edges.size
-                edges.addAll(page.edges)
-                page_info.has_next_page = page.page_info.has_next_page
-                withContext(Dispatchers.Main) {
-                    b.rv.adapter?.notifyItemRangeInserted(lastBefore, edges.size)
-                    if (!b.rv.canScrollVertically(1)) fetchSome()
-                }
-            }
-
-            // cache the data model
-            c.mm.tagged?.also { pickle.save(it) }
-
-            fetcher = null
+        // update the data model and the UI
+        if (c.mm.tagged == null) {
+            c.mm.tagged = page
+            withContext(Dispatchers.Main) { onLoaded() }
+        } else c.mm.tagged?.apply {
+            val lastBefore = edges.size
+            edges.addAll(page.edges)
+            page_info.has_next_page = page.page_info.has_next_page
+            withContext(Dispatchers.Main) { onLazilyLoaded(lastBefore, edges.size) }
         }
-    }
 
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onLoaded(isEmpty: Boolean) {
-        super.onLoaded(isEmpty)
-        if (b.rv.adapter == null) b.rv.adapter = ListTag(c, this)
-        else b.rv.adapter?.notifyDataSetChanged()
-        if (tracker == null) buildSelection()
-        c.b.refresher.isRefreshing = false
-    }
+        // cache the data model
+        c.mm.tagged?.also { pickle.save(it) }
 
-    override fun onFailed(message: String) {
-        super.onFailed(message)
-        c.b.refresher.isRefreshing = false
+        job = null
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -164,11 +106,6 @@ class PageTag : BasePageViewer() {
             PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
             StorageStrategy.createStringStorage()
         ).build().also { it.addObserver(SelectObserver()) }
-    }
-
-    override fun onRecyclerViewScrolled() {
-        super.onRecyclerViewScrolled()
-        updateShadow()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

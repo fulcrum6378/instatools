@@ -4,7 +4,8 @@ import android.view.MenuItem
 import ir.mahdiparastesh.instatools.R
 
 /**
- * Subclass of BaseActivity which controls a Service and switches start/stop buttons.
+ * Subclass of [ir.mahdiparastesh.instatools.util.BaseActivity] which controls a Service
+ * and switches start and stop buttons.
  * This activity does NOT use bound services.
  * @see [ir.mahdiparastesh.instatools.util.ForegroundService]
  */

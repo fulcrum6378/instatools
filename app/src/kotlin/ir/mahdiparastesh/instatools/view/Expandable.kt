@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException
 /** A ViewGroup that pops up and shows an IG post or reel. */
 class Expandable(
     private val c: BaseActivity,
-    private val b: ExpandableBinding,
+    val b: ExpandableBinding,
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {

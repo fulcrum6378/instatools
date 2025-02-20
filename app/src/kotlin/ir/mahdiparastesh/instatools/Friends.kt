@@ -1,20 +1,21 @@
 package ir.mahdiparastesh.instatools
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.FriendsBinding
 import ir.mahdiparastesh.instatools.list.ListFri
-import ir.mahdiparastesh.instatools.view.OnlineDataLoader
+import ir.mahdiparastesh.instatools.view.CounterActivity
+import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UserListActivity
+import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ import kotlinx.coroutines.withContext
 import java.lang.Integer.min
 import java.util.concurrent.CopyOnWriteArrayList
 
-class Friends : UserListActivity(), OnlineDataLoader {
+class Friends : CounterActivity(), OnlineLister {
     private lateinit var b: FriendsBinding
     val mm: MyModel by viewModels()
     private val friendshipsDataLimit = 500 // no more no less
@@ -31,8 +32,9 @@ class Friends : UserListActivity(), OnlineDataLoader {
     override val com: ActivityCompanion get() = Companion
     override val root: ConstraintLayout? get() = if (bInitialised) b.root else null
     override val bInitialised: Boolean get() = ::b.isInitialized
-    override val bRefresher: SwipeRefreshLayout get() = b.refresher
-    override val bTbShadow: View get() = b.tbShadow
+    override var shouldShowJumper = MutableLiveData(false)
+    override var anJumper: ObjectAnimator? = null
+    override val heightPixels: Int by lazy { dm.heightPixels }
 
     companion object : ActivityCompanion()
 
@@ -46,15 +48,22 @@ class Friends : UserListActivity(), OnlineDataLoader {
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.friends)
 
-        prepareListing(this)
-        error()?.setOnClickListener {
+        if (!Main.guest) {
+            prepareListing(this)
+            b.refresher.setOnRefreshListener { load() }
+        } else {
+            b.refresher.isEnabled = false
+            jumper?.vis(false)
+            rv?.vis(false)
+        }
+        error?.setOnClickListener {
             b.refresher.isRefreshing = true
             load()
         }
         load()
     }
 
-    override fun load() {
+    fun load() {
         CoroutineScope(Dispatchers.IO).launch {
             mm.friends.clear()
             mm.friends.addAll(dao.friends())
@@ -76,7 +85,7 @@ class Friends : UserListActivity(), OnlineDataLoader {
             isPost = true, body = "user_ids=" + mm.friends
                 .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
                 .joinToString(",") { it.id },
-            onError = { code -> onFailed(getString(Api.error(code), code)) }
+            onError = { code -> onFailed(code) }
         ) ?: return
 
         for (f in mm.friends) rest.friendship_statuses[f.id]?.also {
@@ -85,16 +94,6 @@ class Friends : UserListActivity(), OnlineDataLoader {
             f.restricted = it.is_restricted == true
         }
         friendships(index + friendshipsDataLimit)
-    }
-
-    override fun onLoaded(isEmpty: Boolean) {
-        b.refresher.isRefreshing = false
-        super.onLoaded(isEmpty)
-    }
-
-    override fun onFailed(message: String) {
-        b.refresher.isRefreshing = false
-        super.onFailed(message)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -106,5 +105,9 @@ class Friends : UserListActivity(), OnlineDataLoader {
             b.rv.vis(false)
             b.empty.vis(true)
         }
+    }
+
+    override fun updateShadow() {
+        if (::b.isInitialized) b.tbShadow.vish(b.rv.computeVerticalScrollOffset() > 0)
     }
 }
