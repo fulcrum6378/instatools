@@ -95,7 +95,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                         if (acc.cook != null) CoroutineScope(Dispatchers.IO).launch {
                             Api.cookies = acc.cook ?: ""
                             Api.call<Rest.QuickResponse>(
-                                Api.Endpoint.SIGN_OUT.url, Rest.QuickResponse::class,
+                                Api.Endpoint.LOGOUT.url, Rest.QuickResponse::class,
                                 isPost = true, body = "one_tap_app_login=1&user_id=${acc.id}"
                             )
                             Api.cookies = ""

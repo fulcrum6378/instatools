@@ -23,6 +23,8 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
@@ -260,13 +262,13 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 ended()
                 return; }
 
-            val rest = Api.call<Rest.QuickResponse>(
-                Api.Endpoint.UNSAVE.url.format(saved.media.pk()), Rest.QuickResponse::class,
-                isPost = true, onError = { code ->
-                    UiTools.snackbar(b.root, getString(Api.error(code), code))
-                }
+            val gql = Api.call<GraphQl>(
+                Api.Endpoint.QUERY.url, GraphQl::class,
+                isPost = true, body = GraphQlQuery.UNSAVE.body(saved.media.pk()),
+                onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
-            if (rest?.status != "ok") return
+            if (gql == null) return
+            if (gql.data == null) return
 
             c.incrementCounter(Settings.spUnsaveCount)
             withContext(Dispatchers.Main) {

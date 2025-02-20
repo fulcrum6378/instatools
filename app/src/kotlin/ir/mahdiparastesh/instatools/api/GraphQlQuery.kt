@@ -2,9 +2,7 @@ package ir.mahdiparastesh.instatools.api
 
 import java.net.URLEncoder
 
-@Suppress(
-    "PrivatePropertyName", "SpellCheckingInspection", "KDocUnresolvedReference", "unused"
-)
+@Suppress("PrivatePropertyName", "SpellCheckingInspection", "KDocUnresolvedReference", "unused")
 enum class GraphQlQuery(
     private val doc_id: String,
     private val variables: String,

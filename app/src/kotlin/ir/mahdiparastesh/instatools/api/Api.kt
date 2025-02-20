@@ -149,59 +149,46 @@ object Api {
         -2 -> R.string.connectionBroken
         -3 -> R.string.invalidResponse
         -4 -> R.string.loggedOut
-        //302 -> "Found redirection!"
         401 -> R.string.loggedOut401
         404 -> R.string.notFound
         429 -> R.string.manyRequests
         else -> R.string.httpError
     }
 
+    //@Suppress("unused")
     enum class Endpoint(val url: String) {
         QUERY("https://www.instagram.com/graphql/query"),
 
-        // Profiles
-        PROFILE("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
-        INFO("https://www.instagram.com/api/v1/users/%s/info/"),
+        // information
+        USER_INFO("https://www.instagram.com/api/v1/users/%s/info/"),
+        PROFILE_INFO("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
+        SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
         SEARCH(
             "https://www.instagram.com/api/v1/web/search/topsearch/?context=blended&query=%s" +
                 "&include_reel=false&search_surface=web_top_search"
-        ), // &rank_token=0.9366187585704904
+        ),
 
-        // Interactions (always use "?count=" for more accurate results)
-        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
-        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
-        FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"), /*
-        // method = POST, "user_ids=<ids separated by ",">", expect Rest$Friendships *//*
-        FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"), // GET */
-
-        //FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
-        UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
-        /*MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
-        UNMUTE("https://www.instagram.com/api/v1/friendships/unmute_posts_or_story_from_follow/"),
-        // method = POST, "target_posts_author_id=<USER_ID>" AND(using &)/OR "target_reel_author_id=<USER_ID>",
-        // expect Rest$Friendships*/
-        /*RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
-        UNRESTRICT("https://www.instagram.com/api/v1/web/restrict_action/unrestrict/"),
-        // method = POST, body = "target_user_id=<USER_ID>", expect "{"status":"ok"}" */
-        /*BLOCK("https://www.instagram.com/api/v1/web/friendships/%d/block/"),
-        UNBLOCK("https://www.instagram.com/api/v1/web/friendships/%d/unblock/"),
-        // method = POST, expect "{"status":"ok"}" */
-
-        // Saving
-        SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
-        UNSAVE("https://www.instagram.com/web/save/%s/unsave/"),
-        //SAVE("https://www.instagram.com/web/save/%s/save/"),
-        // The fucking web API used /web/save for fulcrum6378 and /graphql/query for instatools.apk !?!
-
-        // Messaging
+        // direct messages
         INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),/*
-        // persistentBadging=true&folder=[0(PRIMARY)|1(GENERAL)]
-        // Avoiding "limit" argument will default to 20, but can be more than that. */
+        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),
         SEEN("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 
-        // Logging in/out
-        SIGN_OUT("https://www.instagram.com/accounts/logout/ajax/"),// MEDIA_ITEM
+        // friendships
+        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
+        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
+        FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
+        FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"),
+        FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
+        UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
+        MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
+        UNMUTE("https://www.instagram.com/api/v1/friendships/unmute_posts_or_story_from_follow/"),
+        RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
+        UNRESTRICT("https://www.instagram.com/api/v1/web/restrict_action/unrestrict/"),
+        BLOCK("https://www.instagram.com/api/v1/web/friendships/%d/block/"),
+        UNBLOCK("https://www.instagram.com/api/v1/web/friendships/%d/unblock/"),
+
+        // logging in/out
+        LOGOUT("https://www.instagram.com/accounts/logout/ajax/"),
     }
 
     fun encode(uriString: String?): String? {
