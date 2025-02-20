@@ -2,8 +2,9 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.databinding.FavouritesBinding
 import ir.mahdiparastesh.instatools.list.ListFav
@@ -18,10 +19,13 @@ class Favourites : CounterActivity(), Lister {
     private lateinit var b: FavouritesBinding
 
     override val com: ActivityCompanion get() = Companion
-    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
     override val menuRes: Int? = null
     override val tbShadow get() = b.tbShadow
-    override var shouldShowJumper = MutableLiveData(false)
+    override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
     override val expandable = null
 

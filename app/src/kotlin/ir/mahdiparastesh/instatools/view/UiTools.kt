@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.view
 
 import android.Manifest
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -19,7 +18,6 @@ import android.text.Html
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.View
-import android.view.animation.OvershootInterpolator
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.RadioGroup
@@ -37,7 +35,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Utils
 import java.util.*
 
@@ -126,20 +123,6 @@ object UiTools {
             setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
         else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
     }
-
-    /** Position of a "Jump to Top" button. */
-    fun jumperTrans(c: BaseActivity) = (c.resources.getDimension(R.dimen.jumperSize) +
-        c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
-
-    /** Animation for a "Jump to Top" button. */
-    fun anJumper(c: BaseActivity, jumper: View, bb: Boolean): ObjectAnimator =
-        ObjectAnimator.ofFloat(
-            jumper, View.TRANSLATION_Y, if (bb) 0f else jumperTrans(c)
-        ).apply {
-            duration = 500L
-            interpolator = OvershootInterpolator(1.75f)
-            start()
-        }
 
     /** Opens a Direct Message in Instagram. */
     @Suppress("SpellCheckingInspection")

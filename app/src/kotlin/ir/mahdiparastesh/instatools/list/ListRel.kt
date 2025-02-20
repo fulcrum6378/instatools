@@ -6,20 +6,20 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Story
-import ir.mahdiparastesh.instatools.databinding.ListRliBinding
+import ir.mahdiparastesh.instatools.databinding.ListRelBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
 class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
-    RecyclerView.Adapter<AnyViewHolder<ListRliBinding>>() {
+    RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListRliBinding> =
-        AnyViewHolder(ListRliBinding.inflate(c.layoutInflater, parent, false))
+    ): AnyViewHolder<ListRelBinding> =
+        AnyViewHolder(ListRelBinding.inflate(c.layoutInflater, parent, false))
 
-    override fun onBindViewHolder(h: AnyViewHolder<ListRliBinding>, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
         val item = story.items?.getOrNull(i) ?: return
         h.b.number.text = "${i + 1}"
 

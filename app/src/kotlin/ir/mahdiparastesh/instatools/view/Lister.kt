@@ -1,13 +1,14 @@
 package ir.mahdiparastesh.instatools.view
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -26,12 +27,12 @@ interface Lister {
     val root: ConstraintLayout?
     val tbShadow: View?
     val expandable: Expandable?
-    var shouldShowJumper: MutableLiveData<Boolean>
+    var shouldShowJumper: Boolean
     var anJumper: ObjectAnimator?
 
-    val rv: RecyclerView? get() = root?.findViewById(R.id.rv)
-    val empty: View? get() = root?.findViewById(R.id.empty)
-    val jumper: ImageView? get() = root?.findViewById(R.id.jumper)
+    val rv: RecyclerView?
+    val empty: View?
+    val jumper: ImageView?
 
     fun isBInitialised(): Boolean
     fun shouldLoadOnPrepare(): Boolean = true
@@ -48,11 +49,7 @@ interface Lister {
         // jumper
         jumper?.apply {
             setOnClickListener { rv?.smoothScrollToPosition(0) }
-            translationY = UiTools.jumperTrans(c)
-        }
-        shouldShowJumper.observe(c) {
-            anJumper?.cancel()
-            anJumper = jumper?.let { jumper -> UiTools.anJumper(c, jumper, it) }
+            translationY = jumperTrans(c)
         }
 
         if (shouldLoadOnPrepare()) {
@@ -60,6 +57,10 @@ interface Lister {
             else load()
         }
     }
+
+    private fun jumperTrans(c: Context) =
+        (c.resources.getDimension(R.dimen.jumperSize) +
+            c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
 
     fun setOnScrollListener() {
         rv?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -81,9 +82,24 @@ interface Lister {
     }
 
     fun updateJumper() {
-        val condition = rv!!.computeVerticalScrollOffset() > screenHeight()
-        if (condition != shouldShowJumper.value) shouldShowJumper.value = condition
+        val condition = shouldShowJumper()
+        if (condition != shouldShowJumper) {
+            shouldShowJumper = condition
+            anJumper?.cancel()
+            anJumper = jumper?.let { jumper ->
+                ObjectAnimator.ofFloat(
+                    jumper, View.TRANSLATION_Y, if (condition) 0f else jumperTrans(jumper.context)
+                ).apply {
+                    duration = 500L
+                    interpolator = OvershootInterpolator(1.75f)
+                    start()
+                }
+            }
+        }
     }
+
+    fun shouldShowJumper(): Boolean =
+        rv!!.computeVerticalScrollOffset() > screenHeight()
 
     @MainThread
     fun load(reset: Boolean = false)

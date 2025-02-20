@@ -32,7 +32,6 @@ import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.ProtocolException
 import java.net.SocketTimeoutException
 import java.net.URI
 import javax.net.ssl.HttpsURLConnection
@@ -143,14 +142,14 @@ class Downloader : ForegroundService() {
                     error(-1)
                     return; }
 
-                val responseCode = try {
+                /*val responseCode = try {
                     con.responseCode
                 } catch (_: ProtocolException) {
                     error(-4)
                     return
-                }
+                }*/
 
-                if (responseCode == 200) try {
+                if (con.responseCode == 200) try {
                     binary = con.inputStream
                 } catch (_: IOException) {
                     error(-4)

@@ -210,7 +210,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
         // miscellaneous
         if (m.files == null) DownloadHistory.load(this)
-        updateProfile()
         CoroutineScope(Dispatchers.IO).launch {
             m.fav = ArrayList(dao.favourites())
             m.fav?.sortBy { it.user }
@@ -354,20 +353,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         return true
     }
 
-    fun updateProfile() {
-        /*FIXME val un = m.acc?.user ?: return
-        CoroutineScope(Dispatchers.IO).launch {
-            val u = Api.call<GraphQl>(Api.Endpoint.PROFILE.url.format(un), GraphQl::class)
-                ?.data?.user ?: return@launch
-            m.acc?.apply {
-                user = u.username
-                name = u.full_name
-                pict = u.picture()
-                saveMe(c)
-            }
-        }*/
-    }
-
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
         sp?.edit { putInt(spMainPage, mm.currentPage.value!!) }
@@ -451,13 +436,13 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * -
   * Extension:
   * Percentage of downloads
+  * Show muted statuses in Friends
   * A button for resuming/restarting the Exporter
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
   * Max slides for HtmlExporter
-  * Find a way to show muted statuses in Friends
   * -
-  * Extensions which need comprehending Instagram APK file:
+  * Extensions which need the Android API:
   * Export/import blocked accounts lists from/into different accounts of one's
   * Batch Unsave API
   * -

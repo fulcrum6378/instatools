@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
@@ -29,7 +30,10 @@ import kotlinx.coroutines.withContext
 
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
-    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.mm.tagged != null

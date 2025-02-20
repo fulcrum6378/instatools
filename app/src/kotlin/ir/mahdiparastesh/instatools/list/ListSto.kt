@@ -16,7 +16,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.databinding.ListRelBinding
+import ir.mahdiparastesh.instatools.databinding.ListStoBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -27,23 +27,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ListSto(private val c: Viewer, private val f: PageSto) :
-    RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
+    RecyclerView.Adapter<AnyViewHolder<ListStoBinding>>() {
     private val hlNumAdd: Int by lazy { if (c.mm.story != null) 0 else 1 }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListRelBinding> =
-        AnyViewHolder(ListRelBinding.inflate(c.layoutInflater, parent, false))
+    ): AnyViewHolder<ListStoBinding> =
+        AnyViewHolder(ListStoBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListStoBinding>, i: Int) {
         var isHL = true
         val story = when {
-            i == 0 && c.mm.story != null -> {
+            c.mm.story != null && i == 0 -> {
                 isHL = false
                 c.mm.story
             }
-            c.mm.story != null -> c.mm.highlights?.edges?.getOrNull(i + 1)?.node
+            c.mm.story != null && i != 0 ->
+                c.mm.highlights?.edges?.getOrNull(i - 1)?.node
             else -> c.mm.highlights?.edges?.getOrNull(i)?.node
         } ?: return
 

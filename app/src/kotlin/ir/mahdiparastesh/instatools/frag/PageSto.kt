@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.api.Api
@@ -20,13 +21,16 @@ import kotlinx.coroutines.withContext
 
 class PageSto : BasePageViewer() {
     lateinit var b: PageStoBinding
-    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.mm.story != null && c.mm.highlights != null
-    override fun isModelEmpty(): Boolean = c.mm.story != null && c.mm.highlights?.isEmpty() == true
+    override fun isModelEmpty(): Boolean = c.mm.story == null && c.mm.highlights?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c, this)
-    override fun canLoadMore(): Boolean = false
+    override fun canLoadMore(): Boolean = !isModelLoaded()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageStoBinding.inflate(inf, parent, false).let { b = it; it.root }

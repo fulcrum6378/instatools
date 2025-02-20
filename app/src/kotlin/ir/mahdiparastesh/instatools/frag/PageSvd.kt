@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
@@ -18,6 +19,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
@@ -50,7 +52,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     private val pickle: Pickle by lazy { Pickle(c.c, Pickle.Type.SAVED, null) }
     private var selectionGuide: LottieAnimationView? = null
 
-    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
     override val emptyIcon: Int = R.drawable.done_svd
     override val expandable: Expandable by lazy {
         Expandable(
@@ -265,10 +270,12 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             val gql = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
                 isPost = true, body = GraphQlQuery.UNSAVE.body(saved.media.pk()),
-                onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
+                onError = { code -> error(code) }
             )
             if (gql == null) return
-            if (gql.data == null) return
+            if (gql.data == null) {
+                withContext(Dispatchers.Main) { error(-3) }
+                return; }
 
             c.incrementCounter(Settings.spUnsaveCount)
             withContext(Dispatchers.Main) {
@@ -284,6 +291,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 delay(500)
                 ended()
             } else ended()
+        }
+
+        private fun error(code: Int) {
+            UiTools.snackbar(b.root, getString(Api.error(code), code), dur = Snackbar.LENGTH_SHORT)
         }
     }
 }

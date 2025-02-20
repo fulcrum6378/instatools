@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -37,7 +38,10 @@ import kotlinx.coroutines.*
 class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
     lateinit var b: PageUnfBinding
 
-    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
     override val emptyIcon: Int = R.drawable.done_unf
     override val expandable: Expandable? = null
     override val selectiveMenuRes: Int? = null

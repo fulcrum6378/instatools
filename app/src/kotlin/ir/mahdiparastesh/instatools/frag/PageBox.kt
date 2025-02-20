@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -53,6 +54,9 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
     private var dirFileProblem = false
 
     override val root: ConstraintLayout get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
     override val emptyIcon: Int = R.drawable.done_box
     override val expandable: Expandable by lazy {
         Expandable(
@@ -77,10 +81,8 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageBoxBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
-    override fun updateJumper() {
-        if (c.mm.dmThread == null) super.updateJumper()
-        else if (shouldShowJumper.value == true) shouldShowJumper.value = false
-    }
+    override fun shouldShowJumper(): Boolean =
+        if (c.mm.dmThread == null) super.shouldShowJumper() else false
 
     override fun canRefresh(): Boolean =
         super.canRefresh() && c.mm.dmThread == null

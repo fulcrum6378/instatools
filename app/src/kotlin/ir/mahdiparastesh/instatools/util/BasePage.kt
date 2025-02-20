@@ -24,10 +24,7 @@ abstract class BasePage<Activity> : Fragment(), OnlineLister, Toolbar.OnMenuItem
     abstract val selectiveMenuRes: Int?
 
     override var job: Job? = null
-    override val rv: RecyclerView? get() = root?.findViewById(R.id.rv)
-    override val empty: View? get() = root?.findViewById(R.id.empty)
-    override val jumper: ImageView? get() = root?.findViewById(R.id.jumper)
-    override var shouldShowJumper = MutableLiveData(false)
+    override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
 
     override fun screenHeight(): Int = c.dm.heightPixels

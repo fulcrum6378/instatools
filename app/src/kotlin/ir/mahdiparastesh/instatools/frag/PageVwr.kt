@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.Selection
@@ -40,7 +41,11 @@ import kotlinx.coroutines.withContext
 
 class PageVwr : BasePageViewer() {
     lateinit var b: PageVwrBinding
-    override val root: ConstraintLayout? get() = if (isBInitialised()) b.root else null
+
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = null
+    override val jumper: ImageView? get() = b.jumper
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun shouldLoadOnPrepare(): Boolean = c.mm.user != null || c.mm.profile != null

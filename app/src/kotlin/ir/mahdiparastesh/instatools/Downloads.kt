@@ -11,6 +11,8 @@ import android.os.Looper
 import android.os.Message
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +20,6 @@ import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -53,11 +54,14 @@ class Downloads : ServiceOwnerActivity(), Lister {
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
 
     override val com: ActivityCompanion get() = Companion
-    override val root: ConstraintLayout? by lazy { b.root }
+    override val root: ConstraintLayout? get() = b.root
+    override val rv: RecyclerView? get() = b.rv
+    override val empty: View? get() = b.empty
+    override val jumper: ImageView? get() = b.jumper
     override val menuRes = R.menu.downloads_tlb
     override val controllerId = R.id.dtControl
     override val tbShadow = null
-    override var shouldShowJumper = MutableLiveData(false)
+    override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
     override val expandable = null
 
