@@ -114,10 +114,6 @@
     <string name="newUnfNtfChannel">New unfollowers</string>
     <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
     <string name="newUnfNtfText">%d new people have unfollowed you!</string>
-    <string name="unfollowedSoMany">
-        Unfortunately Instagram, in order to combat spam, won\'t allow you to unfollow
-        a large number of people so frequently. Please try again about half an hour later&#8230;
-    </string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">Unsave Only</string>

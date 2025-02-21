@@ -8,6 +8,7 @@ import androidx.annotation.WorkerThread
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import ir.mahdiparastesh.instatools.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -17,7 +18,6 @@ import java.net.URI
 import java.util.regex.Pattern
 import javax.net.ssl.HttpsURLConnection
 import kotlin.reflect.KClass
-import ir.mahdiparastesh.instatools.R
 
 /** Controls all API interactions with Instagram Web API using Volley and Gson. */
 object Api {
@@ -155,7 +155,6 @@ object Api {
         else -> R.string.httpError
     }
 
-    //@Suppress("unused")
     enum class Endpoint(val url: String) {
         QUERY("https://www.instagram.com/graphql/query"),
 
@@ -177,15 +176,7 @@ object Api {
         FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
         FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
         FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
-        FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"),
-        FOLLOW("https://www.instagram.com/api/v1/friendships/create/%s/"),
-        UNFOLLOW("https://www.instagram.com/api/v1/friendships/destroy/%s/"),
-        MUTE("https://www.instagram.com/api/v1/friendships/mute_posts_or_story_from_follow/"),
-        UNMUTE("https://www.instagram.com/api/v1/friendships/unmute_posts_or_story_from_follow/"),
-        RESTRICT("https://www.instagram.com/api/v1/web/restrict_action/restrict/"),
-        UNRESTRICT("https://www.instagram.com/api/v1/web/restrict_action/unrestrict/"),
-        BLOCK("https://www.instagram.com/api/v1/web/friendships/%d/block/"),
-        UNBLOCK("https://www.instagram.com/api/v1/web/friendships/%d/unblock/"),
+        //FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"),
 
         // logging in/out
         LOGOUT("https://www.instagram.com/accounts/logout/ajax/"),

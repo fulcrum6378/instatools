@@ -10,7 +10,7 @@ data class User(
     val edge_follow: EdgeFollow?, // available via PROFILE_INFO
     val edge_followed_by: EdgeFollow?, // available via PROFILE_INFO
     val followed_by_viewer: Boolean?, // available via PROFILE_INFO
-    //val friendship_status: Map<String, Any?>?,
+    //val friendship_status: FriendshipStatus?,
     val full_name: String?,
     val hd_profile_pic_url_info: Media.Version?, // available via USER_INFO (highest quality)
     val hd_profile_pic_versions: List<Media.Version>?, // available via USER_INFO

@@ -441,7 +441,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * A button for resuming/restarting the Exporter
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
-  * Max slides for HtmlExporter
   * -
   * Extensions which need the Android API:
   * Export/import blocked accounts lists from/into different accounts of one's

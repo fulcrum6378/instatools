@@ -2,17 +2,17 @@ package ir.mahdiparastesh.instatools.list
 
 import android.view.ContextThemeWrapper
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.data.Friend.Companion.specialSort
 import ir.mahdiparastesh.instatools.databinding.ListUnfBinding
@@ -98,41 +98,31 @@ class ListUnf(val c: Main, private val f: PageUnf) :
 
     private fun unfollow(unf: Friend) {
         CoroutineScope(Dispatchers.IO).launch {
-            val rest = Api.call<Rest.DoFollow>(
-                Api.Endpoint.UNFOLLOW.url.format(unf.id), Rest.DoFollow::class, isPost = true,
-                onError = { code ->
-                    if (code == 429) try {
-                        MaterialAlertDialogBuilder(
-                            ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Primary)
-                        ).apply {
-                            setTitle(R.string.unfollow)
-                            setMessage(R.string.unfollowedSoMany)
-                            setNeutralButton(R.string.ok, null)
-                        }.show()
-                    } catch (_: WindowManager.BadTokenException) { // activity is not running!!
-                    } else {
-                        UiTools.snackbar(f.b.root, R.string.unfCouldNot, c.b.bnv)
-                        if (BuildConfig.DEBUG)
-                            Toast.makeText(c.c, "1: $code", Toast.LENGTH_SHORT).show()
-                    }
+            val gql = Api.call<GraphQl>(
+                Api.Endpoint.QUERY.url, GraphQl::class,
+                isPost = true, body = GraphQlQuery.UNFOLLOW.body(unf.id), onError = { code ->
+                    UiTools.snackbar(
+                        f.b.root, c.getString(Api.error(code), code), c.b.bnv, Snackbar.LENGTH_SHORT
+                    )
                 }
             )
-            if (rest?.status != "ok" || rest.spam == true) {
-                UiTools.snackbar(f.b.root, R.string.unfCouldNot, c.b.bnv)
-                if (BuildConfig.DEBUG) Toast.makeText(c.c, "2: ${rest?.status}", Toast.LENGTH_SHORT)
-                    .show()
+            if (gql == null) return@launch
+            if (gql.data?.xdt_destroy_friendship?.friendship_status?.following != false) {
+                UiTools.snackbar(f.b.root, R.string.unfCouldNot, c.b.bnv, Snackbar.LENGTH_SHORT)
                 return@launch; }
+
             c.incrementCounter(Settings.spUnfollowCount)
-            CoroutineScope(Dispatchers.IO).launch {
-                if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
-                else c.dao.deleteFriend(unf)
+            if (unf.follows) c.dao.updateFriend(unf.apply { followed = false })
+            else c.dao.deleteFriend(unf)
+
+            withContext(Dispatchers.Main) {
+                c.mm.unfollowers.value?.indexOf(unf)?.also { index ->
+                    c.mm.unfollowers.value?.getOrNull(index)?.unfollowed = true
+                    f.b.rv.adapter?.notifyItemChanged(index)
+                }
+                c.mm.unfollowers.value = c.mm.unfollowers.value
+                if (c.mm.unfollowers.value.isNullOrEmpty()) f.onLoaded()
             }
-            c.mm.unfollowers.value?.indexOf(unf)?.also { index ->
-                c.mm.unfollowers.value?.getOrNull(index)?.unfollowed = true
-                f.b.rv.adapter?.notifyItemChanged(index)
-            }
-            c.mm.unfollowers.value = c.mm.unfollowers.value
-            if (c.mm.unfollowers.value.isNullOrEmpty()) f.onLoaded()
         }
     }
 

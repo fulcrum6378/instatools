@@ -65,7 +65,7 @@ interface Rest {
     class FriendshipStatus(
         //val blocking: Boolean?, // only in mute/unmute and show(one)
         //val followed_by: Boolean?, // only in mute/unmute and show(one)
-        //val following: Boolean,
+        val following: Boolean,
         //val incoming_request: Boolean?, // only in show_many and show(one)
         val is_bestie: Boolean,
         //val is_blocking_reel: Boolean?, // only in mute/unmute and show(one)
@@ -93,19 +93,6 @@ interface Rest {
     ) : Rest
 
     class ItemUser(val position: Float, val user: User)
-
-    class DoFollow(
-        //val feedback_title: String?, // e.g.: "Try again later"
-        //val feedback_message: String?, // e.g.: "We restrict certain activity to protect our community."
-        //val feedback_url: String?,
-        //val feedback_action: String?, // e.g.: "report_problem"
-        //val friendship_status: FriendshipStatus,
-        //val message: String?, // e.g.: "feedback_required"
-        //val previous_following: Boolean?,
-        //val result: String?,
-        val spam: Boolean?,
-        override val status: String
-    ) : Rest
 
     class Seen(val status_code: String /* must be "200" */)
 }

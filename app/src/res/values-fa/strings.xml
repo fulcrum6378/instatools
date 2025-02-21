@@ -27,7 +27,6 @@
     <string name="start">شروع</string>
     <string name="stop">توقف</string>
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
-    <string name="pageNotExist">چنین صفحه ای وجود ندارد!</string>
     <string name="sContinue">ادامه</string>
     <!--<string-array name="inaccurateTime">
         <item>%d ماه</item>
@@ -37,7 +36,7 @@
         <item>%d دقیقه</item>
         <item>%d ثانیه</item>
     </string-array>-->
-    <string name="inaccurateTimeSep">،&#160;</string>
+    <!--<string name="inaccurateTimeSep">،&#160;</string>-->
     <string name="downloadAll">دانلود تمام اسلایدها</string>
     <string name="downloadThis">دانلود این اسلاید</string>
     <string name="downloadAudio">دانلود فایل صدا فقط</string>
@@ -99,9 +98,6 @@
     <string name="unfollowers">آنفالورها</string>
     <string name="saved">ذخیره شده</string>
     <string name="direct">@string/export</string>
-    <string name="guestDesc">
-        در حالت مهمان وارد شده اید.\nاز این قابلیت نمی توانید استفاده کنید.
-    </string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
     <string name="terminateBgTasks">
@@ -118,11 +114,6 @@
     <string name="newUnfNtfChannel">آنفالورهای جدید</string>
     <string name="newUnfNtfChannelDesc">بعضی ها شما را آنفالو کرده اند!</string>
     <string name="newUnfNtfText">%d شخص جدید شما را آنفالو کردند!</string>
-    <string name="unfollowedSoMany">
-        متاسفانه اینستاگرام برای مبارزه با اسپم،
-        اجازه نمی دهد کسی پشت سرهم پروفایل های زیادی را آنفالو کند.
-        لطفا حدود نیم ساعت دیگر دوباره امتحان کنید&#8230;
-    </string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">فقط آنسیو</string>
@@ -267,11 +258,6 @@
     <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>
     <string name="exporterDone">استخراج چت %s به اتمام رسید.</string>
     <string name="exporterFailed">استخراج ناتمام ماند!</string>
-    <string name="exporterFailed429">
-        متاسفانه اینستاگرام برای مبارزه با اسپم،
-        اجازه نمی دهد درخواست های زیاد مشابه به یکباره به سرورهایش ارسال شود.
-        لطفا چند ساعت دیگر مجددا تلاش کنید&#8230;
-    </string>
     <string name="exporterAborted">استخراج چت %s ممکن نشد!</string>
     <string name="exportRescued">
         مقصدی که برای استخراج انتخاب کرده بودید در دسترس نبود؛

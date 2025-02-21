@@ -105,14 +105,17 @@ class Downloader : ForegroundService() {
             val fName = q.fName(ext)
             var leaf = branch.findFile(fName)
             if (leaf != null) { // file already exists
-                Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, q)?.sendToTarget()
-                dao.deleteQueued(q)
-                if (q.isMainFile()) m.files?.add(fName)
-                continue@queue
-            }
-            leaf = branch.createFile(
-                MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)!!, fName
-            )!!
+                if (leaf.length() > 0) {
+                    dao.deleteQueued(q)
+                    Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, q)?.sendToTarget()
+                    if (q.isMainFile()) m.files?.add(fName)
+                    continue@queue
+                }
+                // rewrite the file if it is corrupt
+            } else
+                leaf = branch.createFile(
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)!!, fName
+                )!!
 
             // download the file
             binary = null
@@ -121,6 +124,7 @@ class Downloader : ForegroundService() {
                 retry++
                 if (retry > 5) {
                     failed(q)
+                    continue@queue
                 }
 
                 val con = URI(q.url).toURL().openConnection() as HttpsURLConnection
@@ -223,8 +227,12 @@ class Downloader : ForegroundService() {
         finish(false)
     }
 
-    override fun destroy() {
+    override fun finish(cancelled: Boolean) {
         job?.cancel()
+        ntfTitle = getString(R.string.downloaderTitle)
+        ntfSmallText = null
+        updateNotification()
+
         CoroutineScope(Dispatchers.IO).launch {
             val failedSum = dao.countFailedQueueds()
             if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
@@ -250,6 +258,6 @@ class Downloader : ForegroundService() {
             DownloadHistory.saveCache(this@Downloader)
         }
 
-        super.destroy()
+        super.finish(cancelled)
     }
 }

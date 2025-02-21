@@ -73,8 +73,8 @@ enum class GraphQlQuery(
 
     /**
      * PolarisStoriesV3HighlightsPageQuery
-     * @param reel_ids `"\"[Story.id]\""`
-     * @param initial_reel_id `"\"[Story.id]\""` separated by `,`
+     * @param reel_ids `\"[Story.id]\"`
+     * @param initial_reel_id `\"[Story.id]\"` separated by `,`
      */
     HIGHLIGHTS(
         "29001692012763642",
@@ -92,7 +92,7 @@ enum class GraphQlQuery(
      */
     FOLLOW(
         "8681003828679375",
-        "{\"target_user_id\":\"22716405900\"}"
+        "{\"target_user_id\":\"%s\"}"
     ),
 
     /**
@@ -101,7 +101,99 @@ enum class GraphQlQuery(
      */
     UNFOLLOW(
         "8965103070189304",
-        "{\"target_user_id\":\"22716405900\"}"
+        "{\"target_user_id\":\"%s\"}"
+    ),
+
+    /**
+     * usePolarisSetBestiesMutation
+     * @param add `\"[User.id]\"` separated by `,`
+     * @param remove `\"[User.id]\"` separated by `,`
+     */
+    BESTIES(
+        "7489805084467496",
+        "{\"add\":[%1\$s],\"remove\":[%2\$s],\"source\":\"profile\"}"
+    ),
+
+    /**
+     * usePolarisUpdateFeedFavoritesMutation
+     * @param add `\"[User.id]\"` separated by `,`
+     * @param remove `\"[User.id]\"` separated by `,`
+     */
+    FAVORITE(
+        "25141617315482520",
+        "{\"add\":[%1\$s],\"remove\":[%2\$s],\"source\":\"profile\"}"
+    ),
+
+    /**
+     * usePolarisMutePostsMutation
+     * @param target_posts_author_id [User.id]
+     */
+    MUTE_POSTS(
+        "7845855428811431",
+        "{\"target_posts_author_id\":\"%s\"}"
+    ),
+
+    /**
+     * usePolarisUnmutePostsMutation
+     * @param target_posts_author_id [User.id]
+     */
+    UNMUTE_POSTS(
+        "7752090331521095",
+        "{\"target_posts_author_id\":\"%s\"}"
+    ),
+
+    /**
+     * usePolarisMuteStoryMutation
+     * @param target_reel_author_id [User.id]
+     */
+    MUTE_STORY(
+        "7811910972202346",
+        "{\"target_reel_author_id\":\"%s\"}"
+    ),
+
+    /**
+     * usePolarisUnmuteStoryMutation
+     * @param target_reel_author_id [User.id]
+     */
+    UNMUTE_STORY(
+        "7696114017140185",
+        "{\"target_reel_author_id\":\"%s\"}"
+    ),
+
+    /**
+     * usePolarisRestrictMutation
+     * @param target_user_ids `\"[User.id]\"` separated by `,`
+     */
+    RESTRICT(
+        "7456259841095672",
+        "{\"target_user_ids\":[%s]}"
+    ),
+
+    /**
+     * usePolarisUnrestrictMutation
+     * @param [User.id]
+     */
+    UNRESTRICT(
+        "7189308067834241",
+        "{\"target_user_id\":\"%s\"}"
+    ),
+
+    /**
+     * usePolarisBlockManyMutation
+     * @param target_user_ids `\"[User.id]\"` separated by `,`
+     */
+    BLOCK(
+        "7582138121880080",
+        "{\"target_user_ids\":[%s]}"
+    ),
+
+    /**
+     * usePolarisUnblockMutation
+     * @param target_user_id [User.id]
+     */
+    UNBLOCK(
+        "7978259088859181",
+        "{\"target_user_id\":\"%s\"}"
     ),
 
     /**
@@ -124,9 +216,10 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisStoriesV3LikeMutationLikeMutation
-     * @param media_id [Media.pk]
+     * @param mediaId [Media.pk]
      *
      * Applicable for both daily and highlighted stories.
+     * BEWARE that it's `mediaId` not 'media_id'!!
      */
     LIKE_STORY(
         "7324313080956832",
@@ -135,9 +228,10 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisStoriesV3LikeMutationUnlikeMutation
-     * @param media_id [Media.pk]
+     * @param mediaId [Media.pk]
      *
      * Applicable for both daily and highlighted stories.
+     * BEWARE that it's `mediaId` not 'media_id'!!
      */
     UNLIKE_STORY(
         "6826730164093779",
@@ -150,7 +244,7 @@ enum class GraphQlQuery(
      */
     SAVE(
         "7658071600908962",
-        "{\"mediaId\":\"%s\"}"
+        "{\"media_id\":\"%s\"}"
     ),
 
     /**
@@ -159,7 +253,7 @@ enum class GraphQlQuery(
      */
     UNSAVE(
         "8122123554479056",
-        "{\"mediaId\":\"%s\"}"
+        "{\"media_id\":\"%s\"}"
     );
 
     fun body(vararg params: String) =

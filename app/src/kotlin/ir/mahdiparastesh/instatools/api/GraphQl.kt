@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
+import ir.mahdiparastesh.instatools.api.Rest.FriendshipStatus
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
@@ -18,10 +19,22 @@ data class GraphQl(
         val xdt_api__v1__feed__reels_media: Story.Wrapper?, // daily stories
         val xdt_api__v1__feed__reels_media__connection: Page<Story>?, // highlighted stories
         //val xdt_api__v1__media__media_id__like: Liked?, // liked a post
-        //val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo?,
+        //val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo?, // media info
+        //val xdt_api__v1__restrict_action__restrict_many: Array<UserInteraction>?, // restrict
+        //val xdt_api__v1__restrict_action__unrestrict: UserInteraction?, // unrestrict
         //val xdt_api__v1__story_interactions__send_story_like: Liked?, // liked a story
         //val xdt_api__v1__story_interactions__unsend_story_like: Liked?, // unliked a story
         val xdt_api__v1__usertags__user_id__feed_connection: Page<Media>?, // tagged posts
+        //val xdt_block_many: Array<UserInteraction>?, // block
+        //val xdt_create_friendship: UserInteraction?, // follow
+        val xdt_destroy_friendship: UserInteraction?, // unfollow
+        //val xdt_set_besties: Array<UserInteraction>?, // close friends
+        //val xdt_unblock: UserInteraction?, // unblock
+        //val xdt_update_feed_favorites: Array<UserInteraction>?, // favourites
+        //val xdt_user_mute_posts: UserInteractionWrapper?, // mute posts
+        //val xdt_user_mute_story: UserInteractionWrapper?, // mute story
+        //val xdt_user_unmute_posts: UserInteractionWrapper?, // unmute posts
+        //val xdt_user_unmute_story: UserInteractionWrapper?, // unmute story
     )
 
     data class Page<Node>(
@@ -41,6 +54,19 @@ data class GraphQl(
     )
 
     //class MediaShortcodeWebInfo(val items: List<Media>)
+
+    /*class UserInteractionWrapper(
+        val muted_user: UserInteraction?, // posts/story
+        val unmuted_user: UserInteraction?, // posts/story
+    )*/
+
+    class UserInteraction(
+        //val __typename: String?, // only in block/unblock, always equals "XDTUserDict"
+        //val pk: String?, // only in restrict/unrestrict
+        //val username: String?, // only in follow/unfollow
+        val friendship_status: FriendshipStatus?, // missing only in block/unblock
+        //val id: String,
+    )
 
     //data class Liked(val __typename: String) // "XDTEmptyRecord"
 }

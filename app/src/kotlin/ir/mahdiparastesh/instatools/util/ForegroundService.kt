@@ -166,13 +166,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         finish(true)
     }
 
-    open fun finish(cancelled: Boolean) {
-        destroy()
-    }
-
     /** Call it from the same thread of the Service. */
     @MainThread
-    open fun destroy() {
+    open fun finish(cancelled: Boolean) {
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             stopForeground(STOP_FOREGROUND_REMOVE)
