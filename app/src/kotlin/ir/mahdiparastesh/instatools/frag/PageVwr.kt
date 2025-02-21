@@ -96,8 +96,8 @@ class PageVwr : BasePageViewer() {
         }
 
         // buttons for other pages
-        b.toPageRel.setOnClickListener { c.turnToPage(0) }
-        b.toPageTag.setOnClickListener { c.turnToPage(2) }
+        b.toPageRel.setOnClickListener { if (isModelLoaded()) c.turnToPage(0) }
+        b.toPageTag.setOnClickListener { if (isModelLoaded()) c.turnToPage(2) }
 
         showProfile()
     }

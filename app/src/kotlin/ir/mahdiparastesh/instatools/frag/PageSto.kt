@@ -36,7 +36,7 @@ class PageSto : BasePageViewer() {
         PageStoBinding.inflate(inf, parent, false).let { b = it; it.root }
 
     override suspend fun fetch(reset: Boolean) {
-        val uid = c.mm.user!!.id()
+        val uid = c.mm.user?.id() ?: return
 
         // load their story into the data model
         val pickle1 = Pickle(c.c, Pickle.Type.STORY, c.mm.user!!.id!!)

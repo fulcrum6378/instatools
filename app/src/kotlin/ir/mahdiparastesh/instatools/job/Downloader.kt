@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
 import android.webkit.MimeTypeMap
-import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -218,8 +217,8 @@ class Downloader : ForegroundService() {
 
     private fun fatalError(code: Int) {
         eventNotification(Notify.ID_DOWNLOADER_ERROR) {
-            setContentTitle(getString(R.string.downloads))
-            setStyle(NotificationCompat.BigTextStyle().bigText(getString(Api.error(code), code)))
+            setContentTitle(getString(R.string.download))
+            setContentText(getString(Api.error(code), code))
             setContentIntent(
                 PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
             )

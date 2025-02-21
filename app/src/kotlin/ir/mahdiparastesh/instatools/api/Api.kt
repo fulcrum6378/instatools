@@ -49,26 +49,22 @@ object Api {
         )
         con.setRequestProperty("x-ig-app-id", "936619743392459")
         con.setRequestProperty("cookie", cookies)
-        if (isPost && body != null) {
-            con.doOutput = true
-            con.setRequestProperty("content-type", "application/x-www-form-urlencoded")
-        }
+
         con.useCaches = cache
         con.connectTimeout = DEFAULT_CONNECT_TIMEOUT
         con.doInput = true
         con.readTimeout = 10000
-        try {
-            con.connect()
-        } catch (_: SocketTimeoutException) {
-            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
-            return null
-        }
-
-        if (isPost && body != null)
+        if (isPost && body != null) {
+            con.doOutput = true
+            con.setRequestProperty("content-type", "application/x-www-form-urlencoded")
             con.outputStream.bufferedWriter().use { it.write(body) }
+        }
 
         val responseCode = try {
             con.responseCode
+        } catch (_: SocketTimeoutException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
+            return null
         } catch (_: ProtocolException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-4) }
             return null
@@ -114,19 +110,17 @@ object Api {
                 "Chrome/133.0.0.0 Safari/537.36"
         )
         con.setRequestProperty("cookie", cookies)
+
         con.useCaches = false
         con.connectTimeout = DEFAULT_CONNECT_TIMEOUT
         con.doInput = true
         con.readTimeout = 12000
-        try {
-            con.connect()
-        } catch (_: SocketTimeoutException) {
-            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
-            return null
-        }
 
         val responseCode = try {
             con.responseCode
+        } catch (_: SocketTimeoutException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
+            return null
         } catch (_: ProtocolException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-4) }
             return null

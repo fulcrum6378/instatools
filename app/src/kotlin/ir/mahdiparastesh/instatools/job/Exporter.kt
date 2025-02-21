@@ -254,9 +254,7 @@ class Exporter : ForegroundService() {
     private fun error(code: Int) {
         eventNotification(Notify.ID_EXPORTER_ERROR) {
             setContentTitle(getString(R.string.exporterFailed))
-            setStyle(
-                NotificationCompat.BigTextStyle().bigText(getString(Api.error(code), code))
-            )
+            setContentText(getString(Api.error(code), code))
             addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
         }
         finish(false)

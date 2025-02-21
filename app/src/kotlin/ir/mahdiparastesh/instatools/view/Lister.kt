@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -200,6 +201,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     @MainThread
     fun onLazilyFailed(statusCode: Int) {
         job = null
+        refresher?.isRefreshing = false // in case of a refresh
         UiTools.snackbar(root!!, root!!.context.getString(Api.error(statusCode), statusCode))
     }
 
@@ -220,13 +222,15 @@ interface ServiceOwner : Lister {
     override fun prepareListing(c: BaseActivity) {
         super.prepareListing(c)
 
-        serviceActive.observe(c) { bb ->
-            controller?.apply {
-                setIcon(if (bb) R.drawable.pause else R.drawable.play)
-                setTitle(if (bb) R.string.stop else R.string.start)
+        Delay(500) {
+            serviceActive.observe(c) { bb ->
+                controller?.apply {
+                    setIcon(if (bb) R.drawable.pause else R.drawable.play)
+                    setTitle(if (bb) R.string.stop else R.string.start)
+                }
+                rv?.adapter?.notifyDataSetChanged()
+                onListResized()
             }
-            rv?.adapter?.notifyDataSetChanged()
-            onListResized()
         }
     }
 

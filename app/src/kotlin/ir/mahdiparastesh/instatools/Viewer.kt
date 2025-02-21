@@ -212,14 +212,24 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     suspend fun userInfo(userId: String): User? =
         Api.call<Rest.UserInfo>(
             Api.Endpoint.USER_INFO.url.format(userId), Rest.UserInfo::class,
-            onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
+            onError = { code -> onError(code) }
         )?.user
 
     suspend fun userProfile(userName: String): User? =
         Api.call<GraphQl>(
             Api.Endpoint.PROFILE_INFO.url.format(userName), GraphQl::class,
-            onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
+            onError = { code -> onError(code) }
         )?.data?.user
+
+    private fun onError(code: Int) {
+        if (mm.user != null) {
+            page2?.b?.refresher?.isRefreshing = false // in case of a refresh
+            UiTools.snackbar(b.root, getString(Api.error(code), code))
+        } else {
+            Toast.makeText(c, getString(Api.error(code), code), Toast.LENGTH_LONG).show()
+            @Suppress("DEPRECATION") super.onBackPressed()
+        }
+    }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
