@@ -435,6 +435,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
+  * Report to the user that a Queued is already downloaded by `status = 0x4`
   * Percentage of downloads
   * Show muted statuses in Friends
   * A button for resuming/restarting the Exporter

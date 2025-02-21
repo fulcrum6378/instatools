@@ -16,6 +16,7 @@ class Notify {
         const val ID_DOWNLOADER = 1
         const val ID_EXPORTER = 2
         const val ID_DOWNLOADER_ERROR = 10
+        const val ID_DOWNLOADER_SOME_FAILED = 11
         const val ID_EXPORTER_ERROR = 20
         const val ID_EXPORTER_DONE = 25 // incremental
         const val ID_UNF_NEW_ITEMS = 101

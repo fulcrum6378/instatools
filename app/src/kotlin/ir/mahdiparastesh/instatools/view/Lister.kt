@@ -112,9 +112,13 @@ interface Lister {
     @MainThread
     fun load(reset: Boolean = false)
 
+    @SuppressLint("NotifyDataSetChanged")
     @MainThread
     fun onLoaded() {
-        rv?.adapter = createAdapter()
+        if (rv == null) return
+        if (rv!!.adapter == null) rv?.adapter = createAdapter()
+        else rv!!.adapter!!.notifyDataSetChanged()
+
         onListResized()
         if (this is Selective && tracker == null) buildSelection()
     }

@@ -254,9 +254,9 @@
     <!-- Downloader -->
     <string name="downloaderChannel">صف دانلود</string>
     <string name="downloaderChannelDesc">اعلان های دانلود</string>
-    <string name="queuerTitle">در حال دانلود&#8230;</string>
-    <string name="queuerTitleCount">در حال دانلود %d مورد&#8230;</string>
-    <string name="queuerFailed">دانلود %d مورد ممکن نشد!</string>
+    <string name="downloaderTitle">در حال دانلود&#8230;</string>
+    <string name="downloaderTitleCount">در حال دانلود %d مورد&#8230;</string>
+    <string name="downloaderSomeFailed">دانلود %d مورد ممکن نشد!</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">استخراجگر</string>

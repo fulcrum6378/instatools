@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
@@ -32,6 +34,7 @@ import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Counter
@@ -42,6 +45,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 
 class Downloads : BaseActivity(), ServiceOwner, Counter {
@@ -194,12 +199,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun load(reset: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
             mm.queueds = CopyOnWriteArrayList(dao.queueds())
-            try {
-                mm.queueds!!.sortBy { it.addedAt }
-            } catch (e: java.lang.UnsupportedOperationException) {
-                // mysterious error by CopyOnWriteArrayList$COWIterator.set while sorting
-                if (BuildConfig.DEBUG) throw e
-            }
+            mm.queueds!!.sortBy { it.addedAt }
             withContext(Dispatchers.Main) { onLoaded() }
         }
     }
@@ -255,20 +255,22 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     }
                 } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
-            R.id.dtExportLinks -> {}/*if (!mm.queueds.isNullOrEmpty())
+            R.id.dtExportLinks -> if (!mm.queueds.isNullOrEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = EXPORT_LINKS_MIME
                     putExtra(
                         Intent.EXTRA_TITLE,
-                        "instatools_links_${Utils.fileDateTime(Persistent.now())}.$EXPORT_LINKS_EXT"
+                        "instatools_download_list_${Utils.fileDateTime(Persistent.now())}.json"
                     )
-                }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()*/
+                }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
-            R.id.dtImportLinks -> {}/*importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = EXPORT_LINKS_MIME
-            })*/
+                type =
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
+                    else "application/json"
+            })
 
             R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
                 MaterialAlertDialogBuilder(this).apply {
@@ -288,16 +290,12 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         return super.onMenuItemClick(item)
     }
 
-    /*private val exportLinks = launcherForResult {
+    private val exportLinks = launcherForResult {
         if (it.resultCode == RESULT_OK && mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
-            try {
-                contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
-                    FileOutputStream(des.fileDescriptor).use { fos ->
-                        fos.write(mm.queueds!!.joinToString("\n") { q -> q.link }
-                            .encodeToByteArray())
-                    }
+            contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
+                FileOutputStream(des.fileDescriptor).use { fos ->
+                    fos.write(Gson().toJson(mm.queueds!!).encodeToByteArray())
                 }
-            } catch (_: Exception) {
             }
         }
     }
@@ -305,14 +303,16 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
-                    FileInputStream(des!!.fileDescriptor).readBytes().toString(Charsets.UTF_8)
-                        .split("\n")
+                    Gson().fromJson(
+                        FileInputStream(des!!.fileDescriptor).readBytes()
+                            .toString(Charsets.UTF_8),
+                        Array<Queued>::class.java
+                    )
                 }
-            }.onSuccess { links ->
-                val curLinks = mm.queueds?.map { q -> q.link } ?: listOf()
-                for (l in links) if (l !in curLinks)
-                    dao.addQueued(Queued(Persistent.now(), l))
-                handler?.obtainMessage(HANDLE_RESET, 1, 0, dao.queueds())?.sendToTarget()
+            }.onSuccess { queueds ->
+                dao.addQueueds(queueds.toList())
+                mm.queueds?.addAll(queueds)
+                withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -321,7 +321,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 }
             }
         }
-    }*/
+    }
 
     override fun updateShadow() {
     }
@@ -363,10 +363,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
         private fun delete(q: Queued) {
             CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    dao.deleteQueued(q)
-                } catch (_: Exception) {
-                }
+                dao.deleteQueued(q)
                 if (mm.queueds != null) withContext(Dispatchers.Main) {
                     Queued.find(q, mm.queueds)?.let {
                         mm.queueds?.removeAt(it)

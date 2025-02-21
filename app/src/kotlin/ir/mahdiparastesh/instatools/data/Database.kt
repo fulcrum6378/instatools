@@ -24,12 +24,6 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Friend WHERE followed = 1 AND follows = 0")
         suspend fun unfollowers(): List<Friend>
 
-        /*@Query("SELECT * FROM Friend WHERE id LIKE :id LIMIT 1")
-        suspend fun friend(id: String): Friend*/
-
-        /*@Insert
-        suspend fun addFriend(item: Friend)*/
-
         @Insert
         suspend fun addFriends(item: List<Friend>)
 
@@ -47,16 +41,19 @@ abstract class Database : RoomDatabase() {
         suspend fun queueds(): List<Queued>
 
         @Query("SELECT * FROM Queued WHERE status = 0 LIMIT 1")
-        suspend fun firstQueued(): Queued?
+        suspend fun firstReadyQueued(): Queued?
 
         @Query("SELECT COUNT(*) FROM Queued WHERE status = 0")
         suspend fun countReadyQueueds(): Int
 
+        @Query("SELECT COUNT(*) FROM Queued WHERE status = 1")
+        suspend fun countFailedQueueds(): Int
+
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun addQueued(item: Queued): Long
 
-        /*@Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun addQueueds(item: List<Queued>)*/
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun addQueueds(item: List<Queued>)
 
         @Update
         suspend fun updateQueued(item: Queued)
@@ -76,9 +73,6 @@ abstract class Database : RoomDatabase() {
 
         @Delete
         suspend fun deleteExportable(item: Exportable)
-
-        /*@Query("DELETE FROM Exportable")
-        suspend fun deleteExportables()*/
 
 
         @Query("SELECT * FROM Favourite")

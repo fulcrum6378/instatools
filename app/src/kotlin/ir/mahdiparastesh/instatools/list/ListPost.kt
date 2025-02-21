@@ -79,7 +79,7 @@ abstract class ListPost<Activity, Fragment>(
             if (theirs == null)
                 false
             else if (med.carousel_media != null)
-                med.carousel_media.all { it.pk() in theirs }
+                med.carousel_media.any { it.pk() in theirs }
             else
                 med.pk() in theirs
         )

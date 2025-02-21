@@ -273,20 +273,21 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 onError = { code -> error(code) }
             )
             if (gql == null) return
-            if (gql.data == null) {
+            if (gql.data == null)
                 withContext(Dispatchers.Main) { error(-3) }
-                return; }
-
-            c.incrementCounter(Settings.spUnsaveCount)
-            withContext(Dispatchers.Main) {
-                c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
-                c.mm.saved?.items?.find { it.media.pk() == svd }?.let { media ->
-                    val x = c.mm.saved!!.items.indexOf(media)
-                    c.mm.saved!!.items.removeAt(x)
-                    b.rv.adapter?.notifyItemRemoved(x)
-                    b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items.size)
+            else {
+                c.incrementCounter(Settings.spUnsaveCount)
+                withContext(Dispatchers.Main) {
+                    c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
+                    c.mm.saved?.items?.find { it.media.pk() == svd }?.let { media ->
+                        val x = c.mm.saved!!.items.indexOf(media)
+                        c.mm.saved!!.items.removeAt(x)
+                        b.rv.adapter?.notifyItemRemoved(x)
+                        b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items.size)
+                    }
                 }
             }
+
             if (size() > 1) {
                 delay(500)
                 ended()

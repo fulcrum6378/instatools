@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/guest"
-    style="@style/tip"
-    android:drawablePadding="15dp"
-    android:text="@string/guestDesc"
-    android:textSize="@dimen/guestFont"
-    app:drawableTopCompat="@drawable/guest" />

@@ -22,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.apache.commons.imaging.Imaging
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
@@ -67,7 +66,7 @@ class Downloader : ForegroundService() {
             finish(false); return; }
 
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
-        ntfTitle = getString(R.string.queuerTitle)
+        ntfTitle = getString(R.string.downloaderTitle)
         initialNotification(Companion, Downloads::class)
         if (job?.isActive != true)
             job = CoroutineScope(Dispatchers.IO).launch { download() }
@@ -77,13 +76,13 @@ class Downloader : ForegroundService() {
         var q: Queued? = null
         var queueSize: Int
         var binary: InputStream?
-        while (dao.firstQueued().also { q = it } != null) {
+        queue@ while (dao.firstReadyQueued().also { q = it } != null) {
             q!!
 
             // update the notification
             queueSize = dao.countReadyQueueds()
             ntfTitle = getString(
-                if (queueSize > 1) R.string.queuerTitleCount else R.string.queuerTitleCount1,
+                if (queueSize > 1) R.string.downloaderTitleCount else R.string.downloaderTitleCount1,
                 queueSize
             )
             ntfSmallText = q.userName
@@ -101,30 +100,27 @@ class Downloader : ForegroundService() {
                     Settings.spBranchingCb, Settings.defSpBranchingCb
                 ) -> stem.findFile(q.userName) ?: stem.createDirectory(q.userName)
                 else -> stem
-            } ?: return
+            }!!
             val ext = q.extension()
             val fName = q.fName(ext)
             var leaf = branch.findFile(fName)
-            // Never check existence from StorageCache because the file might be deleted anytime
-            // and the user might want to re-download it!
-            if (leaf != null) return
+            if (leaf != null) { // file already exists
+                Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, q)?.sendToTarget()
+                dao.deleteQueued(q)
+                if (q.isMainFile()) m.files?.add(fName)
+                continue@queue
+            }
             leaf = branch.createFile(
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)!!, fName
-            ) ?: return
-            // Nevertheless files are RARELY duplicated with a " (1)" suffix.
-            // It presumably happens during slow connections.
-            // It could be because of simultaneous writing.
+            )!!
 
             // download the file
             binary = null
             var retry = -1
-            while (binary == null) {
+            download@ while (binary == null) {
                 retry++
                 if (retry > 5) {
-                    q.status = 0b1
-                    Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, q)?.sendToTarget()
-                    dao.updateQueued(q)
-                    incrementCounter(Settings.spDlErrorCount)
+                    failed(q)
                 }
 
                 val con = URI(q.url).toURL().openConnection() as HttpsURLConnection
@@ -139,25 +135,30 @@ class Downloader : ForegroundService() {
                 try {
                     con.connect()
                 } catch (_: SocketTimeoutException) {
-                    error(-1)
-                    return; }
+                    fatalError(-1)
+                    return
+                }
 
                 /*val responseCode = try {
                     con.responseCode
                 } catch (_: ProtocolException) {
-                    error(-4)
+                    onError(-4)
                     return
                 }*/
 
                 if (con.responseCode == 200) try {
                     binary = con.inputStream
                 } catch (_: IOException) {
-                    error(-4)
-                    return; }
+                    failed(q)
+                    continue@queue
+                } else {
+                    fatalError(con.responseCode)
+                    return
+                }
             }
 
             // save the file
-            val des = c.contentResolver.openFileDescriptor(leaf.uri, "w") ?: return
+            val des = c.contentResolver.openFileDescriptor(leaf.uri, "w")!!
             val fos = FileOutputStream(des.fileDescriptor)
             when (ext) {
                 "jpg" -> {
@@ -204,7 +205,14 @@ class Downloader : ForegroundService() {
         finish(false)
     }
 
-    private fun error(code: Int) {
+    private suspend fun failed(q: Queued) {
+        q.status = 0b1
+        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, q)?.sendToTarget()
+        dao.updateQueued(q)
+        incrementCounter(Settings.spDlErrorCount)
+    }
+
+    private fun fatalError(code: Int) {
         eventNotification(Notify.ID_DOWNLOADER_ERROR) {
             setContentTitle(getString(R.string.downloads))
             setStyle(NotificationCompat.BigTextStyle().bigText(getString(Api.error(code), code)))
@@ -218,6 +226,16 @@ class Downloader : ForegroundService() {
     override fun destroy() {
         job?.cancel()
         CoroutineScope(Dispatchers.IO).launch {
+            val failedSum = dao.countFailedQueueds()
+            if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
+                setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
+                setContentIntent(
+                    PendingIntent.getActivity(
+                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                    )
+                )
+            }
+
             clearCacheIfNecessary()
             @Suppress("KotlinConstantConditions")
             if (dest == null || !bPreference(
@@ -230,8 +248,8 @@ class Downloader : ForegroundService() {
                 if (branch.isDirectory && branch.listFiles().isEmpty())
                     branch.delete()
             DownloadHistory.saveCache(this@Downloader)
-
-            withContext(Dispatchers.IO) { super.destroy() }
         }
+
+        super.destroy()
     }
 }

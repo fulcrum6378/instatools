@@ -4,12 +4,8 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.view.OnlineLister
 import kotlinx.coroutines.Job
 

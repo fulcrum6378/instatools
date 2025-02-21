@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.IBinder
+import androidx.annotation.MainThread
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -169,6 +170,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         destroy()
     }
 
+    /** Call it from the same thread of the Service. */
+    @MainThread
     open fun destroy() {
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
