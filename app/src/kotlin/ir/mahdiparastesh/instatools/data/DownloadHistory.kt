@@ -82,7 +82,8 @@ object DownloadHistory {
 
     private fun List<DocumentFile>.filterMedia() = filter {
         it.isFile && it.name?.let { n ->
-            n.endsWith(".jpg") || n.endsWith(".png") || n.endsWith(".webp") || n.endsWith(".mp4")
+            n.endsWith(".mp4") ||
+            n.endsWith(".jpg") || n.endsWith(".png") || n.endsWith(".webp") || n.endsWith(".heic")
         } == true
     }.map { it.name!! }.toSet()
 

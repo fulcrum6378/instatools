@@ -314,7 +314,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     searcher = CoroutineScope(Dispatchers.IO).launch {
                         val rest = Api.call<Rest.Search>(
                             Api.Endpoint.SEARCH.url.format(newText), Rest.Search::class,
-                            cache = true, onError = {
+                            onError = {
                                 searchErrored = true
                                 b.searchStatus.setAnimation(R.raw.failed)
                             }
@@ -429,6 +429,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 /* TODO:
   * Problems:
   * Merge Friends into PageUnf
+  * Destroy Favourites
   * Make the coroutines pausable
   * Large heap?!?
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable

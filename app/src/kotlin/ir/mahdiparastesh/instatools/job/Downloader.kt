@@ -30,8 +30,10 @@ import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
 import java.net.SocketTimeoutException
 import java.net.URI
+import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
 
 class Downloader : ForegroundService() {
@@ -74,7 +76,7 @@ class Downloader : ForegroundService() {
     suspend fun download() {
         var q: Queued? = null
         var queueSize: Int
-        var binary: InputStream?
+        var stream: InputStream?
         queue@ while (dao.firstReadyQueued().also { q = it } != null) {
             q!!
 
@@ -117,9 +119,9 @@ class Downloader : ForegroundService() {
                 )!!
 
             // download the file
-            binary = null
+            stream = null
             var retry = -1
-            download@ while (binary == null) {
+            download@ while (stream == null) {
                 retry++
                 if (retry > 5) {
                     failed(q)
@@ -137,20 +139,16 @@ class Downloader : ForegroundService() {
                 }
                 try {
                     con.connect()
+                } catch (_: UnknownHostException) {
+                    fatalError(-1)
+                    return
                 } catch (_: SocketTimeoutException) {
                     fatalError(-1)
                     return
                 }
 
-                /*val responseCode = try {
-                    con.responseCode
-                } catch (_: ProtocolException) {
-                    onError(-4)
-                    return
-                }*/
-
                 if (con.responseCode == 200) try {
-                    binary = con.inputStream
+                    stream = con.inputStream
                 } catch (_: IOException) {
                     failed(q)
                     continue@queue
@@ -163,40 +161,17 @@ class Downloader : ForegroundService() {
             // save the file
             val des = c.contentResolver.openFileDescriptor(leaf.uri, "w")!!
             val fos = FileOutputStream(des.fileDescriptor)
-            when (ext) {
-                "jpg" -> {
-                    val ba = binary.readBytes()
-                    val outputSet = (Imaging.getMetadata(ba) as JpegImageMetadata?)?.exif?.outputSet
-                        ?: TiffOutputSet()
-                    outputSet.orCreateRootDirectory.apply {
-                        removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
-                        add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
-                        removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
-                        add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
-                        removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
-                        add(TiffTagConstants.TIFF_TAG_ARTIST, q.userName)
-                        removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
-                        add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.userName}")
-                    }
-                    outputSet.orCreateExifDirectory.apply {
-                        /*removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL)
-                        add( // Date taken
-                            ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
-                            tiffDate.format(q.addedAt)
-                        )*/
-                        q.caption?.also {
-                            removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
-                            add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
-                        }
-                        removeField(ExifTagConstants.EXIF_TAG_SITE)
-                        add(ExifTagConstants.EXIF_TAG_SITE, q.link)
-                    }
-                    ExifRewriter().updateExifMetadataLossless(ba, fos, outputSet)
-                } // TODO location data?
-
-                else -> binary.copyTo(fos) // TODO metadata for videos, PNG, WEBP, etc?
-                // FIXME SocketTimeoutException.java
+            try {
+                when (ext) {
+                    "jpg" -> writeJpeg(q, stream.readBytes(), fos)
+                    else -> stream.copyTo(fos)
+                    // TODO metadata for MP4 and WEBP?
+                }
+            } catch (_: IOException) {
+                failed(q)
+                continue@queue
             }
+            stream.close()
             fos.close()
             des.close()
             if (q.isMainFile()) m.files?.add(fName)
@@ -207,6 +182,37 @@ class Downloader : ForegroundService() {
         }
 
         finish(false)
+    }
+
+    @Throws(IOException::class)
+    private fun writeJpeg(q: Queued, `in`: ByteArray, out: OutputStream) {
+        val outputSet = (Imaging.getMetadata(`in`) as JpegImageMetadata?)?.exif?.outputSet
+            ?: TiffOutputSet()
+        outputSet.orCreateRootDirectory.apply {
+            removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+            add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+            removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
+            add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
+            removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
+            add(TiffTagConstants.TIFF_TAG_ARTIST, q.userName)
+            removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
+            add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.userName}")
+        }
+        outputSet.orCreateExifDirectory.apply {
+            /*removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL)
+            add( // Date taken
+                ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
+                tiffDate.format(q.addedAt)
+            )*/
+            q.caption?.also {
+                removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
+                add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
+            }
+            removeField(ExifTagConstants.EXIF_TAG_SITE)
+            add(ExifTagConstants.EXIF_TAG_SITE, q.link)
+        }
+        // TODO location data?
+        ExifRewriter().updateExifMetadataLossless(`in`, out, outputSet)
     }
 
     private suspend fun failed(q: Queued) {

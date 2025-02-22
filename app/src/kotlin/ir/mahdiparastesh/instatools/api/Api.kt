@@ -15,6 +15,7 @@ import java.io.IOException
 import java.net.ProtocolException
 import java.net.SocketTimeoutException
 import java.net.URI
+import java.net.UnknownHostException
 import java.util.regex.Pattern
 import javax.net.ssl.HttpsURLConnection
 import kotlin.reflect.KClass
@@ -35,7 +36,6 @@ object Api {
         isPost: Boolean = false,
         body: String? = null,
         retry: Int = 1, // TODO implement retrying
-        cache: Boolean = false,
         @MainThread onError: ((code: Int) -> Unit)? = null
     ): JSON? {
         if (cookies == "") return null
@@ -50,18 +50,22 @@ object Api {
         con.setRequestProperty("x-ig-app-id", "936619743392459")
         con.setRequestProperty("cookie", cookies)
 
-        con.useCaches = cache
+        con.useCaches = false
         con.connectTimeout = DEFAULT_CONNECT_TIMEOUT
         con.doInput = true
         con.readTimeout = 10000
         if (isPost && body != null) {
             con.doOutput = true
             con.setRequestProperty("content-type", "application/x-www-form-urlencoded")
-            con.outputStream.bufferedWriter().use { it.write(body) }
         }
 
         val responseCode = try {
+            if (isPost && body != null)
+                con.outputStream.bufferedWriter().use { it.write(body) }
             con.responseCode
+        } catch (_: UnknownHostException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
+            return null
         } catch (_: SocketTimeoutException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
             return null
@@ -118,6 +122,9 @@ object Api {
 
         val responseCode = try {
             con.responseCode
+        } catch (_: UnknownHostException) {
+            if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
+            return null
         } catch (_: SocketTimeoutException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-1) }
             return null

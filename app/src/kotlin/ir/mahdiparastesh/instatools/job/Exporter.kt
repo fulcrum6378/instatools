@@ -213,7 +213,9 @@ class Exporter : ForegroundService() {
                 }
 
                 if (con.responseCode == 200) try {
-                    media[dl.key]!!.write(con.inputStream.readBytes())
+                    FileOutputStream(media[dl.key]!!.cache).use { fos ->
+                        con.inputStream.use { it.copyTo(fos) }
+                    }
                     downloaded = true
                 } catch (_: IOException) {
                 }
@@ -323,10 +325,5 @@ class Exporter : ForegroundService() {
         val cache = File(folder, "${dmId}_$quality.${fileTypes[type].second}")
 
         fun fileName(dmId: String) = "${dmId}.${fileTypes[type].second}"
-
-        @Suppress("RedundantSuspendModifier")
-        suspend fun write(ba: ByteArray) {
-            FileOutputStream(cache).use { fos -> fos.write(ba) }
-        }
     }
 }

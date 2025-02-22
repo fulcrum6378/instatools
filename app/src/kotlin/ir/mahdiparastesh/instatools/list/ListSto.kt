@@ -125,7 +125,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                 val graphQl = Api.call<GraphQl>(
                     Api.Endpoint.QUERY.url, GraphQl::class,
                     isPost = true, body = GraphQlQuery.HIGHLIGHTS.body(apiId, apiId),
-                    cache = true, onError = { code ->
+                    onError = { code ->
                         UiTools.snackbar(f.b.root, c.getString(Api.error(code), code))
                     }
                 )
