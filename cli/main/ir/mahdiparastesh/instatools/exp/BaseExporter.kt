@@ -1,10 +1,11 @@
 package ir.mahdiparastesh.instatools.exp
 
+import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.job.Exporter
 import java.io.File
 import java.io.FileOutputStream
 
-abstract class BaseExporter(protected val exp: Exporter.Exportable) {
+abstract class BaseExporter(protected val exp: Exportable) {
     abstract val method: Exporter.Method
 
     fun write(data: ByteArray, page: Int) {

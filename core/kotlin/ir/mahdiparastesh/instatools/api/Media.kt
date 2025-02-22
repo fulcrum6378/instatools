@@ -176,7 +176,6 @@ class Media(
         }
     }
 
-    @Suppress("unused")
     enum class Type(val num: Byte) {
         IMAGE(1),
         VIDEO(2),

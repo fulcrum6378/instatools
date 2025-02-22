@@ -17,7 +17,6 @@
     <dimen name="padGallery">3dp</dimen>
     <dimen name="unfAction">@dimen/moreAction</dimen>
     <dimen name="svdSelectedPad">75dp</dimen>
-    <dimen name="guestIcon">100dp</dimen>
     <dimen name="guestFont">24sp</dimen>
     <dimen name="dmCorner">30dp</dimen>
     <dimen name="dmPadV">20dp</dimen>

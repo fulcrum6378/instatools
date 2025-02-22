@@ -1,11 +1,12 @@
 package ir.mahdiparastesh.instatools.exp
 
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.util.Utils
 import java.util.*
 
-class HtmlExporter(exportable: Exporter.Exportable) : BaseExporter(exportable) {
+class HtmlExporter(exportable: Exportable) : BaseExporter(exportable) {
     override val method: Exporter.Method = Exporter.Method.HTML
 
     private val containers = arrayListOf<List<String>>()

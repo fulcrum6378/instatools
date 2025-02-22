@@ -5,7 +5,7 @@ import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.Context.exporter
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.job.Exporter.Exportable
+import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.job.Exporter.Method
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.Direct
@@ -358,7 +358,7 @@ fun profileCommand(a: Array<String>, lister: (Profile) -> Profile.Section) {
         val nextParam = if (a1UN != null) 2 else 1
         when (a.getOrNull(nextParam)) {
             null -> lister(p).fetch(false)
-            "reset" -> lister(p).fetch(true) // reset can be mistakenly called OneTimeListers
+            "reset" -> lister(p).fetch(true)
 
             else -> {
                 val sect = lister(p)

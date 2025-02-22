@@ -2,6 +2,7 @@
   <dictionary name="fulcr">
     <words>
       <w>adbe</w>
+      <w>angeldust</w>
       <w>anydesk</w>
       <w>anydeskandroid</w>
       <w>asbd</w>
@@ -34,6 +35,7 @@
       <w>myket</w>
       <w>pacifico</w>
       <w>parastesh</w>
+      <w>pausable</w>
       <w>pdcf</w>
       <w>preloader</w>
       <w>priv</w>
@@ -49,6 +51,7 @@
       <w>unmute</w>
       <w>unrestrict</w>
       <w>unsave</w>
+      <w>vcvarsall</w>
       <w>vish</w>
     </words>
   </dictionary>
