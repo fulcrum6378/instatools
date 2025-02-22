@@ -61,6 +61,8 @@ androidComponents.beforeVariants { variantBuilder ->
 }
 
 dependencies {
+    implementation(project(":core"))
+
     implementation(libs.ktx.activity) // only for ActivityResultLauncher
     implementation(libs.ktx.core)
     implementation(libs.media3.exoplayer)

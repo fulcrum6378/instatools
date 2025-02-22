@@ -3,6 +3,12 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="22">
       <module name="InstaTools.app" target="23" />
+      <module name="InstaTools.cli" target="23" />
+      <module name="InstaTools.cli.main" target="23" />
+      <module name="InstaTools.cli.test" target="23" />
+      <module name="InstaTools.core" target="23" />
+      <module name="InstaTools.core.main" target="23" />
+      <module name="InstaTools.core.test" target="23" />
     </bytecodeTargetLevel>
   </component>
 </project>

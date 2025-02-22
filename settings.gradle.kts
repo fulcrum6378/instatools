@@ -20,4 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "InstaTools"
+include(":core")
 include(":app")
+include(":cli")
