@@ -195,6 +195,7 @@ class Downloader : ForegroundService() {
                 } // TODO location data?
 
                 else -> binary.copyTo(fos) // TODO metadata for videos, PNG, WEBP, etc?
+                // FIXME SocketTimeoutException.java
             }
             fos.close()
             des.close()

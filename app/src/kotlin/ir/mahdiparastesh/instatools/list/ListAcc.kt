@@ -33,7 +33,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
         AnyViewHolder(ListAccBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListAccBinding>, i: Int) {
-        // Apparently even the most static kinds of list adapters need to be null-safe.
+        // apparently even the most static kinds of list adapters need to be null-safe.
         val acc = c.accounts.getOrNull(i) ?: return
         val guest = acc.id < 0L
 
@@ -48,7 +48,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
             c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
         }
 
-        // Clicks
+        // clicks
         h.b.more.vis(!guest)
         h.b.more.setOnClickListener(if (!guest) View.OnClickListener {
             val a = c.accounts.getOrNull(h.layoutPosition) ?: return@OnClickListener
@@ -73,9 +73,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                 c.goTo(Main::class, true)
             },
             R.id.amBrowseWeb to {
+                c.accBrowsingWeb = acc
                 c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.HOST)
-                acc.last = Persistent.now()
-                acc.saveMeInIO(c)
             },
             R.id.amInjectCookies to {
                 c.injectingCookieForAccIndex = i

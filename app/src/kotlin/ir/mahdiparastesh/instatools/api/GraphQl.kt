@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 data class GraphQl(
     val data: GraphQlData?,
-    //val errors: List<Map<String, Any>>?,
+    //val errors: Array<GraphQlError>?,
     //val extensions: Map<String, Any>,
     override val status: String // can be "ok" with HTTP code 200 while having errors!!!
 ) : Rest {
@@ -15,16 +15,19 @@ data class GraphQl(
     class GraphQlData(
         val highlights: Page<Story>?,
         val user: User?,
-        val xdt_api__v1__feed__user_timeline_graphql_connection: Page<Media>?, // profile posts
         val xdt_api__v1__feed__reels_media: Story.Wrapper?, // daily stories
         val xdt_api__v1__feed__reels_media__connection: Page<Story>?, // highlighted stories
-        //val xdt_api__v1__media__media_id__like: Liked?, // liked a post
+        val xdt_api__v1__feed__user_timeline_graphql_connection: Page<Media>?, // profile posts
+        //val xdt_api__v1__media__media_id__like: MediaInteraction?, // like post
+        //val xdt_api__v1__media__media_id__unlike: MediaInteraction?, // unlike post
         //val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo?, // media info
         //val xdt_api__v1__restrict_action__restrict_many: Array<UserInteraction>?, // restrict
         //val xdt_api__v1__restrict_action__unrestrict: UserInteraction?, // unrestrict
-        //val xdt_api__v1__story_interactions__send_story_like: Liked?, // liked a story
-        //val xdt_api__v1__story_interactions__unsend_story_like: Liked?, // unliked a story
+        //val xdt_api__v1__story_interactions__send_story_like: MediaInteraction?, // like story
+        //val xdt_api__v1__story_interactions__unsend_story_like: MediaInteraction?, // unlike story
         val xdt_api__v1__usertags__user_id__feed_connection: Page<Media>?, // tagged posts
+        //val xdt_api__v1__web__save__media_id__save: MediaInteraction?, // save
+        //val xdt_api__v1__web__save__media_id__unsave: MediaInteraction?, // unsave
         //val xdt_block_many: Array<UserInteraction>?, // block
         //val xdt_create_friendship: UserInteraction?, // follow
         val xdt_destroy_friendship: UserInteraction?, // unfollow
@@ -36,6 +39,16 @@ data class GraphQl(
         //val xdt_user_unmute_posts: UserInteractionWrapper?, // unmute posts
         //val xdt_user_unmute_story: UserInteractionWrapper?, // unmute story
     )
+
+    /*class GraphQlError(
+        //val message: String,
+        //val code: Int?,
+        //val summary: String?,
+        //val description: String?,
+        //val path: Array<String>,
+        //val extensions: Map<String, String>?,
+        //val severity: String,
+    )*/
 
     data class Page<Node>(
         val edges: CopyOnWriteArrayList<Edge<Node>>,
@@ -68,5 +81,5 @@ data class GraphQl(
         //val id: String,
     )
 
-    //data class Liked(val __typename: String) // "XDTEmptyRecord"
+    //class MediaInteraction(val __typename: String) // always "XDTEmptyRecord"
 }

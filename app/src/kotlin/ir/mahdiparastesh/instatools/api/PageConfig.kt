@@ -10,9 +10,9 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import org.apache.commons.text.StringEscapeUtils
 
 /** Resolves an HTML from Instagram and collects required data. */
-class PageConfig(
-    val define: HashMap<String, List<Any>>, val require: HashMap<String, List<Any>>
-) {
+class PageConfig(val define: HashMap<String, List<Any>>) {
+    //val require: HashMap<String, List<Any>>
+
     companion object {
         private const val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
 
@@ -26,7 +26,7 @@ class PageConfig(
         }
 
         fun create(map: LinkedTreeMap<String, Any>): PageConfig =
-            PageConfig(titledListToMap(map["define"]!!), titledListToMap(map["require"]!!))
+            PageConfig(titledListToMap(map["define"]!!)/*, titledListToMap(map["require"]!!)*/)
 
         fun findFromHtml(
             rawHtml: String, isEvaluated: Boolean, onFailure: (e: Exception) -> Unit,

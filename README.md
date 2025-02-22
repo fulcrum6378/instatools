@@ -13,13 +13,13 @@ in a JSON file in the /files/ directory inside the internal storage.
 That JSON file is an array of
 [Account](app/src/main/kotlin/ir/mahdiparastesh/instatools/data/Account.kt)
 objects and stores the data mentioned before.
-These data are used later for dealing with the web API of Instagram.
+These data are used later for dealing with Instagram's private API.
 This app supports multiple accounts; each account has its own database and shared preferences.
 That's why the JSON file mentioned above is an array of multiple Account instances.
 
 ### [Main.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/Main.kt)
 
-InstaTools uses the Instagram Web API to performs 3 primary goals,
+InstaTools uses Instagram's private API to performs 3 primary goals,
 plus a few other miscellaneous things that will be mentioned later.
 
 1. **Unfollowers** ([PageUnf.kt](app/src/main/kotlin/ir/mahdiparastesh/instatools/frag/PageUnf.kt)):

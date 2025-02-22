@@ -428,9 +428,9 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * Favourites -> Bookmarks
+  * Merge Friends into PageUnf
+  * Make the coroutines pausable
   * Large heap?!?
-  * Friends is empty if Inquiry hasn't been triggered yet
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -

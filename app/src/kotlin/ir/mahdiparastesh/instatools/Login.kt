@@ -38,6 +38,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var bw: WelcomeBinding
     lateinit var accounts: ArrayList<Account>
     private lateinit var cookieManager: CookieManager
+    var accBrowsingWeb: Account? = null
     var injectingCookieForAccIndex: Int? = null
 
     override val menuRes: Int? = null
@@ -251,11 +252,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            if ((url != HOST && !url.startsWith("$HOST?")) || browsePurpose == BROWSE_THE_WEB) return
-            try { // Don't remove the explanatory comments
+            if ((url != HOST && !url.startsWith("$HOST?"))) return
+
+            if (browsePurpose != BROWSE_THE_WEB) try {
                 view.evaluateJavascript(
                     "document.getElementsByTagName('body')[0].innerHTML"
-                ) { html -> // returns innerHtml of <body> inside "".
+                ) { html ->
                     if (html == "null") {
                         failed(Exception("evaluateJavascript() returned null!"))
                         return@evaluateJavascript; }
@@ -264,9 +266,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     } catch (e: JsonSyntaxException) {
                         failed(e)
                     } catch (e: IllegalStateException) {
-                        failed(e) // The page may have failed to load properly.
+                        failed(e) // the page may have failed to load properly.
                     } catch (_: NumberFormatException) {
-                        // This happens when you go to, for example, the profiles/hashtags page,
+                        // this happens when you go to, for example, the profiles/hashtags page,
                         // tap on the pretty "Instagram" title in the header, then you go to
                         // another page, e.g. sign up page, then you come back to the same
                         // "instagram.com" page, then you repeat this act once more.
@@ -274,6 +276,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
             } catch (e: Exception) {
                 if (BuildConfig.DEBUG) throw e else failed(e)
+            }
+            // the user is just browsing the web
+            else accBrowsingWeb?.also { accBrowsingWeb ->
+                accBrowsingWeb.last = Persistent.now()
+                accBrowsingWeb.cook = cookieManager.getCookieOrganised(HOST)
+                accBrowsingWeb.saveMeInIO(c)
             }
         }
 
