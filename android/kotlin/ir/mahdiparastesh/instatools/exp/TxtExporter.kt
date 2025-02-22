@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.expt
+package ir.mahdiparastesh.instatools.exp
 
 import android.net.Uri
 import ir.mahdiparastesh.instatools.api.Api

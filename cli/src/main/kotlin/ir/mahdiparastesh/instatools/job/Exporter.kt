@@ -2,14 +2,14 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.exp.HtmlExporter
 import ir.mahdiparastesh.instatools.util.Queuer
 import java.io.File
 
 /** Exports direct messages. */
-class Exporter : Queuer<Exporter.Exportable>() {
+class Exporter : Queuer<Exportable>() {
     override val outputDir = File("./Messages/")
 
     companion object {
@@ -105,22 +105,6 @@ class Exporter : Queuer<Exporter.Exportable>() {
             }
         }*/
     }
-
-    data class Exportable(
-        val name: String,
-        val thread: Dm.DmThread,
-        val method: Method,
-        val image: Float?,
-        val video: Float?,
-        val post: Float?,
-        val reel: Float?,
-        val story: Float?,
-        val uploadedImage: Float?,
-        val uploadedVideo: Float?,
-        val voice: Boolean,
-        val min: Long?,
-        val max: Long?,
-    )
 
     enum class Method(val ext: String) {
         HTML("html"),

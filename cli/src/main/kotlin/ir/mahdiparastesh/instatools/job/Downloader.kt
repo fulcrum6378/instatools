@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.Queuer
 import ir.mahdiparastesh.instatools.util.Utils
 import org.apache.commons.imaging.Imaging
@@ -17,8 +18,7 @@ import java.net.URI
 import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
 
-/** Downloads media and saves them. */
-class Downloader : Queuer<Downloader.Queued>() {
+class Downloader : Queuer<Queued>() {
     override val outputDir = File("./Downloads/")
 
     fun download(
@@ -121,7 +121,7 @@ class Downloader : Queuer<Downloader.Queued>() {
             removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
             if (q.link != null) add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
             removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
-            add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.APP_NAME)
+            add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
             removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
             add(TiffTagConstants.TIFF_TAG_ARTIST, q.owner)
             removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
@@ -137,22 +137,6 @@ class Downloader : Queuer<Downloader.Queued>() {
         }
         // TODO location data?
         ExifRewriter().updateExifMetadataLossless(`in`, out, outputSet)
-    }
-
-    /** Data structure for information of a media. */
-    data class Queued(
-        val id: String,
-        val date: Long,
-        val url: String,
-        val type: Byte,
-        val owner: String,
-        val caption: String?,
-        val link: String?,
-        //val thumb: String?,
-    ) {
-        fun fileName(ext: String) = "${owner}_${Utils.fileDateTime(date)}_$id.$ext"
-
-        fun extension() = URI(url).path.split(".").last()
     }
 
     inner class FailureException :

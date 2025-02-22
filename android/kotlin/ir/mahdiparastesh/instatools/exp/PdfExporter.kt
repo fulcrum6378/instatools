@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.expt
+package ir.mahdiparastesh.instatools.exp
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -20,7 +20,7 @@ import java.util.regex.Pattern
 import javax.net.ssl.HttpsURLConnection
 import kotlin.reflect.KClass
 
-/** Controls all API interactions with Instagram Web API using Volley and Gson. */
+/** Controls all interactions with Instagram's private API using [Gson]. */
 object Api {
     const val DEFAULT_CONNECT_TIMEOUT = 5000
     var cookies = ""

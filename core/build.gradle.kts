@@ -2,10 +2,9 @@ plugins { kotlin("jvm") }
 kotlin { jvmToolchain(23) }
 
 sourceSets.getByName("main") {
-    kotlin.srcDirs("src/kotlin")
+    kotlin.srcDirs("kotlin")
 }
 
 dependencies {
     implementation(libs.gson)
-    //implementation(libs.commons.imaging)
 }

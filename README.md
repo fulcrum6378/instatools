@@ -87,7 +87,7 @@ This activity controls both global settings (gsp) and also settings of the curre
   including back-end data models, endpoint addresses and their related utilities.
 - [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) :
   data models used for storing in databases or other local files.
-- [**expt**](android/kotlin/ir/mahdiparastesh/instatools/expt) :
+- [**exp**](android/kotlin/ir/mahdiparastesh/instatools/exp) :
   utilities that help exporting direct messages.
 - [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
 - [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
