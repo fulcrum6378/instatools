@@ -34,12 +34,12 @@ import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Counter
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwner
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -161,7 +161,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
             if (it in handledLinks || mm.queueds?.map { q -> q.link }
                     ?.let { qs -> it in qs } == true) return@also
-            if (!it.startsWith(Utils.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
+            if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
@@ -261,7 +261,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     type = EXPORT_LINKS_MIME
                     putExtra(
                         Intent.EXTRA_TITLE,
-                        "instatools_download_list_${Utils.fileDateTime(Persistent.now())}.json"
+                        "instatools_download_list_${Utils.fileDateTime(Utils.now())}.json"
                     )
                 }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 

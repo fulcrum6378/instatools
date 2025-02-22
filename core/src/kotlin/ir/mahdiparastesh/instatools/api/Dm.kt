@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.api
 
-import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.Utils
 
 @Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")
@@ -128,7 +127,7 @@ data class Dm(
     ) {
         fun title() = if (!is_group) users.getOrNull(0)?.visName() else thread_title
 
-        fun exported() = "Exported ${title()}_${Utils.fileDateTime(Persistent.now())}"
+        fun exported() = "Exported ${title()}_${Utils.fileDateTime(Utils.now())}"
     }
 
     class ActionLog

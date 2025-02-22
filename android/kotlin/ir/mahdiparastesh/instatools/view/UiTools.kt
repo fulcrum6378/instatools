@@ -34,26 +34,31 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.util.Utils
 import java.util.*
 
 object UiTools {
     const val DATE_FORMAT = "yyyy.MM.dd"
     const val TIME_FORMAT = "hh:mm:ss"
     const val PROFILE = "https://www.instagram.com/%s/"
-    const val POST_LINK = "https://www.instagram.com/p/%s/"
-    const val REEL_LINK = "https://www.instagram.com/reel/%s/"
-    const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s"
+    const val IG_OPENABLE = "https://www.instagram.com/"
+    const val INSTA_PACKAGE = "com.instagram.android"
     const val MAX_BADGE_CHAR = 6
     private const val OPTION_DISABLED_ALPHA = 0.5f
     //private const val maxInaccurateTimeItems = 2
 
+    val accFromUrl = arrayOf(Login.RAW_HOST, Login.HOST)
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
     val reqPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
+
+    /** Gets the IG user name from a link. */
+    fun accountFromUrl(str: String, host: String): String? =
+        if (str.startsWith(host)) str.substringAfter(host).substringBefore("/")
+            .substringBefore("?") else null
 
     /** @return TextView instances of a BottomNavigationView for applying custom styles on them. */
     @SuppressLint("RestrictedApi")
@@ -81,7 +86,7 @@ object UiTools {
     fun openProfile(c: Activity, user: String): Boolean = try {
         c.startActivity(
             Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
-                .setPackage(Utils.INSTA_PACKAGE)
+                .setPackage(INSTA_PACKAGE)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
         true
@@ -130,7 +135,7 @@ object UiTools {
         try {
             c.startActivity(
                 Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
-                    ComponentName(Utils.INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
+                    ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } catch (_: ActivityNotFoundException) {

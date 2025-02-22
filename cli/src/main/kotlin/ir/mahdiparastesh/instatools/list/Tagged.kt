@@ -32,7 +32,7 @@ class Tagged(override val p: Profile) : LazyLister<Media>(), Profile.Section {
             add(e.node)
         }
         if (page.page_info.has_next_page) {
-            cursor = page.edges.last().node.pk
+            cursor = page.edges.last().node.id()
             println("Enter `t ${p.userName}` again or just `t` to load more tagged posts from their profile...")
         } else endOfList()
     }

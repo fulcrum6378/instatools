@@ -67,44 +67,44 @@ class HtmlExporter(exportable: Exporter.Exportable) : BaseExporter(exportable) {
             val nonMedia = when {
                 dm.animated_media != null -> {
                     limit += 2
-                    divGif.format(dm.animated_media.images.fixed_height.url)
+                    divGif.format(dm.animated_media!!.images.fixed_height.url)
                 }
 
                 dm.clip != null -> {
-                    media = dm.clip.clip
+                    media = dm.clip!!.clip
                     mediaVideoAllowed = (exp.reel ?: exp.video) != Media.Version.THUMB
                     mediaQuality = if (mediaVideoAllowed) exp.reel ?: exp.video else exp.post ?: exp.image
                     ""
                 }
 
                 dm.direct_media_share != null -> {
-                    media = dm.direct_media_share.media
+                    media = dm.direct_media_share!!.media
                     mediaVideoAllowed = (exp.uploadedVideo ?: exp.video) != Media.Version.THUMB
                     mediaQuality =
-                        if (dm.direct_media_share.media.video_versions != null && mediaVideoAllowed)
+                        if (dm.direct_media_share!!.media.video_versions != null && mediaVideoAllowed)
                             exp.uploadedVideo ?: exp.video
                         else exp.uploadedImage ?: exp.image
-                    dm.direct_media_share.text
+                    dm.direct_media_share!!.text
                 }
 
                 dm.felix_share != null -> {
-                    media = dm.felix_share.video
+                    media = dm.felix_share!!.video
                     mediaVideoAllowed = (exp.reel ?: exp.video) != Media.Version.THUMB
                     mediaQuality = if (mediaVideoAllowed) exp.reel ?: exp.video else exp.post ?: exp.image
-                    dm.felix_share.text?.let { divDial.format(it) } ?: ""
+                    dm.felix_share!!.text?.let { divDial.format(it) } ?: ""
                 }
 
                 dm.like != null -> divDial.format(dm.like)
-                dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text, "")
+                dm.link != null -> divLink.format(dm.link!!.link_context.link_url, dm.link!!.text, "")
                 dm.live_viewer_invite != null -> hintAndDial(
-                    dm.live_viewer_invite.cta_button_name, dm.live_viewer_invite.text
+                    dm.live_viewer_invite!!.cta_button_name, dm.live_viewer_invite!!.text
                 )
 
                 dm.media != null -> {
                     media = dm.media
                     mediaVideoAllowed = (exp.uploadedVideo ?: exp.video) != Media.Version.THUMB
                     mediaQuality =
-                        if (dm.media.video_versions != null && mediaVideoAllowed)
+                        if (dm.media!!.video_versions != null && mediaVideoAllowed)
                             exp.uploadedVideo ?: exp.video
                         else exp.uploadedImage ?: exp.image
                     ""
@@ -114,56 +114,56 @@ class HtmlExporter(exportable: Exporter.Exportable) : BaseExporter(exportable) {
                     media = dm.media_share
                     mediaVideoAllowed = (exp.reel ?: exp.video) != Media.Version.THUMB
                     mediaQuality =
-                        if (dm.media_share.video_versions != null && mediaVideoAllowed)
+                        if (dm.media_share!!.video_versions != null && mediaVideoAllowed)
                             exp.reel ?: exp.video
                         else exp.uploadedImage ?: exp.image
                     ""
                 }
 
-                dm.placeholder != null -> divHint.format(dm.placeholder.message)
+                dm.placeholder != null -> divHint.format(dm.placeholder!!.message)
                 dm.profile != null -> divLink.format(
-                    Utils.PROFILE.format(dm.profile.username), "@${dm.profile.username}",
-                    " <i>[User ID: ${dm.profile.pk}]</i>"
+                    Utils.PROFILE.format(dm.profile!!.username), "@${dm.profile!!.username}",
+                    " <i>[User ID: ${dm.profile!!.pk}]</i>"
                 )
 
                 dm.raven_media != null -> {
                     media = dm.raven_media
                     mediaVideoAllowed = (exp.uploadedVideo ?: exp.video) != Media.Version.THUMB
                     mediaQuality =
-                        if (dm.raven_media.video_versions != null && mediaVideoAllowed)
+                        if (dm.raven_media!!.video_versions != null && mediaVideoAllowed)
                             exp.uploadedVideo ?: exp.video
                         else exp.uploadedImage ?: exp.image
                     ""
                 }
 
                 dm.reel_share != null -> {
-                    media = dm.reel_share.media
+                    media = dm.reel_share!!.media
                     mediaVideoAllowed = (exp.reel ?: exp.video) != Media.Version.THUMB
                     mediaQuality = if (mediaVideoAllowed) exp.reel ?: exp.video else exp.post ?: exp.image
-                    hintAndDial(dm.reel_share.message, dm.reel_share.text)
+                    hintAndDial(dm.reel_share!!.message, dm.reel_share!!.text)
                 }
 
                 dm.story_share != null -> {
-                    media = dm.story_share.media
-                    if (dm.story_share.media?.video_versions != null && mediaVideoAllowed)
+                    media = dm.story_share!!.media
+                    if (dm.story_share!!.media?.video_versions != null && mediaVideoAllowed)
                         exp.uploadedVideo ?: exp.video
                     else exp.uploadedImage ?: exp.image
-                    hintAndDial(dm.story_share.message, dm.story_share.text)
+                    hintAndDial(dm.story_share!!.message, dm.story_share!!.text)
                 }
 
                 dm.text != null -> divDial.format(dm.text)
                 dm.video_call_event != null ->
-                    divHint.format(dm.video_call_event.description)
+                    divHint.format(dm.video_call_event!!.description)
 
                 dm.voice_media != null -> when {
-                    exp.voice && dm.voice_media.media != null -> {
+                    exp.voice && dm.voice_media!!.media != null -> {
                         limit += 4
                         "<audio controls>\n" +
                                 "$div2Ind  <source src=\"${dm.item_id}.m4a\" type=\"audio/mp4\">\n" +
                                 "$div2Ind</audio>"
                     }
 
-                    dm.voice_media.media == null ->
+                    dm.voice_media!!.media == null ->
                         divHint.format("Sent a voice message.")
 
                     else -> divHint.format("Voice message omitted!")
@@ -234,7 +234,7 @@ class HtmlExporter(exportable: Exporter.Exportable) : BaseExporter(exportable) {
             if (nonMedia.isNotBlank()) limit++
             if (dm.reactions != null) {
                 div.append("\n$div2Ind<p class=\"reactions\">")
-                for (r in dm.reactions.emojis) div.append(r.emoji)
+                for (r in dm.reactions!!.emojis) div.append(r.emoji)
                 div.append("</p>")
             }
             div.append(

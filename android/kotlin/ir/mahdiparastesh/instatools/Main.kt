@@ -41,8 +41,6 @@ import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -296,8 +294,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                         else b.searchRes.adapter?.notifyDataSetChanged()
                         return true
                     }
-                    Utils.ACC_FROM_URL.forEach { host ->
-                        newText.accFromUrl(host)?.also {
+                    UiTools.accFromUrl.forEach { host ->
+                        UiTools.accountFromUrl(newText, host)?.also {
                             searchInput.setText(it)
                             return true // onQueryTextChange will be invoked again by setText!
                         }

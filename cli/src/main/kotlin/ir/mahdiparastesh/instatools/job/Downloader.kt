@@ -27,7 +27,7 @@ class Downloader : Queuer<Downloader.Queued>() {
         val u = med.owner()
         if (med.carousel_media != null) for (car in med.carousel_media) enqueue(
             Queued(
-                car.pk(),
+                car.id(),
                 Utils.compileSecondsTS(car.taken_at),
                 car.nearest(idealSize)!!,
                 car.media_type.toInt().toByte(),
@@ -38,7 +38,7 @@ class Downloader : Queuer<Downloader.Queued>() {
             )
         ) else enqueue(
             Queued(
-                med.pk!!,
+                med.id(),
                 Utils.compileSecondsTS(med.taken_at),
                 med.nearest(idealSize)!!,
                 med.media_type.toInt().toByte(),

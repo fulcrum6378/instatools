@@ -30,7 +30,7 @@ class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
             add(e.node)
         }
         if (page.page_info.has_next_page) {
-            cursor = page.edges.last().node.id
+            cursor = page.edges.last().node.id()
             println("Enter `p ${p.userName}` again or just `p` to load more posts from their profile...")
         } else endOfList()
     }

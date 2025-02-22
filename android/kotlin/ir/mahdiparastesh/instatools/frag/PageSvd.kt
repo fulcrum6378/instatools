@@ -29,6 +29,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Pickle
+import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
@@ -169,7 +170,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 tracker?.clearSelection()
             }
             R.id.mtSelectAll -> if (c.mm.saved != null)
-                tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.pk() }, true)
+                tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id() }, true)
 
             R.id.mtDeselectAll -> tracker?.clearSelection()
         }
@@ -199,10 +200,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.pk()
+        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.id()
         override fun getPosition(key: String): Int {
             c.mm.saved?.items?.forEachIndexed { i, item ->
-                if (item.media.pk() == key) return@getPosition i
+                if (item.media.id() == key) return@getPosition i
             }
             return -1
         }
@@ -257,7 +258,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 if (download) Downloads.initService(c)
                 if (unsave) c.mm.saved?.also { pickle.save(it) }
                 return; }
-            val saved = c.mm.saved?.items?.find { it.media.pk() == svd }
+            val saved = c.mm.saved?.items?.find { it.media.id() == svd }
             if (saved == null) {
                 ended(); return; }
 
@@ -269,7 +270,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
 
             val gql = Api.call<GraphQl>(
                 Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.UNSAVE.body(saved.media.pk()),
+                isPost = true, body = GraphQlQuery.UNSAVE.body(saved.media.id()),
                 onError = { code -> error(code) }
             )
             if (gql == null) return
@@ -279,7 +280,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 c.incrementCounter(Settings.spUnsaveCount)
                 withContext(Dispatchers.Main) {
                     c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
-                    c.mm.saved?.items?.find { it.media.pk() == svd }?.let { media ->
+                    c.mm.saved?.items?.find { it.media.id() == svd }?.let { media ->
                         val x = c.mm.saved!!.items.indexOf(media)
                         c.mm.saved!!.items.removeAt(x)
                         b.rv.adapter?.notifyItemRemoved(x)

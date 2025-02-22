@@ -17,7 +17,7 @@ import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.ListAccBinding
-import ir.mahdiparastesh.instatools.util.Persistent
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -68,7 +68,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
         MaterialMenu(c, v, R.menu.acc_more,
             R.id.amWithoutAuth to {
                 c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
-                acc.last = Persistent.now()
+                acc.last = Utils.now()
                 acc.saveMeInIO(c)
                 c.goTo(Main::class, true)
             },

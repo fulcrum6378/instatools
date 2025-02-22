@@ -23,8 +23,8 @@ import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.util.Delay
-import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -279,7 +279,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
             // the user is just browsing the web
             else accBrowsingWeb?.also { accBrowsingWeb ->
-                accBrowsingWeb.last = Persistent.now()
+                accBrowsingWeb.last = Utils.now()
                 accBrowsingWeb.cook = cookieManager.getCookieOrganised(HOST)
                 accBrowsingWeb.saveMeInIO(c)
             }
@@ -300,7 +300,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 m.acc = Account(
                     id.toLong(), u.username, u.full_name, u.picture(),
                     cookieManager.getCookieOrganised(HOST),
-                    Persistent.now()
+                    Utils.now()
                 ).apply {
                     accounts.removeAll { it.id == id }
                     accounts.add(this)

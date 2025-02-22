@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test Command" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="23" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="debug" value="1" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="ir.mahdiparastesh.instatools.MainKt" />
+    <module name="InstaTools.cli.test" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cli" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,8 +1,8 @@
 package ir.mahdiparastesh.instatools.api
 
-@Suppress("MemberVisibilityCanBePrivate", "PropertyName")
+@Suppress("PropertyName")
 class Story(
-    //val cover_media: Cover?, // null in stories
+    val cover_media: Cover?, // null in stories
     val id: String, // user id
     var items: ArrayList<Media>?, // null in highlights tray
     //val latest_reel_media: Double, // time in seconds
@@ -10,7 +10,10 @@ class Story(
     val reel_type: String?, // "user_reel" or "highlight_reel", null in highlights tray
     //val seen: Float?, // null in highlights
     val title: String?, // null in stories
-    val user: User
+    val user: User,
+
+    @Transient var opened: Boolean,
+    @Transient var anSlide: Any? = null
 ) {
 
     fun link(): String = when (reel_type) {
@@ -24,12 +27,12 @@ class Story(
     fun highlightId(): String = id.substring(10)
 
 
-    /*class Cover(
+    class Cover(
         val cropped_image_version: Url,
-        val full_image_version: Any?
-    )*/
+        //val full_image_version: Any?
+    )
 
-    /*class Url(val url: String)*/
+    class Url(val url: String)
 
     class Wrapper(val reels_media: List<Story>)
 }

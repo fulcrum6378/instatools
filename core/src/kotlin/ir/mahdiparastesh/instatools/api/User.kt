@@ -1,11 +1,10 @@
 package ir.mahdiparastesh.instatools.api
 
-import ir.mahdiparastesh.instatools.data.Favourite
 import java.text.DecimalFormat
 
 @Suppress("PropertyName")
-data class User(
-    //val bio_links: List<BioLink>?,
+class User(
+    //val bio_links: Array<BioLink>?,
     val biography: String?,
     val edge_follow: EdgeFollow?, // available via PROFILE_INFO
     val edge_followed_by: EdgeFollow?, // available via PROFILE_INFO
@@ -13,14 +12,14 @@ data class User(
     //val friendship_status: FriendshipStatus?,
     val full_name: String?,
     val hd_profile_pic_url_info: Media.Version?, // available via USER_INFO (highest quality)
-    val hd_profile_pic_versions: List<Media.Version>?, // available via USER_INFO
+    val hd_profile_pic_versions: Array<Media.Version>?, // available via USER_INFO
     val id: String?,
     val is_private: Boolean?,
     //val is_unpublished: Boolean?,
     val pk: String?, // missing in PROFILE_INFO
     val profile_pic_url: String?,
     val profile_pic_url_hd: String?, // available via PROFILE_INFO
-    val pronouns: List<String>?,
+    val pronouns: Array<String>?,
     val username: String?,
 ) {
 
@@ -35,12 +34,10 @@ data class User(
 
     fun pv() = is_private == true
 
-    fun favourite(): Favourite = Favourite(id(), username!!, full_name!!, picture(), pv())
 
+    /*class BioLink(val title: String, val url: String)*/
 
-    /*data class BioLink(val title: String, val url: String)*/
-
-    /*data class FriendshipStatus(
+    /*class FriendshipStatus(
         //val blocking: Boolean?, // only in mute/unmute and show(one)
         //val followed_by: Boolean?, // only in mute/unmute and show(one)
         //val following: Boolean,

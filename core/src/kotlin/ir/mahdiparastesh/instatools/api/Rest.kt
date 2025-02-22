@@ -5,9 +5,9 @@ import java.util.concurrent.CopyOnWriteArrayList
 interface Rest {
     val status: String
 
-    data class QuickResponse(override val status: String) : Rest
+    class QuickResponse(override val status: String) : Rest
 
-    data class LazyList<N>(
+    class LazyList<N>(
         //val auto_load_more_enabled: Boolean,
         val items: CopyOnWriteArrayList<N>,
         var more_available: Boolean,
@@ -16,19 +16,20 @@ interface Rest {
         override val status: String,
     ) : Rest
 
-    data class SavedItem(val media: Media)
+    class SavedItem(val media: Media)
 
-    data class UserInfo(
+    class UserInfo(
         val user: User,
         override val status: String
     ) : Rest
 
     class InboxPage(
-        //val has_pending_top_requests: Boolean,
-        val inbox: Dm.Inbox,
-        //val pending_requests_total: Double,
-        //val seq_id: Double,
         //val viewer: User,
+        val inbox: Dm.Inbox,
+        //val seq_id: String,
+        //val snapshot_at_ms: Double, // milliseconds
+        //val pending_requests_total: Double,
+        //val has_pending_top_requests: Boolean,
         override val status: String
     ) : Rest
 

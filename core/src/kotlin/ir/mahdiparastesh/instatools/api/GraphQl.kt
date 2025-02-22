@@ -1,6 +1,9 @@
 package ir.mahdiparastesh.instatools.api
 
-@Suppress("PropertyName", "SpellCheckingInspection")
+import ir.mahdiparastesh.instatools.api.Rest.FriendshipStatus
+import java.util.concurrent.CopyOnWriteArrayList
+
+@Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 class GraphQl(
     val data: GraphQlData?,
     //val errors: Array<GraphQlError>?,
@@ -26,7 +29,7 @@ class GraphQl(
         //val xdt_api__v1__web__save__media_id__unsave: MediaInteraction?, // unsave
         //val xdt_block_many: Array<UserInteraction>?, // block
         //val xdt_create_friendship: UserInteraction?, // follow
-        //val xdt_destroy_friendship: UserInteraction?, // unfollow
+        val xdt_destroy_friendship: UserInteraction?, // unfollow
         //val xdt_set_besties: Array<UserInteraction>?, // close friends
         //val xdt_unblock: UserInteraction?, // unblock
         //val xdt_update_feed_favorites: Array<UserInteraction>?, // favourites
@@ -47,15 +50,17 @@ class GraphQl(
     )*/
 
     class Page<Node>(
-        val edges: List<Edge<Node>>,
+        val edges: CopyOnWriteArrayList<Edge<Node>>,
         val page_info: PageInfo,
-    )
+    ) {
+        fun isEmpty(): Boolean = edges.isEmpty()
+    }
 
     class Edge<Node>(val node: Node)
 
     class PageInfo(
         //val end_cursor: String,
-        val has_next_page: Boolean,
+        var has_next_page: Boolean,
         //val has_previous_page: Boolean,
         //val start_cursor: String?,
     )
@@ -67,13 +72,13 @@ class GraphQl(
         val unmuted_user: UserInteraction?, // posts/story
     )*/
 
-    /*class UserInteraction(
+    class UserInteraction(
         //val __typename: String?, // only in block/unblock, always equals "XDTUserDict"
         //val pk: String?, // only in restrict/unrestrict
         //val username: String?, // only in follow/unfollow
         val friendship_status: FriendshipStatus?, // missing only in block/unblock
         //val id: String
-    )*/
+    )
 
     //class MediaInteraction(val __typename: String) // always "XDTEmptyRecord"
 }

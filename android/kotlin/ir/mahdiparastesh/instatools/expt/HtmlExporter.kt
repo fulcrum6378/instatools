@@ -3,14 +3,12 @@ package ir.mahdiparastesh.instatools.expt
 import android.annotation.SuppressLint
 import android.provider.DocumentsContract
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.util.Utils.calendar
-import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
 import ir.mahdiparastesh.instatools.util.Utils.z
+import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.runBlocking
 import java.io.FileOutputStream
 import java.util.*
@@ -53,10 +51,12 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     || exp.threadData!!.items[i - 1].action_log != null
 
             // Date
-            val cal = dm.timestamp.xFromMicroseconds().calendar()
+            val cal = Utils.calendar(Utils.compileMicrosecondsTS(dm.timestamp))
             var showDate = true
             if (i > 0 && !divisions.isNullOrEmpty()) {
-                val prev = exp.threadData!!.items[i - 1].timestamp.xFromMicroseconds().calendar()
+                val prev = Utils.calendar(
+                    Utils.compileMicrosecondsTS(exp.threadData!!.items[i - 1].timestamp)
+                )
                 if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
                     cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
                     cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
@@ -78,24 +78,25 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             val nonMedia = when {
                 dm.animated_media != null -> {
                     limit += 2
-                    divGif.format(dm.animated_media.images.fixed_height.url)
+                    divGif.format(dm.animated_media!!.images.fixed_height.url)
                 }
                 dm.clip != null -> {
-                    media = dm.clip.clip
+                    media = dm.clip!!.clip
                     ""
                 }
                 dm.direct_media_share != null -> {
-                    media = dm.direct_media_share.media
-                    dm.direct_media_share.text
+                    media = dm.direct_media_share!!.media
+                    dm.direct_media_share!!.text
                 }
                 dm.felix_share != null -> {
-                    media = dm.felix_share.video
-                    dm.felix_share.text?.let { divDial.format(it) } ?: ""
+                    media = dm.felix_share!!.video
+                    dm.felix_share!!.text?.let { divDial.format(it) } ?: ""
                 }
                 dm.like != null -> divDial.format(dm.like)
-                dm.link != null -> divLink.format(dm.link.link_context.link_url, dm.link.text, "")
+                dm.link != null ->
+                    divLink.format(dm.link!!.link_context.link_url, dm.link!!.text, "")
                 dm.live_viewer_invite != null -> hintAndDial(
-                    dm.live_viewer_invite.cta_button_name, dm.live_viewer_invite.text
+                    dm.live_viewer_invite!!.cta_button_name, dm.live_viewer_invite!!.text
                 )
                 dm.media != null -> {
                     media = dm.media
@@ -105,10 +106,10 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     media = dm.media_share
                     ""
                 }
-                dm.placeholder != null -> divHint.format(dm.placeholder.message)
+                dm.placeholder != null -> divHint.format(dm.placeholder!!.message)
                 dm.profile != null -> divLink.format(
-                    UiTools.PROFILE.format(dm.profile.username), "@${dm.profile.username}",
-                    " <i>[User ID: ${dm.profile.pk}]</i>"
+                    UiTools.PROFILE.format(dm.profile!!.username), "@${dm.profile!!.username}",
+                    " <i>[User ID: ${dm.profile!!.pk}]</i>"
                 )
                 dm.raven_media != null -> {
                     raven = true
@@ -116,26 +117,26 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
                     ""
                 }
                 dm.reel_share != null -> {
-                    media = dm.reel_share.media
-                    hintAndDial(dm.reel_share.message, dm.reel_share.text)
+                    media = dm.reel_share!!.media
+                    hintAndDial(dm.reel_share!!.message, dm.reel_share!!.text)
                 }
                 dm.story_share != null -> {
-                    media = dm.story_share.media
-                    hintAndDial(dm.story_share.message, dm.story_share.text)
+                    media = dm.story_share!!.media
+                    hintAndDial(dm.story_share!!.message, dm.story_share!!.text)
                 }
                 dm.text != null -> divDial.format(dm.text)
                 dm.video_call_event != null ->
-                    divHint.format(dm.video_call_event.description)
+                    divHint.format(dm.video_call_event!!.description)
                 dm.voice_media != null ->
                     when {
-                        exp.opt?.voi() == true && dm.voice_media.media != null -> {
+                        exp.opt?.voi() == true && dm.voice_media!!.media != null -> {
                             limit += 4
                             "<audio controls>\n" +
                                 "$div2Ind  <source src=\"./${subFolderNames[2]}/${dm.item_id}.m4a\"" +
                                 " type=\"audio/mp4\">\n" +
                                 "$div2Ind</audio>"
                         }
-                        dm.voice_media.media == null ->
+                        dm.voice_media!!.media == null ->
                             divHint.format("Sent a voice message.")
                         else -> divHint.format("Voice message omitted!")
                     }
@@ -205,7 +206,7 @@ abstract class HtmlExporter(c: Exporter, exp: Exportable) : MultiExporter(c, exp
             if (nonMedia.isNotBlank()) limit++
             if (dm.reactions != null) {
                 div.append("\n$div2Ind<p class=\"reactions\">")
-                for (r in dm.reactions.emojis) div.append(r.emoji)
+                for (r in dm.reactions!!.emojis) div.append(r.emoji)
                 div.append("</p>")
             }
             div.append(
@@ -321,7 +322,7 @@ body { background: #FCFCFC; }
   </main>
   <p id="copyright">
     Created by <a href="https://www.instagram.com/instatools.apk/">InstaTools</a>
-    app from <a href="${Utils.MAHDI_PARASTESH}">Mahdi Parastesh</a>
+    app from <a href="${Utils.MAHDI}">Mahdi Parastesh</a>
   </p>
 </body>
 </html>"""

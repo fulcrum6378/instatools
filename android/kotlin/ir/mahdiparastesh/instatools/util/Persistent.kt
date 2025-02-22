@@ -88,7 +88,8 @@ interface Persistent {
     companion object {
         const val GSP = "global"
 
-        fun now() = System.currentTimeMillis()
+        /** Are any Activities or Services alive? */
+        fun anyoneAlive() = BaseActivity.anyActive() || ForegroundService.anyRunning()
 
         fun Context.isPathAccessible(uri: Uri): Boolean =
             checkUriPermission(

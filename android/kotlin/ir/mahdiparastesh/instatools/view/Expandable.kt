@@ -20,12 +20,11 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.util.Utils.xFromSeconds
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -92,12 +91,12 @@ class Expandable(
                     val u = owner()
                     c.dao.addQueued(
                         Queued(
-                            Persistent.now(),
+                            Utils.now(),
                             link() ?: audioUrl,
-                            taken_at.xFromSeconds(),
+                            Utils.compileSecondsTS(taken_at),
                             u.id(),
                             u.username!!,
-                            pk(),
+                            id(),
                             audioUrl,
                             thumb(),
                             0x03,
@@ -114,9 +113,9 @@ class Expandable(
                 try {
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
-                            if (it.startsWith(Utils.IG_OPENABLE) &&
+                            if (it.startsWith(UiTools.IG_OPENABLE) &&
                                 !it.startsWith("https://www.instagram.com/stories/highlights/")
-                            ) setPackage(Utils.INSTA_PACKAGE)
+                            ) setPackage(UiTools.INSTA_PACKAGE)
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     )

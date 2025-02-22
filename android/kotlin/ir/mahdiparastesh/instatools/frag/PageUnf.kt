@@ -120,7 +120,7 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
             else ended()
         } else {
             delay(7000)
-            allFollow(flw.next_max_id, theFollowers)
+            allFollow(flw.next_max_id!!, theFollowers)
         }
     }
 
@@ -132,7 +132,7 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
             if (newer.follows) newer.unfollowedMeAt = null
             else oldFriends.find { it.id == newer.id }.also { before ->
                 if (before?.follows == true && !newer.follows)
-                    newer.unfollowedMeAt = Persistent.now()
+                    newer.unfollowedMeAt = Utils.now()
                 else newer.unfollowedMeAt = before?.unfollowedMeAt
             }
         }
@@ -210,6 +210,6 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
                 setAutoCancel(true)
             }.build()
         )
-        c.sp?.edit { putLong(Settings.spNotifiedUnfTill, Persistent.now()) }
+        c.sp?.edit { putLong(Settings.spNotifiedUnfTill, Utils.now()) }
     } // Never use Fragment::getString()
 }

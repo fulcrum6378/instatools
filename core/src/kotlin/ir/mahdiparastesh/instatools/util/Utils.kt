@@ -4,8 +4,9 @@ import java.util.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 object Utils {
-    const val APP_NAME = "InstaTools"
     const val MAHDI = "https://mahdiparastesh.ir/"
+    const val APP_NAME = "InstaTools"
+    const val INSTATOOLS = "InstaTools"
     const val PROFILE = "https://www.instagram.com/%s/"
     const val POST_LINK = "https://www.instagram.com/p/%s/"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
@@ -17,17 +18,26 @@ object Utils {
         return if (s.length == 1) "0$s" else s
     }
 
-    fun now() = Calendar.getInstance().timeInMillis
+    fun now() = System.currentTimeMillis() // Calendar.getInstance().timeInMillis
 
+    /** Converts a timestamp to a Calendar instance. */
     fun calendar(time: Long): Calendar =
         Calendar.getInstance().apply { timeInMillis = time }
+
+    /** Converts a timestamp to a human-readable date. */
+    fun date(time: Long): String {
+        val cal = calendar(time)
+        return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
+            "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
+            "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
+    }
 
     /** @return a datetime text to be used in a file name. */
     fun fileDateTime(time: Long): String {
         val cal = calendar(time)
         return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
-                "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
-                "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
+            "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
+            "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
     }
 
     /** Converts a timestamp of seconds to a timestamp of millisecond. */
@@ -35,6 +45,8 @@ object Utils {
 
     /** Converts a timestamp of microseconds to a timestamp of millisecond. */
     fun compileMicrosecondsTS(microseconds: Double) = microseconds.toLong() / 1000L
+
+    fun <T> Map<String, T>.getOrNull(key: String): T? = if (containsKey(key)) this[key] else null
 
     interface InstaToolsException
 }

@@ -47,7 +47,7 @@ object SimpleJobs {
         med: Media, graphQlQuery: GraphQlQuery, result: (success: Boolean) -> Unit
     ) {
         val gql = api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class, true, graphQlQuery.body(med.pk())
+            Api.Endpoint.QUERY.url, GraphQl::class, true, graphQlQuery.body(med.id())
         )
         result(gql.data != null)
     }

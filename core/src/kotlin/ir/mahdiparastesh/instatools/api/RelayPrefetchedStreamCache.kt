@@ -24,13 +24,14 @@ object RelayPrefetchedStreamCache {
             read = read.substringAfter(HTML_TAG_SCRIPT_JSON).substringAfter(">")
             json = read.substringBefore("</script>")
             if (json.contains("RelayPrefetchedStreamCache") && predicate(json)) {
-                gson = (GsonBuilder().setLenient().create().fromJson(json, gsonType) as Map<String, List<List<Any>>>)
+                gson = (GsonBuilder().setLenient().create().fromJson(json, gsonType)
+                    as Map<String, List<List<Any>>>)
                 gson = (gson["require"]!![0][3] as List<Map<String, Any?>>)[0]["__bbox"]!!
-                        as Map<String, List<List<Any>>>
+                    as Map<String, List<List<Any>>>
                 tuple = gson["require"]!![0][3] as List<Any>
                 data[(tuple[0] as String).split("_")[1]] =
                     (((tuple[1] as Map<String, Map<String, Any>>)["__bbox"]!!["result"]
-                            as Map<String, Map<String, Any>>)["data"])!!.values.first() as Map<String, Any>
+                        as Map<String, Map<String, Any>>)["data"])!!.values.first() as Map<String, Any>
             }
             read = read.substringAfter("</script>")
         }

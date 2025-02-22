@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Dm
-import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.job.Exporter
+import ir.mahdiparastesh.instatools.util.Utils
 import java.io.File
 
 @Entity
@@ -23,7 +23,7 @@ class Exportable(
     @Ignore @Transient var cacheBranch: File? = null,
 ) {
     @PrimaryKey
-    var addedAt: Long = Persistent.now()
+    var addedAt: Long = Utils.now()
 
     constructor() : this("", "", 0, "")
 

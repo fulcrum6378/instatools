@@ -21,7 +21,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-/** Abstract RecyclerView adapter that lists IG posts. */
+/** Abstract [RecyclerView.Adapter] that lists IG posts. */
 abstract class ListPost<Activity, Fragment>(
     protected val c: Activity, protected val f: Fragment
 ) : RecyclerView.Adapter<ListPost<Activity, Fragment>.ViewHolder>()
@@ -40,7 +40,7 @@ abstract class ListPost<Activity, Fragment>(
         fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
             object : ItemDetailsLookup.ItemDetails<String>() {
                 override fun getPosition(): Int = layoutPosition
-                override fun getSelectionKey(): String? = this@ListPost[position]?.pk()
+                override fun getSelectionKey(): String? = this@ListPost[position]?.id()
             }
     }
 
@@ -57,7 +57,7 @@ abstract class ListPost<Activity, Fragment>(
 
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         val med = this[i] ?: return
-        val norm = tracker?.isSelected(med.pk()) != true
+        val norm = tracker?.isSelected(med.id()) != true
 
         if (med.thumb() != null) Glide.with(c.c)
             .load(med.thumb())
@@ -79,9 +79,9 @@ abstract class ListPost<Activity, Fragment>(
             if (theirs == null)
                 false
             else if (med.carousel_media != null)
-                med.carousel_media.any { it.pk() in theirs }
+                med.carousel_media!!.any { it.id() in theirs }
             else
-                med.pk() in theirs
+                med.id() in theirs
         )
         h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
         h.b.click.setOnClickListener { expand(it, h.layoutPosition) }

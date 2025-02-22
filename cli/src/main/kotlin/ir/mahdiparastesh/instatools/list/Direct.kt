@@ -2,11 +2,11 @@ package ir.mahdiparastesh.instatools.list
 
 import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Message
+import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.util.Lister.LazyLister
 
-class Direct : LazyLister<Message.DmThread>() {
+class Direct : LazyLister<Dm.DmThread>() {
 
     override fun fetch() {
         super.fetch()

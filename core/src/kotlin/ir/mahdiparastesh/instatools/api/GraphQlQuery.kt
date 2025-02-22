@@ -2,7 +2,7 @@ package ir.mahdiparastesh.instatools.api
 
 import java.net.URLEncoder
 
-@Suppress("PrivatePropertyName", "SpellCheckingInspection", "KDocUnresolvedReference", "unused")
+@Suppress("KDocUnresolvedReference", "unused")
 enum class GraphQlQuery(
     private val doc_id: String,
     private val variables: String,
@@ -37,7 +37,7 @@ enum class GraphQlQuery(
      * PolarisProfileTaggedTabContentQuery (second and later fetches)
      * @param user_id [User.id]
      * @param count default: 12
-     * @param after [Media.pk] of the last item in the previous fetch
+     * @param after [Media.id] of the last item in the previous fetch
      */
     PROFILE_TAGGED_CURSORED(
         "8786107121469577",
@@ -198,7 +198,7 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisLikeMediaLikeMutation
-     * @param media_id [Media.pk]
+     * @param media_id [Media.id]
      */
     LIKE_POST(
         "8552604541488484",
@@ -207,7 +207,7 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisLikeMediaUnlikeMutation
-     * @param media_id [Media.pk]
+     * @param media_id [Media.id]
      */
     UNLIKE_POST(
         "8525474704176507",
@@ -216,7 +216,7 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisStoriesV3LikeMutationLikeMutation
-     * @param mediaId [Media.pk]
+     * @param mediaId [Media.id]
      *
      * Applicable for both daily and highlighted stories.
      * BEWARE that it's `mediaId` not 'media_id'!!
@@ -228,7 +228,7 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisStoriesV3LikeMutationUnlikeMutation
-     * @param mediaId [Media.pk]
+     * @param mediaId [Media.id]
      *
      * Applicable for both daily and highlighted stories.
      * BEWARE that it's `mediaId` not 'media_id'!!
@@ -240,7 +240,7 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisSaveMediaSaveMutation
-     * @param media_id [Media.pk]
+     * @param media_id [Media.id]
      */
     SAVE(
         "7658071600908962",
@@ -249,7 +249,7 @@ enum class GraphQlQuery(
 
     /**
      * usePolarisSaveMediaUnsaveMutation
-     * @param media_id [Media.pk]
+     * @param media_id [Media.id]
      */
     UNSAVE(
         "8122123554479056",

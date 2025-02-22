@@ -93,7 +93,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND, Intent.ACTION_VIEW)) {
             incrementCounter(Settings.spOpenAppCount)
             if (!gsp.contains(Settings.spFirstOpenApp))
-                gsp.edit { putLong(Settings.spFirstOpenApp, Persistent.now()) }
+                gsp.edit { putLong(Settings.spFirstOpenApp, Utils.now()) }
         }
     }
 
@@ -190,7 +190,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     override fun onDestroy() {
         com.active = false
-        if (dbLazy.isInitialized() && !Utils.anyoneAlive()) db.close()
+        if (dbLazy.isInitialized() && !Persistent.anyoneAlive()) db.close()
         super.onDestroy()
     }
 

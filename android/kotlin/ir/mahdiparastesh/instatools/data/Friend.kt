@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import ir.mahdiparastesh.instatools.util.Utils.calendar
+import ir.mahdiparastesh.instatools.util.Utils
 
 @Entity
 class Friend(
@@ -57,7 +57,7 @@ class Friend(
 
         fun ArrayList<Friend>.specialSort() {
             sortBy { it.user }
-            sortByDescending { (it.unfollowedMeAt ?: 0L).calendar().time }
+            sortByDescending { Utils.calendar(it.unfollowedMeAt ?: 0L).time }
             sortBy { it.inFav }
         }
     }

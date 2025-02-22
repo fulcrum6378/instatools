@@ -16,6 +16,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.data.Pickle
+import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -84,28 +85,29 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         if (story.opened && isHL)
             fetchHighlights(story, h.b.reel.adapter!! as ListRel)
         h.b.header.setOnClickListener {
-            story.anSlide?.cancel()
+            (story.anSlide as? ObjectAnimator)?.cancel()
             story.opened = !story.opened
             if (story.opened && isHL)
                 fetchHighlights(story, h.b.reel.adapter!! as ListRel)
-            story.anSlide =
-                ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f)
-            story.anSlide!!.addUpdateListener {
-                h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
-                    height = (c.resources.getDimension(R.dimen.vwReelHeight)
-                        * it.animatedValue as Float).toInt()
+            ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f).apply {
+                story.anSlide = this
+                addUpdateListener {
+                    h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
+                        height = (c.resources.getDimension(R.dimen.vwReelHeight)
+                            * it.animatedValue as Float).toInt()
+                    }
                 }
+                addListener(
+                    onStart = {
+                        h.b.reel.vis(true)
+                        if (story.opened) h.b.shadow.vis()
+                    }, onEnd = {
+                        h.b.reel.vis(story.opened)
+                        if (!story.opened) h.b.shadow.vis(false)
+                    }
+                )
+                start()
             }
-            story.anSlide!!.addListener(
-                onStart = {
-                    h.b.reel.vis(true)
-                    if (story.opened) h.b.shadow.vis()
-                }, onEnd = {
-                    h.b.reel.vis(story.opened)
-                    if (!story.opened) h.b.shadow.vis(false)
-                }
-            )
-            story.anSlide!!.start()
         }
 
         h.b.line.vis(i < itemCount - 1)

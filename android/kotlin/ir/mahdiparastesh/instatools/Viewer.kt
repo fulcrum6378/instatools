@@ -34,8 +34,6 @@ import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePageViewer
-import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.util.Utils.accFromUrl
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -121,8 +119,8 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         }
         intent.data?.also { data ->
             var userName: String? = null
-            for (host in Utils.ACC_FROM_URL)
-                data.toString().accFromUrl(host)
+            for (host in UiTools.accFromUrl)
+                UiTools.accountFromUrl(data.toString(), host)
                     ?.also { u -> if (userName == null) userName = u }
             if (userName == null) {
                 Toast.makeText(c, R.string.vwLinkNotProfile, Toast.LENGTH_LONG).show()
@@ -237,7 +235,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             R.id.vtFav -> mm.user?.also { u ->
                 CoroutineScope(Dispatchers.IO).launch {
                     if (mm.fav == null) {
-                        mm.fav = u.favourite()
+                        mm.fav = Favourite(u.id(), u.username!!, u.full_name!!, u.picture(), u.pv())
                         dao.addFavourite(mm.fav!!)
                         m.fav?.add(mm.fav!!)
                     } else {
@@ -256,14 +254,14 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                             Intent(
                                 Intent.ACTION_VIEW,
                                 Uri.parse(UiTools.PROFILE.format(u.username))
-                            ).setPackage(Utils.INSTA_PACKAGE)
+                            ).setPackage(UiTools.INSTA_PACKAGE)
                         )
                         setIcon(
                             IconCompat.createWithBitmap(
                                 Bitmap.createScaledBitmap(bmp, 128, 128, true)
                             )
                         )
-                        setShortLabel(u.full_name!!.ifBlank { u.username })
+                        setShortLabel(u.full_name!!.ifBlank { u.username!! })
                     }.build(), null
                 )
                 incrementCounter(Settings.spShortcutCount)

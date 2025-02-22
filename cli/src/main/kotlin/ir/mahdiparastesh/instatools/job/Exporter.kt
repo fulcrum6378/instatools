@@ -2,7 +2,7 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Message
+import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.exp.HtmlExporter
 import ir.mahdiparastesh.instatools.util.Queuer
@@ -23,9 +23,9 @@ class Exporter : Queuer<Exporter.Exportable>() {
                 q.thread.thread_id, q.thread.items.first().item_id, "20"
             ),
             Rest.InboxThread::class,
-        ).thread.also { newThread ->
+        ).thread?.also { newThread ->
             q.thread.has_older = newThread.has_older
-            (q.thread.items as ArrayList).apply {
+            q.thread.items.apply {
                 // TODO remove duplicates?
                 addAll(newThread.items)
                 sortBy { it.timestamp }
@@ -108,7 +108,7 @@ class Exporter : Queuer<Exporter.Exportable>() {
 
     data class Exportable(
         val name: String,
-        val thread: Message.DmThread,
+        val thread: Dm.DmThread,
         val method: Method,
         val image: Float?,
         val video: Float?,

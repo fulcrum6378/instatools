@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.api
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlin.math.abs
 
-@Suppress("MemberVisibilityCanBePrivate", "PropertyName")
+@Suppress("PropertyName")
 class Media(
     //val can_reply: Boolean?,
     val caption: Caption?,
@@ -16,7 +16,7 @@ class Media(
     val has_audio: Boolean?,
     val has_liked: Boolean?,
     val has_viewer_saved: Boolean?,
-    val id: String, // <media ID>_<user ID>
+    private val id: String, // <media ID>_<user ID>
     //val invited_coauthor_producers: Array<User>?,
     val image_versions2: ImageVersions2,
     //val like_count: Double?,
@@ -28,16 +28,17 @@ class Media(
     val original_width: Float?, // nullable in tagged carousel items
     val owner: User?,
     //val photo_of_you: Boolean?,
-    val pk: String?, // nullable in tagged carousel items
+    private val pk: String?, // nullable in tagged carousel items
     val product_type: String?,
     val taken_at: Double,
     val user: User?,
     val video_dash_manifest: String?,
+    val video_duration: Float?, // in seconds
     val video_versions: Array<Version>?,
     //val view_count: Double?,
 ) {
 
-    fun pk() = pk ?: id.substringBefore("_")
+    fun id() = pk ?: id.substringBefore("_")
 
     fun owner(): User = owner ?: user!!
 
@@ -119,7 +120,8 @@ class Media(
                 original: Pair<Float, Float>? = null,
             ): String? {
                 var ret: String?
-                ret = original?.let { o -> list.find { it.width == o.first && it.height == o.second }?.url }
+                ret =
+                    original?.let { o -> list.find { it.width == o.first && it.height == o.second }?.url }
                 if (ret == null) {
                     var maxW = 0f
                     var maxH = 0f

@@ -15,23 +15,22 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.databinding.ListThdBinding
-import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.databinding.ListThdBinding
+import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.job.Exporter.Downloadable
+import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.util.Utils.getOrNull
+import ir.mahdiparastesh.instatools.util.Utils.z
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.FastCustomGlide
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.PROFILE
 import ir.mahdiparastesh.instatools.view.UiTools.anchor
-import ir.mahdiparastesh.instatools.util.Utils.calendar
-import ir.mahdiparastesh.instatools.util.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
-import ir.mahdiparastesh.instatools.util.Utils.z
 import java.io.FileInputStream
 import java.util.*
 
@@ -67,10 +66,12 @@ class ListThd(val c: Main, private val f: PageBox) :
             body.vis(dm.action_log == null)
 
             // Date
-            val cal = dm.timestamp.xFromMicroseconds().calendar()
+            val cal = Utils.calendar(Utils.compileMicrosecondsTS(dm.timestamp))
             var showDate = true
             if (i > 0) {
-                val prev = thread.items[i - 1].timestamp.xFromMicroseconds().calendar()
+                val prev = Utils.calendar(
+                    Utils.compileMicrosecondsTS(thread.items[i - 1].timestamp)
+                )
                 if (cal[Calendar.YEAR] == prev[Calendar.YEAR] &&
                     cal[Calendar.MONTH] == prev[Calendar.MONTH] &&
                     cal[Calendar.DAY_OF_MONTH] == prev[Calendar.DAY_OF_MONTH]
@@ -143,46 +144,46 @@ class ListThd(val c: Main, private val f: PageBox) :
             when {
                 dm.animated_media != null ->
                     msgIvHint.apply { text = "Sent a sticker"; vis() }
-                dm.clip != null -> media = dm.clip.clip
+                dm.clip != null -> media = dm.clip!!.clip
                 dm.direct_media_share != null -> {
-                    media = dm.direct_media_share.media
-                    msgTv.text = dm.direct_media_share.text
+                    media = dm.direct_media_share!!.media
+                    msgTv.text = dm.direct_media_share!!.text
                 }
                 dm.felix_share != null -> {
-                    media = dm.felix_share.video
-                    if (dm.felix_share.message != null)
-                        msgIvHint.apply { text = dm.felix_share.message; vis() }
-                    msgTv.text = dm.felix_share.text
+                    media = dm.felix_share!!.video
+                    if (dm.felix_share!!.message != null)
+                        msgIvHint.apply { text = dm.felix_share!!.message; vis() }
+                    msgTv.text = dm.felix_share!!.text
                 }
                 dm.like != null -> msgTv.text = dm.like
-                dm.link != null -> msgTv.anchor(dm.link.text, dm.link.link_context.link_url)
+                dm.link != null -> msgTv.anchor(dm.link!!.text, dm.link!!.link_context.link_url)
                 dm.live_viewer_invite != null -> {
-                    msgIvHint.apply { text = dm.live_viewer_invite.cta_button_name; vis() }
-                    msgTv.text = dm.live_viewer_invite.text
+                    msgIvHint.apply { text = dm.live_viewer_invite!!.cta_button_name; vis() }
+                    msgTv.text = dm.live_viewer_invite!!.text
                 }
                 dm.media != null -> media = dm.media
                 dm.media_share != null -> media = dm.media_share
-                dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder.message; vis() }
+                dm.placeholder != null -> msgIvHint.apply { text = dm.placeholder!!.message; vis() }
                 dm.profile != null -> msgTv.anchor(
-                    "@${dm.profile.username} [User ID: ${dm.profile.pk}]",
-                    PROFILE.format(dm.profile.username)
+                    "@${dm.profile!!.username} [User ID: ${dm.profile!!.pk}]",
+                    PROFILE.format(dm.profile!!.username)
                 )
                 dm.raven_media != null -> media = dm.raven_media
                 dm.reel_share != null -> {
-                    media = dm.reel_share.media
-                    if (dm.reel_share.message != null)
-                        msgIvHint.apply { text = dm.reel_share.message; vis() }
-                    msgTv.text = dm.reel_share.text
+                    media = dm.reel_share!!.media
+                    if (dm.reel_share!!.message != null)
+                        msgIvHint.apply { text = dm.reel_share!!.message; vis() }
+                    msgTv.text = dm.reel_share!!.text
                 }
                 dm.story_share != null -> {
-                    media = dm.story_share.media
-                    if (dm.story_share.message != null)
-                        msgIvHint.apply { text = dm.story_share.message; vis() }
-                    msgTv.text = dm.story_share.text
+                    media = dm.story_share!!.media
+                    if (dm.story_share!!.message != null)
+                        msgIvHint.apply { text = dm.story_share!!.message; vis() }
+                    msgTv.text = dm.story_share!!.text
                 }
                 dm.text != null -> msgTv.text = dm.text
                 dm.video_call_event != null ->
-                    msgIvHint.apply { text = dm.video_call_event.description; vis() }
+                    msgIvHint.apply { text = dm.video_call_event!!.description; vis() }
                 dm.voice_media != null ->
                     msgIvHint.apply { text = "Voice message omitted!"; vis() }
                 else ->
@@ -240,7 +241,7 @@ class ListThd(val c: Main, private val f: PageBox) :
             // Reactions
             reactions.removeAllViews()
             reactions.vis(dm.reactions != null)
-            if (dm.reactions != null) for (r in dm.reactions.emojis) reactions.addView(
+            if (dm.reactions != null) for (r in dm.reactions!!.emojis) reactions.addView(
                 AppCompatTextView(c).apply {
                     layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
                     text = r.emoji

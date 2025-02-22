@@ -12,7 +12,6 @@ import ir.mahdiparastesh.instatools.databinding.ListBoxBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.util.Utils.xFromMicroseconds
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -37,8 +36,9 @@ class ListBox(val c: Main, private val f: PageBox) :
         else h.b.photo.setImageResource(R.drawable.switch_account)
         h.b.name.text = thd.title()
 
-        h.b.last.text =
-            c.getString(R.string.boxUntil, Utils.date(thd.last_activity_at.xFromMicroseconds()))
+        h.b.last.text = c.getString(
+            R.string.boxUntil, Utils.date(Utils.compileMicrosecondsTS(thd.last_activity_at))
+        )
         h.b.root.setOnClickListener {
             c.mm.dmThread =
                 c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener

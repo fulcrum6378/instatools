@@ -10,7 +10,7 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.api.User
-import ir.mahdiparastesh.instatools.util.Persistent
+import ir.mahdiparastesh.instatools.util.Utils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -35,7 +35,7 @@ class Pickle(c: Context, private val type: Type, id: String?) {
     }
 
     suspend fun <DATA> restore(): DATA? =
-        if (file.exists() && (Persistent.now() - file.lastModified()) < 2 * 86400000L) try {
+        if (file.exists() && (Utils.now() - file.lastModified()) < 2 * 86400000L) try {
             Gson().fromJson<DATA>(
                 FileInputStream(file).use { it.readBytes().toString(Charsets.UTF_8) },
                 type.javaType

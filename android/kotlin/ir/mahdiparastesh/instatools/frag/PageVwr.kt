@@ -23,6 +23,7 @@ import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
@@ -76,9 +77,9 @@ class PageVwr : BasePageViewer() {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.dao.addQueued(
                             Queued(
-                                Persistent.now(),
+                                Utils.now(),
                                 UiTools.PROFILE.format(c.mm.user!!.username!!),
-                                Persistent.now(),
+                                Utils.now(),
                                 c.mm.user!!.id!!,
                                 c.mm.user!!.username!!,
                                 "profile_photo",
@@ -187,7 +188,7 @@ class PageVwr : BasePageViewer() {
         val graphQl = Api.call<GraphQl>(
             Api.Endpoint.QUERY.url, GraphQl::class,
             isPost = true, body = GraphQlQuery.PROFILE_POSTS.body(
-                c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.pk().toString()
+                c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.id().toString()
             ), onError = { code -> onFailed(code) }
         )
         if (graphQl == null) return
@@ -219,7 +220,7 @@ class PageVwr : BasePageViewer() {
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
-                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.pk() }, true)
+                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -238,10 +239,10 @@ class PageVwr : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.pk()
+        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
             c.mm.posts?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.pk() == key) return@getPosition i
+                if (edge.node.id() == key) return@getPosition i
             }
             return -1
         }
@@ -253,7 +254,7 @@ class PageVwr : BasePageViewer() {
             if (edg == null) {
                 Downloads.initService(c)
                 return; }
-            c.mm.posts?.edges?.find { it.node.pk() == edg }
+            c.mm.posts?.edges?.find { it.node.id() == edg }
                 ?.also { edge -> edge.node.queue(c.dao) } // TODO handle all posts in one search
             ended()
         }

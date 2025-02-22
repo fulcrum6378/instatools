@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Pickle
+import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
@@ -54,7 +55,7 @@ class PageTag : BasePageViewer() {
             return; }
 
         // fetch online tagged posts
-        val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.pk()
+        val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.id()
         val graphQl = Api.call<GraphQl>(
             Api.Endpoint.QUERY.url, GraphQl::class,
             isPost = true, body = if (cursor == null)
@@ -92,7 +93,7 @@ class PageTag : BasePageViewer() {
                 tracker?.clearSelection()
             }
             R.id.vtSelectAll -> if (c.mm.tagged?.edges != null)
-                tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.pk() }, true)
+                tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
@@ -107,10 +108,10 @@ class PageTag : BasePageViewer() {
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.pk()
+        override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
             c.mm.tagged?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.pk() == key) return@getPosition i
+                if (edge.node.id() == key) return@getPosition i
             }
             return -1
         }
@@ -123,7 +124,7 @@ class PageTag : BasePageViewer() {
                 Downloads.initService(c)
                 return
             }
-            c.mm.tagged?.edges?.find { it.node.pk() == edg }?.node?.queue(c.dao)
+            c.mm.tagged?.edges?.find { it.node.id() == edg }?.node?.queue(c.dao)
             ended()
         }
     }
