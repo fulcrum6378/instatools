@@ -27,9 +27,9 @@ android {
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
-        manifest.srcFile("src/AndroidManifest.xml")
-        kotlin.setSrcDirs(listOf("src/kotlin"))
-        res.setSrcDirs(listOf("src/res"))
+        manifest.srcFile("AndroidManifest.xml")
+        kotlin.setSrcDirs(listOf("kotlin"))
+        res.setSrcDirs(listOf("res"))
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_23
