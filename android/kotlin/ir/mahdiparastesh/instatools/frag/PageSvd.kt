@@ -105,7 +105,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
         // fetch online saved posts
         val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
             Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-            Rest.LazyList::class, generics = arrayOf(Rest.SavedItem::class),
             onError = { code -> if (c.mm.saved == null) onFailed(code) else onLazilyFailed(code) }
         )
         if (lazyList == null) return
@@ -269,8 +268,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 return; }
 
             val gql = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.UNSAVE.body(saved.media.id()),
+                Api.Endpoint.QUERY.url, true, GraphQlQuery.UNSAVE.body(saved.media.id()),
                 onError = { code -> error(code) }
             )
             if (gql == null) return

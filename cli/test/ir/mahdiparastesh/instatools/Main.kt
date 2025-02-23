@@ -13,9 +13,6 @@ fun main() {
     )
     println("Liked!")*/
 
-    val info = api.call<Rest.UserInfo>(
-        Api.Endpoint.USER_INFO.url.format("8337021434"),
-        Rest.UserInfo::class
-    ).user
+    val info = api.call<Rest.UserInfo>(Api.Endpoint.USER_INFO.url.format("8337021434")).user
     println(info.picture())
 }

@@ -7,7 +7,6 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.net.*
 import javax.net.ssl.HttpsURLConnection
-import kotlin.reflect.KClass
 
 class Api {
     var cookies = ""
@@ -38,10 +37,8 @@ class Api {
 
     inline fun <reified JSON> call(
         url: String,
-        clazz: KClass<*>,
         isPost: Boolean = false,
         body: String? = null,
-        generics: Array<KClass<*>>? = null
     ): JSON {
         val con = URI(url).toURL().openConnection(proxy) as HttpsURLConnection
         con.requestMethod = if (isPost) "POST" else "GET"

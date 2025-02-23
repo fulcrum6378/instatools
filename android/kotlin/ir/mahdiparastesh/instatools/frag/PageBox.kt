@@ -91,7 +91,7 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
         if (c.mm.dmThread == null) {
             val page = Api.call<InboxPage>(
                 Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
-                InboxPage::class, onError = { code ->
+                onError = { code ->
                     if (c.mm.dmInbox == null) onFailed(code) else onLazilyFailed(code)
                 }
             )
@@ -114,7 +114,6 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
             val inbox = Api.call<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
                     .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20),
-                Rest.InboxThread::class,
                 onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
             )
             if (inbox == null) return

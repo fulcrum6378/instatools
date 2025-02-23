@@ -58,8 +58,7 @@ class ListBox(val c: Main, private val f: PageBox) :
                     val last = thd.items.lastOrNull()
                     if (last != null) CoroutineScope(Dispatchers.IO).launch {
                         val rest = Api.call<Rest.Seen>(
-                            Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id),
-                            Rest.Seen::class, isPost = true
+                            Api.Endpoint.SEEN.url.format(thd.thread_id, last.item_id), true
                         )
                         if (rest?.status_code == "200") thd.read_state = 0.0
                     }

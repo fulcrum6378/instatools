@@ -46,8 +46,7 @@ class PageSto : BasePageViewer() {
         else {
             // fetch their story
             val graphQl1 = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.STORY.body(uid),
+                Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(uid),
                 onError = { code -> onFailed(code) }
             )
             if (graphQl1 == null) return
@@ -64,8 +63,7 @@ class PageSto : BasePageViewer() {
         else {
             // fetch their highlights
             val graphQl2 = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
+                Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
                 onError = { code -> onFailed(code) }
             )
             if (graphQl2 == null) return

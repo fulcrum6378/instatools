@@ -92,7 +92,7 @@ class Exporter : ForegroundService() {
             val inbox = Api.call<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
                     .format(thread, threadData?.items?.firstOrNull()?.item_id ?: "", 75),
-                Rest.InboxThread::class, onError = { code -> error(code) }
+                onError = { code -> error(code) }
             )
             if (inbox == null) return
             val dmThd = inbox.thread

@@ -6,7 +6,7 @@ plugins {
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "3.2.0"
+version = "3.3.0"
 
 sourceSets.getByName("main") { kotlin.srcDirs("main") }
 sourceSets.getByName("test") { kotlin.srcDirs("test") }
@@ -15,7 +15,6 @@ dependencies {
     implementation(project(":core"))
 
     implementation(libs.serialization.json)
-    implementation(libs.gson)
     implementation(libs.commons.imaging)
 }
 

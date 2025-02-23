@@ -186,8 +186,7 @@ class PageVwr : BasePageViewer() {
 
         // fetch online posts
         val graphQl = Api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class,
-            isPost = true, body = GraphQlQuery.PROFILE_POSTS.body(
+            Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_POSTS.body(
                 c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.id().toString()
             ), onError = { code -> onFailed(code) }
         )

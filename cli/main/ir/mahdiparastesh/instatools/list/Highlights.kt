@@ -20,8 +20,7 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         super.fetch()
         p.requireUserId()
         val hls = api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class, true,
-            GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(p.userId!!)
+            Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(p.userId!!)
         ).data!!.highlights!!.edges
 
         if (hls.isEmpty()) println("This user has no highlighted stories.")
@@ -29,9 +28,9 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
             val hlId = tray.node.highlightId()
             println(
                 "$hlId:" +
-                        (if (tray.node.title != null) " ${tray.node.title} -" else "") +
-                        " ${tray.node.link()}" +
-                        (if (tray.node.items != null) " (${tray.node.items!!.size} items)" else "")
+                    (if (tray.node.title != null) " ${tray.node.title} -" else "") +
+                    " ${tray.node.link()}" +
+                    (if (tray.node.items != null) " (${tray.node.items!!.size} items)" else "")
             )
             if (hlId in trays && trays[hlId]!!.items == null)
                 tray.node.items = trays[hlId]!!.items
@@ -53,8 +52,7 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         if (ready == null) {
             val apiId = "\"highlight:${currentTray}\""
             val page = api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class, true,
-                GraphQlQuery.HIGHLIGHTS.body(apiId, apiId)
+                Api.Endpoint.QUERY.url, true, GraphQlQuery.HIGHLIGHTS.body(apiId, apiId)
             ).data!!.xdt_api__v1__feed__reels_media__connection!!
             page.edges.forEach { tray ->
                 tray.node.items = ArrayList(tray.node.items!!)
@@ -64,7 +62,11 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         if (a.size == offsetOfClauses + 1)
             println("This tray contains only ${trays[currentTray!!]!!.items!!.size} items.")
         else this[a[offsetOfClauses + 1]].forEach { med ->
-            downloader.download(med, Option.quality(opt?.get(Option.QUALITY.key)), owner = p.userName)
+            downloader.download(
+                med,
+                Option.quality(opt?.get(Option.QUALITY.key)),
+                owner = p.userName
+            )
             if (opt?.contains(Option.LIKE.key) == true)
                 SimpleActions.actionMedia(med, GraphQlQuery.LIKE_STORY)
         }

@@ -209,14 +209,12 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
     suspend fun userInfo(userId: String): User? =
         Api.call<Rest.UserInfo>(
-            Api.Endpoint.USER_INFO.url.format(userId), Rest.UserInfo::class,
-            onError = { code -> onError(code) }
+            Api.Endpoint.USER_INFO.url.format(userId), onError = { code -> onError(code) }
         )?.user
 
     suspend fun userProfile(userName: String): User? =
         Api.call<GraphQl>(
-            Api.Endpoint.PROFILE_INFO.url.format(userName), GraphQl::class,
-            onError = { code -> onError(code) }
+            Api.Endpoint.PROFILE_INFO.url.format(userName), onError = { code -> onError(code) }
         )?.data?.user
 
     private fun onError(code: Int) {

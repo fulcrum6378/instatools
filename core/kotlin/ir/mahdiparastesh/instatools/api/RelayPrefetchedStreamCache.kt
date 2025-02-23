@@ -1,21 +1,18 @@
 package ir.mahdiparastesh.instatools.api
 
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-
 object RelayPrefetchedStreamCache {
-    private const val HTML_TAG_SCRIPT_JSON = "<script type=\"application/json\""
+    /*private const val HTML_TAG_SCRIPT_JSON = "<script type=\"application/json\""
     private val gsonType = TypeToken.getParameterized(
         Map::class.java, String::class.java, TypeToken.getParameterized(
             List::class.java, TypeToken.getParameterized(List::class.java, Any::class.java).type
         ).type
-    ).type
+    ).type*/
 
     @Suppress("UNCHECKED_CAST")
     fun crawl(
         html: String, predicate: (json: String) -> Boolean
     ): HashMap<String, Map<String, Any>> {
-        var read = html
+        /*var read = html
         var json: String
         var gson: Map<String, List<List<Any>>>
         var tuple: List<Any>
@@ -34,7 +31,7 @@ object RelayPrefetchedStreamCache {
                         as Map<String, Map<String, Any>>)["data"])!!.values.first() as Map<String, Any>
             }
             read = read.substringAfter("</script>")
-        }
-        return data
+        }*/
+        return hashMapOf()//data
     }
 }

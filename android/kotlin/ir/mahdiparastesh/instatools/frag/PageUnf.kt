@@ -99,7 +99,7 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
         if (c.m.acc == null) return
         val flw = Api.call<Rest.Follow>(
             (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
-                .format(c.m.acc?.id ?: 0, next_max_id), Rest.Follow::class,
+                .format(c.m.acc?.id ?: 0, next_max_id),
             onError = { code -> onFailed(code) }
         )
         if (c.m.acc == null || flw?.users == null) return

@@ -19,10 +19,7 @@ class Exporter : Queuer<Exportable>() {
     override fun handle(q: Exportable) {
         // fetch all messages
         while (q.thread.has_older) api.call<Rest.InboxThread>(
-            Api.Endpoint.DIRECT.url.format(
-                q.thread.thread_id, q.thread.items.first().item_id, "20"
-            ),
-            Rest.InboxThread::class,
+            Api.Endpoint.DIRECT.url.format(q.thread.thread_id, q.thread.items.first().item_id, "20")
         ).thread?.also { newThread ->
             q.thread.has_older = newThread.has_older
             q.thread.items.apply {

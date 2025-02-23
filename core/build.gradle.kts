@@ -5,9 +5,10 @@ plugins {
 
 kotlin { jvmToolchain(23) }
 
-sourceSets.getByName("main") { kotlin.srcDirs("kotlin") }
+sourceSets.getByName("main") {
+    kotlin.srcDirs("kotlin")
+}
 
 dependencies {
     implementation(libs.serialization.json)
-    implementation(libs.gson)
 }

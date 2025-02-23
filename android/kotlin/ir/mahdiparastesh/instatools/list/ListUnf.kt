@@ -99,8 +99,8 @@ class ListUnf(val c: Main, private val f: PageUnf) :
     private fun unfollow(unf: Friend) {
         CoroutineScope(Dispatchers.IO).launch {
             val gql = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, GraphQl::class,
-                isPost = true, body = GraphQlQuery.UNFOLLOW.body(unf.id), onError = { code ->
+                Api.Endpoint.QUERY.url, true, GraphQlQuery.UNFOLLOW.body(unf.id),
+                onError = { code ->
                     UiTools.snackbar(
                         f.b.root, c.getString(Api.error(code), code), c.b.bnv, Snackbar.LENGTH_SHORT
                     )

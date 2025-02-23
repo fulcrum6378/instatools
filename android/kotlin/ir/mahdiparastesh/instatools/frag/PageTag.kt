@@ -57,8 +57,8 @@ class PageTag : BasePageViewer() {
         // fetch online tagged posts
         val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.id()
         val graphQl = Api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class,
-            isPost = true, body = if (cursor == null)
+            Api.Endpoint.QUERY.url, true,
+            if (cursor == null)
                 GraphQlQuery.PROFILE_TAGGED.body(c.mm.user!!.id!!, "36")
             else
                 GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),

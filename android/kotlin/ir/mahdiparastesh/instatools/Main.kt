@@ -263,8 +263,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     if (m.acc == null) return@setPositiveButton
                     CoroutineScope(Dispatchers.IO).launch {
                         Api.call<Rest.QuickResponse>(
-                            Api.Endpoint.LOGOUT.url, Rest.QuickResponse::class,
-                            isPost = true, body = "one_tap_app_login=1&user_id=${m.acc?.id}",
+                            Api.Endpoint.LOGOUT.url,
+                            true, "one_tap_app_login=1&user_id=${m.acc?.id}",
                         )
                     }
                     signOut(bd.root.isChecked)
@@ -311,8 +311,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     searcher?.cancel()
                     searcher = CoroutineScope(Dispatchers.IO).launch {
                         val rest = Api.call<Rest.Search>(
-                            Api.Endpoint.SEARCH.url.format(newText), Rest.Search::class,
-                            onError = {
+                            Api.Endpoint.SEARCH.url.format(newText), onError = {
                                 searchErrored = true
                                 b.searchStatus.setAnimation(R.raw.failed)
                             }

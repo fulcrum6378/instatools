@@ -18,7 +18,7 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
         super.fetch()
         p.requireUserId()
         val reels = api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class, true, GraphQlQuery.STORY.body(p.userId!!)
+            Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(p.userId!!)
         ).data!!.xdt_api__v1__feed__reels_media!!.reels_media
 
         val media = reels.firstOrNull()?.items
@@ -39,7 +39,11 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
         a: Array<String>, offsetOfClauses: Int, opt: HashMap<String, String?>?
     ) {
         this[a[offsetOfClauses]].forEach { med ->
-            downloader.download(med, Option.quality(opt?.get(Option.QUALITY.key)), owner = p.userName)
+            downloader.download(
+                med,
+                Option.quality(opt?.get(Option.QUALITY.key)),
+                owner = p.userName
+            )
             if (opt?.contains(Option.LIKE.key) == true)
                 SimpleActions.actionMedia(med, GraphQlQuery.LIKE_STORY)
         }

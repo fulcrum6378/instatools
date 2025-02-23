@@ -5,12 +5,11 @@ import android.text.TextUtils
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
-import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import java.io.IOException
 import java.net.ProtocolException
 import java.net.SocketTimeoutException
@@ -18,25 +17,20 @@ import java.net.URI
 import java.net.UnknownHostException
 import java.util.regex.Pattern
 import javax.net.ssl.HttpsURLConnection
-import kotlin.reflect.KClass
 
-/** Controls all interactions with Instagram's private API using [Gson]. */
 object Api {
     const val DEFAULT_CONNECT_TIMEOUT = 5000
     var cookies = ""
+    val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
 
-    /**
-     * @return JSON on success, null if the procedure fails
-     */
+    /** @return JSON on success, null if the procedure fails */
     @WorkerThread
-    suspend fun <JSON> call(
+    suspend inline fun <reified JSON> call(
         url: String,
-        clazz: KClass<*>,
-        generics: Array<KClass<*>>? = null,
         isPost: Boolean = false,
         body: String? = null,
         retry: Int = 1, // TODO implement retrying
-        @MainThread onError: ((code: Int) -> Unit)? = null
+        @MainThread noinline onError: ((code: Int) -> Unit)? = null
     ): JSON? {
         if (cookies == "") return null
 
@@ -81,16 +75,11 @@ object Api {
             return null
         } else {
             if (onError != null) withContext(Dispatchers.Main) { onError(responseCode) }
-            null
+            return null
         }
 
         return try {
-            Gson().fromJson(
-                text,
-                if (generics != null) TypeToken.getParameterized(
-                    clazz.java, *generics.map { it.java }.toTypedArray()
-                ).type else clazz.java
-            ) as JSON
+            json.decodeFromString<JSON>(text)
         } catch (_: JsonSyntaxException) {
             if (onError != null) withContext(Dispatchers.Main) { onError(-3) }
             null

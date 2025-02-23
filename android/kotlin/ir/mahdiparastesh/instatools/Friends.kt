@@ -74,8 +74,8 @@ class Friends : BaseActivity(), OnlineLister, Counter {
             return; }
 
         val rest = Api.call<Rest.Friendships>(
-            Api.Endpoint.FRIENDSHIPS_MANY.url, Rest.Friendships::class,
-            isPost = true, body = "user_ids=" + mm.friends
+            Api.Endpoint.FRIENDSHIPS_MANY.url,
+            true, "user_ids=" + mm.friends
                 .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
                 .joinToString(",") { it.id },
             onError = { code -> onFailed(code) }

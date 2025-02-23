@@ -10,17 +10,14 @@ class Direct : LazyLister<Dm.DmThread>() {
 
     override fun fetch() {
         super.fetch()
-        api.call<Rest.InboxPage>(
-            Api.Endpoint.INBOX.url.format(cursor ?: ""), Rest.InboxPage::class,
-        ).also { page ->
-            for (thread in page.inbox.threads) {
-                println("$index. ${thread.title()}")
-                add(thread)
-            }
-            if (page.inbox.has_older) {
-                cursor = page.inbox.oldest_cursor
-                println("Enter `m` again to load more conversations...")
-            } else endOfList()
+        val page = api.call<Rest.InboxPage>(Api.Endpoint.INBOX.url.format(cursor ?: ""))
+        for (thread in page.inbox.threads) {
+            println("$index. ${thread.title()}")
+            add(thread)
         }
+        if (page.inbox.has_older) {
+            cursor = page.inbox.oldest_cursor
+            println("Enter `m` again to load more conversations...")
+        } else endOfList()
     }
 }

@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.job
 
-import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.api.*
@@ -18,16 +17,18 @@ object SimpleJobs {
 
         if ("PolarisPostRootQueryRelayPreloader" in data) {
             @Suppress("UNCHECKED_CAST")
-            val medMap = (data["PolarisPostRootQueryRelayPreloader"]!!["items"] as List<Map<String, Any>>)[0]
-            downloader.download(Gson().fromJson(Gson().toJson(medMap), Media::class.java), idealSize, link)
+            val medMap =
+                (data["PolarisPostRootQueryRelayPreloader"]!!["items"] as List<Map<String, Any>>)[0]
+            downloader.download(
+                api.json.decodeFromString<Media>(api.json.encodeToString(medMap)),
+                idealSize, link
+            )
         } else if ("instagram://media?id=" in html) {
             val medId = html.substringAfter("instagram://media?id=").substringBefore("\"")
             if (System.getenv("debug") == "1")
                 println("Media ID: $medId")
-            val singleItemList = api.call<Rest.LazyList<Media>>(
-                Api.Endpoint.MEDIA_INFO.url.format(medId),
-                Rest.LazyList::class, generics = arrayOf(Media::class),
-            )
+            val singleItemList =
+                api.call<Rest.LazyList<Media>>(Api.Endpoint.MEDIA_INFO.url.format(medId))
             downloader.download(singleItemList.items.first(), idealSize, link)
         } else
             if (System.getenv("debug") == "1")
@@ -36,19 +37,17 @@ object SimpleJobs {
 
     /** If a user doesn't exist, HTTP error code 404 will be thrown! */
     fun userInfo(userId: String): User =
-        api.call<Rest.UserInfo>(Api.Endpoint.USER_INFO.url.format(userId), Rest.UserInfo::class).user
+        api.call<Rest.UserInfo>(Api.Endpoint.USER_INFO.url.format(userId)).user
 
     /** If a user doesn't exist, HTTP error code 404 will be thrown! */
     fun profileInfo(userName: String): User =
-        api.call<GraphQl>(Api.Endpoint.PROFILE_INFO.url.format(userName), GraphQl::class).data!!.user!!
+        api.call<GraphQl>(Api.Endpoint.PROFILE_INFO.url.format(userName)).data!!.user!!
 
     /** Performs a GraphQL action on a post/reel/story. */
     fun actionMedia(
         med: Media, graphQlQuery: GraphQlQuery, result: (success: Boolean) -> Unit
     ) {
-        val gql = api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class, true, graphQlQuery.body(med.id())
-        )
+        val gql = api.call<GraphQl>(Api.Endpoint.QUERY.url, true, graphQlQuery.body(med.id()))
         result(gql.data != null)
     }
 }

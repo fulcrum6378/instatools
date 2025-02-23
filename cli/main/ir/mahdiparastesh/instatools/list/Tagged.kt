@@ -18,7 +18,7 @@ class Tagged(override val p: Profile) : LazyLister<Media>(), Profile.Section {
         super.fetch()
         p.requireUserId()
         val page = api.call<GraphQl>(
-            Api.Endpoint.QUERY.url, GraphQl::class, true,
+            Api.Endpoint.QUERY.url, true,
             if (cursor == null)
                 GraphQlQuery.PROFILE_TAGGED.body(p.userId!!, "36")
             else
