@@ -1,18 +1,18 @@
 package ir.mahdiparastesh.instatools
 
-import ir.mahdiparastesh.instatools.Context.downloader
-import ir.mahdiparastesh.instatools.Context.exporter
+import ir.mahdiparastesh.instatools.Context.downloadTask
+import ir.mahdiparastesh.instatools.Context.exportTask
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.job.Exporter.Method
+import ir.mahdiparastesh.instatools.job.ExportTask.Method
 import ir.mahdiparastesh.instatools.job.SimpleJobs
+import ir.mahdiparastesh.instatools.job.SimpleTasks
 import ir.mahdiparastesh.instatools.list.Direct
 import ir.mahdiparastesh.instatools.list.Saved
 import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Profile
-import ir.mahdiparastesh.instatools.util.SimpleActions
 import ir.mahdiparastesh.instatools.util.Utils
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -158,7 +158,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                         else -> null
                     }
                 } else null
-                SimpleActions.handlePostLink(a[1], Option.quality(opt?.get(Option.QUALITY.key)))
+                SimpleTasks.handlePostLink(a[1], Option.quality(opt?.get(Option.QUALITY.key)))
             } else
                 throw InvalidCommandException("Only links to Instagram posts and reels are supported!")
 
@@ -180,15 +180,15 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                     listSvd[a[2]].forEach { med ->
                         // unsave / resave
                         val unsave = a[1] == "u" || a[1] == "unsave"
-                        SimpleActions.actionMedia(
+                        SimpleTasks.actionMedia(
                             med, if (unsave) GraphQlQuery.UNSAVE else GraphQlQuery.SAVE
                         )
 
                         // like / unlike
                         if (opt?.contains(Option.LIKE.key) == true)
-                            SimpleActions.actionMedia(med, GraphQlQuery.LIKE_POST)
+                            SimpleTasks.actionMedia(med, GraphQlQuery.LIKE_POST)
                         else if (opt?.contains(Option.UNLIKE.key) == true)
-                            SimpleActions.actionMedia(med, GraphQlQuery.UNLIKE_POST)
+                            SimpleTasks.actionMedia(med, GraphQlQuery.UNLIKE_POST)
                     }
                 }
 
@@ -202,11 +202,11 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                         }
                     } else null
                     listSvd[a[1]].forEach { med ->
-                        downloader.download(med, Option.quality(opt?.get(Option.QUALITY.key)))
+                        downloadTask.download(med, Option.quality(opt?.get(Option.QUALITY.key)))
                         if (opt?.contains(Option.UNSAVE.key) == true)
-                            SimpleActions.actionMedia(med, GraphQlQuery.UNSAVE)
+                            SimpleTasks.actionMedia(med, GraphQlQuery.UNSAVE)
                         if (opt?.contains(Option.LIKE.key) == true)
-                            SimpleActions.actionMedia(med, GraphQlQuery.LIKE_POST)
+                            SimpleTasks.actionMedia(med, GraphQlQuery.LIKE_POST)
                     }
                 }
             }
@@ -280,7 +280,7 @@ ${u.biography}
                             dateTime(opt[Option.EXP_MIN_DATE.key]),
                             dateTime(opt[Option.EXP_MAX_DATE.key]),
                         )
-                        exporter.enqueue(exp)
+                        exportTask.queue.add(exp)
                     }
                 }
             }

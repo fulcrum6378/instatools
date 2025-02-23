@@ -20,7 +20,6 @@ import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
@@ -47,7 +46,7 @@ class PageTag : BasePageViewer() {
 
     override suspend fun fetch(reset: Boolean) {
         // first read from cache if available
-        val pickle = Pickle(c.c, Pickle.Type.TAGGED, c.mm.user!!.id!!)
+        val pickle = Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.TAGGED, c.mm.user!!.id!!)
         val cache = if (c.mm.tagged == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
             c.mm.tagged = cache
@@ -118,7 +117,8 @@ class PageTag : BasePageViewer() {
                 Downloads.initService(c)
                 return
             }
-            c.mm.tagged?.edges?.find { it.node.id() == edg }?.node?.queue(c.dao)
+            c.mm.tagged?.edges?.find { it.node.id() == edg }?.node?.queue()
+                ?.also { c.m.queue.addAll(it) }
             ended()
         }
     }

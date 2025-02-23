@@ -4,18 +4,19 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.exp.HtmlExporter
-import ir.mahdiparastesh.instatools.util.Queuer
 import java.io.File
+import java.util.concurrent.CopyOnWriteArrayList
 
-/** Exports direct messages. */
-class Exporter : Queuer<Exportable>() {
-    override val outputDir = File("./Messages/")
+class ExportTask : Queuer<Exportable> {
+    override val queue: CopyOnWriteArrayList<Exportable> = CopyOnWriteArrayList()
+    override var q: Int = 0
+    val outputDir = File("./Messages/")
 
     companion object {
         const val USER_PROFILE_IMG = "user_%s"
     }
 
-    override fun handle(q: Exportable) {
+    override fun handle(q: Exportable): Boolean {
         // fetch all messages
         while (q.thread.has_older) Api.json<Rest.InboxThread>(
             Api.Endpoint.DIRECT.url.format(q.thread.thread_id, q.thread.items.first().item_id, "20")
@@ -100,6 +101,19 @@ class Exporter : Queuer<Exportable>() {
                 )
             }
         }*/
+        return true
+    }
+
+    override fun onSuccess(q: Exportable) {
+    }
+
+    override fun onFailure(q: Exportable) {
+    }
+
+    override fun onFinished() {
+    }
+
+    override fun onFatalError(e: Exception) {
     }
 
     enum class Method(val ext: String) {

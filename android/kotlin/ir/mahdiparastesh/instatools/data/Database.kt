@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Friend::class, Queued::class, Exportable::class, Favourite::class],
+    entities = [Friend::class, Exportable::class, Favourite::class],
     version = 1, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
@@ -35,34 +35,6 @@ abstract class Database : RoomDatabase() {
 
         @Query("DELETE FROM Friend")
         suspend fun deleteFriends(): Int
-
-
-        @Query("SELECT * FROM Queued")
-        suspend fun queueds(): List<Queued>
-
-        @Query("SELECT * FROM Queued WHERE status = 0 LIMIT 1")
-        suspend fun firstReadyQueued(): Queued?
-
-        @Query("SELECT COUNT(*) FROM Queued WHERE status = 0")
-        suspend fun countReadyQueueds(): Int
-
-        @Query("SELECT COUNT(*) FROM Queued WHERE status = 1")
-        suspend fun countFailedQueueds(): Int
-
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun addQueued(item: Queued): Long
-
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun addQueueds(item: List<Queued>)
-
-        @Update
-        suspend fun updateQueued(item: Queued)
-
-        @Delete
-        suspend fun deleteQueued(item: Queued)
-
-        @Query("DELETE FROM Queued")
-        suspend fun deleteQueueds(): Int
 
 
         @Query("SELECT * FROM Exportable LIMIT 1")

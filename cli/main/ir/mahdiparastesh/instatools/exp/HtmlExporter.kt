@@ -2,12 +2,12 @@ package ir.mahdiparastesh.instatools.exp
 
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.job.Exporter
+import ir.mahdiparastesh.instatools.job.ExportTask
 import ir.mahdiparastesh.instatools.util.Utils
 import java.util.*
 
 class HtmlExporter(exportable: Exportable) : BaseExporter(exportable) {
-    override val method: Exporter.Method = Exporter.Method.HTML
+    override val method: ExportTask.Method = ExportTask.Method.HTML
 
     private val containers = arrayListOf<List<String>>()
     private var divisions: ArrayList<String>? = null // temporarily a page's contents
@@ -192,7 +192,7 @@ class HtmlExporter(exportable: Exportable) : BaseExporter(exportable) {
                                 "src=\"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=\"" +
                                         " style=\"background-color: #33AADD;\" "
 
-                            showPro -> "src=\"${Exporter.USER_PROFILE_IMG.format(userId)}.jpg\" "
+                            showPro -> "src=\"${ExportTask.USER_PROFILE_IMG.format(userId)}.jpg\" "
 
                             else -> ""
                         }

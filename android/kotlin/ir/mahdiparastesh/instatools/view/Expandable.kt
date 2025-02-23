@@ -18,9 +18,7 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
@@ -41,7 +39,7 @@ class Expandable(
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
     var media: Media? = null
-    var mediaOwner: User? = null // used only for stories and highlights
+    var mediaOwner: String? = null // used only for stories and highlights
     var thumb: View? = null
     var zoomed = false
     private var currentAnimator: Animator? = null
@@ -60,7 +58,7 @@ class Expandable(
         b.download.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    med.queue(c.dao, owner = mediaOwner)
+                    c.m.queue.addAll(med.queue(owner = mediaOwner))
                     Downloads.initService(c)
                 }
             }
@@ -68,7 +66,7 @@ class Expandable(
         b.downloadThis.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    med.queue(c.dao, onlyOneSlide = b.slider.currentItem)
+                    c.m.queue.addAll(med.queue(onlyOneSlide = b.slider.currentItem))
                     Downloads.initService(c)
                 }
             }
@@ -77,7 +75,7 @@ class Expandable(
         b.downloadAll.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    med.queue(c.dao)
+                    c.m.queue.addAll(med.queue())
                     Downloads.initService(c)
                 }
             }
@@ -88,20 +86,17 @@ class Expandable(
                 ?: return@setOnClickListener
             media?.apply {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val u = owner()
-                    c.dao.addQueued(
+                    c.m.queue.add(
                         Queued(
-                            Utils.now(),
-                            link() ?: audioUrl,
-                            Utils.compileSecondsTS(taken_at),
-                            u.id(),
-                            u.username!!,
                             id(),
+                            Utils.compileSecondsTS(taken_at),
                             audioUrl,
-                            thumb(),
-                            0x03,
-                            video_duration,
+                            0x3,
+                            mediaOwner ?: owner().username!!,
                             caption?.text,
+                            link() ?: audioUrl,
+                            thumb(),
+                            video_duration,
                         )
                     )
                     Downloads.initService(c)

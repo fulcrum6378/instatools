@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.downloader
+import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
@@ -8,7 +8,7 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.util.Lister.LazyLister
 import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Profile
-import ir.mahdiparastesh.instatools.util.SimpleActions
+import ir.mahdiparastesh.instatools.job.SimpleTasks
 
 class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
     override val numberOfClauses: Int = 1
@@ -42,9 +42,9 @@ class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
         a: Array<String>, offsetOfClauses: Int, opt: HashMap<String, String?>?
     ) {
         this[a[offsetOfClauses]].forEach { med ->
-            downloader.download(med, Option.quality(opt?.get(Option.QUALITY.key)))
+            downloadTask.download(med, Option.quality(opt?.get(Option.QUALITY.key)))
             if (opt?.contains(Option.LIKE.key) == true)
-                SimpleActions.actionMedia(med, GraphQlQuery.LIKE_POST)
+                SimpleTasks.actionMedia(med, GraphQlQuery.LIKE_POST)
         }
     }
 }

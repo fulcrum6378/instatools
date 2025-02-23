@@ -1,7 +1,7 @@
 package ir.mahdiparastesh.instatools.data
 
 import ir.mahdiparastesh.instatools.api.Dm
-import ir.mahdiparastesh.instatools.job.Exporter.Method
+import ir.mahdiparastesh.instatools.job.ExportTask.Method
 
 data class Exportable(
     val name: String,

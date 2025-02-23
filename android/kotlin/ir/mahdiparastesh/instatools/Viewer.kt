@@ -149,7 +149,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 mm.user?.also { oldUser ->
                     userReplaced = oldUser.id!! != userId_
                 }
-                pickle = Pickle(c, Pickle.Type.PROFILE, userId_)
+                pickle = Pickle(c.cacheDir, m.acc!!.id, Pickle.Type.PROFILE, userId_)
                 val cache = if (!userReplaced && !reset) pickle.restore<Array<User>>() else null
                 if (cache != null && cache.size == 2) {
                     mm.user = cache[0]
@@ -194,7 +194,8 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 }
             }
 
-            if (pickle == null) pickle = Pickle(c, Pickle.Type.PROFILE, userId_)
+            if (pickle == null) pickle =
+                Pickle(c.cacheDir, m.acc!!.id, Pickle.Type.PROFILE, userId_)
             pickle.save(arrayOf(mm.user!!, mm.profile!!))
 
             if (userReplaced) {

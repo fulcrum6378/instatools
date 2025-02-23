@@ -29,7 +29,6 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
@@ -50,7 +49,7 @@ import kotlinx.coroutines.withContext
 class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     lateinit var b: PageSvdBinding
     var saver: Saver? = null
-    private val pickle: Pickle by lazy { Pickle(c.c, Pickle.Type.SAVED, null) }
+    private val pickle: Pickle by lazy { Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.SAVED, null) }
     private var selectionGuide: LottieAnimationView? = null
 
     override val root: ConstraintLayout? get() = b.root
@@ -259,7 +258,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             if (saved == null) {
                 ended(); return; }
 
-            if (download) saved.media.queue(c.dao)
+            if (download) c.m.queue.addAll(saved.media.queue())
 
             if (!unsave) {
                 ended()

@@ -1,16 +1,15 @@
-package ir.mahdiparastesh.instatools.util
+package ir.mahdiparastesh.instatools.job
 
-import ir.mahdiparastesh.instatools.Context.downloader
+import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Api.FailureException
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.RelayPrefetchedStreamCache
 import ir.mahdiparastesh.instatools.api.Rest
-import ir.mahdiparastesh.instatools.job.SimpleJobs
 import kotlin.collections.contains
 
-object SimpleActions {
+object SimpleTasks {
 
     /**
      * Resolves download URLs of desired posts or reels via their official links.
@@ -29,7 +28,7 @@ object SimpleActions {
             @Suppress("UNCHECKED_CAST")
             val medMap =
                 (data["PolarisPostRootQueryRelayPreloader"]!!["items"] as List<Map<String, Any>>)[0]
-            downloader.download(
+            downloadTask.download(
                 Api.json.decodeFromString<Media>(Api.json.encodeToString(medMap)), idealSize, link
             )
         } else if ("instagram://media?id=" in html) {
@@ -38,7 +37,7 @@ object SimpleActions {
                 println("Media ID: $medId")
             val singleItemList =
                 Api.json<Rest.LazyList<Media>>(Api.Endpoint.MEDIA_INFO.url.format(medId))
-            downloader.download(singleItemList.items.first(), idealSize, link)
+            downloadTask.download(singleItemList.items.first(), idealSize, link)
         } else
             if (System.getenv("debug") == "1")
                 System.err.println("Shall we re-implement PageConfig?")

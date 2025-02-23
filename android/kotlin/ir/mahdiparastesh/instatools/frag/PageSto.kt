@@ -39,7 +39,7 @@ class PageSto : BasePageViewer() {
         val uid = c.mm.user?.id() ?: return
 
         // load their story into the data model
-        val pickle1 = Pickle(c.c, Pickle.Type.STORY, c.mm.user!!.id!!)
+        val pickle1 = Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.STORY, c.mm.user!!.id!!)
         val cache1 = if (!reset) pickle1.restore<Story>() else null
         if (cache1 != null) // read from cache
             c.mm.story = cache1
@@ -52,7 +52,7 @@ class PageSto : BasePageViewer() {
         }
 
         // load their highlights into the data model
-        val pickle2 = Pickle(c.c, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
+        val pickle2 = Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
         val cache2 = if (!reset) pickle2.restore<Page<Story>>() else null
         if (cache2 != null) // read from cache
             c.mm.highlights = cache2

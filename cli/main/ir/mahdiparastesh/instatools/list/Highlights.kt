@@ -1,11 +1,11 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.downloader
+import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.*
+import ir.mahdiparastesh.instatools.job.SimpleTasks
 import ir.mahdiparastesh.instatools.util.Lister
 import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Profile
-import ir.mahdiparastesh.instatools.util.SimpleActions
 
 class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
     private val trays: HashMap<String, Story> = hashMapOf()
@@ -61,13 +61,13 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         if (a.size == offsetOfClauses + 1)
             println("This tray contains only ${trays[currentTray!!]!!.items!!.size} items.")
         else this[a[offsetOfClauses + 1]].forEach { med ->
-            downloader.download(
+            downloadTask.download(
                 med,
                 Option.quality(opt?.get(Option.QUALITY.key)),
                 owner = p.userName
             )
             if (opt?.contains(Option.LIKE.key) == true)
-                SimpleActions.actionMedia(med, GraphQlQuery.LIKE_STORY)
+                SimpleTasks.actionMedia(med, GraphQlQuery.LIKE_STORY)
         }
     }
 }

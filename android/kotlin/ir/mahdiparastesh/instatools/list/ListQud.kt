@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
-import ir.mahdiparastesh.instatools.job.Downloader
+import ir.mahdiparastesh.instatools.job.DownloadService
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -39,7 +39,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         else h.b.status.setAnimation(
             when {
                 qud.isFailed() -> R.raw.failed
-                Downloader.active.value != true -> R.raw.pending
+                DownloadService.active.value != true -> R.raw.pending
                 else -> R.raw.download
             }
         )

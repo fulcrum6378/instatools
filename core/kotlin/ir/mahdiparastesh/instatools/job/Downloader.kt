@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.job
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.util.Queuer
 import ir.mahdiparastesh.instatools.util.Utils
 import org.apache.commons.imaging.Imaging
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
@@ -11,65 +10,31 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
-import java.io.*
-import java.net.ConnectException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
+import kotlin.io.copyTo
 
-class Downloader : Queuer<Queued>() {
-    override val outputDir = File("./Downloads/")
+interface Downloader : Queuer<Queued> {
 
-    fun download(
-        med: Media, idealSize: Float, link: String? = null, owner: String? = null
-    ) {
-        val u = med.owner()
-        if (med.carousel_media != null) for (car in med.carousel_media) enqueue(
-            Queued(
-                car.id(),
-                Utils.compileSecondsTS(car.taken_at),
-                car.nearest(idealSize)!!,
-                car.media_type.toInt().toByte(),
-                u.username ?: owner!!,
-                med.caption?.text,
-                link ?: med.link(),
-                //car.thumb()
-            )
-        ) else enqueue(
-            Queued(
-                med.id(),
-                Utils.compileSecondsTS(med.taken_at),
-                med.nearest(idealSize)!!,
-                med.media_type.toInt().toByte(),
-                u.username ?: owner!!,
-                med.caption?.text,
-                link ?: med.link(),
-                //med.thumb()
-            )
-        )
-        start()
-    }
+    fun prepareOutput(q: Queued): FileOutputStream?
 
-    /** Contains CLI-specific codes! */
-    override fun handle(q: Queued) {
-        // prepare the path
-        val extension = q.extension()
-        val fileName = q.fileName(extension)
-        val file = File(outputDir, fileName)
-        if (file.exists()) {
-            println("File `${fileName}` already exists! Overwrite? (y / any)")
-            if (readlnOrNull() !in arrayOf("y", "Y", "yes")) return
-        }
+    override fun handle(q: Queued): Boolean {
+        val fos = prepareOutput(q) ?: return true
 
-        // download the file
+        // prepare to download the file
         var stream: InputStream? = null
         var retry = -1
         while (stream == null) {
             retry++
             if (retry > 0) {
                 if (retry > 5) throw FailureException()
-                else println("Retrying for ${q.link}")
+                else onRetry(q)
             }
 
             val con = URI(q.url).toURL().openConnection(Api.proxy) as HttpsURLConnection
@@ -79,16 +44,14 @@ class Downloader : Queuer<Queued>() {
             con.doInput = true
             con.readTimeout = when (q.type) {
                 Media.Type.IMAGE.num -> 15000
-                else -> 2 * 60000
+                else -> q.dur?.let { (it * 2000f).toInt() } ?: (2 * 60000)
             }
             try {
                 con.connect()
             } catch (_: UnknownHostException) {
-                continue
-            } catch (_: ConnectException) {
-                continue
+                throw Api.FailureException(-1)
             } catch (_: SocketTimeoutException) {
-                continue
+                throw Api.FailureException(-2)
             }
 
             if (con.responseCode == 200) try {
@@ -97,11 +60,10 @@ class Downloader : Queuer<Queued>() {
             }
         }
 
-        // save the file
-        val fos = FileOutputStream(file)
+        // download and save the file
         try {
-            when (extension) {
-                "jpg" -> writeJpeg(q, stream.readAllBytes(), fos)
+            when (q.ext) {
+                "jpg" -> writeJpeg(q, stream.readBytes(), fos)
                 else -> stream.copyTo(fos)
                 // TODO metadata for MP4 and WEBP?
             }
@@ -110,8 +72,10 @@ class Downloader : Queuer<Queued>() {
         }
         stream.close()
         fos.close()
-        println("Downloaded $fileName")
+        return true
     }
+
+    fun onRetry(q: Queued)
 
     @Throws(IOException::class)
     private fun writeJpeg(q: Queued, `in`: ByteArray, out: OutputStream) {
@@ -119,7 +83,7 @@ class Downloader : Queuer<Queued>() {
             ?: TiffOutputSet()
         outputSet.orCreateRootDirectory.apply {
             removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
-            if (q.link != null) add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+            add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
             removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
             add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
             removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
@@ -139,7 +103,7 @@ class Downloader : Queuer<Queued>() {
         ExifRewriter().updateExifMetadataLossless(`in`, out, outputSet)
     }
 
-    inner class FailureException :
+    class FailureException :
         IllegalStateException("Couldn't download from Instagram!"),
         Utils.InstaToolsException
 }

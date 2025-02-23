@@ -13,9 +13,6 @@ sourceSets.getByName("test") { kotlin.srcDirs("test") }
 
 dependencies {
     implementation(project(":core"))
-
-    implementation(libs.serialization.json)
-    implementation(libs.commons.imaging)
 }
 
 tasks.jar {

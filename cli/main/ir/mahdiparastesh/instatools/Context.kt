@@ -1,9 +1,9 @@
 package ir.mahdiparastesh.instatools
 
-import ir.mahdiparastesh.instatools.job.Downloader
-import ir.mahdiparastesh.instatools.job.Exporter
+import ir.mahdiparastesh.instatools.job.DownloadTask
+import ir.mahdiparastesh.instatools.job.ExportTask
 
 object Context {
-    val downloader: Downloader by lazy { Downloader() }
-    val exporter: Exporter by lazy { Exporter() }
+    val downloadTask: DownloadTask by lazy { DownloadTask() }
+    val exportTask: ExportTask by lazy { ExportTask() }
 }

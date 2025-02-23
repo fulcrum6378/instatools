@@ -10,5 +10,6 @@ sourceSets.getByName("main") {
 }
 
 dependencies {
+    implementation(libs.commons.imaging)
     implementation(libs.serialization.json)
 }

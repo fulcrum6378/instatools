@@ -28,7 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
-import ir.mahdiparastesh.instatools.job.Downloader
+import ir.mahdiparastesh.instatools.job.DownloadService
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
@@ -68,7 +68,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
     override val expandable = null
-    override val serviceActive = Downloader.active
+    override val serviceActive = DownloadService.active
     override val controller: MenuItem? get() = b.toolbar.menu.findItem(R.id.dtControl)
     override var countBadge: BadgeDrawable? = null
 
@@ -99,7 +99,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 c.goTo(Settings::class) { putExtra(Settings.EXTRA_SELECT_PATH, 1) }
                 return; }
             c.startService(
-                Intent(c, Downloader::class.java).setAction(ForegroundService.ACTION_START)
+                Intent(c, DownloadService::class.java).setAction(ForegroundService.ACTION_START)
             )
         }
     }
@@ -137,7 +137,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             }
 
             fun find(msg: Message): Int? =
-                if (mm.queueds != null) Queued.find(msg.obj as Queued, mm.queueds!!) else null
+                if (mm.queueds != null) findQueued(msg.obj as Queued, mm.queueds!!) else null
         }
 
         // paste link
@@ -227,11 +227,17 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         updateCount(this, mm.queueds?.size ?: 0)
     }
 
+    private fun findQueued(it: Queued, inList: List<Queued>?): Int? {
+        if (inList == null) return null
+        for (i in inList.indices) if (inList[i].id == it.id) return i
+        return null
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
-                if (Downloader.active.value == true) stopService(Intent(c, Downloader::class.java)
+                if (DownloadService.active.value == true) stopService(Intent(c, DownloadService::class.java)
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
@@ -364,7 +370,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             CoroutineScope(Dispatchers.IO).launch {
                 dao.deleteQueued(q)
                 if (mm.queueds != null) withContext(Dispatchers.Main) {
-                    Queued.find(q, mm.queueds)?.let {
+                    findQueued(q, mm.queueds)?.let {
                         mm.queueds?.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         if (mm.queueds == null) return@let

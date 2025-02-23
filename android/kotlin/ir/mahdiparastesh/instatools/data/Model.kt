@@ -2,11 +2,13 @@ package ir.mahdiparastesh.instatools.data
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 /** Global view model for all Activity instances. */
 class Model : ViewModel() {
     var acc: Account? = null
+    val queue: CopyOnWriteArrayList<Queued> = CopyOnWriteArrayList()
     var files: CopyOnWriteArraySet<String>? = null
     var fav: ArrayList<Favourite>? = null
 

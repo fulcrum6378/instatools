@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.api
 
+import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
@@ -77,6 +78,51 @@ class Media(
             .substringAfter("<BaseURL")
             .substringAfter(">")
             .substringBefore("</BaseURL>")
+    }
+
+    /**
+     * Adds this item to the download queue.
+     * @param owner must be specified in stories and highlights.
+     * @param onlyOneSlide whether this position of the slider should downloaded, null otherwise
+     */
+    fun queue(
+        idealSize: Float = Version.BEST,
+        link: String? = null,
+        owner: String? = null,
+        onlyOneSlide: Int? = null
+    ): ArrayList<Queued> {
+        val list = arrayListOf<Queued>()
+        val u = owner ?: owner().username!!
+        if (carousel_media != null) for (slide in carousel_media.indices) {
+            if (onlyOneSlide != null && onlyOneSlide != slide) continue
+            val car = carousel_media[slide]
+            list.add(
+                Queued(
+                    car.id(),
+                    Utils.compileSecondsTS(car.taken_at),
+                    car.nearest(idealSize)!!,
+                    car.media_type.toInt().toByte(),
+                    u,
+                    caption?.text,
+                    link ?: link()!!,
+                    car.thumb(),
+                    car.video_duration,
+                )
+            )
+        } else list.add(
+            Queued(
+                id(),
+                Utils.compileSecondsTS(taken_at),
+                nearest(idealSize)!!,
+                media_type.toInt().toByte(),
+                u,
+                caption?.text,
+                link ?: link()!!,
+                thumb(),
+                video_duration,
+            )
+        )
+        return list
     }
 
 

@@ -23,7 +23,6 @@ import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.data.Queued.Companion.queue
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
@@ -75,19 +74,17 @@ class PageVwr : BasePageViewer() {
             MaterialMenu(c, v, R.menu.viewer_pic_more,
                 R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
-                        c.dao.addQueued(
+                        c.m.queue.add(
                             Queued(
-                                Utils.now(),
-                                UiTools.PROFILE.format(c.mm.user!!.username!!),
-                                Utils.now(),
-                                c.mm.user!!.id!!,
-                                c.mm.user!!.username!!,
                                 "profile_photo",
+                                Utils.now(),
                                 picture,
-                                c.mm.user!!.profile_pic_url,
                                 0x1,
-                                null,
-                                c.mm.user!!.biography
+                                c.mm.user!!.username!!,
+                                c.mm.user!!.biography,
+                                UiTools.PROFILE.format(c.mm.user!!.username!!),
+                                c.mm.user!!.profile_pic_url,
+                                null
                             )
                         )
                         Downloads.initService(c)
@@ -177,7 +174,7 @@ class PageVwr : BasePageViewer() {
 
     override suspend fun fetch(reset: Boolean) {
         // first read from cache if available
-        val pickle = Pickle(c.c, Pickle.Type.POSTS, c.mm.user!!.id!!)
+        val pickle = Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!)
         val cache = if (c.mm.posts == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
             c.mm.posts = cache
@@ -248,8 +245,8 @@ class PageVwr : BasePageViewer() {
             if (edg == null) {
                 Downloads.initService(c)
                 return; }
-            c.mm.posts?.edges?.find { it.node.id() == edg }
-                ?.also { edge -> edge.node.queue(c.dao) } // TODO handle all posts in one search
+            c.mm.posts?.edges?.find { it.node.id() == edg }?.node?.queue()
+                ?.also { c.m.queue.addAll(it) } // TODO handle all posts in one search
             ended()
         }
     }
