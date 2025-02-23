@@ -6,9 +6,11 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Media.Version
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.util.Utils
+import kotlinx.serialization.Serializable
 import java.net.URI
 
 @Entity
+@Serializable
 class Queued(
     val addedAt: Long,
     val link: String, // can be empty

@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
@@ -45,6 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
@@ -294,7 +294,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK && mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
             contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
                 FileOutputStream(des.fileDescriptor).use { fos ->
-                    fos.write(Gson().toJson(mm.queueds!!).encodeToByteArray())
+                    fos.write(Json.encodeToString(mm.queueds!!).encodeToByteArray())
                 }
             }
         }
@@ -303,10 +303,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
-                    Gson().fromJson(
+                    Json.decodeFromString<Array<Queued>>(
                         FileInputStream(des!!.fileDescriptor).readBytes()
-                            .toString(Charsets.UTF_8),
-                        Array<Queued>::class.java
+                            .toString(Charsets.UTF_8)
                     )
                 }
             }.onSuccess { queueds ->

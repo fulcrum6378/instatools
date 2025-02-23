@@ -3,17 +3,19 @@ package ir.mahdiparastesh.instatools.data
 import android.content.Context
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
-import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Login.Companion.SP_ACCOUNT
 import ir.mahdiparastesh.instatools.util.Persistent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
 /** Represents an Instagram account. */
+@Serializable
 class Account(
     var id: Long,
     var user: String? = null,
@@ -35,6 +37,7 @@ class Account(
     }
 
     companion object {
+        @Suppress("RedundantSuspendModifier")
         suspend fun load(c: Context): ArrayList<Account> {
             val secured = Secured(c)
             return if (secured.exists()) {
@@ -42,8 +45,7 @@ class Account(
                 runCatching {
                     FileInputStream(secured).use { it.readBytes() }
                 }.onSuccess { data = it }
-                data?.let { Gson().fromJson(String(it), Array<Account>::class.java) }
-                    ?.let { ArrayList(it.toList()) }
+                data?.let { ArrayList(Json.decodeFromString<Array<Account>>(String(it)).toList()) }
                     ?: arrayListOf()
             } else arrayListOf()
         }
@@ -60,7 +62,7 @@ class Account(
             runCatching {
                 FileOutputStream(Secured(c)).use { fos ->
                     fos.write(
-                        Gson().toJson(accounts.filter { it.cook != null || it.id == -1L })
+                        Json.encodeToString(accounts.filter { it.cook != null || it.id == -1L })
                             .encodeToByteArray()
                     )
                 }

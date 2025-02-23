@@ -105,7 +105,7 @@ class ListUnf(val c: Main, private val f: PageUnf) :
                 } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
                         UiTools.snackbar(
-                            f.b.root, c.getString(UiTools.apiError(e.code), e.code), c.b.bnv,
+                            f.b.root, UiTools.apiError(c.c, e.code), c.b.bnv,
                             Snackbar.LENGTH_SHORT
                         )
                     }

@@ -263,7 +263,7 @@ class Exporter : ForegroundService() {
     private fun error(code: Int) {
         eventNotification(Notify.ID_EXPORTER_ERROR) {
             setContentTitle(getString(R.string.exporterFailed))
-            setContentText(getString(UiTools.apiError(code), code))
+            setContentText(UiTools.apiError(c, code))
             addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
         }
         finish(false)

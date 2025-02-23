@@ -4,13 +4,13 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
-import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.walk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -35,8 +35,8 @@ object DownloadHistory {
                 runCatching {
                     FileInputStream(stored).use { return@use it.readBytes() }
                 }.onSuccess { data ->
-                    c.m.files = Gson().fromJson<Set<String>>(String(data), Set::class.java)
-                        ?.let { CopyOnWriteArraySet(it) }
+                    c.m.files =
+                        CopyOnWriteArraySet(Json.decodeFromString<List<String>>(String(data)))
                     if (c.m.files != null) loading = false
                     else checkStorage(c)
                 }.onFailure { checkStorage(c) }
@@ -75,7 +75,7 @@ object DownloadHistory {
     suspend fun saveCache(c: Persistent) {
         runCatching {
             FileOutputStream(Stored(c.c)).use {
-                it.write(Gson().toJson(c.m.files).encodeToByteArray())
+                it.write(Json.encodeToString(c.m.files).encodeToByteArray())
             }
         }
     }
@@ -83,7 +83,7 @@ object DownloadHistory {
     private fun List<DocumentFile>.filterMedia() = filter {
         it.isFile && it.name?.let { n ->
             n.endsWith(".mp4") ||
-            n.endsWith(".jpg") || n.endsWith(".png") || n.endsWith(".webp") || n.endsWith(".heic")
+                n.endsWith(".jpg") || n.endsWith(".png") || n.endsWith(".webp") || n.endsWith(".heic")
         } == true
     }.map { it.name!! }.toSet()
 

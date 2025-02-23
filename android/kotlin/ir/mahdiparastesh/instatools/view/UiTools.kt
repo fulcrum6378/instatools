@@ -259,18 +259,19 @@ object UiTools {
         }
     }
 
-    @StringRes
-    fun apiError(code: Int): Int = when (code) { // TODO c
-        -1 -> R.string.noInternet
-        -2 -> R.string.connectionFailure
-        -3 -> R.string.connectionBroken
-        -4 -> R.string.loggedOut
-        -5 -> R.string.operationFailed
-        401 -> R.string.loggedOut401
-        404 -> R.string.notFound
-        429 -> R.string.manyRequests
-        else -> R.string.httpError
-    }
+    fun apiError(c: Context, code: Int): String = c.resources.getString(
+        when (code) {
+            -1 -> R.string.noInternet
+            -2 -> R.string.connectionFailure
+            -3 -> R.string.connectionBroken
+            -4 -> R.string.loggedOut
+            -5 -> R.string.operationFailed
+            401 -> R.string.loggedOut401
+            404 -> R.string.notFound
+            429 -> R.string.manyRequests
+            else -> R.string.httpError
+        }, code
+    )
 
     fun urlEncode(uriString: String?): String? {
         if (uriString == null) return null

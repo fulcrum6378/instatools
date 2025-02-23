@@ -164,7 +164,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
                 }
             }
         }.also {
-            it.invokeOnCompletion { job = null } // FIXME eliminate them
+            it.invokeOnCompletion { job = null }
         }
     }
 
@@ -172,7 +172,6 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     suspend fun fetch(reset: Boolean)
 
     override fun onLoaded() {
-        job = null
         super.onLoaded()
         refresher?.isRefreshing = false
         if (loading != null && root!!.contains(loading!!)) {
@@ -185,16 +184,14 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     @MainThread
     fun onLazilyLoaded(start: Int, size: Int) {
-        job = null
         if (size > 0) rv?.adapter?.notifyItemRangeInserted(start, size)
         if (isModelEmpty() && !rv!!.canScrollVertically(1)) load()
     }
 
     @MainThread
     fun onFailed(statusCode: Int) {
-        job = null
         refresher?.isRefreshing = false
-        UiTools.snackbar(root!!, root!!.context.getString(UiTools.apiError(statusCode), statusCode))
+        UiTools.snackbar(root!!, UiTools.apiError(root!!.context, statusCode))
         error?.vis()
         error?.setOnClickListener {
             refresher?.isRefreshing = true
@@ -209,9 +206,8 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     @MainThread
     fun onLazilyFailed(statusCode: Int) {
-        job = null
         refresher?.isRefreshing = false // in case of a refresh
-        UiTools.snackbar(root!!, root!!.context.getString(UiTools.apiError(statusCode), statusCode))
+        UiTools.snackbar(root!!, UiTools.apiError(root!!.context, statusCode))
     }
 
     override fun onRefresh() {

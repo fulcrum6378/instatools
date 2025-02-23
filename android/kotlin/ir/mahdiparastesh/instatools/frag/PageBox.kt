@@ -123,7 +123,6 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
             c.mm.dmThread!!.items.sortBy { it.timestamp }
             val dif = c.mm.dmThread!!.items.size - bef
             withContext(Dispatchers.Main) {
-                job = null
                 b.rv.adapter?.let {
                     it.notifyItemRangeInserted(0, dif)
                     it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)

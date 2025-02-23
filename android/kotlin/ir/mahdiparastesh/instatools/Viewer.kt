@@ -220,9 +220,9 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         withContext(Dispatchers.Main) {
             if (mm.user != null) {
                 page2?.b?.refresher?.isRefreshing = false // in case of a refresh
-                UiTools.snackbar(b.root, getString(UiTools.apiError(code), code))
+                UiTools.snackbar(b.root, UiTools.apiError(c, code))
             } else {
-                Toast.makeText(c, getString(UiTools.apiError(code), code), Toast.LENGTH_LONG).show()
+                Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
                 @Suppress("DEPRECATION") super.onBackPressed()
             }
         }

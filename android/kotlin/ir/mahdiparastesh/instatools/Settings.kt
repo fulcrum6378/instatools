@@ -21,7 +21,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
@@ -43,6 +42,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 
@@ -157,7 +157,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         suspend fun loadAliases(c: Persistent, global: Boolean): HashMap<String, String> {
             val map = (if (global) c.gsp else c.sp!!).getString(spAliases, null)
-                ?.let { Gson().fromJson<HashMap<String, String>>(it, HashMap::class.java) }
+                ?.let { Json.decodeFromString<HashMap<String, String>>(it) }
                 ?: hashMapOf()
             val removal = arrayListOf<String>()
             map.forEach { (k, v) ->
@@ -177,7 +177,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun saveAliases(sp: SharedPreferences, aliases: HashMap<String, String>?) {
             if (aliases == null) return
-            sp.edit { putString(spAliases, Gson().toJson(aliases)) }
+            sp.edit { putString(spAliases, Json.encodeToString(aliases)) }
         }
 
         fun Uri.folderName() = path.toString().split("/").last()

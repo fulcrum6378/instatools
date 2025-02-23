@@ -130,7 +130,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                     ).data!!.xdt_api__v1__feed__reels_media__connection!!.edges.first().node
                 } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
-                        UiTools.snackbar(f.b.root, c.getString(UiTools.apiError(e.code), e.code))
+                        UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
                     }
                     return@launch
                 }

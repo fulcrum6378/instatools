@@ -261,7 +261,7 @@ class Downloader : ForegroundService() {
     private fun fatalError(code: Int) {
         eventNotification(Notify.ID_DOWNLOADER_ERROR) {
             setContentTitle(getString(R.string.download))
-            setContentText(getString(UiTools.apiError(code), code))
+            setContentText(UiTools.apiError(c, code))
             setContentIntent(
                 PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
             )

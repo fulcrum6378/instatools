@@ -3,11 +3,11 @@ package ir.mahdiparastesh.instatools.data
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.google.gson.Gson
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.util.Utils
+import kotlinx.serialization.json.Json
 import java.io.File
 
 @Entity
@@ -45,11 +45,11 @@ class Exportable(
         fun voi() = voice > -1
         fun actVid() = video in 0..2
 
-        fun toJson(): String = Gson().toJson(this)
+        fun toJson(): String = Json.encodeToString(this)
 
         companion object {
             fun parse(json: String?): Options? =
-                json?.let { Gson().fromJson(json, Options::class.java) }
+                json?.let { Json.decodeFromString(json) }
 
             const val DEF_IMAGE = 1
             const val DEF_VIDEO = 0

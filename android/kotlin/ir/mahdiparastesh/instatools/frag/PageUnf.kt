@@ -179,7 +179,6 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
             withContext(Dispatchers.Main) { gotNewOnes(newUnf.size) }
             // HIGHLIGHT THEM IF YOU WANT
         }
-        job = null
     }
 
     /** Makes a Notification about new unfollowers. */

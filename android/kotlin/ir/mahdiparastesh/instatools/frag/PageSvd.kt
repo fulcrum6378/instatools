@@ -282,8 +282,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             } catch (e: Api.FailureException) {
                 withContext(Dispatchers.Main) {
                     UiTools.snackbar(
-                        b.root, getString(UiTools.apiError(e.code), e.code),
-                        dur = Snackbar.LENGTH_SHORT
+                        b.root, UiTools.apiError(c.c, e.code), dur = Snackbar.LENGTH_SHORT
                     )
                 }
                 // TODO should continue in case of an error?
