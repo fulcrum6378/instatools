@@ -2,17 +2,21 @@ package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.job.SimpleJobs
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Proxy
 
 fun main() {
-    val api = Api()
-    api.loadCookies()
+    Api.loadCookiesFromFile()
+    if (InetAddress.getLocalHost().hostName in arrayOf("CHIMAERA", "ANGELDUST"))
+        Api.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("127.0.0.1", 8580))
 
-    /*api.call<GraphQl>(
-        Api.Endpoint.QUERY.url, GraphQl::class, true,
-        GraphQlQuery.LIKE_POST.body("3567641127255644417")
+    /*Api.json<GraphQl>(
+        Api.Endpoint.QUERY.url, true, GraphQlQuery.LIKE_POST.body("3567641127255644417")
     )
     println("Liked!")*/
 
-    val info = api.call<Rest.UserInfo>(Api.Endpoint.USER_INFO.url.format("8337021434")).user
+    val info = SimpleJobs.userInfo("8337021434")
     println(info.picture())
 }

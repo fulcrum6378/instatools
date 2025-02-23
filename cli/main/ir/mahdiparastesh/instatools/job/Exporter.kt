@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.job
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Exportable
@@ -18,7 +17,7 @@ class Exporter : Queuer<Exportable>() {
 
     override fun handle(q: Exportable) {
         // fetch all messages
-        while (q.thread.has_older) api.call<Rest.InboxThread>(
+        while (q.thread.has_older) Api.json<Rest.InboxThread>(
             Api.Endpoint.DIRECT.url.format(q.thread.thread_id, q.thread.items.first().item_id, "20")
         ).thread?.also { newThread ->
             q.thread.has_older = newThread.has_older

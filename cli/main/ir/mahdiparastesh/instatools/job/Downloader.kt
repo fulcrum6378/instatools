@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.job
 
-import ir.mahdiparastesh.instatools.Context.api
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.Queuer
@@ -72,10 +72,10 @@ class Downloader : Queuer<Queued>() {
                 else println("Retrying for ${q.link}")
             }
 
-            val con = URI(q.url).toURL().openConnection(api.proxy) as HttpsURLConnection
+            val con = URI(q.url).toURL().openConnection(Api.proxy) as HttpsURLConnection
             con.requestMethod = "GET"
             con.useCaches = false
-            con.connectTimeout = api.connectTimeout
+            con.connectTimeout = Api.connectTimeout
             con.doInput = true
             con.readTimeout = when (q.type) {
                 Media.Type.IMAGE.num -> 15000

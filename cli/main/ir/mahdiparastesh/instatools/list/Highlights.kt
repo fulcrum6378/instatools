@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.api.*
 import ir.mahdiparastesh.instatools.util.Lister
@@ -19,7 +18,7 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
     override fun fetch() {
         super.fetch()
         p.requireUserId()
-        val hls = api.call<GraphQl>(
+        val hls = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(p.userId!!)
         ).data!!.highlights!!.edges
 
@@ -51,7 +50,7 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         val ready = trays[currentTray]?.items
         if (ready == null) {
             val apiId = "\"highlight:${currentTray}\""
-            val page = api.call<GraphQl>(
+            val page = Api.json<GraphQl>(
                 Api.Endpoint.QUERY.url, true, GraphQlQuery.HIGHLIGHTS.body(apiId, apiId)
             ).data!!.xdt_api__v1__feed__reels_media__connection!!
             page.edges.forEach { tray ->

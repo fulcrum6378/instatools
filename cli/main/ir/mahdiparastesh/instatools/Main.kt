@@ -1,8 +1,8 @@
 package ir.mahdiparastesh.instatools
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.Context.exporter
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Exportable
@@ -14,6 +14,9 @@ import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Profile
 import ir.mahdiparastesh.instatools.util.SimpleActions
 import ir.mahdiparastesh.instatools.util.Utils
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.util.*
 
 val listSvd: Saved by lazy { Saved() }
@@ -111,8 +114,10 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
     )
 
     // preparations
-    if (!api.loadCookies())
+    if (!Api.loadCookiesFromFile())
         System.err.println("No cookies found; insert cookies in `cookies.txt` right beside this JAR...")
+    if (InetAddress.getLocalHost().hostName in arrayOf("CHIMAERA", "ANGELDUST"))
+        Api.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("127.0.0.1", 8580))
 
     // execute commands
     var repeat = true
@@ -131,13 +136,13 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
 
             "set" -> when (a.getOrNull(1)) {
                 "cookies" -> {
-                    if (if (a.size > 2) api.loadCookies(a[2]) else api.loadCookies())
+                    if (if (a.size > 2) Api.loadCookiesFromFile(a[2]) else Api.loadCookiesFromFile())
                         println("Cookies loaded!")
                     else
                         throw InvalidCommandException("Such a file doesn't exist!")
                 }
 
-                "proxy" -> api.setProxy(a[2])
+                "proxy" -> Api.setProxy(a[2])
 
                 null -> throw InvalidCommandException("Invalid setting!")
             }
@@ -153,7 +158,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                         else -> null
                     }
                 } else null
-                SimpleJobs.handlePostLink(a[1], Option.quality(opt?.get(Option.QUALITY.key)))
+                SimpleActions.handlePostLink(a[1], Option.quality(opt?.get(Option.QUALITY.key)))
             } else
                 throw InvalidCommandException("Only links to Instagram posts and reels are supported!")
 
@@ -175,7 +180,9 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                     listSvd[a[2]].forEach { med ->
                         // unsave / resave
                         val unsave = a[1] == "u" || a[1] == "unsave"
-                        SimpleActions.actionMedia(med, if (unsave) GraphQlQuery.UNSAVE else GraphQlQuery.SAVE)
+                        SimpleActions.actionMedia(
+                            med, if (unsave) GraphQlQuery.UNSAVE else GraphQlQuery.SAVE
+                        )
 
                         // like / unlike
                         if (opt?.contains(Option.LIKE.key) == true)

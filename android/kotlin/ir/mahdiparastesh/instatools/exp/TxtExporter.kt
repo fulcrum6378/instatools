@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.exp
 
 import android.net.Uri
-import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.job.Exporter
@@ -87,7 +86,9 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             ink.append("\n")
         }
         try {
-            c.c.contentResolver.openFileDescriptor(Uri.parse(Api.encode(exp.uri)), "w")?.use {
+            c.c.contentResolver.openFileDescriptor(
+                Uri.parse(UiTools.urlEncode(exp.uri)), "w"
+            )?.use {
                 FileOutputStream(it.fileDescriptor).use { fos ->
                     fos.write(ink.toString().encodeToByteArray())
                 }

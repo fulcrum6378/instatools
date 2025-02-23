@@ -19,10 +19,8 @@ import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Favourite
@@ -31,6 +29,7 @@ import ir.mahdiparastesh.instatools.databinding.ViewerBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
+import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePageViewer
@@ -156,32 +155,42 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     mm.user = cache[0]
                     mm.profile = cache[1]
                 } else {
-                    mm.user = userInfo(userId_)
-                    if (mm.user == null) { // got an API error
+                    mm.user = try {
+                        SimpleJobs.userInfo(userId_)
+                    } catch (e: Api.FailureException) {
+                        onError(e.code)
                         loader = null
-                        return@launch; }
+                        return@launch
+                    }
                     userName_ = mm.user!!.username!!
 
-                    mm.profile = userProfile(userName_)
-                    if (mm.profile == null) {
+                    mm.profile = try {
+                        SimpleJobs.profileInfo(userName_)
+                    } catch (e: Api.FailureException) {
+                        onError(e.code)
                         loader = null
-                        return@launch; }
+                        return@launch
+                    }
                 }
 
             } else { // if the parameter `userName` is used
                 mm.user?.also { oldUser ->
                     userReplaced = oldUser.username!! != userName_
                 }
-                mm.profile = userProfile(userName_!!)
-                if (mm.profile == null) { // got an API error
+                mm.profile = try {
+                    SimpleJobs.profileInfo(userName_!!)
+                } catch (e: Api.FailureException) {
+                    onError(e.code)
                     loader = null
-                    return@launch; }
+                    return@launch
+                }
                 userId_ = mm.profile!!.id!!
-                if (mm.user == null) {
-                    mm.user = userInfo(userId_)
-                    if (mm.user == null) { // got an API error
-                        loader = null
-                        return@launch; }
+                if (mm.user == null) mm.user = try {
+                    SimpleJobs.userInfo(userId_)
+                } catch (e: Api.FailureException) {
+                    onError(e.code)
+                    loader = null
+                    return@launch
                 }
             }
 
@@ -207,23 +216,15 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         }
     }
 
-    suspend fun userInfo(userId: String): User? =
-        Api.call<Rest.UserInfo>(
-            Api.Endpoint.USER_INFO.url.format(userId), onError = { code -> onError(code) }
-        )?.user
-
-    suspend fun userProfile(userName: String): User? =
-        Api.call<GraphQl>(
-            Api.Endpoint.PROFILE_INFO.url.format(userName), onError = { code -> onError(code) }
-        )?.data?.user
-
-    private fun onError(code: Int) {
-        if (mm.user != null) {
-            page2?.b?.refresher?.isRefreshing = false // in case of a refresh
-            UiTools.snackbar(b.root, getString(Api.error(code), code))
-        } else {
-            Toast.makeText(c, getString(Api.error(code), code), Toast.LENGTH_LONG).show()
-            @Suppress("DEPRECATION") super.onBackPressed()
+    private suspend fun onError(code: Int) {
+        withContext(Dispatchers.Main) {
+            if (mm.user != null) {
+                page2?.b?.refresher?.isRefreshing = false // in case of a refresh
+                UiTools.snackbar(b.root, getString(UiTools.apiError(code), code))
+            } else {
+                Toast.makeText(c, getString(UiTools.apiError(code), code), Toast.LENGTH_LONG).show()
+                @Suppress("DEPRECATION") super.onBackPressed()
+            }
         }
     }
 

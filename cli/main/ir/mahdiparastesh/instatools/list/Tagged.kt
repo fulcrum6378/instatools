@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -17,7 +16,7 @@ class Tagged(override val p: Profile) : LazyLister<Media>(), Profile.Section {
     override fun fetch() {
         super.fetch()
         p.requireUserId()
-        val page = api.call<GraphQl>(
+        val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
                 GraphQlQuery.PROFILE_TAGGED.body(p.userId!!, "36")

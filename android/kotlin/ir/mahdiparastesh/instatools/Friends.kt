@@ -73,13 +73,17 @@ class Friends : BaseActivity(), OnlineLister, Counter {
             withContext(Dispatchers.Main) { onLoaded() }
             return; }
 
-        val rest = Api.call<Rest.Friendships>(
-            Api.Endpoint.FRIENDSHIPS_MANY.url,
-            true, "user_ids=" + mm.friends
-                .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
-                .joinToString(",") { it.id },
-            onError = { code -> onFailed(code) }
-        ) ?: return
+        val rest = try {
+            Api.json<Rest.Friendships>(
+                Api.Endpoint.FRIENDSHIPS_MANY.url,
+                true, "user_ids=" + mm.friends
+                    .subList(index, min(index + friendshipsDataLimit, mm.friends.size))
+                    .joinToString(",") { it.id }
+            )
+        } catch (e: Api.FailureException) {
+            withContext(Dispatchers.Main) { onFailed(e.code) }
+            return
+        }
 
         for (f in mm.friends) rest.friendship_statuses[f.id]?.also {
             f.bestie = it.is_bestie

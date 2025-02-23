@@ -97,13 +97,17 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
      */
     private suspend fun allFollow(next_max_id: String = "", theFollowers: Boolean) {
         if (c.m.acc == null) return
-        val flw = Api.call<Rest.Follow>(
-            (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
-                .format(c.m.acc?.id ?: 0, next_max_id),
-            onError = { code -> onFailed(code) }
-        )
-        if (c.m.acc == null || flw?.users == null) return
-        for (u in flw.users) {
+        val flw = try {
+            Api.json<Rest.Follow>(
+                (if (theFollowers) Api.Endpoint.FOLLOWERS else Api.Endpoint.FOLLOWING).url
+                    .format(c.m.acc?.id ?: 0, next_max_id)
+            )
+        } catch (e: Api.FailureException) {
+            withContext(Dispatchers.IO) { onFailed(e.code) }
+            return
+        }
+        if (c.m.acc == null) return
+        for (u in flw.users!!) {
             val already = newFriends.indexOfFirst { it.id == u.pk }
             if (already > -1) newFriends[already].apply {
                 if (theFollowers) follows = true

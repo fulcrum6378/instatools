@@ -98,16 +98,20 @@ class ListUnf(val c: Main, private val f: PageUnf) :
 
     private fun unfollow(unf: Friend) {
         CoroutineScope(Dispatchers.IO).launch {
-            val gql = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, true, GraphQlQuery.UNFOLLOW.body(unf.id),
-                onError = { code ->
-                    UiTools.snackbar(
-                        f.b.root, c.getString(Api.error(code), code), c.b.bnv, Snackbar.LENGTH_SHORT
-                    )
-                }
-            )
-            if (gql == null) return@launch
-            if (gql.data?.xdt_destroy_friendship?.friendship_status?.following != false) {
+            if ((try {
+                    Api.json<GraphQl>(
+                        Api.Endpoint.QUERY.url, true, GraphQlQuery.UNFOLLOW.body(unf.id)
+                    ).data!!.xdt_destroy_friendship!!.friendship_status!!.following
+                } catch (e: Api.FailureException) {
+                    withContext(Dispatchers.Main) {
+                        UiTools.snackbar(
+                            f.b.root, c.getString(UiTools.apiError(e.code), e.code), c.b.bnv,
+                            Snackbar.LENGTH_SHORT
+                        )
+                    }
+                    return@launch
+                }) != false
+            ) {
                 UiTools.snackbar(f.b.root, R.string.unfCouldNot, c.b.bnv, Snackbar.LENGTH_SHORT)
                 return@launch; }
 

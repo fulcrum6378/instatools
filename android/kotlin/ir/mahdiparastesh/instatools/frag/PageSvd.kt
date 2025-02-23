@@ -103,11 +103,9 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             return; }
 
         // fetch online saved posts
-        val lazyList = Api.call<Rest.LazyList<Rest.SavedItem>>(
-            Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: ""),
-            onError = { code -> if (c.mm.saved == null) onFailed(code) else onLazilyFailed(code) }
+        val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(
+            Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: "")
         )
-        if (lazyList == null) return
 
         // update the data model
         var lastBefore: Int? = null
@@ -267,14 +265,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 ended()
                 return; }
 
-            val gql = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, true, GraphQlQuery.UNSAVE.body(saved.media.id()),
-                onError = { code -> error(code) }
-            )
-            if (gql == null) return
-            if (gql.data == null)
-                withContext(Dispatchers.Main) { error(-3) }
-            else {
+            try {
+                Api.json<GraphQl>(
+                    Api.Endpoint.QUERY.url, true, GraphQlQuery.UNSAVE.body(saved.media.id())
+                )
                 c.incrementCounter(Settings.spUnsaveCount)
                 withContext(Dispatchers.Main) {
                     c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
@@ -285,16 +279,20 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                         b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items.size)
                     }
                 }
+            } catch (e: Api.FailureException) {
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(
+                        b.root, getString(UiTools.apiError(e.code), e.code),
+                        dur = Snackbar.LENGTH_SHORT
+                    )
+                }
+                // TODO should continue in case of an error?
             }
 
             if (size() > 1) {
                 delay(500)
                 ended()
             } else ended()
-        }
-
-        private fun error(code: Int) {
-            UiTools.snackbar(b.root, getString(Api.error(code), code), dur = Snackbar.LENGTH_SHORT)
         }
     }
 }

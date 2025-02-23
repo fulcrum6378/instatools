@@ -62,11 +62,12 @@
     <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
     <string name="change">تغییر</string>
 
-    <!-- #API -->
+    <!-- API -->
+    <string name="noInternet">اینترنت قطع است!</string>
     <string name="connectionFailure">اتصال برقرار نشد!</string>
     <string name="connectionBroken">اتصال قطع شد!</string>
-    <string name="invalidResponse">جواب غیرمنتظره ای از اینستاگرام دریافت شد!</string>
     <string name="loggedOut">شما از حسابتان خارج شده اید!</string>
+    <string name="operationFailed">عملیات ناموفق بود؛ احتمالا از حسابتان خارج شده اید!</string>
     <string name="loggedOut401">شما از حسابتان خارج شده اید! (خطای %s)</string>
     <string name="notFound">یافت نشد!</string>
     <string name="manyRequests">

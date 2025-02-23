@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -16,7 +15,7 @@ class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
 
     override fun fetch() {
         super.fetch()
-        val page = api.call<GraphQl>(
+        val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             GraphQlQuery.PROFILE_POSTS.body(p.userName, "33", cursor.toString())
         ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!

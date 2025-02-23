@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
@@ -10,7 +9,7 @@ class Saved : LazyLister<Media>() {
 
     override fun fetch() {
         super.fetch()
-        val lazyList = api.call<Rest.LazyList<Rest.SavedItem>>(
+        val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(
             Api.Endpoint.SAVED.url + (cursor?.let { "?max_id=$it" } ?: "")
         )
         var caption: String

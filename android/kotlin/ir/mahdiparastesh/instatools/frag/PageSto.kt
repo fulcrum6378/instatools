@@ -45,14 +45,10 @@ class PageSto : BasePageViewer() {
             c.mm.story = cache1
         else {
             // fetch their story
-            val graphQl1 = Api.call<GraphQl>(
-                Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(uid),
-                onError = { code -> onFailed(code) }
-            )
-            if (graphQl1 == null) return
-            c.mm.story =
-                graphQl1.data?.xdt_api__v1__feed__reels_media?.reels_media?.firstOrNull()
-            c.mm.story?.also { pickle1.save(it) }
+            c.mm.story = Api.json<GraphQl>(
+                Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(uid)
+            ).data!!.xdt_api__v1__feed__reels_media!!.reels_media.first()
+            pickle1.save(c.mm.story!!)
         }
 
         // load their highlights into the data model
@@ -62,13 +58,10 @@ class PageSto : BasePageViewer() {
             c.mm.highlights = cache2
         else {
             // fetch their highlights
-            val graphQl2 = Api.call<GraphQl>(
+            c.mm.highlights = Api.json<GraphQl>(
                 Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
-                onError = { code -> onFailed(code) }
-            )
-            if (graphQl2 == null) return
-            c.mm.highlights = graphQl2.data?.highlights
-            c.mm.highlights?.also { pickle2.save(it) }
+            ).data!!.highlights!!
+            pickle2.save(c.mm.highlights!!)
         }
 
         withContext(Dispatchers.Main) { onLoaded() }

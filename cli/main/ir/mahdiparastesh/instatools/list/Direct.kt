@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
@@ -10,7 +9,7 @@ class Direct : LazyLister<Dm.DmThread>() {
 
     override fun fetch() {
         super.fetch()
-        val page = api.call<Rest.InboxPage>(Api.Endpoint.INBOX.url.format(cursor ?: ""))
+        val page = Api.json<Rest.InboxPage>(Api.Endpoint.INBOX.url.format(cursor ?: ""))
         for (thread in page.inbox.threads) {
             println("$index. ${thread.title()}")
             add(thread)

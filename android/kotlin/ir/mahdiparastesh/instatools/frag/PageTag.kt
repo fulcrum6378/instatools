@@ -56,19 +56,13 @@ class PageTag : BasePageViewer() {
 
         // fetch online tagged posts
         val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.id()
-        val graphQl = Api.call<GraphQl>(
+        val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
                 GraphQlQuery.PROFILE_TAGGED.body(c.mm.user!!.id!!, "36")
             else
-                GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor),
-            onError = { code -> if (cursor == null) onFailed(code) else onLazilyFailed(code) }
-        )
-        if (graphQl == null) return
-        val page = graphQl.data?.xdt_api__v1__usertags__user_id__feed_connection
-        if (page == null) {
-            withContext(Dispatchers.Main) { onLazilyFailed(-3) }
-            return; }
+                GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor)
+        ).data!!.xdt_api__v1__usertags__user_id__feed_connection!!
 
         // update the data model and the UI
         if (c.mm.tagged == null || reset) {

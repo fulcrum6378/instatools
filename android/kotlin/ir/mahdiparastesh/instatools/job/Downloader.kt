@@ -14,9 +14,10 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Queued
-import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -133,7 +134,7 @@ class Downloader : ForegroundService() {
                 val con = URI(q.url).toURL().openConnection() as HttpsURLConnection
                 con.requestMethod = "GET"
                 con.useCaches = false
-                con.connectTimeout = Api.DEFAULT_CONNECT_TIMEOUT
+                con.connectTimeout = Api.connectTimeout
                 con.doInput = true
                 con.readTimeout = when (q.type) {
                     Media.Type.IMAGE.num -> 15000
@@ -260,7 +261,7 @@ class Downloader : ForegroundService() {
     private fun fatalError(code: Int) {
         eventNotification(Notify.ID_DOWNLOADER_ERROR) {
             setContentTitle(getString(R.string.download))
-            setContentText(getString(Api.error(code), code))
+            setContentText(getString(UiTools.apiError(code), code))
             setContentIntent(
                 PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
             )

@@ -262,7 +262,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                 setPositiveButton(R.string.yes) { _, _ ->
                     if (m.acc == null) return@setPositiveButton
                     CoroutineScope(Dispatchers.IO).launch {
-                        Api.call<Rest.QuickResponse>(
+                        Api.json<Rest.QuickResponse>(
                             Api.Endpoint.LOGOUT.url,
                             true, "one_tap_app_login=1&user_id=${m.acc?.id}",
                         )
@@ -310,16 +310,21 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
                     searcher?.cancel()
                     searcher = CoroutineScope(Dispatchers.IO).launch {
-                        val rest = Api.call<Rest.Search>(
-                            Api.Endpoint.SEARCH.url.format(newText), onError = {
+                        try {
+                            val rest =
+                                Api.json<Rest.Search>(Api.Endpoint.SEARCH.url.format(newText))
+                            withContext(Dispatchers.Main) {
+                                b.searchStatus.vis(false)
+                                b.searchStatus.pauseAnimation()
+                                schRes = rest.users.sortedBy { it.position }.toTypedArray()
+                                b.searchRes.adapter?.notifyDataSetChanged()
+                            }
+                        } catch (e: Api.FailureException) {
+                            withContext(Dispatchers.Main) {
                                 searchErrored = true
                                 b.searchStatus.setAnimation(R.raw.failed)
                             }
-                        )
-                        b.searchStatus.vis(false)
-                        b.searchStatus.pauseAnimation()
-                        schRes = rest?.users?.sortedBy { it.position }?.toTypedArray()
-                        b.searchRes.adapter?.notifyDataSetChanged()
+                        }
                     }
                     return true
                 }

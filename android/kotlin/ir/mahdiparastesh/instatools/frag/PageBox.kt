@@ -37,7 +37,6 @@ import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.BasePageMain
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.areEnabled
 import ir.mahdiparastesh.instatools.view.UiTools.enabled
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -89,13 +88,9 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
 
     override suspend fun fetch(reset: Boolean) {
         if (c.mm.dmThread == null) {
-            val page = Api.call<InboxPage>(
-                Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: ""),
-                onError = { code ->
-                    if (c.mm.dmInbox == null) onFailed(code) else onLazilyFailed(code)
-                }
+            val page = Api.json<InboxPage>(
+                Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: "")
             )
-            if (page == null) return
 
             if (c.mm.dmInbox == null || reset)
                 c.mm.dmInbox = page.inbox
@@ -111,15 +106,12 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
                 if (!canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
             }
         } else {
-            val inbox = Api.call<Rest.InboxThread>(
+            val dmThd = Api.json<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
-                    .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20),
-                onError = { code -> UiTools.snackbar(b.root, getString(Api.error(code), code)) }
-            )
-            if (inbox == null) return
-            val dmThd = inbox.thread
+                    .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20)
+            ).thread
             if (dmThd == null) {
-                withContext(Dispatchers.Main) { onLazilyFailed(-3) }
+                withContext(Dispatchers.Main) { onLazilyFailed(-5) }
                 return; }
 
             val bef = c.mm.dmThread!!.items.size

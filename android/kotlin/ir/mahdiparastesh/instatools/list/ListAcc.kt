@@ -93,10 +93,13 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                     setPositiveButton(R.string.yes) { _, _ ->
                         if (acc.cook != null) CoroutineScope(Dispatchers.IO).launch {
                             Api.cookies = acc.cook ?: ""
-                            Api.call<Rest.QuickResponse>(
-                                Api.Endpoint.LOGOUT.url,
-                                true, "one_tap_app_login=1&user_id=${acc.id}"
-                            )
+                            try {
+                                Api.json<Rest.QuickResponse>(
+                                    Api.Endpoint.LOGOUT.url,
+                                    true, "one_tap_app_login=1&user_id=${acc.id}"
+                                )
+                            } catch (_: Api.FailureException) {
+                            }
                             Api.cookies = ""
                         }
                         signOut(acc, i, bd.root.isChecked)

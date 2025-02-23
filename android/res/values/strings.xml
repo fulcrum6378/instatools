@@ -62,11 +62,12 @@
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="change">Change</string>
 
-    <!-- #API -->
+    <!-- API -->
+    <string name="noInternet">No internet connection!</string>
     <string name="connectionFailure">Couldn\'t connect to Instagram!</string>
     <string name="connectionBroken">Connection was broken!</string>
-    <string name="invalidResponse">Invalid response from Instagram!</string>
     <string name="loggedOut">You\'ve been logged out!</string>
+    <string name="operationFailed">Operation failed; presumably you\'ve been logged out!</string>
     <string name="loggedOut401">You\'ve been logged out! (HTTP error code %s)</string>
     <string name="notFound">Not found!</string>
     <string name="manyRequests">

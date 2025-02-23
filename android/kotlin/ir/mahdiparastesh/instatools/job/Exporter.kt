@@ -21,6 +21,7 @@ import ir.mahdiparastesh.instatools.exp.TxtExporter
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.view.Notify
+import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -89,15 +90,17 @@ class Exporter : ForegroundService() {
                 // The API contains no reference to number of items in a thread.
             }
 
-            val inbox = Api.call<Rest.InboxThread>(
-                Api.Endpoint.DIRECT.url
-                    .format(thread, threadData?.items?.firstOrNull()?.item_id ?: "", 75),
-                onError = { code -> error(code) }
-            )
-            if (inbox == null) return
-            val dmThd = inbox.thread
+            val dmThd = try {
+                Api.json<Rest.InboxThread>(
+                    Api.Endpoint.DIRECT.url
+                        .format(thread, threadData?.items?.firstOrNull()?.item_id ?: "", 75)
+                ).thread
+            } catch (e: Api.FailureException) {
+                withContext(Dispatchers.Main) { error(e.code) }
+                return
+            }
             if (dmThd == null) {
-                error(-3)
+                error(-5)
                 return; }
 
             if (threadData == null || dmThd.items.isNotEmpty()) {
@@ -203,7 +206,7 @@ class Exporter : ForegroundService() {
                 val con = URI(dl.value.url).toURL().openConnection() as HttpsURLConnection
                 con.requestMethod = "GET"
                 con.useCaches = false
-                con.connectTimeout = Api.DEFAULT_CONNECT_TIMEOUT
+                con.connectTimeout = Api.connectTimeout
                 con.doInput = true
                 con.readTimeout = when (dl.value.type) {
                     1 -> 2 * 60000
@@ -260,7 +263,7 @@ class Exporter : ForegroundService() {
     private fun error(code: Int) {
         eventNotification(Notify.ID_EXPORTER_ERROR) {
             setContentTitle(getString(R.string.exporterFailed))
-            setContentText(getString(Api.error(code), code))
+            setContentText(getString(UiTools.apiError(code), code))
             addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
         }
         finish(false)

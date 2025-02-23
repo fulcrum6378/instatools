@@ -374,7 +374,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         onListResized()
                     }
                 }
-                handler?.obtainMessage(-1)?.sendToTarget()
             }
             if (isSwipeDeleteInflated != null) {
                 b.root.removeView(bd.root)

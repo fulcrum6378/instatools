@@ -15,6 +15,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.Html
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.View
@@ -37,6 +38,7 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import java.util.*
+import java.util.regex.Pattern
 
 object UiTools {
     const val DATE_FORMAT = "yyyy.MM.dd"
@@ -255,5 +257,38 @@ object UiTools {
             super.onLoadFailed(errorDrawable)
             iv.setImageDrawable(null)
         }
+    }
+
+    @StringRes
+    fun apiError(code: Int): Int = when (code) { // TODO c
+        -1 -> R.string.noInternet
+        -2 -> R.string.connectionFailure
+        -3 -> R.string.connectionBroken
+        -4 -> R.string.loggedOut
+        -5 -> R.string.operationFailed
+        401 -> R.string.loggedOut401
+        404 -> R.string.notFound
+        429 -> R.string.manyRequests
+        else -> R.string.httpError
+    }
+
+    fun urlEncode(uriString: String?): String? {
+        if (uriString == null) return null
+        if (TextUtils.isEmpty(uriString)) return uriString
+        val allowedUrlCharacters = Pattern.compile(
+            "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[\\da-fA-F]{2})+"
+        )
+        val matcher = allowedUrlCharacters.matcher(uriString)
+        var validUri: String? = null
+        if (matcher.find()) validUri = matcher.group()
+        if (TextUtils.isEmpty(validUri) || uriString.length == validUri!!.length)
+            return uriString
+
+        val uri = Uri.parse(uriString)
+        val uriBuilder = Uri.Builder().scheme(uri.scheme).authority(uri.authority)
+        for (path in uri.pathSegments) uriBuilder.appendPath(path)
+        for (key in uri.queryParameterNames)
+            uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
+        return uriBuilder.build().toString()
     }
 }

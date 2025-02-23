@@ -1,10 +1,54 @@
 package ir.mahdiparastesh.instatools.util
 
+import ir.mahdiparastesh.instatools.Context.downloader
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Api.FailureException
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.RelayPrefetchedStreamCache
+import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.job.SimpleJobs
+import kotlin.collections.contains
 
 object SimpleActions {
+
+    /**
+     * Resolves download URLs of desired posts or reels via their official links.
+     * @throws Api.FailureException
+     */
+    @Throws(FailureException::class)
+    fun handlePostLink(link: String, idealSize: Float) {
+        val html = Api.html(link)
+        val data = RelayPrefetchedStreamCache.crawl(html) { // hashMapOf<String, Map<String, Any>>()
+            it.contains("PolarisPostRootQueryRelayPreloader")
+        }
+        if (System.getenv("debug") == "1")
+            println("RelayPrefetchedStreamCache: " + data.keys.joinToString(", "))
+
+        if ("PolarisPostRootQueryRelayPreloader" in data) {
+            @Suppress("UNCHECKED_CAST")
+            val medMap =
+                (data["PolarisPostRootQueryRelayPreloader"]!!["items"] as List<Map<String, Any>>)[0]
+            downloader.download(
+                Api.json.decodeFromString<Media>(Api.json.encodeToString(medMap)), idealSize, link
+            )
+        } else if ("instagram://media?id=" in html) {
+            val medId = html.substringAfter("instagram://media?id=").substringBefore("\"")
+            if (System.getenv("debug") == "1")
+                println("Media ID: $medId")
+            val singleItemList =
+                Api.json<Rest.LazyList<Media>>(Api.Endpoint.MEDIA_INFO.url.format(medId))
+            downloader.download(singleItemList.items.first(), idealSize, link)
+        } else
+            if (System.getenv("debug") == "1")
+                System.err.println("Shall we re-implement PageConfig?")
+    }
+
+    /**
+     * Performs any of the actions specified in [GraphQlQuery] concerning [Media].
+     * @throws Api.FailureException
+     */
+    @Throws(FailureException::class)
     fun actionMedia(med: Media, graphQlQuery: GraphQlQuery) {
         when (graphQlQuery) {
             GraphQlQuery.LIKE_POST, GraphQlQuery.LIKE_STORY -> if (med.has_liked == true) {

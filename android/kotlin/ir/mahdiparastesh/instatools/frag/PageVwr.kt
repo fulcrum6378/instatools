@@ -185,16 +185,11 @@ class PageVwr : BasePageViewer() {
             return; }
 
         // fetch online posts
-        val graphQl = Api.call<GraphQl>(
+        val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_POSTS.body(
                 c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.id().toString()
-            ), onError = { code -> onFailed(code) }
-        )
-        if (graphQl == null) return
-        val page = graphQl.data?.xdt_api__v1__feed__user_timeline_graphql_connection
-        if (page == null) {
-            withContext(Dispatchers.Main) { onLazilyFailed(-3) }
-            return; }
+            )
+        ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!
 
         // update the data model and the UI
         if (c.mm.posts == null || reset) {

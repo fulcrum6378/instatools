@@ -124,22 +124,18 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         CoroutineScope(Dispatchers.IO).launch {
             if (story.items == null) {
                 val apiId = "\"${story.id}\""
-                val graphQl = Api.call<GraphQl>(
-                    Api.Endpoint.QUERY.url, true, GraphQlQuery.HIGHLIGHTS.body(apiId, apiId),
-                    onError = { code ->
-                        UiTools.snackbar(f.b.root, c.getString(Api.error(code), code))
-                    }
-                )
-                if (graphQl == null) return@launch
-                val newStory = graphQl.data?.xdt_api__v1__feed__reels_media__connection
-                    ?.edges?.firstOrNull()?.node
-                if (newStory == null) {
+                val newStory = try {
+                    Api.json<GraphQl>(
+                        Api.Endpoint.QUERY.url, true, GraphQlQuery.HIGHLIGHTS.body(apiId, apiId)
+                    ).data!!.xdt_api__v1__feed__reels_media__connection!!.edges.first().node
+                } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
-                        UiTools.snackbar(f.b.root, R.string.invalidResponse)
+                        UiTools.snackbar(f.b.root, c.getString(UiTools.apiError(e.code), e.code))
                     }
-                    return@launch; }
-                story.items = newStory.items
+                    return@launch
+                }
 
+                story.items = newStory.items
                 c.mm.highlights?.also {
                     Pickle(c.c, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!).save(it)
                 }

@@ -31,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 interface Lister {
     val root: ConstraintLayout?
@@ -154,8 +155,16 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     override fun load(reset: Boolean) {
         if ((!canLoadMore() && !reset) || job?.isActive == true) return
         job = CoroutineScope(Dispatchers.IO).launch {
-            fetch(reset)
-            job = null
+            try {
+                fetch(reset)
+            } catch (e: Api.FailureException) {
+                withContext(Dispatchers.Main) {
+                    if (!isModelLoaded()) onFailed(e.code)
+                    else onLazilyFailed(e.code) // or reset
+                }
+            }
+        }.also {
+            it.invokeOnCompletion { job = null } // FIXME eliminate them
         }
     }
 
@@ -185,7 +194,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     fun onFailed(statusCode: Int) {
         job = null
         refresher?.isRefreshing = false
-        UiTools.snackbar(root!!, root!!.context.getString(Api.error(statusCode), statusCode))
+        UiTools.snackbar(root!!, root!!.context.getString(UiTools.apiError(statusCode), statusCode))
         error?.vis()
         error?.setOnClickListener {
             refresher?.isRefreshing = true
@@ -202,7 +211,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     fun onLazilyFailed(statusCode: Int) {
         job = null
         refresher?.isRefreshing = false // in case of a refresh
-        UiTools.snackbar(root!!, root!!.context.getString(Api.error(statusCode), statusCode))
+        UiTools.snackbar(root!!, root!!.context.getString(UiTools.apiError(statusCode), statusCode))
     }
 
     override fun onRefresh() {

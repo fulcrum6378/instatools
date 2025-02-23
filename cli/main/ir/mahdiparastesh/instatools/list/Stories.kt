@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.list
 
-import ir.mahdiparastesh.instatools.Context.api
 import ir.mahdiparastesh.instatools.Context.downloader
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -17,7 +16,7 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
     override fun fetch() {
         super.fetch()
         p.requireUserId()
-        val reels = api.call<GraphQl>(
+        val reels = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(p.userId!!)
         ).data!!.xdt_api__v1__feed__reels_media!!.reels_media
 
@@ -40,9 +39,7 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
     ) {
         this[a[offsetOfClauses]].forEach { med ->
             downloader.download(
-                med,
-                Option.quality(opt?.get(Option.QUALITY.key)),
-                owner = p.userName
+                med, Option.quality(opt?.get(Option.QUALITY.key)), owner = p.userName
             )
             if (opt?.contains(Option.LIKE.key) == true)
                 SimpleActions.actionMedia(med, GraphQlQuery.LIKE_STORY)
