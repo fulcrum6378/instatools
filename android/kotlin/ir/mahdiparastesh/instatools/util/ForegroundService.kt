@@ -166,7 +166,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         finish(true)
     }
 
-    /** Call it from the same thread of the Service. */
+    /**
+     * Call it only from the same thread of the Service.
+     * If you don't, the Service will NEVER stop!!
+     */
     @MainThread
     open fun finish(cancelled: Boolean) {
         @Suppress("DEPRECATION")

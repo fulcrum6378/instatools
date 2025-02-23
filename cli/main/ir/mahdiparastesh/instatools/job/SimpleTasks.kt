@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Api.FailureException
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.RelayPrefetchedStreamCache
@@ -15,7 +14,7 @@ object SimpleTasks {
      * Resolves download URLs of desired posts or reels via their official links.
      * @throws Api.FailureException
      */
-    @Throws(FailureException::class)
+    @Throws(Api.FailureException::class)
     fun handlePostLink(link: String, idealSize: Float) {
         val html = Api.html(link)
         val data = RelayPrefetchedStreamCache.crawl(html) { // hashMapOf<String, Map<String, Any>>()
@@ -47,7 +46,7 @@ object SimpleTasks {
      * Performs any of the actions specified in [GraphQlQuery] concerning [Media].
      * @throws Api.FailureException
      */
-    @Throws(FailureException::class)
+    @Throws(Api.FailureException::class)
     fun actionMedia(med: Media, graphQlQuery: GraphQlQuery) {
         when (graphQlQuery) {
             GraphQlQuery.LIKE_POST, GraphQlQuery.LIKE_STORY -> if (med.has_liked == true) {

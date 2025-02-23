@@ -25,45 +25,45 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         AnyViewHolder(ListQudBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
-        val qud = c.mm.queueds?.getOrNull(i) ?: return
+        val q = c.m.queue.getOrNull(i) ?: return
 
         // main
-        if (qud.type != 3.toByte()) Glide.with(c.c).load(qud.thumb).into(h.b.thumb)
+        if (q.type != 3.toByte()) Glide.with(c.c).load(q.thumb).into(h.b.thumb)
         else h.b.thumb.setImageResource(R.drawable.audio)
-        h.b.user.text = "${i + 1}. ${qud.userName}"
-        h.b.date.text = Utils.date(qud.addedAt)
+        h.b.user.text = "${i + 1}. ${q.owner}"
+        h.b.date.text = Utils.date(q.date)
 
         // status
-        if (qud.status == 2.toByte())
+        if (q.status == 2.toByte())
             h.b.status.setImageResource(R.drawable.play)
         else h.b.status.setAnimation(
             when {
-                qud.isFailed() -> R.raw.failed
+                q.isFailed() -> R.raw.failed
                 DownloadService.active.value != true -> R.raw.pending
                 else -> R.raw.download
             }
         )
-        h.b.status.repeatCount = if (qud.isFailed()) 0 else LottieDrawable.INFINITE
+        h.b.status.repeatCount = if (q.isFailed()) 0 else LottieDrawable.INFINITE
         val pad =
-            if (!qud.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
+            if (!q.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
         h.b.status.setPadding(pad, pad, pad, pad)
 
         // clicks
         h.b.root.setOnClickListener {
-            c.mm.queueds?.getOrNull(h.layoutPosition)?.let {
+            c.m.queue.getOrNull(h.layoutPosition)?.also {
                 if (it.link.isNotEmpty()) UiTools.openLink(c, it.link)
             }
         }
         h.b.status.setOnClickListener {
-            c.mm.queueds?.getOrNull(h.layoutPosition)?.apply {
+            c.m.queue.getOrNull(h.layoutPosition)?.apply {
                 if (h.layoutPosition == 0 && status == 0.toByte()) return@setOnClickListener
                 CoroutineScope(Dispatchers.IO).launch {
                     when (status) {
-                        0.toByte() -> status = 2.toByte()
-                        1.toByte() -> status = 0.toByte()
-                        2.toByte() -> status = 0.toByte()
+                        0.toByte() -> status = 2
+                        1.toByte() -> status = 0
+                        2.toByte() -> status = 0
                     }
-                    c.dao.updateQueued(this@apply)
+                    c.pickle.save(c.m.queue.toList())
                     Downloads.initService(c)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
@@ -76,7 +76,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.mm.queueds?.size ?: 0
+    override fun getItemCount() = c.m.queue.size
 
     override fun onViewAttachedToWindow(h: AnyViewHolder<ListQudBinding>) {
         h.b.status.resumeAnimation()

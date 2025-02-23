@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
+import androidx.annotation.WorkerThread
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -13,6 +14,7 @@ import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.DownloadHistory
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Notify
@@ -23,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.cancellation.CancellationException
 
 class DownloadService : ForegroundService(), Downloader {
     private var dest: String? = null
@@ -30,6 +33,9 @@ class DownloadService : ForegroundService(), Downloader {
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
     private var des: ParcelFileDescriptor? = null
+    private val pickle: Pickle by lazy {
+        Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
+    }
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String
@@ -61,8 +67,15 @@ class DownloadService : ForegroundService(), Downloader {
         ntfTitle = getString(R.string.downloaderTitle)
         initialNotification(Companion, Downloads::class)
         if (job?.isActive != true)
-            job = CoroutineScope(Dispatchers.IO).launch { start() }.also {
-                it.invokeOnCompletion { onFinished() }
+            job = CoroutineScope(Dispatchers.IO).launch {
+                if (m.queue.isEmpty())
+                    pickle.restore<List<Queued>>()
+                        ?.also { m.queue.addAll(it) }
+                start()
+            }.also {
+                it.invokeOnCompletion { e ->
+                    if (e is CancellationException) onFinished()
+                }
             }
     }
 
@@ -121,8 +134,14 @@ class DownloadService : ForegroundService(), Downloader {
         incrementCounter(Settings.spDlErrorCount)
     }
 
+    @WorkerThread
     override fun onFinished() {
-        finish(false)
+        CoroutineScope(Dispatchers.IO).launch {
+            pickle.save(m.queue.toList())
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            finish(false)
+        }
     }
 
     override fun onFatalError(e: Exception) {

@@ -6,13 +6,15 @@ plugins {
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "3.3.5"
+version = "3.4.0"
 
 sourceSets.getByName("main") { kotlin.srcDirs("main") }
 sourceSets.getByName("test") { kotlin.srcDirs("test") }
 
 dependencies {
     implementation(project(":core"))
+
+    implementation(libs.serialization.json)
 }
 
 tasks.jar {

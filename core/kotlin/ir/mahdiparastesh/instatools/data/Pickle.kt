@@ -6,10 +6,13 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-/** Caches data models in order to reduce the number of API requests. */
+/**
+ * Caches data models in order to reduce the number of API requests.
+ * Used as an object-oriented data storage as well!
+ */
 @Suppress("RedundantSuspendModifier")
 class Pickle(root: File, acc: Long, type: Type, id: String?) {
-    private val branch: File
+    val branch: File
     val file: File
 
     init {
@@ -18,7 +21,7 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
         file = File(branch, "${if (type.single) type.name.lowercase() else id}.json")
     }
 
-    suspend fun save(data: Any) {
+    suspend inline fun <reified DATA> save(data: DATA) {
         if (!branch.exists()) branch.mkdirs()
         FileOutputStream(file).use {
             it.write(Api.json.encodeToString(data).encodeToByteArray())

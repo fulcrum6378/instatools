@@ -14,17 +14,16 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
@@ -47,16 +46,18 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.concurrent.CopyOnWriteArrayList
 
 class Downloads : BaseActivity(), ServiceOwner, Counter {
     lateinit var b: DownloadsBinding
-    val mm: MyModel by viewModels()
     private lateinit var bd: GuideSwipeDeleteBinding
     private val handledLinks = mutableSetOf<String>()
     private var isSwipeDeleteInflated: Boolean? = false
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
+    private var askedForDelete = false
+    val pickle: Pickle by lazy {
+        Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
+    }
 
     override val com: ActivityCompanion get() = Companion
     override val root: ConstraintLayout? get() = b.root
@@ -73,15 +74,10 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = mm.queueds != null
-    override fun isModelEmpty(): Boolean = mm.queueds?.isEmpty() == true
+    override fun isModelLoaded(): Boolean = true
+    override fun isModelEmpty(): Boolean = m.queue.isEmpty()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListQud(this)
     override fun screenHeight(): Int = dm.heightPixels
-
-    class MyModel : ViewModel() {
-        var queueds: CopyOnWriteArrayList<Queued>? = null
-        var askedForDelete = false
-    }
 
     companion object : ActivityCompanion() {
         const val HANDLE_INSERTED = 0
@@ -114,30 +110,29 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_INSERTED -> mm.queueds?.apply {
-                        add(msg.obj as Queued)
-                        val pos = mm.queueds?.size ?: 1
+                    HANDLE_INSERTED -> {
+                        m.queue.add(msg.obj as Queued) // TODO take it somewhere else
+                        val pos = m.queue.size
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                         onListResized()
                     }
                     HANDLE_CHANGED -> find(msg)?.let {
                         if (it == -1) return@let
-                        mm.queueds!![it] = msg.obj as Queued
+                        m.queue[it] = msg.obj as Queued
                         b.rv.adapter?.notifyItemChanged(it)
                     }
                     HANDLE_DELETED -> find(msg)?.let {
-                        mm.queueds!!.removeAt(it)
+                        m.queue.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size)
+                        b.rv.adapter?.notifyItemRangeChanged(it, m.queue.size)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         onListResized()
                     }
                 }
             }
 
-            fun find(msg: Message): Int? =
-                if (mm.queueds != null) findQueued(msg.obj as Queued, mm.queueds!!) else null
+            fun find(msg: Message): Int? = findQueued(msg.obj as Queued, m.queue)
         }
 
         // paste link
@@ -159,8 +154,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
-            if (it in handledLinks || mm.queueds?.map { q -> q.link }
-                    ?.let { qs -> it in qs } == true) return@also
+            if (it in handledLinks || it in m.queue.map { q -> q.link }) return@also
             if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.downloads)
@@ -198,8 +192,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun load(reset: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            mm.queueds = CopyOnWriteArrayList(dao.queueds())
-            mm.queueds!!.sortBy { it.addedAt }
+            if (m.queue.isEmpty())
+                pickle.restore<List<Queued>>()
+                    ?.also { m.queue.addAll(it) }
             withContext(Dispatchers.Main) { onLoaded() }
         }
     }
@@ -224,7 +219,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun onListResized() {
         super.onListResized()
-        updateCount(this, mm.queueds?.size ?: 0)
+        updateCount(this, m.queue.size)
     }
 
     private fun findQueued(it: Queued, inList: List<Queued>?): Int? {
@@ -236,32 +231,35 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     @SuppressLint("NotifyDataSetChanged")
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.dtControl -> if (!mm.queueds.isNullOrEmpty()) {
-                if (DownloadService.active.value == true) stopService(Intent(c, DownloadService::class.java)
+            R.id.dtControl -> if (!m.queue.isEmpty()) {
+                if (DownloadService.active.value == true) stopService(Intent(
+                    c,
+                    DownloadService::class.java
+                )
                     .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }
 
             R.id.dtRetryAll, R.id.dtPauseAll, R.id.dtResumeAll ->
-                if (!mm.queueds.isNullOrEmpty()) CoroutineScope(Dispatchers.IO).launch {
+                if (!m.queue.isEmpty()) CoroutineScope(Dispatchers.IO).launch {
                     var any = false
-                    mm.queueds?.forEach {
+                    m.queue.forEach {
                         if (it.status == statusPlan[item.itemId] ||
                             !(item.itemId == R.id.dtRetryAll || it.status != 1.toByte()) ||
                             (item.itemId == R.id.dtRetryAll && it.status == 2.toByte())
                         ) return@forEach
                         it.status = statusPlan[item.itemId]!!
-                        dao.updateQueued(it)
                         any = true
                     }
                     if (any) {
+                        pickle.save(m.queue.toList())
                         withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
                 } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
-            R.id.dtExportLinks -> if (!mm.queueds.isNullOrEmpty())
+            R.id.dtExportLinks -> if (!m.queue.isEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = EXPORT_LINKS_MIME
@@ -278,15 +276,15 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     else "application/json"
             })
 
-            R.id.dtClearAll -> if (!mm.queueds.isNullOrEmpty())
+            R.id.dtClearAll -> if (!m.queue.isEmpty())
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.listClear)
                     setMessage(R.string.listClearSure)
                     setNegativeButton(R.string.no, null)
                     setPositiveButton(R.string.yes) { _, _ ->
                         CoroutineScope(Dispatchers.IO).launch {
-                            dao.deleteQueueds()
-                            mm.queueds?.clear()
+                            m.queue.clear()
+                            pickle.save(m.queue.toList())
                             b.rv.adapter?.notifyDataSetChanged()
                             onListResized()
                         }
@@ -297,10 +295,10 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     }
 
     private val exportLinks = launcherForResult {
-        if (it.resultCode == RESULT_OK && mm.queueds != null) CoroutineScope(Dispatchers.IO).launch {
+        if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
                 FileOutputStream(des.fileDescriptor).use { fos ->
-                    fos.write(Json.encodeToString(mm.queueds!!).encodeToByteArray())
+                    fos.write(Json.encodeToString(m.queue).encodeToByteArray())
                 }
             }
         }
@@ -315,8 +313,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     )
                 }
             }.onSuccess { queueds ->
-                dao.addQueueds(queueds.toList())
-                mm.queueds?.addAll(queueds)
+                m.queue.addAll(queueds)
+                pickle.save(m.queue.toList())
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
@@ -337,11 +335,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (isTaskRoot) goTo(Main::class)
     }
 
-    override fun onDestroy() {
-        mm.queueds = null
-        super.onDestroy()
-    }
-
     inner class SwipeToRemove : ItemTouchHelper.Callback() {
         override fun getMovementFlags(rv: RecyclerView, h: RecyclerView.ViewHolder): Int =
             makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
@@ -351,15 +344,15 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         ): Boolean = false
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
-            val q = mm.queueds?.getOrNull(h.layoutPosition) ?: return
-            if (!mm.askedForDelete) MaterialAlertDialogBuilder(this@Downloads).apply {
+            val q = m.queue.getOrNull(h.layoutPosition) ?: return
+            if (!askedForDelete) MaterialAlertDialogBuilder(this@Downloads).apply {
                 setTitle(R.string.downloads)
                 setMessage(R.string.deleteItemSure)
                 setCancelable(false)
                 setPositiveButton(R.string.yes) { _, _ ->
-                    mm.askedForDelete = true
+                    askedForDelete = true
                     delete(q)
-                    Delay(30000L) { mm.askedForDelete = false }
+                    Delay(30000L) { askedForDelete = false }
                 }
                 setNegativeButton(R.string.no, null)
             }.show()
@@ -368,13 +361,12 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
         private fun delete(q: Queued) {
             CoroutineScope(Dispatchers.IO).launch {
-                dao.deleteQueued(q)
-                if (mm.queueds != null) withContext(Dispatchers.Main) {
-                    findQueued(q, mm.queueds)?.let {
-                        mm.queueds?.removeAt(it)
+                pickle.save(m.queue.toList())
+                withContext(Dispatchers.Main) {
+                    findQueued(q, m.queue)?.also {
+                        m.queue.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
-                        if (mm.queueds == null) return@let
-                        b.rv.adapter?.notifyItemRangeChanged(it, mm.queueds!!.size - 1)
+                        b.rv.adapter?.notifyItemRangeChanged(it, m.queue.size - 1)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         onListResized()
                     }
