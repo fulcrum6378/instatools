@@ -1,9 +1,11 @@
 package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.util.Utils
+import kotlinx.serialization.Serializable
 
-@Suppress("PropertyName", "SpellCheckingInspection", "MemberVisibilityCanBePrivate")
-data class Dm(
+@Suppress("SpellCheckingInspection")
+@Serializable
+class Dm(
     val item_id: String,
     //val message_id: String,
     val item_type: String,
@@ -43,6 +45,7 @@ data class Dm(
     // 3. Found in {media_share}: There is also some other kind of short video post which appears
     // in DM this time as a SQUARE and also appears in "Videos" section.
 ) {
+    @Serializable
     class Inbox(
         //val blended_inbox_enabled: Boolean,
         var has_older: Boolean,
@@ -54,12 +57,14 @@ data class Dm(
         //val unseen_count_ts: Double,
     )
 
-    /*class ContinuumCursor( // each are either Double or String
+    /*@Serializable
+    class ContinuumCursor( // each are either Double or String
         val cursor_timestamp_seconds: Any,
         val cursor_relevancy_score: Any,
         val cursor_thread_v2_id: Any,
     )*/
 
+    @Serializable
     class DmThread(
         //val admin_user_ids: Array<Any?>,
         //val approval_required_for_new_members: Boolean,
@@ -130,11 +135,13 @@ data class Dm(
         fun exported() = "Exported ${title()}_${Utils.fileDateTime(Utils.now())}"
     }
 
+    @Serializable
     class ActionLog
     //val bold: Array<Any>,
     //val description: String,
     //val is_reaction_log: Boolean,
 
+    @Serializable
     class AnimatedMedia(
         //val id: String,
         val images: AnimatedMediaImages,
@@ -143,8 +150,10 @@ data class Dm(
         //val user: Rest.User,
     )
 
+    @Serializable
     class AnimatedMediaImages(val fixed_height: AnimatedMediaImage)
 
+    @Serializable
     class AnimatedMediaImage(
         val height: String,
         //val mp4: String, // .MP4
@@ -156,6 +165,7 @@ data class Dm(
         val width: String,
     )
 
+    @Serializable
     class Link(
         //val client_context: String,
         val link_context: LinkContext,
@@ -163,6 +173,7 @@ data class Dm(
         val text: String,
     )
 
+    @Serializable
     class LinkContext(
         val link_url: String,
         //val link_title: String,
@@ -170,12 +181,15 @@ data class Dm(
         //val link_image_url: String,
     )
 
+    @Serializable
     class ClipShare(val clip: Media)
     // Since Clip is some kind of a post you cannot react to it the way you do in a story; and
     // even if you share it to someone else with a message, that'll be considered a separate "text".
 
+    @Serializable
     class FelixShare(val video: Media, val text: String?) : PlaceHolder()
 
+    @Serializable
     class StoryShare(
         //val is_reel_persisted: Boolean?,
         val media: Media?,
@@ -186,6 +200,7 @@ data class Dm(
         val text: String, // the person's message
     ) : PlaceHolder()
 
+    @Serializable
     class ReelShare(
         //val is_reel_persisted: Boolean,
         val media: Media?,
@@ -196,12 +211,14 @@ data class Dm(
         //val type: String, // e.g.: "reply"
     ) : PlaceHolder()
 
+    @Serializable
     class Reactions(
         //val likes: Array<Any?>,
         val emojis: Array<Emoji>,
         //val likes_count: Double
     )
 
+    @Serializable
     class Emoji(
         val timestamp: Double,
         //val client_context: String,
@@ -210,11 +227,13 @@ data class Dm(
         //val super_react_type: String,
     )
 
-    /*class ReactionInfo(
+    /*@Serializable
+    class ReactionInfo(
         val emoji: String,
         val intensity: Any?
     )*/
 
+    @Serializable
     class Voice(
         //val is_shh_mode: Boolean,
         val media: VoiceMedia?,
@@ -225,6 +244,7 @@ data class Dm(
         //val view_mode: String,
     )
 
+    @Serializable
     class VoiceMedia(
         val audio: Audio,
         //val id: String,
@@ -238,6 +258,7 @@ data class Dm(
         lateinit var audio_src: String
     }
 
+    @Serializable
     class Audio : AudioSrc()
     //val audio_src_expiration_timestamp_us: Double,
     //val duration: Double,
@@ -245,6 +266,7 @@ data class Dm(
     //val waveform_data: Array<Float>, // waves
     //val waveform_sampling_frequency_hz: Float,
 
+    @Serializable
     class VideoCallEvent(
         //val action: String, // e.g.: "video_call_started" or "video_call_ended"; the same for audio calls
         //val call_duration: Double,
@@ -262,6 +284,7 @@ data class Dm(
         //val vc_id: String,
     )
 
+    @Serializable
     open class PlaceHolder {
         //var is_linked: Boolean? = null // e.g.: false
         var title: String? = null // e.g.: "Post unavailable"
@@ -270,12 +293,14 @@ data class Dm(
     // When someone shares a profile, if the viewer has blocked that profile, the Placeholder is
     // shown instead of the Rest.User; indicating no reference to that profile's username or id!
 
+    @Serializable
     class LiveViewerInvite(
         val broadcast: LiveBroadcast?,
         val cta_button_name: String, // e.g.: "Watch Live Video" then "Content Not Available"
         val text: String, // e.g.: ""
     ) : PlaceHolder()
 
+    @Serializable
     class LiveBroadcast(
         //val id: String,
         //val dash_playback_url: String, // an *.mpd file!!
@@ -303,6 +328,7 @@ data class Dm(
         //val visibility: Float,
     )
 
+    @Serializable
     class DirectMediaShare(
         val text: String,
         //val media_share_type: String,// e.g.: "tag"

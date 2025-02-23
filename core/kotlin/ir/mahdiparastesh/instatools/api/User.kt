@@ -1,8 +1,9 @@
 package ir.mahdiparastesh.instatools.api
 
+import kotlinx.serialization.Serializable
 import java.text.DecimalFormat
 
-@Suppress("PropertyName")
+@Serializable
 class User(
     //val bio_links: Array<BioLink>?,
     val biography: String?,
@@ -58,7 +59,8 @@ class User(
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
     )*/
 
-    open class EdgeFollow(val count: Double) {
+    @Serializable
+    class EdgeFollow(val count: Double) {
         override fun toString(): String = when {
             count > 1000000.0 -> DecimalFormat("#.##").format(count / 1000000.0) + "M"
             count > 1000.0 -> DecimalFormat("#.##").format(count / 1000.0) + "K"

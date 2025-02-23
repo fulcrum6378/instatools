@@ -27,6 +27,8 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet
+import org.apache.commons.imaging.formats.webp.WebPImageMetadata
+import org.apache.commons.imaging.formats.webp.WebPImageParser
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -164,8 +166,9 @@ class Downloader : ForegroundService() {
             try {
                 when (ext) {
                     "jpg" -> writeJpeg(q, stream.readBytes(), fos)
+                    //"webp" -> writeWebP(q, stream.readBytes(), fos)
                     else -> stream.copyTo(fos)
-                    // TODO metadata for MP4 and WEBP?
+                    // TODO metadata for MP4 and PNG?
                 }
             } catch (_: IOException) {
                 failed(q)
@@ -186,7 +189,7 @@ class Downloader : ForegroundService() {
 
     @Throws(IOException::class)
     private fun writeJpeg(q: Queued, `in`: ByteArray, out: OutputStream) {
-        val outputSet = (Imaging.getMetadata(`in`) as JpegImageMetadata?)?.exif?.outputSet
+        val outputSet = (Imaging.getMetadata(`in`) as? JpegImageMetadata)?.exif?.outputSet
             ?: TiffOutputSet()
         outputSet.orCreateRootDirectory.apply {
             removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
@@ -213,6 +216,38 @@ class Downloader : ForegroundService() {
         }
         // TODO location data?
         ExifRewriter().updateExifMetadataLossless(`in`, out, outputSet)
+    }
+
+    @Throws(IOException::class)
+    private fun writeWebP(q: Queued, `in`: ByteArray, out: OutputStream) {
+        val parser = WebPImageParser()
+        val outputSet = (parser.getMetadata(`in`) as? WebPImageMetadata)?.exif?.outputSet
+            ?: TiffOutputSet()
+        outputSet.orCreateRootDirectory.apply {
+            removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+            add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+            removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
+            add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
+            removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
+            add(TiffTagConstants.TIFF_TAG_ARTIST, q.userName)
+            removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
+            add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.userName}")
+        }
+        outputSet.orCreateExifDirectory.apply {
+            /*removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL)
+            add( // Date taken
+                ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
+                tiffDate.format(q.addedAt)
+            )*/
+            q.caption?.also {
+                removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
+                add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
+            }
+            removeField(ExifTagConstants.EXIF_TAG_SITE)
+            add(ExifTagConstants.EXIF_TAG_SITE, q.link)
+        }
+        //`in`, out, outputSet
+        //TODO parser.writeImage()
     }
 
     private suspend fun failed(q: Queued) {

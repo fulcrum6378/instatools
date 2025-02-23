@@ -1,9 +1,11 @@
 package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.api.Rest.FriendshipStatus
+import ir.mahdiparastesh.instatools.util.CopyOnWriteArrayListSerializer
+import kotlinx.serialization.Serializable
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Suppress("MemberVisibilityCanBePrivate", "SpellCheckingInspection")
+@Serializable
 class GraphQl(
     val data: GraphQlData?,
     //val errors: Array<GraphQlError>?,
@@ -11,6 +13,7 @@ class GraphQl(
     override val status: String // can be "ok" with HTTP code 200 while having errors!!!
 ) : Rest {
 
+    @Serializable
     class GraphQlData(
         val highlights: Page<Story>?,
         val user: User?,
@@ -39,7 +42,8 @@ class GraphQl(
         //val xdt_user_unmute_story: UserInteractionWrapper?, // unmute story
     )
 
-    /*class GraphQlError(
+    /*@Serializable
+     class GraphQlError(
         //val message: String,
         //val code: Int?,
         //val summary: String?,
@@ -49,15 +53,19 @@ class GraphQl(
         //val severity: String
     )*/
 
+    @Serializable
     class Page<Node>(
+        @Serializable(with = CopyOnWriteArrayListSerializer::class)
         val edges: CopyOnWriteArrayList<Edge<Node>>,
         val page_info: PageInfo,
     ) {
         fun isEmpty(): Boolean = edges.isEmpty()
     }
 
+    @Serializable
     class Edge<Node>(val node: Node)
 
+    @Serializable
     class PageInfo(
         //val end_cursor: String,
         var has_next_page: Boolean,
@@ -65,13 +73,16 @@ class GraphQl(
         //val start_cursor: String?,
     )
 
-    //class MediaShortcodeWebInfo(val items: List<Media>)
+    /*@Serializable
+    class MediaShortcodeWebInfo(val items: List<Media>)*/
 
-    /*class UserInteractionWrapper(
+    /*@Serializable
+    class UserInteractionWrapper(
         val muted_user: UserInteraction?, // posts/story
         val unmuted_user: UserInteraction?, // posts/story
     )*/
 
+    @Serializable
     class UserInteraction(
         //val __typename: String?, // only in block/unblock, always equals "XDTUserDict"
         //val pk: String?, // only in restrict/unrestrict
@@ -80,5 +91,6 @@ class GraphQl(
         //val id: String
     )
 
-    //class MediaInteraction(val __typename: String) // always "XDTEmptyRecord"
+    /*@Serializable
+    class MediaInteraction(val __typename: String)*/ // always "XDTEmptyRecord"
 }

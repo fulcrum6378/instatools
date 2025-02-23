@@ -1,4 +1,8 @@
-plugins { kotlin("jvm") }
+plugins {
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.serialization)
+}
+
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
@@ -10,6 +14,7 @@ sourceSets.getByName("test") { kotlin.srcDirs("test") }
 dependencies {
     implementation(project(":core"))
 
+    implementation(libs.serialization.json)
     implementation(libs.gson)
     implementation(libs.commons.imaging)
 }

@@ -1,8 +1,7 @@
 package ir.mahdiparastesh.instatools.api
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import ir.mahdiparastesh.instatools.util.Utils
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -11,9 +10,10 @@ import javax.net.ssl.HttpsURLConnection
 import kotlin.reflect.KClass
 
 class Api {
-    private var cookies = ""
+    var cookies = ""
     var proxy: Proxy = Proxy.NO_PROXY
     val connectTimeout = 5000
+    val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
 
     init {
         if (InetAddress.getLocalHost().hostName in arrayOf("CHIMAERA", "ANGELDUST"))
@@ -36,7 +36,7 @@ class Api {
             }
     }
 
-    fun <JSON> call(
+    inline fun <reified JSON> call(
         url: String,
         clazz: KClass<*>,
         isPost: Boolean = false,
@@ -92,15 +92,9 @@ class Api {
         if (text.startsWith("<!DOCTYPE html>"))
             throw FailureException(-4)
 
-        val json = Gson().fromJson(
-            text,
-            if (generics != null) TypeToken.getParameterized(
-                clazz.java, *generics.map { it.java }.toTypedArray()
-            ).type else clazz.java
-        ) as JSON
-        if (clazz == GraphQl::class && (json as GraphQl).data == null)
-            throw FailureException(-5)
-        return json
+        val data = json.decodeFromString<JSON>(text)
+        if (data is GraphQl && data.data == null) throw FailureException(-5)
+        return data
     }
 
     fun page(url: String): String {
@@ -109,8 +103,8 @@ class Api {
         con.setRequestProperty("accept", "text/html")
         con.setRequestProperty(
             "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                    "Chrome/133.0.0.0 Safari/537.36"
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/133.0.0.0 Safari/537.36"
         )
         con.setRequestProperty("cookie", cookies)
 

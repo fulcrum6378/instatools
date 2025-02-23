@@ -1,14 +1,19 @@
 package ir.mahdiparastesh.instatools.api
 
+import ir.mahdiparastesh.instatools.util.CopyOnWriteArrayListSerializer
+import kotlinx.serialization.Serializable
 import java.util.concurrent.CopyOnWriteArrayList
 
 interface Rest {
     val status: String
 
+    @Serializable
     class QuickResponse(override val status: String) : Rest
 
+    @Serializable
     class LazyList<N>(
         //val auto_load_more_enabled: Boolean,
+        @Serializable(with = CopyOnWriteArrayListSerializer::class)
         val items: CopyOnWriteArrayList<N>,
         var more_available: Boolean,
         var next_max_id: String?,
@@ -16,13 +21,16 @@ interface Rest {
         override val status: String,
     ) : Rest
 
+    @Serializable
     class SavedItem(val media: Media)
 
+    @Serializable
     class UserInfo(
         val user: User,
         override val status: String
     ) : Rest
 
+    @Serializable
     class InboxPage(
         //val viewer: User,
         val inbox: Dm.Inbox,
@@ -33,6 +41,7 @@ interface Rest {
         override val status: String
     ) : Rest
 
+    @Serializable
     class InboxThread(
         val thread: Dm.DmThread?,
         override val status: String
@@ -40,6 +49,7 @@ interface Rest {
 
 
     /** Both following and followers receive this API. */
+    @Serializable
     class Follow(
         val users: Array<User>? = null,
         /* true for @fulcrum6378 which needs multiple fetches,
@@ -58,11 +68,13 @@ interface Rest {
         override val status: String
     ) : Rest
 
+    @Serializable
     class Friendships(
         val friendship_statuses: Map<String, FriendshipStatus>,
         override val status: String
     ) : Rest
 
+    @Serializable
     class FriendshipStatus(
         //val blocking: Boolean?, // only in mute/unmute and show(one)
         //val followed_by: Boolean?, // only in mute/unmute and show(one)
@@ -84,6 +96,7 @@ interface Rest {
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
     )
 
+    @Serializable
     class Search(
         //val places: Array<HashMap<String, *>>,
         //val hashtags: Array<HashMap<String, *>>,
@@ -93,7 +106,9 @@ interface Rest {
         override val status: String
     ) : Rest
 
+    @Serializable
     class ItemUser(val position: Float, val user: User)
 
+    @Serializable
     class Seen(val status_code: String /* must be "200" */)
 }

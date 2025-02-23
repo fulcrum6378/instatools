@@ -1,9 +1,10 @@
 package ir.mahdiparastesh.instatools.api
 
 import ir.mahdiparastesh.instatools.util.Utils
+import kotlinx.serialization.Serializable
 import kotlin.math.abs
 
-@Suppress("PropertyName")
+@Serializable
 class Media(
     //val can_reply: Boolean?,
     val caption: Caption?,
@@ -79,6 +80,7 @@ class Media(
     }
 
 
+    @Serializable
     class Caption(
         //val created_at: Double,
         val pk: String,
@@ -87,8 +89,10 @@ class Media(
         //val user_id: String?,
     )
 
+    @Serializable
     class ImageVersions2(val candidates: Array<Version>)
 
+    @Serializable
     class Version(
         val url: String,
         val height: Float,
