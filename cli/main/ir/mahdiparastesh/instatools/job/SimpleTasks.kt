@@ -15,7 +15,7 @@ object SimpleTasks {
      * @throws Api.FailureException
      */
     @Throws(Api.FailureException::class)
-    fun handlePostLink(link: String, idealSize: Float) {
+    fun handlePostLink(link: String, idealSize: Int) {
         val html = Api.html(link)
         val data = RelayPrefetchedStreamCache.crawl(html) { // hashMapOf<String, Map<String, Any>>()
             it.contains("PolarisPostRootQueryRelayPreloader")

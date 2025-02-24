@@ -8,10 +8,10 @@ class Story(
     val cover_media: Cover?, // null in stories
     val id: String, // user id
     var items: ArrayList<Media>?, // null in highlights tray
-    //val latest_reel_media: Double, // time in seconds
+    //val latest_reel_media: Float, // time in seconds
     //val muted: Boolean?, // null in highlights
     val reel_type: String?, // "user_reel" or "highlight_reel", null in highlights tray
-    //val seen: Float?, // null in highlights
+    //val seen: Int?, // null in highlights
     val title: String?, // null in stories
     val user: User,
 
@@ -32,12 +32,9 @@ class Story(
 
     @Serializable
     class Cover(
-        val cropped_image_version: Url,
+        val cropped_image_version: Media.Url,
         //val full_image_version: Any?
     )
-
-    @Serializable
-    class Url(val url: String)
 
     @Serializable
     class Wrapper(val reels_media: List<Story>)

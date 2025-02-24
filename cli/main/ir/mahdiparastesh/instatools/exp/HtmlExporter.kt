@@ -64,7 +64,7 @@ class HtmlExporter(exportable: Exportable) : BaseExporter(exportable) {
             // Media
             var media: Media? = null
             var mediaVideoAllowed = true
-            var mediaQuality: Float? = null
+            var mediaQuality: Int? = null
             val nonMedia = when {
                 dm.animated_media != null -> {
                     limit += 2

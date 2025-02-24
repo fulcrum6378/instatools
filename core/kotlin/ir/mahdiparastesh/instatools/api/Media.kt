@@ -10,11 +10,11 @@ class Media(
     //val can_reply: Boolean?,
     val caption: Caption?,
     val carousel_media: Array<Media>?,
-    //val carousel_media_count: Float?,
+    //val carousel_media_count: Int?,
     //val carousel_media_ids: Array<String>?,
     //val coauthor_producers: Array<User>?,
     val code: String?,
-    //val comment_count: Float?,
+    //val comment_count: Int?,
     val has_audio: Boolean?,
     val has_liked: Boolean?,
     val has_viewer_saved: Boolean?,
@@ -23,11 +23,11 @@ class Media(
     val image_versions2: ImageVersions2,
     //val like_count: Double?,
     //val location: Map<String, Any?>?,
-    val media_type: Float,
-    //val number_of_qualities: Float?,
+    val media_type: Int,
+    //val number_of_qualities: Int?,
     //val organic_tracking_token: String?,
-    val original_height: Float?, // nullable in tagged carousel items
-    val original_width: Float?, // nullable in tagged carousel items
+    val original_height: Int?, // nullable in tagged carousel items
+    val original_width: Int?, // nullable in tagged carousel items
     val owner: User?,
     //val photo_of_you: Boolean?,
     private val pk: String?, // nullable in tagged carousel items
@@ -54,7 +54,7 @@ class Media(
         else -> throw IllegalStateException("New product type: $product_type ?!?")
     }
 
-    fun nearest(ideal: Float = Version.BEST, justImage: Boolean = false): String? {
+    fun nearest(ideal: Int = Version.BEST, justImage: Boolean = false): String? {
         var ret: String? = null
         val original = original_width?.let { Pair(original_width, original_height!!) }
         if (!justImage && video_versions != null)
@@ -69,7 +69,7 @@ class Media(
             ?: nearest(Version.WORST, true)
 
     fun hasAudio() =
-        has_audio == true || (carousel_media != null && carousel_media.any { it.media_type == 2f })
+        has_audio == true || (carousel_media != null && carousel_media.any { it.media_type == 2 })
 
     fun audioUrl(): String? {
         if (video_dash_manifest == null) return null
@@ -86,7 +86,7 @@ class Media(
      * @param onlyOneSlide whether this position of the slider should downloaded, null otherwise
      */
     fun queue(
-        idealSize: Float = Version.BEST,
+        idealSize: Int = Version.BEST,
         link: String? = null,
         owner: String? = null,
         onlyOneSlide: Int? = null
@@ -141,23 +141,23 @@ class Media(
     @Serializable
     class Version(
         val url: String,
-        val height: Float,
-        val width: Float,
+        val height: Int,
+        val width: Int,
     ) {
         @Suppress("MemberVisibilityCanBePrivate")
         companion object {
-            const val WORST = 0f
-            const val MEDIUM = -1f
-            const val BEST = -2f
+            const val WORST = 0
+            const val MEDIUM = -1
+            const val BEST = -2
             // Any positive number except these, represents an ideal width,
             // Any negative number except these, represents an ideal height.
 
-            const val THUMB = -3f  // used only in Exporter
+            const val THUMB = -3  // used only in Exporter
 
             fun pick(
                 list: Array<Version>,
-                ideal: Float,
-                original: Pair<Float, Float>? = null,
+                ideal: Int,
+                original: Pair<Int, Int>? = null,
             ): String? = when (ideal) {
                 BEST -> best(list, original)
                 MEDIUM -> medium(list)
@@ -167,14 +167,14 @@ class Media(
 
             fun best(
                 list: Array<Version>,
-                original: Pair<Float, Float>? = null,
+                original: Pair<Int, Int>? = null,
             ): String? {
                 var ret: String?
                 ret =
                     original?.let { o -> list.find { it.width == o.first && it.height == o.second }?.url }
                 if (ret == null) {
-                    var maxW = 0f
-                    var maxH = 0f
+                    var maxW = 0
+                    var maxH = 0
                     list.forEach {
                         if (it.width > maxW) maxW = it.width
                         if (it.height > maxH) maxH = it.height
@@ -189,8 +189,8 @@ class Media(
 
 
             fun worst(list: Array<Version>): String? {
-                var minW = 1000f
-                var minH = 1000f
+                var minW = 1000
+                var minH = 1000
                 list.forEach {
                     if (it.width < minW) minW = it.width
                     if (it.height < minH) minH = it.height
@@ -201,11 +201,11 @@ class Media(
 
             fun nearest(
                 list: Array<Version>,
-                ideal: Float,
-                original: Pair<Float, Float>? = null,
+                ideal: Int,
+                original: Pair<Int, Int>? = null,
             ): String? {
-                var nW = original?.first ?: 0f
-                var nH = original?.second ?: 0f
+                var nW = original?.first ?: 0
+                var nH = original?.second ?: 0
                 var nWDif = abs(ideal - nW)
                 var nHDif = abs(ideal - nH)
                 if (ideal > 0) list.forEach {
@@ -225,6 +225,9 @@ class Media(
             }
         }
     }
+
+    @Serializable
+    class Url(val url: String)
 
     enum class Type(val num: Byte) {
         IMAGE(1),

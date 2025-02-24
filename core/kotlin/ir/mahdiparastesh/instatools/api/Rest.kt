@@ -107,7 +107,7 @@ interface Rest {
     ) : Rest
 
     @Serializable
-    class ItemUser(val position: Float, val user: User)
+    class ItemUser(val position: Int, val user: User)
 
     @Serializable
     class Seen(val status_code: String /* must be "200" */)

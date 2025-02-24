@@ -12,7 +12,7 @@ class User(
     val followed_by_viewer: Boolean?, // available via PROFILE_INFO
     //val friendship_status: FriendshipStatus?,
     val full_name: String?,
-    val hd_profile_pic_url_info: Media.Version?, // available via USER_INFO (highest quality)
+    val hd_profile_pic_url_info: Media.Url?, // available via USER_INFO (highest quality)
     val hd_profile_pic_versions: Array<Media.Version>?, // available via USER_INFO
     val id: String?,
     val is_private: Boolean?,

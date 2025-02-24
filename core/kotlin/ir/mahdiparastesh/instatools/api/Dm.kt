@@ -237,9 +237,9 @@ class Dm(
     class Voice(
         //val is_shh_mode: Boolean,
         val media: VoiceMedia?,
-        //val media_type: Float?,
+        //val media_type: Int?,
         //val replay_expiring_at_us: Any?,
-        //val seen_count: Float,
+        //val seen_count: Int,
         //val seen_user_ids: Array<Any>,
         //val view_mode: String,
     )
@@ -248,7 +248,7 @@ class Dm(
     class VoiceMedia(
         val audio: Audio,
         //val id: String,
-        //val media_type: Float,
+        //val media_type: Int,
         //val organic_tracking_token: String,
         //val product_type: String,
         //val user: Rest.User,
@@ -306,11 +306,11 @@ class Dm(
         //val dash_playback_url: String, // an *.mpd file!!
         //val dash_abr_playback_url: String, // an *.mpd file!!
         //val broadcast_status: String, // e.g.: "interrupted"
-        //val viewer_count: Float,
+        //val viewer_count: Int,
         //val internal_only: Boolean,
         //val cover_frame_url: String, // thumbnail
         //val cobroadcasters: Array<Any>,
-        //val is_player_live_trace_enabled: Float,
+        //val is_player_live_trace_enabled: Int,
         //val is_gaming_content: Boolean,
         //val is_live_comment_mention_enabled: Boolean,
         //val is_live_comment_replies_enabled: Boolean,
@@ -323,9 +323,9 @@ class Dm(
         //val live_post_id: String,
         //val broadcast_message: String,
         //val organic_tracking_token: String,
-        //val dimensions: Map<String, Float>, // "width" and "height"
+        //val dimensions: Map<String, Int>, // "width" and "height"
         //val broadcast_experiments: Map<String, Any?>, // much data
-        //val visibility: Float,
+        //val visibility: Int,
     )
 
     @Serializable

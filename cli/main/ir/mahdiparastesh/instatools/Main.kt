@@ -317,7 +317,7 @@ private fun expOptionSelector(key: String) = when (key) {
     else -> null
 }
 
-private fun expSetting(value: String?): Float? {
+private fun expSetting(value: String?): Int? {
     if (value in arrayOf("no", "n", "none")) return null
     if (value in arrayOf("thumb", "thumbnail")) return Media.Version.THUMB
     return Option.quality(value)

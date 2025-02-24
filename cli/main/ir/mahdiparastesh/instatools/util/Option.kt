@@ -39,20 +39,20 @@ enum class Option(val key: String, val value: Any? = null) {
             return opt
         }
 
-        fun quality(value: String? = null): Float {
+        fun quality(value: String? = null): Int {
             if (value == null) return Media.Version.BEST
             return when (value) {
                 "h", "high", "original" -> Media.Version.BEST
                 "m", "medium", "med" -> Media.Version.MEDIUM
                 "l", "low" -> Media.Version.WORST
                 "x" -> try {
-                    value.substring(1).toFloat()
+                    value.substring(1).toInt()
                 } catch (_: NumberFormatException) {
                     throw InvalidCommandException("\"$value\" is not a valid number!")
                 }
 
                 "y" -> try {
-                    -value.substring(1).toFloat()
+                    -value.substring(1).toInt()
                 } catch (_: NumberFormatException) {
                     throw InvalidCommandException("\"$value\" is not a valid number!")
                 }

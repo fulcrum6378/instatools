@@ -11,7 +11,7 @@ class DownloadTask : Downloader {
     val outputDir = File("./Downloads/")
 
     fun download(
-        med: Media, idealSize: Float, link: String? = null, owner: String? = null
+        med: Media, idealSize: Int, link: String? = null, owner: String? = null
     ) {
         for (q in med.queue(idealSize, link, owner)) queue.add(q)
         start()

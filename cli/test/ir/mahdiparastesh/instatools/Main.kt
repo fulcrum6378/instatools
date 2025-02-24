@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import java.net.InetAddress
 import java.net.InetSocketAddress
