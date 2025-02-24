@@ -35,8 +35,8 @@ interface Rest {
         //val viewer: User,
         val inbox: Dm.Inbox,
         //val seq_id: String,
-        //val snapshot_at_ms: Double, // milliseconds
-        //val pending_requests_total: Double,
+        //val snapshot_at_ms: Long, // milliseconds
+        //val pending_requests_total: Int,
         //val has_pending_top_requests: Boolean,
         override val status: String
     ) : Rest
@@ -57,7 +57,7 @@ interface Rest {
         //val big_list: Boolean,
         /* Maximum amount of users a single fetch can take which randomly is lower than expected!
          * always equals 200, even in Instagram Web's own fetches! */
-        //val page_size: Double,
+        //val page_size: Int,
         val next_max_id: String? = null,
         /* "Accounts you don't follow back", "Least interacted with", etc. ONLY IN FOLLOWERS! */
         //val groups: Map<String, Any?>,

@@ -36,7 +36,7 @@ import java.util.*
 
 class ListThd(val c: Main, private val f: PageBox) :
     RecyclerView.Adapter<AnyViewHolder<ListThdBinding>>() {
-    private val idealW = (c.dm.widthPixels.toFloat() * 0.8f) * c.dm.density
+    private val idealW = ((c.dm.widthPixels.toFloat() * 0.8f) * c.dm.density).toInt()
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -58,7 +58,7 @@ class ListThd(val c: Main, private val f: PageBox) :
 
         @SuppressLint("CheckResult", "SetTextI18n")
         fun ListThdBinding.onBind(
-            c: Context, thread: Dm.DmThread, i: Int, idealW: Float = Media.Version.BEST,
+            c: Context, thread: Dm.DmThread, i: Int, idealW: Int = Media.Version.BEST,
             f: PageBox? = null, h: AnyViewHolder<ListThdBinding>? = null,
             downloaded: HashMap<String, Downloadable>? = null,
         ): ListThdBinding {

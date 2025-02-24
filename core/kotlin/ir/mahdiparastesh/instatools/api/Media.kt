@@ -21,7 +21,7 @@ class Media(
     private val id: String, // <media ID>_<user ID>
     //val invited_coauthor_producers: Array<User>?,
     val image_versions2: ImageVersions2,
-    //val like_count: Double?,
+    //val like_count: Long?,
     //val location: Map<String, Any?>?,
     val media_type: Int,
     //val number_of_qualities: Int?,
@@ -32,12 +32,12 @@ class Media(
     //val photo_of_you: Boolean?,
     private val pk: String?, // nullable in tagged carousel items
     val product_type: String?,
-    val taken_at: Double,
+    val taken_at: Long,
     val user: User?,
     val video_dash_manifest: String?,
     val video_duration: Float?, // in seconds
     val video_versions: Array<Version>?,
-    //val view_count: Double?,
+    //val view_count: Long?,
 ) {
 
     fun id() = pk ?: id.substringBefore("_")
@@ -128,7 +128,7 @@ class Media(
 
     @Serializable
     class Caption(
-        //val created_at: Double,
+        //val created_at: Long,
         val pk: String,
         val text: String,
         val user: User?,

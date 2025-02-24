@@ -60,13 +60,13 @@ class User(
     )*/
 
     @Serializable
-    class EdgeFollow(val count: Double) {
+    class EdgeFollow(val count: Long) {
         override fun toString(): String = when {
-            count > 1000000.0 -> DecimalFormat("#.##").format(count / 1000000.0) + "M"
-            count > 1000.0 -> DecimalFormat("#.##").format(count / 1000.0) + "K"
+            count > 1000000 -> DecimalFormat("#.##").format(count / 1000000) + "M"
+            count > 1000 -> DecimalFormat("#.##").format(count / 1000) + "K"
             else -> count.toInt().toString()
         } // Cannot move to strings.xml without Context
     }
 
-    //class EdgeFollowMutual(count: Double, val edges: Array<Any>) : EdgeFollow(count)
+    //class EdgeFollowMutual(count: Long, val edges: Array<Any>) : EdgeFollow(count)
 }

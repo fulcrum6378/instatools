@@ -144,8 +144,8 @@ class Exporter : ForegroundService() {
                 if (opt?.img() == true || opt?.vid() == true) (when {
                     vid && dm.clip != null -> dm.clip!!.clip
                     dm.direct_media_share != null -> when (dm.direct_media_share!!.media.media_type) {
-                        1f, 2f -> if (img || vid) dm.direct_media_share!!.media else null
-                        8f -> dm.direct_media_share!!.media.carousel_media
+                        1, 2 -> if (img || vid) dm.direct_media_share!!.media else null
+                        8 -> dm.direct_media_share!!.media.carousel_media
                             ?.let { if (img || vid) it[0] else null }
 
                         else -> null
@@ -153,8 +153,8 @@ class Exporter : ForegroundService() {
                     vid && dm.felix_share != null -> dm.felix_share!!.video
                     dm.media != null -> if (img || vid) dm.media else null
                     dm.media_share != null -> when (dm.media_share!!.media_type) {
-                        1f, 2f -> if (img || vid) dm.media_share else null
-                        8f -> dm.media_share!!.carousel_media
+                        1, 2 -> if (img || vid) dm.media_share else null
+                        8 -> dm.media_share!!.carousel_media
                             ?.let { if (img || vid) it[0] else null }
                         else -> null
                     }
@@ -166,9 +166,9 @@ class Exporter : ForegroundService() {
                     val theVer = carousel_media?.getOrNull(0) ?: this
                     val quality = when {
                         theVer.video_versions != null && opt!!.video == 3 ->
-                            if (img) -opt!!.image.toFloat() else Media.Version.MEDIUM
-                        theVer.video_versions != null -> -opt!!.video.toFloat()
-                        else -> -opt!!.image.toFloat()
+                            if (img) -opt!!.image else Media.Version.MEDIUM
+                        theVer.video_versions != null -> -opt!!.video
+                        else -> -opt!!.image
                     }
                     theVer.nearest(quality, justImage = opt?.actVid() != true)?.also { url ->
                         media[dm.item_id] = Downloadable(

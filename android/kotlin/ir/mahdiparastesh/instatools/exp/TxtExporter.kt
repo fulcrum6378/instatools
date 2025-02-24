@@ -55,14 +55,14 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
                             ?.let { ", from @$it" } ?: "") +
                         ">" + dm.live_viewer_invite!!.text.shareText()
                     dm.media != null ->
-                        "<uploaded a ${if (dm.media!!.media_type == 1f) "picture" else "video"}>"
+                        "<uploaded a ${if (dm.media!!.media_type == 1) "picture" else "video"}>"
                     dm.media_share != null ->
-                        "<shared a ${if (dm.media_share!!.media_type == 1f) "picture" else "video"}: " +
+                        "<shared a ${if (dm.media_share!!.media_type == 1) "picture" else "video"}: " +
                             "${dm.media_share!!.link()}>"
                     dm.placeholder != null -> "<${dm.placeholder!!.message}>"
                     dm.profile != null -> "@${dm.profile!!.username} <User ID: ${dm.profile!!.pk}>"
                     dm.raven_media != null ->
-                        "<captured a ${if (dm.raven_media!!.media_type == 1f) "photo" else "video"}>"
+                        "<captured a ${if (dm.raven_media!!.media_type == 1) "photo" else "video"}>"
                     dm.reel_share != null ->
                         "<shared a reel${dm.reel_share!!.media?.link()?.let { ": $it" } ?: ""}>" +
                             dm.reel_share!!.text.shareText()
@@ -77,7 +77,7 @@ abstract class TxtExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp) 
             )
             if (dm.reactions != null) for (r in dm.reactions!!.emojis) ink.append("\n")
                 .append(r.emoji)
-                .append(" by ${allUsers?.find { it.id().toDouble() == r.sender_id }?.username} at ")
+                .append(" by ${allUsers?.find { it.id().toLong() == r.sender_id }?.username} at ")
                 .append(
                     SimpleDateFormat(
                         "${UiTools.DATE_FORMAT} - ${UiTools.TIME_FORMAT}", Locale.getDefault()

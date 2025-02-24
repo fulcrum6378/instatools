@@ -40,10 +40,10 @@ object Utils {
     }
 
     /** Converts a timestamp of seconds to a timestamp of millisecond. */
-    fun compileSecondsTS(seconds: Double) = seconds.toLong() * 1000L
+    fun compileSecondsTS(seconds: Long) = seconds * 1000L
 
     /** Converts a timestamp of microseconds to a timestamp of millisecond. */
-    fun compileMicrosecondsTS(microseconds: Double) = microseconds.toLong() / 1000L
+    fun compileMicrosecondsTS(microseconds: Long) = microseconds / 1000L
 
     fun <T> Map<String, T>.getOrNull(key: String): T? = if (containsKey(key)) this[key] else null
 

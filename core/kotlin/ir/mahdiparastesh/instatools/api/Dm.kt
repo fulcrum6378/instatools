@@ -12,7 +12,7 @@ class Dm(
     val is_sent_by_viewer: Boolean,
     val reactions: Reactions?,
     //val show_forward_attribution: Boolean,
-    val timestamp: Double,
+    val timestamp: Long,
     //val tq_seq_id: Double,
     //val uq_seq_id: Double,
     val user_id: Double,
@@ -53,7 +53,7 @@ class Dm(
         var oldest_cursor: String?,
         //val prev_cursor: ContinuumCursor?,
         var threads: ArrayList<DmThread>,
-        //val unseen_count: Double,
+        //val unseen_count: Long,
         //val unseen_count_ts: Double,
     )
 
@@ -74,7 +74,7 @@ class Dm(
         //val business_thread_folder: Double,
         //val canonical: Boolean,
         //val encoded_server_data_info: String,
-        //val folder: Double,
+        //val folder: Int,
         //val group_link_joinable_mode: Double,
         //val has_groups_xac_ineligible_user: Boolean,
         //val has_newer: Boolean,
@@ -88,7 +88,7 @@ class Dm(
         //val is_xac_thread: Boolean,
         val items: ArrayList<Dm>,
         //val joinable_group_link: String,
-        val last_activity_at: Double,
+        val last_activity_at: Long,
         //val last_non_sender_item_at: Double,
         //val last_permanent_item: Dm,
         //val last_seen_at: Map<String, Map<String, Any?>>,
@@ -220,9 +220,9 @@ class Dm(
 
     @Serializable
     class Emoji(
-        val timestamp: Double,
+        val timestamp: Long,
         //val client_context: String,
-        val sender_id: Double,
+        val sender_id: Long,
         val emoji: String,
         //val super_react_type: String,
     )
