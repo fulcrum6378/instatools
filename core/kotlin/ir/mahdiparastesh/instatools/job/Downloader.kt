@@ -1,8 +1,6 @@
 package ir.mahdiparastesh.instatools.job
 
-import com.ashampoo.kim.Kim
 import com.ashampoo.kim.common.ImageReadException
-import com.ashampoo.kim.format.jpeg.JpegRewriter
 import com.ashampoo.kim.format.tiff.constant.ExifTag
 import com.ashampoo.kim.format.tiff.constant.TiffTag
 import com.ashampoo.kim.format.tiff.write.TiffOutputSet
@@ -16,6 +14,11 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.Utils
+import org.apache.commons.imaging.Imaging
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
+import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
+import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -87,36 +90,28 @@ interface Downloader : Queuer<Queued> {
 
     @Throws(IOException::class)
     private fun writeJpeg(q: Queued, `in`: ByteArray, out: OutputStream) {
-        val reader = ByteArrayByteReader(`in`)
-        val outputSet: TiffOutputSet =
-            Kim.readMetadata(reader)?.exif?.createOutputSet() ?: TiffOutputSet()
-
-        outputSet.getOrCreateRootDirectory().apply {
-            removeField(TiffTag.TIFF_TAG_ARTIST) // Authors
-            add(TiffTag.TIFF_TAG_ARTIST, q.owner)
-            removeField(TiffTag.TIFF_TAG_COPYRIGHT)
-            add(TiffTag.TIFF_TAG_COPYRIGHT, "IG: @${q.owner}")
-            removeField(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
-            add(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+        val outputSet = (Imaging.getMetadata(`in`) as JpegImageMetadata?)?.exif?.outputSet
+            ?: org.apache.commons.imaging.formats.tiff.write.TiffOutputSet()
+        outputSet.orCreateRootDirectory.apply {
+            removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+            add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+            removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
+            add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
+            removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
+            add(TiffTagConstants.TIFF_TAG_ARTIST, q.owner)
+            removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
+            add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.owner}")
         }
-        outputSet.getOrCreateExifDirectory().apply {
-            removeField(ExifTag.EXIF_TAG_SITE)
-            add(ExifTag.EXIF_TAG_SITE, q.link)
-            removeField(ExifTag.EXIF_TAG_SOFTWARE)
-            add(ExifTag.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
+        outputSet.orCreateExifDirectory.apply {
             q.caption?.also {
-                removeField(ExifTag.EXIF_TAG_USER_COMMENT)
-                add(ExifTag.EXIF_TAG_USER_COMMENT, it)
+                removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
+                add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
             }
+            removeField(ExifTagConstants.EXIF_TAG_SITE)
+            add(ExifTagConstants.EXIF_TAG_SITE, q.link)
         }
-        // TODO outputSet.getOrCreateGPSDirectory()
-        try {
-            JpegRewriter.updateExifMetadataLossless(
-                reader, OutputStreamByteWriter(out), outputSet
-            )
-        } catch (_: ImageReadException) {
-            out.write(`in`)
-        }
+        // TODO outputSet.orCreateGpsDirectory.apply {}
+        ExifRewriter().updateExifMetadataLossless(`in`, out, outputSet)
     }
 
     @Throws(IOException::class)
@@ -151,6 +146,7 @@ interface Downloader : Queuer<Queued> {
                 add(ExifTag.EXIF_TAG_USER_COMMENT, it)
             }
         }
+        // TODO outputSet.getOrCreateGPSDirectory()
 
         val exifBytesWriter = ByteArrayByteWriter()
         TiffWriterBase
