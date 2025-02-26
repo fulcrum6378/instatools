@@ -5,11 +5,10 @@ import ir.mahdiparastesh.instatools.InvalidCommandException
 abstract class Lister<Item> {
     protected open var list: ArrayList<Item>? = null
 
-    protected open fun fetch() {
-        if (list == null) list = arrayListOf()
-    }
+    protected abstract fun fetch()
 
     protected open fun add(item: Item) {
+        if (list == null) list = arrayListOf()
         list!!.add(item)
     }
 

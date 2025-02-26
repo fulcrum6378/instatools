@@ -21,8 +21,10 @@ class Media(
     private val id: String, // <media ID>_<user ID>
     //val invited_coauthor_producers: Array<User>?,
     val image_versions2: ImageVersions2,
+    val lat: Double?,
+    val lng: Double?,
     //val like_count: Long?,
-    //val location: Map<String, Any?>?,
+    val location: Location?,
     val media_type: Int,
     //val number_of_qualities: Int?,
     //val organic_tracking_token: String?,
@@ -107,6 +109,8 @@ class Media(
                     link ?: link()!!,
                     car.thumb(),
                     car.video_duration,
+                    lat ?: location?.lat,
+                    lng ?: location?.lng,
                 )
             )
         } else list.add(
@@ -120,6 +124,8 @@ class Media(
                 link ?: link()!!,
                 thumb(),
                 video_duration,
+                lat ?: location?.lat,
+                lng ?: location?.lng,
             )
         )
         return list
@@ -225,6 +231,22 @@ class Media(
             }
         }
     }
+
+    @Serializable
+    class Location(
+        //val address: String?,
+        //val city: String?,
+        //val external_source: String?,
+        //val facebook_places_id: String?,
+        //val has_viewer_saved: Boolean?,
+        //val is_eligible_for_guides: Boolean?,
+        val lat: Double, // actually it's just a Float for now
+        val lng: Double,
+        //val name: String,
+        //val pk: String,
+        //val short_name: String?,
+        //val profile_pic_url: String?,
+    )
 
     @Serializable
     class Url(val url: String)

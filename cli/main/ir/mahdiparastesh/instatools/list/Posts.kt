@@ -14,7 +14,6 @@ class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
     override val numberOfClauses: Int = 1
 
     override fun fetch() {
-        super.fetch()
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             GraphQlQuery.PROFILE_POSTS.body(p.userName, "33", cursor.toString())

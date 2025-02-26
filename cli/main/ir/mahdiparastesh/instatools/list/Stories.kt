@@ -14,7 +14,6 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
     override val numberOfClauses: Int = 1
 
     override fun fetch() {
-        super.fetch()
         p.requireUserId()
         val reels = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(p.userId!!)

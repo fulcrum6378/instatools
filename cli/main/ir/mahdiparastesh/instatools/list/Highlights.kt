@@ -16,7 +16,6 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
     override val numberOfClauses: Int = 2
 
     override fun fetch() {
-        super.fetch()
         p.requireUserId()
         val hls = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(p.userId!!)

@@ -8,7 +8,6 @@ import ir.mahdiparastesh.instatools.util.Lister.LazyLister
 class Direct : LazyLister<Dm.DmThread>() {
 
     override fun fetch() {
-        super.fetch()
         val page = Api.json<Rest.InboxPage>(Api.Endpoint.INBOX.url.format(cursor ?: ""))
         for (thread in page.inbox.threads) {
             println("$index. ${thread.title()}")

@@ -5,7 +5,6 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate")
 object Utils {
     const val MAHDI = "https://mahdiparastesh.ir/"
-    const val INSTATOOLS = "InstaTools"
     const val PROFILE = "https://www.instagram.com/%s/"
     const val POST_LINK = "https://www.instagram.com/p/%s/"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"

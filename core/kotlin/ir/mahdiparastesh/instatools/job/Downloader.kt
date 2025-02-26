@@ -1,11 +1,13 @@
 package ir.mahdiparastesh.instatools.job
 
+import com.ashampoo.kim.common.exifDateFormat
+import com.ashampoo.kim.format.ImageMetadata
 import com.ashampoo.kim.format.jpeg.JpegImageParser
 import com.ashampoo.kim.format.jpeg.JpegRewriter
-import com.ashampoo.kim.format.png.PngChunkType
 import com.ashampoo.kim.format.png.PngImageParser
 import com.ashampoo.kim.format.png.PngWriter
 import com.ashampoo.kim.format.tiff.constant.ExifTag
+import com.ashampoo.kim.format.tiff.constant.TiffConstants
 import com.ashampoo.kim.format.tiff.constant.TiffTag
 import com.ashampoo.kim.format.tiff.write.TiffOutputSet
 import com.ashampoo.kim.format.tiff.write.TiffWriterBase
@@ -87,12 +89,11 @@ interface Downloader : Queuer<Queued> {
 
     fun onRetry(q: Queued)
 
-    @Throws(IOException::class)
     private fun writeJpeg(q: Queued, ba: ByteArray, out: OutputStream) {
         val outputSet: TiffOutputSet =
             JpegImageParser.parseMetadata(ByteArrayByteReader(ba))
                 .exif?.createOutputSet() ?: TiffOutputSet()
-        writeExif(q, outputSet)
+        instilExif(q, outputSet)
         JpegRewriter.updateExifMetadataLossless(
             ByteArrayByteReader(ba), OutputStreamByteWriter(out), outputSet
         )
@@ -100,64 +101,67 @@ interface Downloader : Queuer<Queued> {
     }
 
     private fun writePng(q: Queued, ba: ByteArray, out: OutputStream) {
-        val chunks = PngImageParser.readChunks(ByteArrayByteReader(ba), listOf(PngChunkType.EXIF))
+        val chunks = PngImageParser.readChunks(ByteArrayByteReader(ba), null) // NEVER filter
         val metadata = PngImageParser.parseMetadataFromChunks(chunks)
-        val outputSet: TiffOutputSet =
-            PngImageParser.parseMetadata(ByteArrayByteReader(ba))
-                .exif?.createOutputSet() ?: TiffOutputSet()
-        writeExif(q, outputSet)
-
-        val exifBytesWriter = ByteArrayByteWriter()
-        TiffWriterBase
-            .createTiffWriter(outputSet.byteOrder, metadata.exifBytes)
-            .write(exifBytesWriter, outputSet)
+        val outputSet: TiffOutputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
+        instilExif(q, outputSet)
         PngWriter.writeImage(
-            chunks, OutputStreamByteWriter(out), exifBytesWriter.toByteArray(), null, null
+            chunks, OutputStreamByteWriter(out), exifBytes(metadata, outputSet), null, null
         )
     }
 
-    @Throws(IOException::class)
     private fun writeWebP(q: Queued, ba: ByteArray, out: OutputStream) {
         val chunks = //try {
-            WebPImageParser.readChunks(ByteArrayByteReader(ba), true)
+            WebPImageParser.readChunks(ByteArrayByteReader(ba), false) // NEVER set it to true
         //} catch (_: ImageReadException) {
         //out.write(`in`)
         //return
         //}
         val metadata = WebPImageParser.parseMetadataFromChunks(chunks)
         val outputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
-        writeExif(q, outputSet)
-
-        val exifBytesWriter = ByteArrayByteWriter()
-        TiffWriterBase
-            .createTiffWriter(outputSet.byteOrder, metadata.exifBytes)
-            .write(exifBytesWriter, outputSet)
+        instilExif(q, outputSet)
         WebPWriter.writeImage(
-            chunks, OutputStreamByteWriter(out), exifBytesWriter.toByteArray(), null
+            chunks, OutputStreamByteWriter(out), exifBytes(metadata, outputSet), null
         )
     }
 
-    private fun writeExif(q: Queued, outputSet: TiffOutputSet) {
-        outputSet.getOrCreateRootDirectory().apply {
+    private fun instilExif(q: Queued, outputSet: TiffOutputSet) {
+        val lacksGps = outputSet
+            .getDirectories().none { it.type == TiffConstants.TIFF_DIRECTORY_GPS }
+        outputSet.getOrCreateRootDirectory().apply { // directory IFD0
             removeField(TiffTag.TIFF_TAG_ARTIST) // Authors
             add(TiffTag.TIFF_TAG_ARTIST, q.owner)
             removeField(TiffTag.TIFF_TAG_COPYRIGHT)
-            add(TiffTag.TIFF_TAG_COPYRIGHT, "IG: @${q.owner}")
-            removeField(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
-            add(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
+            add(TiffTag.TIFF_TAG_COPYRIGHT, "IG @${q.owner}")
+            q.caption?.also {
+                removeField(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+                add(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION, it)
+            }
+            removeField(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE) // belongs in the root dir
+            add(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE, "Instagram")
+            removeField(ExifTag.EXIF_TAG_SOFTWARE) //belongs in the root dir
+            add(ExifTag.EXIF_TAG_SOFTWARE, "InstaTools")
         }
-        outputSet.getOrCreateExifDirectory().apply {
+        outputSet.getOrCreateExifDirectory().apply { // directory ExifIFD
             removeField(ExifTag.EXIF_TAG_SITE)
             add(ExifTag.EXIF_TAG_SITE, q.link)
-            removeField(ExifTag.EXIF_TAG_SOFTWARE)
-            add(ExifTag.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
-            q.caption?.also {
-                removeField(ExifTag.EXIF_TAG_USER_COMMENT)
-                add(ExifTag.EXIF_TAG_USER_COMMENT, it)
-            }
+            removeField(ExifTag.EXIF_TAG_USER_COMMENT)
+            add(ExifTag.EXIF_TAG_USER_COMMENT, q.link)
+            removeField(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED)
+            add(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED, exifDateFormat.format(q.date))
         }
-        // TODO outputSet.getOrCreateGPSDirectory()
+        if (q.lat != null && lacksGps)
+            outputSet.setGpsCoordinates(q.coordinates())
+        // to retrieve:
+        // GPSInfo.createFrom(metadata.findTiffDirectory(TiffConstants.TIFF_DIRECTORY_GPS)!!)
     }
+
+    private fun exifBytes(metadata: ImageMetadata, outputSet: TiffOutputSet) =
+        ByteArrayByteWriter().apply {
+            TiffWriterBase
+                .createTiffWriter(outputSet.byteOrder, metadata.exifBytes)
+                .write(this, outputSet)
+        }.toByteArray()
 
     class FailureException :
         IllegalStateException("Couldn't download from Instagram!"),

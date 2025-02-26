@@ -8,7 +8,6 @@ import ir.mahdiparastesh.instatools.util.Lister.LazyLister
 class Saved : LazyLister<Media>() {
 
     override fun fetch() {
-        super.fetch()
         val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(
             Api.Endpoint.SAVED.url + (cursor?.let { "?max_id=$it" } ?: "")
         )

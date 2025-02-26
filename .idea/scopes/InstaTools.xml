@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="InstaTools" pattern="(file[InstaTools.android*]:*//*||file[InstaTools.cli*]:*//*||file[InstaTools.core.main]:ir/mahdiparastesh/instatools/api/*||file[InstaTools.core.main]:ir/mahdiparastesh/instatools/data/*||file[InstaTools.core.main]:ir/mahdiparastesh/instatools/job/*||file[InstaTools.core.main]:ir/mahdiparastesh/instatools/util/*||file[InstaTools.cli]:*/||file[InstaTools.android]:*/)&amp;&amp;!file[InstaTools.cli]:*||file[InstaTools]:gradle//*" />
+</component>

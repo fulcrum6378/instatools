@@ -1,9 +1,11 @@
 package ir.mahdiparastesh.instatools.data
 
+import com.ashampoo.kim.model.GpsCoordinates
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import java.net.URI
+import kotlin.jvm.Throws
 
 /**
  * @param id [Media.pk]
@@ -15,19 +17,23 @@ import java.net.URI
  * @param link official link of the Instagram page of the media
  * @param thumb thumbnail
  * @param dur duration of the video (if it is a video, otherwise null)
+ * @param lat latitude
+ * @param lng longitude
  * @param status 0=>pending, 1=>failed, 2=>suspended
  */
 @Serializable
 class Queued(
     val id: String,
     val date: Long,
-    var url: String,
-    var type: Byte,
-    var owner: String,
-    var caption: String?,
+    val url: String,
+    val type: Byte,
+    val owner: String,
+    val caption: String?,
     val link: String,
-    var thumb: String?,
-    var dur: Float?,
+    val thumb: String?,
+    val dur: Float?,
+    val lat: Double?,
+    val lng: Double?,
     var status: Byte = 0x0
 ) {
     val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
@@ -37,4 +43,7 @@ class Queued(
     fun isMainFile() = type.toInt() !in arrayOf(3)
 
     fun isFailed() = status == 1.toByte()
+
+    @Throws(NullPointerException::class)
+    fun coordinates() = GpsCoordinates(lat!!, lng!!)
 }
