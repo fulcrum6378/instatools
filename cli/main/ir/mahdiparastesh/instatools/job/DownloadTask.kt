@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.util.LazyFile
 import java.io.*
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -22,13 +23,13 @@ class DownloadTask : Downloader {
         super.start()
     }
 
-    override fun prepareOutput(q: Queued): FileOutputStream? {
+    override fun prepareOutput(q: Queued): LazyFile<FileOutputStream>? {
         val file = File(outputDir, q.fileName)
         if (file.exists() && file.length() != 0L) {
             println("File `${q.fileName}` already exists! Overwrite? (y / any)")
             if (readlnOrNull() !in arrayOf("y", "Y", "yes")) return null
         }
-        return FileOutputStream(file)
+        return LazyFile { FileOutputStream(file) }
     }
 
     override fun onRetry(q: Queued) {

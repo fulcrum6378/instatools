@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.view
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
@@ -10,7 +9,6 @@ import androidx.annotation.StringRes
 import ir.mahdiparastesh.instatools.R
 
 /** Helper class for maintaining Notifications. */
-@SuppressLint("NewApi")
 class Notify {
     companion object {
         const val ID_DOWNLOADER = 1

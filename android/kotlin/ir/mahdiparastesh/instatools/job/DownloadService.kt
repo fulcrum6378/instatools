@@ -17,6 +17,7 @@ import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -66,6 +67,7 @@ class DownloadService : ForegroundService(), Downloader {
             finish(false); return; }
 
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
+        ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
         ntfTitle = getString(R.string.downloaderTitle)
         initialNotification(Companion, Downloads::class)
         if (job?.isActive != true)
@@ -81,7 +83,7 @@ class DownloadService : ForegroundService(), Downloader {
             }
     }
 
-    override fun prepareOutput(q: Queued): FileOutputStream? {
+    override fun prepareOutput(q: Queued): LazyFile<FileOutputStream>? {
         val branch: DocumentFile = when {
             q.owner in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.owner]))
                 ?.exists() == true ->
@@ -98,12 +100,14 @@ class DownloadService : ForegroundService(), Downloader {
         if (leaf != null) { // file already exists
             if (leaf.length() > 0) return null
             // rewrite the file if it is corrupt
-        } else
-            leaf = branch.createFile(
+        }
+        return LazyFile {
+            if (leaf == null) leaf = branch.createFile(
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(q.ext)!!, q.fileName
             )!!
-        des = c.contentResolver.openFileDescriptor(leaf.uri, "w")!!
-        return FileOutputStream(des!!.fileDescriptor)
+            des = c.contentResolver.openFileDescriptor(leaf.uri, "w")!!
+            FileOutputStream(des!!.fileDescriptor)
+        }
     }
 
     override fun handle(q: Queued): Boolean {
@@ -124,7 +128,9 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onSuccess(q: Queued) {
         des?.close()
-        Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, q)?.sendToTarget()
+        m.findQueued(q)?.also {
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, it)?.sendToTarget()
+        }
         if (q.isMainFile()) m.files?.add(q.fileName)
         incrementCounter(Settings.spDownloadCount)
     }
@@ -132,7 +138,9 @@ class DownloadService : ForegroundService(), Downloader {
     override fun onFailure(q: Queued) {
         des?.close()
         q.status = 0b1
-        Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, q)?.sendToTarget()
+        m.findQueued(q)?.also {
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, it)?.sendToTarget()
+        }
         incrementCounter(Settings.spDlErrorCount)
     }
 

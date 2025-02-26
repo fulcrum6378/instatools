@@ -112,28 +112,23 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_INSERTED -> {
-                        m.queue.add(msg.obj as Queued) // TODO take it somewhere else
+                        // TODO use while handling links (change on multiple additions)
                         val pos = m.queue.size
                         b.rv.adapter?.notifyItemInserted(pos - 1)
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                         onListResized()
                     }
-                    HANDLE_CHANGED -> find(msg)?.let {
-                        if (it == -1) return@let
-                        m.queue[it] = msg.obj as Queued
-                        b.rv.adapter?.notifyItemChanged(it)
-                    }
-                    HANDLE_DELETED -> find(msg)?.let {
-                        m.queue.removeAt(it)
-                        b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.queue.size)
-                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
+                    HANDLE_CHANGED ->
+                        b.rv.adapter?.notifyItemChanged(msg.obj as Int)
+                    HANDLE_DELETED -> {
+                        val index = msg.obj as Int
+                        b.rv.adapter?.notifyItemRemoved(index)
+                        b.rv.adapter?.notifyItemRangeChanged(index, m.queue.size)
+                        if (index > 0) b.rv.adapter?.notifyItemChanged(index - 1)
                         onListResized()
                     }
                 }
             }
-
-            fun find(msg: Message): Int? = findQueued(msg.obj as Queued, m.queue)
         }
 
         // paste link
@@ -183,8 +178,14 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun onResume() {
         super.onResume()
-        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-            .cancel(Notify.ID_DOWNLOADER_ERROR)
+        cancelNotifications()
+    }
+
+    private fun cancelNotifications() {
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).apply {
+            cancel(Notify.ID_DOWNLOADER_ERROR)
+            cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
+        }
     }
 
     override fun shouldShowJumper(): Boolean =
@@ -220,12 +221,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun onListResized() {
         super.onListResized()
         updateCount(this, m.queue.size)
-    }
-
-    private fun findQueued(it: Queued, inList: List<Queued>?): Int? {
-        if (inList == null) return null
-        for (i in inList.indices) if (inList[i].id == it.id) return i
-        return null
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -361,12 +356,13 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             CoroutineScope(Dispatchers.IO).launch {
                 pickle.save(m.queue.toList())
                 withContext(Dispatchers.Main) {
-                    findQueued(q, m.queue)?.also {
+                    m.findQueued(q)?.also {
                         m.queue.removeAt(it)
                         b.rv.adapter?.notifyItemRemoved(it)
                         b.rv.adapter?.notifyItemRangeChanged(it, m.queue.size - 1)
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         onListResized()
+                        cancelNotifications()
                     }
                 }
             }

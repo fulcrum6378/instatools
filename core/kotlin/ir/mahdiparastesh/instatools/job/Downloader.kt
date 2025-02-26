@@ -20,11 +20,11 @@ import com.ashampoo.kim.output.OutputStreamByteWriter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.UnknownHostException
@@ -33,10 +33,10 @@ import kotlin.io.copyTo
 
 interface Downloader : Queuer<Queued> {
 
-    fun prepareOutput(q: Queued): FileOutputStream?
+    fun prepareOutput(q: Queued): LazyFile<FileOutputStream>?
 
     override fun handle(q: Queued): Boolean {
-        val fos = prepareOutput(q) ?: return true
+        val output = prepareOutput(q) ?: return true
 
         // prepare to download the file
         var stream: InputStream? = null
@@ -74,10 +74,10 @@ interface Downloader : Queuer<Queued> {
         // download and save the file
         try {
             when (q.ext) {
-                "jpg" -> writeJpeg(q, stream.readBytes(), fos)
-                "png" -> writePng(q, stream.readBytes(), fos)
-                "webp" -> writeWebP(q, stream.readBytes(), fos)
-                else -> stream.copyTo(fos)
+                "jpg" -> writeJpeg(q, stream.readBytes(), output)
+                "png" -> writePng(q, stream.readBytes(), output)
+                "webp" -> writeWebP(q, stream.readBytes(), output)
+                else -> stream.copyTo(output.open())
                 // TODO metadata for HEIC and MP4?
             }
         } catch (_: IOException) {
@@ -86,41 +86,41 @@ interface Downloader : Queuer<Queued> {
             return false
         }
         stream.close()
-        fos.close()
+        output.close()
         return true
     }
 
     fun onRetry(q: Queued)
 
-    private fun writeJpeg(q: Queued, ba: ByteArray, out: OutputStream) {
+    private fun writeJpeg(q: Queued, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val outputSet: TiffOutputSet =
             JpegImageParser.parseMetadata(ByteArrayByteReader(ba))
                 .exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
         JpegRewriter.updateExifMetadataLossless(
-            ByteArrayByteReader(ba), OutputStreamByteWriter(out), outputSet
+            ByteArrayByteReader(ba), OutputStreamByteWriter(out.open()), outputSet
         )
         // NEVER reuse a ByteReader
     }
 
-    private fun writePng(q: Queued, ba: ByteArray, out: OutputStream) {
+    private fun writePng(q: Queued, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val chunks = PngImageParser.readChunks(ByteArrayByteReader(ba), null) // NEVER filter
         val metadata = PngImageParser.parseMetadataFromChunks(chunks)
         val outputSet: TiffOutputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
         PngWriter.writeImage(
-            chunks, OutputStreamByteWriter(out), exifBytes(metadata, outputSet), null, null
+            chunks, OutputStreamByteWriter(out.open()), exifBytes(metadata, outputSet), null, null
         )
     }
 
-    private fun writeWebP(q: Queued, ba: ByteArray, out: OutputStream) {
+    private fun writeWebP(q: Queued, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val chunks =
             WebPImageParser.readChunks(ByteArrayByteReader(ba), false) // NEVER set it to true
         val metadata = WebPImageParser.parseMetadataFromChunks(chunks)
         val outputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
         WebPWriter.writeImage(
-            chunks, OutputStreamByteWriter(out), exifBytes(metadata, outputSet), null
+            chunks, OutputStreamByteWriter(out.open()), exifBytes(metadata, outputSet), null
         )
     }
 

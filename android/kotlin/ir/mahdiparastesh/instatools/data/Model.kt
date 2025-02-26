@@ -16,6 +16,11 @@ class Model : ViewModel() {
         fav = null
     }
 
+    fun findQueued(it: Queued): Int? {
+        for (i in queue.indices) if (queue[i].id == it.id) return i
+        return null
+    }
+
     /** Shares the ViewModel across different Activity instances. */
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

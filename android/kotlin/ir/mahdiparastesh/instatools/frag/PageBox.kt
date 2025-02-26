@@ -65,23 +65,30 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
     override val selectiveMenuRes: Int? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = c.mm.dmInbox?.threads.isNullOrEmpty()
+    override fun isModelLoaded(): Boolean = c.mm.dmInbox != null
     override fun isModelEmpty(): Boolean =
-        if (c.mm.dmThread == null) c.mm.dmInbox?.threads?.isEmpty() == true
-        else c.mm.dmThread?.items?.isEmpty() == true
+        if (c.mm.dmThread == null)
+            c.mm.dmInbox?.threads?.isEmpty() == true
+        else
+            c.mm.dmThread?.items?.isEmpty() == true
 
     override fun createAdapter(): RecyclerView.Adapter<*> =
         if (c.mm.dmThread == null) ListBox(c, this) else ListThd(c, this)
 
     override fun canLoadMore(): Boolean =
-        if (c.mm.dmThread == null) c.mm.dmInbox?.has_older != false
-        else c.mm.dmThread!!.has_older
+        if (c.mm.dmThread == null)
+            c.mm.dmInbox?.has_older != false
+        else
+            c.mm.dmThread!!.has_older
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageBoxBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
     override fun shouldShowJumper(): Boolean =
-        if (c.mm.dmThread == null) super.shouldShowJumper() else false
+        if (c.mm.dmThread == null)
+            super.shouldShowJumper()
+        else
+            false
 
     override fun canRefresh(): Boolean =
         super.canRefresh() && c.mm.dmThread == null

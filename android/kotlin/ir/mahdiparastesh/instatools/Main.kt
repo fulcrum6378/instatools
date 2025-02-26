@@ -59,7 +59,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
     private var exiting = false
 
-    // theming
+    // themes
     private var anTheme: ValueAnimator? = null
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
@@ -71,7 +71,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         R.style.Theme_InstaTools_Popup_Tertiary
     )
 
-    // searching
+    // search
     @SuppressLint("RestrictedApi")
     lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
@@ -429,6 +429,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
+  * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
   * Merge Friends into PageUnf?
   * Make the coroutines pausable
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
