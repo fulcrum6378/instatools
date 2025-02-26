@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">اینستاتولز</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="Untranslatable">اینستاتولز</string>
 
     <!-- #GLOBAL -->
     <string name="navOpen">باز کردن</string>
@@ -178,7 +178,7 @@
     <string name="friBestie">نزدیک</string>
     <string name="friRestricted">ممنوع شده</string>
     <!--<string name="friMuted">بی صدا شده</string>-->
-    <string name="friSep" translatable="false">،&#160;</string>
+    <string name="friSep" translatable="false" tools:ignore="Untranslatable">،&#160;</string>
 
     <!-- Favourites -->
     <string name="favourites">مورد علاقه</string>

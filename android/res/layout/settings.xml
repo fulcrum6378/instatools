@@ -25,8 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="@dimen/stMarginV"
-            android:paddingBottom="@dimen/stMarginV">
+            android:paddingVertical="@dimen/stMarginV">
 
             <LinearLayout style="@style/stItem">
 
@@ -77,8 +76,7 @@
                     android:id="@+id/stAliases"
                     style="@style/stSubItem"
                     android:nestedScrollingEnabled="false"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="0dp" />
+                    android:paddingHorizontal="0dp" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/stAddAlias"

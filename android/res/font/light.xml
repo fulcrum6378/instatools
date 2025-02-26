@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
     <font
-        app:font="@font/titillium_web_light"
-        app:fontStyle="normal"
-        app:fontWeight="200" />
+        android:font="@font/titillium_web_light"
+        android:fontStyle="normal"
+        android:fontWeight="200" />
 </font-family>

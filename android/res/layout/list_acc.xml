@@ -5,16 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/button"
-    android:paddingLeft="@dimen/loginPadH"
-    android:paddingRight="@dimen/loginPadH"
+    android:paddingHorizontal="@dimen/loginPadH"
     tools:ignore="ContentDescription">
 
     <ImageView
         android:id="@+id/photo"
         android:layout_width="@dimen/profilePhoto"
         android:layout_height="@dimen/profilePhoto"
-        android:layout_marginTop="@dimen/userPadV"
-        android:layout_marginBottom="@dimen/userPadV"
+        android:layout_marginVertical="@dimen/userPadV"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

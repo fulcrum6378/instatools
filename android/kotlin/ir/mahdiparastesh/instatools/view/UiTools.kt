@@ -112,13 +112,10 @@ object UiTools {
         val vib = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         else getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            vib.vibrate(VibrationEffect.createOneShot(dur, VibrationEffect.DEFAULT_AMPLITUDE))
-        else vib.vibrate(dur)
+        vib.vibrate(VibrationEffect.createOneShot(dur, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 
     /** Linkifies an AppCompatTextView. */
-    @Suppress("DEPRECATION")
     fun AppCompatTextView.anchor(text: String?, url: String?) {
         if (text == null || url == null) {
             movementMethod = null
@@ -126,9 +123,7 @@ object UiTools {
             return
         }
         movementMethod = SafeLinkMovementMethod.getInstance()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
-        else setText(Html.fromHtml("<a href=\"$url\">$text</a>"))
+        setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
     }
 
     /** Opens a Direct Message in Instagram. */

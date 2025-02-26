@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -101,10 +100,7 @@ class PageVwr : BasePageViewer() {
     }
 
     override fun setOnScrollListener() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            b.nsv.setOnScrollChangeListener { v, _, _, _, _ -> onScroll() }
-        else
-            b.nsv.viewTreeObserver.addOnScrollChangedListener { onScroll() }
+        b.nsv.setOnScrollChangeListener { v, _, _, _, _ -> onScroll() }
     }
 
     override fun onScroll() {

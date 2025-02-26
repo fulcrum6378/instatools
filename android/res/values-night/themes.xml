@@ -5,7 +5,7 @@
         <item name="colorAccent">@color/defCA</item>
         <item name="backgroundColor">?attr/colorPrimary</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">

@@ -184,9 +184,8 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
     /** Makes a Notification about new unfollowers. */
     private fun gotNewOnes(num: Int) {
         if (c.m.acc == null) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            (c.c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(Notify.Channel.UNF_NEW_ITEMS.create(c.c))
+        (c.c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .createNotificationChannel(Notify.Channel.UNF_NEW_ITEMS.create(c.c))
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ActivityCompat.checkSelfPermission(c.c, Manifest.permission.POST_NOTIFICATIONS)
             == PackageManager.PERMISSION_GRANTED

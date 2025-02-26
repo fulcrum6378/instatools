@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.job
 import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.documentfile.provider.DocumentFile
@@ -58,8 +57,7 @@ class Exporter : ForegroundService() {
         ) // TODO add support for other extensions
         var ntfDoneIdInc = 0
 
-        fun canCreateDirSelf(c: Persistent) = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-            c.sPreference(Settings.spStorage) != null
+        fun canCreateDirSelf(c: Persistent) = c.sPreference(Settings.spStorage) != null
     }
 
     override fun onCreate() {

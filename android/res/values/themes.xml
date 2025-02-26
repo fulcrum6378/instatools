@@ -27,7 +27,7 @@
         <item name="colorPrimaryHigh">@color/CSH</item>
         <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 

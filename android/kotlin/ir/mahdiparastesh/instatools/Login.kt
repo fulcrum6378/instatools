@@ -205,17 +205,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             view: WebView?, request: WebResourceRequest?, error: WebResourceError?
         ) {
             super.onReceivedError(view, request, error)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
             if (error?.errorCode != null) onError(error.errorCode)
-        }
-
-        @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-        override fun onReceivedError(
-            view: WebView?, errorCode: Int, description: String?, failingUrl: String?
-        ) {
-            super.onReceivedError(view, errorCode, description, failingUrl)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return
-            onError(errorCode)
         }
 
         private fun onError(errorCode: Int) {

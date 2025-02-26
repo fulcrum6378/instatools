@@ -11,10 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/button"
-        android:paddingStart="@dimen/mainPadH"
-        android:paddingTop="20dp"
-        android:paddingEnd="@dimen/mainPadH"
-        android:paddingBottom="20dp"
+        android:paddingHorizontal="@dimen/mainPadH"
+        android:paddingVertical="20dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -89,8 +87,7 @@
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginStart="@dimen/mainPadH"
-        android:layout_marginEnd="@dimen/mainPadH"
+        android:layout_marginHorizontal="@dimen/mainPadH"
         android:background="@color/sepLine"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

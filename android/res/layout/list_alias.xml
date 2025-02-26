@@ -8,9 +8,8 @@
     android:layout_margin="0dp"
     android:background="@drawable/button"
     android:orientation="horizontal"
-    android:paddingTop="10dp"
+    android:paddingVertical="10dp"
     android:paddingEnd="3dp"
-    android:paddingBottom="10dp"
     tools:ignore="RtlSymmetry">
 
     <androidx.appcompat.widget.AppCompatTextView

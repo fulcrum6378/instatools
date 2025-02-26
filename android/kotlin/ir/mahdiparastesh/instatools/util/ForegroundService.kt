@@ -52,9 +52,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         fun ntfMutability(bb: Boolean = true): Int = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                 if (bb) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_IMMUTABLE
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
+            else ->
                 if (bb) PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_IMMUTABLE
-            else -> PendingIntent.FLAG_UPDATE_CURRENT
         }
     }
 
@@ -118,10 +117,8 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfCom = com
         ntfAct = openActivity
         ntfPage = turnToPage
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
-            ntfManager.createNotificationChannel(com.channel.create(c))
-        }
+        ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
+        ntfManager.createNotificationChannel(com.channel.create(c))
         startForeground(com.ntfId, notification(progress))
     }
 
@@ -152,8 +149,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         }.build()
 
     protected fun eventNotification(id: Int, func: NotificationCompat.Builder.() -> Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
+        ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
         ntfManager.notify(
             id, NotificationCompat.Builder(c, Notify.Channel.RESULT.id).apply {
                 setSmallIcon(R.drawable.notification)
@@ -172,10 +168,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
      */
     @MainThread
     open fun finish(cancelled: Boolean) {
-        @Suppress("DEPRECATION")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            stopForeground(STOP_FOREGROUND_REMOVE)
-        else stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 

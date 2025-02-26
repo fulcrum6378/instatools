@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.StatFs
 import android.view.MenuItem
@@ -225,16 +224,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         )
         prf = if (globalMode || sp == null) gsp else sp!!
 
-        // Beauty
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            b.sv.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-                b.tbShadow.vish(scrollY > 0)
-            }
-        else b.sv.viewTreeObserver.addOnScrollChangedListener {
-            b.tbShadow.vish(b.sv.scrollY > 0)
+        // beauty
+        b.sv.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            b.tbShadow.vish(scrollY > 0)
         }
 
-        // Main Path
+        // main path
         if (intent.hasExtra(EXTRA_SELECT_PATH)) selectPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { v ->
@@ -286,14 +281,14 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             prf.edit { putBoolean(spAutoDeleteEmptyDirs, bb) }
         }
 
-        // Alias Paths
+        // alias paths
         CoroutineScope(Dispatchers.IO).launch {
             aliases = loadAliases(this@Settings, globalMode)
             withContext(Dispatchers.Main) { showAliases() }
         }
         b.stAddAlias.setOnClickListener { editAlias(null) }
 
-        // Caching
+        // caching
         cacheLimit = gsp.getLong(spCacheLimit, defaultCacheLimit(c))
         b.stCacheLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -319,7 +314,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             updateCacheSize()
         }
 
-        // User Data
+        // user data
         if (globalMode) b.stResetData.vis(false)
         else b.stResetData.setOnClickListener {
             MaterialAlertDialogBuilder(this).apply {
