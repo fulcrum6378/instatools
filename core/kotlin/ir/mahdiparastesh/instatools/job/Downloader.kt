@@ -1,6 +1,10 @@
 package ir.mahdiparastesh.instatools.job
 
-import com.ashampoo.kim.common.ImageReadException
+import com.ashampoo.kim.format.jpeg.JpegImageParser
+import com.ashampoo.kim.format.jpeg.JpegRewriter
+import com.ashampoo.kim.format.png.PngChunkType
+import com.ashampoo.kim.format.png.PngImageParser
+import com.ashampoo.kim.format.png.PngWriter
 import com.ashampoo.kim.format.tiff.constant.ExifTag
 import com.ashampoo.kim.format.tiff.constant.TiffTag
 import com.ashampoo.kim.format.tiff.write.TiffOutputSet
@@ -14,11 +18,6 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.Utils
-import org.apache.commons.imaging.Imaging
-import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata
-import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter
-import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants
-import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -73,10 +72,10 @@ interface Downloader : Queuer<Queued> {
         try {
             when (q.ext) {
                 "jpg" -> writeJpeg(q, stream.readBytes(), fos)
-                "png" -> stream.copyTo(fos)
+                "png" -> writePng(q, stream.readBytes(), fos)
                 "webp" -> writeWebP(q, stream.readBytes(), fos)
                 else -> stream.copyTo(fos)
-                // TODO metadata for MP4?
+                // TODO metadata for HEIC and MP4?
             }
         } catch (_: IOException) {
             throw FailureException()
@@ -89,45 +88,56 @@ interface Downloader : Queuer<Queued> {
     fun onRetry(q: Queued)
 
     @Throws(IOException::class)
-    private fun writeJpeg(q: Queued, `in`: ByteArray, out: OutputStream) {
-        val outputSet = (Imaging.getMetadata(`in`) as JpegImageMetadata?)?.exif?.outputSet
-            ?: org.apache.commons.imaging.formats.tiff.write.TiffOutputSet()
-        outputSet.orCreateRootDirectory.apply {
-            removeField(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
-            add(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION, q.link)
-            removeField(ExifTagConstants.EXIF_TAG_SOFTWARE)
-            add(ExifTagConstants.EXIF_TAG_SOFTWARE, Utils.INSTATOOLS)
-            removeField(TiffTagConstants.TIFF_TAG_ARTIST) // Authors
-            add(TiffTagConstants.TIFF_TAG_ARTIST, q.owner)
-            removeField(TiffTagConstants.TIFF_TAG_COPYRIGHT)
-            add(TiffTagConstants.TIFF_TAG_COPYRIGHT, "IG: @${q.owner}")
-        }
-        outputSet.orCreateExifDirectory.apply {
-            q.caption?.also {
-                removeField(ExifTagConstants.EXIF_TAG_USER_COMMENT)
-                add(ExifTagConstants.EXIF_TAG_USER_COMMENT, it)
-            }
-            removeField(ExifTagConstants.EXIF_TAG_SITE)
-            add(ExifTagConstants.EXIF_TAG_SITE, q.link)
-        }
-        // TODO outputSet.orCreateGpsDirectory.apply {}
-        ExifRewriter().updateExifMetadataLossless(`in`, out, outputSet)
+    private fun writeJpeg(q: Queued, ba: ByteArray, out: OutputStream) {
+        val outputSet: TiffOutputSet =
+            JpegImageParser.parseMetadata(ByteArrayByteReader(ba))
+                .exif?.createOutputSet() ?: TiffOutputSet()
+        writeExif(q, outputSet)
+        JpegRewriter.updateExifMetadataLossless(
+            ByteArrayByteReader(ba), OutputStreamByteWriter(out), outputSet
+        )
+        // NEVER reuse a ByteReader
+    }
+
+    private fun writePng(q: Queued, ba: ByteArray, out: OutputStream) {
+        val chunks = PngImageParser.readChunks(ByteArrayByteReader(ba), listOf(PngChunkType.EXIF))
+        val metadata = PngImageParser.parseMetadataFromChunks(chunks)
+        val outputSet: TiffOutputSet =
+            PngImageParser.parseMetadata(ByteArrayByteReader(ba))
+                .exif?.createOutputSet() ?: TiffOutputSet()
+        writeExif(q, outputSet)
+
+        val exifBytesWriter = ByteArrayByteWriter()
+        TiffWriterBase
+            .createTiffWriter(outputSet.byteOrder, metadata.exifBytes)
+            .write(exifBytesWriter, outputSet)
+        PngWriter.writeImage(
+            chunks, OutputStreamByteWriter(out), exifBytesWriter.toByteArray(), null, null
+        )
     }
 
     @Throws(IOException::class)
-    private fun writeWebP(q: Queued, `in`: ByteArray, out: OutputStream) {
-        val reader = ByteArrayByteReader(`in`)
-        val chunks = try {
-            WebPImageParser.readChunks(reader, true)
-        } catch (_: ImageReadException) {
-            out.write(`in`)
-            return
-        }
+    private fun writeWebP(q: Queued, ba: ByteArray, out: OutputStream) {
+        val chunks = //try {
+            WebPImageParser.readChunks(ByteArrayByteReader(ba), true)
+        //} catch (_: ImageReadException) {
+        //out.write(`in`)
+        //return
+        //}
         val metadata = WebPImageParser.parseMetadataFromChunks(chunks)
-        val outputSet: TiffOutputSet =
-            metadata.exif?.createOutputSet() ?: TiffOutputSet()
+        val outputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
+        writeExif(q, outputSet)
 
+        val exifBytesWriter = ByteArrayByteWriter()
+        TiffWriterBase
+            .createTiffWriter(outputSet.byteOrder, metadata.exifBytes)
+            .write(exifBytesWriter, outputSet)
+        WebPWriter.writeImage(
+            chunks, OutputStreamByteWriter(out), exifBytesWriter.toByteArray(), null
+        )
+    }
 
+    private fun writeExif(q: Queued, outputSet: TiffOutputSet) {
         outputSet.getOrCreateRootDirectory().apply {
             removeField(TiffTag.TIFF_TAG_ARTIST) // Authors
             add(TiffTag.TIFF_TAG_ARTIST, q.owner)
@@ -147,14 +157,6 @@ interface Downloader : Queuer<Queued> {
             }
         }
         // TODO outputSet.getOrCreateGPSDirectory()
-
-        val exifBytesWriter = ByteArrayByteWriter()
-        TiffWriterBase
-            .createTiffWriter(outputSet.byteOrder, metadata.exifBytes)
-            .write(exifBytesWriter, outputSet)
-        WebPWriter.writeImage(
-            chunks, OutputStreamByteWriter(out), exifBytesWriter.toByteArray(), null
-        )
     }
 
     class FailureException :

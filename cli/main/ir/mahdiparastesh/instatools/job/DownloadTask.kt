@@ -24,7 +24,7 @@ class DownloadTask : Downloader {
 
     override fun prepareOutput(q: Queued): FileOutputStream? {
         val file = File(outputDir, q.fileName)
-        if (file.exists()) {
+        if (file.exists() && file.length() != 0L) {
             println("File `${q.fileName}` already exists! Overwrite? (y / any)")
             if (readlnOrNull() !in arrayOf("y", "Y", "yes")) return null
         }
