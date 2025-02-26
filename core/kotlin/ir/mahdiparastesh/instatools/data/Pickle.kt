@@ -14,11 +14,13 @@ import java.io.FileOutputStream
 class Pickle(root: File, acc: Long, type: Type, id: String?) {
     val branch: File
     val file: File
+    val lifespan: Long
 
     init {
         val tree = File(root, "pickle_$acc")
-        branch = if (type.single) tree else File(tree, type.name.lowercase())
-        file = File(branch, "${if (type.single) type.name.lowercase() else id}.json")
+        branch = if (type.singleFile) tree else File(tree, type.name.lowercase())
+        file = File(branch, "${if (type.singleFile) type.name.lowercase() else id}.json")
+        lifespan = type.lifespanDays * 86400000L
     }
 
     suspend inline fun <reified DATA> save(data: DATA) {
@@ -29,7 +31,7 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
     }
 
     suspend inline fun <reified DATA> restore(): DATA? =
-        if (file.exists() && (Utils.now() - file.lastModified()) < 2 * 86400000L) try {
+        if (file.exists() && (Utils.now() - file.lastModified()) < lifespan) try {
             Api.json.decodeFromString<DATA>(
                 FileInputStream(file).use { it.readBytes().toString(Charsets.UTF_8) }
             )
@@ -39,16 +41,17 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
 
     enum class Type(
         val isCache: Boolean,
-        val single: Boolean = !isCache,
+        val lifespanDays: Int,
+        val singleFile: Boolean = !isCache,
     ) {
-        DOWNLOAD_LIST(false),
-        EXPORT_LIST(false),
+        DOWNLOAD_LIST(false, 30),
+        EXPORT_LIST(false, 30),
 
-        SAVED(true, true),
-        PROFILE(true),
-        POSTS(true),
-        STORY(true),
-        HIGHLIGHTS(true),
-        TAGGED(true),
+        SAVED(true, 1, true),
+        PROFILE(true, 2),
+        POSTS(true, 3),
+        STORY(true, 1),
+        HIGHLIGHTS(true, 7),
+        TAGGED(true, 7),
     }
 }

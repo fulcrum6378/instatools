@@ -31,6 +31,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.*
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
@@ -100,6 +101,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     var isAccountSet = false
     open fun onAccountSet() {
         if (m.acc?.id != null) sp = initSp(m.acc)
+        if (Api.cookies.isEmpty()) Api.cookies = m.acc!!.cook ?: ""
         isAccountSet = true
     }
 

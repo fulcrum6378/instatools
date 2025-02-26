@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.util.Persistent
 import ir.mahdiparastesh.instatools.util.walk
@@ -17,8 +18,8 @@ import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
- * Caches the paths of downloaded files for indicating that their related posts are already
- * downloaded.
+ * Caches paths of downloaded files in order to show to the user that their related posts are
+ * already downloaded.
  * @see [ir.mahdiparastesh.instatools.list.ListPost]
  */
 @Suppress("RedundantSuspendModifier")
@@ -39,7 +40,10 @@ object DownloadHistory {
                         CopyOnWriteArraySet(Json.decodeFromString<List<String>>(String(data)))
                     if (c.m.files != null) loading = false
                     else checkStorage(c)
-                }.onFailure { checkStorage(c) }
+                }.onFailure {
+                    if (BuildConfig.DEBUG) throw it
+                    checkStorage(c)
+                }
             } else checkStorage(c)
         }
     }
@@ -73,10 +77,9 @@ object DownloadHistory {
     }
 
     suspend fun saveCache(c: Persistent) {
-        runCatching {
-            FileOutputStream(Stored(c.c)).use {
-                it.write(Json.encodeToString(c.m.files).encodeToByteArray())
-            }
+        if (c.m.files.isNullOrEmpty()) return
+        FileOutputStream(Stored(c.c)).use {
+            it.write(Json.encodeToString(c.m.files?.toList()).encodeToByteArray())
         }
     }
 

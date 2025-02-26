@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -19,6 +18,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -189,7 +189,18 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 it.expandable.collapse(); return@goBack true; }
         }
         if (tracker?.hasSelection() == true) {
-            tracker?.clearSelection()
+            if (tracker!!.selection.size() < 3)
+                tracker?.clearSelection()
+            else {
+                MaterialAlertDialogBuilder(
+                    android.view.ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Secondary)
+                ).apply {
+                    setTitle(R.string.deselectAll)
+                    setMessage(R.string.deselectAllSure)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ -> tracker?.clearSelection() }
+                }.show()
+            }
             return true
         }
         return false
@@ -213,7 +224,9 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             if (c.tbTitle?.parent == null) return
             // to avoid NullPointerException in BadgeDrawable.updateAnchorParentToNotClip
             BadgeUtils.attachBadgeDrawable(
-                BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
+                BadgeDrawable.create(
+                    androidx.appcompat.view.ContextThemeWrapper(c, UiTools.materialTheme)
+                ).apply {
                     number = tracker?.selection?.size() ?: 0
                     backgroundColor = c.ca[1]
                     badgeTextColor = if (c.night()) c.bg[1] else c.color(R.color.defBG)

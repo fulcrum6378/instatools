@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.instatools.job
 
+import ir.mahdiparastesh.instatools.util.Utils
+import java.lang.IllegalStateException
 import java.util.concurrent.CopyOnWriteArrayList
 
 interface Queuer<Item> {
@@ -13,15 +15,20 @@ interface Queuer<Item> {
 
     /** Starts handling the queue. */
     fun start() {
+        var consecutiveFailures = 0
         try {
             q = 0
             while (remaining() > 0)
                 if (handle(queue[q])) {
                     onSuccess(queue[q])
                     queue.removeAt(q)
+                    consecutiveFailures = 0
                 } else {
                     onFailure(queue[q])
                     q++
+                    consecutiveFailures++
+                    if (consecutiveFailures > 5)
+                        throw FailureException(consecutiveFailures)
                 }
             onFinished()
         } catch (e: Exception) {
@@ -43,4 +50,8 @@ interface Queuer<Item> {
     fun onFinished()
 
     fun onFatalError(e: Exception)
+
+    class FailureException(val times: Int) :
+        IllegalStateException("$times executive failures detected!"),
+        Utils.InstaToolsException
 }

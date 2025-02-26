@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.job
 
+import com.ashampoo.kim.common.ImageReadException
 import com.ashampoo.kim.common.exifDateFormat
 import com.ashampoo.kim.format.ImageMetadata
 import com.ashampoo.kim.format.jpeg.JpegImageParser
@@ -80,7 +81,9 @@ interface Downloader : Queuer<Queued> {
                 // TODO metadata for HEIC and MP4?
             }
         } catch (_: IOException) {
-            throw FailureException()
+            return false
+        } catch (_: ImageReadException) {
+            return false
         }
         stream.close()
         fos.close()
@@ -111,12 +114,8 @@ interface Downloader : Queuer<Queued> {
     }
 
     private fun writeWebP(q: Queued, ba: ByteArray, out: OutputStream) {
-        val chunks = //try {
+        val chunks =
             WebPImageParser.readChunks(ByteArrayByteReader(ba), false) // NEVER set it to true
-        //} catch (_: ImageReadException) {
-        //out.write(`in`)
-        //return
-        //}
         val metadata = WebPImageParser.parseMetadataFromChunks(chunks)
         val outputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
@@ -162,6 +161,6 @@ interface Downloader : Queuer<Queued> {
         }.toByteArray()
 
     class FailureException :
-        IllegalStateException("Couldn't download from Instagram!"),
+        IllegalStateException("Cannot download from Instagram!"),
         Utils.InstaToolsException
 }

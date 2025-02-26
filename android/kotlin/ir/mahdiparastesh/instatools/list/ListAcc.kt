@@ -7,7 +7,7 @@ import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.instatools.Downloads.Companion.EXPORT_LINKS_MIME
+import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
@@ -35,29 +35,24 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
     override fun onBindViewHolder(h: AnyViewHolder<ListAccBinding>, i: Int) {
         // apparently even the most static kinds of list adapters need to be null-safe.
         val acc = c.accounts.getOrNull(i) ?: return
-        val guest = acc.id < 0L
 
-        Glide.with(c.c).load(if (!guest) acc.pict else R.mipmap.launcher)
-            .into(h.b.photo)
-        if (!guest) h.b.name.text = acc.name
-        else h.b.name.setText(R.string.guest)
-        if (!guest) h.b.user.text = acc.user
-        else h.b.user.setText(R.string.enterWithoutAuth)
-        h.b.name.vis(guest || acc.name != "")
+        Glide.with(c.c).load(acc.pict).into(h.b.photo)
+        h.b.name.text = acc.name
+        h.b.user.text = acc.user
+        h.b.name.vis(acc.name != "")
         h.b.root.setOnClickListener {
             c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
         }
 
         // clicks
-        h.b.more.vis(!guest)
-        h.b.more.setOnClickListener(if (!guest) View.OnClickListener {
-            val a = c.accounts.getOrNull(h.layoutPosition) ?: return@OnClickListener
+        h.b.more.setOnClickListener {
+            val a = c.accounts.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             more(it, a, h.layoutPosition)
-        } else null)
-        h.b.root.setOnLongClickListener(if (!guest) View.OnLongClickListener {
-            val a = c.accounts.getOrNull(h.layoutPosition) ?: return@OnLongClickListener true
+        }
+        h.b.root.setOnLongClickListener {
+            val a = c.accounts.getOrNull(h.layoutPosition) ?: return@setOnLongClickListener true
             more(it, a, h.layoutPosition)
-        } else null)
+        }
 
         h.b.sep.vis(i < itemCount - 1)
     }
@@ -66,7 +61,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
 
     private fun more(v: View, acc: Account, i: Int): Boolean {
         MaterialMenu(c, v, R.menu.acc_more,
-            R.id.amWithoutAuth to {
+            R.id.amOffline to {
                 c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
                 acc.last = Utils.now()
                 acc.saveMeInIO(c)
@@ -80,7 +75,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                 c.injectingCookieForAccIndex = i
                 c.injectCookies.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = EXPORT_LINKS_MIME
+                    type = "txt"
                 })
             },
             R.id.amSignOut to {
@@ -98,7 +93,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                                     Api.Endpoint.LOGOUT.url,
                                     true, "one_tap_app_login=1&user_id=${acc.id}"
                                 )
-                            } catch (_: Api.FailureException) {
+                            } catch (e: Api.FailureException) {
+                                if (BuildConfig.DEBUG) throw e
                             }
                             Api.cookies = ""
                         }

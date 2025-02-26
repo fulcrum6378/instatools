@@ -17,6 +17,7 @@
     <string name="unsave">Unsave</string>
     <string name="backgroundTasks">کار های پشت صحنه</string>
     <string name="selectAll">انتخاب همه</string>
+    <string name="deselectAllSure">آیا مطمئنید میخواهید تمام علامت ها را بردارید؟</string>
     <string name="deselectAll">انتخاب هیچ کدام</string>
     <string name="viewProfile">باز کردن پروفایل</string>
     <string name="viewHere">باز کردن در اینجا</string>
@@ -242,6 +243,7 @@
     <string name="downloaderTitle">در حال دانلود&#8230;</string>
     <string name="downloaderTitleCount">در حال دانلود %d مورد&#8230;</string>
     <string name="downloaderSomeFailed">دانلود %d مورد ممکن نشد!</string>
+    <string name="downloaderCannot">دانلود چیزی از اینستاگرام امکان پذیر نیست!</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">استخراجگر</string>

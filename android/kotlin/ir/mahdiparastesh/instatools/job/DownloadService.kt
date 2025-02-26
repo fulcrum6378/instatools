@@ -17,12 +17,14 @@ import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.coroutines.cancellation.CancellationException
@@ -145,11 +147,17 @@ class DownloadService : ForegroundService(), Downloader {
     }
 
     override fun onFatalError(e: Exception) {
-        if (e !is Api.FailureException) throw e
-
+        if (e !is Utils.InstaToolsException) throw e
         eventNotification(Notify.ID_DOWNLOADER_ERROR) {
             setContentTitle(getString(R.string.download))
-            setContentText(UiTools.apiError(c, e.code))
+            setContentText(
+                when (e) {
+                    is Api.FailureException -> UiTools.apiError(c, e.code)
+                    is Downloader.FailureException -> getString(R.string.downloaderCannot)
+                    is Queuer.FailureException -> getString(R.string.downloaderSomeFailed, e.times)
+                    else -> throw IllegalStateException("IMPOSSIBLE?!")
+                }
+            )
             setContentIntent(
                 PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
             )
@@ -176,18 +184,19 @@ class DownloadService : ForegroundService(), Downloader {
 
             clearCacheIfNecessary()
             @Suppress("KotlinConstantConditions")
-            if (dest == null || !bPreference(
+            if (dest != null && bPreference(
                     Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
                     Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
                 )
-            ) return@launch
-            val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
-            for (branch in stem.listFiles())
-                if (branch.isDirectory && branch.listFiles().isEmpty())
-                    branch.delete()
+            ) {
+                val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
+                for (branch in stem.listFiles())
+                    if (branch.isDirectory && branch.listFiles().isEmpty())
+                        branch.delete()
+            }
             DownloadHistory.saveCache(this@DownloadService)
-        }
 
-        super.finish(cancelled)
+            withContext(Dispatchers.Main) { super.finish(cancelled) }
+        }
     }
 }

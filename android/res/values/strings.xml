@@ -18,6 +18,7 @@
     <string name="backgroundTasks">Background Tasks</string>
     <string name="selectAll">Select All</string>
     <string name="deselectAll">Deselect All</string>
+    <string name="deselectAllSure">Are you sure you want to deselect all these items?</string>
     <string name="viewProfile">View Profile</string>
     <string name="viewHere">View Here</string>
     <string name="viewInInsta">View in Instagram</string>
@@ -237,6 +238,7 @@
     <string name="downloaderTitleCount">Downloading %d items&#8230;</string>
     <string name="downloaderTitleCount1" translatable="false">Downloading %d item&#8230;</string>
     <string name="downloaderSomeFailed">Couldn\'t download %d items!</string>
+    <string name="downloaderCannot">Cannot download from Instagram!</string>
 
     <!-- Exporter -->
     <string name="exporterChannel">Exporter</string>

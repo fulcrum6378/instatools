@@ -175,7 +175,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
             goTo(Login::class, true)
             return; }
         super.onAccountSet()
-        Api.cookies = m.acc!!.cook ?: ""
         onBuildUiBasedOnAccount()
     }
 
@@ -319,7 +318,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                                 schRes = rest.users.sortedBy { it.position }.toTypedArray()
                                 b.searchRes.adapter?.notifyDataSetChanged()
                             }
-                        } catch (e: Api.FailureException) {
+                        } catch (_: Api.FailureException) {
                             withContext(Dispatchers.Main) {
                                 searchErrored = true
                                 b.searchStatus.setAnimation(R.raw.failed)
@@ -430,10 +429,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * Merge Friends into PageUnf
-  * Destroy Favourites
+  * Merge Friends into PageUnf?
   * Make the coroutines pausable
-  * Large heap?!?
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -

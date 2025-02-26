@@ -49,15 +49,15 @@ import java.io.FileOutputStream
 
 class Downloads : BaseActivity(), ServiceOwner, Counter {
     lateinit var b: DownloadsBinding
-    private lateinit var bd: GuideSwipeDeleteBinding
-    private val handledLinks = mutableSetOf<String>()
-    private var isSwipeDeleteInflated: Boolean? = false
-    private val statusPlan =
-        mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
-    private var askedForDelete = false
     val pickle: Pickle by lazy {
         Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
     }
+    private val handledLinks = mutableSetOf<String>()
+    private val statusPlan =
+        mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
+    private var askedForDelete = false
+    private lateinit var bd: GuideSwipeDeleteBinding
+    private var isSwipeDeleteInflated: Boolean? = false
 
     override val com: ActivityCompanion get() = Companion
     override val root: ConstraintLayout? get() = b.root
@@ -74,7 +74,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = true
+    override fun isModelLoaded(): Boolean = false
     override fun isModelEmpty(): Boolean = m.queue.isEmpty()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListQud(this)
     override fun screenHeight(): Int = dm.heightPixels
@@ -83,8 +83,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         const val HANDLE_INSERTED = 0
         const val HANDLE_CHANGED = 1
         const val HANDLE_DELETED = 2
-        const val EXPORT_LINKS_MIME = "text/plain"
-        //const val EXPORT_LINKS_EXT = "txt"
+        val exportQueueMime =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
+            else "application/json"
 
         var handler: Handler? = null
 
@@ -164,7 +165,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 return@also
             }
             handledLinks.add(it)
-            // TODO Api.cookies
             if (m.acc != null) {
                 // TODO handle link `it`
                 initService(this)
@@ -262,7 +262,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             R.id.dtExportLinks -> if (!m.queue.isEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = EXPORT_LINKS_MIME
+                    type = exportQueueMime
                     putExtra(
                         Intent.EXTRA_TITLE,
                         "instatools_download_list_${Utils.fileDateTime(Utils.now())}.json"
@@ -271,9 +271,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
             R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type =
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
-                    else "application/json"
+                type = exportQueueMime
             })
 
             R.id.dtClearAll -> if (!m.queue.isEmpty())
@@ -352,7 +350,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 setPositiveButton(R.string.yes) { _, _ ->
                     askedForDelete = true
                     delete(q)
-                    Delay(30000L) { askedForDelete = false }
+                    Delay(60000L) { askedForDelete = false }
                 }
                 setNegativeButton(R.string.no, null)
             }.show()

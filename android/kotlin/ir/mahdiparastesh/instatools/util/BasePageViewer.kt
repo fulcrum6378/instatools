@@ -6,6 +6,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.selection.SelectionTracker
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.frag.PageVwr
@@ -33,7 +34,15 @@ abstract class BasePageViewer : BasePage<Viewer>(), Selective {
 
     override fun goBack(): Boolean {
         if (tracker?.hasSelection() == true) {
-            tracker?.clearSelection()
+            if (tracker!!.selection.size() < 3)
+                tracker?.clearSelection()
+            else
+                MaterialAlertDialogBuilder(c).apply {
+                    setTitle(R.string.deselectAll)
+                    setMessage(R.string.deselectAllSure)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ -> tracker?.clearSelection() }
+                }.show()
             return true
         }
         return false
