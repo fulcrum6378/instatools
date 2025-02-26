@@ -21,8 +21,8 @@ class Media(
     private val id: String, // <media ID>_<user ID>
     //val invited_coauthor_producers: Array<User>?,
     val image_versions2: ImageVersions2,
-    val lat: Double?,
-    val lng: Double?,
+    private val lat: Double?,
+    private val lng: Double?,
     //val like_count: Long?,
     val location: Location?,
     val media_type: Int,
@@ -82,6 +82,9 @@ class Media(
             .substringBefore("</BaseURL>")
     }
 
+    fun latitude(): Double? = lat ?: location?.lat
+    fun longitude(): Double? = lng ?: location?.lng
+
     /**
      * Adds this item to the download queue.
      * @param owner must be specified in stories and highlights.
@@ -109,8 +112,8 @@ class Media(
                     link ?: link()!!,
                     car.thumb(),
                     car.video_duration,
-                    lat ?: location?.lat,
-                    lng ?: location?.lng,
+                    latitude(),
+                    longitude(),
                 )
             )
         } else list.add(
@@ -124,8 +127,8 @@ class Media(
                 link ?: link()!!,
                 thumb(),
                 video_duration,
-                lat ?: location?.lat,
-                lng ?: location?.lng,
+                latitude(),
+                longitude(),
             )
         )
         return list

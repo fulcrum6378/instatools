@@ -132,14 +132,14 @@ interface Downloader : Queuer<Queued> {
             removeField(TiffTag.TIFF_TAG_ARTIST) // Authors
             add(TiffTag.TIFF_TAG_ARTIST, q.owner)
             removeField(TiffTag.TIFF_TAG_COPYRIGHT)
-            add(TiffTag.TIFF_TAG_COPYRIGHT, "IG @${q.owner}")
+            add(TiffTag.TIFF_TAG_COPYRIGHT, "IG: @${q.owner}")
             q.caption?.also {
                 removeField(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
                 add(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION, it)
             }
             removeField(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE) // belongs in the root dir
             add(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE, "Instagram")
-            removeField(ExifTag.EXIF_TAG_SOFTWARE) //belongs in the root dir
+            removeField(ExifTag.EXIF_TAG_SOFTWARE) // belongs in the root dir
             add(ExifTag.EXIF_TAG_SOFTWARE, "InstaTools")
         }
         outputSet.getOrCreateExifDirectory().apply { // directory ExifIFD
@@ -152,8 +152,6 @@ interface Downloader : Queuer<Queued> {
         }
         if (q.lat != null && lacksGps)
             outputSet.setGpsCoordinates(q.coordinates())
-        // to retrieve:
-        // GPSInfo.createFrom(metadata.findTiffDirectory(TiffConstants.TIFF_DIRECTORY_GPS)!!)
     }
 
     private fun exifBytes(metadata: ImageMetadata, outputSet: TiffOutputSet) =

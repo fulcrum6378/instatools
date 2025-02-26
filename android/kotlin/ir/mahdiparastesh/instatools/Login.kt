@@ -23,8 +23,8 @@ import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,10 +51,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val SP_ACCOUNT = "account" // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val BROWSE_FOR_ADD = 0
-        const val BROWSE_AS_GUEST = 1
-        const val BROWSE_ACC_EXIST = 2
-        const val BROWSE_AUTH_REQ = 3
-        const val BROWSE_THE_WEB = 4
+        const val BROWSE_ACC_EXIST = 1
+        const val BROWSE_AUTH_REQ = 2
+        const val BROWSE_THE_WEB = 3
         var browsePurpose: Int? = null
     }
 
@@ -84,14 +83,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         // Accounts
         CoroutineScope(Dispatchers.IO).launch {
             accounts = Account.load(c)
-            if (accounts.find { it.id == -1L } == null)
-                Account(-1L, "", "").apply { accounts.add(this) }
             withContext(Dispatchers.Main) {
                 when {
                     intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
                         .apply {
                             MaterialAlertDialogBuilder(this@Login).apply {
-                                setTitle(R.string.guest)
+                                setTitle(R.string.loggedOut)
                                 setMessage(getString(R.string.needAuthentication))
                                 setNeutralButton(R.string.ok, null)
                             }.show()
@@ -154,15 +151,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     fun selectAccount(acc: Account) {
         when {
-            acc.id == -1L -> MaterialAlertDialogBuilder(this).apply {
-                setTitle(R.string.guest)
-                setMessage(getString(R.string.guestSure))
-                setNegativeButton(R.string.cancel, null)
-                setPositiveButton(R.string.sContinue) { _, _ ->
-                    m.acc = acc
-                    browse(BROWSE_AS_GUEST)
-                }
-            }.show()
             acc.cook != null -> browse(BROWSE_ACC_EXIST, acc.cook)
             else -> {
                 accounts.removeAll { it.id == acc.id }
@@ -207,13 +195,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             b.refresher.isRefreshing = true
-            if (browsePurpose == BROWSE_AS_GUEST) {
-                id = "-1"
-                accounts.getOrNull(accounts.indexOf(accounts.find { it.id == -1L }))?.cook =
-                    cookieManager.getCookieOrganised(HOST)
-                CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
-                gsp.edit { putString(SP_ACCOUNT, id) }
-                goTo(Main::class, true); return; }
             if (doClearHistory) {
                 b.web.clearHistory()
                 doClearHistory = false

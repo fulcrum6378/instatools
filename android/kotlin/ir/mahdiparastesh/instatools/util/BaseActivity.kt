@@ -99,7 +99,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     var isAccountSet = false
     open fun onAccountSet() {
-        if (m.acc?.id != -1L) sp = initSp(m.acc)
+        if (m.acc?.id != null) sp = initSp(m.acc)
         isAccountSet = true
     }
 

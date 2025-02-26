@@ -3,7 +3,6 @@
     <string name="app_name" translatable="false">InstaTools</string>
 
     <!-- #GLOBAL -->
-    <string name="guest">Guest</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
     <string name="search">Search</string>
@@ -77,17 +76,11 @@
 
     <!-- Login -->
     <string name="addAccount">Add Account</string>
-    <string name="enterWithoutAuth">Enter without Authentication</string>
-    <string name="browseInTheWeb">Browse in the Web</string>
-    <string name="injectCookies">Inject Cookies (TXT)</string>
+    <string name="enterWithoutAuth">Enter offline</string>
+    <string name="browseInTheWeb">Browse the web</string>
+    <string name="injectCookies">Inject cookies (TXT)</string>
     <string name="cookieInjectionSuccess">
         New cookies were saved. You may enter your account now.
-    </string>
-    <string name="guestSure">
-        Unfortunately Instagram won\'t let you view people in its website so frequently without signing in.
-        It\'ll force you sign in or sign up to do that.
-        (You can check this fact by opening Instagram in your browser\'s \"Incognito\" mode.)
-        So there\'s no guarantee that you won\'t need to log in soon after entering the Guest mode.
     </string>
     <string name="unknownError">Sorry, an unknown error occurred: %s</string>
     <string name="needAuthentication">

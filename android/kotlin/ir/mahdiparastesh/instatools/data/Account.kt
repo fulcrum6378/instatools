@@ -61,10 +61,7 @@ class Account(
         suspend fun save(c: Context, accounts: List<Account>) {
             runCatching {
                 FileOutputStream(Secured(c)).use { fos ->
-                    fos.write(
-                        Json.encodeToString(accounts.filter { it.cook != null || it.id == -1L })
-                            .encodeToByteArray()
-                    )
+                    fos.write(Json.encodeToString(accounts).encodeToByteArray())
                 }
             }
         }
@@ -75,7 +72,7 @@ class Account(
             return null
         }
 
-        fun Account?.dbName() = if (this != null && id != -1L) id.toString() else "guest"
+        fun Account?.dbName() = if (this != null) id.toString() else "guest"
     }
 
     class Secured(c: Context) : File(c.filesDir, "cache.json")

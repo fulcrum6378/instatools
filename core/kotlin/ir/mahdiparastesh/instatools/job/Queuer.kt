@@ -9,21 +9,20 @@ interface Queuer<Item> {
     var q: Int
 
     /** Counts remaining items in the queue. */
-    fun remaining(): Int = queue.size - (q)
+    fun remaining(): Int = queue.size - q
 
     /** Starts handling the queue. */
     fun start() {
         try {
             q = 0
-            while (remaining() > 0) {
-                if (handle(queue[q]))
+            while (remaining() > 0)
+                if (handle(queue[q])) {
                     onSuccess(queue[q])
-                else {
+                    queue.removeAt(q)
+                } else {
                     onFailure(queue[q])
                     q++
                 }
-                queue.removeAt(q)
-            }
             onFinished()
         } catch (e: Exception) {
             onFatalError(e)

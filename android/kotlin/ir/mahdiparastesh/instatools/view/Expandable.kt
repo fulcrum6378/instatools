@@ -97,6 +97,8 @@ class Expandable(
                             link() ?: audioUrl,
                             thumb(),
                             video_duration,
+                            latitude(),
+                            longitude(),
                         )
                     )
                     Downloads.initService(c)

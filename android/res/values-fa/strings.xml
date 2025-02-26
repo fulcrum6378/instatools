@@ -3,7 +3,6 @@
     <string name="app_name">اینستاتولز</string>
 
     <!-- #GLOBAL -->
-    <string name="guest">مهمان</string>
     <string name="navOpen">باز کردن</string>
     <string name="navClose">بستن</string>
     <string name="search">جستجو</string>
@@ -78,17 +77,11 @@
 
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
-    <string name="enterWithoutAuth">ورود بدون لوگین</string>
-    <string name="browseInTheWeb">بازکردن مانند مرورگر</string>
+    <string name="enterWithoutAuth">ورود آفلاین</string>
+    <string name="browseInTheWeb">بازکردن در مرورگر</string>
     <string name="injectCookies">تزریق کوکی (TXT)</string>
     <string name="cookieInjectionSuccess">
         کوکی های جدید ذخیره شدند. حالا میتوانید وارد اکانت خود شوید.
-    </string>
-    <string name="guestSure">
-        متاسفانه اینستاگرام به شما اجازه نمی دهد که بتوانید براحتی در بین پروفایل های مختلف بچرخید
-        بدون اینکه به حساب خود وارد شوید. اینستاگرام شما را مجبور خواهد کرد که یا وارد شده یا ثبت نام کنید.
-        (می توانید در حالت «ناشناس» مرورگر خود از این حقیقت مطمئن شوید.)
-        پس هیچ تضمینی نیست که شما در «حالت مهمان» خیلی زود مجبور به وارد شدن به اکانت خود نشوید.
     </string>
     <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
     <string name="needAuthentication">

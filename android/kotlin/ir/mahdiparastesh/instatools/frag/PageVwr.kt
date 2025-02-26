@@ -84,7 +84,7 @@ class PageVwr : BasePageViewer() {
                                 c.mm.user!!.biography,
                                 UiTools.PROFILE.format(c.mm.user!!.username!!),
                                 c.mm.user!!.profile_pic_url,
-                                null
+                                null, null, null
                             )
                         )
                         Downloads.initService(c)
