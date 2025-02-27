@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class DownloadTask : Downloader {
     override val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
+    override var finishedItems: Int = 0
     val outputDir = File("./Downloads/")
 
     fun download(
@@ -44,6 +45,9 @@ class DownloadTask : Downloader {
     }
 
     override fun onFinished() {
+    }
+
+    override fun onEnd(finished: Boolean) {
     }
 
     override fun onFatalError(e: Exception) {

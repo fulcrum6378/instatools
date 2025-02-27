@@ -41,6 +41,7 @@ class DownloadService : ForegroundService(), Downloader {
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String
     override val queue: CopyOnWriteArrayList<Download> get() = m.queue
+    override var finishedItems: Int = 0
 
     companion object : ForegroundServiceCompanion() {
         override val klass = DownloadService::class.java
@@ -109,7 +110,7 @@ class DownloadService : ForegroundService(), Downloader {
             remaining
         )
         ntfSmallText = q.owner
-        updateNotification()
+        updateNotification(Pair(finishedItems, remaining + finishedItems))
 
         return super.handle(q, remaining)
     }

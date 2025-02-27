@@ -13,7 +13,6 @@ import android.os.Message
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.core.graphics.blue
@@ -23,8 +22,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.instatools.data.Pickle
+import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.data.Download
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.job.DownloadService
@@ -252,7 +252,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
-                } else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                }
+                else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
 
             R.id.dtExportLinks -> if (!m.queue.isEmpty())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -262,7 +263,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         Intent.EXTRA_TITLE,
                         "instatools_download_list_${Utils.fileDateTime(Utils.now())}.json"
                     )
-                }) else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                })
+            else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
 
             R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
@@ -278,11 +280,14 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         CoroutineScope(Dispatchers.IO).launch {
                             m.queue.clear()
                             pickle.save(m.queue.toList())
-                            b.rv.adapter?.notifyDataSetChanged()
-                            onListResized()
+                            withContext(Dispatchers.Main) {
+                                b.rv.adapter?.notifyDataSetChanged()
+                                onListResized()
+                            }
                         }
                     }
-                }.show() else Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                }.show()
+            else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
         }
         return super.onMenuItemClick(item)
     }
@@ -311,9 +316,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        c, R.string.importReadError, Toast.LENGTH_LONG
-                    ).show()
+                    UiTools.snackbar(b.root, R.string.importReadError, dur = Snackbar.LENGTH_LONG)
                 }
             }
         }

@@ -20,7 +20,7 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
         val tree = File(root, "pickle_$acc")
         branch = if (type.singleFile) tree else File(tree, type.name.lowercase())
         file = File(branch, "${if (type.singleFile) type.name.lowercase() else id}.json")
-        lifespan = type.lifespanDays * 86400000L
+        lifespan = (type.lifespanDays * 86400000f).toLong()
     }
 
     suspend inline fun <reified DATA> save(data: DATA) {
@@ -41,17 +41,17 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
 
     enum class Type(
         val isCache: Boolean,
-        val lifespanDays: Int,
+        val lifespanDays: Float,
         val singleFile: Boolean = !isCache,
     ) {
-        DOWNLOAD_LIST(false, 30),
-        EXPORT_LIST(false, 30),
+        DOWNLOAD_LIST(false, 30f),
+        EXPORT_LIST(false, 30f),
 
-        SAVED(true, 1, true),
-        PROFILE(true, 2),
-        POSTS(true, 3),
-        STORY(true, 1),
-        HIGHLIGHTS(true, 7),
-        TAGGED(true, 7),
+        SAVED(true, 1f, true),
+        PROFILE(true, 2f),
+        POSTS(true, 3f),
+        STORY(true, 1f),
+        HIGHLIGHTS(true, 7f),
+        TAGGED(true, 7f),
     }
 }

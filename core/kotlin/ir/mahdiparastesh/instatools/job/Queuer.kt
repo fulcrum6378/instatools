@@ -6,6 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 interface Queuer<Item> where Item : Queuer.Queued {
     val queue: CopyOnWriteArrayList<Item>
+    var finishedItems: Int
 
     /** Starts handling the queue. */
     fun start() {
@@ -34,6 +35,7 @@ interface Queuer<Item> where Item : Queuer.Queued {
                     if (consecutiveFailures > 5)
                         throw FailureException(consecutiveFailures)
                 }
+                finishedItems++
             }
             onFinished()
             onEnd(true)
