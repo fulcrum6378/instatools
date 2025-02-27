@@ -100,9 +100,8 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             return; }
 
         // fetch online saved posts
-        val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(
-            Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: "")
-        )
+        val cursor = if (!reset) (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: "") else ""
+        val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(Api.Endpoint.SAVED.url + cursor)
 
         // update the data model and the UI
         if (c.mm.saved == null || reset) {

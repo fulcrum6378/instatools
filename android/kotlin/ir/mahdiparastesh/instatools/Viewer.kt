@@ -209,7 +209,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             withContext(Dispatchers.Main) {
                 if (userReplaced)
                     pages().forEach { (it as BasePageViewer?)?.clear() }
-                page2?.showProfile()
+                page2?.showProfile(reset)
                 b.toolbar.title = mm.user?.username
                 fixTbMenu()
                 loader = null

@@ -9,14 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class ExportTask : Queuer<Exportable> {
     override val queue: CopyOnWriteArrayList<Exportable> = CopyOnWriteArrayList()
-    override var q: Int = 0
     val outputDir = File("./Messages/")
 
     companion object {
         const val USER_PROFILE_IMG = "user_%s"
     }
 
-    override fun handle(q: Exportable): Boolean {
+    override fun handle(q: Exportable, remaining: Int): Boolean {
         // fetch all messages
         while (q.thread.has_older) Api.json<Rest.InboxThread>(
             Api.Endpoint.DIRECT.url.format(q.thread.thread_id, q.thread.items.first().item_id, "20")

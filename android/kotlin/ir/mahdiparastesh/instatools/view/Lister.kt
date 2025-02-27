@@ -147,8 +147,10 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     override fun onScroll() {
         super.onScroll()
-        if (rv?.canScrollVertically(1) == false) load()
+        if (hasReachedBottom()) load()
     }
+
+    fun hasReachedBottom() = !rv!!.canScrollVertically(1)
 
     fun canRefresh(): Boolean =
         !rv!!.canScrollVertically(-1) && !(this is Selective && tracker?.hasSelection() == true)
@@ -180,13 +182,13 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
             root!!.removeView(loading)
         }
         error?.vis(false)
-        if (isModelEmpty() && !rv!!.canScrollVertically(1)) load()
+        if (isModelEmpty() && hasReachedBottom()) load()
     }
 
     @MainThread
     fun onLazilyLoaded(start: Int, size: Int) {
         if (size > 0) rv?.adapter?.notifyItemRangeInserted(start, size)
-        if (isModelEmpty() && !rv!!.canScrollVertically(1)) load()
+        if (isModelEmpty() && hasReachedBottom()) load()
     }
 
     @MainThread

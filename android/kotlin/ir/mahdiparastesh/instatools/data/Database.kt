@@ -50,6 +50,9 @@ abstract class Database : RoomDatabase() {
         @Query("SELECT * FROM Favourite")
         suspend fun favourites(): List<Favourite>
 
+        @Query("SELECT COUNT(*) FROM Favourite")
+        suspend fun countFavourites(): Int
+
         @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
         suspend fun favourite(id: String): Favourite?
 

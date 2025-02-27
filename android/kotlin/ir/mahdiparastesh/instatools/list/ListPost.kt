@@ -88,6 +88,9 @@ abstract class ListPost<Activity, Fragment>(
         // is media liked?
         h.b.liked.vis(med.has_liked == true)
 
+        // is media saved?
+        h.b.saved.vis(this !is ListSvd && med.has_viewer_saved == true)
+
         // is media selected?
         h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
 

@@ -429,6 +429,8 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
+  * number of posts on PageVwr
+  * on configuration changes (especially Login while browsing the web)
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
   * Make the coroutines pausable
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
@@ -441,17 +443,11 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * A button for resuming/restarting the Exporter
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
+  * Export/import blocked accounts lists from/into different accounts of one's
   * -
   * Extensions which need the Android API:
-  * Export/import blocked accounts lists from/into different accounts of one's
   * Batch Unsave API
-  * -
-  * Extensions which are not recommended:
-  * Metadata for videos and audios (whose libraries seem to be critically unstable)
   *
   * NOTES:
-  * - Media of private accounts as well as DMs are accessible to the public via direct links!!
-  * So you don't need to bind cookies to the DownloadManager and perhaps even Downloader!
   * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
-  * - You can get help from here: https://github.com/dilame/instagram-private-api
 */

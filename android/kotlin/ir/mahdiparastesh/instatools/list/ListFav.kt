@@ -43,10 +43,10 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
                 if (f.tempDeleted) c.dao.deleteFavourite(f)
                 else c.dao.addFavourite(f)
 
-                val listSize = c.m.fav?.size ?: 0
+                val listSize = c.dao.countFavourites()
                 withContext(Dispatchers.Main) {
-                    if (f.tempDeleted) c.updateCount(c, listSize - 1)
-                    else c.updateCount(c, listSize + 1)
+                    if (f.tempDeleted) c.updateCount(c, listSize)
+                    else c.updateCount(c, listSize)
                 }
             }
             h.b.updateIcon(f.tempDeleted)

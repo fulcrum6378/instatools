@@ -104,8 +104,12 @@ class PageVwr : BasePageViewer() {
     }
 
     override fun onScroll() {
-        b.rv.isNestedScrollingEnabled = !b.nsv.canScrollVertically(1)
+        super.onScroll()
+        b.rv.isNestedScrollingEnabled = hasReachedBottom()
     }
+
+    override fun hasReachedBottom(): Boolean =
+        !b.nsv.canScrollVertically(1)
 
     override fun updateShadow() {
         if (isBInitialised()) c.b.tbShadow.vish(b.nsv.scrollY > 0)
@@ -114,7 +118,7 @@ class PageVwr : BasePageViewer() {
     override fun canRefresh(): Boolean =
         super.canRefresh() && !b.nsv.canScrollVertically(-1)
 
-    fun showProfile() {
+    fun showProfile(reset: Boolean = false) {
         if (c.mm.user == null || c.mm.profile == null || !isBInitialised()) return
 
         // profile picture
@@ -147,7 +151,7 @@ class PageVwr : BasePageViewer() {
                     bottomMargin = vPad
                 }
         } else
-            load()
+            load(reset)
 
         // update Favourite
         c.mm.fav?.apply {
@@ -178,10 +182,10 @@ class PageVwr : BasePageViewer() {
             return; }
 
         // fetch online posts
+        val cursor = if (!reset) c.mm.posts?.edges?.lastOrNull()?.node?.id().toString() else "null"
         val page = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_POSTS.body(
-                c.mm.user!!.username!!, "33", c.mm.posts?.edges?.lastOrNull()?.node?.id().toString()
-            )
+            Api.Endpoint.QUERY.url,
+            true, GraphQlQuery.PROFILE_POSTS.body(c.mm.user!!.username!!, "33", cursor)
         ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!
 
         // update the data model and the UI
@@ -191,8 +195,8 @@ class PageVwr : BasePageViewer() {
         } else c.mm.posts?.apply {
             val lastBefore = edges.size
             edges.addAll(page.edges)
-            withContext(Dispatchers.Main) { onLazilyLoaded(lastBefore, page.edges.size) }
             page_info.has_next_page = page.page_info.has_next_page
+            withContext(Dispatchers.Main) { onLazilyLoaded(lastBefore, page.edges.size) }
         }
 
         // cache the data model

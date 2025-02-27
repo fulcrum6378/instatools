@@ -34,7 +34,7 @@ class Media(
     //val photo_of_you: Boolean?,
     private val pk: String?, // nullable in tagged carousel items
     val product_type: String?,
-    val taken_at: Long,
+    val taken_at: Long?, // nullable in tagged carousel items
     val user: User?,
     val video_dash_manifest: String?,
     val video_duration: Float?, // in seconds
@@ -104,7 +104,7 @@ class Media(
             list.add(
                 Download(
                     car.id(),
-                    Utils.compileSecondsTS(car.taken_at),
+                    Utils.compileSecondsTS(car.taken_at ?: taken_at!!),
                     car.nearest(idealSize)!!,
                     car.media_type.toInt().toByte(),
                     u,
@@ -119,7 +119,7 @@ class Media(
         } else list.add(
             Download(
                 id(),
-                Utils.compileSecondsTS(taken_at),
+                Utils.compileSecondsTS(taken_at!!),
                 nearest(idealSize)!!,
                 media_type.toInt().toByte(),
                 u,
@@ -149,9 +149,12 @@ class Media(
 
     @Serializable
     class Version(
+        //val bandwidth: Int?, // in some video_versions, e.g. 1060902
+        //val id: String?, // in some video_versions, e.g. "615736350802035v"
+        val type: Int?,
         val url: String,
-        val height: Int,
-        val width: Int,
+        val height: Int?, // nullable in stories, in that case `type` is provided
+        val width: Int?, // --
     ) {
         @Suppress("MemberVisibilityCanBePrivate")
         companion object {
@@ -178,6 +181,9 @@ class Media(
                 list: Array<Version>,
                 original: Pair<Int, Int>? = null,
             ): String? {
+                if (list[0].width == null)
+                    return list.minBy { it.type!! }.url
+
                 var ret: String?
                 ret =
                     original?.let { o -> list.find { it.width == o.first && it.height == o.second }?.url }
@@ -185,8 +191,8 @@ class Media(
                     var maxW = 0
                     var maxH = 0
                     list.forEach {
-                        if (it.width > maxW) maxW = it.width
-                        if (it.height > maxH) maxH = it.height
+                        if (it.width!! > maxW) maxW = it.width
+                        if (it.height!! > maxH) maxH = it.height
                     }
                     ret = list.find { it.width == maxW && it.height == maxH }?.url
                 }
@@ -198,11 +204,14 @@ class Media(
 
 
             fun worst(list: Array<Version>): String? {
+                if (list[0].width == null)
+                    return list.maxBy { it.type!! }.url
+
                 var minW = 1000
                 var minH = 1000
                 list.forEach {
-                    if (it.width < minW) minW = it.width
-                    if (it.height < minH) minH = it.height
+                    if (it.width!! < minW) minW = it.width
+                    if (it.height!! < minH) minH = it.height
                 }
                 return list.find { it.width == minW && it.height == minH }?.url
                     ?: list.getOrNull(0)?.url
@@ -213,21 +222,24 @@ class Media(
                 ideal: Int,
                 original: Pair<Int, Int>? = null,
             ): String? {
+                if (list[0].width == null)
+                    return list[0].url
+
                 var nW = original?.first ?: 0
                 var nH = original?.second ?: 0
                 var nWDif = abs(ideal - nW)
                 var nHDif = abs(ideal - nH)
                 if (ideal > 0) list.forEach {
-                    if (abs(ideal - it.width) >= nWDif) return@forEach
+                    if (abs(ideal - it.width!!) >= nWDif) return@forEach
                     nWDif = abs(ideal - it.width)
                     nW = it.width
-                    nH = it.height
+                    nH = it.height!!
                 } else list.forEach {
                     val idealH = abs(ideal)
-                    if (abs(idealH - it.height) >= nHDif) return@forEach
+                    if (abs(idealH - it.height!!) >= nHDif) return@forEach
                     nHDif = abs(idealH - it.height)
                     nW = it.height
-                    nH = it.width
+                    nH = it.width!!
                 }
                 return list.find { it.width == nW && it.height == nH }?.url
                     ?: list.getOrNull(0)?.url

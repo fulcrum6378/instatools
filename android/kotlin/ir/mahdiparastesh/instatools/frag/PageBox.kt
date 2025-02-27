@@ -111,9 +111,8 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
                 return; }
 
             // fetch the online inbox
-            val page = Api.json<InboxPage>(
-                Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: "")
-            )
+            val cursor = if (!reset) (c.mm.dmInbox?.oldest_cursor ?: "") else ""
+            val page = Api.json<InboxPage>(Api.Endpoint.INBOX.url.format(cursor))
 
             // update the data model and the UI
             if (c.mm.dmInbox == null || reset) {

@@ -54,7 +54,7 @@ class PageTag : BasePageViewer() {
             return; }
 
         // fetch online tagged posts
-        val cursor = c.mm.tagged?.edges?.lastOrNull()?.node?.id()
+        val cursor = if (!reset) c.mm.tagged?.edges?.lastOrNull()?.node?.id() else null
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)

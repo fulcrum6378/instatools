@@ -89,7 +89,7 @@ class Expandable(
                     c.m.queue.add(
                         Download(
                             id(),
-                            Utils.compileSecondsTS(taken_at),
+                            Utils.compileSecondsTS(taken_at!!),
                             audioUrl,
                             0x3,
                             mediaOwner ?: owner().username!!,
@@ -141,10 +141,10 @@ class Expandable(
         val hasAudio = media?.hasAudio() == true
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
-        if (c !is Viewer) media?.owner()?.also { user ->
+        media?.owner()?.also { user ->
             b.username.text = "@${user.username}"
             b.username.setOnClickListener {
-                if (!UiTools.openProfile(c, user.username!!))
+                if (!UiTools.openProfile(c, user.username!!) && c !is Viewer)
                     Viewer.comeHere(c, user.id())
             }
         }
