@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.data
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Settings
@@ -76,7 +77,8 @@ object DownloadHistory {
         saveCache(c)
     }
 
-    suspend fun saveCache(c: Persistent) {
+    @WorkerThread
+    fun saveCache(c: Persistent) {
         if (c.m.files.isNullOrEmpty()) return
         FileOutputStream(Stored(c.c)).use {
             it.write(Json.encodeToString(c.m.files?.toList()).encodeToByteArray())

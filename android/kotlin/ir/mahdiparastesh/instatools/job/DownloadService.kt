@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
-import androidx.annotation.WorkerThread
+import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -13,9 +13,9 @@ import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
@@ -25,10 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.coroutines.cancellation.CancellationException
 
 class DownloadService : ForegroundService(), Downloader {
     private var dest: String? = null
@@ -42,8 +40,7 @@ class DownloadService : ForegroundService(), Downloader {
 
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String
-    override val queue: CopyOnWriteArrayList<Queued> get() = m.queue
-    override var q: Int = 0
+    override val queue: CopyOnWriteArrayList<Download> get() = m.queue
 
     companion object : ForegroundServiceCompanion() {
         override val klass = DownloadService::class.java
@@ -63,27 +60,22 @@ class DownloadService : ForegroundService(), Downloader {
             if (sp != null) Settings.loadAliases(this@DownloadService, false)
                 .forEach { (k, v) -> aliases[k] = v }
         }
-        if (m.acc == null || dest == null) {
-            finish(false); return; }
+        if (m.acc == null || dest == null) return
 
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
         ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
         ntfTitle = getString(R.string.downloaderTitle)
         initialNotification(Companion, Downloads::class)
-        if (job?.isActive != true)
-            job = CoroutineScope(Dispatchers.IO).launch {
-                if (m.queue.isEmpty())
-                    pickle.restore<List<Queued>>()
-                        ?.also { m.queue.addAll(it) }
-                start()
-            }.also {
-                it.invokeOnCompletion { e ->
-                    if (e is CancellationException) onFinished()
-                }
-            }
+
+        job = CoroutineScope(Dispatchers.IO).launch {
+            if (m.queue.isEmpty())
+                pickle.restore<List<Download>>()
+                    ?.also { m.queue.addAll(it) }
+            start()
+        }
     }
 
-    override fun prepareOutput(q: Queued): LazyFile<FileOutputStream>? {
+    override fun prepareOutput(q: Download): LazyFile<FileOutputStream>? {
         val branch: DocumentFile = when {
             q.owner in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.owner]))
                 ?.exists() == true ->
@@ -110,23 +102,22 @@ class DownloadService : ForegroundService(), Downloader {
         }
     }
 
-    override fun handle(q: Queued): Boolean {
+    override fun handle(q: Download, remaining: Int): Boolean {
         // update the notification
-        val queueSize = remaining()
         ntfTitle = getString(
-            if (queueSize > 1) R.string.downloaderTitleCount else R.string.downloaderTitleCount1,
-            queueSize
+            if (remaining > 1) R.string.downloaderTitleCount else R.string.downloaderTitleCount1,
+            remaining
         )
         ntfSmallText = q.owner
         updateNotification()
 
-        return super.handle(q)
+        return super.handle(q, remaining)
     }
 
-    override fun onRetry(q: Queued) {
+    override fun onRetry(q: Download) {
     }
 
-    override fun onSuccess(q: Queued) {
+    override fun onSuccess(q: Download) {
         des?.close()
         m.findQueued(q)?.also {
             Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, it)?.sendToTarget()
@@ -135,22 +126,17 @@ class DownloadService : ForegroundService(), Downloader {
         incrementCounter(Settings.spDownloadCount)
     }
 
-    override fun onFailure(q: Queued) {
+    override fun onFailure(q: Download) {
         des?.close()
-        q.status = 0b1
         m.findQueued(q)?.also {
             Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, it)?.sendToTarget()
         }
         incrementCounter(Settings.spDlErrorCount)
     }
 
-    @WorkerThread
     override fun onFinished() {
         CoroutineScope(Dispatchers.IO).launch {
             pickle.save(m.queue.toList())
-        }
-        CoroutineScope(Dispatchers.Main).launch {
-            finish(false)
         }
     }
 
@@ -170,16 +156,21 @@ class DownloadService : ForegroundService(), Downloader {
                 PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
             )
         }
-        finish(false)
     }
 
-    override fun finish(cancelled: Boolean) {
+    @MainThread
+    override fun onCancel() {
+        val active = job?.isActive == true
         job?.cancel()
+        onEnd(!active)
+    }
+
+    override fun onEnd(finished: Boolean) {
         ntfTitle = getString(R.string.downloaderTitle)
         ntfSmallText = null
         updateNotification()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        if (finished) {
             val failedSum = queue.size
             if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
                 setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
@@ -189,22 +180,22 @@ class DownloadService : ForegroundService(), Downloader {
                     )
                 )
             }
-
-            clearCacheIfNecessary()
-            @Suppress("KotlinConstantConditions")
-            if (dest != null && bPreference(
-                    Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
-                    Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
-                )
-            ) {
-                val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
-                for (branch in stem.listFiles())
-                    if (branch.isDirectory && branch.listFiles().isEmpty())
-                        branch.delete()
-            }
-            DownloadHistory.saveCache(this@DownloadService)
-
-            withContext(Dispatchers.Main) { super.finish(cancelled) }
         }
+
+        clearCacheIfNecessary()
+        @Suppress("KotlinConstantConditions")
+        if (dest != null && bPreference(
+                Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
+                Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
+            )
+        ) {
+            val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
+            for (branch in stem.listFiles())
+                if (branch.isDirectory && branch.listFiles().isEmpty())
+                    branch.delete()
+        }
+        DownloadHistory.saveCache(this@DownloadService)
+
+        destroy()
     }
 }

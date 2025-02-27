@@ -75,7 +75,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     override fun onCreate(savedInstanceState: Bundle?) {
         com.active = true
         resolvedIntent = null
-        notFirstResume = false
         super.onCreate(savedInstanceState)
         m = ViewModelProvider(this, Model.Factory())["Model", Model::class.java]
         gsp = initGsp()
@@ -178,12 +177,6 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true
-
-    var notFirstResume = false
-    override fun onPause() {
-        super.onPause()
-        notFirstResume = true
-    }
 
     override fun switchAcc() {
         db.close()

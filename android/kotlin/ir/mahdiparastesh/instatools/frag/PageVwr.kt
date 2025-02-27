@@ -20,8 +20,8 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.data.Queued
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
@@ -69,12 +69,12 @@ class PageVwr : BasePageViewer() {
             height = c.dm.widthPixels
         }
         b.proClick.setOnClickListener { v ->
-            val picture = c.mm.user?.picture() ?: return@setOnClickListener
+            val picture = c.mm.user?.originalPicture() ?: return@setOnClickListener
             MaterialMenu(c, v, R.menu.viewer_pic_more,
                 R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.m.queue.add(
-                            Queued(
+                            Download(
                                 "profile_photo",
                                 Utils.now(),
                                 picture,
@@ -119,7 +119,7 @@ class PageVwr : BasePageViewer() {
 
         // profile picture
         Glide.with(c.c)
-            .load(c.mm.user!!.picture())
+            .load(c.mm.profile!!.profile_pic_url_hd!!)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(b.proPic, b.proPicIv))
             .into(b.proPicIv)

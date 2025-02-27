@@ -24,7 +24,10 @@ import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import kotlin.reflect.KClass
 
-/** Abstract class for all foreground services in this app. */
+/**
+ * Abstract class for all foreground services in this app.
+ * Most functions do not require to be called on the main thread.
+ */
 abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     protected lateinit var ntfManager: NotificationManager
 
@@ -158,16 +161,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         )
     }
 
-    open fun onCancel() {
-        finish(true)
-    }
-
-    /**
-     * Call it only from the same thread of the Service.
-     * If you don't, the Service will NEVER stop!!
-     */
     @MainThread
-    open fun finish(cancelled: Boolean) {
+    abstract fun onCancel()
+
+    fun destroy() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

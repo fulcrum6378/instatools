@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.data
 
 import com.ashampoo.kim.model.GpsCoordinates
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.job.Queuer
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import java.net.URI
@@ -22,8 +23,8 @@ import kotlin.jvm.Throws
  * @param status 0=>pending, 1=>failed, 2=>suspended
  */
 @Serializable
-class Queued(
-    val id: String,
+class Download(
+    override val id: String,
     val date: Long,
     val url: String,
     val type: Byte,
@@ -34,15 +35,13 @@ class Queued(
     val dur: Float?,
     val lat: Double?,
     val lng: Double?,
-    var status: Byte = 0x0
-) {
-    val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
+    override var status: Byte = 0x0
+) : Queuer.Queued {
+    override val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
 
     val ext: String by lazy { URI(url).path.split(".").last() }
 
     fun isMainFile() = type.toInt() !in arrayOf(3)
-
-    fun isFailed() = status == 1.toByte()
 
     @Throws(NullPointerException::class)
     fun coordinates() = GpsCoordinates(lat!!, lng!!)

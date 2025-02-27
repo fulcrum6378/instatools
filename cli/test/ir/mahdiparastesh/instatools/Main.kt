@@ -17,5 +17,5 @@ fun main() {
     println("Liked!")*/
 
     val info = SimpleJobs.userInfo("8337021434")
-    println(info.picture())
+    println(info.originalPicture())
 }

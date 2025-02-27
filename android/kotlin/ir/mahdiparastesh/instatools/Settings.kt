@@ -15,6 +15,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.edit
@@ -123,8 +124,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 .apply { if (exists()) delete() }
         }
 
-        @Suppress("RedundantSuspendModifier")
-        suspend fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
+        @WorkerThread
+        fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
 
         private var clearingCache = false
         fun Context.clearCache() {
@@ -144,7 +145,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             return ret
         } ?: defSpCacheLimit
 
-        suspend fun Persistent.clearCacheIfNecessary() {
+        @WorkerThread
+        fun Persistent.clearCacheIfNecessary() {
             if (Exporter.active.value == true) return
             if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
                 c.clearCache()

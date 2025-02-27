@@ -33,6 +33,7 @@ class Favourites : BaseActivity(), Lister, Counter {
     override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
+    override fun shouldLoadOnPrepare(): Boolean = false
     override fun isModelLoaded(): Boolean = m.fav != null
     override fun isModelEmpty(): Boolean = m.fav?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListFav(this)
@@ -50,7 +51,7 @@ class Favourites : BaseActivity(), Lister, Counter {
 
     override fun onResume() {
         super.onResume()
-        if (notFirstResume) load()
+        load()
     }
 
     override fun load(reset: Boolean) {

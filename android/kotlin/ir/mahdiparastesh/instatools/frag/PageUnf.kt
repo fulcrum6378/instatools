@@ -114,7 +114,7 @@ class PageUnf : BasePageMain(BaseActivity.Theme.PRIMARY) {
                 else followed = true
             } else newFriends.add(
                 Friend(
-                    u.id(), u.username!!, u.full_name!!, u.picture(), u.pv(),
+                    u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!, u.pv(),
                     theFollowers, !theFollowers
                 )
             )

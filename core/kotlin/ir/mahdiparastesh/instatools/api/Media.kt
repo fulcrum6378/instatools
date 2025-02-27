@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.api
 
-import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
@@ -95,14 +95,14 @@ class Media(
         link: String? = null,
         owner: String? = null,
         onlyOneSlide: Int? = null
-    ): ArrayList<Queued> {
-        val list = arrayListOf<Queued>()
+    ): ArrayList<Download> {
+        val list = arrayListOf<Download>()
         val u = owner ?: owner().username!!
         if (carousel_media != null) for (slide in carousel_media.indices) {
             if (onlyOneSlide != null && onlyOneSlide != slide) continue
             val car = carousel_media[slide]
             list.add(
-                Queued(
+                Download(
                     car.id(),
                     Utils.compileSecondsTS(car.taken_at),
                     car.nearest(idealSize)!!,
@@ -117,7 +117,7 @@ class Media(
                 )
             )
         } else list.add(
-            Queued(
+            Download(
                 id(),
                 Utils.compileSecondsTS(taken_at),
                 nearest(idealSize)!!,

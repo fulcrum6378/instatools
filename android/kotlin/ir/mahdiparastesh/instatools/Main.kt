@@ -430,13 +430,12 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 /* TODO:
   * Problems:
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
-  * Merge Friends into PageUnf?
   * Make the coroutines pausable
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
-  * Report to the user that a Queued is already downloaded by `status = 0x4`
+  * Report to the user that a Download is already downloaded by `status = 0x4`
   * Percentage of downloads
   * Show muted statuses in Friends
   * A button for resuming/restarting the Exporter

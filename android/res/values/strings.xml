@@ -233,7 +233,7 @@
 
     <!-- Downloader -->
     <string name="downloaderChannel">Download queue</string>
-    <string name="downloaderChannelDesc">Downloads the queued media</string>
+    <string name="downloaderChannelDesc">Downloads media in a queue</string>
     <string name="downloaderTitle">Downloading&#8230;</string>
     <string name="downloaderTitleCount">Downloading %d items&#8230;</string>
     <string name="downloaderTitleCount1" translatable="false">Downloading %d item&#8230;</string>

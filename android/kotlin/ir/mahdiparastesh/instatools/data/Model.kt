@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 /** Global view model for all Activity instances. */
 class Model : ViewModel() {
     var acc: Account? = null
-    val queue: CopyOnWriteArrayList<Queued> = CopyOnWriteArrayList()
+    val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
     var files: CopyOnWriteArraySet<String>? = null
     var fav: ArrayList<Favourite>? = null
 
@@ -16,7 +16,7 @@ class Model : ViewModel() {
         fav = null
     }
 
-    fun findQueued(it: Queued): Int? {
+    fun findQueued(it: Download): Int? {
         for (i in queue.indices) if (queue[i].id == it.id) return i
         return null
     }

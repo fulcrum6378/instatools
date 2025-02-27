@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.job.DownloadService
@@ -194,7 +194,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun load(reset: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
             if (m.queue.isEmpty())
-                pickle.restore<List<Queued>>()
+                pickle.restore<List<Download>>()
                     ?.also { m.queue.addAll(it) }
             withContext(Dispatchers.Main) { onLoaded() }
         }
@@ -300,13 +300,13 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
-                    Json.decodeFromString<Array<Queued>>(
+                    Json.decodeFromString<Array<Download>>(
                         FileInputStream(des!!.fileDescriptor).readBytes()
                             .toString(Charsets.UTF_8)
                     )
                 }
-            }.onSuccess { queueds ->
-                m.queue.addAll(queueds)
+            }.onSuccess { downloads ->
+                m.queue.addAll(downloads)
                 pickle.save(m.queue.toList())
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
@@ -352,7 +352,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             else delete(q)
         }
 
-        private fun delete(q: Queued) {
+        private fun delete(q: Download) {
             CoroutineScope(Dispatchers.IO).launch {
                 pickle.save(m.queue.toList())
                 withContext(Dispatchers.Main) {

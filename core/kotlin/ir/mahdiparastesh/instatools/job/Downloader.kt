@@ -19,7 +19,7 @@ import com.ashampoo.kim.output.ByteArrayByteWriter
 import com.ashampoo.kim.output.OutputStreamByteWriter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.data.Queued
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
 import java.io.FileOutputStream
@@ -31,11 +31,11 @@ import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
 import kotlin.io.copyTo
 
-interface Downloader : Queuer<Queued> {
+interface Downloader : Queuer<Download> {
 
-    fun prepareOutput(q: Queued): LazyFile<FileOutputStream>?
+    fun prepareOutput(q: Download): LazyFile<FileOutputStream>?
 
-    override fun handle(q: Queued): Boolean {
+    override fun handle(q: Download, remaining: Int): Boolean {
         val output = prepareOutput(q) ?: return true
 
         // prepare to download the file
@@ -57,15 +57,16 @@ interface Downloader : Queuer<Queued> {
                 Media.Type.IMAGE.num -> 15000
                 else -> q.dur?.let { (it * 2000f).toInt() } ?: (2 * 60000)
             }
-            try {
-                con.connect()
+
+            val responseCode = try {
+                con.responseCode
             } catch (_: UnknownHostException) {
                 throw Api.FailureException(-1)
             } catch (_: SocketTimeoutException) {
                 throw Api.FailureException(-2)
             }
 
-            if (con.responseCode == 200) try {
+            if (responseCode == 200) try {
                 stream = con.inputStream
             } catch (_: IOException) {
             }
@@ -90,9 +91,9 @@ interface Downloader : Queuer<Queued> {
         return true
     }
 
-    fun onRetry(q: Queued)
+    fun onRetry(q: Download)
 
-    private fun writeJpeg(q: Queued, ba: ByteArray, out: LazyFile<FileOutputStream>) {
+    private fun writeJpeg(q: Download, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val outputSet: TiffOutputSet =
             JpegImageParser.parseMetadata(ByteArrayByteReader(ba))
                 .exif?.createOutputSet() ?: TiffOutputSet()
@@ -103,7 +104,7 @@ interface Downloader : Queuer<Queued> {
         // NEVER reuse a ByteReader
     }
 
-    private fun writePng(q: Queued, ba: ByteArray, out: LazyFile<FileOutputStream>) {
+    private fun writePng(q: Download, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val chunks = PngImageParser.readChunks(ByteArrayByteReader(ba), null) // NEVER filter
         val metadata = PngImageParser.parseMetadataFromChunks(chunks)
         val outputSet: TiffOutputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
@@ -113,7 +114,7 @@ interface Downloader : Queuer<Queued> {
         )
     }
 
-    private fun writeWebP(q: Queued, ba: ByteArray, out: LazyFile<FileOutputStream>) {
+    private fun writeWebP(q: Download, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val chunks =
             WebPImageParser.readChunks(ByteArrayByteReader(ba), false) // NEVER set it to true
         val metadata = WebPImageParser.parseMetadataFromChunks(chunks)
@@ -124,7 +125,7 @@ interface Downloader : Queuer<Queued> {
         )
     }
 
-    private fun instilExif(q: Queued, outputSet: TiffOutputSet) {
+    private fun instilExif(q: Download, outputSet: TiffOutputSet) {
         val lacksGps = outputSet
             .getDirectories().none { it.type == TiffConstants.TIFF_DIRECTORY_GPS }
         outputSet.getOrCreateRootDirectory().apply { // directory IFD0

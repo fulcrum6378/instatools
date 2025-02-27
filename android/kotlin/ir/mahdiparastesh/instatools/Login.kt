@@ -267,9 +267,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 val u = Gson().fromJson(
                     Gson().toJson((wrapper.define["PolarisViewer"]!![1] as Map<*, *>)["data"]),
                     User::class.java
-                ) // it does not contain edge_saved_media!
+                )
                 m.acc = Account(
-                    id.toLong(), u.username, u.full_name, u.picture(),
+                    id.toLong(), u.username, u.full_name, u.originalPicture(),
                     cookieManager.getCookieOrganised(HOST),
                     Utils.now()
                 ).apply {

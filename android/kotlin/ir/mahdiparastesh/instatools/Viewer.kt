@@ -235,7 +235,9 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
             R.id.vtFav -> mm.user?.also { u ->
                 CoroutineScope(Dispatchers.IO).launch {
                     if (mm.fav == null) {
-                        mm.fav = Favourite(u.id(), u.username!!, u.full_name!!, u.picture(), u.pv())
+                        mm.fav = Favourite(
+                            u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!, u.pv()
+                        )
                         dao.addFavourite(mm.fav!!)
                         m.fav?.add(mm.fav!!)
                     } else {

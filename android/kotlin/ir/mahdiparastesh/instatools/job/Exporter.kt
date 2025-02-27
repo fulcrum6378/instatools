@@ -124,7 +124,7 @@ class Exporter : ForegroundService() {
             val actVid = opt?.actVid() == true
             if (img) for (user in threadData!!.users) {
                 val key = USER_PROFILE_IMG.format(user.pk)
-                media[key] = Downloadable(user.picture(), 0, cacheBranch!!, key, 0)
+                media[key] = Downloadable(user.originalPicture(), 0, cacheBranch!!, key, 0)
             }
             for (dm in threadData!!.items) {
                 if (actVid && dm.animated_media != null) continue
@@ -264,7 +264,10 @@ class Exporter : ForegroundService() {
             setContentText(UiTools.apiError(c, code))
             addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
         }
-        finish(false)
+    }
+
+    override fun onCancel() {
+        destroy()
     }
 
     private val endedOnes = arrayListOf<Long>()

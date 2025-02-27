@@ -225,7 +225,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
 Full name:        ${u.full_name}
 Username:         @${u.username}
 REST ID:          ${u.id()}
-Picture:          ${u.picture()}
+Picture:          ${u.originalPicture()}
 Is private?       ${if (u.is_private == true) "Yes" else "No"}
 Pronouns:         ${u.pronouns?.joinToString(", ")}
 Bio:
