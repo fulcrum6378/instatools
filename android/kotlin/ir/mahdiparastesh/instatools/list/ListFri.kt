@@ -42,7 +42,7 @@ class ListFri(val c: Friends) : RecyclerView.Adapter<AnyViewHolder<ListFriBindin
         }.toString()
         h.b.root.setOnClickListener {
             val u = c.mm.friends.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            Viewer.comeHere(c, u.user)
+            Viewer.comeHere(c, u.id)
         }
         h.b.sep.vis(i < itemCount - 1)
     }

@@ -49,6 +49,7 @@ interface Lister {
     fun isModelLoaded(): Boolean
     fun isModelEmpty(): Boolean
     fun createAdapter(): RecyclerView.Adapter<*>
+    fun reuseAdapter(): Boolean = true
     fun screenHeight(): Int
 
     fun prepareListing(c: BaseActivity) {
@@ -118,7 +119,7 @@ interface Lister {
     @MainThread
     fun onLoaded() {
         if (rv == null) return
-        if (rv!!.adapter == null) rv?.adapter = createAdapter()
+        if (rv!!.adapter == null || !reuseAdapter()) rv!!.adapter = createAdapter()
         else rv!!.adapter!!.notifyDataSetChanged()
 
         onListResized()

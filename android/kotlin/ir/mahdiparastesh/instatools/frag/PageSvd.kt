@@ -49,7 +49,9 @@ import kotlinx.coroutines.withContext
 class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     lateinit var b: PageSvdBinding
     var saver: Saver? = null
-    private val pickle: Pickle by lazy { Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.SAVED, null) }
+    private val pickle: Pickle by lazy {
+        Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.SAVED, null)
+    }
     private var selectionGuide: LottieAnimationView? = null
 
     override val root: ConstraintLayout? get() = b.root
@@ -94,11 +96,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             else null
         if (cache != null) {
             c.mm.saved = cache
-            withContext(Dispatchers.Main) {
-                onLoaded()
-                if (c.mm.saved?.more_available == false)
-                    c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
-            }
+            withContext(Dispatchers.Main) { onLoaded() }
             return; }
 
         // fetch online saved posts
@@ -106,23 +104,18 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             Api.Endpoint.SAVED.url + (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: "")
         )
 
-        // update the data model
-        var lastBefore: Int? = null
+        // update the data model and the UI
         if (c.mm.saved == null || reset) {
             c.mm.saved = lazyList
+            withContext(Dispatchers.Main) { onLoaded() }
         } else c.mm.saved?.apply {
-            lastBefore = items.size
+            val lastBefore = items.size
             items.addAll(lazyList.items)
             more_available = lazyList.more_available
             next_max_id = lazyList.next_max_id
-        }
-
-        // update the UI
-        withContext(Dispatchers.Main) {
-            if (lastBefore == null) onLoaded()
-            else onLazilyLoaded(lastBefore, lazyList.items.size)
-            if (c.mm.saved?.more_available == false)
-                c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+            withContext(Dispatchers.Main) {
+                onLazilyLoaded(lastBefore, lazyList.items.size)
+            }
         }
 
         // cache the data model
@@ -131,6 +124,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
 
     override fun onLoaded() {
         super.onLoaded()
+        if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
 
         // teach the user how to select items
         if (!isModelEmpty() && !c.gsp.getBoolean(Settings.spLearntSelection, false)
@@ -146,6 +140,11 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             translationY = c.dm.widthPixels * -0.01f // TODO both cause inconsistencies
             b.root.addView(this, 1)
         }
+    }
+
+    override fun onLazilyLoaded(start: Int, size: Int) {
+        super.onLazilyLoaded(start, size)
+        if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

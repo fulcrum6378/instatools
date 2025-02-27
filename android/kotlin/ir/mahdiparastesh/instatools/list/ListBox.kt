@@ -29,25 +29,23 @@ class ListBox(val c: Main, private val f: PageBox) :
         AnyViewHolder(ListBoxBinding.inflate(f.inflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListBoxBinding>, i: Int) {
-        var thd = c.mm.dmInbox?.threads?.getOrNull(i) ?: return
-        val firstUser = thd.users.getOrNull(0)
-        if (firstUser == null && !thd.is_group) return
-        if (!thd.is_group) Glide.with(c.c).load(firstUser!!.profile_pic_url).into(h.b.photo)
-        else h.b.photo.setImageResource(R.drawable.switch_account)
-        h.b.name.text = thd.title()
+        val thd = c.mm.dmInbox?.threads?.getOrNull(i) ?: return
+        val firstUser = thd.users[0]
 
+        if (!thd.is_group)
+            Glide.with(c.c).load(firstUser.profile_pic_url).into(h.b.photo)
+        else
+            h.b.photo.setImageResource(R.drawable.switch_account)
+        h.b.name.text = thd.title()
         h.b.last.text = c.getString(
             R.string.boxUntil, Utils.date(Utils.compileMicrosecondsTS(thd.last_activity_at))
         )
+
         h.b.root.setOnClickListener {
-            c.mm.dmThread =
-                c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
-            c.mm.dmThread!!.items.sortBy { it.timestamp }
-            //TODO f.onLoaded()
-            f.load()
+            c.mm.dmThread = thd
+            f.onLoaded()
         }
         h.b.more.setOnClickListener {
-            thd = c.mm.dmInbox?.threads?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             MaterialMenu(
                 c, it, R.menu.box_more,
                 R.id.bmHtml to { f.expOptions(Exporter.Method.HTML, thd) },
@@ -67,8 +65,9 @@ class ListBox(val c: Main, private val f: PageBox) :
                     }
                 },
                 R.id.bmView to {
-                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.username!!) }
-                }, theme = R.style.Theme_InstaTools_Popup_Tertiary
+                    thd.users.getOrNull(0)?.let { uu -> Viewer.comeHere(c, uu.id()) }
+                },
+                theme = R.style.Theme_InstaTools_Popup_Tertiary
             ).apply {
                 if (thd.is_group || thd.users.getOrNull(0)?.full_name == "Instagram user")
                     menu.findItem(R.id.bmView)?.let { i -> i.isVisible = false }

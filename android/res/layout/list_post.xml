@@ -28,10 +28,10 @@
             style="@style/parentConstraint"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.16"
+            app:layout_constraintHeight_percent="0.14"
             app:layout_constraintHorizontal_bias="0.95"
             app:layout_constraintVertical_bias="0.05"
-            app:layout_constraintWidth_percent="0.16" />
+            app:layout_constraintWidth_percent="0.14" />
 
         <ImageView
             android:id="@+id/stored"
@@ -40,9 +40,21 @@
             android:layout_height="0dp"
             android:src="@drawable/save"
             android:visibility="gone"
-            app:layout_constraintHeight_percent="0.16"
+            app:layout_constraintHeight_percent="0.14"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintVertical_bias="0.05"
-            app:layout_constraintWidth_percent="0.16" />
+            app:layout_constraintWidth_percent="0.14" />
+
+        <ImageView
+            android:id="@+id/liked"
+            style="@style/parentConstraint"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/favourite_icon"
+            android:visibility="gone"
+            app:layout_constraintHeight_percent="0.14"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintVertical_bias="0.95"
+            app:layout_constraintWidth_percent="0.14" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>

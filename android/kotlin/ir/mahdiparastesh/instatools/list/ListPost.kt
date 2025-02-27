@@ -9,7 +9,6 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
@@ -21,7 +20,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-/** Abstract [RecyclerView.Adapter] that lists IG posts. */
+/** Abstract [RecyclerView.Adapter] that lists Instagram [Media]s in a grid. */
 abstract class ListPost<Activity, Fragment>(
     protected val c: Activity, protected val f: Fragment
 ) : RecyclerView.Adapter<ListPost<Activity, Fragment>.ViewHolder>()
@@ -53,12 +52,11 @@ abstract class ListPost<Activity, Fragment>(
         return ViewHolder(b)
     }
 
-    abstract operator fun get(position: Int): Media?
-
     override fun onBindViewHolder(h: ViewHolder, i: Int) {
         val med = this[i] ?: return
         val norm = tracker?.isSelected(med.id()) != true
 
+        // load thumbnail
         if (med.thumb() != null) Glide.with(c.c)
             .load(med.thumb())
             .centerCrop()
@@ -66,6 +64,7 @@ abstract class ListPost<Activity, Fragment>(
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 
+        // media type
         h.b.type.setImageDrawable(
             when {
                 med.carousel_media != null -> typeStack
@@ -73,6 +72,8 @@ abstract class ListPost<Activity, Fragment>(
                 else -> null
             }
         )
+
+        // is media already downloaded?
         val theirs = c.m.files?.filter { it.startsWith("${med.owner().username}_") }
             ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
         h.b.stored.vis(
@@ -83,8 +84,17 @@ abstract class ListPost<Activity, Fragment>(
             else
                 med.id() in theirs
         )
+
+        // is media liked?
+        h.b.liked.vis(med.has_liked == true)
+
+        // is media selected?
         h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
-        h.b.click.setOnClickListener { expand(it, h.layoutPosition) }
+
+        // clicks
+        h.b.click.setOnClickListener {
+            expand(it, h.layoutPosition)
+        }
         h.b.click.setOnLongClickListener {
             if (firstLongClickSelect) {
                 firstLongClickSelect = false
@@ -95,19 +105,13 @@ abstract class ListPost<Activity, Fragment>(
         }
     }
 
-    private fun expand(v: View, i: Int) {
-        expandable.settings(i)
-        expandable.thumb = v
-        try {
-            expandable.expand()
-            f.jumper?.vis(false)
-        } catch (e: Exception) {
-            if (BuildConfig.DEBUG) throw e
-        }
-    }
+    abstract operator fun get(position: Int): Media?
 
-    fun Expandable.settings(position: Int) {
-        media = this@ListPost[position]
+    private fun expand(v: View, i: Int) {
+        expandable.media = this@ListPost[i]
+        expandable.thumb = v
+        expandable.expand()
+        //TODO f.jumper?.vis(false)
     }
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {

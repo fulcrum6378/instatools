@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -27,6 +26,7 @@ import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.api.Rest.InboxPage
 import ir.mahdiparastesh.instatools.data.Exportable
+import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.DmNotSeenBinding
 import ir.mahdiparastesh.instatools.databinding.ExportOptionsBinding
 import ir.mahdiparastesh.instatools.databinding.PageBoxBinding
@@ -47,6 +47,9 @@ import kotlinx.coroutines.withContext
 
 class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallback<ActivityResult> {
     lateinit var b: PageBoxBinding
+    private val pickle: Pickle by lazy {
+        Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.DIRECT, null)
+    }
     private var exportable: Exportable? = null
     private var guideDmNotSeenShowing = false
     private var boxScroll: Int? = null
@@ -75,6 +78,8 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
     override fun createAdapter(): RecyclerView.Adapter<*> =
         if (c.mm.dmThread == null) ListBox(c, this) else ListThd(c, this)
 
+    override fun reuseAdapter(): Boolean = false
+
     override fun canLoadMore(): Boolean =
         if (c.mm.dmThread == null)
             c.mm.dmInbox?.has_older != false
@@ -94,25 +99,42 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
         super.canRefresh() && c.mm.dmThread == null
 
     override suspend fun fetch(reset: Boolean) {
-        if (c.mm.dmThread == null) {
+        if (c.mm.dmThread == null) { // on ListBox
+
+            // first read from cache if available
+            val cache =
+                if (c.mm.dmInbox == null && !reset) pickle.restore<Dm.Inbox>()
+                else null
+            if (cache != null) {
+                c.mm.dmInbox = cache
+                withContext(Dispatchers.Main) { onLoaded() }
+                return; }
+
+            // fetch the online inbox
             val page = Api.json<InboxPage>(
                 Api.Endpoint.INBOX.url.format(c.mm.dmInbox?.oldest_cursor ?: "")
             )
 
-            if (c.mm.dmInbox == null || reset)
+            // update the data model and the UI
+            if (c.mm.dmInbox == null || reset) {
                 c.mm.dmInbox = page.inbox
-            else c.mm.dmInbox?.apply {
+                withContext(Dispatchers.Main) { onLoaded() }
+            } else c.mm.dmInbox?.apply {
+                val lastBefore = threads.size
                 threads.removeAll { it.thread_id in page.inbox.threads.map { t -> t.thread_id } }
                 threads.addAll(page.inbox.threads)
                 threads.sortByDescending { it.last_activity_at }
                 oldest_cursor = page.inbox.oldest_cursor
                 has_older = page.inbox.has_older
+                withContext(Dispatchers.Main) {
+                    onLazilyLoaded(lastBefore, page.inbox.threads.size)
+                }
             }
-            withContext(Dispatchers.Main) {
-                onLoaded()
-                if (!canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
-            }
-        } else {
+
+            // cache the data model
+            c.mm.dmInbox?.also { pickle.save(it) }
+
+        } else { // on ListThd
             val dmThd = Api.json<Rest.InboxThread>(
                 Api.Endpoint.DIRECT.url
                     .format(c.mm.dmThread!!.thread_id, c.mm.dmThread!!.items.first().item_id, 20)
@@ -129,21 +151,18 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
             c.mm.dmThread!!.has_older = dmThd.has_older
             c.mm.dmThread!!.items.sortBy { it.timestamp }
             val dif = c.mm.dmThread!!.items.size - bef
-            withContext(Dispatchers.Main) {
-                b.rv.adapter?.let {
-                    it.notifyItemRangeInserted(0, dif)
-                    it.notifyItemRangeChanged(dif, c.mm.dmThread!!.items.size)
-                }
-            }
+            withContext(Dispatchers.Main) { onLazilyLoaded(0, dif) }
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onLoaded() {
         val prevScrollPos = boxScroll
         super.onLoaded()
-        if (c.mm.dmThread == null)
+        if (c.mm.dmThread == null) {
             prevScrollPos?.also { b.rv.scrollToPosition(it) }
+
+            if (!canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
+        }
 
         // teach the user that they can view messages without them being marked as seen
         if (!isModelEmpty() && !c.gsp.getBoolean(Settings.spLearntDmNotSeen, false)
@@ -162,8 +181,16 @@ class PageBox : BasePageMain(BaseActivity.Theme.TERTIARY), ActivityResultCallbac
         }.show()
     }
 
+    override fun onLazilyLoaded(start: Int, size: Int) {
+        super.onLazilyLoaded(start, size)
+        if (c.mm.dmThread == null) {
+            if (!canLoadMore()) c.mm.dmInboxCount.value = c.mm.dmInbox?.threads?.size ?: 0
+        } else {
+            b.rv.adapter?.notifyItemRangeChanged(size, c.mm.dmThread!!.items.size)
+        }
+    }
+
     fun expOptions(method: Exporter.Method, thread: Dm.DmThread) {
-        // selection: Array<String>? = null
         val bi = ExportOptionsBinding.inflate(inflater, null, false)
         val opt = c.sp?.getString(Settings.spExpOptions, null)
             ?.let { Exportable.Options.parse(it) } ?: Exportable.Options()

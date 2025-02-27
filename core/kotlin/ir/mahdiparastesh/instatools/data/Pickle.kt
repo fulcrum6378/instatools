@@ -44,10 +44,15 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
         val lifespanDays: Float,
         val singleFile: Boolean = !isCache,
     ) {
+        // queues
         DOWNLOAD_LIST(false, 30f),
         EXPORT_LIST(false, 30f),
 
+        // Main cache
         SAVED(true, 1f, true),
+        DIRECT(true, 0.25f, true),
+
+        // Viewer cache
         PROFILE(true, 2f),
         POSTS(true, 3f),
         STORY(true, 1f),
