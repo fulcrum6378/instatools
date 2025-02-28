@@ -19,12 +19,14 @@ import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Command
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.job.CommandService
@@ -186,7 +188,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                     c.incrementCounter(Settings.spUnsaveCount)
                 }
             }
-            if (download) c.m.downloads.pickle(downloadsPickle)
+            if (download) {
+                c.m.downloads.pickle<Download>(downloadsPickle)
+                Downloads.initService(c)
+            }
             if (unsave) c.startService(
                 Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
             )
@@ -200,6 +205,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                             b.rv.adapter?.notifyItemRemoved(del)
                             b.rv.adapter?.notifyItemRangeChanged(del, saved.items.size)
                             c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
+                            onListResized()
                         } catch (_: IndexOutOfBoundsException) {
                             errored = true
                         }

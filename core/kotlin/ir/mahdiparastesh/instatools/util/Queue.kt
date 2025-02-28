@@ -9,7 +9,8 @@ class Queue<T> : CopyOnWriteArrayList<T>() {
         return if (!contains(element)) super.add(element) else false
     }
 
-    fun pickle(pickle: Pickle) {
-        pickle.save(toList())
+    inline fun <reified T> pickle(pickle: Pickle) {
+        @Suppress("UNCHECKED_CAST")
+        pickle.save<List<T>>(toList() as List<T>)
     }
 }

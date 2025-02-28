@@ -140,7 +140,7 @@ class DownloadService : ForegroundService(), Downloader {
         updateNotification()
 
         // save data models
-        m.downloads.pickle(pickle)
+        m.downloads.pickle<Download>(pickle)
         if (!clearCacheIfNecessary("image_manager_disk_cache"))
             DownloadHistory.saveCache(this@DownloadService)
 

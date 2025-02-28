@@ -6,6 +6,7 @@ import com.airbnb.lottie.LottieDrawable
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.databinding.ListQudBinding
 import ir.mahdiparastesh.instatools.job.DownloadService
 import ir.mahdiparastesh.instatools.util.Utils
@@ -38,9 +39,9 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             h.b.status.setImageResource(R.drawable.play)
         else h.b.status.setAnimation(
             when {
+                q == DownloadService.processingItem -> R.raw.download
                 q.isFailed() -> R.raw.failed
-                q == DownloadService.processingItem -> R.raw.pending
-                else -> R.raw.download
+                else -> R.raw.pending
             }
         )
         h.b.status.repeatCount = if (q.isFailed()) 0 else LottieDrawable.INFINITE
@@ -63,7 +64,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                         1.toByte() -> status = 0
                         2.toByte() -> status = 0
                     }
-                    c.m.downloads.pickle(c.pickle)
+                    c.m.downloads.pickle<Download>(c.pickle)
                     Downloads.initService(c)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)

@@ -261,6 +261,7 @@
         Repeatedly sends specific API commands to the Instagram private API.
     </string>
     <string name="commanderTitle">Sending commands to Instagram&#8230;</string>
+    <string name="commanderSubtitle">%1$s (%2$d of %3$d)</string>
     <string name="commanderSomeFailed">Couldn\'t process %d items!</string>
 
     <!-- Other Notifications -->

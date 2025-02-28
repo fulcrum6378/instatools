@@ -229,9 +229,12 @@ class PageVwr : BasePageViewer() {
         CoroutineScope(Dispatchers.Default).launch {
             for (edg in posts.edges.indices) {
                 if (posts.edges[edg].node.id() !in selection) continue
-                if (download) c.m.downloads.addAll(posts.edges[edg].node.queue())
+                if (download) {
+                    c.m.downloads.addAll(posts.edges[edg].node.queue())
+                    Downloads.initService(c)
+                }
             }
-            if (download) c.m.downloads.pickle(c.downloadsPickle)
+            if (download) c.m.downloads.pickle<Download>(c.downloadsPickle)
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()
             }

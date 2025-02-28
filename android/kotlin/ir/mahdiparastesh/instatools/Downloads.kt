@@ -249,7 +249,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         any = true
                     }
                     if (any) {
-                        m.downloads.pickle(pickle)
+                        m.downloads.pickle<Download>(pickle)
                         withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
@@ -280,7 +280,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     setPositiveButton(R.string.yes) { _, _ ->
                         CoroutineScope(Dispatchers.IO).launch {
                             m.downloads.clear()
-                            m.downloads.pickle(pickle)
+                            m.downloads.pickle<Download>(pickle)
                             withContext(Dispatchers.Main) {
                                 b.rv.adapter?.notifyDataSetChanged()
                                 onListResized()
@@ -314,11 +314,15 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 }
             }.onSuccess { downloads ->
                 m.downloads.addAll(downloads)
-                m.downloads.pickle(pickle)
+                m.downloads.pickle<Download>(pickle)
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
-                    UiTools.snackbar(b.root, R.string.importReadError, dur = Snackbar.LENGTH_LONG)
+                    UiTools.snackbar(
+                        b.root,
+                        R.string.importReadError,
+                        dur = Snackbar.LENGTH_LONG
+                    )
                 }
             }
         }
@@ -367,7 +371,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
             onListResized()
             cancelNotifications()
-            CoroutineScope(Dispatchers.IO).launch { m.downloads.pickle(pickle) }
+            CoroutineScope(Dispatchers.IO).launch { m.downloads.pickle<Download>(pickle) }
 
             if (isSwipeDeleteInflated != null) {
                 b.root.removeView(bd.root)

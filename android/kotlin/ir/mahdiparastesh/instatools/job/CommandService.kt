@@ -55,18 +55,22 @@ class CommandService : ForegroundService(), Queuer<Command> {
     override fun handle(q: Command, remaining: Int): Boolean {
 
         // update the notification
-        ntfTitle =
-            getString(R.string.commanderTitle) + " ($remaining / ${remaining + handledItems})"
-        ntfSmallText = q.media.owner().username
+        ntfSmallText = getString(
+            R.string.commanderSubtitle,
+            q.media.owner().username,
+            handledItems, remaining + handledItems
+        )
         updateNotification(Pair(handledItems, remaining + handledItems))
 
         // wait if necessary
-        if (handledItems > 0) Thread.sleep(5000)
+        if (handledItems > 0) Thread.sleep(5000L)
 
         // call the Instagram API
-        for (post in q.graphQl()) Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true, post.body(q.media.id())
-        )
+        val posts = q.graphQl()
+        for (post in posts) {
+            Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, post.body(q.media.id()))
+            if (posts.size > 1) Thread.sleep(1000L)
+        }
         return true
     }
 
@@ -78,12 +82,11 @@ class CommandService : ForegroundService(), Queuer<Command> {
     }
 
     override fun onFinished(fatalError: Exception?) {
-        ntfTitle = getString(R.string.commanderTitle)
         ntfSmallText = null
         updateNotification()
 
         // save data models
-        m.commands.pickle(pickle)
+        m.commands.pickle<Command>(pickle)
 
         if (fatalError !is CancellationException) {
             if (fatalError != null) {

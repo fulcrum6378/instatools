@@ -423,6 +423,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
+  * Make Exporter and CommandService cancellable and pausable
   * Replace PageUnf with Favourites as Unfollowers and PageFav!!
   * on configuration changes (especially Login while browsing the web)
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
@@ -437,9 +438,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
   * Export/import blocked accounts lists from/into different accounts of one's
-  * -
-  * Extensions which need the Android API:
-  * Batch Unsave API
   *
   * NOTES:
   * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

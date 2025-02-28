@@ -266,7 +266,9 @@
         به اینستاگرام فرمان های خاصی را  پشت سرهم ارسال میکند.
     </string>
     <string name="commanderTitle">درحال ارسال فرمان ها&#8230;</string>
+    <string name="commanderSubtitle">%1$s (%2$d از %3$d)</string>
     <string name="commanderSomeFailed">پردازش %d مورد ممکن نشد!</string>
+
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">کارهای طولانی</string>
     <string name="servicesChannelGroupDesc">عملیات های طولانی مانند دانلود و استخراج.</string>

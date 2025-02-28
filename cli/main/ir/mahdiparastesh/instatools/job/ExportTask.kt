@@ -4,18 +4,20 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.exp.HtmlExporter
+import ir.mahdiparastesh.instatools.util.Queue
 import java.io.File
-import java.util.concurrent.CopyOnWriteArrayList
 
-class ExportTask {
+class ExportTask : Queuer<Exportable> {
     val outputDir = File("./Messages/")
-    override val queue: CopyOnWriteArrayList<Exportable> = CopyOnWriteArrayList()
+    override val queue: Queue<Exportable> = Queue()
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
     companion object {
         const val USER_PROFILE_IMG = "user_%s"
     }
+
+    override fun shouldHandle(q: Exportable): Boolean = true
 
     override fun handle(q: Exportable, remaining: Int): Boolean {
         // fetch all messages
@@ -103,6 +105,12 @@ class ExportTask {
             }
         }*/
         return true
+    }
+
+    override fun onHandled(q: Exportable, success: Boolean) {
+    }
+
+    override fun onFinished(fatalError: Exception?) {
     }
 
     enum class Method(val ext: String) {
