@@ -81,7 +81,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.gson)
     implementation(libs.dotsindicator)
-    implementation(libs.commons.imaging)
     implementation(libs.commons.text) // StringEscapeUtils
     implementation(libs.serialization.json)
 }

@@ -3,12 +3,13 @@ package ir.mahdiparastesh.instatools.job
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.LazyFile
+import ir.mahdiparastesh.instatools.util.Queue
 import java.io.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class DownloadTask : Downloader {
     val outputDir = File("./Downloads/")
-    override val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
+    override val queue: Queue<Download> = Queue()
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
