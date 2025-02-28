@@ -131,10 +131,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             return ret
         } ?: defSpCacheLimit
 
-        fun Persistent.clearCacheIfNecessary(subdir: String): Boolean {
+        fun Persistent.clearCacheIfNecessary(subdir: String? = null): Boolean {
             if (Exporter.active.value == true) return false
             if (c.cacheSize() <= gsp.getLong(spCacheLimit, defaultCacheLimit(c))) return false
-            File(c.cacheDir, subdir).deleteRecursively()
+            (if (subdir != null) File(c.cacheDir, subdir) else c.cacheDir)
+                .deleteRecursively()
             return true
         }
 

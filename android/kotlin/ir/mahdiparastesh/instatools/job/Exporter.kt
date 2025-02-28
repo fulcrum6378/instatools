@@ -9,6 +9,7 @@ import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
@@ -37,24 +38,21 @@ import kotlin.collections.set
 
 class Exporter : ForegroundService() {
     private var job: Job? = null
-    private val cacheTree: File by lazy { File(c.cacheDir, "exporter") }
+    private val cacheTree: File by lazy { File(c.cacheDir, CACHE_SUB_DIR) }
 
+    override val klass = Exporter::class.java
     override val com: ForegroundServiceCompanion get() = Companion
+    override val channel = Notify.Channel.EXPORTER
+    override val ntfId = Notify.ID_EXPORTER
     override lateinit var ntfTitle: String
+    override val ntfActions: Array<Pair<String, Int>> = arrayOf(
+        ACTION_STOP to R.string.stop
+    )
 
     companion object : ForegroundServiceCompanion() {
-        override val klass = Exporter::class.java
-        override val channel = Notify.Channel.EXPORTER
-        override val ntfId = Notify.ID_EXPORTER
-        override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-            ACTION_STOP to R.string.stop
-        )
-
+        const val CACHE_SUB_DIR = "exporter"
         const val DIR_MIME = "vnd.android.document/directory"
         const val USER_PROFILE_IMG = "user_%s"
-        val fileTypes = arrayOf(
-            "image/jpg" to "jpg", "video/mp4" to "mp4", "audio/mp4" to "m4a", "image/gif" to "gif"
-        ) // TODO add support for other extensions
         var ntfDoneIdInc = 0
 
         fun canCreateDirSelf(c: Persistent) = c.sPreference(Settings.spStorage) != null
@@ -63,10 +61,8 @@ class Exporter : ForegroundService() {
     override fun onCreate() {
         super.onCreate()
         ntfTitle = getString(R.string.exporterTitle)
-        initialNotification(Companion, Main::class, 2)
-
-        if (job?.isActive != true)
-            job = CoroutineScope(Dispatchers.IO).launch { export() }
+        initialNotification(Main::class, 2)
+        job = CoroutineScope(Dispatchers.IO).launch { export() }
     }
 
     private suspend fun export() {
@@ -124,14 +120,14 @@ class Exporter : ForegroundService() {
             val actVid = opt?.actVid() == true
             if (img) for (user in threadData!!.users) {
                 val key = USER_PROFILE_IMG.format(user.pk)
-                media[key] = Downloadable(user.originalPicture(), 0, cacheBranch!!, key, 0)
+                media[key] = Attachment(user.originalPicture(), 0, cacheBranch!!, key, 0)
             }
             for (dm in threadData!!.items) {
                 if (actVid && dm.animated_media != null) continue
                 // HTML gets GIFs dynamically, PDF cannot show them properly, and TXT...
                 if (dm.voice_media != null) {
                     if (opt?.voice == 0 && dm.voice_media!!.media != null)
-                        media[dm.item_id] = Downloadable(
+                        media[dm.item_id] = Attachment(
                             dm.voice_media!!.media!!.audio.audio_src,
                             2,
                             cacheBranch!!,
@@ -169,7 +165,7 @@ class Exporter : ForegroundService() {
                         else -> -opt!!.image
                     }
                     theVer.nearest(quality, justImage = opt?.actVid() != true)?.also { url ->
-                        media[dm.item_id] = Downloadable(
+                        media[dm.item_id] = Attachment(
                             url, if (opt?.actVid() == true && video_versions != null) 1 else 0,
                             cacheBranch!!, dm.item_id, quality.toInt()
                         )
@@ -278,34 +274,34 @@ class Exporter : ForegroundService() {
         CoroutineScope(Dispatchers.IO).launch {
             dao.deleteExportable(oldExp)
             incrementCounter(Settings.spExportCount)
-            withContext(Dispatchers.Main) {
-                eventNotification(Notify.ID_EXPORTER_DONE + ntfDoneIdInc) {
-                    setContentTitle(
-                        getString(
-                            if (succeeded) R.string.exporterDone else R.string.exporterAborted,
-                            oldExp.threadData?.title() ?: ""
-                        )
+            clearCacheIfNecessary(CACHE_SUB_DIR)
+
+            eventNotification(Notify.ID_EXPORTER_DONE + ntfDoneIdInc) {
+                setContentTitle(
+                    getString(
+                        if (succeeded) R.string.exporterDone else R.string.exporterAborted,
+                        oldExp.threadData?.title() ?: ""
                     )
-                    if (succeeded && alternativeFolder != null) setStyle(
-                        NotificationCompat.BigTextStyle()
-                            .bigText(getString(R.string.exportRescued))
+                )
+                if (succeeded && alternativeFolder != null) setStyle(
+                    NotificationCompat.BigTextStyle()
+                        .bigText(getString(R.string.exportRescued))
+                )
+                if (succeeded) addAction(
+                    0, getString(R.string.openFolder), PendingIntent.getActivity(
+                        c, 0, Intent(Intent.ACTION_VIEW).apply {
+                            setDataAndType(alternativeFolder
+                                ?: (if (oldExp.method().asTree) oldExp.uri
+                                    ?.let { Uri.parse(it) }
+                                else oldExp.uri
+                                    ?.let { DocumentFile.fromSingleUri(c, Uri.parse(it)) }
+                                    ?.parentFile?.uri), DIR_MIME)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }, ntfMutability()
                     )
-                    if (succeeded) addAction(
-                        0, getString(R.string.openFolder), PendingIntent.getActivity(
-                            c, 0, Intent(Intent.ACTION_VIEW).apply {
-                                setDataAndType(alternativeFolder
-                                    ?: (if (oldExp.method().asTree) oldExp.uri
-                                        ?.let { Uri.parse(it) }
-                                    else oldExp.uri
-                                        ?.let { DocumentFile.fromSingleUri(c, Uri.parse(it)) }
-                                        ?.parentFile?.uri), DIR_MIME)
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }, ntfMutability()
-                        )
-                    )
-                }
-                ntfDoneIdInc++
+                )
             }
+            ntfDoneIdInc++
         }
     }
 
@@ -327,11 +323,13 @@ class Exporter : ForegroundService() {
         ),
     }
 
-    inner class Downloadable(
+    inner class Attachment(
         val url: String, val type: Int, folder: File, dmId: String, quality: Int
-    ) { // TYPE: 0=>IMG, 1=>VID, 2=>AUD, 3=>GIF
-        val cache = File(folder, "${dmId}_$quality.${fileTypes[type].second}")
+    ) {
+        val ext: String by lazy { URI(url).path.split(".").last() }
 
-        fun fileName(dmId: String) = "${dmId}.${fileTypes[type].second}"
+        val cache = File(folder, "${dmId}_$quality.$ext")
+
+        fun fileName(dmId: String) = "${dmId}.$ext"
     }
 }

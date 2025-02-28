@@ -20,7 +20,7 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ListThdBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.job.Exporter
-import ir.mahdiparastesh.instatools.job.Exporter.Downloadable
+import ir.mahdiparastesh.instatools.job.Exporter.Attachment
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.util.Utils.getOrNull
@@ -60,7 +60,7 @@ class ListThd(val c: Main, private val f: PageBox) :
         fun ListThdBinding.onBind(
             c: Context, thread: Dm.DmThread, i: Int, idealW: Int = Media.Version.BEST,
             f: PageBox? = null, h: AnyViewHolder<ListThdBinding>? = null,
-            downloaded: HashMap<String, Downloadable>? = null,
+            downloaded: HashMap<String, Attachment>? = null,
         ): ListThdBinding {
             val dm = thread.items.getOrNull(i) ?: return this
             body.vis(dm.action_log == null)

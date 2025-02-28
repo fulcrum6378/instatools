@@ -33,10 +33,15 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     override val viewModelStore = ViewModelStore()
 
+    abstract val klass: Class<*>
     abstract val com: ForegroundServiceCompanion
+    abstract val channel: Notify.Channel
+    abstract val ntfId: Int
     abstract var ntfTitle: String
     protected open var ntfText: String? = null
     protected open var ntfSmallText: String? = null
+    open val ntfSmallIcon: Int = R.drawable.notification
+    abstract val ntfActions: Array<Pair<String, Int>>
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -61,20 +66,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     /**
-     * Abstract class from which all companion objects of ForegroundService subclasses must extend.
+     * Abstract class from which all companion objects of [ForegroundService] subclasses must extend.
      */
     abstract class ForegroundServiceCompanion {
         val active = MutableLiveData(false)
-
-        abstract val klass: Class<*>
-        abstract val channel: Notify.Channel
-        open val ntfSmallIcon: Int = R.drawable.notification
-        abstract val ntfId: Int
-        abstract val ntfActions: Array<Pair<String, Int>>
-
-        open fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
-            c, 0, Intent(c, klass).apply { action = code }, ntfMutability()
-        )
     }
 
     // With getters and setters, you'll avoid NullPointerException;
@@ -110,28 +105,25 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
 
-    private lateinit var ntfCom: ForegroundServiceCompanion
     private lateinit var ntfAct: KClass<*>
     private var ntfPage: Int? = null
-    open fun initialNotification(
-        com: ForegroundServiceCompanion, openActivity: KClass<*>, turnToPage: Int? = null,
-        progress: Pair<Int, Int>? = null
+    fun initialNotification(
+        openActivity: KClass<*>, turnToPage: Int? = null, progress: Pair<Int, Int>? = null
     ) {
-        ntfCom = com
         ntfAct = openActivity
         ntfPage = turnToPage
         ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
-        ntfManager.createNotificationChannel(com.channel.create(c))
-        startForeground(com.ntfId, notification(progress))
+        ntfManager.createNotificationChannel(channel.create(c))
+        startForeground(ntfId, notification(progress))
     }
 
-    open fun updateNotification(progress: Pair<Int, Int>? = null) {
-        ntfManager.notify(ntfCom.ntfId, notification(progress))
+    fun updateNotification(progress: Pair<Int, Int>? = null) {
+        ntfManager.notify(ntfId, notification(progress))
     }
 
     private fun notification(progress: Pair<Int, Int>?) =
-        NotificationCompat.Builder(c, ntfCom.channel.id).apply {
-            setSmallIcon(ntfCom.ntfSmallIcon)
+        NotificationCompat.Builder(c, channel.id).apply {
+            setSmallIcon(ntfSmallIcon)
             setContentTitle(ntfTitle)
             ntfSmallText?.also { setContentText(it) }
             setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
@@ -147,9 +139,13 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                     }, ntfMutability()
                 )
             )
-            for (a in ntfCom.ntfActions)
-                addAction(0, getString(a.second), ntfCom.pi(c, a.first))
+            for (a in ntfActions)
+                addAction(0, getString(a.second), pi(c, a.first))
         }.build()
+
+    fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
+        c, 0, Intent(c, klass).apply { action = code }, ntfMutability()
+    )
 
     protected fun eventNotification(id: Int, func: NotificationCompat.Builder.() -> Unit) {
         ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))

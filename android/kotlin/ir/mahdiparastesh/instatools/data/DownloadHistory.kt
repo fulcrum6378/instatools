@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.data
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.MainThread
-import androidx.annotation.WorkerThread
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Settings
@@ -23,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArraySet
  * already downloaded.
  * @see [ir.mahdiparastesh.instatools.list.ListPost]
  */
-@Suppress("RedundantSuspendModifier")
 object DownloadHistory {
     private var loading = false
 
@@ -49,7 +47,7 @@ object DownloadHistory {
         }
     }
 
-    private suspend fun checkStorage(c: Persistent) {
+    private fun checkStorage(c: Persistent) {
         c.m.files = CopyOnWriteArraySet()
         val paths = c.c.contentResolver.persistedUriPermissions
             .map { DocumentFile.fromTreeUri(c.c, it.uri) }
@@ -63,21 +61,20 @@ object DownloadHistory {
         loading = false
     }
 
-    suspend fun folderAdded(c: Persistent, uri: Uri) {
+    fun folderAdded(c: Persistent, uri: Uri) {
         if (c.m.files == null) return
         DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
             ?.also { c.m.files?.addAll(it) }
         saveCache(c)
     }
 
-    suspend fun folderRemoved(c: Persistent, uri: Uri) {
+    fun folderRemoved(c: Persistent, uri: Uri) {
         if (c.m.files == null) return
         DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
             ?.forEach { c.m.files?.remove(it) }
         saveCache(c)
     }
 
-    @WorkerThread
     fun saveCache(c: Persistent) {
         if (c.m.files.isNullOrEmpty()) return
         FileOutputStream(Stored(c.c)).use {

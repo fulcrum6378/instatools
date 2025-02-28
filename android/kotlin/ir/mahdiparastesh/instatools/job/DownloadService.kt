@@ -38,19 +38,18 @@ class DownloadService : ForegroundService(), Downloader {
         Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
     }
 
+    override val klass = DownloadService::class.java
     override val com: ForegroundServiceCompanion get() = Companion
+    override val channel = Notify.Channel.DOWNLOADER
+    override val ntfId = Notify.ID_DOWNLOADER
     override lateinit var ntfTitle: String
+    override val ntfActions: Array<Pair<String, Int>> = arrayOf(
+        ACTION_STOP to R.string.stop
+    )
     override val queue: CopyOnWriteArrayList<Download> get() = m.queue
     override var handledItems: Int = 0
 
-    companion object : ForegroundServiceCompanion() {
-        override val klass = DownloadService::class.java
-        override val channel = Notify.Channel.DOWNLOADER
-        override val ntfId = Notify.ID_DOWNLOADER
-        override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-            ACTION_STOP to R.string.stop
-        )
-    }
+    companion object : ForegroundServiceCompanion()
 
     override fun onCreate() {
         super.onCreate()
@@ -60,7 +59,7 @@ class DownloadService : ForegroundService(), Downloader {
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
         ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
         ntfTitle = getString(R.string.downloaderTitle)
-        initialNotification(Companion, Downloads::class)
+        initialNotification(Downloads::class)
 
         job = CoroutineScope(Dispatchers.IO).launch {
             // load the map of alias folders

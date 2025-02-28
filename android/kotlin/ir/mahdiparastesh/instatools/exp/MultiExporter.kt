@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.exp
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.data.Exportable
@@ -47,9 +48,11 @@ abstract class MultiExporter(c: Exporter, exp: Exportable) : BaseExporter(c, exp
             if (t == 3) continue
             if (subFolders[t] == null) subFolders[t] =
                 (if (canCreateDirSelf) tmpDir else folder).createDirectory(subFolderNames[t])!!
-            val ft = Exporter.fileTypes[t]
             if (!dwn.value.cache.exists()) continue
-            subFolders[t]!!.createFile(ft.first, dwn.value.fileName(dwn.key))!!.apply {
+            subFolders[t]!!.createFile(
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(dwn.value.ext)!!,
+                dwn.value.fileName(dwn.key)
+            )!!.apply {
                 c.c.contentResolver.openFileDescriptor(uri, "w")?.use { des ->
                     FileOutputStream(des.fileDescriptor).use { fos ->
                         FileInputStream(dwn.value.cache).use { fis ->
