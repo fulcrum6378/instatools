@@ -46,6 +46,8 @@ class Media(
 
     fun owner(): User = owner ?: user!!
 
+    fun isPost() = product_type in arrayOf("feed", "carousel_container")
+
     fun link(userName: String? = null) = when (product_type) {
         "feed", "carousel_container" -> Utils.POST_LINK.format(code)
         "clips" -> Utils.REEL_LINK.format(code)

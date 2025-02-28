@@ -101,10 +101,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
 
-    private lateinit var ntfAct: KClass<*>
+    private var ntfAct: KClass<*>? = null
     private var ntfPage: Int? = null
     fun initialNotification(
-        openActivity: KClass<*>, turnToPage: Int? = null, progress: Pair<Int, Int>? = null
+        openActivity: KClass<*>? = null, turnToPage: Int? = null, progress: Pair<Int, Int>? = null
     ) {
         ntfAct = openActivity
         ntfPage = turnToPage
@@ -127,9 +127,9 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             // setSound(null) setSilent(true)
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
-            setContentIntent(
+            if (ntfAct != null) setContentIntent(
                 PendingIntent.getActivity(
-                    c, 0, Intent(c, ntfAct.java).apply {
+                    c, 0, Intent(c, ntfAct!!.java).apply {
                         if (ntfPage != null)
                             putExtra(TriplePageActivity.Companion.EXTRA_TURN_TO_PAGE, ntfPage)
                     }, ntfMutability()

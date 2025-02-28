@@ -25,7 +25,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         AnyViewHolder(ListQudBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
-        val q = c.m.queue.getOrNull(i) ?: return
+        val q = c.m.downloads.getOrNull(i) ?: return
 
         // main
         if (q.type != 3.toByte()) Glide.with(c.c).load(q.thumb).into(h.b.thumb)
@@ -39,7 +39,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         else h.b.status.setAnimation(
             when {
                 q.isFailed() -> R.raw.failed
-                DownloadService.active.value != true -> R.raw.pending
+                q == DownloadService.processingItem -> R.raw.pending
                 else -> R.raw.download
             }
         )
@@ -50,12 +50,12 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
 
         // clicks
         h.b.root.setOnClickListener {
-            c.m.queue.getOrNull(h.layoutPosition)?.also {
+            c.m.downloads.getOrNull(h.layoutPosition)?.also {
                 if (it.link.isNotEmpty()) UiTools.openLink(c, it.link)
             }
         }
         h.b.status.setOnClickListener {
-            c.m.queue.getOrNull(h.layoutPosition)?.apply {
+            c.m.downloads.getOrNull(h.layoutPosition)?.apply {
                 if (h.layoutPosition == 0 && status == 0.toByte()) return@setOnClickListener
                 CoroutineScope(Dispatchers.IO).launch {
                     when (status) {
@@ -63,7 +63,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                         1.toByte() -> status = 0
                         2.toByte() -> status = 0
                     }
-                    c.m.saveQueue(c.pickle)
+                    c.m.downloads.pickle(c.pickle)
                     Downloads.initService(c)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
@@ -76,7 +76,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.queue.size
+    override fun getItemCount() = c.m.downloads.size
 
     override fun onViewAttachedToWindow(h: AnyViewHolder<ListQudBinding>) {
         h.b.status.resumeAnimation()

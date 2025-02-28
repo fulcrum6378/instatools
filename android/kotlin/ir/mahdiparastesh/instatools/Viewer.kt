@@ -38,14 +38,15 @@ import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
     lateinit var b: ViewerBinding
     val mm: MyModel by viewModels()
-    private var loader: Job? = null
+    val downloadsPickle: Pickle by lazy {
+        Pickle(c.cacheDir, m.acc!!.id, Pickle.Type.SAVED, null)
+    }
     val expandable: Expandable by lazy {
         Expandable(
             this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)
@@ -138,8 +139,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
         }
         if (::b.isInitialized && expandable.zoomed) expandable.collapse()
 
-        loader?.cancel()
-        loader = CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             var userId_: String? = if (!reset) userId else mm.user!!.id()
             var userName_: String? = userName
             var userReplaced = false
@@ -159,7 +159,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                         SimpleJobs.userInfo(userId_)
                     } catch (e: Api.FailureException) {
                         onError(e.code)
-                        loader = null
                         return@launch
                     }
                     userName_ = mm.user!!.username!!
@@ -168,7 +167,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                         SimpleJobs.profileInfo(userName_)
                     } catch (e: Api.FailureException) {
                         onError(e.code)
-                        loader = null
                         return@launch
                     }
                 }
@@ -181,7 +179,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     SimpleJobs.profileInfo(userName_!!)
                 } catch (e: Api.FailureException) {
                     onError(e.code)
-                    loader = null
                     return@launch
                 }
                 userId_ = mm.profile!!.id!!
@@ -189,7 +186,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                     SimpleJobs.userInfo(userId_)
                 } catch (e: Api.FailureException) {
                     onError(e.code)
-                    loader = null
                     return@launch
                 }
             }
@@ -212,7 +208,6 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 page2?.showProfile(reset)
                 b.toolbar.title = mm.user?.username
                 fixTbMenu()
-                loader = null
             }
         }
     }

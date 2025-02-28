@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.data
 
 import com.ashampoo.kim.model.GpsCoordinates
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import java.net.URI
@@ -24,7 +23,7 @@ import kotlin.jvm.Throws
  */
 @Serializable
 class Download(
-    override val id: String,
+    val id: String,
     val date: Long,
     val url: String,
     val type: Byte,
@@ -35,12 +34,13 @@ class Download(
     val dur: Float?,
     val lat: Double?,
     val lng: Double?,
-    override var status: Byte = 0x0
-) : Queue.Item {
+    var status: Byte = 0x0
+) {
 
-    override val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
-
+    val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
     val ext: String by lazy { URI(url).path.split(".").last() }
+
+    fun isFailed() = status == 1.toByte()
 
     fun isMainFile() = type.toInt() !in arrayOf(3)
 

@@ -143,7 +143,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
 
             if (downloadAll) {
                 for (reel in story.items!!)
-                    c.m.queue.addAll(reel.queue(owner = c.mm.user!!.username!!))
+                    c.m.downloads.addAll(reel.queue(owner = c.mm.user!!.username!!))
                 Downloads.initService(c)
             }
 

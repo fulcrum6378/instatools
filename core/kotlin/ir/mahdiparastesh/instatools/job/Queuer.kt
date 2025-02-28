@@ -6,7 +6,7 @@ import java.lang.IllegalStateException
 import java.util.concurrent.CancellationException
 
 /** A structure for handling multiple items as a queue. */
-interface Queuer<Item> where Item : Queue.Item {
+interface Queuer<Item> {
 
     /** Main queue repository of a job. */
     val queue: Queue<Item>
@@ -30,7 +30,7 @@ interface Queuer<Item> where Item : Queue.Item {
                 q = null
                 remaining = 0
                 for (qq in queue) {
-                    if (!qq.ready()) continue
+                    if (!shouldHandle(qq)) continue
                     if (q == null) q = qq
                     remaining++
                 }
@@ -41,7 +41,6 @@ interface Queuer<Item> where Item : Queue.Item {
                     queue.remove(q)
                     consecutiveFailures = 0
                 } else {
-                    q.status = 1
                     onHandled(q, false)
                     consecutiveFailures++
                     if (consecutiveFailures > 5)
@@ -54,6 +53,8 @@ interface Queuer<Item> where Item : Queue.Item {
             onFinished(fatalError)
         }
     }
+
+    fun shouldHandle(q: Item): Boolean
 
     /**
      * Handles one item at a time.

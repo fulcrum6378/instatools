@@ -5,7 +5,6 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Queue
 import java.io.*
-import java.util.concurrent.CopyOnWriteArrayList
 
 class DownloadTask : Downloader {
     val outputDir = File("./Downloads/")
@@ -39,6 +38,7 @@ class DownloadTask : Downloader {
     }
 
     override fun onHandled(q: Download, success: Boolean) {
+        super.onHandled(q, success)
         println("${if (success) "Downloaded" else "Failed downloading"} ${q.fileName}")
     }
 

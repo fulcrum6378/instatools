@@ -109,5 +109,11 @@
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:stopWithTask="false" />
+
+        <service
+            android:name=".job.CommandService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false" />
     </application>
 </manifest>

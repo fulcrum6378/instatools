@@ -260,6 +260,13 @@
         برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.
     </string>
 
+    <!-- Commander -->
+    <string name="commanderChannel">دستورات اینستاگرام</string>
+    <string name="commanderChannelDesc">
+        به اینستاگرام فرمان های خاصی را  پشت سرهم ارسال میکند.
+    </string>
+    <string name="commanderTitle">درحال ارسال فرمان ها&#8230;</string>
+    <string name="commanderSomeFailed">پردازش %d مورد ممکن نشد!</string>
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">کارهای طولانی</string>
     <string name="servicesChannelGroupDesc">عملیات های طولانی مانند دانلود و استخراج.</string>

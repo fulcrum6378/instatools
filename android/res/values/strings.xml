@@ -255,11 +255,19 @@
         So we moved them into an alternative destination which can be opened using the button below.
     </string>
 
+    <!-- Commander -->
+    <string name="commanderChannel">API Commands</string>
+    <string name="commanderChannelDesc">
+        Repeatedly sends specific API commands to the Instagram private API.
+    </string>
+    <string name="commanderTitle">Sending commands to Instagram&#8230;</string>
+    <string name="commanderSomeFailed">Couldn\'t process %d items!</string>
+
     <!-- Other Notifications -->
-    <string name="servicesChannelGroup">Progressing Tasks</string>
-    <string name="servicesChannelGroupDesc">Long-running tasks like downloading and exporting.</string>
+    <string name="servicesChannelGroup">Long-Running Tasks</string>
+    <string name="servicesChannelGroupDesc">Examples are downloading and exporting.</string>
     <string name="taskResultChannel">Task Results</string>
     <string name="taskResultChannelDesc">
-        Notifies anything resulted from a long-running task, like downloading, exporting and mass following.
+        Notifies anything resulted from a long-running task, like downloading and exporting.
     </string>
 </resources>

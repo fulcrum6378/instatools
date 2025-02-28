@@ -46,7 +46,6 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -77,7 +76,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     private lateinit var searchClose: ImageView
     var schRes: Array<Rest.ItemUser>? = null
     var searchErrored = false
-    var searcher: Job? = null
 
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
@@ -308,8 +306,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
                     b.searchStatus.playAnimation()
                     b.searchStatus.vis()
 
-                    searcher?.cancel()
-                    searcher = CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val rest =
                                 Api.json<Rest.Search>(Api.Endpoint.SEARCH.url.format(newText))
@@ -403,10 +400,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     }
 
     override fun switchAcc() {
-        page1?.job?.cancel() // FIXME
-        page2?.job?.cancel()
-        page2?.saver?.job?.cancel()
-        page3?.job?.cancel()
         mm.accountSwitched()
         super.switchAcc()
     }
@@ -430,7 +423,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * pending downloads should have a different icon
+  * Replace PageUnf with Favourites as Unfollowers and PageFav!!
   * on configuration changes (especially Login while browsing the web)
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable

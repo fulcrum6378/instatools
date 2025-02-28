@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +28,6 @@ import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.view.SelectionHandler
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -73,7 +71,7 @@ class PageVwr : BasePageViewer() {
             MaterialMenu(c, v, R.menu.viewer_pic_more,
                 R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
-                        c.m.queue.add(
+                        c.m.downloads.add(
                             Download(
                                 Utils.PROFILE_PHOTO,
                                 Utils.now(),
@@ -205,11 +203,7 @@ class PageVwr : BasePageViewer() {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload -> {
-                if (tracker != null && c.mm.posts?.edges != null)
-                    Saver(tracker!!.selection)
-                tracker?.clearSelection()
-            }
+            R.id.vtDownload -> processMedia()
             R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
                 tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
@@ -229,6 +223,21 @@ class PageVwr : BasePageViewer() {
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
+    fun processMedia(download: Boolean = true) {
+        val selection = tracker?.selection ?: return
+        val posts = c.mm.posts ?: return
+        CoroutineScope(Dispatchers.Default).launch {
+            for (edg in posts.edges.indices) {
+                if (posts.edges[edg].node.id() !in selection) continue
+                if (download) c.m.downloads.addAll(posts.edges[edg].node.queue())
+            }
+            if (download) c.m.downloads.pickle(c.downloadsPickle)
+            withContext(Dispatchers.Main) {
+                tracker?.clearSelection()
+            }
+        }
+    }
+
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
         override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
@@ -236,18 +245,6 @@ class PageVwr : BasePageViewer() {
                 if (edge.node.id() == key) return@getPosition i
             }
             return -1
-        }
-    }
-
-    inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
-        override suspend fun handle() {
-            val edg = next()
-            if (edg == null) {
-                Downloads.initService(c)
-                return; }
-            c.mm.posts?.edges?.find { it.node.id() == edg }?.node?.queue()
-                ?.also { c.m.queue.addAll(it) } // TODO handle all posts in one search
-            ended()
         }
     }
 }

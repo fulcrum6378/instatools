@@ -8,11 +8,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
-import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -24,8 +22,9 @@ import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.*
-import ir.mahdiparastesh.instatools.view.SelectionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PageTag : BasePageViewer() {
@@ -80,11 +79,7 @@ class PageTag : BasePageViewer() {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload -> {
-                if (tracker != null && c.mm.tagged?.edges != null)
-                    Saver(tracker!!.selection)
-                tracker?.clearSelection()
-            }
+            R.id.vtDownload -> processMedia()
             R.id.vtSelectAll -> if (c.mm.tagged?.edges != null)
                 tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
@@ -100,6 +95,21 @@ class PageTag : BasePageViewer() {
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
+    fun processMedia(download: Boolean = true) {
+        val selection = tracker?.selection ?: return
+        val tagged = c.mm.tagged ?: return
+        CoroutineScope(Dispatchers.Default).launch {
+            for (edg in tagged.edges.indices) {
+                if (tagged.edges[edg].node.id() !in selection) continue
+                if (download) c.m.downloads.addAll(tagged.edges[edg].node.queue())
+            }
+            if (download) c.m.downloads.pickle(c.downloadsPickle)
+            withContext(Dispatchers.Main) {
+                tracker?.clearSelection()
+            }
+        }
+    }
+
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
         override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
@@ -107,19 +117,6 @@ class PageTag : BasePageViewer() {
                 if (edge.node.id() == key) return@getPosition i
             }
             return -1
-        }
-    }
-
-    inner class Saver(selection: Selection<String>) : SelectionHandler(selection) {
-        override suspend fun handle() {
-            val edg = next()
-            if (edg == null) {
-                Downloads.initService(c)
-                return
-            }
-            c.mm.tagged?.edges?.find { it.node.id() == edg }?.node?.queue()
-                ?.also { c.m.queue.addAll(it) }
-            ended()
         }
     }
 }

@@ -13,10 +13,13 @@ class Notify {
     companion object {
         const val ID_DOWNLOADER = 1
         const val ID_EXPORTER = 2
+        const val ID_COMMANDER = 3
         const val ID_DOWNLOADER_ERROR = 10
         const val ID_DOWNLOADER_SOME_FAILED = 11
         const val ID_EXPORTER_ERROR = 20
         const val ID_EXPORTER_DONE = 25 // incremental
+        const val ID_COMMANDER_ERROR = 30
+        const val ID_COMMANDER_SOME_FAILED = 31
         const val ID_UNF_NEW_ITEMS = 101
     }
 
@@ -27,12 +30,16 @@ class Notify {
         private val importance: Int = NotificationManager.IMPORTANCE_LOW,
         private val groupId: String? = null,
     ) {
+        DOWNLOADER(
+            "downloading", R.string.downloaderChannel, R.string.downloaderChannelDesc,
+            groupId = ChannelGroup.SERVICES.id
+        ),
         EXPORTER(
             "exporting", R.string.exporterChannel, R.string.exporterChannelDesc,
             groupId = ChannelGroup.SERVICES.id
         ),
-        DOWNLOADER(
-            "downloading", R.string.downloaderChannel, R.string.downloaderChannelDesc,
+        COMMANDER(
+            "commanding", R.string.commanderChannel, R.string.commanderChannelDesc,
             groupId = ChannelGroup.SERVICES.id
         ),
 

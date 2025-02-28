@@ -41,12 +41,12 @@ class DownloadService : ForegroundService(), Downloader {
     override val ntfChannel = Notify.Channel.DOWNLOADER
     override val ntfId = Notify.ID_DOWNLOADER
     override lateinit var ntfTitle: String
-    override val queue: Queue<Download> get() = m.queue
+    override val queue: Queue<Download> get() = m.downloads
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
     companion object : ForegroundServiceCompanion() {
-        var processingItem: String? = null
+        var processingItem: Download? = null
     }
 
     override fun onCreate() {
@@ -67,9 +67,9 @@ class DownloadService : ForegroundService(), Downloader {
                 .forEach { (k, v) -> aliases[k] = v }
 
             // load the download list
-            if (m.queue.isEmpty())
+            if (m.downloads.isEmpty())
                 pickle.restore<List<Download>>()
-                    ?.also { m.queue.addAll(it) }
+                    ?.also { m.downloads.addAll(it) }
 
             // start looping
             start()
@@ -104,7 +104,7 @@ class DownloadService : ForegroundService(), Downloader {
     }
 
     override fun handle(q: Download, remaining: Int): Boolean {
-        processingItem = q.id
+        processingItem = q
 
         // update the notification
         ntfTitle = getString(
@@ -121,6 +121,7 @@ class DownloadService : ForegroundService(), Downloader {
     }
 
     override fun onHandled(q: Download, success: Boolean) {
+        super.onHandled(q, success)
         des?.close()
         Downloads.handler?.obtainMessage(
             if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, q
@@ -139,7 +140,7 @@ class DownloadService : ForegroundService(), Downloader {
         updateNotification()
 
         // save data models
-        m.saveQueue(pickle)
+        m.downloads.pickle(pickle)
         if (!clearCacheIfNecessary("image_manager_disk_cache"))
             DownloadHistory.saveCache(this@DownloadService)
 

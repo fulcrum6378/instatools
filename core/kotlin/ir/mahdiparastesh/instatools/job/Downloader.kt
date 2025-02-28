@@ -33,6 +33,8 @@ import kotlin.io.copyTo
 
 interface Downloader : Queuer<Download> {
 
+    override fun shouldHandle(q: Download): Boolean = q.status == 0.toByte()
+
     fun prepareOutput(q: Download): LazyFile<FileOutputStream>?
 
     override fun handle(q: Download, remaining: Int): Boolean {
@@ -92,6 +94,10 @@ interface Downloader : Queuer<Download> {
     }
 
     fun onRetry(q: Download)
+
+    override fun onHandled(q: Download, success: Boolean) {
+        if (!success) q.status = 1
+    }
 
     private fun writeJpeg(q: Download, ba: ByteArray, out: LazyFile<FileOutputStream>) {
         val outputSet: TiffOutputSet =

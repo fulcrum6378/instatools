@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -10,7 +11,6 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.Selection
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
@@ -19,38 +19,37 @@ import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
-import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
+import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.SafeGridManager
-import ir.mahdiparastesh.instatools.view.SelectionHandler
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@SuppressLint("NotifyDataSetChanged")
 class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     lateinit var b: PageSvdBinding
-    var saver: Saver? = null
     private val pickle: Pickle by lazy {
         Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.SAVED, null)
+    }
+    val downloadsPickle: Pickle by lazy {
+        Pickle(c.filesDir, c.m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
     }
     private var selectionGuide: LottieAnimationView? = null
 
@@ -148,21 +147,12 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.mtUnsaveDownload -> {
-                if (tracker != null && c.mm.saved != null && saver?.active != true)
-                    saver = Saver(tracker!!.selection, unsave = true, download = true)
-                tracker?.clearSelection()
-            }
-            R.id.mtDownload -> {
-                if (tracker != null && c.mm.saved != null && saver?.active != true)
-                    saver = Saver(tracker!!.selection, unsave = false, download = true)
-                tracker?.clearSelection()
-            }
-            R.id.mtUnsave -> {
-                if (tracker != null && c.mm.saved != null && saver?.active != true)
-                    saver = Saver(tracker!!.selection, unsave = true, download = false)
-                tracker?.clearSelection()
-            }
+            R.id.mtUnsaveDownload ->
+                processMedia(unsave = true, download = true)
+            R.id.mtDownload ->
+                processMedia(unsave = false, download = true)
+            R.id.mtUnsave ->
+                processMedia(unsave = true, download = false)
             R.id.mtSelectAll -> if (c.mm.saved != null)
                 tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id() }, true)
 
@@ -178,6 +168,46 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
             PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
             StorageStrategy.createStringStorage()
         ).build().also { it.addObserver(SelectObserver()) }
+    }
+
+    fun processMedia(download: Boolean, unsave: Boolean) {
+        val selection = tracker?.selection ?: return
+        val saved = c.mm.saved ?: return
+        val deletion = arrayListOf<Int>()
+        CoroutineScope(Dispatchers.Default).launch {
+            for (svd in saved.items.indices) {
+                if (saved.items[svd].media.id() !in selection) continue
+                if (download) c.m.downloads.addAll(saved.items[svd].media.queue())
+                if (unsave) {
+                    c.m.commands.add(
+                        Command(saved.items[svd].media, unsave = true)
+                    )
+                    deletion.add(svd)
+                    c.incrementCounter(Settings.spUnsaveCount)
+                }
+            }
+            if (download) c.m.downloads.pickle(downloadsPickle)
+            if (unsave) c.startService(
+                Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
+            )
+            withContext(Dispatchers.Main) {
+                tracker?.clearSelection()
+                if (unsave) {
+                    var errored = false
+                    for (del in deletion.reversed()) {
+                        try {
+                            c.mm.saved?.items?.removeAt(del)
+                            b.rv.adapter?.notifyItemRemoved(del)
+                            b.rv.adapter?.notifyItemRangeChanged(del, saved.items.size)
+                            c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
+                        } catch (_: IndexOutOfBoundsException) {
+                            errored = true
+                        }
+                    }
+                    if (!errored) pickle.save(saved)
+                }
+            }
+        }
     }
 
     override fun goBack(): Boolean {
@@ -252,56 +282,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
                 BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
                 c.selectionBadge = null
             }
-        }
-    }
-
-    inner class Saver(
-        selection: Selection<String>, private val unsave: Boolean, private val download: Boolean
-    ) : SelectionHandler(selection) {
-
-        override suspend fun handle() {
-            val svd = next()
-            if (svd == null) {
-                if (download) Downloads.initService(c)
-                if (unsave) c.mm.saved?.also { pickle.save(it) }
-                return; }
-            val saved = c.mm.saved?.items?.find { it.media.id() == svd }
-            if (saved == null) {
-                ended(); return; }
-
-            if (download) c.m.queue.addAll(saved.media.queue())
-
-            if (!unsave) {
-                ended()
-                return; }
-
-            try {
-                Api.json<GraphQl>(
-                    Api.Endpoint.QUERY.url, true, GraphQlQuery.UNSAVE.body(saved.media.id())
-                )
-                c.incrementCounter(Settings.spUnsaveCount)
-                withContext(Dispatchers.Main) {
-                    c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
-                    c.mm.saved?.items?.find { it.media.id() == svd }?.let { media ->
-                        val x = c.mm.saved!!.items.indexOf(media)
-                        c.mm.saved!!.items.removeAt(x)
-                        b.rv.adapter?.notifyItemRemoved(x)
-                        b.rv.adapter?.notifyItemRangeChanged(x, c.mm.saved!!.items.size)
-                    }
-                }
-            } catch (e: Api.FailureException) {
-                withContext(Dispatchers.Main) {
-                    UiTools.snackbar(
-                        b.root, UiTools.apiError(c.c, e.code), dur = Snackbar.LENGTH_SHORT
-                    )
-                }
-                // TODO should continue in case of an error?
-            }
-
-            if (size() > 1) {
-                delay(500)
-                ended()
-            } else ended()
         }
     }
 }
