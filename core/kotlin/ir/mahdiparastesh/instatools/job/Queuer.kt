@@ -4,11 +4,19 @@ import ir.mahdiparastesh.instatools.util.Utils
 import java.lang.IllegalStateException
 import java.util.concurrent.CopyOnWriteArrayList
 
-interface Queuer<Item> where Item : Queuer.Queued {
-    val queue: CopyOnWriteArrayList<Item>
-    var finishedItems: Int
+/** A structure for handling multiple items as a queue. */
+interface Queuer<Item> where Item : Queuer.Item {
 
-    /** Starts handling the queue. */
+    /** Main queue repository of a job. */
+    val queue: CopyOnWriteArrayList<Item>
+
+    /**
+     * The number of handled items; useful for tracking the progress.
+     * Just set it to `0`.
+     */
+    var handledItems: Int
+
+    /** Starts looping over the queue. */
     fun start() {
         var q: Item?
         var remaining: Int
@@ -25,23 +33,21 @@ interface Queuer<Item> where Item : Queuer.Queued {
                 if (q == null) break
 
                 if (handle(q, remaining)) {
-                    onSuccess(q)
+                    onHandled(q, true)
                     queue.removeIf { it.id == q!!.id }
                     consecutiveFailures = 0
                 } else {
                     q.status = 1
-                    onFailure(q)
+                    onHandled(q, false)
                     consecutiveFailures++
                     if (consecutiveFailures > 5)
                         throw FailureException(consecutiveFailures)
                 }
-                finishedItems++
+                handledItems++
             }
-            onFinished()
-            onEnd(true)
-        } catch (e: Exception) {
-            onFatalError(e)
-            onEnd(false)
+            onFinished(null)
+        } catch (fatalError: Exception) {
+            onFinished(fatalError)
         }
     }
 
@@ -51,19 +57,21 @@ interface Queuer<Item> where Item : Queuer.Queued {
      */
     fun handle(q: Item, remaining: Int): Boolean
 
-    fun onSuccess(q: Item)
+    /**
+     * Called when finished handling an item.
+     * @param success true if the item was handled successfully
+     */
+    fun onHandled(q: Item, success: Boolean)
 
-    fun onFailure(q: Item)
-
-    /** Called when all the queue is finished. */
-    fun onFinished()
-
-    fun onFatalError(e: Exception)
-
-    fun onEnd(finished: Boolean)
+    /**
+     * Called when the loop is over, whether successfully or with fatal errors.
+     * @param fatalError
+     */
+    fun onFinished(fatalError: Exception?)
 
 
-    interface Queued {
+    /** A structure for a single item of a [Queuer] */
+    interface Item {
         /** A unique ID */
         val id: String
 

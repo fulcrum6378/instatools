@@ -7,9 +7,9 @@ import java.io.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 class DownloadTask : Downloader {
-    override val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
-    override var finishedItems: Int = 0
     val outputDir = File("./Downloads/")
+    override val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
+    override var handledItems: Int = 0
 
     fun download(
         med: Media, idealSize: Int, link: String? = null, owner: String? = null
@@ -36,21 +36,11 @@ class DownloadTask : Downloader {
         println("Retrying for ${q.link}")
     }
 
-    override fun onSuccess(q: Download) {
-        println("Downloaded ${q.fileName}")
+    override fun onHandled(q: Download, success: Boolean) {
+        println("${if (success) "Downloaded" else "Failed downloading"} ${q.fileName}")
     }
 
-    override fun onFailure(q: Download) {
-        println("Failed downloading ${q.link}")
-    }
-
-    override fun onFinished() {
-    }
-
-    override fun onEnd(finished: Boolean) {
-    }
-
-    override fun onFatalError(e: Exception) {
-        throw e
+    override fun onFinished(fatalError: Exception?) {
+        if (fatalError != null) throw fatalError
     }
 }

@@ -36,7 +36,7 @@ class Download(
     val lat: Double?,
     val lng: Double?,
     override var status: Byte = 0x0
-) : Queuer.Queued {
+) : Queuer.Item {
     override val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
 
     val ext: String by lazy { URI(url).path.split(".").last() }

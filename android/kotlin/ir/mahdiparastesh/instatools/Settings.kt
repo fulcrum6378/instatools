@@ -15,7 +15,6 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.edit
@@ -81,8 +80,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
         const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
-
-        // FIXME delete const val spUnfLastChecked = "unf_last_checked" // def: 0L
         const val spExpOptions = "export_options"
 
         // Mere-Global Hidden Preferences
@@ -109,8 +106,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         )
         var recreateMain = false
 
-        @Suppress("RedundantSuspendModifier")
-        suspend fun deleteDb(id: String) {
+        fun deleteDb(id: String) {
             arrayOf(
                 DbFile(id, DbFile.Triple.MAIN),
                 DbFile(id, DbFile.Triple.SHARED_MEMORY),
@@ -118,22 +114,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             ).forEach { f -> if (f.exists()) f.delete() }
         }
 
-        @Suppress("RedundantSuspendModifier")
-        suspend fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
+        fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
             File(c.getDir("shared_prefs", MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }
         }
 
-        @WorkerThread
         fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
-
-        private var clearingCache = false
-        fun Context.clearCache() {
-            clearingCache = true
-            CoroutineScope(Dispatchers.IO)
-                .launch { cacheDir.deleteRecursively() }
-                .invokeOnCompletion { clearingCache = false }
-        }
 
         fun defaultCacheLimit(c: Context): Long = c.getExternalFilesDir(null)?.let {
             val minie = c.resources.getInteger(R.integer.stCacheMin)
@@ -145,11 +131,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             return ret
         } ?: defSpCacheLimit
 
-        @WorkerThread
-        fun Persistent.clearCacheIfNecessary() {
-            if (Exporter.active.value == true) return
-            if (c.cacheSize() > gsp.getLong(spCacheLimit, defaultCacheLimit(c)))
-                c.clearCache()
+        fun Persistent.clearCacheIfNecessary(subdir: String): Boolean {
+            if (Exporter.active.value == true) return false
+            if (c.cacheSize() <= gsp.getLong(spCacheLimit, defaultCacheLimit(c))) return false
+            File(c.cacheDir, subdir).deleteRecursively()
+            return true
         }
 
         fun Long.toMBs() = (this / MB).toInt()
@@ -369,6 +355,14 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
     private fun updateMainPath(value: String? = null) {
         b.stMainPath.text = Uri.decode(value ?: prf.getString(spStorage, ""))
+    }
+
+    private var clearingCache = false
+    fun Context.clearCache() {
+        clearingCache = true
+        CoroutineScope(Dispatchers.IO)
+            .launch { cacheDir.deleteRecursively() }
+            .invokeOnCompletion { clearingCache = false }
     }
 
     private fun updateCacheSize() {

@@ -63,7 +63,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                         1.toByte() -> status = 0
                         2.toByte() -> status = 0
                     }
-                    c.pickle.save(c.m.queue.toList())
+                    c.m.saveQueue(c.pickle)
                     Downloads.initService(c)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)

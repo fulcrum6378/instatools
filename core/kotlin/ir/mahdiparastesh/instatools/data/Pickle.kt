@@ -10,7 +10,6 @@ import java.io.FileOutputStream
  * Caches data models in order to reduce the number of API requests.
  * Used as an object-oriented data storage as well!
  */
-@Suppress("RedundantSuspendModifier")
 class Pickle(root: File, acc: Long, type: Type, id: String?) {
     val branch: File
     val file: File
@@ -23,14 +22,14 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
         lifespan = (type.lifespanDays * 86400000f).toLong()
     }
 
-    suspend inline fun <reified DATA> save(data: DATA) {
+    inline fun <reified DATA> save(data: DATA) {
         if (!branch.exists()) branch.mkdirs()
         FileOutputStream(file).use {
             it.write(Api.json.encodeToString(data).encodeToByteArray())
         }
     }
 
-    suspend inline fun <reified DATA> restore(): DATA? =
+    inline fun <reified DATA> restore(): DATA? =
         if (file.exists() && (Utils.now() - file.lastModified()) < lifespan) try {
             Api.json.decodeFromString<DATA>(
                 FileInputStream(file).use { it.readBytes().toString(Charsets.UTF_8) }

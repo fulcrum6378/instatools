@@ -21,6 +21,10 @@ class Model : ViewModel() {
         return null
     }
 
+    fun saveQueue(pickle: Pickle) {
+        pickle.save(queue.toList())
+    }
+
     /** Shares the ViewModel across different Activity instances. */
     @Suppress("UNCHECKED_CAST")
     class Factory : ViewModelProvider.Factory {

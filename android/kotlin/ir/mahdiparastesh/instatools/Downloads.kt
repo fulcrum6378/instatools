@@ -248,7 +248,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         any = true
                     }
                     if (any) {
-                        pickle.save(m.queue.toList())
+                        m.saveQueue(pickle)
                         withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
@@ -279,10 +279,11 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     setPositiveButton(R.string.yes) { _, _ ->
                         CoroutineScope(Dispatchers.IO).launch {
                             m.queue.clear()
-                            pickle.save(m.queue.toList())
+                            m.saveQueue(pickle)
                             withContext(Dispatchers.Main) {
                                 b.rv.adapter?.notifyDataSetChanged()
                                 onListResized()
+                                cancelNotifications()
                             }
                         }
                     }
@@ -312,7 +313,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 }
             }.onSuccess { downloads ->
                 m.queue.addAll(downloads)
-                pickle.save(m.queue.toList())
+                m.saveQueue(pickle)
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
@@ -357,7 +358,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
         private fun delete(q: Download) {
             CoroutineScope(Dispatchers.IO).launch {
-                pickle.save(m.queue.toList())
+                m.saveQueue(pickle)
                 withContext(Dispatchers.Main) {
                     m.findQueued(q)?.also {
                         m.queue.removeAt(it)

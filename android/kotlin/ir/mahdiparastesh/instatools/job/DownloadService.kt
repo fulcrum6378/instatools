@@ -41,7 +41,7 @@ class DownloadService : ForegroundService(), Downloader {
     override val com: ForegroundServiceCompanion get() = Companion
     override lateinit var ntfTitle: String
     override val queue: CopyOnWriteArrayList<Download> get() = m.queue
-    override var finishedItems: Int = 0
+    override var handledItems: Int = 0
 
     companion object : ForegroundServiceCompanion() {
         override val klass = DownloadService::class.java
@@ -55,12 +55,6 @@ class DownloadService : ForegroundService(), Downloader {
     override fun onCreate() {
         super.onCreate()
         dest = sPreference(Settings.spStorage)
-        CoroutineScope(Dispatchers.IO).launch {
-            Settings.loadAliases(this@DownloadService, true)
-                .forEach { (k, v) -> aliases[k] = v }
-            if (sp != null) Settings.loadAliases(this@DownloadService, false)
-                .forEach { (k, v) -> aliases[k] = v }
-        }
         if (m.acc == null || dest == null) return
 
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
@@ -69,9 +63,18 @@ class DownloadService : ForegroundService(), Downloader {
         initialNotification(Companion, Downloads::class)
 
         job = CoroutineScope(Dispatchers.IO).launch {
+            // load the map of alias folders
+            Settings.loadAliases(this@DownloadService, true)
+                .forEach { (k, v) -> aliases[k] = v }
+            if (sp != null) Settings.loadAliases(this@DownloadService, false)
+                .forEach { (k, v) -> aliases[k] = v }
+
+            // load the download list
             if (m.queue.isEmpty())
                 pickle.restore<List<Download>>()
                     ?.also { m.queue.addAll(it) }
+
+            // start looping
             start()
         }
     }
@@ -110,7 +113,7 @@ class DownloadService : ForegroundService(), Downloader {
             remaining
         )
         ntfSmallText = q.owner
-        updateNotification(Pair(finishedItems, remaining + finishedItems))
+        updateNotification(Pair(handledItems, remaining + handledItems))
 
         return super.handle(q, remaining)
     }
@@ -118,60 +121,56 @@ class DownloadService : ForegroundService(), Downloader {
     override fun onRetry(q: Download) {
     }
 
-    override fun onSuccess(q: Download) {
+    override fun onHandled(q: Download, success: Boolean) {
         des?.close()
         m.findQueued(q)?.also {
-            Downloads.handler?.obtainMessage(Downloads.HANDLE_DELETED, it)?.sendToTarget()
+            Downloads.handler?.obtainMessage(
+                if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, it
+            )?.sendToTarget()
         }
         if (q.isMainFile()) m.files?.add(q.fileName)
-        incrementCounter(Settings.spDownloadCount)
-    }
-
-    override fun onFailure(q: Download) {
-        des?.close()
-        m.findQueued(q)?.also {
-            Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, it)?.sendToTarget()
-        }
-        incrementCounter(Settings.spDlErrorCount)
-    }
-
-    override fun onFinished() {
-        CoroutineScope(Dispatchers.IO).launch {
-            pickle.save(m.queue.toList())
-        }
-    }
-
-    override fun onFatalError(e: Exception) {
-        if (e !is Utils.InstaToolsException) throw e
-        eventNotification(Notify.ID_DOWNLOADER_ERROR) {
-            setContentTitle(getString(R.string.download))
-            setContentText(
-                when (e) {
-                    is Api.FailureException -> UiTools.apiError(c, e.code)
-                    is Downloader.FailureException -> getString(R.string.downloaderCannot)
-                    is Queuer.FailureException -> getString(R.string.downloaderSomeFailed, e.times)
-                    else -> throw IllegalStateException("IMPOSSIBLE?!")
-                }
-            )
-            setContentIntent(
-                PendingIntent.getActivity(c, 0, Intent(c, Downloads::class.java), ntfMutability())
-            )
-        }
+        incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
     }
 
     @MainThread
     override fun onCancel() {
-        val active = job?.isActive == true
         job?.cancel()
-        onEnd(!active)
+        onFinished(null)
     }
 
-    override fun onEnd(finished: Boolean) {
+    override fun onFinished(fatalError: Exception?) {
         ntfTitle = getString(R.string.downloaderTitle)
         ntfSmallText = null
         updateNotification()
 
-        if (finished) {
+        // save data models
+        m.saveQueue(pickle)
+        if (!clearCacheIfNecessary("image_manager_disk_cache"))
+            DownloadHistory.saveCache(this@DownloadService)
+
+        if (fatalError != null) {
+            if (fatalError !is Utils.InstaToolsException) throw fatalError
+            eventNotification(Notify.ID_DOWNLOADER_ERROR) {
+                setContentTitle(getString(R.string.download))
+                setContentText(
+                    when (fatalError) {
+                        is Api.FailureException ->
+                            UiTools.apiError(c, fatalError.code)
+                        is Downloader.FailureException ->
+                            getString(R.string.downloaderCannot)
+                        is Queuer.FailureException ->
+                            getString(R.string.downloaderSomeFailed, fatalError.times)
+                        else -> throw IllegalStateException("IMPOSSIBLE?!")
+                    }
+                )
+                setContentIntent(
+                    PendingIntent.getActivity(
+                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                    )
+                )
+            }
+        } else {
+            // report if some downloads failed
             val failedSum = queue.size
             if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
                 setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
@@ -183,7 +182,7 @@ class DownloadService : ForegroundService(), Downloader {
             }
         }
 
-        clearCacheIfNecessary()
+        // remove empty directories
         @Suppress("KotlinConstantConditions")
         if (dest != null && bPreference(
                 Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
@@ -195,8 +194,8 @@ class DownloadService : ForegroundService(), Downloader {
                 if (branch.isDirectory && branch.listFiles().isEmpty())
                     branch.delete()
         }
-        DownloadHistory.saveCache(this@DownloadService)
 
+        // end the foreground service via the worker thread
         destroy()
     }
 }

@@ -16,6 +16,7 @@ import androidx.webkit.WebViewFeature
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.api.PageConfig
 import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Account
@@ -280,6 +281,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
                 gsp.edit { putString(SP_ACCOUNT, id) }
                 goTo(Main::class, true)
+                clearCacheIfNecessary("WebView")
                 improperLoading = 0
             }
         }
