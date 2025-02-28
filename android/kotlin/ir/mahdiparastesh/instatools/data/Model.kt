@@ -2,23 +2,18 @@ package ir.mahdiparastesh.instatools.data
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import java.util.concurrent.CopyOnWriteArrayList
+import ir.mahdiparastesh.instatools.util.Queue
 import java.util.concurrent.CopyOnWriteArraySet
 
-/** Global view model for all Activity instances. */
+/** Global view model shared between all BaseActivity instances. */
 class Model : ViewModel() {
     var acc: Account? = null
-    val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
-    var files: CopyOnWriteArraySet<String>? = null
+    val queue: Queue<Download> = Queue()
+    var downloadHistory: CopyOnWriteArraySet<String>? = null
     var fav: ArrayList<Favourite>? = null
 
     fun accountSwitched() {
         fav = null
-    }
-
-    fun findQueued(it: Download): Int? {
-        for (i in queue.indices) if (queue[i].id == it.id) return i
-        return null
     }
 
     fun saveQueue(pickle: Pickle) {

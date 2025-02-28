@@ -75,7 +75,7 @@ class PageVwr : BasePageViewer() {
                     CoroutineScope(Dispatchers.IO).launch {
                         c.m.queue.add(
                             Download(
-                                "profile_photo",
+                                Utils.PROFILE_PHOTO,
                                 Utils.now(),
                                 picture,
                                 0x1,

@@ -108,7 +108,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         initToolbar(b.toolbar, R.string.downloads)
 
         handler = object : Handler(Looper.getMainLooper()) {
-            @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_INSERTED -> {
@@ -118,13 +117,15 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
                         onListResized()
                     }
-                    HANDLE_CHANGED ->
-                        b.rv.adapter?.notifyItemChanged(msg.obj as Int)
-                    HANDLE_DELETED -> {
-                        val index = msg.obj as Int
-                        b.rv.adapter?.notifyItemRemoved(index)
-                        b.rv.adapter?.notifyItemRangeChanged(index, m.queue.size)
-                        if (index > 0) b.rv.adapter?.notifyItemChanged(index - 1)
+                    HANDLE_CHANGED -> m.queue.indexOf(msg.obj as Download).also {
+                        if (it == -1) return@also
+                        b.rv.adapter?.notifyItemChanged(it)
+                    }
+                    HANDLE_DELETED -> m.queue.indexOf(msg.obj as Download).also {
+                        if (it == -1) return@also
+                        b.rv.adapter?.notifyItemRemoved(it)
+                        b.rv.adapter?.notifyItemRangeChanged(it, m.queue.size)
+                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         onListResized()
                     }
                 }
@@ -341,35 +342,33 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         ): Boolean = false
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
-            val q = m.queue.getOrNull(h.layoutPosition) ?: return
-            if (!askedForDelete) MaterialAlertDialogBuilder(this@Downloads).apply {
-                setTitle(R.string.downloads)
-                setMessage(R.string.deleteItemSure)
-                setCancelable(false)
-                setPositiveButton(R.string.yes) { _, _ ->
-                    askedForDelete = true
-                    delete(q)
-                    Delay(60000L) { askedForDelete = false }
-                }
-                setNegativeButton(R.string.no, null)
-            }.show()
-            else delete(q)
+            if (!askedForDelete) {
+                val q = m.queue.getOrNull(h.layoutPosition) ?: return
+                MaterialAlertDialogBuilder(this@Downloads).apply {
+                    setTitle(R.string.downloads)
+                    setMessage(R.string.deleteItemSure)
+                    setCancelable(false)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        askedForDelete = true
+                        val index = m.queue.indexOf(q)
+                        if (index != -1) delete(index)
+                        Delay(60000L) { askedForDelete = false }
+                    }
+                    setNegativeButton(R.string.no, null)
+                }.show()
+            } else
+                delete(h.layoutPosition)
         }
 
-        private fun delete(q: Download) {
-            CoroutineScope(Dispatchers.IO).launch {
-                m.saveQueue(pickle)
-                withContext(Dispatchers.Main) {
-                    m.findQueued(q)?.also {
-                        m.queue.removeAt(it)
-                        b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.queue.size - 1)
-                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
-                        onListResized()
-                        cancelNotifications()
-                    }
-                }
-            }
+        private fun delete(q: Int) {
+            m.queue.removeAt(q)
+            b.rv.adapter?.notifyItemRemoved(q)
+            b.rv.adapter?.notifyItemRangeChanged(q, m.queue.size - 1)
+            if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
+            onListResized()
+            cancelNotifications()
+            CoroutineScope(Dispatchers.IO).launch { m.saveQueue(pickle) }
+
             if (isSwipeDeleteInflated != null) {
                 b.root.removeView(bd.root)
                 gsp.edit { putBoolean(Settings.spLearntSwipeDelete, true) }

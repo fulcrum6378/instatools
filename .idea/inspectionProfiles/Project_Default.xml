@@ -35,6 +35,7 @@
           <option value="java.nio.ByteBuffer.getShort" />
           <option value="java.util.concurrent.CopyOnWriteArrayList.isEmpty" />
           <option value="java.util.ArrayList.isEmpty" />
+          <option value="java.util.concurrent.ConcurrentHashMap.isEmpty" />
         </list>
       </option>
     </inspection_tool>

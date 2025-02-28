@@ -206,7 +206,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         }
 
         // miscellaneous
-        if (m.files == null) DownloadHistory.load(this)
+        if (m.downloadHistory == null) DownloadHistory.load(this)
         CoroutineScope(Dispatchers.IO).launch {
             m.fav = ArrayList(dao.favourites())
             m.fav?.sortBy { it.user }
@@ -403,7 +403,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     }
 
     override fun switchAcc() {
-        page1?.job?.cancel()
+        page1?.job?.cancel() // FIXME
         page2?.job?.cancel()
         page2?.saver?.job?.cancel()
         page3?.job?.cancel()
@@ -430,14 +430,14 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * number of posts on PageVwr
+  * pending downloads should have a different icon
   * on configuration changes (especially Login while browsing the web)
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
-  * Report to the user that a Download is already downloaded by `status = 0x4`
+  * number of posts on PageVwr
   * Percentage of downloads
   * Show muted statuses in Friends
   * A button for resuming/restarting the Exporter

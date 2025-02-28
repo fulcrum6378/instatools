@@ -7,7 +7,7 @@ import ir.mahdiparastesh.instatools.exp.HtmlExporter
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
-class ExportTask : Queuer<Exportable> {
+class ExportTask {
     val outputDir = File("./Messages/")
     override val queue: CopyOnWriteArrayList<Exportable> = CopyOnWriteArrayList()
     override var handledItems: Int = 0
@@ -103,12 +103,6 @@ class ExportTask : Queuer<Exportable> {
             }
         }*/
         return true
-    }
-
-    override fun onHandled(q: Exportable, success: Boolean) {
-    }
-
-    override fun onFinished(fatalError: Exception?) {
     }
 
     enum class Method(val ext: String) {

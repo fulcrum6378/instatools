@@ -35,9 +35,9 @@ object DownloadHistory {
                 runCatching {
                     FileInputStream(stored).use { return@use it.readBytes() }
                 }.onSuccess { data ->
-                    c.m.files =
+                    c.m.downloadHistory =
                         CopyOnWriteArraySet(Json.decodeFromString<List<String>>(String(data)))
-                    if (c.m.files != null) loading = false
+                    if (c.m.downloadHistory != null) loading = false
                     else checkStorage(c)
                 }.onFailure {
                     if (BuildConfig.DEBUG) throw it
@@ -48,37 +48,37 @@ object DownloadHistory {
     }
 
     private fun checkStorage(c: Persistent) {
-        c.m.files = CopyOnWriteArraySet()
+        c.m.downloadHistory = CopyOnWriteArraySet()
         val paths = c.c.contentResolver.persistedUriPermissions
             .map { DocumentFile.fromTreeUri(c.c, it.uri) }
         if (paths.isNotEmpty()) {
             val mainPath = c.sPreference(Settings.spStorage)
             for (path in paths) if (path != null) (if (path.uri.toString() != mainPath) path.listFiles()
                 .toList() else path.walk().toList())
-                .filterMedia().also { c.m.files?.addAll(it) }
+                .filterMedia().also { c.m.downloadHistory?.addAll(it) }
             saveCache(c)
         }
         loading = false
     }
 
     fun folderAdded(c: Persistent, uri: Uri) {
-        if (c.m.files == null) return
+        if (c.m.downloadHistory == null) return
         DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
-            ?.also { c.m.files?.addAll(it) }
+            ?.also { c.m.downloadHistory?.addAll(it) }
         saveCache(c)
     }
 
     fun folderRemoved(c: Persistent, uri: Uri) {
-        if (c.m.files == null) return
+        if (c.m.downloadHistory == null) return
         DocumentFile.fromTreeUri(c.c, uri)?.listFiles()?.toList()?.filterMedia()
-            ?.forEach { c.m.files?.remove(it) }
+            ?.forEach { c.m.downloadHistory?.remove(it) }
         saveCache(c)
     }
 
     fun saveCache(c: Persistent) {
-        if (c.m.files.isNullOrEmpty()) return
+        if (c.m.downloadHistory.isNullOrEmpty()) return
         FileOutputStream(Stored(c.c)).use {
-            it.write(Json.encodeToString(c.m.files?.toList()).encodeToByteArray())
+            it.write(Json.encodeToString(c.m.downloadHistory?.toList()).encodeToByteArray())
         }
     }
 

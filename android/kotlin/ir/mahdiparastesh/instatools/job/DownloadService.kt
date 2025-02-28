@@ -17,6 +17,7 @@ import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.LazyFile
+import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -25,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
-import java.util.concurrent.CopyOnWriteArrayList
 
 class DownloadService : ForegroundService(), Downloader {
     private var dest: String? = null
@@ -41,11 +41,13 @@ class DownloadService : ForegroundService(), Downloader {
     override val ntfChannel = Notify.Channel.DOWNLOADER
     override val ntfId = Notify.ID_DOWNLOADER
     override lateinit var ntfTitle: String
-    override val queue: CopyOnWriteArrayList<Download> get() = m.queue
+    override val queue: Queue<Download> get() = m.queue
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
-    companion object : ForegroundServiceCompanion()
+    companion object : ForegroundServiceCompanion() {
+        var processingItem: String? = null
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -102,6 +104,8 @@ class DownloadService : ForegroundService(), Downloader {
     }
 
     override fun handle(q: Download, remaining: Int): Boolean {
+        processingItem = q.id
+
         // update the notification
         ntfTitle = getString(
             if (remaining > 1) R.string.downloaderTitleCount else R.string.downloaderTitleCount1,
@@ -118,12 +122,10 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onHandled(q: Download, success: Boolean) {
         des?.close()
-        m.findQueued(q)?.also {
-            Downloads.handler?.obtainMessage(
-                if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, it
-            )?.sendToTarget()
-        }
-        if (q.isMainFile()) m.files?.add(q.fileName)
+        Downloads.handler?.obtainMessage(
+            if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, q
+        )?.sendToTarget()
+        if (q.isMainFile()) m.downloadHistory?.add(q.fileName)
         incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
     }
 
@@ -141,39 +143,43 @@ class DownloadService : ForegroundService(), Downloader {
         if (!clearCacheIfNecessary("image_manager_disk_cache"))
             DownloadHistory.saveCache(this@DownloadService)
 
-        if (fatalError != null && fatalError !is CancellationException) {
-            if (fatalError !is Utils.InstaToolsException) throw fatalError
-            eventNotification(Notify.ID_DOWNLOADER_ERROR) {
-                setContentTitle(getString(R.string.download))
-                setContentText(
-                    when (fatalError) {
-                        is Api.FailureException ->
-                            UiTools.apiError(c, fatalError.code)
-                        is Downloader.FailureException ->
-                            getString(R.string.downloaderCannot)
-                        is Queuer.FailureException ->
-                            getString(R.string.downloaderSomeFailed, fatalError.times)
-                        else -> throw IllegalStateException("IMPOSSIBLE?!")
-                    }
-                )
-                setContentIntent(
-                    PendingIntent.getActivity(
-                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
+        if (fatalError !is CancellationException) {
+            if (fatalError != null) {
+                if (fatalError !is Utils.InstaToolsException) throw fatalError
+
+                // report the fatal error
+                eventNotification(Notify.ID_DOWNLOADER_ERROR) {
+                    setContentTitle(getString(R.string.download))
+                    setContentText(
+                        when (fatalError) {
+                            is Api.FailureException ->
+                                UiTools.apiError(c, fatalError.code)
+                            is Downloader.FailureException ->
+                                getString(R.string.downloaderCannot)
+                            is Queuer.FailureException ->
+                                getString(R.string.downloaderSomeFailed, fatalError.times)
+                            else -> throw IllegalStateException("IMPOSSIBLE?!")
+                        }
                     )
-                )
-                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
-            }
-        } else {
-            // report if some downloads failed
-            val failedSum = queue.size
-            if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
-                setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
-                setContentIntent(
-                    PendingIntent.getActivity(
-                        c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                    setContentIntent(
+                        PendingIntent.getActivity(
+                            c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                        )
                     )
-                )
-                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
+                    addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
+                }
+            } else {
+                // report if some downloads failed
+                val failedSum = queue.size
+                if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
+                    setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
+                    setContentIntent(
+                        PendingIntent.getActivity(
+                            c, 0, Intent(c, Downloads::class.java), ntfMutability()
+                        )
+                    )
+                    addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
+                }
             }
         }
 

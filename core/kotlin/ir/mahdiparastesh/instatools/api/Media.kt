@@ -42,7 +42,7 @@ class Media(
     //val view_count: Long?,
 ) {
 
-    fun id() = pk ?: id.substringBefore("_")
+    fun id(): String = pk ?: id.substringBefore("_")
 
     fun owner(): User = owner ?: user!!
 

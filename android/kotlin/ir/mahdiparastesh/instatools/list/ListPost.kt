@@ -74,7 +74,7 @@ abstract class ListPost<Activity, Fragment>(
         )
 
         // is media already downloaded?
-        val theirs = c.m.files?.filter { it.startsWith("${med.owner().username}_") }
+        val theirs = c.m.downloadHistory?.filter { it.startsWith("${med.owner().username}_") }
             ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
         h.b.stored.vis(
             if (theirs == null)

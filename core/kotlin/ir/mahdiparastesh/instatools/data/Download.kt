@@ -2,14 +2,14 @@ package ir.mahdiparastesh.instatools.data
 
 import com.ashampoo.kim.model.GpsCoordinates
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.job.Queuer
+import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import java.net.URI
 import kotlin.jvm.Throws
 
 /**
- * @param id [Media.pk]
+ * @param id unique ID of a [Media]
  * @param date date posted on Instagram
  * @param url of the desired version
  * @param type [Media.Type.num]
@@ -36,7 +36,8 @@ class Download(
     val lat: Double?,
     val lng: Double?,
     override var status: Byte = 0x0
-) : Queuer.Item {
+) : Queue.Item {
+
     override val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
 
     val ext: String by lazy { URI(url).path.split(".").last() }
@@ -45,4 +46,19 @@ class Download(
 
     @Throws(NullPointerException::class)
     fun coordinates() = GpsCoordinates(lat!!, lng!!)
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + type
+        result = 31 * result + owner.hashCode()
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Download
+        return id == other.id && type == other.type &&
+            (id != Utils.PROFILE_PHOTO || owner == other.owner)
+    }
 }

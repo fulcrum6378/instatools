@@ -1,15 +1,15 @@
 package ir.mahdiparastesh.instatools.job
 
+import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import java.lang.IllegalStateException
 import java.util.concurrent.CancellationException
-import java.util.concurrent.CopyOnWriteArrayList
 
 /** A structure for handling multiple items as a queue. */
-interface Queuer<Item> where Item : Queuer.Item {
+interface Queuer<Item> where Item : Queue.Item {
 
     /** Main queue repository of a job. */
-    val queue: CopyOnWriteArrayList<Item>
+    val queue: Queue<Item>
 
     /**
      * The number of handled items; useful for tracking the progress.
@@ -38,7 +38,7 @@ interface Queuer<Item> where Item : Queuer.Item {
 
                 if (handle(q, remaining)) {
                     onHandled(q, true)
-                    queue.removeIf { it.id == q!!.id }
+                    queue.remove(q)
                     consecutiveFailures = 0
                 } else {
                     q.status = 1
@@ -73,23 +73,6 @@ interface Queuer<Item> where Item : Queuer.Item {
      */
     fun onFinished(fatalError: Exception?)
 
-
-    /** A structure for a single item of a [Queuer] */
-    interface Item {
-        /** A unique ID */
-        val id: String
-
-        /** 0=>pending, 1=>failed */
-        var status: Byte
-
-        /* A lazy field fo file name */
-        val fileName: String
-
-
-        fun ready() = status == 0.toByte()
-
-        fun isFailed() = status == 1.toByte()
-    }
 
     class FailureException(val times: Int) :
         IllegalStateException("$times executive failures detected!"),
