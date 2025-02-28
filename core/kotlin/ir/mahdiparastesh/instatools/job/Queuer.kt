@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.util.Utils
 import java.lang.IllegalStateException
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CopyOnWriteArrayList
 
 /** A structure for handling multiple items as a queue. */
@@ -16,13 +17,16 @@ interface Queuer<Item> where Item : Queuer.Item {
      */
     var handledItems: Int
 
+    /** Whether the loop should proceed or is cancelled. */
+    var proceed: Boolean
+
     /** Starts looping over the queue. */
     fun start() {
         var q: Item?
         var remaining: Int
         var consecutiveFailures = 0
         try {
-            while (true) {
+            while (proceed) {
                 q = null
                 remaining = 0
                 for (qq in queue) {
@@ -45,7 +49,7 @@ interface Queuer<Item> where Item : Queuer.Item {
                 }
                 handledItems++
             }
-            onFinished(null)
+            onFinished(if (proceed) null else CancellationException())
         } catch (fatalError: Exception) {
             onFinished(fatalError)
         }

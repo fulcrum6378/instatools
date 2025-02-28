@@ -433,7 +433,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
   * number of posts on PageVwr
   * on configuration changes (especially Login while browsing the web)
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
-  * Make the coroutines pausable
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -

@@ -11,6 +11,7 @@ class ExportTask : Queuer<Exportable> {
     val outputDir = File("./Messages/")
     override val queue: CopyOnWriteArrayList<Exportable> = CopyOnWriteArrayList()
     override var handledItems: Int = 0
+    override var proceed: Boolean = true
 
     companion object {
         const val USER_PROFILE_IMG = "user_%s"

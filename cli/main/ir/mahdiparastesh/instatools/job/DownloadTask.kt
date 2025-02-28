@@ -10,6 +10,7 @@ class DownloadTask : Downloader {
     val outputDir = File("./Downloads/")
     override val queue: CopyOnWriteArrayList<Download> = CopyOnWriteArrayList()
     override var handledItems: Int = 0
+    override var proceed: Boolean = true
 
     fun download(
         med: Media, idealSize: Int, link: String? = null, owner: String? = null

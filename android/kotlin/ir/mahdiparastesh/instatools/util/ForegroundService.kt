@@ -35,13 +35,12 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     abstract val klass: Class<*>
     abstract val com: ForegroundServiceCompanion
-    abstract val channel: Notify.Channel
+    abstract val ntfChannel: Notify.Channel
     abstract val ntfId: Int
     abstract var ntfTitle: String
     protected open var ntfText: String? = null
     protected open var ntfSmallText: String? = null
     open val ntfSmallIcon: Int = R.drawable.notification
-    abstract val ntfActions: Array<Pair<String, Int>>
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -86,13 +85,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
-            ACTION_START -> resolveIntent(intent)
-            ACTION_STOP -> if (com.active.value == true) onCancel()
+            ACTION_START -> {}
+            ACTION_STOP -> onCancel()
         }
         return START_NOT_STICKY
-    }
-
-    open fun resolveIntent(intent: Intent) {
     }
 
     override fun onCreate() {
@@ -113,7 +109,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfAct = openActivity
         ntfPage = turnToPage
         ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
-        ntfManager.createNotificationChannel(channel.create(c))
+        ntfManager.createNotificationChannel(ntfChannel.create(c))
         startForeground(ntfId, notification(progress))
     }
 
@@ -122,7 +118,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     }
 
     private fun notification(progress: Pair<Int, Int>?) =
-        NotificationCompat.Builder(c, channel.id).apply {
+        NotificationCompat.Builder(c, ntfChannel.id).apply {
             setSmallIcon(ntfSmallIcon)
             setContentTitle(ntfTitle)
             ntfSmallText?.also { setContentText(it) }
@@ -139,8 +135,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                     }, ntfMutability()
                 )
             )
-            for (a in ntfActions)
-                addAction(0, getString(a.second), pi(c, a.first))
+            addAction(0, getString(R.string.stop), pi(c, ACTION_STOP))
         }.build()
 
     fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(

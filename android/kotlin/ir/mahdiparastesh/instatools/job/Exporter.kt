@@ -24,7 +24,6 @@ import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,17 +36,13 @@ import javax.net.ssl.HttpsURLConnection
 import kotlin.collections.set
 
 class Exporter : ForegroundService() {
-    private var job: Job? = null
     private val cacheTree: File by lazy { File(c.cacheDir, CACHE_SUB_DIR) }
 
     override val klass = Exporter::class.java
     override val com: ForegroundServiceCompanion get() = Companion
-    override val channel = Notify.Channel.EXPORTER
+    override val ntfChannel = Notify.Channel.EXPORTER
     override val ntfId = Notify.ID_EXPORTER
     override lateinit var ntfTitle: String
-    override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-        ACTION_STOP to R.string.stop
-    )
 
     companion object : ForegroundServiceCompanion() {
         const val CACHE_SUB_DIR = "exporter"
@@ -62,7 +57,7 @@ class Exporter : ForegroundService() {
         super.onCreate()
         ntfTitle = getString(R.string.exporterTitle)
         initialNotification(Main::class, 2)
-        job = CoroutineScope(Dispatchers.IO).launch { export() }
+        CoroutineScope(Dispatchers.IO).launch { export() }
     }
 
     private suspend fun export() {

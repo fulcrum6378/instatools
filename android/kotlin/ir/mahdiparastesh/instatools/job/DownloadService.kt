@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
-import androidx.annotation.MainThread
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -21,16 +20,15 @@ import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 
 class DownloadService : ForegroundService(), Downloader {
     private var dest: String? = null
-    private var job: Job? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
     private var des: ParcelFileDescriptor? = null
@@ -40,14 +38,12 @@ class DownloadService : ForegroundService(), Downloader {
 
     override val klass = DownloadService::class.java
     override val com: ForegroundServiceCompanion get() = Companion
-    override val channel = Notify.Channel.DOWNLOADER
+    override val ntfChannel = Notify.Channel.DOWNLOADER
     override val ntfId = Notify.ID_DOWNLOADER
     override lateinit var ntfTitle: String
-    override val ntfActions: Array<Pair<String, Int>> = arrayOf(
-        ACTION_STOP to R.string.stop
-    )
     override val queue: CopyOnWriteArrayList<Download> get() = m.queue
     override var handledItems: Int = 0
+    override var proceed: Boolean = true
 
     companion object : ForegroundServiceCompanion()
 
@@ -61,7 +57,7 @@ class DownloadService : ForegroundService(), Downloader {
         ntfTitle = getString(R.string.downloaderTitle)
         initialNotification(Downloads::class)
 
-        job = CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             // load the map of alias folders
             Settings.loadAliases(this@DownloadService, true)
                 .forEach { (k, v) -> aliases[k] = v }
@@ -131,10 +127,8 @@ class DownloadService : ForegroundService(), Downloader {
         incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
     }
 
-    @MainThread
     override fun onCancel() {
-        job?.cancel()
-        onFinished(null)
+        proceed = false
     }
 
     override fun onFinished(fatalError: Exception?) {
@@ -147,7 +141,7 @@ class DownloadService : ForegroundService(), Downloader {
         if (!clearCacheIfNecessary("image_manager_disk_cache"))
             DownloadHistory.saveCache(this@DownloadService)
 
-        if (fatalError != null) {
+        if (fatalError != null && fatalError !is CancellationException) {
             if (fatalError !is Utils.InstaToolsException) throw fatalError
             eventNotification(Notify.ID_DOWNLOADER_ERROR) {
                 setContentTitle(getString(R.string.download))
@@ -167,6 +161,7 @@ class DownloadService : ForegroundService(), Downloader {
                         c, 0, Intent(c, Downloads::class.java), ntfMutability()
                     )
                 )
+                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
             }
         } else {
             // report if some downloads failed
@@ -178,6 +173,7 @@ class DownloadService : ForegroundService(), Downloader {
                         c, 0, Intent(c, Downloads::class.java), ntfMutability()
                     )
                 )
+                addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
             }
         }
 
