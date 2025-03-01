@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.job.SimpleJobs
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -16,6 +15,5 @@ fun main() {
     )
     println("Liked!")*/
 
-    val info = SimpleJobs.userInfo("8337021434")
-    println(info.originalPicture())
+    HtmlData(false)
 }
