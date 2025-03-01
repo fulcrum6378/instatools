@@ -21,7 +21,7 @@ class GraphQl(
         val xdt_api__v1__feed__user_timeline_graphql_connection: Page<Media>?, // profile posts
         //val xdt_api__v1__media__media_id__like: MediaInteraction?, // like post
         //val xdt_api__v1__media__media_id__unlike: MediaInteraction?, // unlike post
-        //val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo?, // media info
+        val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo?, // media info
         //val xdt_api__v1__restrict_action__restrict_many: Array<UserInteraction>?, // restrict
         //val xdt_api__v1__restrict_action__unrestrict: UserInteraction?, // unrestrict
         //val xdt_api__v1__story_interactions__send_story_like: MediaInteraction?, // like story
@@ -72,8 +72,8 @@ class GraphQl(
         //val start_cursor: String?,
     )
 
-    /*@Serializable
-    class MediaShortcodeWebInfo(val items: List<Media>)*/
+    @Serializable
+    class MediaShortcodeWebInfo(val items: List<Media>)
 
     /*@Serializable
     class UserInteractionWrapper(

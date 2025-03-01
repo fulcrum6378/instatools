@@ -1,6 +1,9 @@
 package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.User
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -11,62 +14,100 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class HtmlData(private val rewrite: Boolean) {
-    val mainPageFile = File("Downloads\\instagram.html")
-    val configFile = File("Downloads\\config.json")
+/**
+ * @param path e.g. p/<shortcode>/
+ * @param useCache should it rewrite cached debug files
+ */
+class HtmlData(path: String?, private val useCache: Boolean) {
+    val htmlJsonTag = "<script type=\"application/json\""
 
     init {
-        downloadMainPage()
-        stripFromHtml()
-        parseJson()
-    }
-
-    fun downloadMainPage() {
-        if (mainPageFile.exists() && !rewrite) return
-        val html = Api.html("https://www.instagram.com/")
-        FileOutputStream(mainPageFile)
-            .use { it.write(html.encodeToByteArray()) }
-    }
-
-    /** From the `ScheduledServerJS` script find the one with `XIGSharedData`. */
-    fun stripFromHtml() {
-        if (configFile.exists() && !rewrite) return
-        val html = FileInputStream(mainPageFile)
-            .use { it.readBytes() }
-            .toString(Charsets.UTF_8)
-        var read = html
-        val jsons = arrayListOf<String>()
-        val scheduledServerJS = "{\"require\":[[\"ScheduledServerJS\""
-        while (read.contains(scheduledServerJS)) {
-            read = read.substring(read.indexOf(scheduledServerJS))
-            jsons.add(read.substringBefore("</script>"))
-            read = read.substringAfter("</script>")
+        if (path == null) {
+            val htmlFile = File("Downloads\\main.html")
+            val html = downloadHtml("https://www.instagram.com/", htmlFile)
+            val json = extractJson(html, File("Downloads\\main.json")) { json ->
+                json.contains("XIGSharedData")
+                // we don't need "XIGSharedData"; we just need that JSON which uniquely contains it.
+            }
+            val user = extractUser(json)
+            println(user?.biography)
+        } else {
+            val shortcode = path.substringAfter("/").substringBefore("/")
+            val htmlFile = File("Downloads\\$shortcode.html")
+            val html = downloadHtml("https://www.instagram.com/$path", htmlFile)
+            val json = extractJson(html, File("Downloads\\$shortcode.json")) { json ->
+                json.contains("RelayPrefetchedStreamCache")
+                    && json.contains("PolarisPostRootQueryRelayPreloader")
+            }
+            val media = extractMedia(json)
+            println(media?.id())
         }
-        val json = jsons.find { it.contains("XIGSharedData") }
-        // we do not need "XIGSharedData" itself; we just need that JSON which uniquely contains it.
-        if (json != null)
-            FileOutputStream(configFile).use { it.write(json.encodeToByteArray()) }
-        else
-            throw Exception("Haven't you been logged out?!")
     }
 
-    fun parseJson() {
-        val json = FileInputStream(configFile)
-            .use { it.readBytes() }
-            .toString(Charsets.UTF_8)
+    fun downloadHtml(url: String, cache: File): String {
+        if (cache.exists() && useCache)
+            return FileInputStream(cache)
+                .use { it.readBytes() }.toString(Charsets.UTF_8)
+
+        val html = Api.html(url)
+        FileOutputStream(cache)
+            .use { it.write(html.encodeToByteArray()) }
+        return html
+    }
+
+    fun extractJson(html: String, cache: File, predicate: (json: String) -> Boolean): String {
+        if (cache.exists() && useCache)
+            return FileInputStream(cache)
+                .use { it.readBytes() }.toString(Charsets.UTF_8)
+
+        var read = html
+        var json: String? = null
+        while (read.contains(htmlJsonTag)) {
+            read = read.substringAfter(htmlJsonTag).substringAfter(">")
+            json = read.substringBefore("</script>")
+            if (json.startsWith("{\"require\":[[\"ScheduledServerJS\"") && predicate(json))
+                break
+            json = null
+        }
+        if (json == null)
+            throw IllegalStateException("JSON not found! Haven't you been logged out?!")
+
+        FileOutputStream(cache).use { it.write(json.encodeToByteArray()) }
+        return json
+    }
+
+    /** @return same as [User] received from [Api.Endpoint.PROFILE_INFO] */
+    fun extractUser(json: String): User? {
+        val node = extractNode(json, "define", "PolarisViewer") ?: return null
+        return Api.json.decodeFromJsonElement<User>(
+            (node[2] as JsonObject)["data"] as JsonObject
+        )
+    }
+
+    /** @return same as [Media] received from [GraphQlQuery.POST_ROOT] */
+    fun extractMedia(json: String): Media? {
+        val node = extractNode(json, "require", "RelayPrefetchedStreamCache") ?: return null
+        val gql = Api.json.decodeFromJsonElement<GraphQl>(
+            (((node[3] as JsonArray)[1] as JsonObject)["__bbox"] as JsonObject)["result"] as JsonObject
+        ) // FIXME missing field "status"
+        return gql.data?.xdt_api__v1__media__shortcode__web_info?.items?.get(0)
+    }
+
+    /**
+     * @param json raw JSON string
+     * @param groupKey either "require", "instances" or "require"
+     * @param node name of head of a node within
+     */
+    private fun extractNode(json: String, groupKey: String, node: String): JsonArray? {
         val scheduledServerJS =
             ((Json.decodeFromString<JsonObject>(json)["require"] as JsonArray)[0] as JsonArray)[3]
                 as JsonArray // only the first element of `scheduledServerJS` is useful.
-        val define = ((scheduledServerJS[0] as JsonObject)["__bbox"] as JsonObject)["define"]
-            as JsonArray // everything is in `define`, it contains ~300 elements!
+        val box = (scheduledServerJS[0] as JsonObject)["__bbox"] as JsonObject
+        val group = box[groupKey] as JsonArray
         var head: JsonPrimitive
-        val polarisViewer = (define.find {
+        return (group.find {
             head = (it as JsonArray)[0] as JsonPrimitive
-            head.isString && head.content == "PolarisViewer"
-            // "XIGSharedData" is its brother, but we don't need it.
-        } as JsonArray)[2] as JsonObject
-        val user = // resembles that of PROFILE_INFO
-            Api.json.decodeFromJsonElement<User>(polarisViewer["data"] as JsonObject)
-        println(user.biography)
+            head.isString && head.content == node
+        } as? JsonArray)
     }
 }
