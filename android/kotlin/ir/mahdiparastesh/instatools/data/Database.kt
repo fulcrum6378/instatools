@@ -14,35 +14,32 @@ abstract class Database : RoomDatabase() {
     interface DAO {
 
         @Query("SELECT * FROM Exportable LIMIT 1")
-        suspend fun firstExportable(): Exportable?
+        fun firstExportable(): Exportable?
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun addExportable(item: Exportable): Long
+        fun addExportable(item: Exportable): Long
 
         @Delete
-        suspend fun deleteExportable(item: Exportable)
+        fun deleteExportable(item: Exportable)
 
 
         @Query("SELECT * FROM Favourite")
-        suspend fun favourites(): List<Favourite>
+        fun favourites(): List<Favourite>
 
-        @Query("SELECT COUNT(*) FROM Favourite")
-        suspend fun countFavourites(): Int
+        /*@Query("SELECT COUNT(*) FROM Favourite")
+        fun countFavourites(): Int*/
 
         @Query("SELECT * FROM Favourite WHERE id = :id LIMIT 1")
-        suspend fun favourite(id: String): Favourite?
+        fun favourite(id: String): Favourite?
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun addFavourite(item: Favourite)
+        fun addFavourite(item: Favourite)
 
         @Update
-        suspend fun updateFavourite(item: Favourite)
+        fun updateFavourite(item: Favourite)
 
         @Delete
-        suspend fun deleteFavourite(item: Favourite)
-
-        @Query("DELETE FROM Favourite WHERE id = :id")
-        suspend fun deleteFavouriteById(id: String)
+        fun deleteFavourite(item: Favourite)
     }
 
     companion object {

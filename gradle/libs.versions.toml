@@ -33,7 +33,6 @@ media3-session = { group = "androidx.media3", name = "media3-session", version.r
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "selection" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swipeRefreshLayout" }
 webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }

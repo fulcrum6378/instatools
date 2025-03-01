@@ -24,7 +24,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 77
-        versionName = "34.8.5"
+        versionName = "34.9.0"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -71,7 +71,6 @@ dependencies {
     implementation(libs.media3.ui)
     implementation(libs.recyclerview.selection)
     ksp(libs.room.compiler)
-    implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     implementation(libs.swiperefreshlayout)
     implementation(libs.webkit)

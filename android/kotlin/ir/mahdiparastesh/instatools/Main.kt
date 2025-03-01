@@ -422,7 +422,6 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
 /* TODO:
   * Problems:
   * Make Exporter and CommandService cancellable and pausable
-  * Replace PageUnf with Favourites as Unfollowers and PageFav!!
   * on configuration changes (especially Login while browsing the web)
   * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
   * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
