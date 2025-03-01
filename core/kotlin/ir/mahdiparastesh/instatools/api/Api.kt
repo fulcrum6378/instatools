@@ -141,7 +141,8 @@ object Api {
         // information
         USER_INFO("https://www.instagram.com/api/v1/users/%s/info/"),
         PROFILE_INFO("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
-        MEDIA_INFO("https://www.instagram.com/api/v1/media/%s/info/"),
+
+        //MEDIA_INFO("https://www.instagram.com/api/v1/media/%s/info/"),
         SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
         SEARCH(
             "https://www.instagram.com/api/v1/web/search/topsearch/?context=blended&query=%s" +

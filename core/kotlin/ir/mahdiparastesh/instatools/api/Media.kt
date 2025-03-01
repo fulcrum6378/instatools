@@ -140,9 +140,9 @@ class Media(
     @Serializable
     class Caption(
         //val created_at: Long,
-        val pk: String,
+        //val pk: String?,
         val text: String,
-        val user: User?,
+        //val user: User?,
         //val user_id: String?,
     )
 

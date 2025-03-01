@@ -2,6 +2,10 @@ package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.Context.exportTask
+import ir.mahdiparastesh.instatools.Context.latestUser
+import ir.mahdiparastesh.instatools.Context.listMsg
+import ir.mahdiparastesh.instatools.Context.listSvd
+import ir.mahdiparastesh.instatools.Context.profiles
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
@@ -9,8 +13,6 @@ import ir.mahdiparastesh.instatools.data.Exportable
 import ir.mahdiparastesh.instatools.job.ExportTask.Method
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.job.SimpleTasks
-import ir.mahdiparastesh.instatools.list.Direct
-import ir.mahdiparastesh.instatools.list.Saved
 import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Profile
 import ir.mahdiparastesh.instatools.util.Utils
@@ -18,11 +20,6 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.*
-
-val listSvd: Saved by lazy { Saved() }
-val listMsg: Direct by lazy { Direct() }
-val profiles: HashMap<String, Profile> = hashMapOf()
-var latestUser: String? = null
 
 fun main(args: Array<String>) {
     val interactive = args.isEmpty()
@@ -158,7 +155,11 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                         else -> null
                     }
                 } else null
-                SimpleTasks.handlePostLink(a[1], Option.quality(opt?.get(Option.QUALITY.key)))
+                downloadTask.download(
+                    SimpleJobs.handlePostLink(a[1]),
+                    Option.quality(opt?.get(Option.QUALITY.key)),
+                    a[1]
+                )
             } else
                 throw InvalidCommandException("Only links to Instagram posts and reels are supported!")
 
