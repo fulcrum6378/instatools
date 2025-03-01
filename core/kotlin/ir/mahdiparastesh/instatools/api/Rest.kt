@@ -48,25 +48,25 @@ interface Rest {
     ) : Rest
 
 
-    /** Both following and followers receive this API. */
-    @Serializable
+    /* Both following and followers receive this API. */
+    /*@Serializable
     class Follow(
         val users: Array<User>? = null,
-        /* true for @fulcrum6378 which needs multiple fetches,
-         * false for @instatools.apk which requires a single one. */
+        // true for @fulcrum6378 which needs multiple fetches,
+        // false for @instatools.apk which requires a single one.
         //val big_list: Boolean,
-        /* Maximum amount of users a single fetch can take which randomly is lower than expected!
-         * always equals 200, even in Instagram Web's own fetches! */
+        // Maximum amount of users a single fetch can take which randomly is lower than expected!
+        // always equals 200, even in Instagram Web's own fetches!
         //val page_size: Int,
         val next_max_id: String? = null,
-        /* "Accounts you don't follow back", "Least interacted with", etc. ONLY IN FOLLOWERS! */
+        // "Accounts you don't follow back", "Least interacted with", etc. ONLY IN FOLLOWERS!
         //val groups: Map<String, Any?>,
-        /* Only in followers */
+        // Only in followers
         //val more_groups_available: Boolean,
         //val has_more: Boolean, always returns false incorrectly!
         //val should_limit_list_of_followers: Boolean,
         override val status: String
-    ) : Rest
+    ) : Rest*/
 
     /*@Serializable
     class Friendships(
@@ -74,11 +74,11 @@ interface Rest {
         override val status: String
     ) : Rest*/
 
-    @Serializable
+    /*@Serializable
     class FriendshipStatus(
         //val blocking: Boolean?, // only in mute/unmute and show(one)
         //val followed_by: Boolean?, // only in mute/unmute and show(one)
-        val following: Boolean,
+        //val following: Boolean,
         //val incoming_request: Boolean?, // only in show_many and show(one)
         //val is_bestie: Boolean,
         //val is_blocking_reel: Boolean?, // only in mute/unmute and show(one)
@@ -94,7 +94,7 @@ interface Rest {
         //val outgoing_request: Boolean,
         //val status: Boolean?, // as Rest, only in show(one)
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
-    )
+    )*/
 
     @Serializable
     class Search(

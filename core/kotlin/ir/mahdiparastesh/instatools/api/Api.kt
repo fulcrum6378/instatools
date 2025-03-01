@@ -152,8 +152,8 @@ object Api {
         SEEN("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
 
         // friendships
-        FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
-        FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
+        //FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
+        //FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
         //FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
         //FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"),
 

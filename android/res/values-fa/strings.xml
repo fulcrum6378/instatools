@@ -90,7 +90,7 @@
     </string>
 
     <!-- Main -->
-    <string name="unfollowers">آنفالورها</string>
+    <string name="favourites">مورد علاقه</string>
     <string name="saved">ذخیره شده</string>
     <string name="direct">@string/export</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
@@ -101,14 +101,12 @@
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
 
-    <!-- PageUnf -->
-    <string name="unfollow">آنفالو</string>
-    <string name="unfollowPV">این پروفایل شخصی (پرایوت) است. آیا از آنفالو کردن مطمئن هستید؟</string>
-    <string name="unfCouldNot">پروفایل آنفالو نشد!</string>
-    <string name="unfEmpty">شما هیچ آنفالوری ندارید!</string>
-    <string name="newUnfNtfChannel">آنفالورهای جدید</string>
-    <string name="newUnfNtfChannelDesc">بعضی ها شما را آنفالو کرده اند!</string>
-    <string name="newUnfNtfText">%d شخص جدید شما را آنفالو کردند!</string>
+    <!-- PageFav -->
+    <string name="favouritesTb">مورد علاقه (آفلاین)</string>
+    <string name="favEmpty">
+        یک پروفایل را در اینستاتولز باز کنید
+        و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.
+    </string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">فقط آنسیو</string>
@@ -124,7 +122,6 @@
     <string name="exportOptions">گزینه های استخراج (%s)</string>
     <string name="export">استخراج</string>
     <string name="boxEmpty">شما هیچ پیامی ندارید!</string>
-    <string name="unfollowedAt">تاریخ آنفالو: %s</string>
     <string name="dmNotSeen">شما مخفی هستید!</string>
     <string name="dmNotSeenDesc">
         پیام های دایرکتی که شما در این اپلیکیشن می خوانید، بعنوان «خوانده شده» تیک نخواهند خورد!
@@ -167,14 +164,6 @@
     <string name="dGuestSure">
         شما در حالت مهمان هستید و اینستاگرام ممکن است بدون ورود به شما اجازه دانلود ندهد!
         آیا میخواهید ادامه دهید؟
-    </string>
-
-    <!-- Favourites -->
-    <string name="favourites">مورد علاقه</string>
-    <string name="favouritesTb">مورد علاقه (آفلاین)</string>
-    <string name="favEmpty">
-        یک پروفایل را در اینستاتولز باز کنید
-        و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.
     </string>
 
     <!-- Viewer -->

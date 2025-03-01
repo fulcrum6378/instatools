@@ -89,7 +89,7 @@
     </string>
 
     <!-- Main -->
-    <string name="unfollowers">Unfollowers</string>
+    <string name="favourites">Favourites</string>
     <string name="saved">Saved</string>
     <string name="direct">@string/export</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
@@ -100,15 +100,11 @@
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="toExit">Double tap to exit&#8230;</string>
 
-    <!-- PageUnf -->
-    <string name="unfollow">Unfollow</string>
-    <string name="unfollowPV">This account is private. Are you sure you want to unfollow them?</string>
-    <string name="unfCouldNot">Could not unfollow this user!</string>
-    <string name="unfEmpty">You have no unfollowers!</string>
-    <string name="unfollowedAt">Unfollowed at %s</string>
-    <string name="newUnfNtfChannel">New unfollowers</string>
-    <string name="newUnfNtfChannelDesc">Some people just unfollowed you!</string>
-    <string name="newUnfNtfText">%d new people have unfollowed you!</string>
+    <!-- PageFav -->
+    <string name="favouritesTb">Favourites (offline)</string>
+    <string name="favEmpty">
+        Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.
+    </string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">Unsave Only</string>
@@ -162,13 +158,6 @@
     <string name="dGuestSure">
         You\'re in the guest mode and Instagram may not allow downloads without authentication!
         Are you sure you want to continue?
-    </string>
-
-    <!-- Favourites -->
-    <string name="favourites">Favourites</string>
-    <string name="favouritesTb">Favourites (offline)</string>
-    <string name="favEmpty">
-        Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.
     </string>
 
     <!-- Viewer -->

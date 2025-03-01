@@ -20,7 +20,6 @@ class Notify {
         const val ID_EXPORTER_DONE = 25 // incremental
         const val ID_COMMANDER_ERROR = 30
         const val ID_COMMANDER_SOME_FAILED = 31
-        const val ID_UNF_NEW_ITEMS = 101
     }
 
     enum class Channel(
@@ -41,11 +40,6 @@ class Notify {
         COMMANDER(
             "commanding", R.string.commanderChannel, R.string.commanderChannelDesc,
             groupId = ChannelGroup.SERVICES.id
-        ),
-
-        UNF_NEW_ITEMS(
-            "unf_new_items", R.string.newUnfNtfChannel, R.string.newUnfNtfChannelDesc,
-            NotificationManager.IMPORTANCE_HIGH
         ),
 
         RESULT("result", R.string.taskResultChannel, R.string.taskResultChannelDesc);

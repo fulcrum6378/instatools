@@ -2,14 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/root"
-    tools:context=".Favourites"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".frag.PageFav"
     tools:ignore="ContentDescription,MissingConstraints">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/toolbar"
-        app:title="@string/favouritesTb" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
@@ -18,7 +14,7 @@
         android:paddingTop="20dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/empty"
@@ -26,10 +22,6 @@
         android:text="@string/favEmpty"
         android:textSize="@dimen/favEmpty"
         android:visibility="gone" />
-
-    <View
-        android:id="@+id/tbShadow"
-        style="@style/tbShadow" />
 
     <ImageView
         android:id="@+id/jumper"

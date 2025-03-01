@@ -31,13 +31,12 @@ import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
-import ir.mahdiparastesh.instatools.data.Friend
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
 import ir.mahdiparastesh.instatools.frag.PageBox
+import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.frag.PageUnf
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
@@ -49,7 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
+class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     val mm: MyModel by viewModels()
@@ -63,7 +62,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    private val bnvButtons = arrayOf(R.id.to_unfollowers, R.id.to_saved, R.id.to_direct)
+    private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved, R.id.to_direct)
     private val popupThemes = arrayOf(
         R.style.Theme_InstaTools_Popup_Primary,
         R.style.Theme_InstaTools_Popup_Secondary,
@@ -80,7 +79,7 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = mm.currentPage
-    override val aKlass = PageUnf::class
+    override val aKlass = PageFav::class
     override val bKlass = PageSvd::class
     override val cKlass = PageBox::class
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
@@ -88,7 +87,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         ?: Settings.defSpMainPage
 
     class MyModel : ViewModel() {
-        var unfollowers = MutableLiveData<ArrayList<Friend>?>(null)
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
         var dmInbox: Dm.Inbox? = null
@@ -97,7 +95,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         val currentPage = MutableLiveData(Settings.defSpMainPage)
 
         fun accountSwitched() {
-            unfollowers.value = null
             saved = null
             dmInbox = null
             dmThread = null
@@ -117,7 +114,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
         // Bottom Navigation Bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
-        mm.unfollowers.observe(this) { bnvBadge(0, it?.filter { u -> !u.unfollowed }?.size) }
         mm.savedCount.observe(this) { bnvBadge(1, it) }
         mm.dmInboxCount.observe(this) { bnvBadge(2, it) }
 
@@ -227,7 +223,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mnDownloads -> goTo(Downloads::class)
-        R.id.mnFavourites -> goTo(Favourites::class)
         R.id.mnGSettings -> goTo(Settings::class)
         R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {

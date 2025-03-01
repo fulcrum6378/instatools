@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.*
 
 @androidx.room.Database(
-    entities = [Friend::class, Exportable::class, Favourite::class],
+    entities = [Exportable::class, Favourite::class],
     version = 1, exportSchema = false
 )
 abstract class Database : RoomDatabase() {
@@ -12,30 +12,6 @@ abstract class Database : RoomDatabase() {
 
     @Dao
     interface DAO {
-        @Query("SELECT * FROM Friend")
-        suspend fun friends(): List<Friend>
-
-        /*@Query("SELECT * FROM Friend WHERE follows = 1")
-        suspend fun followers(): List<Friend>*/
-
-        @Query("SELECT * FROM Friend WHERE followed = 1")
-        suspend fun following(): List<Friend>
-
-        @Query("SELECT * FROM Friend WHERE followed = 1 AND follows = 0")
-        suspend fun unfollowers(): List<Friend>
-
-        @Insert
-        suspend fun addFriends(item: List<Friend>)
-
-        @Update
-        suspend fun updateFriend(item: Friend)
-
-        @Delete
-        suspend fun deleteFriend(item: Friend)
-
-        @Query("DELETE FROM Friend")
-        suspend fun deleteFriends(): Int
-
 
         @Query("SELECT * FROM Exportable LIMIT 1")
         suspend fun firstExportable(): Exportable?

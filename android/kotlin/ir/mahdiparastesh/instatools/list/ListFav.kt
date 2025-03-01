@@ -4,23 +4,24 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ir.mahdiparastesh.instatools.Favourites
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.databinding.ListFavBinding
+import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBinding>>() {
+class ListFav(val c: Main, private val f: PageFav) :
+    RecyclerView.Adapter<AnyViewHolder<ListFavBinding>>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListFavBinding> {
-        val b = ListFavBinding.inflate(c.layoutInflater, parent, false)
+        val b = ListFavBinding.inflate(f.layoutInflater, parent, false)
         b.name.textDirection =
             if (!c.dirRtl) AppCompatTextView.TEXT_DIRECTION_LTR
             else AppCompatTextView.TEXT_DIRECTION_RTL
@@ -42,12 +43,6 @@ class ListFav(val c: Favourites) : RecyclerView.Adapter<AnyViewHolder<ListFavBin
             CoroutineScope(Dispatchers.IO).launch {
                 if (f.tempDeleted) c.dao.deleteFavourite(f)
                 else c.dao.addFavourite(f)
-
-                val listSize = c.dao.countFavourites()
-                withContext(Dispatchers.Main) {
-                    if (f.tempDeleted) c.updateCount(c, listSize)
-                    else c.updateCount(c, listSize)
-                }
             }
             h.b.updateIcon(f.tempDeleted)
         }

@@ -5,10 +5,6 @@
         android:icon="@drawable/download"
         android:title="@string/downloads" />
     <item
-        android:id="@+id/mnFavourites"
-        android:icon="@drawable/favourite"
-        android:title="@string/favourites" />
-    <item
         android:id="@+id/mnGSettings"
         android:icon="@drawable/settings"
         android:title="@string/gSettings" />
