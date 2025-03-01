@@ -17,6 +17,7 @@ gson = "2.10.1"
 dotsIndicator = "5.1.0"
 commonsText = "1.11.0"
 serializationJson = "1.8.0"
+junit = "5.12.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -44,3 +45,5 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 dotsindicator = { group = "com.tbuonomo", name = "dotsindicator", version.ref = "dotsIndicator" }
 commons-text = { group = "org.apache.commons", name = "commons-text", version.ref = "commonsText" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
+junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
+junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }

@@ -260,9 +260,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
         @Throws(JsonSyntaxException::class, NumberFormatException::class)
         private fun collect(html: String) { // UnicodeUnescaper fucks up!
-            PageConfig.findFromHtml(
-                html, true, { failed(it) }, null, null
-            ) { wrapper ->
+            PageConfig.findFromHtml(html, true, { failed(it) }) { wrapper ->
                 id = cookieManager.getCookieOrganised(HOST)
                     .substringAfter("ds_user_id=")
                     .substringBefore(";").toLong().toString()

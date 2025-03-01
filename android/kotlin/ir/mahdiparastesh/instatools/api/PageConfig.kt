@@ -29,13 +29,12 @@ class PageConfig(val define: HashMap<String, List<Any>>) {
             PageConfig(titledListToMap(map["define"]!!)/*, titledListToMap(map["require"]!!)*/)
 
         fun findFromHtml(
-            rawHtml: String, isEvaluated: Boolean, onFailure: (e: Exception) -> Unit,
-            testHtml: Context? = null, testJson: Context? = null,
+            rawHtml: String,
+            isEvaluated: Boolean,
+            onFailure: (e: Exception) -> Unit,
             onSuccess: (wrapper: PageConfig) -> Unit,
         ) {
             val html = if (isEvaluated) StringEscapeUtils.unescapeJson(rawHtml) else rawHtml
-            testHtml?.openFileOutput("login.html", 0)
-                ?.use { it.write(html.encodeToByteArray()) }
 
             // Find the JSON blocks containing "scheduledServerJS" and find XIGSharedData
             var read = html
@@ -63,8 +62,6 @@ class PageConfig(val define: HashMap<String, List<Any>>) {
                 onFailure(e)
                 null
             }?.also {
-                testJson?.openFileOutput("wrapper.json", 0)
-                    ?.use { j -> j.write(Gson().toJson(it).encodeToByteArray()) }
                 onSuccess(create(it))
             } else onFailure(NeedAuth())
         }

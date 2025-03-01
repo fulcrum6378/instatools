@@ -36,6 +36,7 @@ object Api {
             }
     }
 
+    @Throws(FailureException::class)
     inline fun <reified JSON> json(
         url: String,
         isPost: Boolean = false,
@@ -97,6 +98,7 @@ object Api {
         return data
     }
 
+    @Throws(FailureException::class)
     fun html(url: String): String {
         val con = URI(url).toURL().openConnection(proxy) as HttpsURLConnection
         con.requestMethod = "GET"

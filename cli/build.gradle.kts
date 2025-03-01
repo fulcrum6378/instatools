@@ -15,6 +15,8 @@ dependencies {
     implementation(project(":core"))
 
     implementation(libs.serialization.json)
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
 }
 
 tasks.jar {
