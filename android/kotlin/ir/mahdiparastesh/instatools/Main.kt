@@ -227,7 +227,6 @@ class Main : TriplePageActivity<PageUnf, PageSvd, PageBox>(),
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.mnDownloads -> goTo(Downloads::class)
-        R.id.mnFriends -> goTo(Friends::class)
         R.id.mnFavourites -> goTo(Favourites::class)
         R.id.mnGSettings -> goTo(Settings::class)
         R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }

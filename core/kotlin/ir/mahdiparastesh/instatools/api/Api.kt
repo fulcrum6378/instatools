@@ -154,7 +154,7 @@ object Api {
         // friendships
         FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
         FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
-        FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
+        //FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
         //FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"),
 
         // logging in/out

@@ -24,22 +24,6 @@ class Friend(
     @Transient
     var unfollowed: Boolean = false
 
-    @Ignore
-    @Transient
-    var bestie: Boolean = false
-
-    @Ignore
-    @Transient
-    var feedFav: Boolean = false
-
-    @Ignore
-    @Transient
-    var restricted: Boolean = false
-
-    /*@Ignore
-    @Transient
-    var muted: Boolean = false*/
-
     fun toFavourite() = Favourite(id, user, name, pict, priv)
 
     companion object {

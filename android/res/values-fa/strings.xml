@@ -169,17 +169,6 @@
         آیا میخواهید ادامه دهید؟
     </string>
 
-    <!-- Friends -->
-    <string name="friends">دوستان</string>
-    <string name="friEmpty">شما نه کسی را دنبال کرده اید، نه کسی شما را دنبال میکند.</string>
-    <string name="friFollows">دنبال کننده</string>
-    <string name="friFollowed">دنبال شونده</string>
-    <string name="friPrivate">خصوصی</string>
-    <string name="friBestie">نزدیک</string>
-    <string name="friRestricted">ممنوع شده</string>
-    <!--<string name="friMuted">بی صدا شده</string>-->
-    <string name="friSep" translatable="false" tools:ignore="Untranslatable">،&#160;</string>
-
     <!-- Favourites -->
     <string name="favourites">مورد علاقه</string>
     <string name="favouritesTb">مورد علاقه (آفلاین)</string>

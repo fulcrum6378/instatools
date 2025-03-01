@@ -68,11 +68,11 @@ interface Rest {
         override val status: String
     ) : Rest
 
-    @Serializable
+    /*@Serializable
     class Friendships(
         val friendship_statuses: Map<String, FriendshipStatus>,
         override val status: String
-    ) : Rest
+    ) : Rest*/
 
     @Serializable
     class FriendshipStatus(
@@ -80,15 +80,15 @@ interface Rest {
         //val followed_by: Boolean?, // only in mute/unmute and show(one)
         val following: Boolean,
         //val incoming_request: Boolean?, // only in show_many and show(one)
-        val is_bestie: Boolean,
+        //val is_bestie: Boolean,
         //val is_blocking_reel: Boolean?, // only in mute/unmute and show(one)
         //val is_eligible_to_subscribe: Boolean?, // only in mute/unmute and show(one)
-        val is_feed_favorite: Boolean?, // only in show_many and mute/unmute and show(one)
+        //val is_feed_favorite: Boolean?, // only in show_many and mute/unmute and show(one)
         //val is_guardian_of_viewer: Boolean?, // only in show(one)
         //val is_muting_notes: Boolean?, // only in show(one)
         //val is_muting_reel: Boolean?, // only in reels_tray and mute/unmute and show(one)
         //val is_private: Boolean?, // only in show_many and mute/unmute and show(one)
-        val is_restricted: Boolean?, // only in show_many and mute/unmute and show(one)
+        //val is_restricted: Boolean?, // only in show_many and mute/unmute and show(one)
         //val is_supervised_by_viewer: Boolean?, // only in show(one)
         //val muting: Boolean?, // only in reels_tray and mute/unmute and show(one)
         //val outgoing_request: Boolean,

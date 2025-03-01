@@ -164,17 +164,6 @@
         Are you sure you want to continue?
     </string>
 
-    <!-- Friends -->
-    <string name="friends">Friends</string>
-    <string name="friEmpty">You neither follow or are followed by anyone.</string>
-    <string name="friFollows">follower</string>
-    <string name="friFollowed">following</string>
-    <string name="friPrivate">private</string>
-    <string name="friBestie">close friend</string>
-    <string name="friRestricted">restricted</string>
-    <!--<string name="friMuted">muted</string>-->
-    <string name="friSep" translatable="false">,&#160;</string>
-
     <!-- Favourites -->
     <string name="favourites">Favourites</string>
     <string name="favouritesTb">Favourites (offline)</string>
