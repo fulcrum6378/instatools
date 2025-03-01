@@ -53,6 +53,6 @@ class ListFav(val c: Main, private val f: PageFav) :
     override fun getItemCount() = c.m.fav?.size ?: 0
 
     private fun ListFavBinding.updateIcon(tempDeleted: Boolean) {
-        unFav.setImageResource(if (tempDeleted) R.drawable.non_favourite else R.drawable.favourite)
+        unFav.setImageResource(if (tempDeleted) R.drawable.favourite_off else R.drawable.favourite_on)
     }
 }

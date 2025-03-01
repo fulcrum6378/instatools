@@ -4,9 +4,8 @@ InstaTools is a project containing applications which help people retrieve conte
 [Instagram](https://www.instagram.com/). Using these applications you can:
 
 1. Download anyone's posts, reels, stories and highlights
-2. Export your direct messages
-3. Track your unfollowers
-4. Manage your saved posts
+2. Manage your saved posts
+3. Export your direct messages
 
 This project is written in pure Kotlin and contains these modules:
 
@@ -33,16 +32,13 @@ That's why the JSON file mentioned above is an array of multiple Account instanc
 
 ### [Main.kt](android/kotlin/ir/mahdiparastesh/instatools/Main.kt)
 
-InstaTools uses Instagram's private API to performs 3 primary goals,
-plus a few other miscellaneous things that will be mentioned later.
+This activity contains 3 fragments:
 
-1. **Unfollowers** ([PageUnf.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageUnf.kt)):
-   Fetches a list of followers and then a list of the following,
-   then sorts out the unfollowers and notifies when encounters new items.
+1. **Favourites** ([PageFav.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageFav.kt)) :
+   Displays a local list of favourite Instagram profiles
+   (its data is only stored in the local database not in Instagram).
    Its theme is the yellow-brown one called Theme.InstaTools.Primary.
-   The fragment just shows the unfollowers from database, fetches are on its inner class
-   [Inquiry](android/kotlin/ir/mahdiparastesh/instatools/frag/PageUnf.kt#L158).
-2. **Download** : [PageSvd.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageSvd.kt)
+2. **Saved Posts** [PageSvd.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageSvd.kt) :
    lists the saved posts and lets the users unsave and/or download them.
    [Downloads.kt](android/kotlin/ir/mahdiparastesh/instatools/Downloads.kt)
    can download any Instagram content, including post, story, reels, TV and profile picture.
@@ -50,7 +46,7 @@ plus a few other miscellaneous things that will be mentioned later.
    [Downloader.kt](android/kotlin/ir/mahdiparastesh/instatools/job/Downloader.kt)
    is the service implemented mainly by Downloads (or it can run from anywhere).
    It queues the download items and downloads them one by one.
-3. **DM Export** ([PageBox.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageBox.kt)):
+3. **DM Export** ([PageBox.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageBox.kt)) :
    Fetches all messages in a DM conversation(thread) and optionally downloads the media inside
    those messages and exports them all into HTML, PDF or TXT file types.
    Its theme is the blue one called Theme.InstaTools.Tertiary.
@@ -69,17 +65,12 @@ it uses the pink theme of Downloads and has 3 fragments like Main.kt:
 3. [PageTag](android/kotlin/ir/mahdiparastesh/instatools/frag/PageTag.kt)
    shows their tagged posts.
 
-### [Favourites.kt](android/kotlin/ir/mahdiparastesh/instatools/Favourites.kt)
-
-This activity shows merely locally favourited Instagram profiles
-(data is only stored in the local database not by Instagram).
-These profiles sink in the *Unfollowers* page and are easily accessible.
-
 ### [Settings.kt](android/kotlin/ir/mahdiparastesh/instatools/Settings.kt)
 
 There are different shared preference files related to each account
 and there is also a global shared preference.
-This activity controls both global settings (gsp) and also settings of the current account (sp).
+This activity controls both global settings (`gsp`)
+and also settings of the current account (`sp)`.
 
 ### Subpackages
 
@@ -117,6 +108,9 @@ So I was disappointed. Similar things happened in Galaxy Store for perhaps tens 
 with those as-hole reviewers!
 
 I continued the app in the 2 Iranian app stores { Bazaar & Myket }.
+
+This application could track users' unfollowers in the past but this feature was removed
+because of Instagram's hypersensitivity!
 
 ## Command-Line Interface
 

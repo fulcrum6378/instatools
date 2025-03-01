@@ -21,7 +21,8 @@
         style="@style/tip"
         android:text="@string/favEmpty"
         android:textSize="@dimen/favEmpty"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:drawableTopCompat="@drawable/favourite_on" />
 
     <ImageView
         android:id="@+id/jumper"

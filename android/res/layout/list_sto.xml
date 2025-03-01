@@ -53,8 +53,8 @@
 
         <ImageView
             android:id="@+id/downloadAll"
-            android:layout_width="@dimen/unfAction"
-            android:layout_height="@dimen/unfAction"
+            android:layout_width="@dimen/favAction"
+            android:layout_height="@dimen/favAction"
             android:background="@drawable/button_round"
             android:padding="10dp"
             android:src="@drawable/download_all"

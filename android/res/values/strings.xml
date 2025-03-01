@@ -23,7 +23,6 @@
     <string name="viewHere">View Here</string>
     <string name="viewInInsta">View in Instagram</string>
     <string name="addToFav">Add to favourites</string>
-    <string name="removeFav">Remove from favourites</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="openDmInInsta">Open Chat in Instagram</string>
@@ -101,9 +100,8 @@
     <string name="toExit">Double tap to exit&#8230;</string>
 
     <!-- PageFav -->
-    <string name="favouritesTb">Favourites (offline)</string>
     <string name="favEmpty">
-        Open a profile in InstaTools and tap the \"heart\" icon at top right to add them into this list.
+        Open a profile in InstaTools and tap the heart icon at top right to add them into this list.
     </string>
 
     <!-- PageSvd -->

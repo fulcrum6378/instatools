@@ -24,7 +24,7 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
-    override val emptyIcon: Int = R.drawable.favourite
+    override val emptyIcon: Int = R.drawable.favourite_on
     override val expandable = null
     override val selectiveMenuRes: Int? = null
 
@@ -53,6 +53,5 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     }
 
     override suspend fun fetch(reset: Boolean) {
-        TODO("Not yet implemented")
     }
 }

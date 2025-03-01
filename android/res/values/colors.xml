@@ -37,7 +37,7 @@
     <color name="fastScrollLine">#11000000</color>
 
     <!-- Main -->
-    <color name="unfollowers">@color/CP</color>
+    <color name="favourites">@color/CP</color>
     <color name="saved">@color/CS</color>
     <color name="direct">@color/CT</color>
     <color name="dmFromMeLight">#08000000</color>

@@ -109,7 +109,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     @MainThread
     fun fixTbMenu() {
         b.toolbar.menu.findItem(R.id.vtFav)
-            ?.setIcon(if (mm.fav != null) R.drawable.favourite else R.drawable.non_favourite)
+            ?.setIcon(if (mm.fav != null) R.drawable.favourite_on else R.drawable.favourite_off)
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {

@@ -24,6 +24,7 @@
     <dimen name="bnv">66dp</dimen>
     <dimen name="mainPadH">26dp</dimen>
     <dimen name="padGallery">2dp</dimen>
+    <dimen name="favAction">@dimen/moreAction</dimen>
     <dimen name="svdSelectedPad">50dp</dimen>
     <dimen name="guestFont">16sp</dimen>
     <dimen name="emptyListFont">@dimen/guestFont</dimen>

@@ -205,7 +205,11 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
             m.fav = ArrayList(dao.favourites())
             m.fav?.sortBy { it.user }
         }
-        sp?.edit { remove("unf_last_checked") }
+        sp?.edit {
+            remove("unf_last_checked")
+            remove("notified_unf_till")
+            remove("unfollow_count")
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

@@ -23,7 +23,6 @@
     <string name="viewHere">باز کردن در اینجا</string>
     <string name="viewInInsta">باز کردن در اینستاگرام</string>
     <string name="addToFav">اضافه به مورد علاقه</string>
-    <string name="removeFav">حذف از مورد علاقه</string>
     <string name="start">شروع</string>
     <string name="stop">توقف</string>
     <string name="openDmInInsta">بازکردن چت در اینستا</string>
@@ -102,7 +101,6 @@
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
 
     <!-- PageFav -->
-    <string name="favouritesTb">مورد علاقه (آفلاین)</string>
     <string name="favEmpty">
         یک پروفایل را در اینستاتولز باز کنید
         و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.

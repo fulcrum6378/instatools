@@ -46,11 +46,11 @@
 
     <ImageView
         android:id="@+id/unFav"
-        android:layout_width="@dimen/unfAction"
-        android:layout_height="@dimen/unfAction"
+        android:layout_width="@dimen/favAction"
+        android:layout_height="@dimen/favAction"
         android:background="@drawable/button_round"
         android:padding="11dp"
-        android:src="@drawable/favourite"
+        android:src="@drawable/favourite_on"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -15,7 +15,7 @@
     <dimen name="bnv">90dp</dimen>
     <dimen name="mainPadH">32dp</dimen>
     <dimen name="padGallery">3dp</dimen>
-    <dimen name="unfAction">@dimen/moreAction</dimen>
+    <dimen name="favAction">@dimen/moreAction</dimen>
     <dimen name="svdSelectedPad">75dp</dimen>
     <dimen name="guestFont">24sp</dimen>
     <dimen name="dmCorner">30dp</dimen>

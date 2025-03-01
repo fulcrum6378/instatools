@@ -79,13 +79,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         // Hidden Preferences
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
-        const val spNotifiedUnfTill = "notified_unf_till" // def: 0L
         const val spExpOptions = "export_options"
 
         // Mere-Global Hidden Preferences
         const val spFirstOpenApp = "first_open_app" // def: null
         const val spOpenAppCount = "open_app_count" // def: 0L
-        const val spUnfollowCount = "unfollow_count" // def: 0L
         const val spDownloadCount = "download_count" // def: 0L
         const val spDlErrorCount = "download_error_count" // def: 0L
         const val spUnsaveCount = "unsave_count" // def: 0L
