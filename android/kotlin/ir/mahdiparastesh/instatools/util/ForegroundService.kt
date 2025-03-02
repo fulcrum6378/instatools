@@ -33,13 +33,12 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     override val viewModelStore = ViewModelStore()
 
-    abstract val klass: Class<*>
     abstract val com: ForegroundServiceCompanion
     abstract val ntfChannel: Notify.Channel
     abstract val ntfId: Int
     abstract var ntfTitle: String
-    protected open var ntfText: String? = null
-    protected open var ntfSmallText: String? = null
+    abstract var ntfText: String?
+    abstract var ntfSmallText: String?
     open val ntfSmallIcon: Int = R.drawable.notification
 
     companion object {
@@ -139,7 +138,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         }.build()
 
     fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
-        c, 0, Intent(c, klass).apply { action = code }, ntfMutability()
+        c, 0, Intent(c, this::class.java).apply { action = code }, ntfMutability()
     )
 
     protected fun eventNotification(id: Int, func: NotificationCompat.Builder.() -> Unit) {

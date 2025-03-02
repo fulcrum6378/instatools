@@ -409,7 +409,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
+  * A new proper logo
   * number of posts on PageVwr
+  * Choose download qualities in the Toolbar of Downloads
+  * Custom icons for the Services
   * Percentage of downloads
   * Undo for Unsave
   *

@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.text.TextUtils
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.View
@@ -29,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import java.util.*
-import java.util.regex.Pattern
 
 object UiTools {
     const val PROFILE = "https://www.instagram.com/%s/"
@@ -191,7 +189,7 @@ object UiTools {
         }, code
     )
 
-    fun urlEncode(uriString: String?): String? {
+    /*fun urlEncode(uriString: String?): String? {
         if (uriString == null) return null
         if (TextUtils.isEmpty(uriString)) return uriString
         val allowedUrlCharacters = Pattern.compile(
@@ -209,5 +207,5 @@ object UiTools {
         for (key in uri.queryParameterNames)
             uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
         return uriBuilder.build().toString()
-    }
+    }*/
 }

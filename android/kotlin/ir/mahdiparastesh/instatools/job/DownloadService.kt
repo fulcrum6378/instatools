@@ -36,11 +36,12 @@ class DownloadService : ForegroundService(), Downloader {
         Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
     }
 
-    override val klass = DownloadService::class.java
     override val com: ForegroundServiceCompanion get() = Companion
     override val ntfChannel = Notify.Channel.DOWNLOADER
     override val ntfId = Notify.ID_DOWNLOADER
     override lateinit var ntfTitle: String
+    override var ntfText: String? = null
+    override var ntfSmallText: String? = null
     override val queue: Queue<Download> get() = m.downloads
     override var handledItems: Int = 0
     override var proceed: Boolean = true

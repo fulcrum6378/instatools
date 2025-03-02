@@ -121,7 +121,7 @@
     <string name="dtImportLinks">Import links</string>
     <string name="dEmptyQueue">The download list is empty!</string>
     <string name="dGuestSure">
-        You\'re in the guest mode and Instagram may not allow downloads without authentication!
+        You haven\'t logged in yer and Instagram may not allow downloads!
         Are you sure you want to continue?
     </string>
 

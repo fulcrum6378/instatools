@@ -20,11 +20,12 @@ class CommandService : ForegroundService(), Queuer<Command> {
         Pickle(c.filesDir, m.acc!!.id, Pickle.Type.COMMAND_LIST, null)
     }
 
-    override val klass: Class<*> = CommandService::class.java
     override val com: ForegroundServiceCompanion get() = Companion
     override val ntfChannel: Notify.Channel = Notify.Channel.COMMANDER
     override val ntfId: Int = Notify.ID_COMMANDER
     override lateinit var ntfTitle: String
+    override var ntfText: String? = null
+    override var ntfSmallText: String? = null
     override val queue: Queue<Command> get() = m.commands
     override var handledItems: Int = 0
     override var proceed: Boolean = true

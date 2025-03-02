@@ -23,11 +23,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.job.DownloadService
+import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
@@ -80,7 +82,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun screenHeight(): Int = dm.heightPixels
 
     companion object : ActivityCompanion() {
-        const val HANDLE_INSERTED = 0
         const val HANDLE_CHANGED = 1
         const val HANDLE_DELETED = 2
         val exportQueueMime =
@@ -110,13 +111,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_INSERTED -> {
-                        // TODO use while handling links (change on multiple additions)
-                        val pos = m.downloads.size
-                        b.rv.adapter?.notifyItemInserted(pos - 1)
-                        if (pos > 0) b.rv.adapter?.notifyItemChanged(pos - 2)
-                        onListResized()
-                    }
                     HANDLE_CHANGED -> m.downloads.indexOf(msg.obj as Download).also {
                         if (it == -1) return@also
                         b.rv.adapter?.notifyItemChanged(it)
@@ -135,8 +129,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         // paste link
         b.linkButton.setOnClickListener {
             if (b.pasteLink.text.toString() == "") return@setOnClickListener
-            // TODO handle link `b.pasteLink.text.toString()`
-            initService(this)
+            handleLink(b.pasteLink.text.toString())
             b.pasteLink.setText("")
         }
         if (!night()) color(R.color.CS).apply {
@@ -162,14 +155,14 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             }
             handledLinks.add(it)
             if (m.acc != null) {
-                // TODO handle link `it`
+                handleLink(it)
                 initService(this)
             } else MaterialAlertDialogBuilder(this).apply {
                 setTitle(R.string.downloads)
                 setMessage(R.string.dGuestSure)
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
-                    // TODO handle link `it`
+                    handleLink(it)
                     initService(this@Downloads)
                 }
             }.show()
@@ -292,6 +285,29 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
         }
         return super.onMenuItemClick(item)
+    }
+
+    private fun handleLink(link: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val addition: Int
+                m.downloads.addAll(
+                    SimpleJobs.handlePostLink(link).queue().also { addition = it.size })
+                withContext(Dispatchers.Main) {
+                    val first = m.downloads.size - addition
+                    b.rv.adapter?.notifyItemRangeInserted(first, addition)
+                    if (first > 0) b.rv.adapter?.notifyItemChanged(first - 1)
+                    onListResized()
+                }
+                initService(this@Downloads)
+            } catch (e: Api.FailureException) {
+                withContext(Dispatchers.Main) {
+                    UiTools.snackbar(
+                        b.root, UiTools.apiError(c, e.code), dur = Snackbar.LENGTH_LONG
+                    )
+                }
+            }
+        }
     }
 
     private val exportLinks = launcherForResult {
