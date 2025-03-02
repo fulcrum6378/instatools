@@ -1,13 +1,13 @@
 package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
+import ir.mahdiparastesh.instatools.Context.exportTask
 import ir.mahdiparastesh.instatools.Context.latestUser
 import ir.mahdiparastesh.instatools.Context.listMsg
 import ir.mahdiparastesh.instatools.Context.listSvd
 import ir.mahdiparastesh.instatools.Context.profiles
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
-import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.job.SimpleTasks
 import ir.mahdiparastesh.instatools.util.Option
@@ -16,7 +16,6 @@ import ir.mahdiparastesh.instatools.util.Utils
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.*
 
 fun main(args: Array<String>) {
     val interactive = args.isEmpty()
@@ -287,7 +286,7 @@ $qualitiesGuide
 m, messages                    List your direct message threads.
   m reset                      Forget the previously loaded threads and load them again.
   m <NUMBER(s)> {OPTIONS}      Export the thread in that position.
-    -t, --type=<HTML,TXT>                File type of the output export
+    -t, --type=<JSON,TEXT,HTML>          File type of the output export
     --all-media=<no|QUALITY>             Default settings for all media (e.g. `--all-media=low`)
     --images=<no|QUALITY>                Default settings for all images (e.g. `--images=low`)
     --videos=<no|thumb|QUALITY>          Default settings for all videos (e.g. `--videos=thumb`)
@@ -307,35 +306,8 @@ $qualitiesGuide
 
                 else -> {
                     if (a.size == 2) throw InvalidCommandException("Please specify options for the export.")
-                    val opt = Option.parse(a.slice(2..<a.size)) { expOptionSelector(it) }
                     listMsg[a[1]].forEach { thread ->
-                        /*val allMedia = opt[Option.EXP_ALL_MEDIA.key]
-                        val exp = Exportable(
-                            "Exported ${thread.title()}_${Utils.fileDateTime(Utils.now())}",
-                            thread,
-                            when (opt[Option.EXP_TYPE.key]) {
-                                "HTML", "html", "htm", "web" -> Method.HTML
-                                "TXT", "txt", "TEXT", "text" -> Method.TEXT
-                                else -> throw InvalidCommandException(
-                                    "Unsupported export method: ${opt[Option.EXP_TYPE.key]}"
-                                )
-                            },
-                            expSetting(allMedia ?: opt[Option.EXP_IMAGES.key]),
-                            expSetting(allMedia ?: opt[Option.EXP_VIDEOS.key]),
-                            expSetting(allMedia ?: opt[Option.EXP_POSTS.key]),
-                            expSetting(allMedia ?: opt[Option.EXP_REELS.key]),
-                            expSetting(allMedia ?: opt[Option.EXP_STORY.key]),
-                            expSetting(allMedia ?: opt[Option.EXP_UPLOADED_IMAGES.key]),
-                            expSetting(allMedia ?: opt[Option.EXP_UPLOADED_VIDEOS.key]),
-                            when (opt[Option.EXP_VOICE.key]) {
-                                "yes", "y", "1" -> true
-                                "no", "n", "none" -> false
-                                else -> throw InvalidCommandException("Please set `yes` or `no` for voice.")
-                            },
-                            dateTime(opt[Option.EXP_MIN_DATE.key]),
-                            dateTime(opt[Option.EXP_MAX_DATE.key]),
-                        )
-                        exportTask.queue.add(exp)*/
+                        exportTask.export(thread, a.slice(2..<a.size))
                     }
                 }
             }
@@ -352,51 +324,6 @@ $qualitiesGuide
     }
 
     println("Good luck!")
-}
-
-private fun expOptionSelector(key: String) = when (key) {
-    "-u", "u", "--unsave", "-unsave", "unsave" -> Option.UNSAVE
-    "-q", "q", "--quality", "-quality", "quality" -> Option.QUALITY
-    "-t", "t", "--type", "-type", "type" -> Option.EXP_TYPE
-    "--all-media", "-all-media", "all-media" -> Option.EXP_ALL_MEDIA
-    "--images", "-images", "images", "--image", "-image", "image" -> Option.EXP_IMAGES
-    "--videos", "-videos", "videos", "--video", "-video", "video" -> Option.EXP_VIDEOS
-    "--posts", "-posts", "posts", "--post", "-post", "post" -> Option.EXP_POSTS
-    "--reels", "-reels", "reels", "--reel", "-reel", "reel" -> Option.EXP_REELS
-    "--story", "-story", "story", "--stories", "-stories", "stories" -> Option.EXP_STORY
-    "--uploaded-images", "-uploaded-images", "uploaded-images" -> Option.EXP_UPLOADED_IMAGES
-    "--uploaded-videos", "-uploaded-videos", "uploaded-videos" -> Option.EXP_UPLOADED_VIDEOS
-    "--voice", "-voice", "voice" -> Option.EXP_VOICE
-    "--min-date", "-min-date", "min-date" -> Option.EXP_MIN_DATE
-    "--max-date", "-max-date", "max-date" -> Option.EXP_MAX_DATE
-    else -> null
-}
-
-private fun expSetting(value: String?): Int? {
-    if (value in arrayOf("no", "n", "none")) return null
-    if (value in arrayOf("thumb", "thumbnail")) return Media.Version.THUMB
-    return Option.quality(value)
-}
-
-private fun dateTime(value: String?): Long? {
-    if (value == null) return null
-    val cal = GregorianCalendar(1970, 1, 1, 0, 0, 0)
-    cal[Calendar.MILLISECOND] = 0
-    val spl = value.split("-")
-    for (i in 0..5) cal[when (i) {
-        0 -> Calendar.YEAR
-        1 -> Calendar.MONTH
-        2 -> Calendar.DAY_OF_MONTH
-        3 -> Calendar.HOUR_OF_DAY
-        4 -> Calendar.MINUTE
-        5 -> Calendar.SECOND
-        else -> throw InvalidCommandException("Date/time arguments exceeded!")
-    }] = try {
-        spl[i].toInt() + (if (i == 1) 1 else 0)
-    } catch (_: NumberFormatException) {
-        throw InvalidCommandException("Something in date-time is Not-A-Number!")
-    }
-    return cal.timeInMillis
 }
 
 fun profileCommand(a: Array<String>, guide: String, lister: (Profile) -> Profile.Section) {

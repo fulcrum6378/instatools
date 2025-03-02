@@ -7,22 +7,7 @@ enum class Option(val key: String, val value: Any? = null) {
     QUALITY("q"),
     UNSAVE("us"),
     LIKE("l"),
-    UNLIKE("ul"),
-
-    // exporting
-    EXP_TYPE("t"),
-    EXP_ALL_MEDIA("all-media"),
-    EXP_IMAGES("images"),
-    EXP_VIDEOS("videos"),
-    EXP_POSTS("posts"),
-    EXP_REELS("reels"),
-    EXP_STORY("story"),
-    EXP_UPLOADED_IMAGES("uploaded-images"),
-    EXP_UPLOADED_VIDEOS("uploaded-videos"),
-    EXP_VOICE("voice"),
-    EXP_MIN_DATE("min-date"),
-    EXP_MAX_DATE("max-date");
-
+    UNLIKE("ul");
 
     companion object {
         fun parse(

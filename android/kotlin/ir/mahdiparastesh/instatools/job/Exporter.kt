@@ -317,14 +317,4 @@ class Exporter : ForegroundService() {
             R.string.exportTxtDesc
         ),
     }
-
-    inner class Attachment(
-        val url: String, val type: Int, folder: File, dmId: String, quality: Int
-    ) {
-        val ext: String by lazy { URI(url).path.split(".").last() }
-
-        val cache = File(folder, "${dmId}_$quality.$ext")
-
-        fun fileName(dmId: String) = "${dmId}.$ext"
-    }
 }

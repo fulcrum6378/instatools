@@ -1,15 +1,21 @@
 package ir.mahdiparastesh.instatools.job
 
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Rest
-import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.exp.HtmlExporter
+import ir.mahdiparastesh.instatools.InvalidCommandException
+import ir.mahdiparastesh.instatools.api.Dm
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Export
+import ir.mahdiparastesh.instatools.data.Export.Filters
+import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Queue
+import ir.mahdiparastesh.instatools.util.Utils
 import java.io.File
+import java.util.Calendar
+import java.util.GregorianCalendar
 
-class ExportTask : Queuer<Exportable> {
+class ExportTask : Exporter {
     val outputDir = File("./Messages/")
-    override val queue: Queue<Exportable> = Queue()
+    override val cacheRoot: File = File(".\\AppData\\Roaming\\InstaTools")
+    override val queue: Queue<Export> = Queue()
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
@@ -17,105 +23,88 @@ class ExportTask : Queuer<Exportable> {
         const val USER_PROFILE_IMG = "user_%s"
     }
 
-    override fun shouldHandle(q: Exportable): Boolean = true
+    fun export(thread: Dm.DmThread, cmdOptions: List<String>) {
 
-    override fun handle(q: Exportable, remaining: Int): Boolean {
-        // fetch all messages
-        while (q.thread.has_older) Api.json<Rest.InboxThread>(
-            Api.Endpoint.DIRECT.url.format(q.thread.thread_id, q.thread.items.first().item_id, "20")
-        ).thread?.also { newThread ->
-            q.thread.has_older = newThread.has_older
-            q.thread.items.apply {
-                // TODO remove duplicates?
-                addAll(newThread.items)
-                sortBy { it.timestamp }
+        // parse options
+        var method = Export.METHOD_TEXT
+        val filters = Filters()
+        var allMedia: Int? = null
+        for (kv in cmdOptions) {
+            val kvSplit = if ("=" in kv) kv.split("=") else null
+            val k = kvSplit?.get(0) ?: kv
+            val v = kvSplit?.getOrNull(1)
+
+            when (k) {
+                "-t", "t", "--type", "-type", "type" -> when (v) {
+                    "JSON", "json" -> Export.METHOD_JSON
+                    "TXT", "txt", "TEXT", "text" -> Export.METHOD_TEXT
+                    "HTML", "html", "htm", "web" -> Export.METHOD_HTML
+                    else -> throw InvalidCommandException("Unsupported export method: $v")
+                }
+                "--all-media", "-all-media", "all-media" ->
+                    allMedia = expSetting(v)
+                "--images", "-images", "images", "--image", "-image", "image" ->
+                    filters.image = expSetting(v)
+                "--videos", "-videos", "videos", "--video", "-video", "video" ->
+                    filters.video = expSetting(v)
+                "--posts", "-posts", "posts", "--post", "-post", "post" ->
+                    filters.post = expSetting(v)!!
+                "--reels", "-reels", "reels", "--reel", "-reel", "reel" ->
+                    filters.reel = expSetting(v)!!
+                "--story", "-story", "story", "--stories", "-stories", "stories" ->
+                    filters.story = expSetting(v)!!
+                "--uploaded-images", "-uploaded-images", "uploaded-images" ->
+                    filters.uploadedImage = expSetting(v)!!
+                "--uploaded-videos", "-uploaded-videos", "uploaded-videos" ->
+                    filters.video = expSetting(v)
+                "--voice", "-voice", "voice" -> filters.voice = when (v) {
+                    "yes", "y", "1" -> true
+                    "no", "n", "none" -> false
+                    else -> throw InvalidCommandException("Please set `yes` or `no` for voice.")
+                }
+                "--min-date", "-min-date", "min-date" ->
+                    filters.minDate = dateTime(v)
+                "--max-date", "-max-date", "max-date" ->
+                    filters.maxDate = dateTime(v)
+                else -> throw InvalidCommandException("Unknown option \"$k\"!")
             }
         }
 
-        // prepare the path
-        val branch = File(outputDir, q.name)
-        branch.mkdir()
-
-        // write messages
-        when (q.method) {
-            Method.HTML -> HtmlExporter(q)
-            Method.TEXT -> {}//TextExporter(q)
-            Method.JSON -> {}//JsonExporter(q)
-        }
-
-        // download the media
-        /*media = hashMapOf()
-        if (opt?.img() == false && opt?.vid() == false && opt?.voi() == false) {
-            fetchMedium(); return; }
-
-        q.thread.thread_id.also {
-            cacheDir = File(Cache(c), it)
-            if (!cacheDir!!.exists()) cacheDir!!.mkdir()
-        }
-        val img = opt?.img() == true
-        val vid = opt?.vid() == true
-        val actVid = opt?.actVid() == true
-        if (img) for (user in q.thread.users) {
-            val key = USER_PROFILE_IMG.format(user.pk)
-            media[key] = Downloadable(user.profile_pic_url, 0, cacheDir!!, key, 0)
-        }
-        for (dm in q.thread.items) {
-            if (actVid && dm.animated_media != null) continue
-            // HTML gets GIFs dynamically, PDF cannot show them properly, and TXT...
-            if (dm.voice_media != null) {
-                if (opt?.voice == 0 && dm.voice_media.media != null)
-                    media[dm.item_id] = Downloadable(
-                        dm.voice_media.media.audio.audio_src, 2, cacheDir!!, dm.item_id, -2
-                    )
-                continue; }
-            if (opt?.img() == true || opt?.vid() == true) (when {
-                vid && dm.clip != null -> dm.clip.clip
-                dm.direct_media_share != null -> when (dm.direct_media_share.media.media_type) {
-                    1f, 2f -> if (img || vid) dm.direct_media_share.media else null
-                    8f -> dm.direct_media_share.media.carousel_media
-                        ?.let { if (img || vid) it[0] else null }
-
-                    else -> null
-                }
-                vid && dm.felix_share != null -> dm.felix_share.video
-                dm.media != null -> if (img || vid) dm.media else null
-                dm.media_share != null -> when (dm.media_share.media_type) {
-                    1f, 2f -> if (img || vid) dm.media_share else null
-                    8f -> dm.media_share.carousel_media?.let { if (img || vid) it[0] else null }
-                    else -> null
-                }
-                img && dm.raven_media != null -> dm.raven_media
-                dm.reel_share != null -> if (img || vid) dm.reel_share.media else null
-                dm.story_share != null -> if (img || vid) dm.story_share.media else null
-                else -> null
-            })?.apply {
-                if (carousel_media == null && image_versions2 == null) return@apply
-                val theVer = carousel_media?.getOrNull(0) ?: this
-                val quality = when {
-                    theVer.video_versions != null && opt!!.video == 3 ->
-                        if (img) -opt!!.image.toFloat() else Media.Version.MEDIUM
-                    theVer.video_versions != null -> -opt!!.video.toFloat()
-                    else -> -opt!!.image.toFloat()
-                }
-                val url = theVer.nearest(quality, justImage = opt?.actVid() != true) ?: return@apply
-                media[dm.item_id] = Downloadable(
-                    url, if (opt?.actVid() == true && video_versions != null) 1 else 0,
-                    cacheDir!!, dm.item_id, quality.toInt()
-                )
-            }
-        }*/
-        return true
+        // enqueue the item and start the task
+        queue.add(Export(thread, method, Utils.now(), filters))
+        start()
     }
 
-    override fun onHandled(q: Exportable, success: Boolean) {
+    private fun expSetting(value: String?): Int? {
+        if (value in arrayOf("no", "n", "none")) return null
+        if (value in arrayOf("thumb", "thumbnail")) return Media.Version.THUMB
+        return Option.quality(value)
+    }
+
+    private fun dateTime(value: String?): Long? {
+        if (value == null) return null
+        val cal = GregorianCalendar(1970, 1, 1, 0, 0, 0)
+        cal[Calendar.MILLISECOND] = 0
+        val spl = value.split("-")
+        for (i in 0..5) cal[when (i) {
+            0 -> Calendar.YEAR
+            1 -> Calendar.MONTH
+            2 -> Calendar.DAY_OF_MONTH
+            3 -> Calendar.HOUR_OF_DAY
+            4 -> Calendar.MINUTE
+            5 -> Calendar.SECOND
+            else -> throw InvalidCommandException("Date/time arguments exceeded!")
+        }] = try {
+            spl[i].toInt() + (if (i == 1) 1 else 0)
+        } catch (_: NumberFormatException) {
+            throw InvalidCommandException("Something in date-time is Not-A-Number!")
+        }
+        return cal.timeInMillis
+    }
+
+    override fun onHandled(q: Export, success: Boolean) {
     }
 
     override fun onFinished(fatalError: Exception?) {
-    }
-
-    enum class Method(val ext: String) {
-        HTML("html"),
-        TEXT("txt"),
-        JSON("json"),
     }
 }
