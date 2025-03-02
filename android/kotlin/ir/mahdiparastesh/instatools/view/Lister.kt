@@ -141,6 +141,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     override fun prepareListing(c: BaseActivity) {
         super.prepareListing(c)
+        refresher?.setOnRefreshListener(this)
         refresher?.setOnClickListener { onRefresh() }
         refresher?.setOnChildScrollUpCallback { _, _ -> !canRefresh() }
     }

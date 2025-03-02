@@ -31,6 +31,7 @@ import kotlinx.coroutines.withContext
 
 class PageTag : BasePageViewer() {
     private lateinit var b: PageTagBinding
+
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty

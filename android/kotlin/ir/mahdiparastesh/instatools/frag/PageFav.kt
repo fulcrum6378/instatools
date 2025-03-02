@@ -33,7 +33,6 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     override fun isModelLoaded(): Boolean = c.m.fav != null
     override fun isModelEmpty(): Boolean = c.m.fav?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListFav(c, this)
-    override fun canLoadMore(): Boolean = false
     override fun screenHeight(): Int = c.dm.heightPixels
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -50,8 +49,5 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
             c.m.fav?.sortBy { it.user }
             withContext(Dispatchers.Main) { onLoaded() }
         }
-    }
-
-    override suspend fun fetch(reset: Boolean) {
     }
 }

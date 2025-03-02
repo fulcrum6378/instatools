@@ -11,8 +11,8 @@
         android:icon="@drawable/saved"
         android:title="@string/saved" />
 
-    <item
+    <!--<item
         android:id="@+id/to_direct"
         android:icon="@drawable/settings"
-        android:title="@string/settings" />
+        android:title="@string/settings" />-->
 </menu>

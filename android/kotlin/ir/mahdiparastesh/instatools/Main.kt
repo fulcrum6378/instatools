@@ -38,7 +38,7 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.view.TriplePageActivity
+import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Main : TriplePageActivity<PageFav, PageSvd, PageFav>(),
+class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     val mm: MyModel by viewModels()
@@ -59,7 +59,7 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageFav>(),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved, R.id.to_direct)
+    private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved) // R.id.to_direct
     private val popupThemes = arrayOf(
         R.style.Theme_InstaTools_Popup_Primary,
         R.style.Theme_InstaTools_Popup_Secondary,
@@ -76,9 +76,6 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageFav>(),
     override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = mm.currentPage
-    override val aKlass = PageFav::class
-    override val bKlass = PageSvd::class
-    override val cKlass = PageFav::class
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
         ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
         ?: Settings.defSpMainPage
@@ -121,8 +118,8 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageFav>(),
             b.nav.setBackgroundColor(it)
             b.searchRes.setBackgroundColor(it)
             b.bnv.setBackgroundColor(it)
-            if (page2?.isBInitialised() == true)
-                page2?.b?.expanded?.root?.setBackgroundColor(it)
+            if (pages[1]?.isBInitialised() == true)
+                (pages[1] as? PageSvd)?.b?.expanded?.root?.setBackgroundColor(it)
         } else colorAc.observe(this) {
             if (it == null) return@observe
             styliseToolbar()
@@ -195,13 +192,6 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageFav>(),
         CoroutineScope(Dispatchers.IO).launch {
             m.fav = ArrayList(dao.favourites())
             m.fav?.sortBy { it.user }
-        }
-        sp?.edit {
-            remove("unf_last_checked")
-            remove("notified_unf_till")
-            remove("unfollow_count")
-            remove("export_count")
-            remove("learnt_dm_not_seen")
         }
     }
 

@@ -21,7 +21,7 @@ import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.job.DownloadService
 import ir.mahdiparastesh.instatools.view.Notify
-import ir.mahdiparastesh.instatools.view.TriplePageActivity
+import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import kotlin.reflect.KClass
 
 /**
@@ -131,7 +131,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
                 PendingIntent.getActivity(
                     c, 0, Intent(c, ntfAct!!.java).apply {
                         if (ntfPage != null)
-                            putExtra(TriplePageActivity.Companion.EXTRA_TURN_TO_PAGE, ntfPage)
+                            putExtra(MultiPagedActivity.Companion.EXTRA_TURN_TO_PAGE, ntfPage)
                     }, ntfMutability()
                 )
             )

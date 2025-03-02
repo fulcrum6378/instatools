@@ -35,6 +35,7 @@ import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -42,10 +43,11 @@ import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
+class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Selective {
     lateinit var b: PageSvdBinding
     private val pickle: Pickle by lazy {
         Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.SAVED, null)
@@ -57,6 +59,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
 
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
+    override var job: Job? = null
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
     override val emptyIcon: Int = R.drawable.done_svd
@@ -123,7 +126,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), Selective {
     }
 
     override fun onLoaded() {
-        super.onLoaded()
+        super<OnlineLister>.onLoaded()
         if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
 
         // teach the user how to select items

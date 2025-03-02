@@ -34,14 +34,16 @@ import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePageViewer
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.TriplePageActivity
+import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuItemClickListener {
+class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class),
+    Toolbar.OnMenuItemClickListener {
+
     lateinit var b: ViewerBinding
     val mm: MyModel by viewModels()
     val downloadsPickle: Pickle by lazy {
@@ -50,15 +52,12 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     val expandable: Expandable by lazy {
         Expandable(
             this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)
-        ) { (pages()[currentPage.value!!] as BasePageViewer).updateShadow() }
+        ) { (pages[currentPage.value!!] as BasePageViewer).updateShadow() }
     }
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = mm.currentPage
-    override val aKlass = PageSto::class
-    override val bKlass = PageVwr::class
-    override val cKlass = PageTag::class
     override fun defPage(): Int = 1
 
     class MyModel : ViewModel() {
@@ -204,8 +203,8 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
 
             withContext(Dispatchers.Main) {
                 if (userReplaced)
-                    pages().forEach { (it as BasePageViewer?)?.clear() }
-                page2?.showProfile(reset)
+                    pages.forEach { (it as BasePageViewer?)?.clear() }
+                (pages[1] as? PageVwr)?.showProfile(reset)
                 b.toolbar.title = mm.user?.username
                 fixTbMenu()
             }
@@ -215,7 +214,7 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
     private suspend fun onError(code: Int) {
         withContext(Dispatchers.Main) {
             if (mm.user != null) {
-                page2?.b?.refresher?.isRefreshing = false // in case of a refresh
+                (pages[1] as? PageVwr)?.b?.refresher?.isRefreshing = false // in case of a refresh
                 UiTools.snackbar(b.root, UiTools.apiError(c, code))
             } else {
                 Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
@@ -244,7 +243,8 @@ class Viewer : TriplePageActivity<PageSto, PageVwr, PageTag>(), Toolbar.OnMenuIt
                 }
             }
             R.id.vtShortcut -> mm.user?.also { u ->
-                val bmp = (page2?.b?.proPicIv?.drawable as BitmapDrawable?)?.bitmap ?: return@also
+                val bmp = ((pages[1] as? PageVwr)?.b?.proPicIv?.drawable as BitmapDrawable?)
+                    ?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, u.username!!).apply {
                         setIntent(

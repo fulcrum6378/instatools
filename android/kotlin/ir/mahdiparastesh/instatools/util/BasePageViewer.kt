@@ -13,16 +13,19 @@ import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
+import kotlinx.coroutines.Job
 
 /** Subclass of [BasePage], from which all pages of [Viewer] extend. */
-abstract class BasePageViewer : BasePage<Viewer>(), Selective {
+abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister, Selective {
 
     override val tbShadow: View? by lazy { c.b.tbShadow }
     override val expandable: Expandable? get() = c.expandable
+    override var job: Job? = null
     override var tracker: SelectionTracker<String>? = null
     override var selectivity = false
     override val selectiveMenuRes = R.menu.viewer_tlb_select

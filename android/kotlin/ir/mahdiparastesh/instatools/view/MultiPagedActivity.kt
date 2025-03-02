@@ -13,34 +13,18 @@ import ir.mahdiparastesh.instatools.util.Delay
 import kotlin.reflect.KClass
 
 /**
- * An abstract subclass of [BaseActivity] which takes three generic types and each one of them is a
- * subclass of [BasePage]; therefore they'll make a three-paged activity.
- * This class contains every utility required for a three-paged activity.
+ * An abstract subclass of [BaseActivity] which takes multiple classes and each one of them is a
+ * subclass of [BasePage]; therefore they'll make a multi-paged activity.
+ * This class contains every utility required for a multi-paged activity.
  * In order to implement it, createPages() must be called for rendering the pages.
  */
-abstract class TriplePageActivity<A, B, C> : BaseActivity()
-    where A : BasePage<*>, B : BasePage<*>, C : BasePage<*> {
+abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
 
-    /** Variable that holds the first page (fragment). */
-    protected var page1: A? = null
-
-    /** Variable that holds the second page (fragment). */
-    protected var page2: B? = null
-
-    /** Variable that holds the third page (fragment). */
-    protected var page3: C? = null
+    private val classes = arrayOf(*classes)
+    val pages: Array<BasePage<*>?> = arrayOfNulls(classes.size)
 
     /** A LiveData whose value indicates the current page and must never be null. */
     abstract val currentPage: MutableLiveData<Int>
-
-    /** Kotlin class name of the first page. */
-    abstract val aKlass: KClass<A>
-
-    /** Kotlin class name of the second page. */
-    abstract val bKlass: KClass<B>
-
-    /** Kotlin class name of the third page. */
-    abstract val cKlass: KClass<C>
 
     /** Algorithm to select a page as default. */
     abstract fun defPage(): Int
@@ -48,7 +32,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
     /** Indicates the index of the last fragment before switching to a new one. */
     protected var lastPage: Int = 0
 
-    /** @see TriplePageActivity.selective */
+    /** @see MultiPagedActivity.selective */
     private var isSelective = false
 
     /** Holds the BadgeDrawable which enumerates the selected items in RecyclerView. */
@@ -66,13 +50,11 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
 
     /**
      * This method must be called for rendering the pages, normally inside onCreate().
-     *
      * @param toDefaultPage true if it's going to switch to the default page.
      */
     open fun createPages(toDefaultPage: Boolean = true) {
         if (toDefaultPage) currentPage.value = defPage()
         createCurrentPage()
-        val pages = pages()
         for (i in pages.indices) if (pages[i] != null) transFrag().apply {
             if (pages[i]!!.isAdded) remove(pages[i]!!)
             add(R.id.frame, pages[i]!!)
@@ -87,8 +69,8 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         Delay(100) {
             currentPage.observe(this) {
                 try {
-                    pages()[it]?.updateShadow()
-                    pages()[it]?.updateJumper()
+                    pages[it]?.updateShadow()
+                    pages[it]?.updateJumper()
                 } catch (_: NullPointerException) {
                     // getC() might cause it!
                 }
@@ -102,20 +84,13 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
      */
     private fun createCurrentPage(): Boolean {
         var created = false
-        when (currentPage.value!!) {
-            0 -> if (page1 == null) {
-                page1 = aKlass.java.getDeclaredConstructor().newInstance()
-                created = true
-            }
-            1 -> if (page2 == null) {
-                page2 = bKlass.java.getDeclaredConstructor().newInstance()
-                created = true
-            }
-            2 -> if (page3 == null) {
-                page3 = cKlass.java.getDeclaredConstructor().newInstance()
-                created = true
-            }
+        if (pages[currentPage.value!!] == null) {
+            pages[currentPage.value!!] =
+                classes[currentPage.value!!].java.getDeclaredConstructor().newInstance()
+                    as BasePage<*>?
+            created = true
         }
+
         return created
     }
 
@@ -136,9 +111,6 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
             )
         }
 
-    /** @return an array of variables pointing to each page. */
-    protected fun pages(): Array<BasePage<*>?> = arrayOf(page1, page2, page3)
-
     /**
      * Switches to a fragment by index.
      * @return if switching was successful.
@@ -149,8 +121,8 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         currentPage.value = i
         val createdCur = createCurrentPage()
         transFrag(lastPage, currentPage.value!!).apply {
-            pages().getOrNull(lastPage)?.also { detach(it) }
-            pages().getOrNull(currentPage.value!!)?.also {
+            pages[lastPage]?.also { detach(it) }
+            pages[currentPage.value!!]?.also {
                 if (createdCur) add(R.id.frame, it) else attach(it)
             }
             commit()
@@ -169,7 +141,7 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
         if (isSelective == bb) return false
         isSelective = bb
         toolbar.menu.clear()
-        val page = pages()[currentPage.value!!]!!
+        val page = pages[currentPage.value!!]!!
         toolbar.inflateMenu(if (bb) page.selectiveMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(if (isSelective) page else this)
         if (this is Main) styliseToolbar()
@@ -181,13 +153,11 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
      * Invokes the current fragment to process the onBackPressed action for its own.
      * @return false, if the fragment didn't have anything to do with onBackPressed.
      */
-    protected fun pageGoBack() = pages()[currentPage.value!!]?.goBack() == true
+    protected fun pageGoBack() = pages[currentPage.value!!]?.goBack() == true
 
     override fun onDestroy() {
         // don't call transFrag().remove() here: Can not perform this action after onSaveInstanceState!
-        page1 = null
-        page2 = null
-        page3 = null
+        for (p in pages.indices) pages[p] = null
         super.onDestroy()
     }
 
@@ -196,14 +166,11 @@ abstract class TriplePageActivity<A, B, C> : BaseActivity()
      * Used mostly on a configuration change.
      */
     private inner class PageFactory : FragmentFactory() {
-        override fun instantiate(loader: ClassLoader, name: String): Fragment = when (name) {
-            aKlass.java.name ->
-                aKlass.java.getDeclaredConstructor().newInstance().also { page1 = it }
-            bKlass.java.name ->
-                bKlass.java.getDeclaredConstructor().newInstance().also { page2 = it }
-            cKlass.java.name ->
-                cKlass.java.getDeclaredConstructor().newInstance().also { page3 = it }
-            else -> super.instantiate(loader, name)
+        override fun instantiate(loader: ClassLoader, name: String): Fragment {
+            val index = classes.indexOfFirst { it.java.name == name }
+            val frag = return classes[index].java.getDeclaredConstructor().newInstance() as Fragment
+            pages[index] = frag as BasePage<*>?
+            return frag
         }
     }
 }

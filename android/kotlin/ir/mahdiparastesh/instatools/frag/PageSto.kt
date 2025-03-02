@@ -21,6 +21,7 @@ import kotlinx.coroutines.withContext
 
 class PageSto : BasePageViewer() {
     lateinit var b: PageStoBinding
+
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty
