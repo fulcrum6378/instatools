@@ -26,8 +26,6 @@ class User(
 
     fun id(): String = id ?: pk!!
 
-    fun visName() = full_name?.ifBlank { username } ?: username
-
     fun originalPicture(): String = hd_profile_pic_url_info?.url
         ?: hd_profile_pic_versions?.let { list -> Media.Version.best(list) }
         ?: profile_pic_url_hd

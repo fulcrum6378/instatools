@@ -24,7 +24,6 @@
         <item name="colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
-        <item name="dmFromMe">@color/dmFromMe</item>
         <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
     </style>
 

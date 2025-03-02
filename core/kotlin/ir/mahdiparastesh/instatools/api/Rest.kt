@@ -30,23 +30,6 @@ interface Rest {
         override val status: String
     ) : Rest
 
-    @Serializable
-    class InboxPage(
-        //val viewer: User,
-        val inbox: Dm.Inbox,
-        //val seq_id: String,
-        //val snapshot_at_ms: Long, // milliseconds
-        //val pending_requests_total: Int,
-        //val has_pending_top_requests: Boolean,
-        override val status: String
-    ) : Rest
-
-    @Serializable
-    class InboxThread(
-        val thread: Dm.DmThread?,
-        override val status: String
-    ) : Rest
-
 
     /* Both following and followers receive this API. */
     /*@Serializable
@@ -108,7 +91,4 @@ interface Rest {
 
     @Serializable
     class ItemUser(val position: Int, val user: User)
-
-    @Serializable
-    class Seen(val status_code: String /* must be "200" */)
 }

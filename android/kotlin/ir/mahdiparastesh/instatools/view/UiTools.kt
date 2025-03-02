@@ -4,32 +4,23 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.graphics.*
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.text.Html
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.View
-import android.widget.CompoundButton
-import android.widget.ImageView
-import android.widget.RadioGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.forEach
 import androidx.core.view.get
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -41,13 +32,10 @@ import java.util.*
 import java.util.regex.Pattern
 
 object UiTools {
-    const val DATE_FORMAT = "yyyy.MM.dd"
-    const val TIME_FORMAT = "hh:mm:ss"
     const val PROFILE = "https://www.instagram.com/%s/"
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MAX_BADGE_CHAR = 6
-    private const val OPTION_DISABLED_ALPHA = 0.5f
     //private const val maxInaccurateTimeItems = 2
 
     val accFromUrl = arrayOf(Login.RAW_HOST, Login.HOST)
@@ -115,30 +103,6 @@ object UiTools {
         vib.vibrate(VibrationEffect.createOneShot(dur, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 
-    /** Linkifies an AppCompatTextView. */
-    fun AppCompatTextView.anchor(text: String?, url: String?) {
-        if (text == null || url == null) {
-            movementMethod = null
-            setText("")
-            return
-        }
-        movementMethod = SafeLinkMovementMethod.getInstance()
-        setText(Html.fromHtml("<a href=\"$url\">$text</a>", Html.FROM_HTML_MODE_LEGACY))
-    }
-
-    /** Opens a Direct Message in Instagram. */
-    @Suppress("SpellCheckingInspection")
-    fun openDm(c: Activity, threadId: String) {
-        try {
-            c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse("ig://direct_v2?id=$threadId")).setComponent(
-                    ComponentName(INSTA_PACKAGE, "com.instagram.mainactivity.MainActivity")
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        } catch (_: ActivityNotFoundException) {
-        }
-    }
-
     /** Makes an easily readable datetime. */
     /*fun Context.inaccurateTime(milliseconds: Long, zeroIfNothing: Boolean = false): String {
         var shrinking = milliseconds / 1000L
@@ -194,18 +158,6 @@ object UiTools {
             theme.resolveAttribute(attr, this, true)
         }.data
 
-    /** Enables or disables all RadioGroup items and sets an alpha value for each. */
-    fun RadioGroup.areEnabled(bb: Boolean) = forEach {
-        it.isEnabled = bb
-        it.alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
-    }
-
-    /** Enables or disables a CompoundButton and sets an alpha value for it. */
-    fun CompoundButton.enabled(bb: Boolean) {
-        isEnabled = bb
-        alpha = if (bb) 1f else OPTION_DISABLED_ALPHA
-    }
-
     /** Helper function for showing a Snackbar. */
     fun snackbar(view: View, text: String, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG) {
         try {
@@ -223,35 +175,6 @@ object UiTools {
         view: View, @StringRes res: Int, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG
     ) {
         snackbar(view, view.context.getString(res), anchor, dur)
-    }
-
-    /** Rounds a Bitmap as a circle. */
-    fun bmpRound(bmp: Bitmap): Bitmap =
-        Bitmap.createBitmap(bmp.width, bmp.height, Bitmap.Config.ARGB_8888).apply {
-            val canvas = Canvas(this)
-            canvas.drawRoundRect(
-                RectF(Rect(0, 0, bmp.width, bmp.height)),
-                bmp.width / 2f, bmp.height / 2f,
-                Paint().apply { flags = Paint.ANTI_ALIAS_FLAG })
-            val paintImage =
-                Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP) }
-            canvas.drawBitmap(bmp, 0f, 0f, paintImage)
-        }
-
-    /** Helper function for setting Glide target of an IG profile. */
-    fun targetProfile(iv: ImageView) = object : CustomTarget<Bitmap>() {
-        override fun onLoadCleared(placeholder: Drawable?) {
-            iv.setImageDrawable(null)
-        }
-
-        override fun onResourceReady(res: Bitmap, trans: Transition<in Bitmap>?) {
-            iv.setImageBitmap(bmpRound(res))
-        }
-
-        override fun onLoadFailed(errorDrawable: Drawable?) {
-            super.onLoadFailed(errorDrawable)
-            iv.setImageDrawable(null)
-        }
     }
 
     fun apiError(c: Context, code: Int): String = c.resources.getString(

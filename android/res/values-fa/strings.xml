@@ -19,12 +19,10 @@
     <string name="selectAll">انتخاب همه</string>
     <string name="deselectAllSure">آیا مطمئنید میخواهید تمام علامت ها را بردارید؟</string>
     <string name="deselectAll">انتخاب هیچ کدام</string>
-    <string name="viewProfile">باز کردن پروفایل</string>
     <string name="viewInInsta">باز کردن در اینستاگرام</string>
     <string name="addToFav">اضافه به مورد علاقه</string>
     <string name="start">شروع</string>
     <string name="stop">توقف</string>
-    <string name="openDmInInsta">بازکردن چت در اینستا</string>
     <string name="sContinue">ادامه</string>
     <!--<string-array name="inaccurateTime">
         <item>%d ماه</item>
@@ -49,11 +47,8 @@
     <string name="maximum">حداکثر: %s</string>
     <string name="unlimited">بی نهایت</string>
     <string name="addShortcut">اضافه کردن میانبر</string>
-    <string name="next">بعدی</string>
-    <string name="prev">قبلی</string>
     <string name="save">ذخیره</string>
     <string name="tryAgain">تلاش دوباره</string>
-    <string name="openFolder">بازکردن در فولدر</string>
     <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
     <string name="listClear">پاک کردن همه</string>
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
@@ -90,7 +85,6 @@
     <!-- Main -->
     <string name="favourites">مورد علاقه</string>
     <string name="saved">ذخیره شده</string>
-    <string name="direct">@string/export</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
     <string name="terminateBgTasks">
@@ -110,36 +104,6 @@
     <string name="downloadOnly">فقط دانلود</string>
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
     <string name="svdEmpty">شما هیچ پستی را ذخیره نکرده اید!</string>
-
-    <!-- PageBox -->
-    <string name="boxUntil">تا %s</string>
-    <string name="exportHtml">استخراج برای مرورگر (HTML)</string>
-    <string name="exportPdf">استخراج در PDF</string>
-    <string name="exportTxt">استخراج در فایل تکست</string>
-    <string name="exportOptions">گزینه های استخراج (%s)</string>
-    <string name="export">استخراج</string>
-    <string name="boxEmpty">شما هیچ پیامی ندارید!</string>
-    <string name="dmNotSeen">شما مخفی هستید!</string>
-    <string name="dmNotSeenDesc">
-        پیام های دایرکتی که شما در این اپلیکیشن می خوانید، بعنوان «خوانده شده» تیک نخواهند خورد!
-    </string>
-    <string name="expOptImage">استخراج تصاویر</string>
-    <string name="expOptVideo">استخراج ویدئوها</string>
-    <string name="expOptVoice">استخراج وویس ها</string>
-    <string name="expOptLow">کیفیت پایین</string>
-    <string name="expOptMed">کیفیت متوسط</string>
-    <string name="expOptHig">کیفیت بالا</string>
-    <string name="expOptThm">فقط یک عکس پیش نمایش (اولین فریم)</string>
-    <string name="unsupportedExportUriAuth">
-        با عرض پوزش برای استخراج این نوع فایل، از این نوع محل ذخیره پشتیبانی نمی شود!
-        با این حال می توانید در قالب های دیگر در این محل ذخیره کنید.
-    </string>
-    <string name="exportHtmlDesc">
-        توجه: یک فایل HTML را فقط با کامپیوتر میتوانید بدرستی مشاهده نمایید!
-    </string>
-    <string name="exportPdfDesc">یک فایل PDF نمی تواند صدا و فیلم در خود جای بدهد.</string>
-    <string name="exportTxtDesc">یک فایل TXT فقط می تواند متن را در خود جای دهد.</string>
-    <string name="markAsSeen">سین کردن</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>
@@ -190,7 +154,6 @@
     <string name="stAliasProfile">آیدی یک پروفایل را وارد کنید</string>
     <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
     <string name="stClearCache">پاک کردن حافظه پنهان</string>
-    <string name="stClearCacheWaitExporter">لطفا صبر کنید تا استخراج تمام شود!</string>
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
     <string name="stResetDataSure">
@@ -219,21 +182,6 @@
     <string name="downloaderTitleCount">در حال دانلود %d مورد&#8230;</string>
     <string name="downloaderSomeFailed">دانلود %d مورد ممکن نشد!</string>
     <string name="downloaderCannot">دانلود چیزی از اینستاگرام امکان پذیر نیست!</string>
-
-    <!-- Exporter -->
-    <string name="exporterChannel">استخراجگر</string>
-    <string name="exporterChannelDesc">دایرکت ها را برایتان استخراج می کند</string>
-    <string name="exporterTitle">در حال استخراج&#8230;</string>
-    <string name="exporterFetchTexts">%1$d پیام از چت %2$s دریافت شد&#8230;</string>
-    <string name="exporterFetchMedia">درحال دریافت صدا و تصاویر %1$d از %2$d در چت %3$s&#8230;</string>
-    <string name="exporterWriting">درحال ذخیره چت %s در حافظه&#8230;</string>
-    <string name="exporterDone">استخراج چت %s به اتمام رسید.</string>
-    <string name="exporterFailed">استخراج ناتمام ماند!</string>
-    <string name="exporterAborted">استخراج چت %s ممکن نشد!</string>
-    <string name="exportRescued">
-        مقصدی که برای استخراج انتخاب کرده بودید در دسترس نبود؛
-        برای همین فایل ها در جای دیگری استخراج شدند که با این دکمه در پایین می توانید آنها را ببینید.
-    </string>
 
     <!-- Commander -->
     <string name="commanderChannel">دستورات اینستاگرام</string>

@@ -166,8 +166,6 @@ class Media(
             // Any positive number except these, represents an ideal width,
             // Any negative number except these, represents an ideal height.
 
-            const val THUMB = -3  // used only in Exporter
-
             fun pick(
                 list: Array<Version>,
                 ideal: Int,

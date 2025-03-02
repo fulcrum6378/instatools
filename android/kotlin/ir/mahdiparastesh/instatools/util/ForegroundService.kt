@@ -18,8 +18,8 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
 import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
+import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.job.DownloadService
-import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.TriplePageActivity
 import kotlin.reflect.KClass
@@ -45,10 +45,10 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
-        private val services = arrayOf(DownloadService::class, Exporter::class)
+        private val services = arrayOf(DownloadService::class, CommandService::class)
 
-        fun anyRunning() = arrayOf(DownloadService, Exporter).any { it.active.value == true }
-        // Never reference "Downloader"'s Companion in a static variable
+        fun anyRunning() = arrayOf(DownloadService, CommandService)
+            .any { it.active.value == true }
 
         fun terminateTasks(c: Context) {
             services.forEach { service ->

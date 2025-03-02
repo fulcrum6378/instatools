@@ -21,11 +21,9 @@
     <color name="fastScrollLine">#11FFFFFF</color>
 
     <!-- Main -->
-    <color name="favourites">@color/defCA</color>
-    <color name="saved">@color/defCA</color>
-    <color name="direct">@color/defCA</color>
-    <color name="dmFromMe">#11FFFFFF</color>
-    <color name="expOptSep">@color/sepLine</color>
+    <color name="primary">@color/defCA</color>
+    <color name="secondary">@color/defCA</color>
+    <color name="tertiary">@color/defCA</color>
 
     <!-- Viewer -->
     <color name="sepLine">#22FFFFFF</color>

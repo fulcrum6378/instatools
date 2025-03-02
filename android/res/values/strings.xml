@@ -19,12 +19,10 @@
     <string name="selectAll">Select All</string>
     <string name="deselectAll">Deselect All</string>
     <string name="deselectAllSure">Are you sure you want to deselect all these items?</string>
-    <string name="viewProfile">View Profile</string>
     <string name="viewInInsta">View in Instagram</string>
     <string name="addToFav">Add to favourites</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
-    <string name="openDmInInsta">Open Chat in Instagram</string>
     <string name="sContinue">Continue</string>
     <!--<string-array name="inaccurateTime">
         <item>%d months</item>
@@ -49,11 +47,8 @@
     <string name="maximum">Maximum: %s</string>
     <string name="unlimited">Unlimited</string>
     <string name="addShortcut">Add shortcut</string>
-    <string name="next">Next</string>
-    <string name="prev">Previous</string>
     <string name="save">Save</string>
     <string name="tryAgain">Try Again</string>
-    <string name="openFolder">Open in Folder</string>
     <string name="deleteItemSure">Are you sure you want to delete this item?</string>
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
@@ -89,7 +84,6 @@
     <!-- Main -->
     <string name="favourites">Favourites</string>
     <string name="saved">Saved</string>
-    <string name="direct">@string/export</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Enter a profile name or link&#8230;</string>
     <string name="terminateBgTasks">
@@ -108,32 +102,6 @@
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="svdEmpty">You have no saved posts!</string>
-
-    <!-- PageBox -->
-    <string name="boxUntil">Until %s</string>
-    <string name="exportHtml">Export to HTML</string>
-    <string name="exportPdf">Export to PDF</string>
-    <string name="exportTxt">Export to TXT</string>
-    <string name="exportOptions">Export Options (%s)</string>
-    <string name="export">Export</string>
-    <string name="boxEmpty">You have no messages!</string>
-    <string name="dmNotSeen">You Are Invisible!</string>
-    <string name="dmNotSeenDesc">The messages you view in this app will NOT be marked as seen!</string>
-    <string name="expOptImage">Include pictures</string>
-    <string name="expOptVideo">Include videos</string>
-    <string name="expOptVoice">Include voice messages</string>
-    <string name="expOptLow">Low quality</string>
-    <string name="expOptMed">Medium quality</string>
-    <string name="expOptHig">High quality</string>
-    <string name="expOptThm">Only a thumbnail (first frame)</string>
-    <string name="unsupportedExportUriAuth">
-        Sorry, but this kind of folder is not supported for this export type!
-        Although you can export into this very folder in the other file types.
-    </string>
-    <string name="exportHtmlDesc">Caution: an HTML file can only be viewed properly using a PC or macOS!</string>
-    <string name="exportPdfDesc">A PDF file cannot contain audio and video.</string>
-    <string name="exportTxtDesc">A plain text file cannot contain any kind of media.</string>
-    <string name="markAsSeen">Mark as seen</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
@@ -185,7 +153,6 @@
     <string name="addFolder">Add Folder</string>
     <string name="stCache">Caching (current size: %s)</string>
     <string name="stClearCache">Clear Cache</string>
-    <string name="stClearCacheWaitExporter">Please wait until exporting finishes!</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
     <string name="stResetDataSure">
@@ -214,21 +181,6 @@
     <string name="downloaderTitleCount1" translatable="false">Downloading %d item&#8230;</string>
     <string name="downloaderSomeFailed">Couldn\'t download %d items!</string>
     <string name="downloaderCannot">Cannot download from Instagram!</string>
-
-    <!-- Exporter -->
-    <string name="exporterChannel">Exporter</string>
-    <string name="exporterChannelDesc">Exports the direct messages</string>
-    <string name="exporterTitle">Exporting&#8230;</string>
-    <string name="exporterFetchTexts">Fetched %1$d messages in %2$s\'s chat&#8230;</string>
-    <string name="exporterFetchMedia">Fetching %1$d of %2$d media in %3$s\'s chat&#8230;</string>
-    <string name="exporterWriting">Writing %s\'s chat into the storage&#8230;</string>
-    <string name="exporterDone">Exported %s\'s chat.</string>
-    <string name="exporterFailed">Export failed!</string>
-    <string name="exporterAborted">Could not export %s\'s chat!</string>
-    <string name="exportRescued">
-        The exported files were unable to be transferred to the destination folder which you specified!
-        So we moved them into an alternative destination which can be opened using the button below.
-    </string>
 
     <!-- Commander -->
     <string name="commanderChannel">API Commands</string>

@@ -2,10 +2,7 @@ package ir.mahdiparastesh.instatools.util
 
 import java.util.*
 
-@Suppress("MemberVisibilityCanBePrivate")
 object Utils {
-    const val MAHDI = "https://mahdiparastesh.ir/"
-    const val PROFILE = "https://www.instagram.com/%s/"
     const val POST_LINK = "https://www.instagram.com/p/%s/"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
     const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s/"
@@ -41,9 +38,6 @@ object Utils {
 
     /** Converts a timestamp of seconds to a timestamp of millisecond. */
     fun compileSecondsTS(seconds: Long) = seconds * 1000L
-
-    /** Converts a timestamp of microseconds to a timestamp of millisecond. */
-    fun compileMicrosecondsTS(microseconds: Long) = microseconds / 1000L
 
     fun <T> Map<String, T>.getOrNull(key: String): T? = if (containsKey(key)) this[key] else null
 

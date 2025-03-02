@@ -50,14 +50,12 @@
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="colorPrimaryHigh">@color/CTH</item>
         <item name="defCA">@color/defCA</item>
-        <item name="dmFromMe">@color/dmFromMe</item>
         <item name="materialAlertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
     <attr name="colorPrimaryHigh" format="reference|color" />
     <attr name="defCA" format="reference|color" />
-    <attr name="dmFromMe" format="reference|color" />
 
     <!-- used for PdfExporter -->
     <style name="Theme.InstaTools.Tertiary.Light" parent="Theme.AppCompat.Light.NoActionBar">
@@ -68,7 +66,6 @@
         <item name="backgroundColor">#FFF</item>
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="defCA">@color/defCALight</item>
-        <item name="dmFromMe">@color/dmFromMeLight</item>
     </style>
 
 

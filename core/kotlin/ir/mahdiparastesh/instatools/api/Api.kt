@@ -141,18 +141,12 @@ object Api {
         // information
         USER_INFO("https://www.instagram.com/api/v1/users/%s/info/"),
         PROFILE_INFO("https://www.instagram.com/api/v1/users/web_profile_info/?username=%s"),
-
-        //MEDIA_INFO("https://www.instagram.com/api/v1/media/%s/info/"),
         SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
         SEARCH(
             "https://www.instagram.com/api/v1/web/search/topsearch/?context=blended&query=%s" +
                 "&include_reel=false&search_surface=web_top_search"
         ),
-
-        // direct messages
-        INBOX("https://www.instagram.com/api/v1/direct_v2/inbox/?cursor=%s"),
-        DIRECT("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/?cursor=%2\$s&limit=%3\$d"),
-        SEEN("https://www.instagram.com/api/v1/direct_v2/threads/%1\$s/items/%2\$s/seen/"),
+        //MEDIA_INFO("https://www.instagram.com/api/v1/media/%s/info/"),
 
         // friendships
         //FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),

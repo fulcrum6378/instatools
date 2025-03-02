@@ -18,14 +18,9 @@
     <dimen name="favAction">@dimen/moreAction</dimen>
     <dimen name="svdSelectedPad">75dp</dimen>
     <dimen name="guestFont">24sp</dimen>
-    <dimen name="dmCorner">30dp</dimen>
-    <dimen name="dmPadV">20dp</dimen>
-    <dimen name="dmPadH">25dp</dimen>
-    <dimen name="dmFont">22sp</dimen>
     <dimen name="searchFont">18sp</dimen>
     <dimen name="simpleLoading">300dp</dimen>
     <dimen name="simpleError">180dp</dimen>
-    <dimen name="dmProfile">48dp</dimen>
 
     <!-- Login -->
     <dimen name="loginPadH">70dp</dimen>

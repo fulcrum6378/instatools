@@ -45,14 +45,10 @@ class Pickle(root: File, acc: Long, type: Type, id: String?) {
     ) {
         // queues
         DOWNLOAD_LIST(false, 30f),
-        EXPORT_LIST(false, 30f),
         COMMAND_LIST(false, 7f),
 
-        // Main cache
+        // caches
         SAVED(true, 1f, true),
-        DIRECT(true, 0.25f, true),
-
-        // Viewer cache
         PROFILE(true, 2f),
         POSTS(true, 3f),
         STORY(true, 1f),

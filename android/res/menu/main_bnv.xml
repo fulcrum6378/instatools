@@ -13,6 +13,6 @@
 
     <item
         android:id="@+id/to_direct"
-        android:icon="@drawable/direct"
-        android:title="@string/direct" />
+        android:icon="@drawable/settings"
+        android:title="@string/settings" />
 </menu>

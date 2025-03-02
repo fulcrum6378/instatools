@@ -5,7 +5,6 @@ InstaTools is a project containing applications which help people retrieve conte
 
 1. Download anyone's posts, reels, stories and highlights
 2. Manage your saved posts
-3. Export your direct messages
 
 This project is written in pure Kotlin and contains these modules:
 
@@ -46,12 +45,7 @@ This activity contains 3 fragments:
    [Downloader.kt](android/kotlin/ir/mahdiparastesh/instatools/job/Downloader.kt)
    is the service implemented mainly by Downloads (or it can run from anywhere).
    It queues the download items and downloads them one by one.
-3. **DM Export** ([PageBox.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageBox.kt)) :
-   Fetches all messages in a DM conversation(thread) and optionally downloads the media inside
-   those messages and exports them all into HTML, PDF or TXT file types.
-   Its theme is the blue one called Theme.InstaTools.Tertiary.
-   The fragment shows conversations and messages, and the export work is on
-   [Exporter.kt](android/kotlin/ir/mahdiparastesh/instatools/job/Exporter.kt)
+3.
 
 ### [Viewer.kt](android/kotlin/ir/mahdiparastesh/instatools/Viewer.kt)
 
@@ -78,8 +72,6 @@ and also settings of the current account (`sp)`.
   including back-end data models, endpoint addresses and their related utilities.
 - [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) :
   data models used for storing in databases or other local files.
-- [**exp**](android/kotlin/ir/mahdiparastesh/instatools/exp) :
-  utilities that help exporting direct messages.
 - [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
 - [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
 - [**list**](android/kotlin/ir/mahdiparastesh/instatools/list) : all RecyclerView adapters
@@ -109,8 +101,12 @@ with those as-hole reviewers!
 
 I continued the app in the 2 Iranian app stores { Bazaar & Myket }.
 
-This application could track users' unfollowers in the past but this feature was removed
-because of Instagram's hypersensitivity!
+### Removed Features
+
+1. InstaTools could track users' unfollowers in the past but this feature was removed
+   because of Instagram's hypersensitivity.
+2. InstaTools could export direct messages in TXT, PDF and HTML but this feature was removed
+   because Instagram moved away from the old DM API and switched to WebSockets.
 
 ## Command-Line Interface
 
@@ -125,8 +121,7 @@ Now, in order to:
     - `t`|`tagged`: tagged posts of a profile
     - `r`|`story`: story of a profile
     - `h`|`highlight`: highlights of a profile
-2. To export your direct messages in HTML, TXT and JSON file formats: `m`|`messages`
-3. To retrieve information about a user, including their high-quality profile picture: `u`|`user`
+2. To retrieve information about a user, including their high-quality profile picture: `u`|`user`
 
 ### License
 

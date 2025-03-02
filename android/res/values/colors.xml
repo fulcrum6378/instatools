@@ -37,13 +37,10 @@
     <color name="fastScrollLine">#11000000</color>
 
     <!-- Main -->
-    <color name="favourites">@color/CP</color>
-    <color name="saved">@color/CS</color>
-    <color name="direct">@color/CT</color>
-    <color name="dmFromMeLight">#08000000</color>
-    <color name="dmFromMe">@color/dmFromMeLight</color>
+    <color name="primary">@color/CP</color>
+    <color name="secondary">@color/CS</color>
+    <color name="tertiary">@color/CT</color>
     <color name="navHeaderLL">#99FFFFFF</color>
-    <color name="expOptSep">@color/CTW</color>
 
     <!-- Viewer -->
     <color name="sepLine">#EEE</color>

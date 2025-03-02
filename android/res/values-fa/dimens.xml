@@ -5,7 +5,6 @@
 
     <!-- Main -->
     <dimen name="navFont">14sp</dimen>
-    <dimen name="dmFont">14sp</dimen>
     <dimen name="searchFont">14.5sp</dimen>
 
     <!-- Downloads -->

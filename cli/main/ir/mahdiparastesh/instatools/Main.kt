@@ -1,9 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
-import ir.mahdiparastesh.instatools.Context.exportTask
 import ir.mahdiparastesh.instatools.Context.latestUser
-import ir.mahdiparastesh.instatools.Context.listMsg
 import ir.mahdiparastesh.instatools.Context.listSvd
 import ir.mahdiparastesh.instatools.Context.profiles
 import ir.mahdiparastesh.instatools.api.Api
@@ -277,40 +275,6 @@ $numbersGuide
 $qualitiesGuide
             """.trimIndent()
             ) { profile -> profile.highlights }
-
-            "m", "messages" -> if (a.size == 1)
-                listMsg.fetchSome()
-            else when (a[1]) {
-                "-h", "--help" -> println(
-                    """
-m, messages                    List your direct message threads.
-  m reset                      Forget the previously loaded threads and load them again.
-  m <NUMBER(s)> {OPTIONS}      Export the thread in that position.
-    -t, --type=<JSON,TEXT,HTML>          File type of the output export
-    --all-media=<no|QUALITY>             Default settings for all media (e.g. `--all-media=low`)
-    --images=<no|QUALITY>                Default settings for all images (e.g. `--images=low`)
-    --videos=<no|thumb|QUALITY>          Default settings for all videos (e.g. `--videos=thumb`)
-    --posts=<no|QUALITY>                 Settings for shared posts (e.g. `--posts=no`)
-    --reels=<no|thumb|QUALITY>           Settings for shared reels (e.g. `--reels=no`)
-    --story=<no|thumb|QUALITY>           Settings for shared stories and highlights (e.g. `--story=no`)
-    --uploaded-images=<no|QUALITY>       Settings for directly uploaded images  (e.g. `--uploaded-images=high`)
-    --uploaded-videos=<no|thumb|QUALITY> Settings for directly uploaded videos  (e.g. `--uploaded-videos=high`)
-    --voice=<no|yes>                     Whether voice messages should be downloaded (e.g. `--voice=yes`)
-    --min-date=<DATETIME>                Minimum date for messages to be exported (e.g. `--min-date=2025-01-21`)
-    --max-date=<DATETIME>                Minimum date for messages to be exported (e.g. `--min-date=2024`)
-$qualitiesGuide
-                """.trimIndent()
-                )
-
-                "reset" -> listMsg.fetchSome(true)
-
-                else -> {
-                    if (a.size == 2) throw InvalidCommandException("Please specify options for the export.")
-                    listMsg[a[1]].forEach { thread ->
-                        exportTask.export(thread, a.slice(2..<a.size))
-                    }
-                }
-            }
 
             "q", "quit" -> repeat = false
 

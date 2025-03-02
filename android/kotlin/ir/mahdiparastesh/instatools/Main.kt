@@ -27,14 +27,12 @@ import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.Dm
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
-import ir.mahdiparastesh.instatools.frag.PageBox
 import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.list.ListSch
@@ -48,13 +46,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
+class Main : TriplePageActivity<PageFav, PageSvd, PageFav>(),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
     val mm: MyModel by viewModels()
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
-    val exportLauncher = launcherForResult { page3?.onActivityResult(it) }
     private var exiting = false
 
     // themes
@@ -81,7 +78,7 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
     override val currentPage: MutableLiveData<Int> get() = mm.currentPage
     override val aKlass = PageFav::class
     override val bKlass = PageSvd::class
-    override val cKlass = PageBox::class
+    override val cKlass = PageFav::class
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
         ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
         ?: Settings.defSpMainPage
@@ -89,15 +86,10 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
     class MyModel : ViewModel() {
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
-        var dmInbox: Dm.Inbox? = null
-        var dmThread: Dm.DmThread? = null
-        val dmInboxCount = MutableLiveData<Int?>(null)
         val currentPage = MutableLiveData(Settings.defSpMainPage)
 
         fun accountSwitched() {
             saved = null
-            dmInbox = null
-            dmThread = null
         }
     }
 
@@ -115,7 +107,6 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         mm.savedCount.observe(this) { bnvBadge(1, it) }
-        mm.dmInboxCount.observe(this) { bnvBadge(2, it) }
 
         // Theming
         if (night()) colorBG.observe(this) {
@@ -209,6 +200,8 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
             remove("unf_last_checked")
             remove("notified_unf_till")
             remove("unfollow_count")
+            remove("export_count")
+            remove("learnt_dm_not_seen")
         }
     }
 
@@ -421,20 +414,14 @@ class Main : TriplePageActivity<PageFav, PageSvd, PageBox>(),
 
 /* TODO:
   * Problems:
-  * Make Exporter and CommandService cancellable and pausable
+  * Make CommandService cancellable and pausable
   * on configuration changes (especially Login while browsing the web)
-  * After visiting PageBox and returning to PageSvd, its posts can't be clicked!!
-  * When you navigate to PageSvd and then come back to PageBox, ListThd doesn't show Expandable
   * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
   * number of posts on PageVwr
   * Percentage of downloads
-  * Show muted statuses in Friends
-  * A button for resuming/restarting the Exporter
-  * Exporter maximum date of top and bottom which would need a calendar picker!?!?
   * Undo for Unsave
-  * Export/import blocked accounts lists from/into different accounts of one's
   *
   * NOTES:
   * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

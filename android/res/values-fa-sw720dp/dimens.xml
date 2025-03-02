@@ -8,7 +8,6 @@
 
     <!-- Main -->
     <dimen name="navFont">18sp</dimen>
-    <dimen name="dmFont">23sp</dimen>
     <dimen name="searchFont">22sp</dimen>
 
     <!-- Downloads -->

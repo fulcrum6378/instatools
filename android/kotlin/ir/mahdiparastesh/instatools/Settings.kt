@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
@@ -26,7 +25,6 @@ import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
-import ir.mahdiparastesh.instatools.job.Exporter
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.DbFile
 import ir.mahdiparastesh.instatools.util.ForegroundService
@@ -87,11 +85,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spDownloadCount = "download_count" // def: 0L
         const val spDlErrorCount = "download_error_count" // def: 0L
         const val spUnsaveCount = "unsave_count" // def: 0L
-        const val spExportCount = "export_count" // def: 0L
         const val spShortcutCount = "shortcut_count" // def: 0L
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
-        const val spLearntDmNotSeen = "learnt_dm_not_seen" // def: false
         const val spUsedVersion = "used_version"
 
 
@@ -130,7 +126,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         } ?: defSpCacheLimit
 
         fun Persistent.clearCacheIfNecessary(subdir: String? = null): Boolean {
-            if (Exporter.active.value == true) return false
             if (c.cacheSize() <= gsp.getLong(spCacheLimit, defaultCacheLimit(c))) return false
             (if (subdir != null) File(c.cacheDir, subdir) else c.cacheDir)
                 .deleteRecursively()
@@ -293,10 +288,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             b.stCache.vis(false)
             b.stSepCache.vis(false)
         } else b.stClearCache.setOnClickListener {
-            if (Exporter.active.value == true) {
-                Toast.makeText(c, R.string.stClearCacheWaitExporter, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
             clearCache()
             updateCacheSize()
         }
