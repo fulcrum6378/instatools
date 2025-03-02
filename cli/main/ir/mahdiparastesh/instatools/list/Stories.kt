@@ -22,9 +22,12 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
         val media = reels.firstOrNull()?.items
         if (media.isNullOrEmpty())
             println("This user has no stories.")
-        else media.forEachIndexed { i, r ->
-            println("${i + 1}. " + r.link(p.userName))
-            add(r)
+        else {
+            media.forEachIndexed { i, r ->
+                println("${i + 1}. " + r.link(p.userName))
+                add(r)
+            }
+            println("Enter `r -h` to see available options...")
         }
     }
 

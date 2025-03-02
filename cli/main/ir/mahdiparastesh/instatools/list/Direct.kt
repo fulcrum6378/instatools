@@ -16,6 +16,7 @@ class Direct : LazyLister<Dm.DmThread>() {
         if (page.inbox.has_older) {
             cursor = page.inbox.oldest_cursor
             println("Enter `m` again to load more conversations...")
+            println("Enter `m -h` to see available options...")
         } else endOfList()
     }
 }

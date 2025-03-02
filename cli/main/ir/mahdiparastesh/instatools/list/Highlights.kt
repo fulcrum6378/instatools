@@ -22,17 +22,20 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         ).data!!.highlights!!.edges
 
         if (hls.isEmpty()) println("This user has no highlighted stories.")
-        else hls.forEachIndexed { _, tray ->
-            val hlId = tray.node.highlightId()
-            println(
-                "$hlId:" +
-                    (if (tray.node.title != null) " ${tray.node.title} -" else "") +
-                    " ${tray.node.link()}" +
-                    (if (tray.node.items != null) " (${tray.node.items!!.size} items)" else "")
-            )
-            if (hlId in trays && trays[hlId]!!.items == null)
-                tray.node.items = trays[hlId]!!.items
-            trays[hlId] = tray.node
+        else {
+            hls.forEachIndexed { _, tray ->
+                val hlId = tray.node.highlightId()
+                println(
+                    "$hlId:" +
+                        (if (tray.node.title != null) " ${tray.node.title} -" else "") +
+                        " ${tray.node.link()}" +
+                        (if (tray.node.items != null) " (${tray.node.items!!.size} items)" else "")
+                )
+                if (hlId in trays && trays[hlId]!!.items == null)
+                    tray.node.items = trays[hlId]!!.items
+                trays[hlId] = tray.node
+            }
+            println("Enter `h -h` to see available options...")
         }
     }
 

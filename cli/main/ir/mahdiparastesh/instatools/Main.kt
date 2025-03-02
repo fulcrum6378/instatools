@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
-import ir.mahdiparastesh.instatools.Context.exportTask
 import ir.mahdiparastesh.instatools.Context.latestUser
 import ir.mahdiparastesh.instatools.Context.listMsg
 import ir.mahdiparastesh.instatools.Context.listSvd
@@ -9,8 +8,6 @@ import ir.mahdiparastesh.instatools.Context.profiles
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
-import ir.mahdiparastesh.instatools.data.Exportable
-import ir.mahdiparastesh.instatools.job.ExportTask.Method
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.job.SimpleTasks
 import ir.mahdiparastesh.instatools.util.Option
@@ -34,63 +31,23 @@ Copyright © Mahdi Parastesh - All Rights Reserved.
     if (interactive) println(
         """
 >> List of settings:
-set cookies {PATH}           Load the required cookies from a path. (default: `./cookies.txt`)
-set proxy {URL}              Set an HTTP proxy (e.g. `set proxy http://127.0.0.1:8580/`)
+set cookies {PATH}             Load the required cookies from a path. (default: `./cookies.txt`)
+set proxy {URL}                Set an HTTP proxy (e.g. `set proxy http://127.0.0.1:8580/`)
 
 >> List of commands:
-d, download <LINK> {OPTIONS}   Download only a post or reel via its official link.
-    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
-s, saved                       Continuously list your saved posts.
-  s <NUMBER(s)> {OPTIONS}      Download the post in that position.
-    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
-    -u, --unsave                         Additionally unsave the post.
-    -l, --like                           Ensure that the post is liked.
-  s reset                      Forget previously loaded saved posts and load them again.
-  s [u|unsave] <N> {OPTIONS}   Unsave the post in that position.
-    --unlike                             Ensure that the post is unliked.
-    -l, --like                           Ensure that the post is liked.
-  s [r|resave] <N> {OPTIONS}   Save the post in that position AGAIN.
-    --unlike                             Ensure that the post is unliked.
-    -l, --like                           Ensure that the post is liked.
-  m reset                      Forget the previously loaded threads and load them again.
+d, download <LINK> {OPTIONS}   Download a post or a reel via a link. (`d -h` to see more options)
+s, saved                       List your saved posts. (`s -h` to see more options)
 u, user <@USERNAME|REST_ID>    Show details about an IG account. (e.g. `u 8337021434`)
-p, posts <@USERNAME>           List main posts of a profile. (e.g. `p @fulcrum6378`)
-  p, posts                     Load more posts from the latest user.
-  p <@USERNAME> reset          Forget previously loaded main posts of a user and load them again.
-  p reset                      Forget previously loaded main posts of the latest user and load them again.
-  p <NUMBER(s)> {OPTIONS}      Download the post in that position.
-    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
-    -l, --like                           Ensure that the post is liked.
-t, tagged <@USERNAME>          List tagged posts of a profile. (e.g. `t fulcrum6378`)
-  t, tagged                    Load more tagged posts from the latest user.
-  t <@USERNAME> reset          Forget previously loaded tagged posts of the latest user and load them again.
-  t reset                      Forget previously loaded tagged posts of the latest user and load them again.
-  t <NUMBERS> {OPTIONS}        Download the tagged post in that position.
-    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
-    -l, --like                           Ensure that the tagged post is liked.
-r, story <@USERNAME>           List daily story of a profile. (e.g. `r @fulcrum6378`)
-  r <NUMBER(s)> {OPTIONS}      Download the story item in that position.
-    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
-    -l, --like                           Ensure that the story is liked.
-h, highlight <@USERNAME>       List highlighted stories of a profile. (e.g. `h @fulcrum6378`)
-  h <HL-ID> <NUMBERS> {OPTIONS}Download the highlight story item in that position.
-    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
-    -l, --like                           Ensure that the highlighted story is liked.
-m, messages                    List your direct message threads.
-  m <NUMBER(s)> {OPTIONS}      Export the thread in that position.
-    -t, --type=<HTML,TXT>                File type of the output export
-    --all-media=<no|QUALITY>             Default settings for all media (e.g. `--all-media=low`)
-    --images=<no|QUALITY>                Default settings for all images (e.g. `--images=low`)
-    --videos=<no|thumb|QUALITY>          Default settings for all videos (e.g. `--videos=thumb`)
-    --posts=<no|QUALITY>                 Settings for shared posts (e.g. `--posts=no`)
-    --reels=<no|thumb|QUALITY>           Settings for shared reels (e.g. `--reels=no`)
-    --story=<no|thumb|QUALITY>           Settings for shared stories and highlights (e.g. `--story=no`)
-    --uploaded-images=<no|QUALITY>       Settings for directly uploaded images  (e.g. `--uploaded-images=high`)
-    --uploaded-videos=<no|thumb|QUALITY> Settings for directly uploaded videos  (e.g. `--uploaded-videos=high`)
-    --voice=<no|yes>                     Whether voice messages should be downloaded (e.g. `--voice=yes`)
-    --min-date=<DATETIME>                Minimum date for messages to be exported (e.g. `--min-date=2025-01-21`)
-    --max-date=<DATETIME>                Minimum date for messages to be exported (e.g. `--min-date=2024`)
+p, posts <@USERNAME>           List main posts of a profile. (`p -h` to see more options)
+t, tagged <@USERNAME>          List tagged posts of a profile. (`t -h` to see more options)
+r, story <@USERNAME>           List daily story of a profile. (`r -h` to see more options)
+h, highlight <@USERNAME>       List highlighted stories of a profile. (`h -h` to see more options)
 q, quit                        Quit the program.
+
+    """.trimIndent()
+    )
+
+    val numbersGuide = """
 
 >> Numeric patterns for selecting items:
 - `1-5` means 1 up to 5.
@@ -99,6 +56,9 @@ q, quit                        Quit the program.
 - `-35` means since the beginning of the list up to 35.
 - `5-` means 5 until the end of the list.
 - `all`
+    """.trimIndent()
+
+    val qualitiesGuide = """
 
 >> List of qualities:
 h, high                        Highest available quality (original)
@@ -106,9 +66,7 @@ m, medium                      Medium quality
 l, low                         Lowest available quality (often thumbnail for images)
 x<NUMBER>                      Ideal width (e.g. x1000) (do NOT separate the number)
 y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the number)
-
     """.trimIndent()
-    )
 
     // preparations
     if (!Api.loadCookiesFromFile())
@@ -131,6 +89,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
 
         when (a[0]) {
 
+            /* ----- SETTINGS ----- */
             "set" -> when (a.getOrNull(1)) {
                 "cookies" -> {
                     if (if (a.size > 2) Api.loadCookiesFromFile(a[2]) else Api.loadCookiesFromFile())
@@ -144,6 +103,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                 null -> throw InvalidCommandException("Invalid setting!")
             }
 
+            /* ----- DOWNLOAD ----- */
             "d", "download" -> if (a.size == 1)
                 throw InvalidCommandException(
                     "Please enter a link after \"${a[0]}\"; like \"${a[0]} https://\"..."
@@ -160,12 +120,40 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                     Option.quality(opt?.get(Option.QUALITY.key)),
                     a[1]
                 )
-            } else
+            } else if (a[1] in helpOptions)
+                println(
+                    """
+d, download <LINK> {OPTIONS}   Download only a post or reel via its official link.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+$qualitiesGuide
+                """.trimIndent()
+                )
+            else
                 throw InvalidCommandException("Only links to Instagram posts and reels are supported!")
 
+            /* ----- SAVED ----- */
             "s", "saved" -> if (a.size == 1)
                 listSvd.fetchSome()
             else when (a[1]) {
+                helpOptions[0], helpOptions[1] -> println(
+                    """
+s, saved                       Continuously list your saved posts.
+  s reset                      Forget previously loaded saved posts and load them again.
+  s <NUMBER(s)> {OPTIONS}      Download the post in that position.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+    -u, --unsave                         Additionally unsave the post.
+    -l, --like                           Ensure that the post is liked.
+  s [u|unsave] <N> {OPTIONS}   Unsave the post in that position.
+    --unlike                             Ensure that the post is unliked.
+    -l, --like                           Ensure that the post is liked.
+  s [r|resave] <N> {OPTIONS}   Save the post in that position AGAIN.
+    --unlike                             Ensure that the post is unliked.
+    -l, --like                           Ensure that the post is liked.
+$numbersGuide
+$qualitiesGuide
+                """.trimIndent()
+                )
+
                 "reset" -> listSvd.fetchSome(true)
 
                 "u", "unsave", "r", "resave" -> if (a.size < 3)
@@ -212,6 +200,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
                 }
             }
 
+            /* ----- USER ----- */
             "u", "user" -> if (a.size != 2)
                 throw InvalidCommandException("Please enter a username or the REST ID of a user.")
             else (if (a[1].startsWith("@")) SimpleJobs.profileInfo(a[1].substring(1))
@@ -238,24 +227,89 @@ ${u.biography}
                 profiles[u.username]?.userId = u.id()
             }
 
-            "p", "posts" -> profileCommand(a) { profile -> profile.posts }
+            /* ----- POSTS ----- */
+            "p", "posts" -> profileCommand(
+                a, """
+p, posts <@USERNAME>           List main posts of a profile. (e.g. `p @fulcrum6378`)
+  p, posts                     Load more posts from the latest user.
+  p <@USERNAME> reset          Forget previously loaded main posts of a user and load them again.
+  p reset                      Forget previously loaded main posts of the latest user and load them again.
+  p <NUMBER(s)> {OPTIONS}      Download the post in that position.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+    -l, --like                           Ensure that the post is liked.
+$numbersGuide
+$qualitiesGuide
+            """.trimIndent()
+            ) { profile -> profile.posts }
 
-            "t", "tagged" -> profileCommand(a) { profile -> profile.tagged }
+            /* ----- TAGGED ----- */
+            "t", "tagged" -> profileCommand(
+                a, """
+t, tagged <@USERNAME>          List tagged posts of a profile. (e.g. `t fulcrum6378`)
+  t, tagged                    Load more tagged posts from the latest user.
+  t <@USERNAME> reset          Forget previously loaded tagged posts of the latest user and load them again.
+  t reset                      Forget previously loaded tagged posts of the latest user and load them again.
+  t <NUMBERS> {OPTIONS}        Download the tagged post in that position.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+    -l, --like                           Ensure that the tagged post is liked.
+            """.trimIndent()
+            ) { profile -> profile.tagged }
 
-            "r", "story" -> profileCommand(a) { profile -> profile.story }
+            /* ----- STORY ----- */
+            "r", "story" -> profileCommand(
+                a, """
+r, story <@USERNAME>           List daily story of a profile. (e.g. `r @fulcrum6378`)
+  r <NUMBER(s)> {OPTIONS}      Download the story item in that position.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+    -l, --like                           Ensure that the story is liked.
+$numbersGuide
+$qualitiesGuide
+            """.trimIndent()
+            ) { profile -> profile.story }
 
-            "h", "highlight" -> profileCommand(a) { profile -> profile.highlights }
+            /* ----- HIGHLIGHTS ----- */
+            "h", "highlight" -> profileCommand(
+                a, """
+h, highlight <@USERNAME>       List highlighted stories of a profile. (e.g. `h @fulcrum6378`)
+  h <HL-ID> <NUMBERS> {OPTIONS}Download the highlight story item in that position.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+    -l, --like                           Ensure that the highlighted story is liked.
+$numbersGuide
+$qualitiesGuide
+            """.trimIndent()
+            ) { profile -> profile.highlights }
 
             "m", "messages" -> if (a.size == 1)
                 listMsg.fetchSome()
             else when (a[1]) {
+                "-h", "--help" -> println(
+                    """
+m, messages                    List your direct message threads.
+  m reset                      Forget the previously loaded threads and load them again.
+  m <NUMBER(s)> {OPTIONS}      Export the thread in that position.
+    -t, --type=<HTML,TXT>                File type of the output export
+    --all-media=<no|QUALITY>             Default settings for all media (e.g. `--all-media=low`)
+    --images=<no|QUALITY>                Default settings for all images (e.g. `--images=low`)
+    --videos=<no|thumb|QUALITY>          Default settings for all videos (e.g. `--videos=thumb`)
+    --posts=<no|QUALITY>                 Settings for shared posts (e.g. `--posts=no`)
+    --reels=<no|thumb|QUALITY>           Settings for shared reels (e.g. `--reels=no`)
+    --story=<no|thumb|QUALITY>           Settings for shared stories and highlights (e.g. `--story=no`)
+    --uploaded-images=<no|QUALITY>       Settings for directly uploaded images  (e.g. `--uploaded-images=high`)
+    --uploaded-videos=<no|thumb|QUALITY> Settings for directly uploaded videos  (e.g. `--uploaded-videos=high`)
+    --voice=<no|yes>                     Whether voice messages should be downloaded (e.g. `--voice=yes`)
+    --min-date=<DATETIME>                Minimum date for messages to be exported (e.g. `--min-date=2025-01-21`)
+    --max-date=<DATETIME>                Minimum date for messages to be exported (e.g. `--min-date=2024`)
+$qualitiesGuide
+                """.trimIndent()
+                )
+
                 "reset" -> listMsg.fetchSome(true)
 
                 else -> {
                     if (a.size == 2) throw InvalidCommandException("Please specify options for the export.")
                     val opt = Option.parse(a.slice(2..<a.size)) { expOptionSelector(it) }
                     listMsg[a[1]].forEach { thread ->
-                        val allMedia = opt[Option.EXP_ALL_MEDIA.key]
+                        /*val allMedia = opt[Option.EXP_ALL_MEDIA.key]
                         val exp = Exportable(
                             "Exported ${thread.title()}_${Utils.fileDateTime(Utils.now())}",
                             thread,
@@ -281,7 +335,7 @@ ${u.biography}
                             dateTime(opt[Option.EXP_MIN_DATE.key]),
                             dateTime(opt[Option.EXP_MAX_DATE.key]),
                         )
-                        exportTask.queue.add(exp)
+                        exportTask.queue.add(exp)*/
                     }
                 }
             }
@@ -345,20 +399,24 @@ private fun dateTime(value: String?): Long? {
     return cal.timeInMillis
 }
 
-fun profileCommand(a: Array<String>, lister: (Profile) -> Profile.Section) {
+fun profileCommand(a: Array<String>, guide: String, lister: (Profile) -> Profile.Section) {
     if (a.size == 1) {
         if (latestUser == null)
             throw InvalidCommandException("Please enter a username.")
         else
             lister(profiles[latestUser]!!).fetch(false)
     } else {
+        if (a[1] in helpOptions) {
+            println(guide)
+            return; }
+
         val a1UN = when {
             a[1].startsWith("@") -> a[1].substring(1)
+            a[1] == "reset" -> latestUser
             a[1].isNotEmpty() && a[1][0].isLetter() -> a[1]
             else -> null
         }
-        val un = a1UN ?: latestUser
-        ?: throw InvalidCommandException("Please enter a username.")
+        val un = a1UN ?: latestUser ?: throw InvalidCommandException("Please enter a username.")
         if (un !in profiles) profiles[un] = Profile(un)
         val p = profiles[un]!!
         latestUser = un
@@ -366,6 +424,7 @@ fun profileCommand(a: Array<String>, lister: (Profile) -> Profile.Section) {
         val nextParam = if (a1UN != null) 2 else 1
         when (a.getOrNull(nextParam)) {
             null -> lister(p).fetch(false)
+
             "reset" -> lister(p).fetch(true)
 
             else -> {
@@ -385,6 +444,8 @@ fun profileCommand(a: Array<String>, lister: (Profile) -> Profile.Section) {
         }
     }
 }
+
+val helpOptions = arrayOf("-h", "--help")
 
 class InvalidCommandException(msg: String = "Invalid command!") :
     IllegalArgumentException(msg), Utils.InstaToolsException

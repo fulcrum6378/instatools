@@ -20,6 +20,7 @@ class Saved : LazyLister<Media>() {
         if (lazyList.more_available) {
             cursor = lazyList.next_max_id
             println("Enter `s` again to load more posts...")
+            println("Enter `s -h` to see available options...")
         } else endOfList()
     }
 }
