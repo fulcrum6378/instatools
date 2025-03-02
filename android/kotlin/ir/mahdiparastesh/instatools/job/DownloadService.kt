@@ -42,6 +42,7 @@ class DownloadService : ForegroundService(), Downloader {
     override lateinit var ntfTitle: String
     override var ntfText: String? = null
     override var ntfSmallText: String? = null
+    override val ntfActions: Array<Pair<Int, String>> = arrayOf(R.string.stop to ACTION_STOP)
     override val queue: Queue<Download> get() = m.downloads
     override var handledItems: Int = 0
     override var proceed: Boolean = true

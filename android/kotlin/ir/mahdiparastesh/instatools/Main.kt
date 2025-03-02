@@ -404,9 +404,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
 /* TODO:
   * Problems:
-  * Make CommandService cancellable and pausable
   * on configuration changes (especially Login while browsing the web)
-  * Only on switch to night mode, PageSvd overflow menu and jump to top have the same colour of that theme
   * -
   * Extension:
   * A new proper logo
@@ -415,6 +413,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
   * Custom icons for the Services
   * Percentage of downloads
   * Undo for Unsave
+  * Make CommandService cancellable and pausable
   *
   * NOTES:
   * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

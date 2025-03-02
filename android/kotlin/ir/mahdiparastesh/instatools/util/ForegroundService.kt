@@ -20,8 +20,8 @@ import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.job.DownloadService
-import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
+import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
 /**
@@ -39,6 +39,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     abstract var ntfTitle: String
     abstract var ntfText: String?
     abstract var ntfSmallText: String?
+    abstract val ntfActions: Array<Pair<Int, String>>
     open val ntfSmallIcon: Int = R.drawable.notification
 
     companion object {
@@ -100,12 +101,12 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         ntfManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
 
-    private var ntfAct: KClass<*>? = null
+    private var ntfActivity: KClass<*>? = null
     private var ntfPage: Int? = null
     fun initialNotification(
         openActivity: KClass<*>? = null, turnToPage: Int? = null, progress: Pair<Int, Int>? = null
     ) {
-        ntfAct = openActivity
+        ntfActivity = openActivity
         ntfPage = turnToPage
         ntfManager.createNotificationChannelGroup(Notify.ChannelGroup.SERVICES.create(c))
         ntfManager.createNotificationChannel(ntfChannel.create(c))
@@ -126,15 +127,16 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
             // setSound(null) setSilent(true)
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
-            if (ntfAct != null) setContentIntent(
+            if (ntfActivity != null) setContentIntent(
                 PendingIntent.getActivity(
-                    c, 0, Intent(c, ntfAct!!.java).apply {
+                    c, 0, Intent(c, ntfActivity!!.java).apply {
                         if (ntfPage != null)
                             putExtra(MultiPagedActivity.Companion.EXTRA_TURN_TO_PAGE, ntfPage)
                     }, ntfMutability()
                 )
             )
-            addAction(0, getString(R.string.stop), pi(c, ACTION_STOP))
+            for (pair in ntfActions)
+                addAction(0, getString(pair.first), pi(c, pair.second))
         }.build()
 
     fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(

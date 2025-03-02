@@ -55,6 +55,9 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
     val downloadsPickle: Pickle by lazy {
         Pickle(c.filesDir, c.m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
     }
+    val commandsPickle: Pickle by lazy {
+        Pickle(c.filesDir, c.m.acc!!.id, Pickle.Type.COMMAND_LIST, null)
+    }
     private var selectionGuide: LottieAnimationView? = null
 
     override val root: ConstraintLayout? get() = b.root
@@ -140,7 +143,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
             setAnimation(R.raw.guide_selection)
             playAnimation()
             translationX = c.dm.widthPixels * -0.12f
-            translationY = c.dm.widthPixels * -0.01f // TODO both cause inconsistencies
+            translationY = c.dm.widthPixels * -0.01f
             b.root.addView(this, 1)
         }
     }
@@ -180,6 +183,14 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         val saved = c.mm.saved ?: return
         val deletion = arrayListOf<Int>()
         CoroutineScope(Dispatchers.Default).launch {
+
+            // load previous queues
+            if (download && c.m.downloads.isEmpty())
+                c.m.downloads.pickle<Download>(downloadsPickle)
+            if (unsave && c.m.commands.isEmpty())
+                c.m.commands.pickle<Command>(commandsPickle)
+
+            // enqueue
             for (svd in saved.items.indices) {
                 if (saved.items[svd].media.id() !in selection) continue
                 if (download) c.m.downloads.addAll(saved.items[svd].media.queue())
@@ -191,13 +202,14 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                     c.incrementCounter(Settings.spUnsaveCount)
                 }
             }
-            if (download) {
-                c.m.downloads.pickle<Download>(downloadsPickle)
-                Downloads.initService(c)
-            }
+
+            // start the Services
+            if (download) Downloads.initService(c)
             if (unsave) c.startService(
                 Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
             )
+
+            // handle the UI
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()
                 if (unsave) {
