@@ -14,14 +14,11 @@ import androidx.core.content.edit
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
-import ir.mahdiparastesh.instatools.api.PageConfig
-import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
+import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
@@ -31,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.apache.commons.text.StringEscapeUtils
 import java.io.FileInputStream
 import kotlin.system.exitProcess
 
@@ -191,7 +189,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private val myClient = object : WebViewClient() {
-        lateinit var id: String
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
@@ -236,15 +233,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                         return@evaluateJavascript; }
                     try {
                         collect(html)
-                    } catch (e: JsonSyntaxException) {
-                        failed(e)
                     } catch (e: IllegalStateException) {
-                        failed(e) // the page may have failed to load properly.
-                    } catch (_: NumberFormatException) {
-                        // this happens when you go to, for example, the profiles/hashtags page,
-                        // tap on the pretty "Instagram" title in the header, then you go to
-                        // another page, e.g. sign up page, then you come back to the same
-                        // "instagram.com" page, then you repeat this act once more.
+                        failed(e)
                     }
                 }
             } catch (e: Exception) {
@@ -258,30 +248,27 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
         }
 
-        @Throws(JsonSyntaxException::class, NumberFormatException::class)
-        private fun collect(html: String) { // UnicodeUnescaper fucks up!
-            PageConfig.findFromHtml(html, true, { failed(it) }) { wrapper ->
-                id = cookieManager.getCookieOrganised(HOST)
-                    .substringAfter("ds_user_id=")
-                    .substringBefore(";").toLong().toString()
-                val u = Gson().fromJson(
-                    Gson().toJson((wrapper.define["PolarisViewer"]!![1] as Map<*, *>)["data"]),
-                    User::class.java
-                )
-                m.acc = Account(
-                    id.toLong(), u.username, u.full_name, u.originalPicture(),
-                    cookieManager.getCookieOrganised(HOST),
-                    Utils.now()
-                ).apply {
-                    accounts.removeAll { it.id == id }
-                    accounts.add(this)
-                    CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
-                }
-                gsp.edit { putString(SP_ACCOUNT, id) }
-                goTo(Main::class, true)
-                clearCacheIfNecessary("WebView")
-                improperLoading = 0
+        @Throws(IllegalStateException::class)
+        private fun collect(html: String) {
+            val u = SimpleJobs.userFromHtml(
+                StringEscapeUtils.unescapeJson(html) // UnicodeUnescaper fucks up!
+            ) ?: throw IllegalStateException("Couldn't extract user information!")
+
+            val id = u.id().toLong()
+            m.acc = Account(
+                id, u.username, u.full_name, u.originalPicture(),
+                cookieManager.getCookieOrganised(HOST),
+                Utils.now()
+            ).apply {
+                accounts.removeAll { it.id == id }
+                accounts.add(this)
+                CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
             }
+
+            gsp.edit { putString(SP_ACCOUNT, u.id()) }
+            goTo(Main::class, true)
+            clearCacheIfNecessary("WebView")
+            improperLoading = 0
         }
 
         private fun failed(e: Exception, reload: Boolean = true) {

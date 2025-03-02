@@ -1,8 +1,49 @@
 package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.api.*
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 
 object SimpleJobs {
+
+    /** @return same as [User] received from [Api.Endpoint.PROFILE_INFO] */
+    fun userFromHtml(html: String): User? {
+
+        // extract JSON from HTML
+        var read = html
+        val starter = "{\"require\":[[\"ScheduledServerJS\""
+        var json: String? = null
+        while (read.contains(starter)) {
+            read = read.substring(read.indexOf(starter))
+            json = read.substringBefore("</script>")
+            if (json.contains("XIGSharedData")) break
+            // we don't need XIGSharedData itself; we just need the JSON which uniquely contains it.
+            json = null
+            read = read.substringAfter("</script>")
+        }
+        if (json == null) return null
+
+        // extract [User] from JSON
+        return try {
+            val scheduledServerJS =
+                ((Json.decodeFromString<JsonObject>(json)["require"] as JsonArray)[0] as JsonArray)[3]
+                    as JsonArray // only the first element of `scheduledServerJS` is useful.
+            val define = ((scheduledServerJS[0] as JsonObject)["__bbox"] as JsonObject)["define"]
+                as JsonArray // everything is in `define`, it contains ~300 elements!
+            var head: JsonPrimitive
+            val polarisViewer = (define.find {
+                head = (it as JsonArray)[0] as JsonPrimitive
+                head.isString && head.content == "PolarisViewer"
+            } as JsonArray)[2] as JsonObject
+            Api.json.decodeFromJsonElement<User>(polarisViewer["data"] as JsonObject)
+        } catch (_: SerializationException) {
+            null
+        }
+    }
 
     /**
      * Resolves download URLs of desired posts or reels via their official links.

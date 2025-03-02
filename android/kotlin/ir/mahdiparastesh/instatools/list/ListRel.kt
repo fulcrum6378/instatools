@@ -32,6 +32,7 @@ class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
                 ?: return@setOnClickListener
             c.expandable.thumb = h.b.root
             c.expandable.mediaOwner = c.mm.user?.username
+            c.expandable.mediaOwnerId = c.mm.user?.id()
             // these Media instances do not contains User information!
             try {
                 c.expandable.expand()

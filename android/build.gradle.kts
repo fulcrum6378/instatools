@@ -24,7 +24,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 77
-        versionName = "34.9.0"
+        versionName = "35.0.0"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -78,7 +78,6 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.glide)
     implementation(libs.material)
-    implementation(libs.gson)
     implementation(libs.dotsindicator)
     implementation(libs.commons.text) // StringEscapeUtils
     implementation(libs.serialization.json)

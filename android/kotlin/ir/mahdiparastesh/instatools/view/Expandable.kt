@@ -40,6 +40,7 @@ class Expandable(
 ) {
     var media: Media? = null
     var mediaOwner: String? = null // used only for stories and highlights
+    var mediaOwnerId: String? = null // ^^
     var thumb: View? = null
     var zoomed = false
     private var currentAnimator: Animator? = null
@@ -141,12 +142,11 @@ class Expandable(
         val hasAudio = media?.hasAudio() == true
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
-        media?.owner()?.also { user ->
-            b.username.text = "@${user.username}"
-            b.username.setOnClickListener {
-                if (!UiTools.openProfile(c, user.username!!) && c !is Viewer)
-                    Viewer.comeHere(c, user.id())
-            }
+        val u = media?.owner()
+        b.username.text = "@${u?.username ?: mediaOwner}"
+        b.username.setOnClickListener {
+            if (!UiTools.openProfile(c, u?.username ?: mediaOwner!!) && c !is Viewer)
+                Viewer.comeHere(c, u?.id() ?: mediaOwnerId!!)
         }
 
         val startBoundsInt = Rect()

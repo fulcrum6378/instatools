@@ -100,7 +100,7 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
     var isAccountSet = false
     open fun onAccountSet() {
         if (m.acc?.id != null) sp = initSp(m.acc)
-        if (Api.cookies.isEmpty()) Api.cookies = m.acc!!.cook ?: ""
+        Api.cookies = m.acc!!.cook ?: ""
         isAccountSet = true
     }
 
