@@ -128,7 +128,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun Int.toBytes() = this * MB
 
-        suspend fun loadAliases(c: InstaTools, global: Boolean): HashMap<String, String> {
+        fun loadAliases(c: InstaTools, global: Boolean): HashMap<String, String> {
             val map = (if (global) c.gsp else c.sp!!).getString(spAliases, null)
                 ?.let { Json.decodeFromString<HashMap<String, String>>(it) }
                 ?: hashMapOf()
@@ -156,8 +156,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         fun Uri.folderName() = path.toString().split("/").last()
 
         @SuppressLint("SdCardPath")
-        @Suppress("RedundantSuspendModifier")
-        suspend fun Uri.release(c: InstaTools, global: Boolean) {
+        fun Uri.release(c: InstaTools, global: Boolean) {
             val exc = arrayOf(
                 "${if (global) InstaTools.GSP else c.acc!!.id}.xml",
                 "AwOriginVisitLoggerPrefs.xml", "WebViewChromiumPrefs.xml"

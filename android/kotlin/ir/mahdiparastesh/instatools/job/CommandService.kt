@@ -65,6 +65,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
     }
 
     override fun onHandled(q: Command, success: Boolean) {
+        c.commands.remove<Command>(q)
     }
 
     override fun onCancel() {

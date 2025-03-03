@@ -3,7 +3,7 @@
     <option name="SCRIPT_TEXT" value="" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="false" />
     <option name="SCRIPT_PATH" value="$PROJECT_DIR$/cli/compile_aot.bat" />
-    <option name="SCRIPT_OPTIONS" value="3.1.5" />
+    <option name="SCRIPT_OPTIONS" value="4.1.5" />
     <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
     <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$/cli" />
     <option name="INDEPENDENT_INTERPRETER_PATH" value="false" />

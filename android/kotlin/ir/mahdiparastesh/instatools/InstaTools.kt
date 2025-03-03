@@ -132,3 +132,21 @@ class InstaTools : Application() {
         fun Context.isPathAccessible(path: String) = isPathAccessible(Uri.parse(path))
     }
 }
+
+/* TODO:
+  * Problems:
+  * PageSvd cannot select after onPause and onResume (nothing to do with Selective) (~MultiPagedActivity)
+  * on configuration changes (especially Login while browsing the web)
+  * -
+  * Extension:
+  * A new proper logo
+  * number of posts on PageVwr
+  * Choose download qualities in the Toolbar of Downloads
+  * Custom icons for the Services
+  * Percentage of downloads
+  * Undo for Unsave
+  * Make CommandService cancellable and pausable
+  *
+  * NOTES:
+  * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
+*/

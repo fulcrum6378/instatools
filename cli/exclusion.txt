@@ -1,0 +1,3 @@
+ir/mahdiparastesh/instatools/data/Pickle*.class
+META-INF/com.android.tools/**
+META-INF/proguard/**

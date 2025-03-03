@@ -41,6 +41,7 @@ class DownloadTask : Downloader {
 
     override fun onHandled(q: Download, success: Boolean) {
         super.onHandled(q, success)
+        if (success) queue.remove<Download>(q)
         println("${if (success) "Downloaded" else "Failed downloading"} ${q.fileName}")
     }
 

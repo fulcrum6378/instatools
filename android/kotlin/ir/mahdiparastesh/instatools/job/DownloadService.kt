@@ -113,6 +113,7 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onHandled(q: Download, success: Boolean) {
         super.onHandled(q, success)
+        if (success) c.downloads.remove<Download>(q)
         des?.close()
         Downloads.handler?.obtainMessage(
             if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, q

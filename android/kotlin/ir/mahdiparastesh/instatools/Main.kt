@@ -151,7 +151,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             bh.name.text = c.acc!!.name
         else bh.name.vis(false)
         bh.ll.setOnClickListener {
-            UiTools.openLink(this, UiTools.PROFILE.format(c.acc!!.user!!))
+            //UiTools.openLink(this, UiTools.PROFILE.format(c.acc!!.user!!))
+            (supportFragmentManager.findFragmentByTag("Hey") as? PageSvd)?.b?.rv?.vis(false)
         }
 
         // permissions
@@ -377,21 +378,3 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         @Suppress("DEPRECATION") super.onBackPressed() // Do NOT kill the process
     }
 }
-
-/* TODO:
-  * Problems:
-  * PageSvd cannot select after onPause and onResume (nothing to do with Selective)
-  * on configuration changes (especially Login while browsing the web)
-  * -
-  * Extension:
-  * A new proper logo
-  * number of posts on PageVwr
-  * Choose download qualities in the Toolbar of Downloads
-  * Custom icons for the Services
-  * Percentage of downloads
-  * Undo for Unsave
-  * Make CommandService cancellable and pausable
-  *
-  * NOTES:
-  * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
-*/

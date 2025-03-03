@@ -6,7 +6,7 @@ plugins {
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "4.1.0"
+version = "4.1.5"
 
 sourceSets.getByName("main") { kotlin.srcDirs("main") }
 sourceSets.getByName("test") { kotlin.srcDirs("test") }
@@ -21,6 +21,10 @@ tasks.jar {
         attributes["Main-Class"] = "ir.mahdiparastesh.instatools.MainKt"
         attributes["Manifest-Version"] = version
     }
+
     from(configurations.runtimeClasspath.get().map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    file("exclusion.txt").readLines()
+        .forEach { if (it.isNotBlank()) exclude(it) }
 }

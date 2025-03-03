@@ -32,7 +32,7 @@ class Account(
     }
 
     @WorkerThread
-    suspend fun saveMe(c: Context) {
+    fun saveMe(c: Context) {
         save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
     }
 
@@ -54,12 +54,9 @@ class Account(
             return load(c).find { it.id == id }
         }
 
-        @Suppress("RedundantSuspendModifier")
-        suspend fun save(c: Context, accounts: List<Account>) {
-            runCatching {
-                FileOutputStream(Secured(c)).use { fos ->
-                    fos.write(Json.encodeToString(accounts).encodeToByteArray())
-                }
+        fun save(c: Context, accounts: List<Account>) {
+            FileOutputStream(Secured(c)).use { fos ->
+                fos.write(Json.encodeToString(accounts).encodeToByteArray())
             }
         }
 
