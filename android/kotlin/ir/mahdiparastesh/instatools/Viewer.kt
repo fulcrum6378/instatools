@@ -14,7 +14,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
 import ir.mahdiparastesh.instatools.api.Api
@@ -46,15 +45,21 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
     lateinit var b: ViewerBinding
     val mm: MyModel by viewModels()
     val expandable: Expandable by lazy {
-        Expandable(
-            this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)
-        ) { (pages[currentPage.value!!] as BasePageViewer).updateShadow() }
+        Expandable(this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)) {
+            (currentPage() as BasePageViewer?)?.apply {
+                updateShadow()
+                updateJumper()
+            }
+        }
     }
 
     override val menuRes = R.menu.viewer_tlb
     override val com: ActivityCompanion get() = Companion
-    override val currentPage: MutableLiveData<Int> get() = mm.currentPage
-    override fun defPage(): Int = 1
+    override var currentPage: Int
+        get() = mm.currentPage
+        set(i) {
+            mm.currentPage = i
+        }
 
     class MyModel : ViewModel() {
         var user: User? = null
@@ -63,7 +68,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         var story: Story? = null
         var highlights: Page<Story>? = null
         var tagged: Page<Media>? = null
-        var currentPage = MutableLiveData(1)
+        var currentPage = 1
         var fav: Favourite? = null
 
         fun reset() {
@@ -73,7 +78,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             story = null
             highlights = null
             tagged = null
-            currentPage.value = 1
+            currentPage = 1
             fav = null
         }
     }
@@ -92,7 +97,6 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.vwTitle)
-        createPages(toDefaultPage = false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -198,9 +202,8 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 mm.fav = c.dao.favourite(mm.user!!.id!!)
 
             withContext(Dispatchers.Main) {
-                if (userReplaced)
-                    pages.forEach { (it as BasePageViewer?)?.clear() }
-                (pages[1] as? PageVwr)?.showProfile(reset)
+                if (userReplaced) (currentPage() as BasePageViewer?)?.clear()
+                (currentPage() as? PageVwr)?.showProfile(reset)
                 b.toolbar.title = mm.user?.username
                 fixTbMenu()
             }
@@ -210,7 +213,8 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
     private suspend fun onError(code: Int) {
         withContext(Dispatchers.Main) {
             if (mm.user != null) {
-                (pages[1] as? PageVwr)?.b?.refresher?.isRefreshing = false // in case of a refresh
+                (currentPage() as? PageVwr)?.b?.refresher?.isRefreshing =
+                    false // in case of a refresh
                 UiTools.snackbar(b.root, UiTools.apiError(c, code))
             } else {
                 Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
@@ -239,7 +243,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 }
             }
             R.id.vtShortcut -> mm.user?.also { u ->
-                val bmp = ((pages[1] as? PageVwr)?.b?.proPicIv?.drawable as BitmapDrawable?)
+                val bmp = ((currentPage() as? PageVwr)?.b?.proPicIv?.drawable as BitmapDrawable?)
                     ?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, u.username!!).apply {
@@ -274,7 +278,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         if (::b.isInitialized && expandable.zoomed) {
             expandable.collapse(); return; }
         if (pageGoBack()) return
-        if (mm.currentPage.value != 1) {
+        if (mm.currentPage != 1) {
             turnToPage(1); return; }
         mm.reset()
         @Suppress("DEPRECATION") super.onBackPressed()

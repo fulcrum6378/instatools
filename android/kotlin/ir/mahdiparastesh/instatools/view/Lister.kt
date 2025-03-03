@@ -110,7 +110,7 @@ interface Lister {
     }
 
     fun shouldShowJumper(): Boolean =
-        rv!!.computeVerticalScrollOffset() > screenHeight()
+        rv!!.computeVerticalScrollOffset() > screenHeight() && expandable?.zoomed != true
 
     @MainThread
     fun load(reset: Boolean = false)

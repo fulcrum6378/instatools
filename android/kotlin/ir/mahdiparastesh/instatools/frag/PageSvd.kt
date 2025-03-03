@@ -60,9 +60,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
     override val jumper: ImageView? get() = b.jumper
     override val emptyIcon: Int = R.drawable.done_svd
     override val expandable: Expandable by lazy {
-        Expandable(
-            c, b.expanded, c.color(if (!c.night()) R.color.defBG else R.color.CS)
-        ) { updateShadow() }
+        Expandable(c, b.expanded, c.color(if (!c.night()) R.color.defBG else R.color.CS)) {
+            updateShadow()
+            updateJumper()
+        }
     }
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
     override var tracker: SelectionTracker<String>? = null
@@ -180,21 +181,25 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
             // enqueue
             for (svd in saved.items.indices) {
                 if (saved.items[svd].media.id() !in selection) continue
-                if (download) c.c.downloads.addAll<Download>(saved.items[svd].media.queue())
+                if (download) c.c.downloads.addAll<Download>(saved.items[svd].media.queue(), false)
                 if (unsave) {
-                    c.c.commands.add<Download>(
-                        Command(saved.items[svd].media, unsave = true)
-                    )
+                    c.c.commands.add<Command>(Command(saved.items[svd].media, unsave = true), false)
                     deletion.add(svd)
                     c.c.incrementCounter(Settings.spUnsaveCount)
                 }
             }
 
             // start the Services
-            if (download) Downloads.initService(c)
-            if (unsave) c.startService(
-                Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
-            )
+            if (download) {
+                c.c.downloads.save<Download>()
+                Downloads.initService(c)
+            }
+            if (unsave) {
+                c.c.commands.save<Command>()
+                c.startService(
+                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
+                )
+            }
 
             // handle the UI
             withContext(Dispatchers.Main) {

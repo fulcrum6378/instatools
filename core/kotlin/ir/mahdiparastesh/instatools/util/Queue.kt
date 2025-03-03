@@ -33,20 +33,19 @@ class Queue<T>(val pickle: Pickle?) {
         return list.indexOf(element)
     }
 
-    @Deprecated("Do NOT call this function frequently.")
-    inline fun <reified R> add(element: T) {
+    inline fun <reified R> add(element: T, autoSave: Boolean) {
         val list = list<R>() as CopyOnWriteArrayList<T>
         if (!list.contains(element))
             list.add(element)
-        save<R>()
+        if (autoSave) save<R>()
     }
 
-    inline fun <reified R> addAll(elements: Collection<T>) {
+    inline fun <reified R> addAll(elements: Collection<T>, autoSave: Boolean) {
         val list = list<R>() as CopyOnWriteArrayList<T>
         for (element in elements)
             if (!list.contains(element))
                 list.add(element)
-        save<R>()
+        if (autoSave) save<R>()
     }
 
     inline fun <reified R> remove(element: T) {

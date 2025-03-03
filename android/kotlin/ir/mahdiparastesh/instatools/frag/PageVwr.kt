@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.frag
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -71,7 +72,6 @@ class PageVwr : BasePageViewer() {
             MaterialMenu(c, v, R.menu.viewer_pic_more,
                 R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
-                        @Suppress("DEPRECATION")
                         c.c.downloads.add<Download>(
                             Download(
                                 Utils.PROFILE_PHOTO,
@@ -83,7 +83,7 @@ class PageVwr : BasePageViewer() {
                                 UiTools.PROFILE.format(c.mm.user!!.username!!),
                                 c.mm.user!!.profile_pic_url,
                                 null, null, null
-                            )
+                            ), true
                         )
                         Downloads.initService(c)
                     }
@@ -113,6 +113,10 @@ class PageVwr : BasePageViewer() {
     override fun updateShadow() {
         if (isBInitialised()) c.b.tbShadow.vish(b.nsv.scrollY > 0)
     }
+
+    @SuppressLint("RestrictedApi")
+    override fun shouldShowJumper(): Boolean =
+        b.nsv.computeVerticalScrollOffset() > screenHeight() && expandable?.zoomed != true
 
     override fun canRefresh(): Boolean =
         super.canRefresh() && !b.nsv.canScrollVertically(-1)
@@ -232,10 +236,11 @@ class PageVwr : BasePageViewer() {
         CoroutineScope(Dispatchers.Default).launch {
             for (edg in posts.edges.indices) {
                 if (posts.edges[edg].node.id() !in selection) continue
-                if (download) {
-                    c.c.downloads.addAll<Download>(posts.edges[edg].node.queue()) // FIXME all at once
-                    Downloads.initService(c)
-                }
+                if (download) c.c.downloads.addAll<Download>(posts.edges[edg].node.queue(), false)
+            }
+            if (download) {
+                c.c.downloads.save<Download>()
+                Downloads.initService(c)
             }
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()

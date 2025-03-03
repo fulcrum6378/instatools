@@ -143,8 +143,10 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
             }
 
             if (downloadAll) {
-                for (reel in story.items!!) // FIXME all at once
-                    c.c.downloads.addAll<Download>(reel.queue(owner = c.mm.user!!.username!!))
+                for (reel in story.items!!) c.c.downloads.addAll<Download>(
+                    reel.queue(owner = c.mm.user!!.username!!), false
+                )
+                c.c.downloads.save<Download>()
                 Downloads.initService(c)
             }
 

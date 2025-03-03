@@ -275,7 +275,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             try {
                 val addition: Int
                 c.downloads.addAll<Download>(
-                    SimpleJobs.handlePostLink(link).queue().also { addition = it.size })
+                    SimpleJobs.handlePostLink(link).queue().also { addition = it.size }, true
+                )
                 withContext(Dispatchers.Main) {
                     val first = c.downloads.size<Download>() - addition
                     b.rv.adapter?.notifyItemRangeInserted(first, addition)
@@ -312,7 +313,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     )
                 }
             }.onSuccess { downloads ->
-                c.downloads.addAll<Download>(downloads)
+                c.downloads.addAll<Download>(downloads, true)
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {

@@ -3,13 +3,11 @@ package ir.mahdiparastesh.instatools.list
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
-import ir.mahdiparastesh.instatools.view.UiTools.vis
 
 class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
     RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
@@ -28,18 +26,12 @@ class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
             .into(h.b.thumb)
 
         h.b.click.setOnClickListener {
-            c.expandable.media = story.items?.getOrNull(h.layoutPosition)
-                ?: return@setOnClickListener
-            c.expandable.thumb = h.b.root
-            c.expandable.mediaOwner = c.mm.user?.username
-            c.expandable.mediaOwnerId = c.mm.user?.id()
-            // these Media instances do not contains User information!
-            try {
-                c.expandable.expand()
-                f.b.jumper.vis(false)
-            } catch (e: Exception) {
-                if (BuildConfig.DEBUG) throw e
-            }
+            c.expandable.expand(
+                story.items?.getOrNull(h.layoutPosition) ?: return@setOnClickListener,
+                h.b.root,
+                c.mm.user?.username, // these Media instances do not contains User information!
+                c.mm.user?.id()
+            )
         }
     }
 

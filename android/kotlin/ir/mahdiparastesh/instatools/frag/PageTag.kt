@@ -104,9 +104,12 @@ class PageTag : BasePageViewer() {
         CoroutineScope(Dispatchers.Default).launch {
             for (edg in tagged.edges.indices) {
                 if (tagged.edges[edg].node.id() !in selection) continue
-                if (download) c.c.downloads.addAll<Download>(tagged.edges[edg].node.queue()) // FIXME all at once
+                if (download) c.c.downloads.addAll<Download>(tagged.edges[edg].node.queue(), false)
             }
-            if (download) Downloads.initService(c)
+            if (download) {
+                c.c.downloads.save<Download>()
+                Downloads.initService(c)
+            }
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()
             }

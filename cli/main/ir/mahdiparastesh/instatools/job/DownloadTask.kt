@@ -15,7 +15,7 @@ class DownloadTask : Downloader {
     fun download(
         med: Media, idealSize: Int, link: String? = null, owner: String? = null
     ) {
-        queue.addAll<Download>(med.queue(idealSize, link, owner))
+        queue.addAll<Download>(med.queue(idealSize, link, owner), true)
         start()
     }
 

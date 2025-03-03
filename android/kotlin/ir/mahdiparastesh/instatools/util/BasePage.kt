@@ -26,6 +26,8 @@ abstract class BasePage<Activity> : Fragment(), Lister, Toolbar.OnMenuItemClickL
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prepareListing(c)
+        updateShadow()
+        updateJumper()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true

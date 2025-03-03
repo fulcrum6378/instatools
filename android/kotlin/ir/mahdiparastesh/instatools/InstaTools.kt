@@ -135,8 +135,8 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * PageSvd cannot select after onPause and onResume (nothing to do with Selective) (~MultiPagedActivity)
   * on configuration changes (especially Login while browsing the web)
+  * PageVwr doesn't show its jumper
   * -
   * Extension:
   * A new proper logo

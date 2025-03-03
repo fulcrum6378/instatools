@@ -72,17 +72,18 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     var schRes: Array<Rest.ItemUser>? = null
     var searchErrored = false
 
-    override val menuRes = R.menu.main_tlb
     override val com: ActivityCompanion get() = Companion
-    override val currentPage: MutableLiveData<Int> get() = mm.currentPage
-    override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-        ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
-        ?: Settings.defSpMainPage
+    override val menuRes = R.menu.main_tlb
+    override var currentPage: Int
+        get() = mm.currentPage
+        set(i) {
+            mm.currentPage = i
+        }
 
     class MyModel : ViewModel() {
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
-        val currentPage = MutableLiveData(Settings.defSpMainPage)
+        var currentPage = Settings.defSpMainPage
     }
 
     companion object : ActivityCompanion()
@@ -94,13 +95,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
-        createPages()
 
         // bottom navigation bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         mm.savedCount.observe(this) { bnvBadge(1, it) }
-        b.bnv.selectedItemId = bnvButtons[mm.currentPage.value!!]
+        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // theming
         if (night()) colorBG.observe(this) {
@@ -115,8 +115,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             b.nav.setBackgroundColor(it)
             b.searchRes.setBackgroundColor(it)
             b.bnv.setBackgroundColor(it)
-            if (pages[1]?.isBInitialised() == true)
-                (pages[1] as? PageSvd)?.b?.expanded?.root?.setBackgroundColor(it)
+            (currentPage() as? PageSvd)
+                ?.apply { if (isBInitialised()) b.expanded.root.setBackgroundColor(it) }
         } else colorAc.observe(this) {
             if (it == null) return@observe
             styliseToolbar()
@@ -127,10 +127,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             if (::searchClose.isInitialized)
                 searchClose.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
-        if (night()) colorBG.value = bg[mm.currentPage.value!!]
-        else colorAc.value = ca[mm.currentPage.value!!]
-        b.toolbar.popupTheme = popupThemes[mm.currentPage.value!!]
-        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
+        if (night()) colorBG.value = bg[mm.currentPage]
+        else colorAc.value = ca[mm.currentPage]
+        b.toolbar.popupTheme = popupThemes[mm.currentPage]
 
         // navigation
         toggleNav = ActionBarDrawerToggle(
@@ -151,9 +150,14 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             bh.name.text = c.acc!!.name
         else bh.name.vis(false)
         bh.ll.setOnClickListener {
-            //UiTools.openLink(this, UiTools.PROFILE.format(c.acc!!.user!!))
-            (supportFragmentManager.findFragmentByTag("Hey") as? PageSvd)?.b?.rv?.vis(false)
+            UiTools.openLink(this, UiTools.PROFILE.format(c.acc!!.user!!))
         }
+
+        // pages
+        mm.currentPage = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+            ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
+                ?: Settings.defSpMainPage
+        b.bnv.selectedItemId = bnvButtons[mm.currentPage]
 
         // permissions
         if (UiTools.reqPermissions.isNotEmpty())
@@ -216,11 +220,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 setView(bd.root)
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
-                    if (c.acc == null) return@setPositiveButton
                     CoroutineScope(Dispatchers.IO).launch {
                         Api.json<Rest.QuickResponse>(
                             Api.Endpoint.LOGOUT.url,
-                            true, "one_tap_app_login=1&user_id=${c.acc?.id}",
+                            true, "one_tap_app_login=1&user_id=${c.acc!!.id}",
                         )
                     }
                     signOut(bd.root.isChecked)
@@ -312,12 +315,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
-        c.sp?.edit { putInt(spMainPage, mm.currentPage.value!!) }
+        c.sp?.edit { putInt(spMainPage, mm.currentPage) }
         b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()
         val col = if (night()) bg else ca
-        anTheme = ValueAnimator.ofArgb(col[lastPage], col[mm.currentPage.value!!]).apply {
+        anTheme = ValueAnimator.ofArgb(col[lastPage], col[mm.currentPage]).apply {
             duration = resources.getInteger(R.integer.transFrag).toLong()
             addUpdateListener {
                 if (night()) colorBG.value = it.animatedValue as Int

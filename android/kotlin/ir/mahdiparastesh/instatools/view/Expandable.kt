@@ -29,7 +29,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
-import java.util.concurrent.TimeoutException
 
 /** A ViewGroup that pops up and shows an IG post or reel. */
 class Expandable(
@@ -38,11 +37,10 @@ class Expandable(
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
-    var media: Media? = null
-    var mediaOwner: String? = null // used only for stories and highlights
-    var mediaOwnerId: String? = null // ^^
-    var thumb: View? = null
     var zoomed = false
+    private var media: Media? = null
+    private var mediaOwner: String? = null
+    private var thumb: View? = null
     private var currentAnimator: Animator? = null
     private var startScale: Float? = null
     private var startBounds: RectF? = null
@@ -59,7 +57,7 @@ class Expandable(
         b.download.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.c.downloads.addAll<Download>(med.queue(owner = mediaOwner))
+                    c.c.downloads.addAll<Download>(med.queue(owner = mediaOwner), true)
                     Downloads.initService(c)
                 }
             }
@@ -67,7 +65,9 @@ class Expandable(
         b.downloadThis.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.c.downloads.addAll<Download>(med.queue(onlyOneSlide = b.slider.currentItem))
+                    c.c.downloads.addAll<Download>(
+                        med.queue(onlyOneSlide = b.slider.currentItem), true
+                    )
                     Downloads.initService(c)
                 }
             }
@@ -76,7 +76,7 @@ class Expandable(
         b.downloadAll.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.c.downloads.addAll<Download>(med.queue())
+                    c.c.downloads.addAll<Download>(med.queue(), true)
                     Downloads.initService(c)
                 }
             }
@@ -101,7 +101,7 @@ class Expandable(
                             video_duration,
                             latitude(),
                             longitude(),
-                        )
+                        ), true
                     )
                     Downloads.initService(c)
                 }
@@ -124,30 +124,39 @@ class Expandable(
         }
     }
 
-    fun expand() {
+    fun expand(
+        media: Media?,
+        thumb: View?,
+        /** used only for stories and highlights */
+        mediaOwner: String? = null,
+        /** used only for stories and highlights */
+        mediaOwnerId: String? = null
+    ) {
         if (thumb == null || media == null || zoomed) return
         zoomed = true
+        this.media = media
+        this.mediaOwner = mediaOwner
         onZoomChanged(true)
         currentAnimator?.cancel()
         b.username.text = ""
 
-        b.slider.adapter = ListCar(c, media!!, muteSound)
+        b.slider.adapter = ListCar(c, media, muteSound)
         b.indicator.attachTo(b.slider)
         b.buttons.vis()
         b.username.vis()
-        val isSlider = media?.carousel_media != null
+        val isSlider = media.carousel_media != null
         b.indicator.vis(isSlider)
         b.downloadAll.vis(isSlider)
         b.downloadThis.vis(isSlider)
         b.download.vis(!isSlider)
-        val hasAudio = media?.hasAudio() == true
+        val hasAudio = media.hasAudio() == true
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
-        val u = media?.owner()
-        b.username.text = "@${u?.username ?: mediaOwner}"
+        val u = media.owner()
+        b.username.text = "@${u.username ?: mediaOwner}"
         b.username.setOnClickListener {
-            if (!UiTools.openProfile(c, u?.username ?: mediaOwner!!) && c !is Viewer)
-                Viewer.comeHere(c, u?.id() ?: mediaOwnerId!!)
+            if (!UiTools.openProfile(c, u.username ?: mediaOwner!!) && c !is Viewer)
+                Viewer.comeHere(c, mediaOwnerId ?: u.id())
         }
 
         val startBoundsInt = Rect()
@@ -155,7 +164,7 @@ class Expandable(
         val globalOffset = Point()
 
         b.root.vish()
-        thumb?.getGlobalVisibleRect(startBoundsInt)
+        thumb.getGlobalVisibleRect(startBoundsInt)
         b.root.getGlobalVisibleRect(finalBoundsInt, globalOffset)
         startBoundsInt.offset(-globalOffset.x, -globalOffset.y)
         finalBoundsInt.offset(-globalOffset.x, -globalOffset.y)
@@ -177,7 +186,7 @@ class Expandable(
             startBounds!!.bottom += deltaHeight.toInt()
         }
 
-        thumb!!.alpha = 0f
+        thumb.alpha = 0f
         b.slider.pivotX = 0f
         b.slider.pivotY = 0f
 
@@ -229,30 +238,24 @@ class Expandable(
             interpolator = DecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    thumb?.alpha = 1f
-                    thumb = null
-                    try {
-                        b.root.vish(false)
-                    } catch (_: TimeoutException) {
-                        // Waited 100 milliseconds (plus 168807 nanoseconds delay) for
-                        // androidx.media2.player.MediaPlayer$20@60db9c3[status=PENDING]
-                    }
-                    b.slider.adapter = null
-                    currentAnimator = null
-                    zoomed = false
-                    onZoomChanged(false)
+                    zoomedOut()
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
-                    thumb?.alpha = 1f
-                    thumb = null
-                    b.root.vish(false)
-                    currentAnimator = null
-                    zoomed = false
-                    onZoomChanged(false)
+                    zoomedOut()
                 }
             })
             start()
         }
+    }
+
+    private fun zoomedOut() {
+        thumb?.alpha = 1f
+        thumb = null
+        b.root.vish(false)
+        b.slider.adapter = null
+        currentAnimator = null
+        zoomed = false
+        onZoomChanged(false)
     }
 }

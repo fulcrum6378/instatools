@@ -8,6 +8,7 @@ import java.util.concurrent.CancellationException
  * A structure for handling multiple items as a queue.
  * NOTE: [Queuer] is not responsible for interacting with lists;
  * You must manually add and remove items.
+ * This pain is caused by kotlinx-serialization requiring reified generics everywhere!
  */
 interface Queuer<Item> {
 

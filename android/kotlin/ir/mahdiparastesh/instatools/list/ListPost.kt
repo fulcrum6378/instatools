@@ -111,10 +111,7 @@ abstract class ListPost<Activity, Fragment>(
     abstract operator fun get(position: Int): Media?
 
     private fun expand(v: View, i: Int) {
-        expandable.media = this@ListPost[i]
-        expandable.thumb = v
-        expandable.expand()
-        //TODO f.jumper?.vis(false)
+        expandable.expand(this[i], v)
     }
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {

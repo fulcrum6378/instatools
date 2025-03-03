@@ -27,21 +27,27 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         }
     }
 
-    inline fun <reified DATA> restore(): DATA? =
-        if (file.exists() && (Utils.now() - file.lastModified()) < type.lifespan()) try {
+    inline fun <reified DATA> restore(): DATA? {
+        if (!file.exists()) return null
+        val lifespan = type.lifespan()
+        if (lifespan != 0L && (Utils.now() - file.lastModified()) >= lifespan) return null
+        return try {
             Api.json.decodeFromString<DATA>(
                 FileInputStream(file).use { it.readBytes().toString(Charsets.UTF_8) }
             )
-        } catch (_: Exception) {
-            null
-        } else null
+        } catch (e: Exception) {
+            throw e
+            //null
+        }
+    }
 
     enum class Type(
+        /** set it to zero to make it never expire */
         val lifespanInDays: Float,
         val singleFile: Boolean = true,
     ) {
         // queues
-        DOWNLOAD_LIST(30f),
+        DOWNLOAD_LIST(0f),
         COMMAND_LIST(7f),
 
         // caches

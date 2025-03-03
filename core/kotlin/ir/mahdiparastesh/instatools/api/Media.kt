@@ -255,8 +255,8 @@ class Media(
         //val facebook_places_id: String?,
         //val has_viewer_saved: Boolean?,
         //val is_eligible_for_guides: Boolean?,
-        val lat: Double, // actually it's just a Float for now
-        val lng: Double,
+        val lat: Double?, // actually it's just a Float for now
+        val lng: Double?,
         //val name: String,
         //val pk: String,
         //val short_name: String?,

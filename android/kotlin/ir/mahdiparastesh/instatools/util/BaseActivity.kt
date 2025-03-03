@@ -55,6 +55,9 @@ abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListen
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (this !is Login && c.acc == null)
+            goTo(Login::class)
+
         com.active = true
         resolvedIntent = null
         super.onCreate(savedInstanceState)

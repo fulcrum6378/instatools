@@ -45,8 +45,9 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onCreate() {
         super.onCreate()
+        if (c.acc == null) return
         dest = c.sPreference(Settings.spStorage)
-        if (c.acc == null || dest == null) return
+        if (dest == null) return
 
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
         ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
