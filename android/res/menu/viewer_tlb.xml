@@ -8,7 +8,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/vtFav"
-        android:icon="@drawable/favourite_off"
+        android:icon="@drawable/favourite_off_themed"
         android:title="@string/addToFav"
         app:showAsAction="ifRoom" />
     <item

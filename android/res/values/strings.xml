@@ -129,7 +129,10 @@
     <string name="vwFlwZero" translatable="false">0</string>
     <string name="vwPrivate">This account is private!</string>
     <string name="vwStoryReel">Main Stories</string>
-    <string name="vwReelDesc">Contains %d items</string>
+    <plurals name="vwReelDesc">
+        <item quantity="one">Contains %d item</item>
+        <item quantity="other">Contains %d items</item>
+    </plurals>
     <string name="vwNoReels">This profile has no stories!</string>
     <string name="vwNoTagged">This profile has no tagged posts!</string>
     <string name="vwLinkNotProfile">This link doesn\'t represent an IG profile!</string>
@@ -173,9 +176,14 @@
     <string name="downloaderChannel">Download queue</string>
     <string name="downloaderChannelDesc">Downloads media in a queue</string>
     <string name="downloaderTitle">Downloading&#8230;</string>
-    <string name="downloaderTitleCount">Downloading %d items&#8230;</string>
-    <string name="downloaderTitleCount1" translatable="false">Downloading %d item&#8230;</string>
-    <string name="downloaderSomeFailed">Couldn\'t download %d items!</string>
+    <plurals name="downloaderTitleCount">
+        <item quantity="one">Downloading %d item&#8230;</item>
+        <item quantity="other">Downloading %d items&#8230;</item>
+    </plurals>
+    <plurals name="downloaderSomeFailed">
+        <item quantity="one">Couldn\'t download %d item!</item>
+        <item quantity="other">Couldn\'t download %d items!</item>
+    </plurals>
     <string name="downloaderCannot">Cannot download from Instagram!</string>
 
     <!-- Commander -->
@@ -185,7 +193,10 @@
     </string>
     <string name="commanderTitle">Sending commands to Instagram&#8230;</string>
     <string name="commanderSubtitle">%1$s (%2$d of %3$d)</string>
-    <string name="commanderSomeFailed">Couldn\'t process %d items!</string>
+    <plurals name="commanderSomeFailed">
+        <item quantity="one">Couldn\'t process %d command!</item>
+        <item quantity="other">Couldn\'t process %d commands!</item>
+    </plurals>
 
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">Long-Running Tasks</string>

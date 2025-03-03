@@ -130,7 +130,10 @@
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
     <string name="vwStoryReel">استوری های اصلی</string>
-    <string name="vwReelDesc">دارای %d آیتم</string>
+    <plurals name="vwReelDesc">
+        <item quantity="one">دارای %d استوری</item>
+        <item quantity="other">دارای %d استوری</item>
+    </plurals>
     <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
     <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
     <string name="vwLinkNotProfile">این لینک یک پروفایل اینستاگرام نیست!</string>
@@ -175,8 +178,14 @@
     <string name="downloaderChannel">صف دانلود</string>
     <string name="downloaderChannelDesc">اعلان های دانلود</string>
     <string name="downloaderTitle">در حال دانلود&#8230;</string>
-    <string name="downloaderTitleCount">در حال دانلود %d مورد&#8230;</string>
-    <string name="downloaderSomeFailed">دانلود %d مورد ممکن نشد!</string>
+    <plurals name="downloaderTitleCount">
+        <item quantity="one">در حال دانلود %d مورد&#8230;</item>
+        <item quantity="other">در حال دانلود %d مورد&#8230;</item>
+    </plurals>
+    <plurals name="downloaderSomeFailed">
+        <item quantity="one">دانلود %d فایل ممکن نشد!</item>
+        <item quantity="other">دانلود %d فایل ممکن نشد!</item>
+    </plurals>
     <string name="downloaderCannot">دانلود چیزی از اینستاگرام امکان پذیر نیست!</string>
 
     <!-- Commander -->
@@ -186,7 +195,10 @@
     </string>
     <string name="commanderTitle">درحال ارسال فرمان ها&#8230;</string>
     <string name="commanderSubtitle">%1$s (%2$d از %3$d)</string>
-    <string name="commanderSomeFailed">پردازش %d مورد ممکن نشد!</string>
+    <plurals name="commanderSomeFailed">
+        <item quantity="one">پردازش %d فرمان ممکن نشد!</item>
+        <item quantity="other">پردازش %d فرمان ممکن نشد!</item>
+    </plurals>
 
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">کارهای طولانی</string>

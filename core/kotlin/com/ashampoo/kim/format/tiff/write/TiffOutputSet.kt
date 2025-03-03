@@ -29,8 +29,6 @@ import com.ashampoo.kim.format.tiff.constant.TiffConstants.DEFAULT_TIFF_BYTE_ORD
 import com.ashampoo.kim.format.tiff.constant.TiffTag
 import com.ashampoo.kim.model.GpsCoordinates
 import com.ashampoo.kim.model.MetadataUpdate
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.math.abs
 
 @Suppress("TooManyFunctions")

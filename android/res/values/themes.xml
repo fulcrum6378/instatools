@@ -57,17 +57,6 @@
     <attr name="colorPrimaryHigh" format="reference|color" />
     <attr name="defCA" format="reference|color" />
 
-    <!-- used for PdfExporter -->
-    <style name="Theme.InstaTools.Tertiary.Light" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/CT</item>
-        <item name="colorPrimaryDark">?attr/colorPrimary</item>
-        <item name="colorPrimaryWeak">@color/CTW</item>
-        <item name="colorAccent">?attr/colorPrimary</item>
-        <item name="backgroundColor">#FFF</item>
-        <item name="android:windowBackground">?attr/backgroundColor</item>
-        <item name="defCA">@color/defCALight</item>
-    </style>
-
 
     <!-- PopupMenu -->
     <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">

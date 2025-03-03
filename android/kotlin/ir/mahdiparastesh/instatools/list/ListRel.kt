@@ -6,10 +6,9 @@ import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
-import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 
-class ListRel(private val c: Viewer, private val f: PageSto, var story: Story) :
+class ListRel(private val c: Viewer, var story: Story) :
     RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
 
     override fun onCreateViewHolder(

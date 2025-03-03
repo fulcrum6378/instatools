@@ -107,8 +107,9 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
 
     @MainThread
     fun fixTbMenu() {
-        b.toolbar.menu.findItem(R.id.vtFav)
-            ?.setIcon(if (mm.fav != null) R.drawable.favourite_on else R.drawable.favourite_off)
+        b.toolbar.menu.findItem(R.id.vtFav)?.setIcon(
+            if (mm.fav != null) R.drawable.favourite_on_themed else R.drawable.favourite_off_themed
+        )
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {

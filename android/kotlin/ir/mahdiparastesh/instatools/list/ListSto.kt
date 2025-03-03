@@ -53,7 +53,9 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         h.b.title.text =
             if (!isHL) c.getString(R.string.vwStoryReel)
             else "${i + hlNumAdd}. ${story.title}"
-        if (!isHL) h.b.desc.text = c.getString(R.string.vwReelDesc, story.items!!.size)
+        if (!isHL) h.b.desc.text = c.resources.getQuantityString(
+            R.plurals.vwReelDesc, story.items!!.size, story.items!!.size
+        )
         if (!isHL) h.b.icon.setImageResource(R.drawable.instagram)
         else story.cover_media?.cropped_image_version.apply {
             if (this != null) Glide.with(c.c)
@@ -71,7 +73,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
 
         // ListRel: initiation
         if (h.b.reel.adapter == null)
-            h.b.reel.adapter = ListRel(c, f, story)
+            h.b.reel.adapter = ListRel(c, story)
         else
             (h.b.reel.adapter!! as ListRel).story = story
         h.b.reel.adapter?.notifyDataSetChanged()

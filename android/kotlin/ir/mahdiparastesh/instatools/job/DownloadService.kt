@@ -99,10 +99,7 @@ class DownloadService : ForegroundService(), Downloader {
         processingItem = q
 
         // update the notification
-        ntfTitle = getString(
-            if (remaining > 1) R.string.downloaderTitleCount else R.string.downloaderTitleCount1,
-            remaining
-        )
+        ntfTitle = resources.getQuantityString(R.plurals.downloaderTitleCount, remaining, remaining)
         ntfSmallText = q.owner
         updateNotification(Pair(handledItems, remaining + handledItems))
 
@@ -151,8 +148,8 @@ class DownloadService : ForegroundService(), Downloader {
                                 UiTools.apiError(c, fatalError.code)
                             is Downloader.FailureException ->
                                 getString(R.string.downloaderCannot)
-                            is Queuer.FailureException ->
-                                getString(R.string.downloaderSomeFailed, fatalError.times)
+                            is Queuer.FailureException -> resources
+                                .getQuantityString(R.plurals.downloaderSomeFailed, fatalError.times)
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
@@ -167,7 +164,9 @@ class DownloadService : ForegroundService(), Downloader {
                 // report if some downloads failed
                 val failedSum = c.downloads.size<Download>()
                 if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
-                    setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
+                    setContentTitle(
+                        resources.getQuantityString(R.plurals.downloaderSomeFailed, failedSum)
+                    )
                     setContentIntent(
                         PendingIntent.getActivity(
                             c, 0, Intent(c, Downloads::class.java), ntfMutability()

@@ -87,8 +87,10 @@ class CommandService : ForegroundService(), Queuer<Command> {
                         when (fatalError) {
                             is Api.FailureException ->
                                 UiTools.apiError(c, fatalError.code)
-                            is Queuer.FailureException ->
-                                getString(R.string.commanderSomeFailed, fatalError.times)
+                            is Queuer.FailureException -> resources.getQuantityString(
+                                R.plurals.commanderSomeFailed,
+                                fatalError.times, fatalError.times
+                            )
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
@@ -98,7 +100,11 @@ class CommandService : ForegroundService(), Queuer<Command> {
                 // report if some commands failed
                 val failedSum = c.commands.size<Command>()
                 if (failedSum != 0) eventNotification(Notify.ID_COMMANDER_SOME_FAILED) {
-                    setContentTitle(getString(R.string.commanderSomeFailed, failedSum))
+                    setContentTitle(
+                        resources.getQuantityString(
+                            R.plurals.commanderSomeFailed, failedSum, failedSum
+                        )
+                    )
                     addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                 }
             }
