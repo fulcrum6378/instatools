@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.util
 
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Pickle
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -66,5 +67,13 @@ class Queue<T>(val pickle: Pickle?) {
 
     inline fun <reified R> save() {
         pickle?.save<List<R>>(list<R>().toList())
+    }
+
+    inline fun <reified R> export(): String {
+        return Api.json.encodeToString(list<R>().toList())
+    }
+
+    inline fun <reified R> import(json: String) {
+        addAll<R>(Api.json.decodeFromString<List<R>>(json) as List<T>, true)
     }
 }

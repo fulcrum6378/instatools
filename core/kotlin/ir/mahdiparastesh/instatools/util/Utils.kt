@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.util
 import java.util.*
 
 object Utils {
+    const val PROFILE = "https://www.instagram.com/%s/"
     const val POST_LINK = "https://www.instagram.com/p/%s/"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
     const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s/"

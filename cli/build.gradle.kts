@@ -6,7 +6,7 @@ plugins {
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "4.1.5"
+version = "4.2.5"
 
 sourceSets.getByName("main") { kotlin.srcDirs("main") }
 sourceSets.getByName("test") { kotlin.srcDirs("test") }
@@ -27,4 +27,8 @@ tasks.jar {
 
     file("exclusion.txt").readLines()
         .forEach { if (it.isNotBlank()) exclude(it) }
+}
+
+tasks.register("compileAot", Exec::class) {
+    commandLine("${workingDir.absolutePath}/compile_aot.bat", version)
 }

@@ -31,6 +31,7 @@ import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePageViewer
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -251,7 +252,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                         setIntent(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse(UiTools.PROFILE.format(u.username))
+                                Uri.parse(Utils.PROFILE.format(u.username))
                             ).setPackage(UiTools.INSTA_PACKAGE)
                         )
                         setIcon(

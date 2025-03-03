@@ -48,8 +48,8 @@ class PageSto : BasePageViewer() {
             // fetch their story
             c.mm.story = Api.json<GraphQl>(
                 Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(uid)
-            ).data!!.xdt_api__v1__feed__reels_media!!.reels_media.first()
-            pickle1.save(c.mm.story!!)
+            ).data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
+            if (c.mm.story != null) pickle1.save(c.mm.story!!)
         }
 
         // load their highlights into the data model

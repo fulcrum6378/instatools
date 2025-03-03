@@ -135,6 +135,8 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * ListFav texts are black instead of golden
+  * ListFav doesn't show profile pictures
   * on configuration changes (especially Login while browsing the web)
   * PageVwr doesn't show its jumper
   * -

@@ -29,7 +29,6 @@ import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -80,7 +79,7 @@ class PageVwr : BasePageViewer() {
                                 0x1,
                                 c.mm.user!!.username!!,
                                 c.mm.user!!.biography,
-                                UiTools.PROFILE.format(c.mm.user!!.username!!),
+                                Utils.PROFILE.format(c.mm.user!!.username!!),
                                 c.mm.user!!.profile_pic_url,
                                 null, null, null
                             ), true

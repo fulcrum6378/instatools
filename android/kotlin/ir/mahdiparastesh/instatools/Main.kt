@@ -37,6 +37,7 @@ import ir.mahdiparastesh.instatools.frag.PageSvd
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -150,7 +151,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             bh.name.text = c.acc!!.name
         else bh.name.vis(false)
         bh.ll.setOnClickListener {
-            UiTools.openLink(this, UiTools.PROFILE.format(c.acc!!.user!!))
+            UiTools.openLink(this, Utils.PROFILE.format(c.acc!!.user!!))
         }
 
         // pages

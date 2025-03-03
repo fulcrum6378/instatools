@@ -11,7 +11,7 @@ import ir.mahdiparastesh.instatools.util.Delay
 import kotlin.reflect.KClass
 
 /**
- * A subclass of [BaseActivity] which handles multiple [Fragment] in a FrameLayout.
+ * A subclass of [BaseActivity] which handles multiple [Fragment]s inside a FrameLayout.
  */
 abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
 
@@ -39,13 +39,15 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
     override fun setContentView(root: View?) {
         super.setContentView(root)
 
-        // create the initial page
-        val javaClass = classes[currentPage].java
-        val fragment = javaClass.getDeclaredConstructor().newInstance() as Fragment
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.frame, fragment, CURRENT_PAGE)
-            .commit()
+        // create the initial page if it doesn't exist
+        if (currentPage() == null) {
+            val javaClass = classes[currentPage].java
+            val fragment = javaClass.getDeclaredConstructor().newInstance() as Fragment
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.frame, fragment, CURRENT_PAGE)
+                .commit()
+        }
     }
 
     /**

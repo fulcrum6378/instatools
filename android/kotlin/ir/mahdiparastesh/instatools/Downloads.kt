@@ -44,7 +44,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
@@ -298,7 +297,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
                 FileOutputStream(des.fileDescriptor).use { fos ->
-                    fos.write(Json.encodeToString(c.downloads).encodeToByteArray())
+                    fos.write(c.downloads.export<Download>().encodeToByteArray())
                 }
             }
         }
@@ -307,13 +306,12 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
-                    Json.decodeFromString<List<Download>>(
+                    c.downloads.import<Download>(
                         FileInputStream(des!!.fileDescriptor).readBytes()
                             .toString(Charsets.UTF_8)
                     )
                 }
             }.onSuccess { downloads ->
-                c.downloads.addAll<Download>(downloads, true)
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {

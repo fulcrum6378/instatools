@@ -27,10 +27,10 @@ import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.util.Utils
 import java.util.*
 
 object UiTools {
-    const val PROFILE = "https://www.instagram.com/%s/"
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MAX_BADGE_CHAR = 6
@@ -73,7 +73,7 @@ object UiTools {
     /** Opens an IG profile in Instagram, if Instagram is installed. */
     fun openProfile(c: Activity, user: String): Boolean = try {
         c.startActivity(
-            Intent(Intent.ACTION_VIEW, Uri.parse(PROFILE.format(user)))
+            Intent(Intent.ACTION_VIEW, Uri.parse(Utils.PROFILE.format(user)))
                 .setPackage(INSTA_PACKAGE)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
