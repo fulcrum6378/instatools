@@ -5,19 +5,13 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.IBinder
 import androidx.annotation.MainThread
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
+import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
-import ir.mahdiparastesh.instatools.data.Database
-import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.job.DownloadService
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
@@ -28,10 +22,9 @@ import kotlin.reflect.KClass
  * Abstract class for all foreground services in this app.
  * Most functions do not require to be called on the main thread.
  */
-abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
+abstract class ForegroundService : Service() {
+    protected val c: InstaTools by lazy { applicationContext as InstaTools }
     protected lateinit var ntfManager: NotificationManager
-
-    override val viewModelStore = ViewModelStore()
 
     abstract val com: ForegroundServiceCompanion
     abstract val ntfChannel: Notify.Channel
@@ -71,17 +64,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
         val active = MutableLiveData(false)
     }
 
-    // With getters and setters, you'll avoid NullPointerException;
-    // Because "this" is apparently null at the time of instantiation,
-    // So you cannot invoke "applicationContext" on it!
-    override val c: Context get() = applicationContext
-    final override val dbLazy = lazy { Database.build(c, m.acc.dbName()) }
-    override val db: Database by dbLazy
-    override val dao: Database.DAO by lazy { db.dao() }
-    override lateinit var m: Model
-    override lateinit var gsp: SharedPreferences
-    override var sp: SharedPreferences? = null
-
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
@@ -94,10 +76,6 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
     override fun onCreate() {
         super.onCreate()
         com.active.value = true
-        m = ViewModelProvider(viewModelStore, Model.Factory())["Model", Model::class.java]
-        gsp = initGsp()
-        sp = initSp(m.acc)
-
         ntfManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
 
@@ -163,7 +141,7 @@ abstract class ForegroundService : Service(), ViewModelStoreOwner, Persistent {
 
     override fun onDestroy() {
         com.active.value = false
-        if (dbLazy.isInitialized() && !Persistent.anyoneAlive()) db.close()
+        c.onChildDestroyed()
         super.onDestroy()
     }
 

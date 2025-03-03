@@ -9,15 +9,11 @@ import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
-import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.DownloadHistory
-import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.LazyFile
-import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -32,9 +28,6 @@ class DownloadService : ForegroundService(), Downloader {
     private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
     private val aliases = HashMap<String, String>()
     private var des: ParcelFileDescriptor? = null
-    private val pickle: Pickle by lazy {
-        Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
-    }
 
     override val com: ForegroundServiceCompanion get() = Companion
     override val ntfChannel = Notify.Channel.DOWNLOADER
@@ -43,7 +36,6 @@ class DownloadService : ForegroundService(), Downloader {
     override var ntfText: String? = null
     override var ntfSmallText: String? = null
     override val ntfActions: Array<Pair<Int, String>> = arrayOf(R.string.stop to ACTION_STOP)
-    override val queue: Queue<Download> get() = m.downloads
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
@@ -53,8 +45,8 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onCreate() {
         super.onCreate()
-        dest = sPreference(Settings.spStorage)
-        if (m.acc == null || dest == null) return
+        dest = c.sPreference(Settings.spStorage)
+        if (c.acc == null || dest == null) return
 
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
         ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
@@ -63,20 +55,17 @@ class DownloadService : ForegroundService(), Downloader {
 
         CoroutineScope(Dispatchers.IO).launch {
             // load the map of alias folders
-            Settings.loadAliases(this@DownloadService, true)
+            Settings.loadAliases(c, true)
                 .forEach { (k, v) -> aliases[k] = v }
-            if (sp != null) Settings.loadAliases(this@DownloadService, false)
+            if (c.sp != null) Settings.loadAliases(c, false)
                 .forEach { (k, v) -> aliases[k] = v }
-
-            // load the download list
-            if (m.downloads.isEmpty())
-                pickle.restore<List<Download>>()
-                    ?.also { m.downloads.addAll(it) }
 
             // start looping
             start()
         }
     }
+
+    override fun iterator(): Iterator<Download> = c.downloads.iterator<Download>()
 
     override fun prepareOutput(q: Download): LazyFile<FileOutputStream>? {
         val branch: DocumentFile = when {
@@ -85,7 +74,7 @@ class DownloadService : ForegroundService(), Downloader {
                 DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.owner]))
             !q.isMainFile() -> stem
             @Suppress("KotlinConstantConditions")
-            bPreference(
+            c.bPreference(
                 Settings.spBranching, Settings.defSpBranching,
                 Settings.spBranchingCb, Settings.defSpBranchingCb
             ) -> stem.findFile(q.owner) ?: stem.createDirectory(q.owner)
@@ -128,8 +117,8 @@ class DownloadService : ForegroundService(), Downloader {
         Downloads.handler?.obtainMessage(
             if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, q
         )?.sendToTarget()
-        if (q.isMainFile()) m.downloadHistory?.add(q.fileName)
-        incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
+        if (q.isMainFile()) c.downloadHistory?.add(q.fileName)
+        c.incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
     }
 
     override fun onCancel() {
@@ -141,10 +130,11 @@ class DownloadService : ForegroundService(), Downloader {
         ntfSmallText = null
         updateNotification()
 
-        // save data models
-        m.downloads.pickle<Download>(pickle)
-        if (!clearCacheIfNecessary("image_manager_disk_cache"))
-            DownloadHistory.saveCache(this@DownloadService)
+        // clear cached pictures of Glide
+        c.clearCacheIfNecessary("image_manager_disk_cache")
+
+        // save the download history
+        DownloadHistory.saveCache(c)
 
         if (fatalError !is CancellationException) {
             if (fatalError != null) {
@@ -173,7 +163,7 @@ class DownloadService : ForegroundService(), Downloader {
                 }
             } else {
                 // report if some downloads failed
-                val failedSum = queue.size
+                val failedSum = c.downloads.size<Download>()
                 if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
                     setContentTitle(getString(R.string.downloaderSomeFailed, failedSum))
                     setContentIntent(
@@ -188,7 +178,7 @@ class DownloadService : ForegroundService(), Downloader {
 
         // remove empty directories
         @Suppress("KotlinConstantConditions")
-        if (dest != null && bPreference(
+        if (dest != null && c.bPreference(
                 Settings.spAutoDeleteEmptyDirs, Settings.defSpAutoDeleteEmptyDirs,
                 Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
             )

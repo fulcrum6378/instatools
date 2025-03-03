@@ -13,6 +13,7 @@
     </queries>
 
     <application
+        android:name=".InstaTools"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/new_backup"
         android:fullBackupContent="@xml/old_backup"
@@ -25,9 +26,8 @@
         android:theme="@style/Theme.InstaTools">
 
         <activity
-            android:name=".Main"
-            android:exported="true"
-            android:launchMode="singleTop">
+            android:name=".view.Launcher"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,6 +35,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Main"
+            android:exported="false"
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".Login"

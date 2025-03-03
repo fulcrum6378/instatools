@@ -8,14 +8,14 @@ import java.io.*
 
 class DownloadTask : Downloader {
     val outputDir = File("./Downloads/")
-    override val queue: Queue<Download> = Queue()
+    val queue: Queue<Download> = Queue(null)
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
     fun download(
         med: Media, idealSize: Int, link: String? = null, owner: String? = null
     ) {
-        for (q in med.queue(idealSize, link, owner)) queue.add(q)
+        queue.addAll<Download>(med.queue(idealSize, link, owner))
         start()
     }
 
@@ -23,6 +23,8 @@ class DownloadTask : Downloader {
         if (outputDir.isDirectory == false) outputDir.mkdir()
         super.start()
     }
+
+    override fun iterator(): Iterator<Download> = queue.iterator<Download>()
 
     override fun prepareOutput(q: Download): LazyFile<FileOutputStream>? {
         val file = File(outputDir, q.fileName)

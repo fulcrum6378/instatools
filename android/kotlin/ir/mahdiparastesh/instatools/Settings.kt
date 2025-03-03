@@ -19,6 +19,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.instatools.InstaTools.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
@@ -28,8 +29,6 @@ import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.DbFile
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.util.Persistent
-import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.util.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
@@ -108,7 +107,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             ).forEach { f -> if (f.exists()) f.delete() }
         }
 
-        fun deleteSp(c: BaseActivity, acc: Account = c.m.acc!!) {
+        fun deleteSp(c: BaseActivity, acc: Account = c.c.acc!!) {
             File(c.getDir("shared_prefs", MODE_PRIVATE), "${acc.id}.xml")
                 .apply { if (exists()) delete() }
         }
@@ -125,25 +124,18 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             return ret
         } ?: defSpCacheLimit
 
-        fun Persistent.clearCacheIfNecessary(subdir: String? = null): Boolean {
-            if (c.cacheSize() <= gsp.getLong(spCacheLimit, defaultCacheLimit(c))) return false
-            (if (subdir != null) File(c.cacheDir, subdir) else c.cacheDir)
-                .deleteRecursively()
-            return true
-        }
-
         fun Long.toMBs() = (this / MB).toInt()
 
         fun Int.toBytes() = this * MB
 
-        suspend fun loadAliases(c: Persistent, global: Boolean): HashMap<String, String> {
+        suspend fun loadAliases(c: InstaTools, global: Boolean): HashMap<String, String> {
             val map = (if (global) c.gsp else c.sp!!).getString(spAliases, null)
                 ?.let { Json.decodeFromString<HashMap<String, String>>(it) }
                 ?: hashMapOf()
             val removal = arrayListOf<String>()
             map.forEach { (k, v) ->
-                val ex = DocumentFile.fromTreeUri(c.c, Uri.parse(v))?.exists()
-                val ax = c.c.isPathAccessible(v)
+                val ex = DocumentFile.fromTreeUri(c, Uri.parse(v))?.exists()
+                val ax = c.isPathAccessible(v)
                 if (!ax || ex != true) {
                     if (ex != true && ax) Uri.parse(v).release(c, global)
                     removal.add(k)
@@ -165,9 +157,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         @SuppressLint("SdCardPath")
         @Suppress("RedundantSuspendModifier")
-        suspend fun Uri.release(c: Persistent, global: Boolean) {
+        suspend fun Uri.release(c: InstaTools, global: Boolean) {
             val exc = arrayOf(
-                "${if (global) Persistent.GSP else c.m.acc!!.id}.xml",
+                "${if (global) InstaTools.GSP else c.acc!!.id}.xml",
                 "AwOriginVisitLoggerPrefs.xml", "WebViewChromiumPrefs.xml"
             )
             val f0 = ">$this<"
@@ -182,16 +174,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 if (f0 in raw || f1 in raw) return
             }
             try {
-                c.c.contentResolver.releasePersistableUriPermission(
+                c.contentResolver.releasePersistableUriPermission(
                     this,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
             } catch (_: SecurityException) {
             } // No permission grants found for UID XXX and Uri content://...
-        }
-
-        fun Persistent.incrementCounter(key: String) {
-            gsp.edit { putLong(key, gsp.getLong(key, 0L) + 1L) }
         }
     }
 
@@ -204,7 +192,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             b.toolbar, R.string.settings,
             changeTitleTo = getString(if (globalMode) R.string.gSettings else R.string.aSettings)
         )
-        prf = if (globalMode || sp == null) gsp else sp!!
+        prf = if (globalMode || c.sp == null) c.gsp else c.sp!!
 
         // beauty
         b.sv.setOnScrollChangeListener { _, _, scrollY, _, _ ->
@@ -225,8 +213,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         prf.edit { remove(spStorage) }
                         updateMainPath("")
                         CoroutineScope(Dispatchers.IO).launch {
-                            DownloadHistory.folderRemoved(this@Settings, uri)
-                            uri.release(this@Settings, globalMode)
+                            DownloadHistory.folderRemoved(c, uri)
+                            uri.release(c, globalMode)
                         }
                     }
                 }
@@ -265,13 +253,13 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         // alias paths
         CoroutineScope(Dispatchers.IO).launch {
-            aliases = loadAliases(this@Settings, globalMode)
+            aliases = loadAliases(c, globalMode)
             withContext(Dispatchers.Main) { showAliases() }
         }
         b.stAddAlias.setOnClickListener { editAlias(null) }
 
         // caching
-        cacheLimit = gsp.getLong(spCacheLimit, defaultCacheLimit(c))
+        cacheLimit = c.gsp.getLong(spCacheLimit, defaultCacheLimit(c))
         b.stCacheLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return
@@ -281,7 +269,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                gsp.edit { putLong(spCacheLimit, cacheLimit) }
+                c.gsp.edit { putLong(spCacheLimit, cacheLimit) }
             }
         })
         if (!globalMode) {
@@ -301,7 +289,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    CoroutineScope(Dispatchers.IO).launch { deleteDb(m.acc!!.id.toString()) }
+                    CoroutineScope(Dispatchers.IO).launch { deleteDb(c.acc!!.id.toString()) }
                     recreateMain = true
                 }
             }.show()
@@ -397,7 +385,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             setMessage(R.string.stAliasingDesc)
             bfa = FolderAliasBinding.inflate(layoutInflater)
             bfa!!.aliasProfile.setText(u)
-            m.fav?.also { fav ->
+            c.fav?.also { fav ->
                 bfa!!.aliasProfile.setAdapter(
                     ArrayAdapter(this@Settings, android.R.layout.simple_dropdown_item_1line,
                         fav.map { it.user })
@@ -431,11 +419,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         saveAliases(prf, aliases)
                         if (br.root.isChecked) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                DownloadHistory.folderRemoved(this@Settings, uri)
-                                uri.release(this@Settings, globalMode)
+                                DownloadHistory.folderRemoved(c, uri)
+                                uri.release(c, globalMode)
                             }
                             CoroutineScope(Dispatchers.IO).launch {
-                                aliases = loadAliases(this@Settings, globalMode)
+                                aliases = loadAliases(c, globalMode)
                                 withContext(Dispatchers.Main) { showAliases() }
                             }
                         } else showAliases()
@@ -466,8 +454,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 // Remove the previous path if existed
                 val prevUri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
                 if (prevUri != null) CoroutineScope(Dispatchers.IO).launch {
-                    DownloadHistory.folderRemoved(this@Settings, uri)
-                    uri.release(this@Settings, globalMode)
+                    DownloadHistory.folderRemoved(c, uri)
+                    uri.release(c, globalMode)
                 }
 
                 // Set the new path
@@ -489,12 +477,12 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 bfa?.listPaths()
                 bfa?.folders?.setSelection(uriFolders!!.indexOfFirst { it.toString() == uri.toString() })
                 CoroutineScope(Dispatchers.IO).launch {
-                    DownloadHistory.folderAdded(this@Settings, uri)
+                    DownloadHistory.folderAdded(c, uri)
                 }
             }
         }
-        m.downloadHistory = null
-        CoroutineScope(Dispatchers.IO).launch { DownloadHistory.saveCache(this@Settings) }
+        c.downloadHistory = null
+        CoroutineScope(Dispatchers.IO).launch { DownloadHistory.saveCache(c) }
         // this doesn't update the cache, it just clears it, it'll get updated automatically later.
     }
 }

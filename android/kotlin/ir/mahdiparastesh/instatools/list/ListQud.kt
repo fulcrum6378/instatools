@@ -26,7 +26,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         AnyViewHolder(ListQudBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListQudBinding>, i: Int) {
-        val q = c.m.downloads.getOrNull(i) ?: return
+        val q = c.c.downloads.getOrNull<Download>(i) ?: return
 
         // main
         if (q.type != 3.toByte()) Glide.with(c.c).load(q.thumb).into(h.b.thumb)
@@ -51,12 +51,12 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
 
         // clicks
         h.b.root.setOnClickListener {
-            c.m.downloads.getOrNull(h.layoutPosition)?.also {
+            c.c.downloads.getOrNull<Download>(h.layoutPosition)?.also {
                 if (it.link.isNotEmpty()) UiTools.openLink(c, it.link)
             }
         }
         h.b.status.setOnClickListener {
-            c.m.downloads.getOrNull(h.layoutPosition)?.apply {
+            c.c.downloads.getOrNull<Download>(h.layoutPosition)?.apply {
                 if (h.layoutPosition == 0 && status == 0.toByte()) return@setOnClickListener
                 CoroutineScope(Dispatchers.IO).launch {
                     when (status) {
@@ -64,7 +64,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                         1.toByte() -> status = 0
                         2.toByte() -> status = 0
                     }
-                    c.m.downloads.pickle<Download>(c.pickle)
+                    c.c.downloads.save<Download>()
                     Downloads.initService(c)
                     withContext(Dispatchers.Main) {
                         c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
@@ -77,7 +77,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.downloads.size
+    override fun getItemCount() = c.c.downloads.size<Download>()
 
     override fun onViewAttachedToWindow(h: AnyViewHolder<ListQudBinding>) {
         h.b.status.resumeAnimation()

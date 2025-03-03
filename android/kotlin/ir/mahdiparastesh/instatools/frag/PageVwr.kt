@@ -71,7 +71,8 @@ class PageVwr : BasePageViewer() {
             MaterialMenu(c, v, R.menu.viewer_pic_more,
                 R.id.vpDownload to {
                     CoroutineScope(Dispatchers.IO).launch {
-                        c.m.downloads.add(
+                        @Suppress("DEPRECATION")
+                        c.c.downloads.add<Download>(
                             Download(
                                 Utils.PROFILE_PHOTO,
                                 Utils.now(),
@@ -132,7 +133,7 @@ class PageVwr : BasePageViewer() {
 
         // is the page private and not followed?
         val showPv = c.mm.user?.pv() == true && c.mm.profile?.followed_by_viewer == false
-            && c.mm.user?.username != c.m.acc?.user
+            && c.mm.user?.username != c.c.acc?.user
         b.privateAcc.vis(showPv)
         b.rv.vis(!showPv)
         if (showPv) {
@@ -166,13 +167,15 @@ class PageVwr : BasePageViewer() {
                 photo = c.mm.user!!.profile_pic_url_hd
                 changed = true
             }
-            if (changed) CoroutineScope(Dispatchers.IO).launch { c.dao.updateFavourite(this@apply) }
+            if (changed) CoroutineScope(Dispatchers.IO).launch {
+                c.c.dao.updateFavourite(this@apply)
+            }
         }
     }
 
     override suspend fun fetch(reset: Boolean) {
         // first read from cache if available
-        val pickle = Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!)
+        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!)
         val cache = if (c.mm.posts == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
             c.mm.posts = cache
@@ -230,11 +233,10 @@ class PageVwr : BasePageViewer() {
             for (edg in posts.edges.indices) {
                 if (posts.edges[edg].node.id() !in selection) continue
                 if (download) {
-                    c.m.downloads.addAll(posts.edges[edg].node.queue())
+                    c.c.downloads.addAll<Download>(posts.edges[edg].node.queue()) // FIXME all at once
                     Downloads.initService(c)
                 }
             }
-            if (download) c.m.downloads.pickle<Download>(c.downloadsPickle)
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()
             }

@@ -15,6 +15,7 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
+import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
 import ir.mahdiparastesh.instatools.frag.PageSto
@@ -136,14 +137,14 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
 
                 story.items = newStory.items
                 c.mm.highlights?.also {
-                    Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
+                    Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
                         .save(it)
                 }
             }
 
             if (downloadAll) {
-                for (reel in story.items!!)
-                    c.m.downloads.addAll(reel.queue(owner = c.mm.user!!.username!!))
+                for (reel in story.items!!) // FIXME all at once
+                    c.c.downloads.addAll<Download>(reel.queue(owner = c.mm.user!!.username!!))
                 Downloads.initService(c)
             }
 

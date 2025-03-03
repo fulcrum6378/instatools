@@ -30,8 +30,8 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun shouldLoadOnPrepare(): Boolean = false
-    override fun isModelLoaded(): Boolean = c.m.fav != null
-    override fun isModelEmpty(): Boolean = c.m.fav?.isEmpty() == true
+    override fun isModelLoaded(): Boolean = c.c.fav != null
+    override fun isModelEmpty(): Boolean = c.c.fav?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListFav(c, this)
     override fun screenHeight(): Int = c.dm.heightPixels
 
@@ -45,8 +45,8 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
 
     override fun load(reset: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            c.m.fav = ArrayList(c.dao.favourites())
-            c.m.fav?.sortBy { it.user }
+            c.c.fav = ArrayList(c.c.dao.favourites())
+            c.c.fav?.sortBy { it.user }
             withContext(Dispatchers.Main) { onLoaded() }
         }
     }

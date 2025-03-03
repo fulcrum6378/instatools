@@ -14,7 +14,6 @@ import androidx.core.content.edit
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
@@ -62,7 +61,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
-        m.accountSwitched()
+        c.accountSwitched()
 
         // WebView
         b.web.settings.javaScriptEnabled = true
@@ -103,7 +102,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
-    override fun onAccountSet() {}
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
@@ -255,7 +253,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             ) ?: throw IllegalStateException("Couldn't extract user information!")
 
             val id = u.id().toLong()
-            m.acc = Account(
+            c.acc = Account(
                 id, u.username, u.full_name, u.originalPicture(),
                 cookieManager.getCookieOrganised(HOST),
                 Utils.now()
@@ -263,11 +261,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 accounts.removeAll { it.id == id }
                 accounts.add(this)
                 CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
+                c.selectAccount(this)
             }
 
-            gsp.edit { putString(SP_ACCOUNT, u.id()) }
+            c.gsp.edit { putString(SP_ACCOUNT, u.id()) }
             goTo(Main::class, true)
-            clearCacheIfNecessary("WebView")
+            c.clearCacheIfNecessary("WebView")
             improperLoading = 0
         }
 

@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.util
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -28,38 +27,21 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import ir.mahdiparastesh.instatools.*
-import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
-import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.Account.Companion.dbName
-import ir.mahdiparastesh.instatools.data.Database
-import ir.mahdiparastesh.instatools.data.Model
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.reflect.KClass
 
-/** Abstract class for all Activity instances in this app and it extends AppCompatActivity. */
-abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuItemClickListener {
+/** Abstract class for all Activity instances in this app and it extends [AppCompatActivity]. */
+abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
+    val c: InstaTools by lazy { applicationContext as InstaTools }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
 
     abstract val menuRes: Int?
     abstract val com: ActivityCompanion
-    override val c: Context get() = applicationContext
-    final override val dbLazy = lazy { Database.build(c, m.acc.dbName()) }
-    override val db: Database by dbLazy
-    override val dao: Database.DAO by lazy { db.dao() }
-    override lateinit var m: Model
-    override lateinit var gsp: SharedPreferences
-    override var sp: SharedPreferences? = null
 
-    /** Abstract class from which all companion objects of BaseActivity subclasses must extend. */
+    /** Abstract class from which all companion objects of [BaseActivity] subclasses must extend. */
     abstract class ActivityCompanion {
         var active = false
     }
@@ -76,36 +58,15 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         com.active = true
         resolvedIntent = null
         super.onCreate(savedInstanceState)
-        m = ViewModelProvider(this, Model.Factory())["Model", Model::class.java]
-        gsp = initGsp()
-        if ((gsp.contains(Login.SP_ACCOUNT) || this !is Main) && this !is Login) {
-            if (m.acc == null) CoroutineScope(Dispatchers.IO).launch {
-                m.acc = Account.selected(
-                    this@BaseActivity, guestIfNotExists = this@BaseActivity !is Main
-                )
-                withContext(Dispatchers.Main) { onAccountSet() }
-            } else onAccountSet()
-        } else onAccountSet()
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
             @Suppress("DEPRECATION") super.onBackPressed(); finish(); return; }
 
         if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND, Intent.ACTION_VIEW)) {
-            incrementCounter(Settings.spOpenAppCount)
-            if (!gsp.contains(Settings.spFirstOpenApp))
-                gsp.edit { putLong(Settings.spFirstOpenApp, Utils.now()) }
+            c.incrementCounter(Settings.spOpenAppCount)
+            if (!c.gsp.contains(Settings.spFirstOpenApp))
+                c.gsp.edit { putLong(Settings.spFirstOpenApp, Utils.now()) }
         }
-    }
-
-    var isAccountSet = false
-    open fun onAccountSet() {
-        if (m.acc?.id != null) sp = initSp(m.acc)
-        Api.cookies = m.acc!!.cook ?: ""
-        isAccountSet = true
-    }
-
-    open fun onBuildUiBasedOnAccount() {
-        uiBuildBasedOnAccount = true
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -119,12 +80,10 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
         return true // shall pass
     }
 
-    protected var uiBuildBasedOnAccount = false
     override fun setContentView(root: View?) {
         super.setContentView(root)
         root?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
-        onBuildUiBasedOnAccount()
     }
 
     var tbTitle: AppCompatTextView? = null
@@ -178,14 +137,9 @@ abstract class BaseActivity : AppCompatActivity(), Persistent, Toolbar.OnMenuIte
 
     override fun onMenuItemClick(item: MenuItem): Boolean = true
 
-    override fun switchAcc() {
-        db.close()
-        super.switchAcc()
-    }
-
     override fun onDestroy() {
         com.active = false
-        if (dbLazy.isInitialized() && !Persistent.anyoneAlive()) db.close()
+        c.onChildDestroyed()
         super.onDestroy()
     }
 

@@ -1,15 +1,11 @@
 package ir.mahdiparastesh.instatools.job
 
-import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import java.lang.IllegalStateException
 import java.util.concurrent.CancellationException
 
 /** A structure for handling multiple items as a queue. */
 interface Queuer<Item> {
-
-    /** Main queue repository of a job. */
-    val queue: Queue<Item>
 
     /**
      * The number of handled items; useful for tracking the progress.
@@ -29,7 +25,7 @@ interface Queuer<Item> {
             while (proceed) {
                 q = null
                 remaining = 0
-                for (qq in queue) {
+                for (qq in iterator()) {
                     if (!shouldHandle(qq)) continue
                     if (q == null) q = qq
                     remaining++
@@ -38,7 +34,6 @@ interface Queuer<Item> {
 
                 if (handle(q, remaining)) {
                     onHandled(q, true)
-                    queue.remove(q)
                     consecutiveFailures = 0
                 } else {
                     onHandled(q, false)
@@ -54,6 +49,10 @@ interface Queuer<Item> {
         }
     }
 
+    /** @return a [Collection.iterator] from the queue. */
+    fun iterator(): Iterator<Item>
+
+    /** Is this item qualified for [Queuer.handle]? */
     fun shouldHandle(q: Item): Boolean
 
     /**
@@ -64,6 +63,7 @@ interface Queuer<Item> {
 
     /**
      * Called when finished handling an item.
+     * Remember to explicitly remove the item from the queue.
      * @param success true if the item was handled successfully
      */
     fun onHandled(q: Item, success: Boolean)

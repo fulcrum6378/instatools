@@ -23,9 +23,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.InstaTools.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
-import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding
 import ir.mahdiparastesh.instatools.databinding.GuideSwipeDeleteBinding
 import ir.mahdiparastesh.instatools.job.DownloadService
@@ -34,7 +34,6 @@ import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.util.Persistent.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Counter
 import ir.mahdiparastesh.instatools.view.Notify
@@ -51,10 +50,6 @@ import java.io.FileOutputStream
 
 class Downloads : BaseActivity(), ServiceOwner, Counter {
     lateinit var b: DownloadsBinding
-    val pickle: Pickle by lazy {
-        Pickle(c.filesDir, m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
-    }
-    private val handledLinks = mutableSetOf<String>()
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
     private var askedForDelete = false
@@ -77,7 +72,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = false
-    override fun isModelEmpty(): Boolean = m.downloads.isEmpty()
+    override fun isModelEmpty(): Boolean = c.downloads.isEmpty<Download>()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListQud(this)
     override fun screenHeight(): Int = dm.heightPixels
 
@@ -92,7 +87,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
         /** It can be called from any kind of thread. */
         fun initService(c: BaseActivity) {
-            val uri = c.sPreference(Settings.spStorage)
+            val uri = c.c.sPreference(Settings.spStorage)
             if (uri == null || !c.c.isPathAccessible(uri)) {
                 c.goTo(Settings::class) { putExtra(Settings.EXTRA_SELECT_PATH, 1) }
                 return; }
@@ -111,14 +106,14 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_CHANGED -> m.downloads.indexOf(msg.obj as Download).also {
+                    HANDLE_CHANGED -> c.downloads.indexOf<Download>(msg.obj as Download).also {
                         if (it == -1) return@also
                         b.rv.adapter?.notifyItemChanged(it)
                     }
-                    HANDLE_DELETED -> m.downloads.indexOf(msg.obj as Download).also {
+                    HANDLE_DELETED -> c.downloads.indexOf<Download>(msg.obj as Download).also {
                         if (it == -1) return@also
                         b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, m.downloads.size)
+                        b.rv.adapter?.notifyItemRangeChanged(it, c.downloads.size<Download>())
                         if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
                         onListResized()
                     }
@@ -144,7 +139,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
-            if (it in handledLinks || it in m.downloads.map { q -> q.link }) return@also
             if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.downloads)
@@ -153,8 +147,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 }.show()
                 return@also
             }
-            handledLinks.add(it)
-            if (m.acc != null) {
+            if (c.acc != null) {
                 handleLink(it)
                 initService(this)
             } else MaterialAlertDialogBuilder(this).apply {
@@ -187,9 +180,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun load(reset: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            if (m.downloads.isEmpty())
-                pickle.restore<List<Download>>()
-                    ?.also { m.downloads.addAll(it) }
+            c.downloads.list<Download>()
             withContext(Dispatchers.Main) { onLoaded() }
         }
     }
@@ -200,7 +191,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         // teach users that they can swipe items in order to delete them
         val hasContent = !isModelEmpty()
         if (isSwipeDeleteInflated == null) return
-        if (!gsp.getBoolean(Settings.spLearntSwipeDelete, false)) when {
+        if (!c.gsp.getBoolean(Settings.spLearntSwipeDelete, false)) when {
             isSwipeDeleteInflated == false && hasContent -> {
                 b.guideSwipeDeleteStub.setOnInflateListener { _, inflated ->
                     bd = GuideSwipeDeleteBinding.bind(inflated)
@@ -214,13 +205,13 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
     override fun onListResized() {
         super.onListResized()
-        updateCount(this, m.downloads.size)
+        updateCount(this, c.downloads.size<Download>())
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.dtControl -> if (!m.downloads.isEmpty()) {
+            R.id.dtControl -> if (!c.downloads.isEmpty<Download>()) {
                 if (DownloadService.active.value == true) stopService(Intent(
                     c,
                     DownloadService::class.java
@@ -231,25 +222,25 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             }
 
             R.id.dtRetryAll, R.id.dtPauseAll, R.id.dtResumeAll ->
-                if (!m.downloads.isEmpty()) CoroutineScope(Dispatchers.IO).launch {
+                if (!c.downloads.isEmpty<Download>()) CoroutineScope(Dispatchers.IO).launch {
                     var any = false
-                    m.downloads.forEach {
+                    for (it in c.downloads.iterator<Download>()) {
                         if (it.status == statusPlan[item.itemId] ||
                             !(item.itemId == R.id.dtRetryAll || it.status != 1.toByte()) ||
                             (item.itemId == R.id.dtRetryAll && it.status == 2.toByte())
-                        ) return@forEach
+                        ) continue
                         it.status = statusPlan[item.itemId]!!
                         any = true
                     }
                     if (any) {
-                        m.downloads.pickle<Download>(pickle)
+                        c.downloads.save<Download>()
                         withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
                         if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
                 }
                 else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
 
-            R.id.dtExportLinks -> if (!m.downloads.isEmpty())
+            R.id.dtExportLinks -> if (!c.downloads.isEmpty<Download>())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = exportQueueMime
@@ -265,15 +256,14 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 type = exportQueueMime
             })
 
-            R.id.dtClearAll -> if (!m.downloads.isEmpty())
+            R.id.dtClearAll -> if (!c.downloads.isEmpty<Download>())
                 MaterialAlertDialogBuilder(this).apply {
                     setTitle(R.string.listClear)
                     setMessage(R.string.listClearSure)
                     setNegativeButton(R.string.no, null)
                     setPositiveButton(R.string.yes) { _, _ ->
                         CoroutineScope(Dispatchers.IO).launch {
-                            m.downloads.clear()
-                            m.downloads.pickle<Download>(pickle)
+                            c.downloads.clear<Download>()
                             withContext(Dispatchers.Main) {
                                 b.rv.adapter?.notifyDataSetChanged()
                                 onListResized()
@@ -291,10 +281,10 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val addition: Int
-                m.downloads.addAll(
+                c.downloads.addAll<Download>(
                     SimpleJobs.handlePostLink(link).queue().also { addition = it.size })
                 withContext(Dispatchers.Main) {
-                    val first = m.downloads.size - addition
+                    val first = c.downloads.size<Download>() - addition
                     b.rv.adapter?.notifyItemRangeInserted(first, addition)
                     if (first > 0) b.rv.adapter?.notifyItemChanged(first - 1)
                     onListResized()
@@ -314,7 +304,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
                 FileOutputStream(des.fileDescriptor).use { fos ->
-                    fos.write(Json.encodeToString(m.downloads).encodeToByteArray())
+                    fos.write(Json.encodeToString(c.downloads).encodeToByteArray())
                 }
             }
         }
@@ -323,14 +313,13 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 contentResolver.openFileDescriptor(it.data!!.data!!, "r").use { des ->
-                    Json.decodeFromString<Array<Download>>(
+                    Json.decodeFromString<List<Download>>(
                         FileInputStream(des!!.fileDescriptor).readBytes()
                             .toString(Charsets.UTF_8)
                     )
                 }
             }.onSuccess { downloads ->
-                m.downloads.addAll(downloads)
-                m.downloads.pickle<Download>(pickle)
+                c.downloads.addAll<Download>(downloads)
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
@@ -363,14 +352,14 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
             if (!askedForDelete) {
-                val q = m.downloads.getOrNull(h.layoutPosition) ?: return
+                val q = c.downloads.getOrNull<Download>(h.layoutPosition) ?: return
                 MaterialAlertDialogBuilder(this@Downloads).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.deleteItemSure)
                     setCancelable(false)
                     setPositiveButton(R.string.yes) { _, _ ->
                         askedForDelete = true
-                        val index = m.downloads.indexOf(q)
+                        val index = c.downloads.indexOf<Download>(q)
                         if (index != -1) delete(index)
                         Delay(60000L) { askedForDelete = false }
                     }
@@ -381,18 +370,22 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         }
 
         private fun delete(q: Int) {
-            m.downloads.removeAt(q)
-            b.rv.adapter?.notifyItemRemoved(q)
-            b.rv.adapter?.notifyItemRangeChanged(q, m.downloads.size - 1)
-            if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
-            onListResized()
-            cancelNotifications()
-            CoroutineScope(Dispatchers.IO).launch { m.downloads.pickle<Download>(pickle) }
+            CoroutineScope(Dispatchers.IO).launch {
+                c.downloads.removeAt<Download>(q)
 
-            if (isSwipeDeleteInflated != null) {
-                b.root.removeView(bd.root)
-                gsp.edit { putBoolean(Settings.spLearntSwipeDelete, true) }
-                isSwipeDeleteInflated = null
+                withContext(Dispatchers.Main) {
+                    b.rv.adapter?.notifyItemRemoved(q)
+                    b.rv.adapter?.notifyItemRangeChanged(q, c.downloads.size<Download>() - 1)
+                    if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
+                    onListResized()
+                    cancelNotifications()
+
+                    if (isSwipeDeleteInflated != null) {
+                        b.root.removeView(bd.root)
+                        c.gsp.edit { putBoolean(Settings.spLearntSwipeDelete, true) }
+                        isSwipeDeleteInflated = null
+                    }
+                }
             }
         }
     }

@@ -4,9 +4,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.data.Command
-import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -16,9 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CommandService : ForegroundService(), Queuer<Command> {
-    private val pickle: Pickle by lazy {
-        Pickle(c.filesDir, m.acc!!.id, Pickle.Type.COMMAND_LIST, null)
-    }
 
     override val com: ForegroundServiceCompanion get() = Companion
     override val ntfChannel: Notify.Channel = Notify.Channel.COMMANDER
@@ -27,7 +22,6 @@ class CommandService : ForegroundService(), Queuer<Command> {
     override var ntfText: String? = null
     override var ntfSmallText: String? = null
     override val ntfActions: Array<Pair<Int, String>> = arrayOf(R.string.stop to ACTION_STOP)
-    override val queue: Queue<Command> get() = m.commands
     override var handledItems: Int = 0
     override var proceed: Boolean = true
 
@@ -35,22 +29,16 @@ class CommandService : ForegroundService(), Queuer<Command> {
 
     override fun onCreate() {
         super.onCreate()
-        if (m.acc == null) return
+        if (c.acc == null) return
 
         ntfManager.cancel(Notify.ID_COMMANDER_ERROR)
         ntfTitle = getString(R.string.commanderTitle)
         initialNotification()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            // load the commands list
-            if (m.commands.isEmpty())
-                pickle.restore<List<Command>>()
-                    ?.also { m.commands.addAll(it) }
-
-            // start looping
-            start()
-        }
+        CoroutineScope(Dispatchers.IO).launch { start() }
     }
+
+    override fun iterator(): Iterator<Command> = c.commands.iterator<Command>()
 
     override fun shouldHandle(q: Command): Boolean = true
 
@@ -87,9 +75,6 @@ class CommandService : ForegroundService(), Queuer<Command> {
         ntfSmallText = null
         updateNotification()
 
-        // save data models
-        m.commands.pickle<Command>(pickle)
-
         if (fatalError !is CancellationException) {
             if (fatalError != null) {
                 if (fatalError !is Utils.InstaToolsException) throw fatalError
@@ -110,7 +95,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
                 }
             } else {
                 // report if some commands failed
-                val failedSum = queue.size
+                val failedSum = c.commands.size<Command>()
                 if (failedSum != 0) eventNotification(Notify.ID_COMMANDER_SOME_FAILED) {
                     setContentTitle(getString(R.string.commanderSomeFailed, failedSum))
                     addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))

@@ -14,4 +14,7 @@ fun main() {
         Api.Endpoint.QUERY.url, true, GraphQlQuery.LIKE_POST.body("3567641127255644417")
     )
     println("Liked!")*/
+
+    /*val queue = Queue<Dummy>(Pickle(File("Downloads"), 1L, Pickle.Type.SAVED, null))
+    queue.addAll<Dummy>(listOf(Dummy(2), Dummy(3), Dummy(4)))*/
 }

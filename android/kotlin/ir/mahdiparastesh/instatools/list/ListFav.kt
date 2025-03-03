@@ -29,20 +29,20 @@ class ListFav(val c: Main, private val f: PageFav) :
     }
 
     override fun onBindViewHolder(h: AnyViewHolder<ListFavBinding>, i: Int) {
-        val fav = c.m.fav?.getOrNull(i) ?: return
+        val fav = c.c.fav?.getOrNull(i) ?: return
         Glide.with(c.c).load(fav.photo).into(h.b.photo)
         h.b.name.text = "${i + 1}. ${fav.name}"
         h.b.user.text = fav.user
         h.b.root.setOnClickListener {
-            val u = c.m.fav?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
+            val u = c.c.fav?.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             Viewer.comeHere(c, u.id)
         }
         h.b.unFav.setOnClickListener {
-            val f = c.m.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }
+            val f = c.c.fav?.getOrNull(h.layoutPosition)?.apply { tempDeleted = !tempDeleted }
                 ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
-                if (f.tempDeleted) c.dao.deleteFavourite(f)
-                else c.dao.addFavourite(f)
+                if (f.tempDeleted) c.c.dao.deleteFavourite(f)
+                else c.c.dao.addFavourite(f)
             }
             h.b.updateIcon(f.tempDeleted)
         }
@@ -50,7 +50,7 @@ class ListFav(val c: Main, private val f: PageFav) :
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.m.fav?.size ?: 0
+    override fun getItemCount() = c.c.fav?.size ?: 0
 
     private fun ListFavBinding.updateIcon(tempDeleted: Boolean) {
         unFav.setImageResource(if (tempDeleted) R.drawable.favourite_off else R.drawable.favourite_on)

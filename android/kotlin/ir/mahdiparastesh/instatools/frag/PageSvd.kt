@@ -22,7 +22,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
-import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Command
@@ -50,13 +49,7 @@ import kotlinx.coroutines.withContext
 class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Selective {
     lateinit var b: PageSvdBinding
     private val pickle: Pickle by lazy {
-        Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.SAVED, null)
-    }
-    val downloadsPickle: Pickle by lazy {
-        Pickle(c.filesDir, c.m.acc!!.id, Pickle.Type.DOWNLOAD_LIST, null)
-    }
-    val commandsPickle: Pickle by lazy {
-        Pickle(c.filesDir, c.m.acc!!.id, Pickle.Type.COMMAND_LIST, null)
+        Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.SAVED, null)
     }
     private var selectionGuide: LottieAnimationView? = null
 
@@ -133,7 +126,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
 
         // teach the user how to select items
-        if (!isModelEmpty() && !c.gsp.getBoolean(Settings.spLearntSelection, false)
+        if (!isModelEmpty() && !c.c.gsp.getBoolean(Settings.spLearntSelection, false)
             && selectionGuide == null
         ) selectionGuide = LottieAnimationView(c).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -184,22 +177,16 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         val deletion = arrayListOf<Int>()
         CoroutineScope(Dispatchers.Default).launch {
 
-            // load previous queues
-            if (download && c.m.downloads.isEmpty())
-                c.m.downloads.pickle<Download>(downloadsPickle)
-            if (unsave && c.m.commands.isEmpty())
-                c.m.commands.pickle<Command>(commandsPickle)
-
             // enqueue
             for (svd in saved.items.indices) {
                 if (saved.items[svd].media.id() !in selection) continue
-                if (download) c.m.downloads.addAll(saved.items[svd].media.queue())
+                if (download) c.c.downloads.addAll<Download>(saved.items[svd].media.queue())
                 if (unsave) {
-                    c.m.commands.add(
+                    c.c.commands.add<Download>(
                         Command(saved.items[svd].media, unsave = true)
                     )
                     deletion.add(svd)
-                    c.incrementCounter(Settings.spUnsaveCount)
+                    c.c.incrementCounter(Settings.spUnsaveCount)
                 }
             }
 
@@ -296,7 +283,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                 (b.rv.adapter as ListSvd?)?.firstLongClickSelect = true
                 if (selectionGuide != null) {
                     b.root.removeView(selectionGuide)
-                    c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
+                    c.c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
                     b.rv.suppressLayout(false)
                 }
             } else {

@@ -62,7 +62,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
     private fun more(v: View, acc: Account, i: Int): Boolean {
         MaterialMenu(c, v, R.menu.acc_more,
             R.id.amOffline to {
-                c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
+                c.c.selectAccount(acc)
+                c.c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
                 acc.last = Utils.now()
                 acc.saveMeInIO(c)
                 c.goTo(Main::class, true)
@@ -114,8 +115,8 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
             }
             c.accounts.removeAll { it.id == acc.id }
             Account.save(c, c.accounts)
-            if (c.gsp.getString(Login.SP_ACCOUNT, null) == acc.id.toString())
-                c.gsp.edit { remove(Login.SP_ACCOUNT) }
+            if (c.c.gsp.getString(Login.SP_ACCOUNT, null) == acc.id.toString())
+                c.c.gsp.edit { remove(Login.SP_ACCOUNT) }
         }
         notifyItemRemoved(i)
         notifyItemRangeChanged(i, c.accounts.size)

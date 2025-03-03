@@ -3,8 +3,8 @@ package ir.mahdiparastesh.instatools.data
 import android.content.Context
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
+import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login.Companion.SP_ACCOUNT
-import ir.mahdiparastesh.instatools.util.Persistent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,8 +37,7 @@ class Account(
     }
 
     companion object {
-        @Suppress("RedundantSuspendModifier")
-        suspend fun load(c: Context): ArrayList<Account> {
+        fun load(c: Context): ArrayList<Account> {
             val secured = Secured(c)
             return if (secured.exists()) {
                 var data: ByteArray? = null
@@ -50,11 +49,9 @@ class Account(
             } else arrayListOf()
         }
 
-        suspend fun selected(
-            c: Persistent, list: List<Account>? = null, guestIfNotExists: Boolean = true
-        ): Account? = (list ?: load(c.c)).find {
-            it.id == c.gsp.getString(SP_ACCOUNT, if (guestIfNotExists) "-1" else "-2")
-                ?.toLongOrNull()
+        fun selected(c: InstaTools): Account? {
+            val id = c.gsp.getString(SP_ACCOUNT, null)?.toLongOrNull() ?: return null
+            return load(c).find { it.id == id }
         }
 
         @Suppress("RedundantSuspendModifier")

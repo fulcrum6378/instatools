@@ -48,7 +48,7 @@ class PageTag : BasePageViewer() {
 
     override suspend fun fetch(reset: Boolean) {
         // first read from cache if available
-        val pickle = Pickle(c.cacheDir, c.m.acc!!.id, Pickle.Type.TAGGED, c.mm.user!!.id!!)
+        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.TAGGED, c.mm.user!!.id!!)
         val cache = if (c.mm.tagged == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
             c.mm.tagged = cache
@@ -104,12 +104,9 @@ class PageTag : BasePageViewer() {
         CoroutineScope(Dispatchers.Default).launch {
             for (edg in tagged.edges.indices) {
                 if (tagged.edges[edg].node.id() !in selection) continue
-                if (download) c.m.downloads.addAll(tagged.edges[edg].node.queue())
+                if (download) c.c.downloads.addAll<Download>(tagged.edges[edg].node.queue()) // FIXME all at once
             }
-            if (download) {
-                c.m.downloads.pickle<Download>(c.downloadsPickle)
-                Downloads.initService(c)
-            }
+            if (download) Downloads.initService(c)
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()
             }

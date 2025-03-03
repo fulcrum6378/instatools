@@ -24,7 +24,6 @@ import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import ir.mahdiparastesh.instatools.Settings.Companion.clearCacheIfNecessary
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
@@ -77,7 +76,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     override val com: ActivityCompanion get() = Companion
     override val currentPage: MutableLiveData<Int> get() = mm.currentPage
     override fun defPage(): Int = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-        ?: sp?.getInt(spMainPage, Settings.defSpMainPage)
+        ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
         ?: Settings.defSpMainPage
 
     class MyModel : ViewModel() {
@@ -94,18 +93,20 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!gsp.contains(Login.SP_ACCOUNT)) {
+        if (!c.gsp.contains(Login.SP_ACCOUNT)) {
             goTo(Login::class, true); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
+        createPages()
 
-        // Bottom Navigation Bar
+        // bottom navigation bar
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         mm.savedCount.observe(this) { bnvBadge(1, it) }
+        b.bnv.selectedItemId = bnvButtons[mm.currentPage.value!!]
 
-        // Theming
+        // theming
         if (night()) colorBG.observe(this) {
             if (it == null) return@observe
             window.decorView.setBackgroundColor(it)
@@ -130,9 +131,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             if (::searchClose.isInitialized)
                 searchClose.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
+        if (night()) colorBG.value = bg[mm.currentPage.value!!]
+        else colorAc.value = ca[mm.currentPage.value!!]
+        b.toolbar.popupTheme = popupThemes[mm.currentPage.value!!]
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
-        // Navigation
+        // navigation
         toggleNav = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
         ).apply {
@@ -141,58 +145,34 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             syncState()
         }
         b.nav.setNavigationItemSelectedListener(this)
+        bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
+        Glide.with(c)
+            .load(c.acc!!.pict)
+            .placeholder(drawable(R.drawable.transparent_square))
+            .into(bh.pict)
+        bh.user.text = c.acc!!.user
+        if (!c.acc!!.name.isNullOrBlank())
+            bh.name.text = c.acc!!.name
+        else bh.name.vis(false)
+        bh.ll.setOnClickListener {
+            UiTools.openLink(this, UiTools.PROFILE.format(c.acc!!.user!!))
+        }
 
-        // Permissions
+        // permissions
         if (UiTools.reqPermissions.isNotEmpty())
             ActivityCompat.requestPermissions(this, UiTools.reqPermissions, 0)
 
-        // Miscellaneous
-        if (gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) != BuildConfig.VERSION_CODE
-            || !gsp.contains(Settings.spUsedVersion)
-        ) gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
-    }
-
-    override fun onAccountSet() {
-        if (m.acc == null) {
-            goTo(Login::class, true)
-            return; }
-        super.onAccountSet()
-        onBuildUiBasedOnAccount()
-    }
-
-    override fun onBuildUiBasedOnAccount() {
-        if (!isAccountSet || !::b.isInitialized || uiBuildBasedOnAccount) return
-        super.onBuildUiBasedOnAccount()
-        createPages()
-
-        // Bottom Navigation Bar
-        b.bnv.selectedItemId = bnvButtons[mm.currentPage.value!!]
-
-        // theming
-        if (night()) colorBG.value = bg[mm.currentPage.value!!]
-        else colorAc.value = ca[mm.currentPage.value!!]
-        b.toolbar.popupTheme = popupThemes[mm.currentPage.value!!]
-
-        // navigation
-        bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
-        Glide.with(c)
-            .load(m.acc!!.pict)
-            .placeholder(drawable(R.drawable.transparent_square))
-            .into(bh.pict)
-        bh.user.text = m.acc!!.user
-        if (!m.acc!!.name.isNullOrBlank())
-            bh.name.text = m.acc!!.name
-        else bh.name.vis(false)
-        bh.ll.setOnClickListener {
-            UiTools.openLink(this, UiTools.PROFILE.format(m.acc!!.user!!))
-        }
-
         // miscellaneous
-        if (m.downloadHistory == null) DownloadHistory.load(this)
+        if (c.downloadHistory == null) DownloadHistory.load(c)
         CoroutineScope(Dispatchers.IO).launch {
-            m.fav = ArrayList(dao.favourites())
-            m.fav?.sortBy { it.user }
+            c.fav = ArrayList(c.dao.favourites())
+            c.fav?.sortBy { it.user }
         }
+        if (c.gsp.getInt(
+                Settings.spUsedVersion, BuildConfig.VERSION_CODE
+            ) != BuildConfig.VERSION_CODE
+            || !c.gsp.contains(Settings.spUsedVersion)
+        ) c.gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -221,12 +201,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    switchAcc()
+                    c.switchAcc()
                 }
             }.show()
             true
         } else {
-            switchAcc(); true; }
+            c.switchAcc(); true; }
         R.id.mnSignOut -> {
             val bd = AlsoDeleteDataBinding.inflate(
                 layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
@@ -239,11 +219,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 setView(bd.root)
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
-                    if (m.acc == null) return@setPositiveButton
+                    if (c.acc == null) return@setPositiveButton
                     CoroutineScope(Dispatchers.IO).launch {
                         Api.json<Rest.QuickResponse>(
                             Api.Endpoint.LOGOUT.url,
-                            true, "one_tap_app_login=1&user_id=${m.acc?.id}",
+                            true, "one_tap_app_login=1&user_id=${c.acc?.id}",
                         )
                     }
                     signOut(bd.root.isChecked)
@@ -335,7 +315,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
-        sp?.edit { putInt(spMainPage, mm.currentPage.value!!) }
+        c.sp?.edit { putInt(spMainPage, mm.currentPage.value!!) }
         b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()
@@ -371,19 +351,19 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
         CoroutineScope(Dispatchers.IO).launch {
-            if (bd) m.acc?.also { acc ->
+            if (bd) c.acc?.also { acc ->
                 Settings.deleteDb(acc.id.toString())
                 Settings.deleteSp(this@Main, acc)
             }
-            Account.save(c, Account.load(c).apply { removeAll { it.id == m.acc?.id } })
-            withContext(Dispatchers.Main) { switchAcc() }
+            Account.save(c, Account.load(c).apply { removeAll { it.id == c.acc?.id } })
+            withContext(Dispatchers.Main) { c.switchAcc() }
         }
     }
 
-    override fun switchAcc() {
+    /*override fun switchAcc() { FIXME
         mm.accountSwitched()
-        super.switchAcc()
-    }
+        c.switchAcc()
+    }*/
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
@@ -396,7 +376,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             exiting = true
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
-            CoroutineScope(Dispatchers.IO).launch { clearCacheIfNecessary() }
+            CoroutineScope(Dispatchers.IO).launch { c.clearCacheIfNecessary() }
             return; }
         @Suppress("DEPRECATION") super.onBackPressed() // Do NOT kill the process
     }

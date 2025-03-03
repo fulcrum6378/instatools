@@ -17,7 +17,6 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
-import ir.mahdiparastesh.instatools.Settings.Companion.incrementCounter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.Media
@@ -46,9 +45,6 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
 
     lateinit var b: ViewerBinding
     val mm: MyModel by viewModels()
-    val downloadsPickle: Pickle by lazy {
-        Pickle(c.cacheDir, m.acc!!.id, Pickle.Type.SAVED, null)
-    }
     val expandable: Expandable by lazy {
         Expandable(
             this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)
@@ -148,7 +144,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 mm.user?.also { oldUser ->
                     userReplaced = oldUser.id!! != userId_
                 }
-                pickle = Pickle(c.cacheDir, m.acc!!.id, Pickle.Type.PROFILE, userId_)
+                pickle = Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_)
                 val cache = if (!userReplaced && !reset) pickle.restore<Array<User>>() else null
                 if (cache != null && cache.size == 2) {
                     mm.user = cache[0]
@@ -190,7 +186,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             }
 
             if (pickle == null) pickle =
-                Pickle(c.cacheDir, m.acc!!.id, Pickle.Type.PROFILE, userId_)
+                Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_)
             pickle.save(arrayOf(mm.user!!, mm.profile!!))
 
             if (userReplaced) {
@@ -199,7 +195,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 mm.highlights = null
                 mm.tagged = null
             } else
-                mm.fav = dao.favourite(mm.user!!.id!!)
+                mm.fav = c.dao.favourite(mm.user!!.id!!)
 
             withContext(Dispatchers.Main) {
                 if (userReplaced)
@@ -232,11 +228,11 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                         mm.fav = Favourite(
                             u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!, u.pv()
                         )
-                        dao.addFavourite(mm.fav!!)
-                        m.fav?.add(mm.fav!!)
+                        c.dao.addFavourite(mm.fav!!)
+                        c.fav?.add(mm.fav!!)
                     } else {
-                        dao.deleteFavourite(mm.fav!!)
-                        m.fav?.remove(mm.fav!!)
+                        c.dao.deleteFavourite(mm.fav!!)
+                        c.fav?.remove(mm.fav!!)
                         mm.fav = null
                     }
                     withContext(Dispatchers.Main) { fixTbMenu() }
@@ -261,7 +257,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                         setShortLabel(u.full_name!!.ifBlank { u.username!! })
                     }.build(), null
                 )
-                incrementCounter(Settings.spShortcutCount)
+                c.incrementCounter(Settings.spShortcutCount)
             }
         }
         return super.onMenuItemClick(item)

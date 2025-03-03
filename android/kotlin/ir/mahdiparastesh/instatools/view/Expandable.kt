@@ -59,7 +59,7 @@ class Expandable(
         b.download.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.m.downloads.addAll(med.queue(owner = mediaOwner))
+                    c.c.downloads.addAll<Download>(med.queue(owner = mediaOwner))
                     Downloads.initService(c)
                 }
             }
@@ -67,7 +67,7 @@ class Expandable(
         b.downloadThis.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.m.downloads.addAll(med.queue(onlyOneSlide = b.slider.currentItem))
+                    c.c.downloads.addAll<Download>(med.queue(onlyOneSlide = b.slider.currentItem))
                     Downloads.initService(c)
                 }
             }
@@ -76,7 +76,7 @@ class Expandable(
         b.downloadAll.setOnClickListener {
             media?.also { med ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.m.downloads.addAll(med.queue())
+                    c.c.downloads.addAll<Download>(med.queue())
                     Downloads.initService(c)
                 }
             }
@@ -87,7 +87,8 @@ class Expandable(
                 ?: return@setOnClickListener
             media?.apply {
                 CoroutineScope(Dispatchers.IO).launch {
-                    c.m.downloads.add(
+                    @Suppress("DEPRECATION")
+                    c.c.downloads.add<Download>(
                         Download(
                             id(),
                             Utils.compileSecondsTS(taken_at!!),
