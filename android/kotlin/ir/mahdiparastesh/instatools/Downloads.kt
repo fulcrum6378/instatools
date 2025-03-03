@@ -150,15 +150,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             if (c.acc != null) {
                 handleLink(it)
                 initService(this)
-            } else MaterialAlertDialogBuilder(this).apply {
-                setTitle(R.string.downloads)
-                setMessage(R.string.dGuestSure)
-                setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ ->
-                    handleLink(it)
-                    initService(this@Downloads)
-                }
-            }.show()
+            } else
+                goTo(Login::class)
         }
         return super.resolveIntent(intent, false)
     }

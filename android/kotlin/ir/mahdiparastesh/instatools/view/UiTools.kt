@@ -14,10 +14,10 @@ import android.os.VibratorManager
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.forEach
 import androidx.core.view.get
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
@@ -50,14 +50,14 @@ object UiTools {
 
     /** @return TextView instances of a BottomNavigationView for applying custom styles on them. */
     @SuppressLint("RestrictedApi")
-    fun bnvTitles(bnv: BottomNavigationView): List<AppCompatTextView> {
-        val list = ArrayList<AppCompatTextView>()
+    fun bnvTitles(bnv: BottomNavigationView): List<TextView> {
+        val list = ArrayList<TextView>()
         (bnv[0] as BottomNavigationMenuView).forEach {
             val item = it as BottomNavigationItemView
             // 0 => FrameLayout (icon) and 1 => BaselineLayout (title)
             val title = item[1] as BaselineLayout // has 2 AppCompatTextView
-            list.add(title[0] as AppCompatTextView) // normal state
-            list.add(title[1] as AppCompatTextView) // selected state
+            list.add(title[0] as TextView) // normal state
+            list.add(title[1] as TextView) // selected state
         }
         return list.toList()
     }

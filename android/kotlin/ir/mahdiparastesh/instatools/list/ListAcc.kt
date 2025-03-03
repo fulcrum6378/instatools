@@ -62,8 +62,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
     private fun more(v: View, acc: Account, i: Int): Boolean {
         MaterialMenu(c, v, R.menu.acc_more,
             R.id.amOffline to {
-                c.c.selectAccount(acc)
-                c.c.gsp.edit { putString(Login.SP_ACCOUNT, acc.id.toString()) }
+                c.c.onLoggedIn(acc, true)
                 acc.last = Utils.now()
                 acc.saveMeInIO(c)
                 c.goTo(Main::class, true)

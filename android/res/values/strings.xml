@@ -120,10 +120,6 @@
     <string name="dtExportLinks">Export links</string>
     <string name="dtImportLinks">Import links</string>
     <string name="dEmptyQueue">The download list is empty!</string>
-    <string name="dGuestSure">
-        You haven\'t logged in yer and Instagram may not allow downloads!
-        Are you sure you want to continue?
-    </string>
 
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>

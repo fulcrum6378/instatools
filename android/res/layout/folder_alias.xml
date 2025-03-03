@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="?attr/colorAccent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/aliasAddFolder"
         style="@style/stButton"
         android:text="@string/addFolder"

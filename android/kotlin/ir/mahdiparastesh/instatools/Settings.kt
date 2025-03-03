@@ -12,10 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -203,7 +203,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         if (intent.hasExtra(EXTRA_SELECT_PATH)) selectPath()
         updateMainPath()
         b.stMainPath.setOnClickListener { v ->
-            if ((v as AppCompatTextView).text.isEmpty())
+            if ((v as TextView).text.isEmpty())
                 selectPath()
             else MaterialMenu(this@Settings, v, R.menu.settings_main_path,
                 R.id.smpChange to { selectPath() },

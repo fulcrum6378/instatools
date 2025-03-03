@@ -25,7 +25,7 @@
         android:id="@+id/jumper"
         style="@style/jumper" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/empty"
         style="@style/emptyList"
         android:text="@string/vwNoTagged" />

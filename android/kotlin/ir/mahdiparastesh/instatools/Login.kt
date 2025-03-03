@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewStub
 import android.webkit.*
 import android.widget.Toast
-import androidx.core.content.edit
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -61,7 +60,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b = LoginBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.welcomeStub.setOnInflateListener(this)
-        c.accountSwitched()
 
         // WebView
         b.web.settings.javaScriptEnabled = true
@@ -261,10 +259,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 accounts.removeAll { it.id == id }
                 accounts.add(this)
                 CoroutineScope(Dispatchers.IO).launch { Account.save(c, accounts) }
-                c.selectAccount(this)
+                c.onLoggedIn(this, true)
             }
 
-            c.gsp.edit { putString(SP_ACCOUNT, u.id()) }
             goTo(Main::class, true)
             c.clearCacheIfNecessary("WebView")
             improperLoading = 0

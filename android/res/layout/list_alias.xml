@@ -12,7 +12,7 @@
     android:paddingEnd="3dp"
     tools:ignore="RtlSymmetry">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/path"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

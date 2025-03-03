@@ -1,7 +1,7 @@
 package ir.mahdiparastesh.instatools.list
 
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ir.mahdiparastesh.instatools.Main
@@ -23,8 +23,8 @@ class ListFav(val c: Main, private val f: PageFav) :
     ): AnyViewHolder<ListFavBinding> {
         val b = ListFavBinding.inflate(f.layoutInflater, parent, false)
         b.name.textDirection =
-            if (!c.dirRtl) AppCompatTextView.TEXT_DIRECTION_LTR
-            else AppCompatTextView.TEXT_DIRECTION_RTL
+            if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR
+            else TextView.TEXT_DIRECTION_RTL
         return AnyViewHolder(b)
     }
 

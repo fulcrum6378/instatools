@@ -29,11 +29,11 @@
 
             <LinearLayout style="@style/stItem">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     style="@style/stItemName"
                     android:text="@string/stDlPath" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stMainPath"
                     style="@style/stPath" />
 
@@ -68,7 +68,7 @@
 
             <LinearLayout style="@style/stItem">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     style="@style/stItemName"
                     android:text="@string/stAliasing" />
 
@@ -78,7 +78,7 @@
                     android:nestedScrollingEnabled="false"
                     android:paddingHorizontal="0dp" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stAddAlias"
                     style="@style/stButton"
                     android:text="@string/stAddAlias" />
@@ -90,7 +90,7 @@
                 android:id="@+id/stCache"
                 style="@style/stItem">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stCaching"
                     style="@style/stItemName" />
 
@@ -99,7 +99,7 @@
                     style="@style/stSubItem"
                     android:max="@integer/stCacheMaxNominal" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stCacheLimitTv"
                     style="@style/stSubItem"
                     android:layout_marginTop="8dp"
@@ -108,7 +108,7 @@
                     android:textAppearance="@style/TextAppearance.InstaTools.Light"
                     android:textSize="13sp" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stClearCache"
                     style="@style/stButton"
                     android:text="@string/stClearCache" />
@@ -120,16 +120,16 @@
 
             <LinearLayout style="@style/stItem">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     style="@style/stItemName"
                     android:text="@string/stUserData" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stResetData"
                     style="@style/stButton"
                     android:text="@string/stResetData" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/stResetSettings"
                     style="@style/stButton"
                     android:text="@string/stResetSettings" />

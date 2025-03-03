@@ -68,12 +68,12 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
         }
         Delay(100) {
             currentPage.observe(this) {
-                try {
-                    pages[it]?.updateShadow()
-                    pages[it]?.updateJumper()
-                } catch (_: NullPointerException) {
-                    // getC() might cause it!
-                }
+                //try {
+                pages[it]?.updateShadow()
+                pages[it]?.updateJumper()
+                //} catch (_: NullPointerException) {
+                // getC() might cause it!
+                //}
             }
         }
     }

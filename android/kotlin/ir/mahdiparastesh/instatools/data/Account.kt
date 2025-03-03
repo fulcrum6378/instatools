@@ -68,8 +68,6 @@ class Account(
             for (i in inList.indices) if (inList[i].id == it.id) return i
             return null
         }
-
-        fun Account?.dbName() = if (this != null) id.toString() else "guest"
     }
 
     class Secured(c: Context) : File(c.filesDir, "cache.json")

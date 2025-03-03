@@ -83,10 +83,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
         val currentPage = MutableLiveData(Settings.defSpMainPage)
-
-        fun accountSwitched() {
-            saved = null
-        }
     }
 
     companion object : ActivityCompanion()
@@ -201,12 +197,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    c.switchAcc()
+                    switchAcc()
                 }
             }.show()
             true
         } else {
-            c.switchAcc(); true; }
+            switchAcc(); true; }
         R.id.mnSignOut -> {
             val bd = AlsoDeleteDataBinding.inflate(
                 layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
@@ -356,14 +352,14 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 Settings.deleteSp(this@Main, acc)
             }
             Account.save(c, Account.load(c).apply { removeAll { it.id == c.acc?.id } })
-            withContext(Dispatchers.Main) { c.switchAcc() }
+            withContext(Dispatchers.Main) { switchAcc() }
         }
     }
 
-    /*override fun switchAcc() { FIXME
-        mm.accountSwitched()
-        c.switchAcc()
-    }*/
+    private fun switchAcc() {
+        goTo(Login::class, true)
+        c.onLoggedOut()
+    }
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
@@ -384,6 +380,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
 /* TODO:
   * Problems:
+  * PageSvd cannot select after onPause and onResume (nothing to do with Selective)
   * on configuration changes (especially Login while browsing the web)
   * -
   * Extension:

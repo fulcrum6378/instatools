@@ -6,7 +6,7 @@
     android:layout_height="@dimen/vwReelHeight"
     tools:ignore="ContentDescription,MissingConstraints">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/number"
         style="@style/parentConstraint"
         android:layout_width="wrap_content"

@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
+import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,7 +18,6 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
@@ -83,17 +83,18 @@ abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListen
     override fun setContentView(root: View?) {
         super.setContentView(root)
         root?.layoutDirection =
-            if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR else ViewGroup.LAYOUT_DIRECTION_RTL
+            if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR
+            else ViewGroup.LAYOUT_DIRECTION_RTL
     }
 
-    var tbTitle: AppCompatTextView? = null
+    var tbTitle: TextView? = null
     lateinit var toolbar: Toolbar
     fun initToolbar(tb: Toolbar, title: Int, changeTitleTo: String? = null) {
         toolbar = tb
         setSupportActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
-            if (getTitle is AppCompatTextView && getTitle.text.toString() == getString(title))
+            if (getTitle is TextView && getTitle.text.toString() == getString(title))
                 tbTitle = getTitle
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
@@ -193,7 +194,6 @@ abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListen
         DEFAULT(R.style.Theme_InstaTools),
         PRIMARY(R.style.Theme_InstaTools_Primary),
         SECONDARY(R.style.Theme_InstaTools_Secondary),
-        TERTIARY(R.style.Theme_InstaTools_Tertiary),
-        TERTIARY_LIGHT(R.style.Theme_InstaTools_Tertiary_Light)
+        TERTIARY(R.style.Theme_InstaTools_Tertiary)
     }
 }

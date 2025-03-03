@@ -122,10 +122,6 @@
     <string name="dtExportLinks">استخراج لینک ها</string>
     <string name="dtImportLinks">وارد کردن لینک ها</string>
     <string name="dEmptyQueue">فهرست دانلود خالی است!</string>
-    <string name="dGuestSure">
-        شما لوگین نکرده اید و اینستاگرام ممکن است به شما اجازه دانلود ندهد!
-        آیا میخواهید ادامه دهید؟
-    </string>
 
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>

@@ -54,12 +54,12 @@
 
                         <LinearLayout style="@style/vwFlwLl">
 
-                            <androidx.appcompat.widget.AppCompatTextView
+                            <TextView
                                 android:id="@+id/followersNum"
                                 style="@style/vwFlwNum"
                                 android:text="@string/vwFlwZero" />
 
-                            <androidx.appcompat.widget.AppCompatTextView
+                            <TextView
                                 android:id="@+id/followersText"
                                 style="@style/vwFlwText"
                                 android:text="@string/vwFollowers" />
@@ -72,12 +72,12 @@
 
                         <LinearLayout style="@style/vwFlwLl">
 
-                            <androidx.appcompat.widget.AppCompatTextView
+                            <TextView
                                 android:id="@+id/followingNum"
                                 style="@style/vwFlwNum"
                                 android:text="@string/vwFlwZero" />
 
-                            <androidx.appcompat.widget.AppCompatTextView
+                            <TextView
                                 android:id="@+id/followingText"
                                 style="@style/vwFlwText"
                                 android:text="@string/vwFollowing" />
@@ -95,7 +95,7 @@
                 <!-- layout_height="wrap_content|match_parent" will cause an
                      ArrayIndexOutOfBoundsException sometimes -->
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/privateAcc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
