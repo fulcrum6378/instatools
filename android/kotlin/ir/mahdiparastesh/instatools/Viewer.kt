@@ -234,11 +234,9 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                         mm.fav = Favourite(
                             u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!, u.pv()
                         )
-                        c.dao.addFavourite(mm.fav!!)
-                        c.fav?.add(mm.fav!!)
+                        c.addFavourite(mm.fav!!)
                     } else {
-                        c.dao.deleteFavourite(mm.fav!!)
-                        c.fav?.remove(mm.fav!!)
+                        c.removeFavourite(mm.fav!!)
                         mm.fav = null
                     }
                     withContext(Dispatchers.Main) { fixTbMenu() }

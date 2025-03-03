@@ -1,18 +1,10 @@
 package ir.mahdiparastesh.instatools
 
 import android.app.Application
-import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Process.myPid
-import android.os.Process.myUid
 import androidx.core.content.edit
-import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.Settings.Companion.cacheSize
-import ir.mahdiparastesh.instatools.Settings.Companion.defaultCacheLimit
-import ir.mahdiparastesh.instatools.Settings.Companion.spCacheLimit
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Command
@@ -26,6 +18,7 @@ import ir.mahdiparastesh.instatools.util.Queue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -34,7 +27,7 @@ class InstaTools : Application() {
     var acc: Account? = null
 
     /** Global Shared Preferences */
-    val gsp: SharedPreferences by lazy { getSharedPreferences(GSP, MODE_PRIVATE) }
+    val gsp: SharedPreferences by lazy { getSharedPreferences(Settings.GSP, MODE_PRIVATE) }
 
     /** Local Shared Preferences */
     var sp: SharedPreferences? = null
@@ -49,7 +42,8 @@ class InstaTools : Application() {
     var downloadHistory: CopyOnWriteArraySet<String>? = null
 
     /** List of all [Favourite]s */
-    var fav: ArrayList<Favourite>? = null
+    var favPickle: Pickle? = null
+    var fav: MutableLiveData<MutableSet<Favourite>?> = MutableLiveData(null)
     private var db: Database? = null
     lateinit var dao: Database.DAO
 
@@ -71,11 +65,15 @@ class InstaTools : Application() {
             commands = Queue(Pickle(filesDir, acc.id, Pickle.Type.COMMAND_LIST, null))
             db = Database.build(this@InstaTools, sid)
             dao = db!!.dao()
+            favPickle = Pickle(filesDir, acc.id, Pickle.Type.FAVOURITES, null)
+            val dbFav = dao.favourites()
+            withContext(Dispatchers.Main) { fav.value = dbFav.toMutableSet() }
         }
     }
 
     fun onLoggedOut() {
-        fav = null
+        fav.value = null
+        favPickle = null
         db?.close()
         //commands = null
         //downloads = null
@@ -103,8 +101,25 @@ class InstaTools : Application() {
         gsp.edit { putLong(key, gsp.getLong(key, 0L) + 1L) }
     }
 
+    fun addFavourite(item: Favourite) {
+        fav.value?.also { favourites ->
+            favourites.add(item)
+            favPickle?.save(favourites)
+        }
+        dao.addFavourite(item)
+    }
+
+    fun removeFavourite(item: Favourite) {
+        fav.value?.also { favourites ->
+            favourites.remove(item)
+            favPickle?.save(favourites)
+        }
+        dao.deleteFavourite(item)
+    }
+
     fun clearCacheIfNecessary(subdir: String? = null): Boolean {
-        if (cacheSize() <= gsp.getLong(spCacheLimit, defaultCacheLimit(this))) return false
+        if (cacheSize() <= gsp.getLong(Settings.spCacheLimit, Settings.defaultCacheLimit(this)))
+            return false
         (if (subdir != null) File(cacheDir, subdir) else cacheDir)
             .deleteRecursively()
         return true
@@ -116,20 +131,8 @@ class InstaTools : Application() {
 
 
     companion object {
-        const val GSP = "global"
-
         /** Are any Activities or Services alive? */
         fun anyoneAlive() = BaseActivity.anyActive() || ForegroundService.anyRunning()
-
-        fun Context.isPathAccessible(uri: Uri): Boolean =
-            checkUriPermission(
-                uri, myPid(), myUid(), Intent.FLAG_GRANT_READ_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED && checkUriPermission(
-                uri, myPid(), myUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            ) == PackageManager.PERMISSION_GRANTED &&
-                DocumentFile.fromTreeUri(this, uri)?.exists() == true
-
-        fun Context.isPathAccessible(path: String) = isPathAccessible(Uri.parse(path))
     }
 }
 

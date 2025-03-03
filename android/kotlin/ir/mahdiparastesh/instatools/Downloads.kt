@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import ir.mahdiparastesh.instatools.InstaTools.Companion.isPathAccessible
+import ir.mahdiparastesh.instatools.Settings.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.databinding.DownloadsBinding

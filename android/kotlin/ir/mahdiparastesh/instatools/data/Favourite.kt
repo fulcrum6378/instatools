@@ -3,8 +3,11 @@ package ir.mahdiparastesh.instatools.data
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Entity
+@Serializable
 class Favourite(
     @PrimaryKey var id: String,
     var user: String,

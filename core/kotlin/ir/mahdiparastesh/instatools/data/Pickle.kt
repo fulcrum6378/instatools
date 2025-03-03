@@ -46,7 +46,8 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         val lifespanInDays: Float,
         val singleFile: Boolean = true,
     ) {
-        // queues
+        // user data
+        FAVOURITES(0f),
         DOWNLOAD_LIST(0f),
         COMMAND_LIST(7f),
 

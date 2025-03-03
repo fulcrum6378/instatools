@@ -29,6 +29,7 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
+import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
@@ -82,6 +83,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         }
 
     class MyModel : ViewModel() {
+        var favourites: List<Favourite> = listOf()
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
         var currentPage = Settings.defSpMainPage
@@ -166,10 +168,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
         // miscellaneous
         if (c.downloadHistory == null) DownloadHistory.load(c)
-        CoroutineScope(Dispatchers.IO).launch {
-            c.fav = ArrayList(c.dao.favourites())
-            c.fav?.sortBy { it.user }
-        }
         if (c.gsp.getInt(
                 Settings.spUsedVersion, BuildConfig.VERSION_CODE
             ) != BuildConfig.VERSION_CODE

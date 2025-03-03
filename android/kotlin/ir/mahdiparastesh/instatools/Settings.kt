@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Process.myPid
+import android.os.Process.myUid
 import android.os.StatFs
 import android.view.MenuItem
 import android.view.View
@@ -19,7 +22,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.instatools.InstaTools.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
@@ -92,6 +94,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_SELECT_PATH = "selectPath"
+        const val GSP = "global"
         private const val MB = 1048576L
         val allSps = arrayOf(
             spStorage, spBranching, spBranchingCb, spAutoDeleteEmptyDirs, spAutoDeleteEmptyDirsCb,
@@ -158,7 +161,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         @SuppressLint("SdCardPath")
         fun Uri.release(c: InstaTools, global: Boolean) {
             val exc = arrayOf(
-                "${if (global) InstaTools.GSP else c.acc!!.id}.xml",
+                "${if (global) GSP else c.acc!!.id}.xml",
                 "AwOriginVisitLoggerPrefs.xml", "WebViewChromiumPrefs.xml"
             )
             val f0 = ">$this<"
@@ -180,6 +183,16 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             } catch (_: SecurityException) {
             } // No permission grants found for UID XXX and Uri content://...
         }
+
+        fun Context.isPathAccessible(uri: Uri): Boolean =
+            checkUriPermission(
+                uri, myPid(), myUid(), Intent.FLAG_GRANT_READ_URI_PERMISSION
+            ) == PackageManager.PERMISSION_GRANTED && checkUriPermission(
+                uri, myPid(), myUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            ) == PackageManager.PERMISSION_GRANTED &&
+                DocumentFile.fromTreeUri(this, uri)?.exists() == true
+
+        fun Context.isPathAccessible(path: String) = isPathAccessible(Uri.parse(path))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -384,7 +397,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             setMessage(R.string.stAliasingDesc)
             bfa = FolderAliasBinding.inflate(layoutInflater)
             bfa!!.aliasProfile.setText(u)
-            c.fav?.also { fav ->
+            c.fav.value?.also { fav ->
                 bfa!!.aliasProfile.setAdapter(
                     ArrayAdapter(this@Settings, android.R.layout.simple_dropdown_item_1line,
                         fav.map { it.user })
