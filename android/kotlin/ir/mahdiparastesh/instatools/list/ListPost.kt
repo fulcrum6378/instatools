@@ -26,6 +26,10 @@ abstract class ListPost<Activity, Fragment>(
 ) : RecyclerView.Adapter<ListPost<Activity, Fragment>.ViewHolder>()
     where Activity : BaseActivity, Fragment : BasePage<Activity> {
 
+    init {
+        setHasStableIds(true)
+    }
+
     protected val typeVideo = c.drawable(R.drawable.video)!!
     protected val typeStack = c.drawable(R.drawable.stack)!!
     var firstLongClickSelect = false
@@ -107,6 +111,9 @@ abstract class ListPost<Activity, Fragment>(
             true
         }
     }
+
+    override fun getItemId(position: Int): Long =
+        this[position]?.uid ?: RecyclerView.NO_ID
 
     abstract operator fun get(position: Int): Media?
 

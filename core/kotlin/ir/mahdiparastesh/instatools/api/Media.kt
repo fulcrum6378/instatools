@@ -41,6 +41,7 @@ class Media(
     val video_versions: Array<Version>?,
     //val view_count: Long?,
 ) {
+    val uid: Long by lazy { id().toLong() }
 
     fun id(): String = pk ?: id.substringBefore("_")
 
