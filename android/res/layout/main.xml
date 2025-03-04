@@ -37,6 +37,8 @@
             android:saveEnabled="false"
             android:theme="@style/Theme.InstaTools.BNV"
             app:itemRippleColor="@color/defRipple"
+            app:itemTextAppearanceActive="@style/TextAppearance.InstaTools.BNV.Active"
+            app:itemTextAppearanceInactive="@style/TextAppearance.InstaTools.BNV.Inactive"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/main_bnv" />
 

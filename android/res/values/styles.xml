@@ -3,15 +3,15 @@
 
     <!-- #TextAppearance -->
     <style name="TextAppearance.InstaTools.Bold" parent="@android:style/TextAppearance">
-        <item name="fontFamily">@font/bold</item>
+        <item name="android:fontFamily">@font/bold</item>
     </style>
 
     <style name="TextAppearance.InstaTools.Medium" parent="@android:style/TextAppearance">
-        <item name="fontFamily">@font/medium</item>
+        <item name="android:fontFamily">@font/medium</item>
     </style>
 
     <style name="TextAppearance.InstaTools.Light" parent="@android:style/TextAppearance">
-        <item name="fontFamily">@font/light</item>
+        <item name="android:fontFamily">@font/light</item>
     </style>
 
     <style name="TextAppearance.InstaTools.Toolbar" parent="@style/TextAppearance.InstaTools.Bold">
@@ -20,11 +20,21 @@
 
     <style name="TextAppearance.InstaTools.Toolbar.Main" parent="@android:style/TextAppearance">
         <item name="android:textSize">@dimen/tbTitleMain</item>
-        <item name="fontFamily">@font/logo</item>
+        <item name="android:fontFamily">@font/logo</item>
     </style>
 
     <style name="TextAppearance.InstaTools.Nav" parent="@style/TextAppearance.InstaTools.Medium">
         <item name="android:textSize">@dimen/navFont</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.BNV.Active" parent="@style/TextAppearance.InstaTools.Medium">
+        <item name="android:fontFamily">@font/bold</item>
+        <item name="android:textSize">@dimen/bnvTextActive</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.BNV.Inactive" parent="@style/TextAppearance.InstaTools.Medium">
+        <item name="android:fontFamily">@font/medium</item>
+        <item name="android:textSize">@dimen/bnvTextInactive</item>
     </style>
 
 

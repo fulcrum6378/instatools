@@ -30,7 +30,7 @@
 
     <!-- PopupMenu -->
     <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
-        <item name="fontFamily">@font/medium</item>
+        <item name="android:fontFamily">@font/medium</item>
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="colorPrimaryWeak">@color/weakWhite</item>
         <item name="android:itemBackground">@drawable/menu_item</item>

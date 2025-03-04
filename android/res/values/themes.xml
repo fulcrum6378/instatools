@@ -60,7 +60,7 @@
 
     <!-- PopupMenu -->
     <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
-        <item name="fontFamily">@font/medium</item>
+        <item name="android:fontFamily">@font/medium</item>
         <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 
@@ -87,7 +87,7 @@
         <item name="android:textColorPrimary">?attr/colorPrimary</item>
         <!-- for custom ContextThemeWrapper initialisation -->
         <item name="colorOnSurface">?attr/colorPrimary</item><!-- title and message-->
-        <item name="fontFamily">@font/medium</item>
+        <item name="android:fontFamily">@font/medium</item>
         <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.InstaTools.Medium
         </item><!-- body font -->
     </style>
@@ -118,16 +118,13 @@
 
     <style name="Theme.InstaTools.Snackbar" parent="Widget.MaterialComponents.Snackbar">
         <item name="android:textColor">@android:color/white</item>
-        <item name="fontFamily">@font/light</item>
+        <item name="android:fontFamily">@font/light</item>
     </style>
 
     <style name="Theme.InstaTools.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
-    <style name="Theme.InstaTools.BNV" parent="Theme.MaterialComponents.DayNight">
-        <!-- don't use Widget.MaterialComponents -->
-        <item name="android:textColor">@android:color/white</item>
-        <item name="fontFamily">@font/light</item>
-    </style>
+    <style name="Theme.InstaTools.BNV" parent="Theme.MaterialComponents.DayNight" />
+    <!-- don't use Widget.MaterialComponents -->
 </resources>
