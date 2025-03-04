@@ -201,11 +201,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.dtControl -> if (!c.downloads.isEmpty<Download>()) {
-                if (DownloadService.active.value == true) stopService(Intent(
-                    c,
-                    DownloadService::class.java
-                )
-                    .apply { action = ForegroundService.ACTION_STOP })
+                if (DownloadService.active.value == true)
+                    startService(Intent(c, DownloadService::class.java) // don't use stopService()
+                        .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }

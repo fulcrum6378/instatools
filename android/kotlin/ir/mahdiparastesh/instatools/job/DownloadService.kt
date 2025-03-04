@@ -17,7 +17,6 @@ import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,9 +36,12 @@ class DownloadService : ForegroundService(), Downloader {
     override var ntfSmallText: String? = null
     override val ntfActions: Array<Pair<Int, String>> = arrayOf(R.string.stop to ACTION_STOP)
     override var handledItems: Int = 0
+
+    @Volatile
     override var proceed: Boolean = true
 
     companion object : ForegroundServiceCompanion() {
+        @Volatile
         var processingItem: Download? = null
     }
 
@@ -136,7 +138,7 @@ class DownloadService : ForegroundService(), Downloader {
         // save the download history
         DownloadHistory.saveCache(c)
 
-        if (fatalError !is CancellationException) {
+        if (proceed) {
             if (fatalError != null) {
                 if (fatalError !is Utils.InstaToolsException) throw fatalError
 

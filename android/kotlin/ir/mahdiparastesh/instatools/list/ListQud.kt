@@ -35,15 +35,12 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.date.text = Utils.date(q.date)
 
         // status
-        if (q.status == 2.toByte())
-            h.b.status.setImageResource(R.drawable.play)
-        else h.b.status.setAnimation(
-            when {
-                q == DownloadService.processingItem -> R.raw.download
-                q.isFailed() -> R.raw.failed
-                else -> R.raw.pending
-            }
-        )
+        when {
+            q.status == 2.toByte() -> h.b.status.setImageResource(R.drawable.play)
+            q == DownloadService.processingItem -> h.b.status.setAnimation(R.raw.download)
+            q.isFailed() -> h.b.status.setAnimation(R.raw.failed)
+            else -> h.b.status.setImageDrawable(null)
+        }
         h.b.status.repeatCount = if (q.isFailed()) 0 else LottieDrawable.INFINITE
         val pad =
             if (!q.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0

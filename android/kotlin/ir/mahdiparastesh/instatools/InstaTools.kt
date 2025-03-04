@@ -147,8 +147,11 @@ class InstaTools : Application() {
   * on configuration changes (especially Login while browsing the web)
   * PageVwr doesn't show its jumper
   * Update highlights count after fetched
+  * Invalid Pickle data detected in posts!
+  * Selection indicator invisible after Expandable collapses
   * -
   * Extension:
+  * A simple following list Activity
   * A new proper logo
   * number of posts on PageVwr
   * Choose download qualities in the Toolbar of Downloads

@@ -26,7 +26,7 @@ That JSON file is an array of
 [Account](android/kotlin/ir/mahdiparastesh/instatools/data/Account.kt)
 objects and stores the data mentioned before.
 These data are used later for dealing with Instagram's private API.
-This app supports multiple accounts; each account has its own database and shared preferences.
+This app supports multiple accounts; each account has its own app data and shared preferences.
 That's why the JSON file mentioned above is an array of multiple Account instances.
 
 ### [Main.kt](android/kotlin/ir/mahdiparastesh/instatools/Main.kt)
@@ -35,7 +35,7 @@ This activity contains 3 fragments:
 
 1. **Favourites** ([PageFav.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageFav.kt)) :
    Displays a local list of favourite Instagram profiles
-   (its data is only stored in the local database not in Instagram).
+   (its data is only stored locally not online on Instagram).
    Its theme is the yellow-brown one called Theme.InstaTools.Primary.
 2. **Saved Posts** [PageSvd.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageSvd.kt) :
    lists the saved posts and lets the users unsave and/or download them.
@@ -70,8 +70,7 @@ and also settings of the current account (`sp)`.
 
 - [**api**](android/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
   including back-end data models, endpoint addresses and their related utilities.
-- [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) :
-  data models used for storing in databases or other local files.
+- [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) : data models
 - [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
 - [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
 - [**list**](android/kotlin/ir/mahdiparastesh/instatools/list) : all RecyclerView adapters

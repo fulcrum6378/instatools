@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.util.Utils
 import java.lang.IllegalStateException
-import java.util.concurrent.CancellationException
 
 /**
  * A structure for handling multiple items as a queue.
@@ -48,7 +47,7 @@ interface Queuer<Item> {
                 }
                 handledItems++
             }
-            onFinished(if (proceed) null else CancellationException())
+            onFinished(null)
         } catch (fatalError: Exception) {
             onFinished(fatalError)
         }
