@@ -23,6 +23,7 @@ import androidx.core.view.forEach
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
@@ -145,6 +146,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
         Glide.with(c)
             .load(c.acc!!.pict)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .placeholder(drawable(R.drawable.transparent_square))
             .into(bh.pict)
         bh.user.text = c.acc!!.user

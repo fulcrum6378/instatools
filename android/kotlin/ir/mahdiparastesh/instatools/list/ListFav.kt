@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -27,7 +28,10 @@ class ListFav(val c: Main, private val f: PageFav) :
 
     override fun onBindViewHolder(h: AnyViewHolder<ListFavBinding>, i: Int) {
         val fav = c.mm.favourites.getOrNull(i) ?: return
-        Glide.with(c.c).load(fav.photo).into(h.b.photo)
+        Glide.with(c.c)
+            .load(fav.photo)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .into(h.b.photo)
         h.b.name.text = "${i + 1}. ${fav.name}"
         h.b.user.text = fav.user
         h.b.root.setOnClickListener {

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
@@ -35,7 +36,10 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
         // apparently even the most static kinds of list adapters need to be null-safe.
         val acc = c.accounts.getOrNull(i) ?: return
 
-        Glide.with(c.c).load(acc.pict).into(h.b.photo)
+        Glide.with(c.c)
+            .load(acc.pict)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .into(h.b.photo)
         h.b.name.text = acc.name
         h.b.user.text = acc.user
         h.b.name.vis(acc.name != "")

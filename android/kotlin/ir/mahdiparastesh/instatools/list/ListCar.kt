@@ -10,6 +10,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ListCarBinding
 import ir.mahdiparastesh.instatools.util.BaseActivity
@@ -55,11 +56,14 @@ class ListCar(
         sessions.forEachIndexed { ii, ms -> if (i != ii) ms?.player?.pause() }
 
         when (slides[i].type) {
-            Media.Type.IMAGE -> slides[i].url?.let {
+            Media.Type.IMAGE -> slides[i].url?.also {
                 h.b.image.vis()
-                Glide.with(c.c).load(it).into(h.b.image)
+                Glide.with(c.c)
+                    .load(it)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(h.b.image)
             }
-            Media.Type.VIDEO -> slides[i].url?.let {
+            Media.Type.VIDEO -> slides[i].url?.also {
                 h.b.video.vis()
                 sessions[i] = MediaSession.Builder(
                     c, ExoPlayer.Builder(c).setAudioAttributes(

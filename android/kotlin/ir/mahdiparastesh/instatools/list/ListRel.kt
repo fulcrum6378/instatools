@@ -3,6 +3,8 @@ package ir.mahdiparastesh.instatools.list
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.databinding.ListRelBinding
@@ -17,11 +19,13 @@ class ListRel(private val c: Viewer, var story: Story) :
         AnyViewHolder(ListRelBinding.inflate(c.layoutInflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
-        val item = story.items?.getOrNull(i) ?: return
+        val med = story.items?.getOrNull(i) ?: return
         h.b.number.text = "${i + 1}"
 
         Glide.with(c.c)
-            .load(item.thumb())
+            .load(med.thumb())
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .signature(ObjectKey(med.id()))
             .into(h.b.thumb)
 
         h.b.click.setOnClickListener {

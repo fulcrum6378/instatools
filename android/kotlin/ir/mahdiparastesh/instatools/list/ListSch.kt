@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.list
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -24,7 +25,10 @@ class ListSch(val c: Main) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>
 
     override fun onBindViewHolder(h: AnyViewHolder<ListAccBinding>, i: Int) {
         if (c.schRes == null || c.schRes!!.size <= i) return
-        Glide.with(c.c).load(c.schRes!![i].user.profile_pic_url).into(h.b.photo)
+        Glide.with(c.c)
+            .load(c.schRes!![i].user.profile_pic_url)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(h.b.photo)
         h.b.name.text = c.schRes!![i].user.full_name
         h.b.name.vis(c.schRes!![i].user.full_name != "")
         h.b.user.vis(c.schRes!![i].user.username != "")

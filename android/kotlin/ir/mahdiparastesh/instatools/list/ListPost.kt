@@ -9,6 +9,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
@@ -63,8 +64,9 @@ abstract class ListPost<Activity, Fragment>(
         // load thumbnail
         if (med.thumb() != null) Glide.with(c.c)
             .load(med.thumb())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .signature(ObjectKey(med.id()))
             .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
             .into(h.b.thumbnail)
 

@@ -8,6 +8,7 @@ import androidx.core.animation.addListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -60,8 +61,9 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         else story.cover_media?.cropped_image_version.apply {
             if (this != null) Glide.with(c.c)
                 .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .signature(ObjectKey(story.id))
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .into(h.b.icon)
             else h.b.icon.setImageDrawable(null)
         }

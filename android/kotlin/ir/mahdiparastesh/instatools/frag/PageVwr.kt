@@ -220,7 +220,7 @@ class PageVwr : BasePageViewer() {
             val pic = c.mm.profile?.profile_pic_url_hd
             if (pic != null) Glide.with(c.c)
                 .load(pic)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .addListener(GlideShimmer(h.b.proPic, h.b.proPicIv))
                 .into(h.b.proPicIv)
             else

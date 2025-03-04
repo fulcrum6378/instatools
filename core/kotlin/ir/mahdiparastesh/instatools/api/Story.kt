@@ -6,7 +6,7 @@ import kotlinx.serialization.Transient
 @Serializable
 class Story(
     val cover_media: Cover?, // null in stories
-    val id: String, // user id
+    val id: String,
     var items: ArrayList<Media>?, // null in highlights tray
     //val latest_reel_media: Float, // time in seconds
     //val muted: Boolean?, // null in highlights
