@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools
 import android.app.Application
 import android.content.SharedPreferences
 import android.util.DisplayMetrics
+import androidx.annotation.MainThread
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.Settings.Companion.cacheSize
@@ -97,18 +98,25 @@ class InstaTools : Application() {
         gsp.edit { putLong(key, gsp.getLong(key, 0L) + 1L) }
     }
 
+    @MainThread
     fun addFavourite(item: Favourite) {
+        if (fav.value == null) fav.value = hashSetOf<Favourite>()
         fav.value?.also { favourites ->
             favourites.remove(item)
             favourites.add(item)
-            favPickle?.save(favourites)
+            CoroutineScope(Dispatchers.IO).launch {
+                favPickle?.save(favourites)
+            }
         }
     }
 
+    @MainThread
     fun removeFavourite(item: Favourite) {
         fav.value?.also { favourites ->
             favourites.remove(item)
-            favPickle?.save(favourites)
+            CoroutineScope(Dispatchers.IO).launch {
+                favPickle?.save(favourites)
+            }
         }
     }
 
@@ -133,10 +141,12 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Search doesn't work at all
+  * Downloads cannot properly track the queue
   * ListFav texts are black instead of golden
-  * ListFav doesn't show profile pictures
   * on configuration changes (especially Login while browsing the web)
   * PageVwr doesn't show its jumper
+  * Update highlights count after fetched
   * -
   * Extension:
   * A new proper logo
@@ -146,6 +156,7 @@ class InstaTools : Application() {
   * Percentage of downloads
   * Undo for Unsave
   * Make CommandService cancellable and pausable
+  * Switch to ComponentActivity
   *
   * NOTES:
   * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

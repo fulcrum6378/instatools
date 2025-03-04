@@ -63,7 +63,7 @@ class PageVwr : BasePageViewer() {
 
         // profile
         b.proPic.layoutParams = b.proPic.layoutParams
-            .apply { height = screenHeight() }
+            .apply { height = c.c.dm.widthPixels }
         b.proClick.setOnClickListener { v ->
             val picture = c.mm.user?.originalPicture() ?: return@setOnClickListener
             MaterialMenu(c, v, R.menu.viewer_pic_more,
@@ -154,11 +154,7 @@ class PageVwr : BasePageViewer() {
             load(reset)
 
         // update Favourite
-        c.mm.fav?.also {
-            CoroutineScope(Dispatchers.IO).launch {
-                c.c.addFavourite(it)
-            }
-        }
+        c.mm.fav?.also { c.c.addFavourite(it) }
     }
 
     override suspend fun fetch(reset: Boolean) {

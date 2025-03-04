@@ -228,18 +228,14 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         when (item.itemId) {
             R.id.vtInsta -> mm.user?.username?.also { UiTools.openProfile(this, it) }
             R.id.vtFav -> mm.user?.also { u ->
-                CoroutineScope(Dispatchers.IO).launch {
-                    if (mm.fav == null) {
-                        mm.fav = Favourite(
-                            u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!, u.pv()
-                        )
-                        c.addFavourite(mm.fav!!)
-                    } else {
-                        c.removeFavourite(mm.fav!!)
-                        mm.fav = null
-                    }
-                    withContext(Dispatchers.Main) { fixTbMenu() }
+                if (mm.fav == null) {
+                    mm.fav = Favourite(u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!)
+                    c.addFavourite(mm.fav!!)
+                } else {
+                    c.removeFavourite(mm.fav!!)
+                    mm.fav = null
                 }
+                fixTbMenu()
             }
             R.id.vtShortcut -> mm.user?.also { u ->
                 val bmp = ((currentPage() as? PageVwr)?.b?.proPicIv?.drawable as BitmapDrawable?)

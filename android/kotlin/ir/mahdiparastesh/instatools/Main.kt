@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -97,6 +98,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
 
         // bottom navigation bar
+        b.bnv.selectedItemId = bnvButtons[mm.currentPage]
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         mm.savedCount.observe(this) { bnvBadge(1, it) }
@@ -153,12 +155,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             UiTools.openLink(this, Utils.PROFILE.format(c.acc!!.user!!))
         }
 
-        // pages
-        mm.currentPage = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
-            ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
-                ?: Settings.defSpMainPage
-        b.bnv.selectedItemId = bnvButtons[mm.currentPage]
-
         // permissions
         if (UiTools.reqPermissions.isNotEmpty())
             ActivityCompat.requestPermissions(this, UiTools.reqPermissions, 0)
@@ -170,6 +166,13 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             ) != BuildConfig.VERSION_CODE
             || !c.gsp.contains(Settings.spUsedVersion)
         ) c.gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
+    }
+
+    override fun setContentView(root: View?) {
+        mm.currentPage = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+            ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
+                ?: Settings.defSpMainPage
+        super.setContentView(root)
     }
 
     override fun onNewIntent(intent: Intent) {

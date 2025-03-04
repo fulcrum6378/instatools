@@ -104,15 +104,13 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_CHANGED -> c.downloads.indexOf<Download>(msg.obj as Download).also {
-                        if (it == -1) return@also
-                        b.rv.adapter?.notifyItemChanged(it)
-                    }
-                    HANDLE_DELETED -> c.downloads.indexOf<Download>(msg.obj as Download).also {
-                        if (it == -1) return@also
-                        b.rv.adapter?.notifyItemRemoved(it)
-                        b.rv.adapter?.notifyItemRangeChanged(it, c.downloads.size<Download>())
-                        if (it > 0) b.rv.adapter?.notifyItemChanged(it - 1)
+                    HANDLE_CHANGED ->
+                        b.rv.adapter?.notifyItemChanged(msg.obj as Int)
+                    HANDLE_DELETED -> {
+                        val index = msg.obj as Int
+                        b.rv.adapter?.notifyItemRemoved(index)
+                        b.rv.adapter?.notifyItemRangeChanged(index, c.downloads.size<Download>())
+                        if (index > 0) b.rv.adapter?.notifyItemChanged(index - 1)
                         onListResized()
                     }
                 }

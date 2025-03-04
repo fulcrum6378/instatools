@@ -11,9 +11,6 @@ import ir.mahdiparastesh.instatools.databinding.ListFavBinding
 import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ListFav(val c: Main, private val f: PageFav) :
     RecyclerView.Adapter<AnyViewHolder<ListFavBinding>>() {
@@ -38,10 +35,8 @@ class ListFav(val c: Main, private val f: PageFav) :
         }
         h.b.unFav.setOnClickListener {
             fav.tempDeleted = !fav.tempDeleted
-            CoroutineScope(Dispatchers.IO).launch {
-                if (fav.tempDeleted) c.c.removeFavourite(fav)
-                else c.c.addFavourite(fav)
-            }
+            if (fav.tempDeleted) c.c.removeFavourite(fav)
+            else c.c.addFavourite(fav)
             h.b.updateIcon(fav.tempDeleted)
         }
         h.b.updateIcon(fav.tempDeleted)

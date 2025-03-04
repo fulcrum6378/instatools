@@ -33,8 +33,13 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageFavBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
+    override fun onResume() {
+        super.onResume()
+        onLoaded()
+    }
+
     override fun load(reset: Boolean) {
-        c.c.fav.observe(c) { onLoaded() }
+        c.c.fav.observe(c) { if (it != null) onLoaded() }
     }
 
     override fun onLoaded() {

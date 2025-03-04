@@ -111,11 +111,12 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onHandled(q: Download, success: Boolean) {
         super.onHandled(q, success)
-        if (success) c.downloads.remove<Download>(q)
         des?.close()
         Downloads.handler?.obtainMessage(
-            if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED, q
+            if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED,
+            c.downloads.indexOf<Download>(q)
         )?.sendToTarget()
+        if (success) c.downloads.remove<Download>(q)
         if (q.isMainFile()) c.downloadHistory?.add(q.fileName)
         c.incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
     }
