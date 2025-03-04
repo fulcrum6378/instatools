@@ -141,7 +141,6 @@ abstract class ForegroundService : Service() {
 
     override fun onDestroy() {
         com.active.value = false
-        c.onChildDestroyed()
         super.onDestroy()
     }
 

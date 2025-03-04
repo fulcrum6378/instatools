@@ -49,7 +49,6 @@ class PageVwr : BasePageViewer() {
     override fun isModelLoaded(): Boolean = c.mm.posts != null
     override fun isModelEmpty(): Boolean = c.mm.posts?.edges?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListVwr(c, this)
-    override fun screenHeight(): Int = c.dm.heightPixels
     override fun canLoadMore(): Boolean = c.mm.posts?.page_info?.has_next_page != false
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -63,9 +62,8 @@ class PageVwr : BasePageViewer() {
         Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
 
         // profile
-        b.proPic.layoutParams = b.proPic.layoutParams.apply {
-            height = c.dm.widthPixels
-        }
+        b.proPic.layoutParams = b.proPic.layoutParams
+            .apply { height = screenHeight() }
         b.proClick.setOnClickListener { v ->
             val picture = c.mm.user?.originalPicture() ?: return@setOnClickListener
             MaterialMenu(c, v, R.menu.viewer_pic_more,
@@ -147,8 +145,8 @@ class PageVwr : BasePageViewer() {
             )
             b.privateAcc.layoutParams =
                 (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                    val vPad = ((c.dm.heightPixels.toFloat()
-                        - c.dm.widthPixels.toFloat()) * 0.19f).toInt()
+                    val vPad = ((c.c.dm.heightPixels.toFloat()
+                        - c.c.dm.widthPixels.toFloat()) * 0.19f).toInt()
                     topMargin = vPad
                     bottomMargin = vPad
                 }
@@ -156,22 +154,9 @@ class PageVwr : BasePageViewer() {
             load(reset)
 
         // update Favourite
-        c.mm.fav?.apply {
-            var changed = false
-            if (user != c.mm.user!!.username) {
-                user = c.mm.user!!.username!!
-                changed = true
-            }
-            if (name != c.mm.user!!.full_name) {
-                name = c.mm.user!!.full_name!!
-                changed = true
-            }
-            if (photo != c.mm.user!!.profile_pic_url_hd) {
-                photo = c.mm.user!!.profile_pic_url_hd
-                changed = true
-            }
-            if (changed) CoroutineScope(Dispatchers.IO).launch {
-                c.c.dao.updateFavourite(this@apply)
+        c.mm.fav?.also {
+            CoroutineScope(Dispatchers.IO).launch {
+                c.c.addFavourite(it)
             }
         }
     }

@@ -2,18 +2,16 @@ package ir.mahdiparastesh.instatools
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.DisplayMetrics
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.Settings.Companion.cacheSize
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Command
-import ir.mahdiparastesh.instatools.data.Database
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Queue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,10 +40,11 @@ class InstaTools : Application() {
     var downloadHistory: CopyOnWriteArraySet<String>? = null
 
     /** List of all [Favourite]s */
-    var favPickle: Pickle? = null
-    var fav: MutableLiveData<MutableSet<Favourite>?> = MutableLiveData(null)
-    private var db: Database? = null
-    lateinit var dao: Database.DAO
+    var fav: MutableLiveData<HashSet<Favourite>?> = MutableLiveData(null)
+    private var favPickle: Pickle? = null
+
+    /** Screen dimensions */
+    val dm: DisplayMetrics by lazy { resources.displayMetrics }
 
 
     override fun onCreate() {
@@ -63,18 +62,15 @@ class InstaTools : Application() {
             sp = getSharedPreferences(sid, MODE_PRIVATE)
             downloads = Queue(Pickle(filesDir, acc.id, Pickle.Type.DOWNLOAD_LIST, null))
             commands = Queue(Pickle(filesDir, acc.id, Pickle.Type.COMMAND_LIST, null))
-            db = Database.build(this@InstaTools, sid)
-            dao = db!!.dao()
             favPickle = Pickle(filesDir, acc.id, Pickle.Type.FAVOURITES, null)
-            val dbFav = dao.favourites()
-            withContext(Dispatchers.Main) { fav.value = dbFav.toMutableSet() }
+            val favourites = favPickle?.restore<List<Favourite>>()?.toHashSet()
+            withContext(Dispatchers.Main) { fav.value = favourites }
         }
     }
 
     fun onLoggedOut() {
         fav.value = null
         favPickle = null
-        db?.close()
         //commands = null
         //downloads = null
         sp = null
@@ -103,10 +99,10 @@ class InstaTools : Application() {
 
     fun addFavourite(item: Favourite) {
         fav.value?.also { favourites ->
+            favourites.remove(item)
             favourites.add(item)
             favPickle?.save(favourites)
         }
-        dao.addFavourite(item)
     }
 
     fun removeFavourite(item: Favourite) {
@@ -114,7 +110,6 @@ class InstaTools : Application() {
             favourites.remove(item)
             favPickle?.save(favourites)
         }
-        dao.deleteFavourite(item)
     }
 
     fun clearCacheIfNecessary(subdir: String? = null): Boolean {
@@ -125,14 +120,14 @@ class InstaTools : Application() {
         return true
     }
 
-    fun onChildDestroyed() {
-        if (!anyoneAlive()) db?.close()
+    fun deletePickles(accountId: String = acc!!.id.toString()) {
+        File(filesDir, Pickle.DIR_PREFIX + accountId).deleteRecursively()
+        File(cacheDir, Pickle.DIR_PREFIX + accountId).deleteRecursively()
     }
 
-
-    companion object {
-        /** Are any Activities or Services alive? */
-        fun anyoneAlive() = BaseActivity.anyActive() || ForegroundService.anyRunning()
+    fun deleteSp(accountId: String = acc!!.id.toString()) {
+        File(getDir("shared_prefs", MODE_PRIVATE), "$accountId.xml")
+            .apply { if (exists()) delete() }
     }
 }
 

@@ -1,12 +1,10 @@
 [versions]
 kotlin = "2.1.10"
 agp = "8.7.3"
-ksp = "2.1.10-1.0.29"
 activityKtx = "1.10.1"
 coreKtx = "1.15.0"
 media3 = "1.5.1"
 selection = "1.1.0"
-room = "2.6.1"
 swipeRefreshLayout = "1.1.0"
 webkit = "1.12.1"
 lottie = "6.6.0"
@@ -19,7 +17,6 @@ serializationJson = "1.8.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -31,8 +28,6 @@ media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", versi
 media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "selection" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swipeRefreshLayout" }
 webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }

@@ -1,5 +1,6 @@
 ir/mahdiparastesh/instatools/data/Command*.class
 ir/mahdiparastesh/instatools/data/Download$*.class
+ir/mahdiparastesh/instatools/data/Favourite*.class
 ir/mahdiparastesh/instatools/data/Pickle*.class
 META-INF/com.android.tools/**
 META-INF/proguard/**

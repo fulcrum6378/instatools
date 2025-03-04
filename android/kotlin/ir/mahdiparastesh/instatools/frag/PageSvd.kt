@@ -136,8 +136,8 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
             repeatCount = LottieDrawable.INFINITE
             setAnimation(R.raw.guide_selection)
             playAnimation()
-            translationX = c.dm.widthPixels * -0.12f
-            translationY = c.dm.widthPixels * -0.01f
+            translationX = c.c.dm.widthPixels * -0.12f
+            translationY = c.c.dm.widthPixels * -0.01f
             b.root.addView(this, 1)
         }
     }

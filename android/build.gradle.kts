@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -24,7 +23,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 77
-        versionName = "35.8.5"
+        versionName = "36.0.5"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {
@@ -70,8 +69,6 @@ dependencies {
     implementation(libs.media3.session)
     implementation(libs.media3.ui)
     implementation(libs.recyclerview.selection)
-    ksp(libs.room.compiler)
-    implementation(libs.room.runtime)
     implementation(libs.swiperefreshlayout)
     implementation(libs.webkit)
     implementation(libs.lottie)

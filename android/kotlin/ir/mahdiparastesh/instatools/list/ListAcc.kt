@@ -11,7 +11,6 @@ import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
@@ -108,13 +107,14 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
 
     private fun signOut(acc: Account, i: Int, bd: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
+            val sid = acc.id.toString()
             if (bd) {
-                Settings.deleteDb(acc.id.toString())
-                Settings.deleteSp(c, acc)
+                c.c.deletePickles(sid)
+                c.c.deleteSp(sid)
             }
             c.accounts.removeAll { it.id == acc.id }
             Account.save(c, c.accounts)
-            if (c.c.gsp.getString(Login.SP_ACCOUNT, null) == acc.id.toString())
+            if (c.c.gsp.getString(Login.SP_ACCOUNT, null) == sid)
                 c.c.gsp.edit { remove(Login.SP_ACCOUNT) }
         }
         notifyItemRemoved(i)

@@ -1,4 +1,7 @@
 -keep class ir.mahdiparastesh.instatools.data.Account { <fields>; }
+-keep class ir.mahdiparastesh.instatools.data.Command { <fields>; }
+-keep class ir.mahdiparastesh.instatools.data.Download { <fields>; }
+-keep class ir.mahdiparastesh.instatools.data.Favourite { <fields>; }
 -keep class ir.mahdiparastesh.instatools.api.GraphQl { <fields>; }
 -keep class ir.mahdiparastesh.instatools.api.GraphQl$* { <fields>; }
 -keep class ir.mahdiparastesh.instatools.api.Media { <fields>; }

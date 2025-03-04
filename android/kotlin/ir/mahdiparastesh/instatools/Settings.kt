@@ -22,14 +22,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.DbFile
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -56,9 +54,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private var uriFolders: ArrayList<Uri>? = null
 
     override val menuRes = R.menu.settings_tlb
-    override val com: ActivityCompanion get() = Companion
 
-    companion object : ActivityCompanion() {
+    companion object {
+
         // Preferences
         const val spStorage = "storage"
         const val spBranching = "branching"
@@ -101,19 +99,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             spAliases, spCacheLimit, spMainPage, spExpOptions
         )
         var recreateMain = false
-
-        fun deleteDb(id: String) {
-            arrayOf(
-                DbFile(id, DbFile.Triple.MAIN),
-                DbFile(id, DbFile.Triple.SHARED_MEMORY),
-                DbFile(id, DbFile.Triple.WRITE_AHEAD_LOG),
-            ).forEach { f -> if (f.exists()) f.delete() }
-        }
-
-        fun deleteSp(c: BaseActivity, acc: Account = c.c.acc!!) {
-            File(c.getDir("shared_prefs", MODE_PRIVATE), "${acc.id}.xml")
-                .apply { if (exists()) delete() }
-        }
 
         fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
 
@@ -301,7 +286,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    CoroutineScope(Dispatchers.IO).launch { deleteDb(c.acc!!.id.toString()) }
+                    CoroutineScope(Dispatchers.IO).launch { c.deletePickles() }
                     recreateMain = true
                 }
             }.show()

@@ -55,7 +55,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     private lateinit var bd: GuideSwipeDeleteBinding
     private var isSwipeDeleteInflated: Boolean? = false
 
-    override val com: ActivityCompanion get() = Companion
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty
@@ -73,9 +72,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun isModelLoaded(): Boolean = false
     override fun isModelEmpty(): Boolean = c.downloads.isEmpty<Download>()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListQud(this)
-    override fun screenHeight(): Int = dm.heightPixels
+    override fun screenHeight(): Int = c.dm.heightPixels
 
-    companion object : ActivityCompanion() {
+    companion object {
         const val HANDLE_CHANGED = 1
         const val HANDLE_DELETED = 2
         val exportQueueMime =

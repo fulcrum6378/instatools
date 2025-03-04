@@ -74,7 +74,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     var schRes: Array<Rest.ItemUser>? = null
     var searchErrored = false
 
-    override val com: ActivityCompanion get() = Companion
     override val menuRes = R.menu.main_tlb
     override var currentPage: Int
         get() = mm.currentPage
@@ -88,8 +87,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         val savedCount = MutableLiveData<Int?>(null)
         var currentPage = Settings.defSpMainPage
     }
-
-    companion object : ActivityCompanion()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -350,9 +347,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
         CoroutineScope(Dispatchers.IO).launch {
-            if (bd) c.acc?.also { acc ->
-                Settings.deleteDb(acc.id.toString())
-                Settings.deleteSp(this@Main, acc)
+            if (bd && c.acc != null) {
+                c.deletePickles()
+                c.deleteSp()
             }
             Account.save(c, Account.load(c).apply { removeAll { it.id == c.acc?.id } })
             withContext(Dispatchers.Main) { switchAcc() }

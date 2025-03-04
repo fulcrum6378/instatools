@@ -39,9 +39,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     var injectingCookieForAccIndex: Int? = null
 
     override val menuRes: Int? = null
-    override val com: ActivityCompanion get() = Companion
 
-    companion object : ActivityCompanion() {
+    companion object {
         const val HOST = "https://www.instagram.com/"
         const val RAW_HOST = "https://instagram.com/"
         const val LOGIN_URL = "${HOST}accounts/login/"

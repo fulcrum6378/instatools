@@ -55,7 +55,6 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
     }
 
     override val menuRes = R.menu.viewer_tlb
-    override val com: ActivityCompanion get() = Companion
     override var currentPage: Int
         get() = mm.currentPage
         set(i) {
@@ -84,7 +83,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         }
     }
 
-    companion object : ActivityCompanion() {
+    companion object {
         private const val EXTRA_USER_ID = "userId"
 
         fun comeHere(c: BaseActivity, userId: String) {
@@ -201,7 +200,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 mm.highlights = null
                 mm.tagged = null
             } else
-                mm.fav = c.dao.favourite(mm.user!!.id!!)
+                mm.fav = c.fav.value?.find { it.id == mm.user!!.id!! }
 
             withContext(Dispatchers.Main) {
                 if (userReplaced) (currentPage() as BasePageViewer?)?.clear()
