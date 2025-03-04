@@ -53,7 +53,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         h.b.title.text =
             if (!isHL) c.getString(R.string.vwStoryReel)
             else "${i + hlNumAdd}. ${story.title}"
-        if (!isHL) h.b.desc.text = c.resources.getQuantityString(
+        if (story.items!!.isNotEmpty()) h.b.desc.text = c.resources.getQuantityString(
             R.plurals.vwReelDesc, story.items!!.size, story.items!!.size
         )
         if (!isHL) h.b.icon.setImageResource(R.drawable.instagram)
@@ -68,7 +68,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
 
         // actions
         h.b.downloadAll.setOnClickListener {
-            fetchHighlights(story, h.b.reel.adapter!! as ListRel, true)
+            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListRel, true)
         }
 
         // ListRel: initiation
@@ -85,12 +85,12 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         }
         h.b.reel.vis(story.opened)
         if (story.opened && isHL)
-            fetchHighlights(story, h.b.reel.adapter!! as ListRel)
+            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListRel)
         h.b.header.setOnClickListener {
             (story.anSlide as? ObjectAnimator)?.cancel()
             story.opened = !story.opened
             if (story.opened && isHL)
-                fetchHighlights(story, h.b.reel.adapter!! as ListRel)
+                fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListRel)
             ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f).apply {
                 story.anSlide = this
                 addUpdateListener {
@@ -120,7 +120,12 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
             (c.mm.highlights?.edges?.size ?: 0)
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun fetchHighlights(story: Story, listRel: ListRel, downloadAll: Boolean = false) {
+    private fun fetchHighlights(
+        story: Story,
+        i: Int,
+        listRel: ListRel,
+        downloadAll: Boolean = false
+    ) {
         if (story.items != null && !downloadAll) return
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -153,6 +158,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
             }
 
             withContext(Dispatchers.Main) {
+                this@ListSto.notifyItemChanged(i)
                 listRel.notifyDataSetChanged()
             }
         }

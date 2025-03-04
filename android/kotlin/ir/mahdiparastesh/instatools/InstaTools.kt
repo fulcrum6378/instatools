@@ -142,11 +142,8 @@ class InstaTools : Application() {
 /* TODO:
   * Problems:
   * Search doesn't work at all
-  * Downloads cannot properly track the queue
-  * ListFav texts are black instead of golden
   * on configuration changes (especially Login while browsing the web)
   * PageVwr doesn't show its jumper
-  * Update highlights count after fetched
   * Invalid Pickle data detected in posts!
   * Selection indicator invisible after Expandable collapses
   * -

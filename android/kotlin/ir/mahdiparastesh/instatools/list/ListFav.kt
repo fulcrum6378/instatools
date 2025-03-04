@@ -18,7 +18,7 @@ class ListFav(val c: Main, private val f: PageFav) :
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListFavBinding> {
-        val b = ListFavBinding.inflate(f.layoutInflater, parent, false)
+        val b = ListFavBinding.inflate(f.inflater, parent, false)
         b.name.textDirection =
             if (!c.dirRtl) TextView.TEXT_DIRECTION_LTR
             else TextView.TEXT_DIRECTION_RTL
