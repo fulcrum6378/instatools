@@ -9,8 +9,9 @@ import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
-import ir.mahdiparastesh.instatools.list.ListPost
+import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
@@ -80,8 +81,12 @@ abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister, Selective {
             c.b.toolbar.inflateMenu(if (status) R.menu.viewer_tlb_select else R.menu.viewer_tlb)
             c.fixTbMenu()
             c.shake()
-            if (this@BasePageViewer is PageVwr) rv?.isNestedScrollingEnabled = status
-            if (status) (rv?.adapter as ListPost<*, *>?)?.firstLongClickSelect = true
+            if (status)
+                when (this@BasePageViewer) {
+                    is PageVwr -> gridAdapter()
+                    is PageTag -> (rv?.adapter as ListTag?)
+                    else -> throw IllegalStateException()
+                }?.firstLongClickSelect = true
             else {
                 BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
                 c.selectionBadge = null

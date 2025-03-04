@@ -149,7 +149,6 @@ class InstaTools : Application() {
   * Extension:
   * A simple following list Activity
   * A new proper logo
-  * number of posts on PageVwr
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Percentage of downloads

@@ -7,8 +7,9 @@ import java.text.DecimalFormat
 class User(
     //val bio_links: Array<BioLink>?,
     val biography: String?,
-    val edge_follow: EdgeFollow?, // available via PROFILE_INFO
-    val edge_followed_by: EdgeFollow?, // available via PROFILE_INFO
+    val edge_follow: ProfileEdge?, // available via PROFILE_INFO
+    val edge_followed_by: ProfileEdge?, // available via PROFILE_INFO
+    val edge_owner_to_timeline_media: ProfileEdge?, // available via PROFILE_INFO
     val followed_by_viewer: Boolean?, // available via PROFILE_INFO
     //val friendship_status: FriendshipStatus?,
     val full_name: String?,
@@ -58,7 +59,7 @@ class User(
     )*/
 
     @Serializable
-    class EdgeFollow(val count: Long) {
+    class ProfileEdge(val count: Long) {
         override fun toString(): String = when {
             count > 1000000 -> DecimalFormat("#.##").format(count / 1000000) + "M"
             count > 1000 -> DecimalFormat("#.##").format(count / 1000) + "K"

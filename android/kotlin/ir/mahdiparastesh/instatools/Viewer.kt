@@ -195,12 +195,13 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_)
             pickle.save(arrayOf(mm.user!!, mm.profile!!))
 
-            if (userReplaced) {
+            if (reset || userReplaced) {
                 mm.posts = null
                 mm.story = null
                 mm.highlights = null
                 mm.tagged = null
-            } else
+            }
+            if (!userReplaced)
                 mm.fav = c.fav.value?.find { it.id == mm.user!!.id!! }
 
             withContext(Dispatchers.Main) {
@@ -229,8 +230,13 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         when (item.itemId) {
             R.id.vtInsta -> mm.user?.username?.also { UiTools.openProfile(this, it) }
             R.id.vtFav -> mm.user?.also { u ->
-                if (mm.fav == null) { // FIXME threw NullPointerException when loading failed!?!
-                    mm.fav = Favourite(u.id(), u.username!!, u.full_name!!, u.profile_pic_url!!)
+                if (mm.fav == null) {
+                    mm.fav = Favourite(
+                        u.id(),
+                        u.username!!,
+                        u.full_name!!,
+                        u.profile_pic_url!!
+                    )
                     c.addFavourite(mm.fav!!)
                 } else {
                     c.removeFavourite(mm.fav!!)

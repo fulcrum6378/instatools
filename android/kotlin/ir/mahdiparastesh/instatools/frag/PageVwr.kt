@@ -1,11 +1,13 @@
 package ir.mahdiparastesh.instatools.frag
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.MainThread
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
@@ -73,6 +75,8 @@ class PageVwr : BasePageViewer() {
         showProfile()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    @MainThread
     fun showProfile(reset: Boolean = false) {
         if (c.mm.user == null || c.mm.profile == null || !isBInitialised()) return
         onLoaded()
@@ -81,7 +85,10 @@ class PageVwr : BasePageViewer() {
         showPv = c.mm.user?.pv() == true && c.mm.profile?.followed_by_viewer == false
             && c.mm.user?.username != c.c.acc?.user
         b.rv.vis(!showPv)
-        if (!showPv) load(reset)
+        if (!showPv) {
+            if (reset) gridAdapter()?.notifyDataSetChanged()
+            load(reset)
+        }
 
         // update Favourite
         c.mm.fav?.also { c.c.addFavourite(it) }
@@ -133,10 +140,11 @@ class PageVwr : BasePageViewer() {
     }
 
     override fun onLazilyLoaded(start: Int, size: Int) {
-        if (size > 0) (rv?.adapter as ConcatAdapter?)?.adapters?.get(1)
-            ?.notifyItemRangeInserted(start, size)
+        if (size > 0) gridAdapter()?.notifyItemRangeInserted(start, size)
         if (isModelEmpty() && hasReachedBottom()) load()
     }
+
+    fun gridAdapter() = (rv?.adapter as ConcatAdapter?)?.adapters?.get(1) as ListVwr?
 
     override fun onRefresh() {
         c.load(reset = true)
@@ -219,6 +227,8 @@ class PageVwr : BasePageViewer() {
                 h.b.proPicIv.setImageDrawable(null)
 
             // followers & following
+            h.b.postsNum.text = c.mm.profile?.edge_owner_to_timeline_media?.toString()
+                ?: getString(R.string.vwFlwZero)
             h.b.followersNum.text = c.mm.profile?.edge_followed_by?.toString()
                 ?: getString(R.string.vwFlwZero)
             h.b.followingNum.text = c.mm.profile?.edge_follow?.toString()

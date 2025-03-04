@@ -126,6 +126,7 @@
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
     <string name="vwShare">نمایش پروفایل</string>
+    <string name="vwPosts">پست</string>
     <string name="vwFollowers">دنبال کننده</string>
     <string name="vwFollowing">دنبال شونده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>

@@ -31,9 +31,22 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/followers"
-            style="@style/vwFlwCl">
+        <androidx.constraintlayout.widget.ConstraintLayout style="@style/vwFlwCl">
+
+            <LinearLayout style="@style/vwFlwLl">
+
+                <TextView
+                    android:id="@+id/postsNum"
+                    style="@style/vwFlwNum"
+                    android:text="@string/vwFlwZero" />
+
+                <TextView
+                    style="@style/vwFlwText"
+                    android:text="@string/vwPosts" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout style="@style/vwFlwCl">
 
             <LinearLayout style="@style/vwFlwLl">
 
@@ -43,15 +56,12 @@
                     android:text="@string/vwFlwZero" />
 
                 <TextView
-                    android:id="@+id/followersText"
                     style="@style/vwFlwText"
                     android:text="@string/vwFollowers" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/following"
-            style="@style/vwFlwCl">
+        <androidx.constraintlayout.widget.ConstraintLayout style="@style/vwFlwCl">
 
             <LinearLayout style="@style/vwFlwLl">
 
@@ -61,7 +71,6 @@
                     android:text="@string/vwFlwZero" />
 
                 <TextView
-                    android:id="@+id/followingText"
                     style="@style/vwFlwText"
                     android:text="@string/vwFollowing" />
             </LinearLayout>

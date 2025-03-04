@@ -124,6 +124,7 @@
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
     <string name="vwShare">View Profile</string>
+    <string name="vwPosts">Posts</string>
     <string name="vwFollowers">Followers</string>
     <string name="vwFollowing">Following</string>
     <string name="vwFlwZero" translatable="false">0</string>
