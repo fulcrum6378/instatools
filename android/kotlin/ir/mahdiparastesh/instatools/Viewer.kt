@@ -16,6 +16,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
+import androidx.recyclerview.widget.ConcatAdapter
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.Media
@@ -238,15 +239,14 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 fixTbMenu()
             }
             R.id.vtShortcut -> mm.user?.also { u ->
-                val bmp = ((currentPage() as? PageVwr)?.b?.proPicIv?.drawable as BitmapDrawable?)
-                    ?.bitmap ?: return@also
+                val header = ((currentPage() as? PageVwr)?.b?.rv?.adapter as ConcatAdapter?)
+                    ?.adapters[0] as PageVwr.Header? ?: return@also
+                val bmp = (header.proPic.drawable as BitmapDrawable?)?.bitmap ?: return@also
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, u.username!!).apply {
                         setIntent(
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse(Utils.PROFILE.format(u.username))
-                            ).setPackage(UiTools.INSTA_PACKAGE)
+                            Intent(Intent.ACTION_VIEW, Uri.parse(Utils.PROFILE.format(u.username)))
+                                .setPackage(UiTools.INSTA_PACKAGE)
                         )
                         setIcon(
                             IconCompat.createWithBitmap(

@@ -55,7 +55,11 @@ interface Lister {
     fun prepareListing(c: BaseActivity) {
 
         // list
-        setOnScrollListener()
+        rv?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                onScroll()
+            }
+        })
 
         // jumper
         jumper?.apply {
@@ -72,14 +76,6 @@ interface Lister {
     private fun jumperTrans(c: Context) =
         (c.resources.getDimension(R.dimen.jumperSize) +
             c.resources.getDimension(R.dimen.jumperBottom)) * 1.25f
-
-    fun setOnScrollListener() {
-        rv?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                onScroll()
-            }
-        })
-    }
 
     fun onScroll() {
         if (isBInitialised()) {

@@ -143,7 +143,6 @@ class InstaTools : Application() {
   * Problems:
   * Search doesn't work at all
   * on configuration changes (especially Login while browsing the web)
-  * PageVwr doesn't show its jumper
   * Invalid Pickle data detected in posts!
   * Selection indicator invisible after Expandable collapses
   * -

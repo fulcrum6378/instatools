@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -11,6 +10,8 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -23,14 +24,16 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
+import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.UiTools.vis
-import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +41,7 @@ import kotlinx.coroutines.withContext
 
 class PageVwr : BasePageViewer() {
     lateinit var b: PageVwrBinding
+    private var showPv: Boolean = false
 
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
@@ -48,7 +52,6 @@ class PageVwr : BasePageViewer() {
     override fun shouldLoadOnPrepare(): Boolean = c.mm.user != null || c.mm.profile != null
     override fun isModelLoaded(): Boolean = c.mm.posts != null
     override fun isModelEmpty(): Boolean = c.mm.posts?.edges?.isEmpty() == true
-    override fun createAdapter(): RecyclerView.Adapter<*> = ListVwr(c, this)
     override fun canLoadMore(): Boolean = c.mm.posts?.page_info?.has_next_page != false
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -58,35 +61,10 @@ class PageVwr : BasePageViewer() {
         super.onViewCreated(view, savedInstanceState)
 
         // list
-        b.rv.setHasFixedSize(true)
-        Delay(1500) { b.rv.layoutParams = b.rv.layoutParams.apply { height = b.nsv.height } }
-
-        // profile
-        b.proPic.layoutParams = b.proPic.layoutParams
-            .apply { height = c.c.dm.widthPixels }
-        b.proClick.setOnClickListener { v ->
-            val picture = c.mm.user?.originalPicture() ?: return@setOnClickListener
-            MaterialMenu(c, v, R.menu.viewer_pic_more,
-                R.id.vpDownload to {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        c.c.downloads.add<Download>(
-                            Download(
-                                Utils.PROFILE_PHOTO,
-                                Utils.now(),
-                                picture,
-                                0x1,
-                                c.mm.user!!.username!!,
-                                c.mm.user!!.biography,
-                                Utils.PROFILE.format(c.mm.user!!.username!!),
-                                c.mm.user!!.profile_pic_url,
-                                null, null, null
-                            ), true
-                        )
-                        Downloads.initService(c)
-                    }
-                }
-            ).show()
-        }
+        (b.rv.layoutManager as SafeGridManager).spanSizeLookup =
+            object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int = if (position == 0) 3 else 1
+            }
 
         // buttons for other pages
         b.toPageRel.setOnClickListener { if (isModelLoaded()) c.turnToPage(0) }
@@ -95,75 +73,31 @@ class PageVwr : BasePageViewer() {
         showProfile()
     }
 
-    override fun setOnScrollListener() {
-        b.nsv.setOnScrollChangeListener { v, _, _, _, _ -> onScroll() }
-    }
-
-    override fun onScroll() {
-        super.onScroll()
-        b.rv.isNestedScrollingEnabled = hasReachedBottom()
-    }
-
-    override fun hasReachedBottom(): Boolean =
-        !b.nsv.canScrollVertically(1)
-
-    override fun updateShadow() {
-        if (isBInitialised()) c.b.tbShadow.vish(b.nsv.scrollY > 0)
-    }
-
-    @SuppressLint("RestrictedApi")
-    override fun shouldShowJumper(): Boolean =
-        b.nsv.computeVerticalScrollOffset() > screenHeight() && expandable?.zoomed != true
-
-    override fun canRefresh(): Boolean =
-        super.canRefresh() && !b.nsv.canScrollVertically(-1)
-
     fun showProfile(reset: Boolean = false) {
         if (c.mm.user == null || c.mm.profile == null || !isBInitialised()) return
-
-        // profile picture
-        Glide.with(c.c)
-            .load(c.mm.profile!!.profile_pic_url_hd!!)
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .addListener(GlideShimmer(b.proPic, b.proPicIv))
-            .into(b.proPicIv)
-
-        // followers & following
-        b.followersNum.text = c.mm.profile!!.edge_followed_by.toString()
-        b.followingNum.text = c.mm.profile!!.edge_follow.toString()
+        onLoaded()
 
         // is the page private and not followed?
-        val showPv = c.mm.user?.pv() == true && c.mm.profile?.followed_by_viewer == false
+        showPv = c.mm.user?.pv() == true && c.mm.profile?.followed_by_viewer == false
             && c.mm.user?.username != c.c.acc?.user
-        b.privateAcc.vis(showPv)
         b.rv.vis(!showPv)
-        if (showPv) {
-            b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
-                null, c.drawable(
-                    R.drawable.private_account, if (c.night()) R.color.defCA else null
-                )!!, null, null
-            )
-            b.privateAcc.layoutParams =
-                (b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                    val vPad = ((c.c.dm.heightPixels.toFloat()
-                        - c.c.dm.widthPixels.toFloat()) * 0.19f).toInt()
-                    topMargin = vPad
-                    bottomMargin = vPad
-                }
-        } else
-            load(reset)
+        if (!showPv) load(reset)
 
         // update Favourite
         c.mm.fav?.also { c.c.addFavourite(it) }
     }
 
+    override fun createAdapter(): RecyclerView.Adapter<*> =
+        ConcatAdapter(Header(), ListVwr(c, this))
+
     override suspend fun fetch(reset: Boolean) {
+
         // first read from cache if available
         val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!)
         val cache = if (c.mm.posts == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
             c.mm.posts = cache
-            withContext(Dispatchers.Main) { onLoaded() }
+            withContext(Dispatchers.Main) { onLazilyLoaded(0, cache.edges.size) }
             return; }
 
         // fetch online posts
@@ -176,7 +110,7 @@ class PageVwr : BasePageViewer() {
         // update the data model and the UI
         if (c.mm.posts == null || reset) {
             c.mm.posts = page
-            withContext(Dispatchers.Main) { onLoaded() }
+            withContext(Dispatchers.Main) { onLazilyLoaded(0, page.edges.size) }
         } else c.mm.posts?.apply {
             val lastBefore = edges.size
             edges.addAll(page.edges)
@@ -196,6 +130,12 @@ class PageVwr : BasePageViewer() {
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
+    }
+
+    override fun onLazilyLoaded(start: Int, size: Int) {
+        if (size > 0) (rv?.adapter as ConcatAdapter?)?.adapters?.get(1)
+            ?.notifyItemRangeInserted(start, size)
+        if (isModelEmpty() && hasReachedBottom()) load()
     }
 
     override fun onRefresh() {
@@ -226,6 +166,83 @@ class PageVwr : BasePageViewer() {
                 tracker?.clearSelection()
             }
         }
+    }
+
+    inner class Header : RecyclerView.Adapter<AnyViewHolder<PageVwrHeaderBinding>>() {
+        lateinit var proPic: ImageView
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
+            AnyViewHolder<PageVwrHeaderBinding> {
+            val b = PageVwrHeaderBinding.inflate(c.layoutInflater, parent, false)
+
+            // profile
+            b.proPic.layoutParams = b.proPic.layoutParams
+                .apply { height = c.c.dm.widthPixels }
+            b.proClick.setOnClickListener { v ->
+                val picture = c.mm.user?.originalPicture() ?: return@setOnClickListener
+                MaterialMenu(c, v, R.menu.viewer_pic_more,
+                    R.id.vpDownload to {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            c.c.downloads.add<Download>(
+                                Download(
+                                    Utils.PROFILE_PHOTO,
+                                    Utils.now(),
+                                    picture,
+                                    0x1,
+                                    c.mm.user!!.username!!,
+                                    c.mm.user!!.biography,
+                                    Utils.PROFILE.format(c.mm.user!!.username!!),
+                                    c.mm.user!!.profile_pic_url,
+                                    null, null, null
+                                ), true
+                            )
+                            Downloads.initService(c)
+                        }
+                    }
+                ).show()
+            }
+            proPic = b.proPicIv
+
+            return AnyViewHolder(b)
+        }
+
+        override fun onBindViewHolder(h: AnyViewHolder<PageVwrHeaderBinding>, position: Int) {
+
+            // profile picture
+            val pic = c.mm.profile?.profile_pic_url_hd
+            if (pic != null) Glide.with(c.c)
+                .load(pic)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .addListener(GlideShimmer(h.b.proPic, h.b.proPicIv))
+                .into(h.b.proPicIv)
+            else
+                h.b.proPicIv.setImageDrawable(null)
+
+            // followers & following
+            h.b.followersNum.text = c.mm.profile?.edge_followed_by?.toString()
+                ?: getString(R.string.vwFlwZero)
+            h.b.followingNum.text = c.mm.profile?.edge_follow?.toString()
+                ?: getString(R.string.vwFlwZero)
+
+            val showPv_ = showPv && c.mm.profile != null
+            h.b.privateAcc.vis(showPv_)
+            if (showPv_) {
+                h.b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
+                    null, c.drawable(
+                        R.drawable.private_account, if (c.night()) R.color.defCA else null
+                    )!!, null, null
+                )
+                h.b.privateAcc.layoutParams =
+                    (h.b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        val vPad = ((c.c.dm.heightPixels.toFloat()
+                            - c.c.dm.widthPixels.toFloat()) * 0.19f).toInt()
+                        topMargin = vPad
+                        bottomMargin = vPad
+                    }
+            }
+        }
+
+        override fun getItemCount(): Int = 1
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
