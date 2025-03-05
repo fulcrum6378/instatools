@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.view
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
@@ -22,12 +23,20 @@ import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.data.Command
+import ir.mahdiparastesh.instatools.data.Download
+import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -260,7 +269,7 @@ interface Selective : Lister {
         tracker = SelectionTracker.Builder(
             this::class.java.simpleName,
             rv!!,
-            keyProvider(),
+            selectionKeyProvider(),
             ListPost.PostDetailsLookup(rv!!),
             StorageStrategy.createStringStorage()
         ).build().also { tracker ->
@@ -272,7 +281,87 @@ interface Selective : Lister {
 
     fun selectionObserver(): SelectionTracker.SelectionObserver<String>?
 
-    fun keyProvider(): ItemKeyProvider<String>
+    fun selectionKeyProvider(): ItemKeyProvider<String>
+
+    fun enqueueSelectedMedia(
+        c: BaseActivity,
+        dataModel: Any?,
+        download: Boolean = false,
+        save: Boolean = false,
+        unsave: Boolean = false,
+        like: Boolean = false,
+        unlike: Boolean = false,
+        onDeleteItems: ((indices: List<Int>) -> Unit)? = null,
+    ) {
+        val selection = tracker?.selection ?: return
+        if (dataModel == null) return
+
+        CoroutineScope(Dispatchers.Default).launch {
+
+            // keep a list of deleted items only if needed
+            var deletion: ArrayList<Int>? = null
+            if (onDeleteItems != null) deletion = arrayListOf<Int>()
+
+            // determine how to deal with the data model
+            val indices: IntRange
+            val getter: (Int) -> Media
+            when (dataModel) {
+                is Rest.LazyList<*> -> { // Rest.SavedItem
+                    indices = dataModel.items.indices
+                    getter = {
+                        (dataModel.items[it] as Rest.SavedItem).media
+                    }
+                }
+                is GraphQl.Page<*> -> { // Media
+                    indices = dataModel.edges.indices
+                    getter = {
+                        @Suppress("UNCHECKED_CAST")
+                        (dataModel.edges[it] as GraphQl.Edge<Media>).node
+                    }
+                }
+                else ->
+                    throw IllegalStateException()
+            }
+
+            // enqueue
+            for (pos in indices) {
+                val med = getter(pos)
+                if (med.id() !in selection) continue
+                if (download) c.c.downloads.addAll<Download>(med.queue(), false)
+                if (save || unsave || like || unlike) {
+                    c.c.commands.add<Command>(
+                        Command(
+                            med,
+                            save = save,
+                            unsave = unsave,
+                            like = like,
+                            unlike = unlike,
+                        ),
+                        false
+                    )
+                    deletion?.add(pos)
+                }
+            }
+
+            // start the Services
+            if (download) {
+                c.c.downloads.save<Download>()
+                Downloads.initService(c)
+            }
+            if (save || unsave || like || unlike) {
+                c.c.commands.save<Command>()
+                c.startService(
+                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
+                )
+            }
+
+            // handle the UI
+            withContext(Dispatchers.Main) {
+                tracker?.clearSelection()
+                onDeleteItems?.also { it(deletion!!) }
+            }
+        }
+    }
 
     fun onGoBackWithSelection(): Boolean {
         if (tracker?.hasSelection() == true) {

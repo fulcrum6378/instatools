@@ -33,4 +33,16 @@
         android:title="@string/unlikeAll"
         android:tooltipText="@string/unlikeAll"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtSave"
+        android:icon="@drawable/saved_on_themed"
+        android:title="@string/saveAll"
+        android:tooltipText="@string/saveAll"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtUnsave"
+        android:icon="@drawable/saved_off_themed"
+        android:title="@string/unsaveAll"
+        android:tooltipText="@string/unsaveAll"
+        app:showAsAction="ifRoom" />
 </menu>

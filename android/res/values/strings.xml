@@ -141,6 +141,8 @@
     <string name="vwNoReels">This profile has no stories!</string>
     <string name="vwNoTagged">This profile has no tagged posts!</string>
     <string name="vwLinkNotProfile">This link doesn\'t represent an IG profile!</string>
+    <string name="saveAll">Save all</string>
+    <string name="unsaveAll">Unsave all</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

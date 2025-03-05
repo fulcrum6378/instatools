@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,7 +31,6 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
-import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
@@ -180,7 +178,7 @@ class PageVwr : BasePageViewer(), Selective {
         c.load(reset = true)
     }
 
-    override fun keyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
+    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
         override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
             c.mm.posts?.edges?.forEachIndexed { i, edge ->
@@ -195,56 +193,24 @@ class PageVwr : BasePageViewer(), Selective {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload -> processMedia(download = true)
-            R.id.vtLike -> processMedia(like = true)
-            R.id.vtUnlike -> processMedia(unlike = true)
-            R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
-                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
-            R.id.vtDeselectAll -> tracker?.clearSelection()
+            R.id.vtDownload ->
+                enqueueSelectedMedia(c, c.mm.posts, download = true)
+            R.id.vtLike ->
+                enqueueSelectedMedia(c, c.mm.posts, like = true)
+            R.id.vtUnlike ->
+                enqueueSelectedMedia(c, c.mm.posts, unlike = true)
+            R.id.vtSave ->
+                enqueueSelectedMedia(c, c.mm.posts, save = true)
+            R.id.vtUnsave ->
+                enqueueSelectedMedia(c, c.mm.posts, unsave = true)
+
+            R.id.vtSelectAll ->
+                if (c.mm.posts?.edges != null)
+                    tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
+            R.id.vtDeselectAll ->
+                tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
-    }
-
-    fun processMedia(
-        download: Boolean = false,
-        like: Boolean = false,
-        unlike: Boolean = false,
-    ) {
-        val selection = tracker?.selection ?: return
-        val posts = c.mm.posts ?: return
-        CoroutineScope(Dispatchers.Default).launch {
-
-            // enqueue
-            for (edg in posts.edges.indices) {
-                if (posts.edges[edg].node.id() !in selection) continue
-                if (download) c.c.downloads.addAll<Download>(posts.edges[edg].node.queue(), false)
-                if (like || unlike) c.c.commands.add<Command>(
-                    Command(
-                        posts.edges[edg].node,
-                        like = like,
-                        unlike = unlike,
-                    ),
-                    false
-                )
-            }
-
-            // start the Services
-            if (download) {
-                c.c.downloads.save<Download>()
-                Downloads.initService(c)
-            }
-            if (like || unlike) {
-                c.c.commands.save<Command>()
-                c.startService(
-                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
-                )
-            }
-
-            // handle the UI
-            withContext(Dispatchers.Main) {
-                tracker?.clearSelection()
-            }
-        }
     }
 
     override fun goBack(): Boolean {

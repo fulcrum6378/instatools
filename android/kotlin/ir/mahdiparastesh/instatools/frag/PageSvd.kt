@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,16 +20,13 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
-import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Command
-import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
-import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
@@ -179,7 +175,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
     }
 
-    override fun keyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
+    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
         override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.id()
         override fun getPosition(key: String): Int {
             c.mm.saved?.items?.forEachIndexed { i, item ->
@@ -233,83 +229,41 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.mtUnsaveDownload ->
-                processMedia(unsave = true, download = true)
+                enqueueSelectedMedia(
+                    c, c.mm.saved, unsave = true, download = true, onDeleteItems = ::onDeleteItems
+                )
             R.id.mtDownload ->
-                processMedia(unsave = false, download = true)
+                enqueueSelectedMedia(c, c.mm.saved, download = true)
             R.id.mtUnsave ->
-                processMedia(unsave = true, download = false)
+                enqueueSelectedMedia(c, c.mm.saved, unsave = true, onDeleteItems = ::onDeleteItems)
             R.id.mtLike ->
-                processMedia(like = true)
+                enqueueSelectedMedia(c, c.mm.saved, like = true)
             R.id.mtUnlike ->
-                processMedia(unlike = true)
+                enqueueSelectedMedia(c, c.mm.saved, unlike = true)
+
             R.id.mtSelectAll -> if (c.mm.saved != null)
                 tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id() }, true)
-
-            R.id.mtDeselectAll -> tracker?.clearSelection()
+            R.id.mtDeselectAll ->
+                tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
     }
 
-    fun processMedia(
-        download: Boolean = false,
-        unsave: Boolean = false,
-        like: Boolean = false,
-        unlike: Boolean = false,
-    ) {
-        val selection = tracker?.selection ?: return
-        val saved = c.mm.saved ?: return
-        val deletion = arrayListOf<Int>()
-        CoroutineScope(Dispatchers.Default).launch {
-
-            // enqueue
-            for (svd in saved.items.indices) {
-                if (saved.items[svd].media.id() !in selection) continue
-                if (download) c.c.downloads.addAll<Download>(saved.items[svd].media.queue(), false)
-                if (unsave || like || unlike) c.c.commands.add<Command>(
-                    Command(
-                        saved.items[svd].media,
-                        unsave = unsave,
-                        like = like,
-                        unlike = unlike,
-                    ),
-                    false
-                )
-                if (unsave) {
-                    deletion.add(svd)
-                    c.c.incrementCounter(Settings.spUnsaveCount)
-                }
+    private fun onDeleteItems(deletion: List<Int>) {
+        c.c.incrementCounter(Settings.spUnsaveCount, deletion.size.toLong())
+        var errored = false
+        for (del in deletion.reversed()) try {
+            c.mm.saved?.items?.removeAt(del)
+            b.rv.adapter?.notifyItemRemoved(del)
+            c.mm.saved?.items?.size?.also { total ->
+                b.rv.adapter?.notifyItemRangeChanged(del, total)
             }
-
-            // start the Services
-            if (download) {
-                c.c.downloads.save<Download>()
-                Downloads.initService(c)
-            }
-            if (unsave || like || unlike) {
-                c.c.commands.save<Command>()
-                c.startService(
-                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
-                )
-            }
-
-            // handle the UI
-            withContext(Dispatchers.Main) {
-                tracker?.clearSelection()
-                if (unsave) {
-                    var errored = false
-                    for (del in deletion.reversed()) try {
-                        c.mm.saved?.items?.removeAt(del)
-                        b.rv.adapter?.notifyItemRemoved(del)
-                        b.rv.adapter?.notifyItemRangeChanged(del, saved.items.size)
-                        c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
-                        onListResized()
-                    } catch (_: IndexOutOfBoundsException) {
-                        errored = true
-                    }
-                    if (!errored) pickle.save(saved)
-                }
-            }
+            c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
+            onListResized()
+        } catch (_: IndexOutOfBoundsException) {
+            errored = true
         }
+        if (!errored) c.mm.saved?.also { pickle.save(it) }
     }
 
     override fun goBack(): Boolean {

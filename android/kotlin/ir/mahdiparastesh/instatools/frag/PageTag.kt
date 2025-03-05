@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,7 +14,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
-import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -23,10 +21,8 @@ import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Command
-import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
-import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.view.Selective
@@ -124,7 +120,7 @@ class PageTag : BasePageViewer(), Selective {
         c.mm.tagged?.also { pickle.save(it) }
     }
 
-    override fun keyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
+    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
         override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
             c.mm.tagged?.edges?.forEachIndexed { i, edge ->
@@ -139,56 +135,24 @@ class PageTag : BasePageViewer(), Selective {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload -> processMedia(download = true)
-            R.id.vtLike -> processMedia(like = true)
-            R.id.vtUnlike -> processMedia(unlike = true)
-            R.id.vtSelectAll -> if (c.mm.tagged?.edges != null)
-                tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.id() }, true)
-            R.id.vtDeselectAll -> tracker?.clearSelection()
+            R.id.vtDownload ->
+                enqueueSelectedMedia(c, c.mm.tagged, download = true)
+            R.id.vtLike ->
+                enqueueSelectedMedia(c, c.mm.tagged, like = true)
+            R.id.vtUnlike ->
+                enqueueSelectedMedia(c, c.mm.tagged, unlike = true)
+            R.id.vtSave ->
+                enqueueSelectedMedia(c, c.mm.tagged, save = true)
+            R.id.vtUnsave ->
+                enqueueSelectedMedia(c, c.mm.tagged, unsave = true)
+
+            R.id.vtSelectAll ->
+                if (c.mm.tagged?.edges != null)
+                    tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.id() }, true)
+            R.id.vtDeselectAll ->
+                tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
-    }
-
-    fun processMedia(
-        download: Boolean = false,
-        like: Boolean = false,
-        unlike: Boolean = false,
-    ) {
-        val selection = tracker?.selection ?: return
-        val tagged = c.mm.tagged ?: return
-        CoroutineScope(Dispatchers.Default).launch {
-
-            // enqueue
-            for (edg in tagged.edges.indices) {
-                if (tagged.edges[edg].node.id() !in selection) continue
-                if (download) c.c.downloads.addAll<Download>(tagged.edges[edg].node.queue(), false)
-                if (like || unlike) c.c.commands.add<Command>(
-                    Command(
-                        tagged.edges[edg].node,
-                        like = like,
-                        unlike = unlike,
-                    ),
-                    false
-                )
-            }
-
-            // start the Services
-            if (download) {
-                c.c.downloads.save<Download>()
-                Downloads.initService(c)
-            }
-            if (like || unlike) {
-                c.c.commands.save<Command>()
-                c.startService(
-                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
-                )
-            }
-
-            // handle the UI
-            withContext(Dispatchers.Main) {
-                tracker?.clearSelection()
-            }
-        }
     }
 
     override fun goBack(): Boolean {

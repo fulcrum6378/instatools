@@ -14,7 +14,7 @@
     <string name="cancel">لغو</string>
     <string name="no">نه</string>
     <string name="yes">آره</string>
-    <string name="unsave">Unsave</string>
+    <string name="unsave">آنسیو</string>
     <string name="backgroundTasks">کار های پشت صحنه</string>
     <string name="selectAll">انتخاب همه</string>
     <string name="deselectAllSure">آیا مطمئنید میخواهید تمام علامت ها را بردارید؟</string>
@@ -142,6 +142,8 @@
     <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
     <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
     <string name="vwLinkNotProfile">این لینک یک پروفایل اینستاگرام نیست!</string>
+    <string name="saveAll">سیو همه</string>
+    <string name="unsaveAll">آنسیو همه</string>
 
     <!-- Settings -->
     <string name="settings">تنظیمات</string>

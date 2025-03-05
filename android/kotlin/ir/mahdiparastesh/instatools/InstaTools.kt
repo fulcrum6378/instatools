@@ -94,8 +94,8 @@ class InstaTools : Application() {
             sp!!.getBoolean(key, def)
         else gsp.getBoolean(key, def)
 
-    fun incrementCounter(key: String) {
-        gsp.edit { putLong(key, gsp.getLong(key, 0L) + 1L) }
+    fun incrementCounter(key: String, howMany: Long = 1L) {
+        gsp.edit { putLong(key, gsp.getLong(key, 0L) + howMany) }
     }
 
     @MainThread
