@@ -435,7 +435,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private fun FolderAliasBinding.listPaths() {
         uriFolders = ArrayList(contentResolver.persistedUriPermissions.map { it.uri }
             .sortedBy { it.folderName() })
-        uriFolders?.removeAll { it.toString() == prf.getString(spStorage, "null") }
+        //uriFolders?.removeAll { it.toString() == prf.getString(spStorage, "null") }
         folders.adapter = ArrayAdapter(
             this@Settings, R.layout.spinner, uriFolders!!.map { it.folderName() })
             .apply { setDropDownViewResource(R.layout.spinner_dd_tertiary) }

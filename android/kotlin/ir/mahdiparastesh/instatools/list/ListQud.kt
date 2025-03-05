@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBinding>>() {
+    private val suspendedAlpha = 0.7f
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -33,7 +34,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         // main
         if (q.type != 3.toByte()) Glide.with(c.c)
             .load(q.thumb)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.ALL) // uses caches by ListPost
             .signature(ObjectKey(q.id))
             .centerCrop()
             .into(h.b.thumb)
@@ -42,12 +43,7 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         h.b.date.text = Utils.date(q.date)
 
         // status
-        when {
-            q.status == 2.toByte() -> h.b.status.setImageResource(R.drawable.play)
-            q == DownloadService.processingItem -> h.b.status.setAnimation(R.raw.download)
-            q.isFailed() -> h.b.status.setAnimation(R.raw.failed)
-            else -> h.b.status.setImageDrawable(null)
-        }
+        syncStatus(h, q)
         h.b.status.repeatCount = if (q.isFailed()) 0 else LottieDrawable.INFINITE
         val pad =
             if (!q.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
@@ -60,8 +56,9 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             }
         }
         h.b.status.setOnClickListener {
+            if (h.layoutPosition == 0 && DownloadService.active.value == true)
+                return@setOnClickListener
             c.c.downloads.getOrNull<Download>(h.layoutPosition)?.apply {
-                if (h.layoutPosition == 0 && status == 0.toByte()) return@setOnClickListener
                 CoroutineScope(Dispatchers.IO).launch {
                     when (status) {
                         0.toByte() -> status = 2
@@ -69,9 +66,9 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
                         2.toByte() -> status = 0
                     }
                     c.c.downloads.save<Download>()
-                    Downloads.initService(c)
+                    //Downloads.initService(c)
                     withContext(Dispatchers.Main) {
-                        c.b.rv.adapter?.notifyItemChanged(h.layoutPosition)
+                        syncStatus(h, this@apply)
                     }
                 }
             }
@@ -79,6 +76,16 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
 
         // separator
         h.b.sep.vis(i < itemCount - 1)
+    }
+
+    private fun syncStatus(h: AnyViewHolder<ListQudBinding>, q: Download) {
+        when {
+            q.status == 2.toByte() -> h.b.status.setImageResource(R.drawable.play)
+            q == DownloadService.processingItem -> h.b.status.setAnimation(R.raw.download)
+            q.isFailed() -> h.b.status.setAnimation(R.raw.failed)
+            else -> h.b.status.setImageResource(R.drawable.pause)
+        }
+        h.b.root.alpha = if (q.status == 2.toByte()) suspendedAlpha else 1f
     }
 
     override fun getItemCount() = c.c.downloads.size<Download>()

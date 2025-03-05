@@ -48,7 +48,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class Downloads : BaseActivity(), ServiceOwner, Counter {
-    lateinit var b: DownloadsBinding
+    private lateinit var b: DownloadsBinding
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
     private var askedForDelete = false
@@ -223,7 +223,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     if (any) {
                         c.downloads.save<Download>()
                         withContext(Dispatchers.Main) { b.rv.adapter?.notifyDataSetChanged() }
-                        if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
+                        //if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
                 }
                 else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)

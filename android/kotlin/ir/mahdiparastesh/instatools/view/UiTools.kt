@@ -44,9 +44,13 @@ object UiTools {
         else arrayOf()
 
     /** Gets the IG user name from a link. */
-    fun accountFromUrl(str: String, host: String): String? =
-        if (str.startsWith(host)) str.substringAfter(host).substringBefore("/")
-            .substringBefore("?") else null
+    fun userNameFromUrl(url: String): String? {
+        if ("/p/" in url || "/reel/" in url || "/stories/" in url) return null
+        for (host in accFromUrl)
+            if (url.startsWith(host))
+                return url.substringAfter(host).substringBefore("/").substringBefore("?")
+        return null
+    }
 
     /** @return TextView instances of a BottomNavigationView for applying custom styles on them. */
     @SuppressLint("RestrictedApi")

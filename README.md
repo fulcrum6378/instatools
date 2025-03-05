@@ -121,6 +121,7 @@ Now, in order to:
     - `r`|`story`: story of a profile
     - `h`|`highlight`: highlights of a profile
 2. To retrieve information about a user, including their high-quality profile picture: `u`|`user`
+3. To list users which have stories in your feed: `y`|`tray`
 
 ### License
 

@@ -143,10 +143,10 @@ class InstaTools : Application() {
   * Problems:
   * Some of ListPost's selected items do not appear to be selected and
   *     the same items might appear as selected at another selection!!
+  *     Related to: Selection indicator invisible after Expandable collapses
   * Search doesn't work at all
   * on configuration changes (especially Login while browsing the web)
   * Invalid Pickle data detected in posts!
-  * Selection indicator invisible after Expandable collapses
   * -
   * Extension:
   * A simple following list Activity

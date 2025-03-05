@@ -54,13 +54,13 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         h.b.title.text =
             if (!isHL) c.getString(R.string.vwStoryReel)
             else "${i + hlNumAdd}. ${story.title}"
-        if (story.items!!.isNotEmpty()) h.b.desc.text = c.resources.getQuantityString(
+        h.b.desc.text = if (!story.items.isNullOrEmpty()) c.resources.getQuantityString(
             R.plurals.vwReelDesc, story.items!!.size, story.items!!.size
-        )
+        ) else ""
         if (!isHL) h.b.icon.setImageResource(R.drawable.instagram)
-        else story.cover_media?.cropped_image_version.apply {
-            if (this != null) Glide.with(c.c)
-                .load(url)
+        else story.cover_media?.cropped_image_version.also {
+            if (it != null) Glide.with(c.c)
+                .load(it.url)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .signature(ObjectKey(story.id))
                 .centerCrop()

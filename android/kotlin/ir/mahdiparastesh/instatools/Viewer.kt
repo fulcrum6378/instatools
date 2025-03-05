@@ -119,10 +119,8 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             return true
         }
         intent.data?.also { data ->
-            var userName: String? = null
-            for (host in UiTools.accFromUrl)
-                UiTools.accountFromUrl(data.toString(), host)
-                    ?.also { u -> if (userName == null) userName = u }
+            val url = data.toString()
+            val userName = UiTools.userNameFromUrl(url)
             if (userName == null) {
                 Toast.makeText(c, R.string.vwLinkNotProfile, Toast.LENGTH_LONG).show()
                 onBackPressed()

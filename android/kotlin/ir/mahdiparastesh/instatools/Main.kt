@@ -254,11 +254,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                         else b.searchRes.adapter?.notifyDataSetChanged()
                         return true
                     }
-                    UiTools.accFromUrl.forEach { host ->
-                        UiTools.accountFromUrl(newText, host)?.also {
-                            searchInput.setText(it)
-                            return true // onQueryTextChange will be invoked again by setText!
-                        }
+                    UiTools.userNameFromUrl(newText)?.also {
+                        searchInput.setText(it)
+                        return true // onQueryTextChange will be invoked again by setText!
                     }
                     if (newText.startsWith("@")) {
                         searchInput.setText(newText.substring(1)); return true; }
