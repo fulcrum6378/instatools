@@ -5,7 +5,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.ItemDetailsLookup.ItemDetails
 import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -24,7 +26,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 /** Abstract [RecyclerView.Adapter] that lists Instagram [Media]s in a grid. */
 abstract class ListPost<Activity, Fragment>(
     protected val c: Activity, protected val f: Fragment
-) : RecyclerView.Adapter<ListPost<Activity, Fragment>.ViewHolder>()
+) : RecyclerView.Adapter<AnyViewHolder<ListPostBinding>>()
     where Activity : BaseActivity, Fragment : BasePage<Activity> {
 
     init {
@@ -40,24 +42,21 @@ abstract class ListPost<Activity, Fragment>(
     abstract val expandable: Expandable
     abstract val expanded: ExpandableBinding
 
-    inner class ViewHolder(b: ListPostBinding) : AnyViewHolder<ListPostBinding>(b) {
-        fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
-            object : ItemDetailsLookup.ItemDetails<String>() {
-                override fun getPosition(): Int = layoutPosition
-                override fun getSelectionKey(): String? = this@ListPost[position]?.id()
-            }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
+        : AnyViewHolder<ListPostBinding> {
         val b = ListPostBinding.inflate(inflater, parent, false)
         b.root.layoutParams = b.root.layoutParams.apply {
             width = c.c.dm.widthPixels / 3
             height = c.c.dm.widthPixels / 3
         }
-        return ViewHolder(b)
+        return AnyViewHolder<ListPostBinding>(b)
     }
 
-    override fun onBindViewHolder(h: ViewHolder, i: Int) {
+    /**
+     * IMPORTANT NOTE: Do NOT use `layoutPosition` here;
+     * use `bindingAdapterPosition` instead in order to support the positioning of ConcatAdapter.
+     */
+    override fun onBindViewHolder(h: AnyViewHolder<ListPostBinding>, i: Int) {
         val med = this[i] ?: return
         val norm = tracker?.isSelected(med.id()) != true
 
@@ -102,14 +101,14 @@ abstract class ListPost<Activity, Fragment>(
 
         // clicks
         h.b.click.setOnClickListener {
-            expand(it, h.layoutPosition)
+            expand(it, h.bindingAdapterPosition)
         }
         h.b.click.setOnLongClickListener {
             if (firstLongClickSelect) {
                 firstLongClickSelect = false
                 return@setOnLongClickListener false
             }
-            expand(it, h.layoutPosition)
+            expand(it, h.bindingAdapterPosition)
             true
         }
     }
@@ -124,12 +123,24 @@ abstract class ListPost<Activity, Fragment>(
     }
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {
+
         override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
-            rv.findChildViewUnder(e.x, e.y)?.let {
-                val h = rv.getChildViewHolder(it)
-                if (h is ListPost<*, *>.ViewHolder) return@getItemDetails h.getItemDetails()
-            }
-            return null
+            val view = rv.findChildViewUnder(e.x, e.y) ?: return null
+            val h = rv.getChildViewHolder(view) as AnyViewHolder<*>
+            return if (rv.adapter is ListPost<*, *>)
+                object : ItemDetails<String>() {
+                    private val adapter = rv.adapter as ListPost<*, *>
+                    override fun getPosition(): Int = h.layoutPosition
+                    override fun getSelectionKey(): String? = adapter[position]?.id()
+                }
+            else
+                object : ItemDetails<String>() {
+                    private val adapter =
+                        (rv.adapter as ConcatAdapter).adapters[1] as ListPost<*, *>
+
+                    override fun getPosition(): Int = h.bindingAdapterPosition
+                    override fun getSelectionKey(): String? = adapter[position]?.id()
+                }
         }
     }
 

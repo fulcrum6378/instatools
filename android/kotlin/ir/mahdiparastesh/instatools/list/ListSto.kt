@@ -61,7 +61,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         else story.cover_media?.cropped_image_version.apply {
             if (this != null) Glide.with(c.c)
                 .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .signature(ObjectKey(story.id))
                 .centerCrop()
                 .into(h.b.icon)

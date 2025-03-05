@@ -99,6 +99,9 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun handle(q: Download, remaining: Int): Boolean {
         processingItem = q
+        Downloads.handler?.obtainMessage(
+            Downloads.HANDLE_CHANGED, c.downloads.indexOf<Download>(q)
+        )?.sendToTarget()
 
         // update the notification
         ntfTitle = resources.getQuantityString(R.plurals.downloaderTitleCount, remaining, remaining)
@@ -114,6 +117,7 @@ class DownloadService : ForegroundService(), Downloader {
     override fun onHandled(q: Download, success: Boolean) {
         super.onHandled(q, success)
         des?.close()
+        processingItem = null
         Downloads.handler?.obtainMessage(
             if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED,
             c.downloads.indexOf<Download>(q)
@@ -178,6 +182,11 @@ class DownloadService : ForegroundService(), Downloader {
                     addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                 }
             }
+        }
+        if (processingItem != null && (!proceed || fatalError != null)) {
+            val index = c.downloads.indexOf<Download>(processingItem!!)
+            processingItem = null
+            Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, index)?.sendToTarget()
         }
 
         // remove empty directories

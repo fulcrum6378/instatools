@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.data.Download
@@ -32,7 +33,9 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
         // main
         if (q.type != 3.toByte()) Glide.with(c.c)
             .load(q.thumb)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .signature(ObjectKey(q.id))
+            .centerCrop()
             .into(h.b.thumb)
         else h.b.thumb.setImageResource(R.drawable.audio)
         h.b.user.text = "${i + 1}. ${q.owner}"

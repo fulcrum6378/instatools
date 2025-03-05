@@ -77,6 +77,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     companion object {
         const val HANDLE_CHANGED = 1
         const val HANDLE_DELETED = 2
+
         val exportQueueMime =
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
             else "application/json"
