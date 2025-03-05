@@ -41,30 +41,30 @@ abstract class Lister<Item> {
         }
         return arr
     }
+}
 
-    abstract class LazyLister<Item> : Lister<Item>() {
-        protected var cursor: String? = null
-        protected var index: Int = 1
+abstract class LazyLister<Item> : Lister<Item>() {
+    protected var cursor: String? = null
+    protected var index: Int = 1
 
-        /** Remember always to call `super.fetch(reset)`. */
-        fun fetchSome(reset: Boolean = false) {
-            if (reset) {
-                cursor = null
-                index = 1
-            }
-            if (cursor == null) list?.clear()
-            fetch()
-        }
-
-        override fun add(item: Item) {
-            super.add(item)
-            index++
-        }
-
-        protected fun endOfList() {
+    /** Remember always to call `super.fetch(reset)`. */
+    fun fetchSome(reset: Boolean = false) {
+        if (reset) {
             cursor = null
             index = 1
-            println("End of list.")
         }
+        if (cursor == null) list?.clear()
+        fetch()
+    }
+
+    override fun add(item: Item) {
+        super.add(item)
+        index++
+    }
+
+    protected fun endOfList() {
+        cursor = null
+        index = 1
+        println("End of list.")
     }
 }

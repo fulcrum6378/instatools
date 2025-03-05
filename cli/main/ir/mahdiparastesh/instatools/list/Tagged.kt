@@ -6,7 +6,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.SimpleTasks
-import ir.mahdiparastesh.instatools.util.Lister.LazyLister
+import ir.mahdiparastesh.instatools.util.LazyLister
 import ir.mahdiparastesh.instatools.util.Option
 import ir.mahdiparastesh.instatools.util.Profile
 

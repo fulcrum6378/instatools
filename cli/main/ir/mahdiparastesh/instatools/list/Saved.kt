@@ -3,7 +3,7 @@ package ir.mahdiparastesh.instatools.list
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
-import ir.mahdiparastesh.instatools.util.Lister.LazyLister
+import ir.mahdiparastesh.instatools.util.LazyLister
 
 class Saved : LazyLister<Media>() {
 

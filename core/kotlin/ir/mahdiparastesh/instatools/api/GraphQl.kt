@@ -18,6 +18,7 @@ class GraphQl(
         val user: User?,
         val xdt_api__v1__feed__reels_media: Story.Wrapper?, // daily stories
         val xdt_api__v1__feed__reels_media__connection: Page<Story>?, // highlighted stories
+        val xdt_api__v1__feed__reels_tray: FeedTray?, // feed stories
         val xdt_api__v1__feed__user_timeline_graphql_connection: Page<Media>?, // profile posts
         //val xdt_api__v1__media__media_id__like: MediaInteraction?, // like post
         //val xdt_api__v1__media__media_id__unlike: MediaInteraction?, // unlike post
@@ -39,6 +40,7 @@ class GraphQl(
         //val xdt_user_mute_story: UserInteractionWrapper?, // mute story
         //val xdt_user_unmute_posts: UserInteractionWrapper?, // unmute posts
         //val xdt_user_unmute_story: UserInteractionWrapper?, // unmute story
+        //val xdt_viewer: Map<String, User>?, // comes together with a data model of feed
     )
 
     /*@Serializable
@@ -92,4 +94,7 @@ class GraphQl(
 
     /*@Serializable
     class MediaInteraction(val __typename: String)*/ // always "XDTEmptyRecord"
+
+    @Serializable
+    class FeedTray(/*val broadcasts: List<Any>,*/ val tray: List<Story>)
 }

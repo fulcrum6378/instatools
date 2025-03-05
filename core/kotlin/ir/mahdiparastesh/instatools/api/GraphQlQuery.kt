@@ -7,6 +7,15 @@ enum class GraphQlQuery(
     private val doc_id: String,
     private val variables: String,
 ) {
+
+    /**
+     * PolarisStoriesV3TrayContainerQuery
+     */
+    FEED_TRAY(
+        "8876958245693138",
+        "{\"data\":{\"is_following_feed\":false}}"
+    ),
+
     /**
      * PolarisProfilePostsQuery
      * @param username [User.username]

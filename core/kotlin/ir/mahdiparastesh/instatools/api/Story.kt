@@ -6,14 +6,19 @@ import kotlinx.serialization.Transient
 @Serializable
 class Story(
     val cover_media: Cover?, // null in stories
+    //val expiring_at: Long?, // only in feed tray, time in seconds
+    //val has_besties_media: Boolean?, // only in feed tray
     val id: String,
-    var items: ArrayList<Media>?, // null in highlights tray
-    //val latest_reel_media: Float, // time in seconds
+    var items: ArrayList<Media>?, // null in highlights tray and feed tray
+    //val latest_reel_media: Long, // time in seconds
     //val muted: Boolean?, // null in highlights
+    //val ranked_position: Int?, // only in feed tray
     val reel_type: String?, // "user_reel" or "highlight_reel", null in highlights tray
     //val seen: Int?, // null in highlights
+    //val seen_ranked_position: Int?, // only in feed tray
     val title: String?, // null in stories
     val user: User,
+    //val __typename: String, // only in feed tray, always "XDTReelDict"
 
     @Transient var opened: Boolean = false,
     @Transient var anSlide: Any? = null
