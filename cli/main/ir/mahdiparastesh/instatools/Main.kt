@@ -31,14 +31,15 @@ Copyright © Mahdi Parastesh - All Rights Reserved.
 set cookies {PATH}             Load the required cookies from a path. (default: `./cookies.txt`)
 set proxy {URL}                Set an HTTP proxy (e.g. `set proxy http://127.0.0.1:8580/`)
 
->> List of commands:
-d, download <LINK> {OPTIONS}   Download a post or a reel via a link. (`d -h` to see more options)
-s, saved                       List your saved posts. (`s -h` to see more options)
-u, user <@USERNAME|REST_ID>    Show details about an IG account. (e.g. `u 8337021434`)
-p, posts <@USERNAME>           List main posts of a profile. (`p -h` to see more options)
-t, tagged <@USERNAME>          List tagged posts of a profile. (`t -h` to see more options)
-r, story <@USERNAME>           List daily story of a profile. (`r -h` to see more options)
-h, highlight <@USERNAME>       List highlighted stories of a profile. (`h -h` to see more options)
+>> List of commands: (type `-h` after each command to see a detailed guide)
+d, download <LINK> {OPTIONS}   Download a post or a reel via a link.  help: `d -h`
+s, saved                       List your saved posts.                 help: `s -h`
+y, tray                        List the stories in your feed.         help: `y -h`
+u, user <@USERNAME|REST_ID>    Show details about an IG account.      e.g. `u 8337021434`
+p, posts <@USERNAME>           List main posts of a profile.          help: `p -h`
+t, tagged <@USERNAME>          List tagged posts of a profile.        help: `t -h`
+r, story <@USERNAME>           List daily story of a profile.         help: `r -h`
+h, highlight <@USERNAME>       List highlighted stories of a profile. help: `h -h`
 q, quit                        Quit the program.
 
     """.trimIndent()
@@ -86,7 +87,7 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
 
         when (a[0]) {
 
-            /* ----- SETTINGS ----- */
+            /* ---------- BEGIN SETTINGS ---------- */
             "set" -> when (a.getOrNull(1)) {
                 "cookies" -> {
                     if (if (a.size > 2) Api.loadCookiesFromFile(a[2]) else Api.loadCookiesFromFile())
@@ -99,8 +100,10 @@ y<NUMBER>                      Ideal height (e.g. y1000) (do NOT separate the nu
 
                 null -> throw InvalidCommandException("Invalid setting!")
             }
+            /* ----------- END SETTINGS ----------- */
 
-            /* ----- DOWNLOAD ----- */
+
+            /* ---------- BEGIN DOWNLOAD ---------- */
             "d", "download" -> if (a.size == 1)
                 throw InvalidCommandException(
                     "Please enter a link after \"${a[0]}\"; like \"${a[0]} https://\"..."
@@ -127,8 +130,10 @@ $qualitiesGuide
                 )
             else
                 throw InvalidCommandException("Only links to Instagram posts and reels are supported!")
+            /* ----------- END DOWNLOAD ----------- */
 
-            /* ----- SAVED ----- */
+
+            /* ---------- BEGIN SAVED ---------- */
             "s", "saved" -> if (a.size == 1)
                 listSvd.fetchSome()
             else when (a[1]) {
@@ -196,8 +201,15 @@ $qualitiesGuide
                     }
                 }
             }
+            /* ----------- END SAVED ----------- */
 
-            /* ----- USER ----- */
+
+            /* ---------- BEGIN TRAY ---------- */
+            // TODO
+            /* ----------- END TRAY ----------- */
+
+
+            /* ---------- BEGIN USER ---------- */
             "u", "user" -> if (a.size != 2)
                 throw InvalidCommandException("Please enter a username or the REST ID of a user.")
             else (if (a[1].startsWith("@")) SimpleJobs.profileInfo(a[1].substring(1))
@@ -223,8 +235,10 @@ ${u.biography}
                 latestUser = u.username
                 profiles[u.username]?.userId = u.id()
             }
+            /* ----------- END USER ----------- */
 
-            /* ----- POSTS ----- */
+
+            /* ---------- BEGIN POSTS ---------- */
             "p", "posts" -> profileCommand(
                 a, """
 p, posts <@USERNAME>           List main posts of a profile. (e.g. `p @fulcrum6378`)
@@ -238,8 +252,10 @@ $numbersGuide
 $qualitiesGuide
             """.trimIndent()
             ) { profile -> profile.posts }
+            /* ----------- END POSTS ----------- */
 
-            /* ----- TAGGED ----- */
+
+            /* ---------- BEGIN TAGGED ---------- */
             "t", "tagged" -> profileCommand(
                 a, """
 t, tagged <@USERNAME>          List tagged posts of a profile. (e.g. `t fulcrum6378`)
@@ -251,8 +267,10 @@ t, tagged <@USERNAME>          List tagged posts of a profile. (e.g. `t fulcrum6
     -l, --like                           Ensure that the tagged post is liked.
             """.trimIndent()
             ) { profile -> profile.tagged }
+            /* ----------- END TAGGED ----------- */
 
-            /* ----- STORY ----- */
+
+            /* ---------- BEGIN STORY ---------- */
             "r", "story" -> profileCommand(
                 a, """
 r, story <@USERNAME>           List daily story of a profile. (e.g. `r @fulcrum6378`)
@@ -263,8 +281,10 @@ $numbersGuide
 $qualitiesGuide
             """.trimIndent()
             ) { profile -> profile.story }
+            /* ----------- END STORY ----------- */
 
-            /* ----- HIGHLIGHTS ----- */
+
+            /* ---------- BEGIN HIGHLIGHTS ---------- */
             "h", "highlight" -> profileCommand(
                 a, """
 h, highlight <@USERNAME>       List highlighted stories of a profile. (e.g. `h @fulcrum6378`)
@@ -275,6 +295,8 @@ $numbersGuide
 $qualitiesGuide
             """.trimIndent()
             ) { profile -> profile.highlights }
+            /* ----------- END HIGHLIGHTS ----------- */
+
 
             "q", "quit" -> repeat = false
 

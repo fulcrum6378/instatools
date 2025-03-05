@@ -35,7 +35,9 @@ abstract class Lister<Item> {
                 }
             }
         } catch (e: Exception) {
-            throw InvalidCommandException("The number(s) you entered is incorrect! (${e::class.simpleName})")
+            throw InvalidCommandException(
+                "The number(s) you typed are incorrect! (${e::class.simpleName})"
+            )
         }
         return arr
     }

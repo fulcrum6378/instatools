@@ -141,6 +141,8 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Some of ListPost's selected items do not appear to be selected and
+  *     the same items might appear as selected at another selection!!
   * Search doesn't work at all
   * on configuration changes (especially Login while browsing the web)
   * Invalid Pickle data detected in posts!

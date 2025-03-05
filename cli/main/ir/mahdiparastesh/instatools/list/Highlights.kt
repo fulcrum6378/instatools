@@ -35,7 +35,7 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
                     tray.node.items = trays[hlId]!!.items
                 trays[hlId] = tray.node
             }
-            println("Enter `h -h` to see available options...")
+            println("Type `h -h` to see the available options...")
         }
     }
 

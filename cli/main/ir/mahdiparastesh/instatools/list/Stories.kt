@@ -27,7 +27,7 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
                 println("${i + 1}. " + r.link(p.userName))
                 add(r)
             }
-            println("Enter `r -h` to see available options...")
+            println("Type `r -h` to see the available options...")
         }
     }
 
