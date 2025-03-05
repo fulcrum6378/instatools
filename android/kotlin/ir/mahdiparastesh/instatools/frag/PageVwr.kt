@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -15,7 +16,6 @@ import androidx.annotation.MainThread
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +33,6 @@ import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
 import ir.mahdiparastesh.instatools.job.CommandService
-import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
@@ -41,13 +40,14 @@ import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
 import ir.mahdiparastesh.instatools.view.SafeGridManager
+import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageVwr : BasePageViewer() {
+class PageVwr : BasePageViewer(), Selective {
     lateinit var b: PageVwrBinding
     private var showPv: Boolean = false
 
@@ -55,6 +55,9 @@ class PageVwr : BasePageViewer() {
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = null
     override val jumper: ImageView? get() = b.jumper
+    override var tracker: SelectionTracker<String>? = null
+    override var selectivity = false
+    override val dialogContext: Context get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun shouldLoadOnPrepare(): Boolean = c.mm.user != null || c.mm.profile != null
@@ -84,15 +87,21 @@ class PageVwr : BasePageViewer() {
                 when (msg.what) {
                     ForegroundService.HANDLE_ITEM_UPDATED -> {
                         val id = msg.obj as Long
-                        val index = c.mm.posts?.edges?.indexOfFirst { it.node.uid == id } ?: return
+                        var index = -1
+                        c.mm.posts?.edges?.forEachIndexed { i, post ->
+                            if (post.node.uid == id) {
+                                Command.applyChangesOnMedia(post.node, msg.arg1)
+                                index = i
+                                return@forEachIndexed; }
+                        }
                         if (index == -1) return
-                        b.rv.adapter?.notifyItemChanged(index)
+                        gridAdapter()?.notifyItemChanged(index)
 
                         CoroutineScope(Dispatchers.IO).launch {
                             val pickle = Pickle(
                                 c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!
                             )
-                            c.mm.tagged?.also { pickle.save(it) }
+                            c.mm.posts?.also { pickle.save(it) }
                         }
                     }
                 }
@@ -160,18 +169,6 @@ class PageVwr : BasePageViewer() {
         c.mm.posts?.also { pickle.save(it) }
     }
 
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.vtDownload -> processMedia(download = true)
-            R.id.vtLike -> processMedia(like = true)
-            R.id.vtUnlike -> processMedia(unlike = true)
-            R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
-                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
-            R.id.vtDeselectAll -> tracker?.clearSelection()
-        }
-        return super.onMenuItemClick(item)
-    }
-
     override fun onLazilyLoaded(start: Int, size: Int) {
         if (size > 0) gridAdapter()?.notifyItemRangeInserted(start, size)
         if (isModelEmpty() && hasReachedBottom()) load()
@@ -183,12 +180,29 @@ class PageVwr : BasePageViewer() {
         c.load(reset = true)
     }
 
-    override fun buildSelection() {
-        tracker = SelectionTracker.Builder(
-            "viewer_main", b.rv,
-            PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
-            StorageStrategy.createStringStorage()
-        ).build().also { it.addObserver(SelectObserver()) }
+    override fun keyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
+        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id()
+        override fun getPosition(key: String): Int {
+            c.mm.posts?.edges?.forEachIndexed { i, edge ->
+                if (edge.node.id() == key) return@getPosition i
+            }
+            return -1
+        }
+    }
+
+    override fun selectionObserver(): SelectionTracker.SelectionObserver<String>? =
+        createSelectionObserver()
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.vtDownload -> processMedia(download = true)
+            R.id.vtLike -> processMedia(like = true)
+            R.id.vtUnlike -> processMedia(unlike = true)
+            R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
+                tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
+            R.id.vtDeselectAll -> tracker?.clearSelection()
+        }
+        return super.onMenuItemClick(item)
     }
 
     fun processMedia(
@@ -231,6 +245,10 @@ class PageVwr : BasePageViewer() {
                 tracker?.clearSelection()
             }
         }
+    }
+
+    override fun goBack(): Boolean {
+        return onGoBackWithSelection()
     }
 
     override fun onDestroy() {
@@ -315,15 +333,5 @@ class PageVwr : BasePageViewer() {
         }
 
         override fun getItemCount(): Int = 1
-    }
-
-    inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id()
-        override fun getPosition(key: String): Int {
-            c.mm.posts?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.id() == key) return@getPosition i
-            }
-            return -1
-        }
     }
 }

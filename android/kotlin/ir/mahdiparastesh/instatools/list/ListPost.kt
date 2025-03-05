@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -138,7 +139,11 @@ abstract class ListPost<Activity, Fragment>(
                     private val adapter =
                         (rv.adapter as ConcatAdapter).adapters[1] as ListPost<*, *>
 
-                    override fun getPosition(): Int = h.bindingAdapterPosition
+                    override fun getPosition(): Int {
+                        Log.println(Log.ASSERT, "ESPINELA", "${h.bindingAdapterPosition}")
+                        return h.bindingAdapterPosition
+                    }
+
                     override fun getSelectionKey(): String? = adapter[position]?.id()
                 }
         }

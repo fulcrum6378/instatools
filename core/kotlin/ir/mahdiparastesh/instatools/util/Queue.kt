@@ -21,6 +21,7 @@ class Queue<T>(val pickle: Pickle?) {
 
     inline fun <reified R> size(): Int = list<R>().size
     inline fun <reified R> isEmpty(): Boolean = list<R>().isEmpty()
+    inline fun <reified R> count(predicate: (R) -> Boolean): Int = list<R>().count(predicate)
     inline fun <reified R> iterator(): Iterator<T> =
         (list<R>() as CopyOnWriteArrayList<T>).iterator()
 

@@ -16,8 +16,8 @@ class Media(
     val code: String?,
     //val comment_count: Int?,
     val has_audio: Boolean?,
-    val has_liked: Boolean?,
-    val has_viewer_saved: Boolean?,
+    var has_liked: Boolean?,
+    var has_viewer_saved: Boolean?,
     private val id: String, // <media ID>_<user ID>
     //val invited_coauthor_producers: Array<User>?,
     val image_versions2: ImageVersions2,

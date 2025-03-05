@@ -60,6 +60,7 @@ class ListCar(
                 h.b.image.vis()
                 Glide.with(c.c)
                     .load(it)
+                    .timeout(10000)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(h.b.image)
             }

@@ -13,14 +13,18 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.Delay
@@ -246,11 +250,46 @@ interface ServiceOwner : Lister {
 }
 
 /** Helper interface for selection mode of [RecyclerView]. */
-interface Selective {
+interface Selective : Lister {
     var tracker: SelectionTracker<String>?
     var selectivity: Boolean
+    val dialogContext: Context
 
-    fun buildSelection()
+    fun buildSelection() {
+        // created only once, except after FragmentTransaction::attach()
+        tracker = SelectionTracker.Builder(
+            this::class.java.simpleName,
+            rv!!,
+            keyProvider(),
+            ListPost.PostDetailsLookup(rv!!),
+            StorageStrategy.createStringStorage()
+        ).build().also { tracker ->
+            selectionObserver()?.also { observer ->
+                tracker.addObserver(observer)
+            }
+        }
+    }
+
+    fun selectionObserver(): SelectionTracker.SelectionObserver<String>?
+
+    fun keyProvider(): ItemKeyProvider<String>
+
+    fun onGoBackWithSelection(): Boolean {
+        if (tracker?.hasSelection() == true) {
+            if (tracker!!.selection.size() < UiTools.DESELECT_MIN_ASK)
+                tracker?.clearSelection()
+            else {
+                MaterialAlertDialogBuilder(dialogContext).apply {
+                    setTitle(R.string.deselectAll)
+                    setMessage(R.string.deselectAllSure)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ -> tracker?.clearSelection() }
+                }.show()
+            }
+            return true
+        }
+        return false
+    }
 }
 
 interface Counter {

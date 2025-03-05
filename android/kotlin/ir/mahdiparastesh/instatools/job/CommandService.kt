@@ -46,9 +46,16 @@ class CommandService : ForegroundService(), Queuer<Command> {
 
     override fun iterator(): Iterator<Command> = c.commands.iterator<Command>()
 
-    override fun shouldHandle(q: Command): Boolean = true
+    override fun shouldSkipForNow(q: Command): Boolean = false
 
     override fun handle(q: Command, remaining: Int): Boolean {
+
+        // check if it is even necessary?
+        if (!q.needsHandling()) {
+            c.commands.remove<Command>(q)
+            return true
+        }
+
         processingItem = q
 
         // update the notification
@@ -73,10 +80,13 @@ class CommandService : ForegroundService(), Queuer<Command> {
             q.done(post)
 
             // inform the UIs
-            if (post != GraphQlQuery.UNSAVE)
-                PageSvd.handler?.obtainMessage(HANDLE_ITEM_UPDATED, q.media.uid)?.sendToTarget()
-            PageVwr.handler?.obtainMessage(HANDLE_ITEM_UPDATED, q.media.uid)?.sendToTarget()
-            PageTag.handler?.obtainMessage(HANDLE_ITEM_UPDATED, q.media.uid)?.sendToTarget()
+            val arg1 = Command.message(post)
+            if (post != GraphQlQuery.UNSAVE) PageSvd.handler
+                ?.obtainMessage(HANDLE_ITEM_UPDATED, arg1, 0, q.media.uid)?.sendToTarget()
+            PageVwr.handler
+                ?.obtainMessage(HANDLE_ITEM_UPDATED, arg1, 0, q.media.uid)?.sendToTarget()
+            PageTag.handler
+                ?.obtainMessage(HANDLE_ITEM_UPDATED, arg1, 0, q.media.uid)?.sendToTarget()
 
             if (posts.size > 1 && index != posts.size - 1) {
                 c.commands.save<Command>()
@@ -88,7 +98,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
     }
 
     override fun onHandled(q: Command, success: Boolean) {
-        processingItem = q
+        processingItem = null
         c.commands.remove<Command>(q)
     }
 

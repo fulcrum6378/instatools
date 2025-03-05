@@ -163,10 +163,12 @@ class DownloadService : ForegroundService(), Downloader {
                 }
             } else {
                 // report if some downloads failed
-                val failedSum = c.downloads.size<Download>()
+                val failedSum = c.downloads.count<Download> { it.isFailed() }
                 if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
                     setContentTitle(
-                        resources.getQuantityString(R.plurals.downloaderSomeFailed, failedSum, failedSum)
+                        resources.getQuantityString(
+                            R.plurals.downloaderSomeFailed, failedSum, failedSum
+                        )
                     )
                     setContentIntent(
                         PendingIntent.getActivity(

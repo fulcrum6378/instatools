@@ -56,8 +56,10 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             }
         }
         h.b.status.setOnClickListener {
+            val q = c.c.downloads.getOrNull<Download>(h.layoutPosition) ?: return@setOnClickListener
+            if (q == DownloadService.processingItem) return@setOnClickListener
+
             CoroutineScope(Dispatchers.IO).launch {
-                val q = c.c.downloads.getOrNull<Download>(h.layoutPosition) ?: return@launch
                 when (q.status) {
                     0.toByte() -> q.status = 2
                     1.toByte() -> q.status = 0

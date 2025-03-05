@@ -30,7 +30,7 @@ interface Queuer<Item> {
                 q = null
                 remaining = 0
                 for (qq in iterator()) {
-                    if (!shouldHandle(qq)) continue
+                    if (shouldSkipForNow(qq)) continue
                     if (q == null) q = qq
                     remaining++
                 }
@@ -57,7 +57,7 @@ interface Queuer<Item> {
     fun iterator(): Iterator<Item>
 
     /** Is this item qualified for [Queuer.handle]? */
-    fun shouldHandle(q: Item): Boolean
+    fun shouldSkipForNow(q: Item): Boolean
 
     /**
      * Handles one item at a time.

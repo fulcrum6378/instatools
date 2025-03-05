@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.frag
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -13,7 +14,6 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -27,21 +27,24 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.job.CommandService
-import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.*
+import ir.mahdiparastesh.instatools.view.Selective
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageTag : BasePageViewer() {
+class PageTag : BasePageViewer(), Selective {
     private lateinit var b: PageTagBinding
 
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
+    override var tracker: SelectionTracker<String>? = null
+    override var selectivity = false
+    override val dialogContext: Context get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.mm.tagged != null
@@ -65,7 +68,13 @@ class PageTag : BasePageViewer() {
                 when (msg.what) {
                     ForegroundService.HANDLE_ITEM_UPDATED -> {
                         val id = msg.obj as Long
-                        val index = c.mm.tagged?.edges?.indexOfFirst { it.node.uid == id } ?: return
+                        var index = -1
+                        c.mm.tagged?.edges?.forEachIndexed { i, tag ->
+                            if (tag.node.uid == id) {
+                                Command.applyChangesOnMedia(tag.node, msg.arg1)
+                                index = i
+                                return@forEachIndexed; }
+                        }
                         if (index == -1) return
                         b.rv.adapter?.notifyItemChanged(index)
 
@@ -115,6 +124,19 @@ class PageTag : BasePageViewer() {
         c.mm.tagged?.also { pickle.save(it) }
     }
 
+    override fun keyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
+        override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.id()
+        override fun getPosition(key: String): Int {
+            c.mm.tagged?.edges?.forEachIndexed { i, edge ->
+                if (edge.node.id() == key) return@getPosition i
+            }
+            return -1
+        }
+    }
+
+    override fun selectionObserver(): SelectionTracker.SelectionObserver<String>? =
+        createSelectionObserver()
+
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload -> processMedia(download = true)
@@ -125,14 +147,6 @@ class PageTag : BasePageViewer() {
             R.id.vtDeselectAll -> tracker?.clearSelection()
         }
         return super.onMenuItemClick(item)
-    }
-
-    override fun buildSelection() {
-        tracker = SelectionTracker.Builder(
-            "viewer_tagged", b.rv,
-            PostKeyProvider(), ListPost.PostDetailsLookup(b.rv),
-            StorageStrategy.createStringStorage()
-        ).build().also { it.addObserver(SelectObserver()) }
     }
 
     fun processMedia(
@@ -177,18 +191,12 @@ class PageTag : BasePageViewer() {
         }
     }
 
+    override fun goBack(): Boolean {
+        return onGoBackWithSelection()
+    }
+
     override fun onDestroy() {
         handler = null
         super.onDestroy()
-    }
-
-    inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.id()
-        override fun getPosition(key: String): Int {
-            c.mm.tagged?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.id() == key) return@getPosition i
-            }
-            return -1
-        }
     }
 }

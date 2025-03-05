@@ -34,7 +34,7 @@ import kotlin.io.copyTo
 
 interface Downloader : Queuer<Download> {
 
-    override fun shouldHandle(q: Download): Boolean = q.status == 0.toByte()
+    override fun shouldSkipForNow(q: Download): Boolean = q.status != 0.toByte()
 
     fun prepareOutput(q: Download): LazyFile<FileOutputStream>?
 

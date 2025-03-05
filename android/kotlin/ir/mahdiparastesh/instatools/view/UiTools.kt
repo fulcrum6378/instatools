@@ -34,6 +34,7 @@ object UiTools {
     const val IG_OPENABLE = "https://www.instagram.com/"
     const val INSTA_PACKAGE = "com.instagram.android"
     const val MAX_BADGE_CHAR = 6
+    const val DESELECT_MIN_ASK = 5
     //private const val maxInaccurateTimeItems = 2
 
     val accFromUrl = arrayOf(Login.RAW_HOST, Login.HOST)
