@@ -16,8 +16,8 @@
     <string name="yes">Yes</string>
     <string name="unsave">Unsave</string>
     <string name="backgroundTasks">Background Tasks</string>
-    <string name="selectAll">Select All</string>
-    <string name="deselectAll">Deselect All</string>
+    <string name="selectAll">Select all</string>
+    <string name="deselectAll">Deselect all</string>
     <string name="deselectAllSure">Are you sure you want to deselect all these items?</string>
     <string name="viewInInsta">View in Instagram</string>
     <string name="addToFav">Add to favourites</string>
@@ -35,8 +35,8 @@
     <!--<string name="inaccurateTimeSep">,&#160;</string>-->
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
-    <string name="downloadAudio">Download Audio</string>
-    <string name="muteSound">Play/Mute Sound</string>
+    <string name="downloadAudio">Download audio</string>
+    <string name="muteSound">Play/mute sound</string>
     <string-array name="bytes" translatable="false">
         <item>%d B</item>
         <item>%d KB</item>
@@ -54,6 +54,10 @@
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="change">Change</string>
+    <string name="like">Like</string>
+    <string name="likeAll">Like all</string>
+    <string name="unlike">Unlike</string>
+    <string name="unlikeAll">Unlike all</string>
 
     <!-- API -->
     <string name="noInternet">No internet connection!</string>

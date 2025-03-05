@@ -28,7 +28,7 @@ class DownloadService : ForegroundService(), Downloader {
     private val aliases = HashMap<String, String>()
     private var des: ParcelFileDescriptor? = null
 
-    override val com: ForegroundServiceCompanion get() = Companion
+    override val com: ForegroundServiceCompanion<Download> get() = Companion
     override val ntfChannel = Notify.Channel.DOWNLOADER
     override val ntfId = Notify.ID_DOWNLOADER
     override lateinit var ntfTitle: String
@@ -40,10 +40,7 @@ class DownloadService : ForegroundService(), Downloader {
     @Volatile
     override var proceed: Boolean = true
 
-    companion object : ForegroundServiceCompanion() {
-        @Volatile
-        var processingItem: Download? = null
-    }
+    companion object : ForegroundServiceCompanion<Download>()
 
     override fun onCreate() {
         super.onCreate()
@@ -99,9 +96,8 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun handle(q: Download, remaining: Int): Boolean {
         processingItem = q
-        Downloads.handler?.obtainMessage(
-            Downloads.HANDLE_CHANGED, c.downloads.indexOf<Download>(q)
-        )?.sendToTarget()
+        Downloads.handler?.obtainMessage(HANDLE_ITEM_UPDATED, c.downloads.indexOf<Download>(q))
+            ?.sendToTarget()
 
         // update the notification
         ntfTitle = resources.getQuantityString(R.plurals.downloaderTitleCount, remaining, remaining)
@@ -119,7 +115,7 @@ class DownloadService : ForegroundService(), Downloader {
         des?.close()
         processingItem = null
         Downloads.handler?.obtainMessage(
-            if (success) Downloads.HANDLE_DELETED else Downloads.HANDLE_CHANGED,
+            if (success) HANDLE_ITEM_DELETED else HANDLE_ITEM_UPDATED,
             c.downloads.indexOf<Download>(q)
         )?.sendToTarget()
         if (success) c.downloads.remove<Download>(q)
@@ -153,10 +149,8 @@ class DownloadService : ForegroundService(), Downloader {
                         when (fatalError) {
                             is Api.FailureException ->
                                 UiTools.apiError(c, fatalError.code)
-                            is Downloader.FailureException ->
+                            is Downloader.FailureException, is Queuer.FailureException ->
                                 getString(R.string.downloaderCannot)
-                            is Queuer.FailureException -> resources
-                                .getQuantityString(R.plurals.downloaderSomeFailed, fatalError.times)
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
@@ -172,7 +166,7 @@ class DownloadService : ForegroundService(), Downloader {
                 val failedSum = c.downloads.size<Download>()
                 if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
                     setContentTitle(
-                        resources.getQuantityString(R.plurals.downloaderSomeFailed, failedSum)
+                        resources.getQuantityString(R.plurals.downloaderSomeFailed, failedSum, failedSum)
                     )
                     setContentIntent(
                         PendingIntent.getActivity(
@@ -186,7 +180,7 @@ class DownloadService : ForegroundService(), Downloader {
         if (processingItem != null && (!proceed || fatalError != null)) {
             val index = c.downloads.indexOf<Download>(processingItem!!)
             processingItem = null
-            Downloads.handler?.obtainMessage(Downloads.HANDLE_CHANGED, index)?.sendToTarget()
+            Downloads.handler?.obtainMessage(HANDLE_ITEM_UPDATED, index)?.sendToTarget()
         }
 
         // remove empty directories

@@ -54,6 +54,10 @@
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
     <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
     <string name="change">تغییر</string>
+    <string name="like">لایک</string>
+    <string name="likeAll">لایک همه</string>
+    <string name="unlike">آنلایک</string>
+    <string name="unlikeAll">آنلایک همه</string>
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>

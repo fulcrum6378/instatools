@@ -21,4 +21,16 @@
         android:title="@string/deselectAll"
         android:tooltipText="@string/deselectAll"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtLike"
+        android:icon="@drawable/favourite_on_themed"
+        android:title="@string/likeAll"
+        android:tooltipText="@string/likeAll"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/vtUnlike"
+        android:icon="@drawable/favourite_off_themed"
+        android:title="@string/unlikeAll"
+        android:tooltipText="@string/unlikeAll"
+        app:showAsAction="ifRoom" />
 </menu>

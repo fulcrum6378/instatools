@@ -28,6 +28,7 @@ import java.io.InputStream
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.UnknownHostException
+import java.util.concurrent.CancellationException
 import javax.net.ssl.HttpsURLConnection
 import kotlin.io.copyTo
 
@@ -44,6 +45,8 @@ interface Downloader : Queuer<Download> {
         var stream: InputStream? = null
         var retry = -1
         while (stream == null) {
+            if (!proceed) throw CancellationException()
+
             retry++
             if (retry > 0) {
                 if (retry > 5) throw FailureException()

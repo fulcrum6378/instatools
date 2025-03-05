@@ -26,7 +26,7 @@ abstract class ForegroundService : Service() {
     protected val c: InstaTools by lazy { applicationContext as InstaTools }
     protected lateinit var ntfManager: NotificationManager
 
-    abstract val com: ForegroundServiceCompanion
+    abstract val com: ForegroundServiceCompanion<*>
     abstract val ntfChannel: Notify.Channel
     abstract val ntfId: Int
     abstract var ntfTitle: String
@@ -38,6 +38,9 @@ abstract class ForegroundService : Service() {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+        const val HANDLE_ITEM_UPDATED = 2
+        const val HANDLE_ITEM_DELETED = 3
+
         private val services = arrayOf(DownloadService::class, CommandService::class)
 
         fun anyRunning() = arrayOf(DownloadService, CommandService)
@@ -60,8 +63,11 @@ abstract class ForegroundService : Service() {
     /**
      * Abstract class from which all companion objects of [ForegroundService] subclasses must extend.
      */
-    abstract class ForegroundServiceCompanion {
+    abstract class ForegroundServiceCompanion<Item> {
         val active = MutableLiveData(false)
+
+        @Volatile
+        var processingItem: Item? = null
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {

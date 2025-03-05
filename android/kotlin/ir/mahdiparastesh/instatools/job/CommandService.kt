@@ -3,7 +3,11 @@ package ir.mahdiparastesh.instatools.job
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.data.Command
+import ir.mahdiparastesh.instatools.frag.PageSvd
+import ir.mahdiparastesh.instatools.frag.PageTag
+import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
@@ -11,10 +15,11 @@ import ir.mahdiparastesh.instatools.view.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.CancellationException
 
 class CommandService : ForegroundService(), Queuer<Command> {
 
-    override val com: ForegroundServiceCompanion get() = Companion
+    override val com: ForegroundServiceCompanion<Command> get() = Companion
     override val ntfChannel: Notify.Channel = Notify.Channel.COMMANDER
     override val ntfId: Int = Notify.ID_COMMANDER
     override lateinit var ntfTitle: String
@@ -26,7 +31,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
     @Volatile
     override var proceed: Boolean = true
 
-    companion object : ForegroundServiceCompanion()
+    companion object : ForegroundServiceCompanion<Command>()
 
     override fun onCreate() {
         super.onCreate()
@@ -44,6 +49,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
     override fun shouldHandle(q: Command): Boolean = true
 
     override fun handle(q: Command, remaining: Int): Boolean {
+        processingItem = q
 
         // update the notification
         ntfSmallText = getString(
@@ -58,14 +64,31 @@ class CommandService : ForegroundService(), Queuer<Command> {
 
         // call the Instagram API
         val posts = q.graphQl()
+        var index = 0
         for (post in posts) {
+            if (!proceed) throw CancellationException()
+
+            // call the API
             Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, post.body(q.media.id()))
-            if (posts.size > 1) Thread.sleep(1000L)
+            q.done(post)
+
+            // inform the UIs
+            if (post != GraphQlQuery.UNSAVE)
+                PageSvd.handler?.obtainMessage(HANDLE_ITEM_UPDATED, q.media.uid)?.sendToTarget()
+            PageVwr.handler?.obtainMessage(HANDLE_ITEM_UPDATED, q.media.uid)?.sendToTarget()
+            PageTag.handler?.obtainMessage(HANDLE_ITEM_UPDATED, q.media.uid)?.sendToTarget()
+
+            if (posts.size > 1 && index != posts.size - 1) {
+                c.commands.save<Command>()
+                Thread.sleep(1000L)
+            }
+            index++
         }
         return true
     }
 
     override fun onHandled(q: Command, success: Boolean) {
+        processingItem = q
         c.commands.remove<Command>(q)
     }
 
@@ -83,7 +106,16 @@ class CommandService : ForegroundService(), Queuer<Command> {
 
                 // report the fatal error
                 eventNotification(Notify.ID_COMMANDER_ERROR) {
-                    setContentTitle(getString(R.string.unsave)) // FIXME
+                    setContentTitle(
+                        getString(
+                            when {
+                                processingItem?.unsave == true -> R.string.unsave
+                                processingItem?.like == true -> R.string.like
+                                processingItem?.unlike == true -> R.string.unlike
+                                else -> R.string.commanderChannel
+                            }
+                        )
+                    )
                     setContentText(
                         when (fatalError) {
                             is Api.FailureException ->

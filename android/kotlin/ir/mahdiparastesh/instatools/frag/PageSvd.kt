@@ -3,6 +3,9 @@ package ir.mahdiparastesh.instatools.frag
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -75,15 +78,38 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
     override fun createAdapter(): RecyclerView.Adapter<*> = ListSvd(c, this)
     override fun canLoadMore(): Boolean = c.mm.saved?.more_available != false
 
+    companion object {
+        var handler: Handler? = null
+    }
+
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageSvdBinding.inflate(inflater, parent, false).let { b = it; it.root }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // list
         b.rv.layoutManager = object : SafeGridManager(c, 3) {
             override fun canScrollVertically(): Boolean =
                 super.canScrollVertically() && selectionGuide == null
+        }
+
+        // handler
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    ForegroundService.HANDLE_ITEM_UPDATED -> {
+                        val id = msg.obj as Long
+                        val index = c.mm.saved?.items?.indexOfFirst { it.media.uid == id } ?: return
+                        if (index == -1) return
+                        b.rv.adapter?.notifyItemChanged(index)
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            c.mm.saved?.also { pickle.save(it) }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -155,6 +181,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                 processMedia(unsave = false, download = true)
             R.id.mtUnsave ->
                 processMedia(unsave = true, download = false)
+            R.id.mtLike ->
+                processMedia(like = true)
+            R.id.mtUnlike ->
+                processMedia(unlike = true)
             R.id.mtSelectAll -> if (c.mm.saved != null)
                 tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id() }, true)
 
@@ -172,7 +202,12 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
-    fun processMedia(download: Boolean, unsave: Boolean) {
+    fun processMedia(
+        download: Boolean = false,
+        unsave: Boolean = false,
+        like: Boolean = false,
+        unlike: Boolean = false,
+    ) {
         val selection = tracker?.selection ?: return
         val saved = c.mm.saved ?: return
         val deletion = arrayListOf<Int>()
@@ -182,8 +217,16 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
             for (svd in saved.items.indices) {
                 if (saved.items[svd].media.id() !in selection) continue
                 if (download) c.c.downloads.addAll<Download>(saved.items[svd].media.queue(), false)
+                if (unsave || like || unlike) c.c.commands.add<Command>(
+                    Command(
+                        saved.items[svd].media,
+                        unsave = unsave,
+                        like = like,
+                        unlike = unlike,
+                    ),
+                    false
+                )
                 if (unsave) {
-                    c.c.commands.add<Command>(Command(saved.items[svd].media, unsave = true), false)
                     deletion.add(svd)
                     c.c.incrementCounter(Settings.spUnsaveCount)
                 }
@@ -194,7 +237,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                 c.c.downloads.save<Download>()
                 Downloads.initService(c)
             }
-            if (unsave) {
+            if (unsave || like || unlike) {
                 c.c.commands.save<Command>()
                 c.startService(
                     Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
@@ -245,6 +288,11 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
             return true
         }
         return false
+    }
+
+    override fun onDestroy() {
+        handler = null
+        super.onDestroy()
     }
 
     inner class PostKeyProvider : ItemKeyProvider<String>(SCOPE_CACHED) {

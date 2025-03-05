@@ -75,8 +75,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun screenHeight(): Int = c.dm.heightPixels
 
     companion object {
-        const val HANDLE_CHANGED = 1
-        const val HANDLE_DELETED = 2
 
         val exportQueueMime =
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
@@ -105,9 +103,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    HANDLE_CHANGED ->
+                    ForegroundService.HANDLE_ITEM_UPDATED ->
                         b.rv.adapter?.notifyItemChanged(msg.obj as Int)
-                    HANDLE_DELETED -> {
+                    ForegroundService.HANDLE_ITEM_DELETED -> {
                         val index = msg.obj as Int
                         b.rv.adapter?.notifyItemRemoved(index)
                         b.rv.adapter?.notifyItemRangeChanged(index, c.downloads.size<Download>())

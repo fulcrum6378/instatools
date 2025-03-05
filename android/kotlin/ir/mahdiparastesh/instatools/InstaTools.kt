@@ -154,7 +154,6 @@ class InstaTools : Application() {
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Percentage of downloads
-  * Undo for Unsave
   * Make CommandService cancellable and pausable
   * Switch to ComponentActivity
   *

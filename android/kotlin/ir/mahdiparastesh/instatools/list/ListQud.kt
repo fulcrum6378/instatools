@@ -56,20 +56,17 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             }
         }
         h.b.status.setOnClickListener {
-            if (h.layoutPosition == 0 && DownloadService.active.value == true)
-                return@setOnClickListener
-            c.c.downloads.getOrNull<Download>(h.layoutPosition)?.apply {
-                CoroutineScope(Dispatchers.IO).launch {
-                    when (status) {
-                        0.toByte() -> status = 2
-                        1.toByte() -> status = 0
-                        2.toByte() -> status = 0
-                    }
-                    c.c.downloads.save<Download>()
-                    //Downloads.initService(c)
-                    withContext(Dispatchers.Main) {
-                        syncStatus(h, this@apply)
-                    }
+            CoroutineScope(Dispatchers.IO).launch {
+                val q = c.c.downloads.getOrNull<Download>(h.layoutPosition) ?: return@launch
+                when (q.status) {
+                    0.toByte() -> q.status = 2
+                    1.toByte() -> q.status = 0
+                    2.toByte() -> q.status = 0
+                }
+                c.c.downloads.save<Download>()
+                //Downloads.initService(c)
+                withContext(Dispatchers.Main) {
+                    syncStatus(h, q)
                 }
             }
         }
@@ -85,7 +82,12 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             q.isFailed() -> h.b.status.setAnimation(R.raw.failed)
             else -> h.b.status.setImageResource(R.drawable.pause)
         }
-        h.b.root.alpha = if (q.status == 2.toByte()) suspendedAlpha else 1f
+        (if (q.status == 2.toByte()) suspendedAlpha else 1f).also { alpha ->
+            // don't set alpha on the root; 'cus RecyclerView will change it.
+            h.b.thumb.alpha = alpha
+            h.b.user.alpha = alpha
+            h.b.date.alpha = alpha
+        }
     }
 
     override fun getItemCount() = c.c.downloads.size<Download>()

@@ -1,7 +1,11 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -23,10 +27,12 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
+import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.util.*
@@ -56,6 +62,10 @@ class PageVwr : BasePageViewer() {
     override fun isModelEmpty(): Boolean = c.mm.posts?.edges?.isEmpty() == true
     override fun canLoadMore(): Boolean = c.mm.posts?.page_info?.has_next_page != false
 
+    companion object {
+        var handler: Handler? = null
+    }
+
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
         PageVwrBinding.inflate(inf, parent, false).let { b = it; it.root }
 
@@ -67,6 +77,27 @@ class PageVwr : BasePageViewer() {
             object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int = if (position == 0) 3 else 1
             }
+
+        // handler
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    ForegroundService.HANDLE_ITEM_UPDATED -> {
+                        val id = msg.obj as Long
+                        val index = c.mm.posts?.edges?.indexOfFirst { it.node.uid == id } ?: return
+                        if (index == -1) return
+                        b.rv.adapter?.notifyItemChanged(index)
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val pickle = Pickle(
+                                c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!
+                            )
+                            c.mm.tagged?.also { pickle.save(it) }
+                        }
+                    }
+                }
+            }
+        }
 
         // buttons for other pages
         b.toPageRel.setOnClickListener { if (isModelLoaded()) c.turnToPage(0) }
@@ -131,7 +162,9 @@ class PageVwr : BasePageViewer() {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload -> processMedia()
+            R.id.vtDownload -> processMedia(download = true)
+            R.id.vtLike -> processMedia(like = true)
+            R.id.vtUnlike -> processMedia(unlike = true)
             R.id.vtSelectAll -> if (c.mm.posts?.edges != null)
                 tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll -> tracker?.clearSelection()
@@ -158,22 +191,51 @@ class PageVwr : BasePageViewer() {
         ).build().also { it.addObserver(SelectObserver()) }
     }
 
-    fun processMedia(download: Boolean = true) {
+    fun processMedia(
+        download: Boolean = false,
+        like: Boolean = false,
+        unlike: Boolean = false,
+    ) {
         val selection = tracker?.selection ?: return
         val posts = c.mm.posts ?: return
         CoroutineScope(Dispatchers.Default).launch {
+
+            // enqueue
             for (edg in posts.edges.indices) {
                 if (posts.edges[edg].node.id() !in selection) continue
                 if (download) c.c.downloads.addAll<Download>(posts.edges[edg].node.queue(), false)
+                if (like || unlike) c.c.commands.add<Command>(
+                    Command(
+                        posts.edges[edg].node,
+                        like = like,
+                        unlike = unlike,
+                    ),
+                    false
+                )
             }
+
+            // start the Services
             if (download) {
                 c.c.downloads.save<Download>()
                 Downloads.initService(c)
             }
+            if (like || unlike) {
+                c.c.commands.save<Command>()
+                c.startService(
+                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
+                )
+            }
+
+            // handle the UI
             withContext(Dispatchers.Main) {
                 tracker?.clearSelection()
             }
         }
+    }
+
+    override fun onDestroy() {
+        handler = null
+        super.onDestroy()
     }
 
     inner class Header : RecyclerView.Adapter<AnyViewHolder<PageVwrHeaderBinding>>() {
