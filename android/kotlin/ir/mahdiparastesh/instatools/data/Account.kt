@@ -14,7 +14,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-/** Represents an Instagram account. */
+/** Represents an Instagram account used in the Login activity. */
 @Serializable
 class Account(
     var id: Long,

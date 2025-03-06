@@ -24,6 +24,7 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -204,7 +205,9 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     @MainThread
     fun onFailed(statusCode: Int) {
         refresher?.isRefreshing = false
-        UiTools.snackbar(root!!, UiTools.apiError(root!!.context, statusCode))
+        UiTools.snackbar(
+            root!!, UiTools.apiError(root!!.context.applicationContext as InstaTools, statusCode)
+        )
         error?.vis()
         error?.setOnClickListener {
             refresher?.isRefreshing = true
@@ -220,7 +223,9 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     @MainThread
     fun onLazilyFailed(statusCode: Int) {
         refresher?.isRefreshing = false // in case of a refresh
-        UiTools.snackbar(root!!, UiTools.apiError(root!!.context, statusCode))
+        UiTools.snackbar(
+            root!!, UiTools.apiError(root!!.context.applicationContext as InstaTools, statusCode)
+        )
     }
 
     override fun onRefresh() {

@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
@@ -36,7 +37,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     lateinit var accounts: ArrayList<Account>
     private lateinit var cookieManager: CookieManager
     var accBrowsingWeb: Account? = null
-    var injectingCookieForAccIndex: Int? = null
+    var injectingCookieForAcc: Long? = null
 
     override val menuRes: Int? = null
 
@@ -75,27 +76,27 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
         b.refresher.setOnRefreshListener { b.web.reload() }
 
-        // Accounts
-        CoroutineScope(Dispatchers.IO).launch {
-            accounts = Account.load(c)
-            withContext(Dispatchers.Main) {
-                when {
-                    intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
-                        .apply {
-                            MaterialAlertDialogBuilder(this@Login).apply {
-                                setTitle(R.string.loggedOut)
-                                setMessage(getString(R.string.needAuthentication))
-                                setNeutralButton(R.string.ok, null)
-                            }.show()
-                            val signedOutFrom =
-                                if (this != -1L) accounts.find { it.id == this } else null
-                            if (signedOutFrom == null || accounts.size <= 1) {
-                                browse(BROWSE_AUTH_REQ)
-                            } else selectAccount(signedOutFrom)
-                        }
-                    else -> welcome()
-                }
+        // what to show?
+        accounts = Account.load(c)
+        when {
+            browsePurpose != null -> { // on configuration changed while browsing
+                b.refresher.vis()
+                if (::bw.isInitialized) bw.root.vis(false)
             }
+            intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
+                .apply {
+                    MaterialAlertDialogBuilder(this@Login).apply {
+                        setTitle(R.string.loggedOut)
+                        setMessage(getString(R.string.needAuthentication))
+                        setNeutralButton(R.string.ok, null)
+                    }.show()
+                    val signedOutFrom =
+                        if (this != -1L) accounts.find { it.id == this } else null
+                    if (signedOutFrom == null || accounts.size <= 1) {
+                        browse(BROWSE_AUTH_REQ)
+                    } else selectAccount(signedOutFrom)
+                }
+            else -> welcome()
         }
     }
 
@@ -117,7 +118,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     val injectCookies = launcherForResult {
-        val acc = injectingCookieForAccIndex?.let { accounts.getOrNull(it) }
+        val acc = injectingCookieForAcc?.let { id -> accounts.find { it.id == id } }
         if (it.resultCode != RESULT_OK || acc == null) return@launcherForResult
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -133,7 +134,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     ).show()
                 }
             }.onFailure {
-                injectingCookieForAccIndex = null
+                injectingCookieForAcc = null
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         c, R.string.importReadError, Toast.LENGTH_LONG
@@ -292,6 +293,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         return sb.toString().trimEnd()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        b.web.invalidate()
+    }
+
     @SuppressLint("MissingSuperCall")
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
@@ -305,10 +311,5 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         moveTaskToBack(true)
         killProcess(myPid())
         exitProcess(0)
-    }
-
-    override fun onDestroy() {
-        browsePurpose = null
-        super.onDestroy()
     }
 }

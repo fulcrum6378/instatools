@@ -25,6 +25,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.internal.BaselineLayout
 import com.google.android.material.snackbar.Snackbar
+import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.Utils
@@ -180,14 +181,20 @@ object UiTools {
         snackbar(view, view.context.getString(res), anchor, dur)
     }
 
-    fun apiError(c: Context, code: Int): String = c.resources.getString(
+    fun apiError(c: InstaTools, code: Int): String = c.resources.getString(
         when (code) {
             -1 -> R.string.noInternet
             -2 -> R.string.connectionFailure
             -3 -> R.string.connectionBroken
-            -4 -> R.string.loggedOut
+            -4 -> {
+                c.needAuthentication()
+                R.string.loggedOut
+            }
             -5 -> R.string.operationFailed
-            401 -> R.string.loggedOut401
+            401 -> {
+                c.needAuthentication()
+                R.string.loggedOut401
+            }
             404 -> R.string.notFound
             429 -> R.string.manyRequests
             else -> R.string.httpError

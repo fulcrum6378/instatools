@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Process.myPid
 import android.os.Process.myUid
-import android.os.StatFs
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +56,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
     companion object {
 
-        // Preferences
+        // preferences
         const val spStorage = "storage"
         const val spBranching = "branching"
         const val spBranchingCb = "branching_checked"
@@ -69,16 +68,15 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val defSpAutoDeleteEmptyDirsCb = false
         private const val spAliases = "aliases"
 
-        // Mere-Global Preferences
+        // mere-global preferences
         const val spCacheLimit = "cache_limit"
-        private const val defSpCacheLimit = 100L * 1024L * 1024L
+        const val defSpCacheLimit = 100L * 1024L * 1024L
 
-        // Hidden Preferences
+        // hidden preferences
         const val spMainPage = "main_page"
         const val defSpMainPage = 1
-        const val spExpOptions = "export_options"
 
-        // Mere-Global Hidden Preferences
+        // mere-global hidden preferences
         const val spFirstOpenApp = "first_open_app" // def: null
         const val spOpenAppCount = "open_app_count" // def: 0L
         const val spDownloadCount = "download_count" // def: 0L
@@ -90,27 +88,16 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spUsedVersion = "used_version"
 
 
+        // Settigns
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_SELECT_PATH = "selectPath"
         const val GSP = "global"
         private const val MB = 1048576L
         val allSps = arrayOf(
             spStorage, spBranching, spBranchingCb, spAutoDeleteEmptyDirs, spAutoDeleteEmptyDirsCb,
-            spAliases, spCacheLimit, spMainPage, spExpOptions
+            spAliases, spCacheLimit, spMainPage
         )
         var recreateMain = false
-
-        fun Context.cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
-
-        fun defaultCacheLimit(c: Context): Long = c.getExternalFilesDir(null)?.let {
-            val minie = c.resources.getInteger(R.integer.stCacheMin)
-            val maxie = c.resources.getInteger(R.integer.stCacheMaxNominal) + minie
-            val stat = StatFs(it.path)
-            var ret = (stat.blockSizeLong * stat.availableBlocksLong) / 275L
-            if (ret < minie.toBytes()) ret = minie.toBytes()
-            if (ret > maxie.toBytes()) ret = maxie.toBytes()
-            return ret
-        } ?: defSpCacheLimit
 
         fun Long.toMBs() = (this / MB).toInt()
 
@@ -256,7 +243,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stAddAlias.setOnClickListener { editAlias(null) }
 
         // caching
-        cacheLimit = c.gsp.getLong(spCacheLimit, defaultCacheLimit(c))
+        cacheLimit = c.gsp.getLong(spCacheLimit, c.defaultCacheLimit())
         b.stCacheLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return

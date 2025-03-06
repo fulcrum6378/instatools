@@ -1,18 +1,21 @@
 package ir.mahdiparastesh.instatools
 
 import android.app.Application
+import android.content.Intent
 import android.content.SharedPreferences
+import android.os.StatFs
 import android.util.DisplayMetrics
 import androidx.annotation.MainThread
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
-import ir.mahdiparastesh.instatools.Settings.Companion.cacheSize
+import ir.mahdiparastesh.instatools.Settings.Companion.toBytes
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
+import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Queue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -121,11 +124,37 @@ class InstaTools : Application() {
     }
 
     fun clearCacheIfNecessary(subdir: String? = null): Boolean {
-        if (cacheSize() <= gsp.getLong(Settings.spCacheLimit, Settings.defaultCacheLimit(this)))
+        if (cacheSize() <= gsp.getLong(Settings.spCacheLimit, defaultCacheLimit()))
             return false
         (if (subdir != null) File(cacheDir, subdir) else cacheDir)
             .deleteRecursively()
         return true
+    }
+
+    fun cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
+
+    fun defaultCacheLimit(): Long = getExternalFilesDir(null)?.let {
+        val minie = resources.getInteger(R.integer.stCacheMin)
+        val maxie = resources.getInteger(R.integer.stCacheMaxNominal) + minie
+        val stat = StatFs(it.path)
+        var ret = (stat.blockSizeLong * stat.availableBlocksLong) / 275L
+        if (ret < minie.toBytes()) ret = minie.toBytes()
+        if (ret > maxie.toBytes()) ret = maxie.toBytes()
+        return ret
+    } ?: Settings.defSpCacheLimit
+
+    /**
+     * If Instagram detects the app as a robot, this method must be invoked for the proper actions
+     * to be taken right away!
+     */
+    fun needAuthentication() {
+        ForegroundService.terminateTasks(this)
+        gsp.edit { remove(Login.SP_ACCOUNT) }
+        onLoggedOut()
+        startActivity(Intent(this, Login::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(Login.EXTRA_NEED_AUTH, true)
+        })
     }
 
     fun deletePickles(accountId: String = acc!!.id.toString()) {
@@ -145,7 +174,6 @@ class InstaTools : Application() {
   *     the same items might appear as selected at another selection!!
   *     Related to: Selection indicator invisible after Expandable collapses
   * Search doesn't work at all
-  * on configuration changes (especially Login while browsing the web)
   * Invalid Pickle data detected in posts!
   * -
   * Extension:

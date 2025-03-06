@@ -98,6 +98,12 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         b = ViewerBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.vwTitle)
+
+        // if the user is already loaded
+        vm.user?.also {
+            b.toolbar.title = it.username
+            fixTbMenu()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

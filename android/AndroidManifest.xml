@@ -39,6 +39,8 @@
 
         <activity
             android:name=".Login"
+            android:configChanges="screenLayout|orientation|screenSize
+|keyboard|keyboardHidden|smallestScreenSize"
             android:exported="false"
             android:theme="@style/Theme.InstaTools.Secondary"
             android:windowSoftInputMode="stateHidden|adjustPan" />

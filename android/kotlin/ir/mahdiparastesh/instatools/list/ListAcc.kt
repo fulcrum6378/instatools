@@ -25,7 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>() {
+class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -75,7 +75,7 @@ class ListAcc(val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>
                 c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.HOST)
             },
             R.id.amInjectCookies to {
-                c.injectingCookieForAccIndex = i
+                c.injectingCookieForAcc = acc.id
                 c.injectCookies.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "txt"

@@ -37,7 +37,7 @@ object DownloadHistory {
                 }.onSuccess { data ->
                     c.downloadHistory =
                         CopyOnWriteArraySet(Json.decodeFromString<List<String>>(String(data)))
-                    if (c.downloadHistory != null) loading = false
+                    if (!c.downloadHistory.isNullOrEmpty()) loading = false
                     else checkStorage(c)
                 }.onFailure {
                     if (BuildConfig.DEBUG) throw it
