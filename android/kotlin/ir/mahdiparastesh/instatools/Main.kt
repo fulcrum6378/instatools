@@ -52,7 +52,7 @@ import kotlinx.coroutines.withContext
 class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     NavigationView.OnNavigationItemSelectedListener {
     lateinit var b: MainBinding
-    val mm: MyModel by viewModels()
+    val vm: MyModel by viewModels()
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
     private var exiting = false
@@ -78,9 +78,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override val menuRes = R.menu.main_tlb
     override var currentPage: Int
-        get() = mm.currentPage
+        get() = vm.currentPage
         set(i) {
-            mm.currentPage = i
+            vm.currentPage = i
         }
 
     class MyModel : ViewModel() {
@@ -99,10 +99,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
 
         // bottom navigation bar
-        b.bnv.selectedItemId = bnvButtons[mm.currentPage]
+        b.bnv.selectedItemId = bnvButtons[vm.currentPage]
         b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
-        mm.savedCount.observe(this) { bnvBadge(1, it) }
+        vm.savedCount.observe(this) { bnvBadge(1, it) }
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // theming
@@ -130,9 +130,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             if (::searchClose.isInitialized)
                 searchClose.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
-        if (night()) colorBG.value = bg[mm.currentPage]
-        else colorAc.value = ca[mm.currentPage]
-        b.toolbar.popupTheme = popupThemes[mm.currentPage]
+        if (night()) colorBG.value = bg[vm.currentPage]
+        else colorAc.value = ca[vm.currentPage]
+        b.toolbar.popupTheme = popupThemes[vm.currentPage]
 
         // navigation
         toggleNav = ActionBarDrawerToggle(
@@ -171,7 +171,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     }
 
     override fun setContentView(root: View?) {
-        mm.currentPage = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
+        vm.currentPage = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
             ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
                 ?: Settings.defSpMainPage
         super.setContentView(root)
@@ -314,12 +314,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
-        c.sp?.edit { putInt(spMainPage, mm.currentPage) }
+        c.sp?.edit { putInt(spMainPage, vm.currentPage) }
         b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()
         val col = if (night()) bg else ca
-        anTheme = ValueAnimator.ofArgb(col[lastPage], col[mm.currentPage]).apply {
+        anTheme = ValueAnimator.ofArgb(col[lastPage], col[vm.currentPage]).apply {
             duration = resources.getInteger(R.integer.transFrag).toLong()
             addUpdateListener {
                 if (night()) colorBG.value = it.animatedValue as Int

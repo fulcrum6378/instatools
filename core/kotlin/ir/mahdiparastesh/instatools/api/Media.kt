@@ -41,13 +41,14 @@ class Media(
     val video_versions: Array<Version>?,
     //val view_count: Long?,
 ) {
+    /** Unique ID as Long */
     val uid: Long by lazy { id().toLong() }
 
     fun id(): String = pk ?: id.substringBefore("_")
 
     fun owner(): User = owner ?: user!!
 
-    fun isPost() = product_type in arrayOf("feed", "carousel_container")
+    fun isPostOrReel() = product_type in arrayOf("feed", "carousel_container", "clips")
 
     fun link(userName: String? = null) = when (product_type) {
         "feed", "carousel_container" -> Utils.POST_LINK.format(code)

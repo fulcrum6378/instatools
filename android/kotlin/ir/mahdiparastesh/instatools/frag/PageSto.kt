@@ -28,8 +28,8 @@ class PageSto : BasePageViewer() {
     override val jumper: ImageView? get() = b.jumper
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = c.mm.story != null && c.mm.highlights != null
-    override fun isModelEmpty(): Boolean = c.mm.story == null && c.mm.highlights?.isEmpty() == true
+    override fun isModelLoaded(): Boolean = c.vm.story != null && c.vm.highlights != null
+    override fun isModelEmpty(): Boolean = c.vm.story == null && c.vm.highlights?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c, this)
     override fun canLoadMore(): Boolean = !isModelLoaded()
 
@@ -37,38 +37,35 @@ class PageSto : BasePageViewer() {
         PageStoBinding.inflate(inf, parent, false).let { b = it; it.root }
 
     override suspend fun fetch(reset: Boolean) {
-        val uid = c.mm.user?.id() ?: return
+        val uid = c.vm.user?.id() ?: return
 
         // load their story into the data model
-        val pickle1 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.STORY, c.mm.user!!.id!!)
+        val pickle1 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.STORY, c.vm.user!!.id!!)
         val cache1 = if (!reset) pickle1.restore<Story>() else null
         if (cache1 != null) // read from cache
-            c.mm.story = cache1
+            c.vm.story = cache1
         else {
             // fetch their story
-            c.mm.story = Api.json<GraphQl>(
+            c.vm.story = Api.json<GraphQl>(
                 Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(uid)
             ).data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
-            if (c.mm.story != null) pickle1.save(c.mm.story!!)
+            if (c.vm.story != null) pickle1.save(c.vm.story!!)
         }
 
         // load their highlights into the data model
-        val pickle2 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
+        val pickle2 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.vm.user!!.id!!)
         val cache2 = if (!reset) pickle2.restore<Page<Story>>() else null
         if (cache2 != null) // read from cache
-            c.mm.highlights = cache2
+            c.vm.highlights = cache2
         else {
             // fetch their highlights
-            c.mm.highlights = Api.json<GraphQl>(
+            c.vm.highlights = Api.json<GraphQl>(
                 Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
             ).data!!.highlights!!
-            pickle2.save(c.mm.highlights!!)
+            pickle2.save(c.vm.highlights!!)
         }
 
         withContext(Dispatchers.Main) { onLoaded() }
-    }
-
-    override fun buildSelection() {
     }
 
     override fun clear() {

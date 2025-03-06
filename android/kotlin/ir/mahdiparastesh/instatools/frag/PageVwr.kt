@@ -58,10 +58,10 @@ class PageVwr : BasePageViewer(), Selective {
     override val dialogContext: Context get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun shouldLoadOnPrepare(): Boolean = c.mm.user != null || c.mm.profile != null
-    override fun isModelLoaded(): Boolean = c.mm.posts != null
-    override fun isModelEmpty(): Boolean = c.mm.posts?.edges?.isEmpty() == true
-    override fun canLoadMore(): Boolean = c.mm.posts?.page_info?.has_next_page != false
+    override fun shouldLoadOnPrepare(): Boolean = c.vm.user != null || c.vm.profile != null
+    override fun isModelLoaded(): Boolean = c.vm.posts != null
+    override fun isModelEmpty(): Boolean = c.vm.posts?.edges?.isEmpty() == true
+    override fun canLoadMore(): Boolean = c.vm.posts?.page_info?.has_next_page != false
 
     companion object {
         var handler: Handler? = null
@@ -86,9 +86,9 @@ class PageVwr : BasePageViewer(), Selective {
                     ForegroundService.HANDLE_ITEM_UPDATED -> {
                         val id = msg.obj as Long
                         var index = -1
-                        c.mm.posts?.edges?.forEachIndexed { i, post ->
+                        c.vm.posts?.edges?.forEachIndexed { i, post ->
                             if (post.node.uid == id) {
-                                Command.applyChangesOnMedia(post.node, msg.arg1)
+                                Command.applyChangesToMedia(post.node, msg.arg1)
                                 index = i
                                 return@forEachIndexed; }
                         }
@@ -97,9 +97,9 @@ class PageVwr : BasePageViewer(), Selective {
 
                         CoroutineScope(Dispatchers.IO).launch {
                             val pickle = Pickle(
-                                c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!
+                                c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.user!!.id!!
                             )
-                            c.mm.posts?.also { pickle.save(it) }
+                            c.vm.posts?.also { pickle.save(it) }
                         }
                     }
                 }
@@ -116,12 +116,12 @@ class PageVwr : BasePageViewer(), Selective {
     @SuppressLint("NotifyDataSetChanged")
     @MainThread
     fun showProfile(reset: Boolean = false) {
-        if (c.mm.user == null || c.mm.profile == null || !isBInitialised()) return
+        if (c.vm.user == null || c.vm.profile == null || !isBInitialised()) return
         onLoaded()
 
         // is the page private and not followed?
-        showPv = c.mm.user?.pv() == true && c.mm.profile?.followed_by_viewer == false
-            && c.mm.user?.username != c.c.acc?.user
+        showPv = c.vm.user?.pv() == true && c.vm.profile?.followed_by_viewer == false
+            && c.vm.user?.username != c.c.acc?.user
         b.rv.vis(!showPv)
         if (!showPv) {
             if (reset) gridAdapter()?.notifyDataSetChanged()
@@ -129,7 +129,7 @@ class PageVwr : BasePageViewer(), Selective {
         }
 
         // update Favourite
-        c.mm.fav?.also { c.c.addFavourite(it) }
+        c.vm.fav?.also { c.c.addFavourite(it) }
     }
 
     override fun createAdapter(): RecyclerView.Adapter<*> =
@@ -138,25 +138,25 @@ class PageVwr : BasePageViewer(), Selective {
     override suspend fun fetch(reset: Boolean) {
 
         // first read from cache if available
-        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.mm.user!!.id!!)
-        val cache = if (c.mm.posts == null && !reset) pickle.restore<Page<Media>>() else null
+        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.user!!.id!!)
+        val cache = if (c.vm.posts == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
-            c.mm.posts = cache
+            c.vm.posts = cache
             withContext(Dispatchers.Main) { onLazilyLoaded(0, cache.edges.size) }
             return; }
 
         // fetch online posts
-        val cursor = if (!reset) c.mm.posts?.edges?.lastOrNull()?.node?.id().toString() else "null"
+        val cursor = if (!reset) c.vm.posts?.edges?.lastOrNull()?.node?.id().toString() else "null"
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url,
-            true, GraphQlQuery.PROFILE_POSTS.body(c.mm.user!!.username!!, "33", cursor)
+            true, GraphQlQuery.PROFILE_POSTS.body(c.vm.user!!.username!!, "33", cursor)
         ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!
 
         // update the data model and the UI
-        if (c.mm.posts == null || reset) {
-            c.mm.posts = page
+        if (c.vm.posts == null || reset) {
+            c.vm.posts = page
             withContext(Dispatchers.Main) { onLazilyLoaded(0, page.edges.size) }
-        } else c.mm.posts?.apply {
+        } else c.vm.posts?.apply {
             val lastBefore = edges.size
             edges.addAll(page.edges)
             page_info.has_next_page = page.page_info.has_next_page
@@ -164,7 +164,7 @@ class PageVwr : BasePageViewer(), Selective {
         }
 
         // cache the data model
-        c.mm.posts?.also { pickle.save(it) }
+        c.vm.posts?.also { pickle.save(it) }
     }
 
     override fun onLazilyLoaded(start: Int, size: Int) {
@@ -178,10 +178,10 @@ class PageVwr : BasePageViewer(), Selective {
         c.load(reset = true)
     }
 
-    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.posts?.edges?.getOrNull(i)?.node?.id()
+    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_MAPPED) {
+        override fun getKey(i: Int): String? = c.vm.posts?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
-            c.mm.posts?.edges?.forEachIndexed { i, edge ->
+            c.vm.posts?.edges?.forEachIndexed { i, edge ->
                 if (edge.node.id() == key) return@getPosition i
             }
             return -1
@@ -194,19 +194,19 @@ class PageVwr : BasePageViewer(), Selective {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload ->
-                enqueueSelectedMedia(c, c.mm.posts, download = true)
+                enqueueSelectedMedia(c, c.vm.posts, download = true)
             R.id.vtLike ->
-                enqueueSelectedMedia(c, c.mm.posts, like = true)
+                enqueueSelectedMedia(c, c.vm.posts, like = true)
             R.id.vtUnlike ->
-                enqueueSelectedMedia(c, c.mm.posts, unlike = true)
+                enqueueSelectedMedia(c, c.vm.posts, unlike = true)
             R.id.vtSave ->
-                enqueueSelectedMedia(c, c.mm.posts, save = true)
+                enqueueSelectedMedia(c, c.vm.posts, save = true)
             R.id.vtUnsave ->
-                enqueueSelectedMedia(c, c.mm.posts, unsave = true)
+                enqueueSelectedMedia(c, c.vm.posts, unsave = true)
 
             R.id.vtSelectAll ->
-                if (c.mm.posts?.edges != null)
-                    tracker?.setItemsSelected(c.mm.posts!!.edges.map { it.node.id() }, true)
+                if (c.vm.posts?.edges != null)
+                    tracker?.setItemsSelected(c.vm.posts!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll ->
                 tracker?.clearSelection()
         }
@@ -233,7 +233,7 @@ class PageVwr : BasePageViewer(), Selective {
             b.proPic.layoutParams = b.proPic.layoutParams
                 .apply { height = c.c.dm.widthPixels }
             b.proClick.setOnClickListener { v ->
-                val picture = c.mm.user?.originalPicture() ?: return@setOnClickListener
+                val picture = c.vm.user?.originalPicture() ?: return@setOnClickListener
                 MaterialMenu(c, v, R.menu.viewer_pic_more,
                     R.id.vpDownload to {
                         CoroutineScope(Dispatchers.IO).launch {
@@ -243,10 +243,10 @@ class PageVwr : BasePageViewer(), Selective {
                                     Utils.now(),
                                     picture,
                                     0x1,
-                                    c.mm.user!!.username!!,
-                                    c.mm.user!!.biography,
-                                    Utils.PROFILE.format(c.mm.user!!.username!!),
-                                    c.mm.user!!.profile_pic_url,
+                                    c.vm.user!!.username!!,
+                                    c.vm.user!!.biography,
+                                    Utils.PROFILE.format(c.vm.user!!.username!!),
+                                    c.vm.user!!.profile_pic_url,
                                     null, null, null
                                 ), true
                             )
@@ -263,7 +263,7 @@ class PageVwr : BasePageViewer(), Selective {
         override fun onBindViewHolder(h: AnyViewHolder<PageVwrHeaderBinding>, position: Int) {
 
             // profile picture
-            val pic = c.mm.profile?.profile_pic_url_hd
+            val pic = c.vm.profile?.profile_pic_url_hd
             if (pic != null) Glide.with(c.c)
                 .load(pic)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -273,14 +273,14 @@ class PageVwr : BasePageViewer(), Selective {
                 h.b.proPicIv.setImageDrawable(null)
 
             // followers & following
-            h.b.postsNum.text = c.mm.profile?.edge_owner_to_timeline_media?.toString()
+            h.b.postsNum.text = c.vm.profile?.edge_owner_to_timeline_media?.toString()
                 ?: getString(R.string.vwFlwZero)
-            h.b.followersNum.text = c.mm.profile?.edge_followed_by?.toString()
+            h.b.followersNum.text = c.vm.profile?.edge_followed_by?.toString()
                 ?: getString(R.string.vwFlwZero)
-            h.b.followingNum.text = c.mm.profile?.edge_follow?.toString()
+            h.b.followingNum.text = c.vm.profile?.edge_follow?.toString()
                 ?: getString(R.string.vwFlwZero)
 
-            val showPv_ = showPv && c.mm.profile != null
+            val showPv_ = showPv && c.vm.profile != null
             h.b.privateAcc.vis(showPv_)
             if (showPv_) {
                 h.b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(

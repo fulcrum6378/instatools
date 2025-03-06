@@ -16,8 +16,14 @@ data class Command(
     fun graphQl() = arrayListOf<GraphQlQuery>().apply {
         if (save) add(GraphQlQuery.SAVE)
         if (unsave) add(GraphQlQuery.UNSAVE)
-        if (like) add(if (media.isPost()) GraphQlQuery.LIKE_POST else GraphQlQuery.LIKE_STORY)
-        if (unlike) add(if (media.isPost()) GraphQlQuery.UNLIKE_POST else GraphQlQuery.UNLIKE_STORY)
+        if (like) add(
+            if (media.isPostOrReel()) GraphQlQuery.LIKE_POST
+            else GraphQlQuery.LIKE_STORY
+        )
+        if (unlike) add(
+            if (media.isPostOrReel()) GraphQlQuery.UNLIKE_POST
+            else GraphQlQuery.UNLIKE_STORY
+        )
     }
 
     /** Check if this [Command] is even valid. */
@@ -30,7 +36,7 @@ data class Command(
     }
 
     /** Call this when one of subcommands is executed. */
-    fun done(action: GraphQlQuery) {
+    fun postHandling(action: GraphQlQuery) {
         when (action) {
             GraphQlQuery.SAVE -> save = false
             GraphQlQuery.UNSAVE -> unsave = false
@@ -46,7 +52,7 @@ data class Command(
         const val HANDLE_ITEM_LIKED = 3
         const val HANDLE_ITEM_UNLIKED = 4
 
-        fun applyChangesOnMedia(med: Media, change: Int) {
+        fun applyChangesToMedia(med: Media, change: Int) {
             when (change) {
                 HANDLE_ITEM_SAVED -> med.has_viewer_saved = true
                 HANDLE_ITEM_UNSAVED -> med.has_viewer_saved = false

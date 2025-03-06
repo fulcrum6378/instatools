@@ -15,8 +15,8 @@ class ListTag(c: Viewer, f: PageTag) : ListPost<Viewer, PageTag>(c, f) {
     override val expanded: ExpandableBinding = c.b.expanded
 
     override fun get(position: Int): Media? =
-        c.mm.tagged?.edges?.getOrNull(position)?.node
+        c.vm.tagged?.edges?.getOrNull(position)?.node
 
     override fun getItemCount(): Int =
-        c.mm.tagged?.edges?.size ?: 0
+        c.vm.tagged?.edges?.size ?: 0
 }

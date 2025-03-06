@@ -15,8 +15,8 @@ class ListVwr(c: Viewer, f: PageVwr) : ListPost<Viewer, PageVwr>(c, f) {
     override val expanded: ExpandableBinding = c.b.expanded
 
     override fun get(position: Int): Media? =
-        c.mm.posts?.edges?.getOrNull(position)?.node
+        c.vm.posts?.edges?.getOrNull(position)?.node
 
     override fun getItemCount(): Int =
-        c.mm.posts?.edges?.size ?: 0
+        c.vm.posts?.edges?.size ?: 0
 }

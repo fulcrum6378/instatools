@@ -15,8 +15,8 @@ class ListSvd(c: Main, f: PageSvd) : ListPost<Main, PageSvd>(c, f) {
     override val expanded: ExpandableBinding = f.b.expanded
 
     override fun get(position: Int): Media? =
-        c.mm.saved?.items?.getOrNull(position)?.media
+        c.vm.saved?.items?.getOrNull(position)?.media
 
     override fun getItemCount(): Int =
-        c.mm.saved?.items?.size ?: 0
+        c.vm.saved?.items?.size ?: 0
 }

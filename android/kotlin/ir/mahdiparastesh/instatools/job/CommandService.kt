@@ -77,7 +77,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
 
             // call the API
             Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, post.body(q.media.id()))
-            q.done(post)
+            q.postHandling(post)
 
             // inform the UIs
             val arg1 = Command.message(post)

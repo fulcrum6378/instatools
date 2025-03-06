@@ -27,7 +27,7 @@ class ListFav(val c: Main, private val f: PageFav) :
     }
 
     override fun onBindViewHolder(h: AnyViewHolder<ListFavBinding>, i: Int) {
-        val fav = c.mm.favourites.getOrNull(i) ?: return
+        val fav = c.vm.favourites.getOrNull(i) ?: return
         Glide.with(c.c)
             .load(fav.photo)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -47,7 +47,7 @@ class ListFav(val c: Main, private val f: PageFav) :
         h.b.sep.vis(i < itemCount - 1)
     }
 
-    override fun getItemCount() = c.mm.favourites.size
+    override fun getItemCount() = c.vm.favourites.size
 
     private fun ListFavBinding.updateIcon(tempDeleted: Boolean) {
         unFav.setImageResource(if (tempDeleted) R.drawable.favourite_off else R.drawable.favourite_on)

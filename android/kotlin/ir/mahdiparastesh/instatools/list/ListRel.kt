@@ -32,8 +32,8 @@ class ListRel(private val c: Viewer, var story: Story) :
             c.expandable.expand(
                 story.items?.getOrNull(h.layoutPosition) ?: return@setOnClickListener,
                 h.b.root,
-                c.mm.user?.username, // these Media instances do not contains User information!
-                c.mm.user?.id()
+                c.vm.user?.username, // these Media instances do not contains User information!
+                c.vm.user?.id()
             )
         }
     }

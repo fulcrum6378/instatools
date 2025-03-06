@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 
 class ListSto(private val c: Viewer, private val f: PageSto) :
     RecyclerView.Adapter<AnyViewHolder<ListStoBinding>>() {
-    private val hlNumAdd: Int by lazy { if (c.mm.story != null) 0 else 1 }
+    private val hlNumAdd: Int by lazy { if (c.vm.story != null) 0 else 1 }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -41,13 +41,13 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
     override fun onBindViewHolder(h: AnyViewHolder<ListStoBinding>, i: Int) {
         var isHL = true
         val story = when {
-            c.mm.story != null && i == 0 -> {
+            c.vm.story != null && i == 0 -> {
                 isHL = false
-                c.mm.story
+                c.vm.story
             }
-            c.mm.story != null && i != 0 ->
-                c.mm.highlights?.edges?.getOrNull(i - 1)?.node
-            else -> c.mm.highlights?.edges?.getOrNull(i)?.node
+            c.vm.story != null && i != 0 ->
+                c.vm.highlights?.edges?.getOrNull(i - 1)?.node
+            else -> c.vm.highlights?.edges?.getOrNull(i)?.node
         } ?: return
 
         // details
@@ -118,8 +118,8 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
     }
 
     override fun getItemCount(): Int =
-        (if (c.mm.story != null) 1 else 0) +
-            (c.mm.highlights?.edges?.size ?: 0)
+        (if (c.vm.story != null) 1 else 0) +
+            (c.vm.highlights?.edges?.size ?: 0)
 
     @SuppressLint("NotifyDataSetChanged")
     private fun fetchHighlights(
@@ -145,15 +145,15 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                 }
 
                 story.items = newStory.items
-                c.mm.highlights?.also {
-                    Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.mm.user!!.id!!)
+                c.vm.highlights?.also {
+                    Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.vm.user!!.id!!)
                         .save(it)
                 }
             }
 
             if (downloadAll) {
                 for (reel in story.items!!) c.c.downloads.addAll<Download>(
-                    reel.queue(owner = c.mm.user!!.username!!), false
+                    reel.queue(owner = c.vm.user!!.username!!), false
                 )
                 c.c.downloads.save<Download>()
                 Downloads.initService(c)

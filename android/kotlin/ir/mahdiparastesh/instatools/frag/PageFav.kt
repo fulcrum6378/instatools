@@ -27,7 +27,7 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun shouldLoadOnPrepare(): Boolean = true
     override fun isModelLoaded(): Boolean = c.c.fav.value != null
-    override fun isModelEmpty(): Boolean = c.mm.favourites.isEmpty()
+    override fun isModelEmpty(): Boolean = c.vm.favourites.isEmpty()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListFav(c, this)
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =
@@ -43,7 +43,7 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     }
 
     override fun onLoaded() {
-        c.mm.favourites = c.c.fav.value?.toList()?.sortedBy { it.user } ?: listOf()
+        c.vm.favourites = c.c.fav.value?.toList()?.sortedBy { it.user } ?: listOf()
         super.onLoaded()
     }
 }

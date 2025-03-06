@@ -13,6 +13,7 @@ import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLHandshakeException
 
 object Api {
     var cookies = ""
@@ -75,6 +76,8 @@ object Api {
             throw FailureException(if (proxy != Proxy.NO_PROXY) -11 else -2)
         } catch (_: SocketTimeoutException) {
             throw FailureException(-2)
+        } catch (_: SSLHandshakeException) {
+            throw FailureException(-3)
         } catch (_: ProtocolException) { // more than 20 redirections!
             throw FailureException(-4)
         }

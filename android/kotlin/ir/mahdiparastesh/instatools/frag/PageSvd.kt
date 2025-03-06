@@ -69,10 +69,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         get() = android.view.ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Secondary)
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = c.mm.saved != null
-    override fun isModelEmpty(): Boolean = c.mm.saved?.items?.isEmpty() == true
+    override fun isModelLoaded(): Boolean = c.vm.saved != null
+    override fun isModelEmpty(): Boolean = c.vm.saved?.items?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListSvd(c, this)
-    override fun canLoadMore(): Boolean = c.mm.saved?.more_available != false
+    override fun canLoadMore(): Boolean = c.vm.saved?.more_available != false
 
     companion object {
         var handler: Handler? = null
@@ -97,9 +97,9 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                     ForegroundService.HANDLE_ITEM_UPDATED -> {
                         val id = msg.obj as Long
                         var index = -1
-                        c.mm.saved?.items?.forEachIndexed { i, svd ->
+                        c.vm.saved?.items?.forEachIndexed { i, svd ->
                             if (svd.media.uid == id) {
-                                Command.applyChangesOnMedia(svd.media, msg.arg1)
+                                Command.applyChangesToMedia(svd.media, msg.arg1)
                                 index = i
                                 return@forEachIndexed; }
                         }
@@ -107,7 +107,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                         b.rv.adapter?.notifyItemChanged(index)
 
                         CoroutineScope(Dispatchers.IO).launch {
-                            c.mm.saved?.also { pickle.save(it) }
+                            c.vm.saved?.also { pickle.save(it) }
                         }
                     }
                 }
@@ -121,22 +121,22 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
     override suspend fun fetch(reset: Boolean) {
         // first read from cache if available
         val cache =
-            if (c.mm.saved == null && !reset) pickle.restore<Rest.LazyList<Rest.SavedItem>>()
+            if (c.vm.saved == null && !reset) pickle.restore<Rest.LazyList<Rest.SavedItem>>()
             else null
         if (cache != null) {
-            c.mm.saved = cache
+            c.vm.saved = cache
             withContext(Dispatchers.Main) { onLoaded() }
             return; }
 
         // fetch online saved posts
-        val cursor = if (!reset) (c.mm.saved?.next_max_id?.let { "?max_id=$it" } ?: "") else ""
+        val cursor = if (!reset) (c.vm.saved?.next_max_id?.let { "?max_id=$it" } ?: "") else ""
         val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(Api.Endpoint.SAVED.url + cursor)
 
         // update the data model and the UI
-        if (c.mm.saved == null || reset) {
-            c.mm.saved = lazyList
+        if (c.vm.saved == null || reset) {
+            c.vm.saved = lazyList
             withContext(Dispatchers.Main) { onLoaded() }
-        } else c.mm.saved?.apply {
+        } else c.vm.saved?.apply {
             val lastBefore = items.size
             items.addAll(lazyList.items)
             more_available = lazyList.more_available
@@ -147,12 +147,12 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         }
 
         // cache the data model
-        c.mm.saved?.also { pickle.save(it) }
+        c.vm.saved?.also { pickle.save(it) }
     }
 
     override fun onLoaded() {
         super<OnlineLister>.onLoaded()
-        if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+        if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
 
         // teach the user how to select items
         if (!isModelEmpty() && !c.c.gsp.getBoolean(Settings.spLearntSelection, false)
@@ -172,13 +172,13 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
 
     override fun onLazilyLoaded(start: Int, size: Int) {
         super.onLazilyLoaded(start, size)
-        if (!canLoadMore()) c.mm.savedCount.value = c.mm.saved?.items?.size ?: 0
+        if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
     }
 
-    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.saved?.items?.getOrNull(i)?.media?.id()
+    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_MAPPED) {
+        override fun getKey(i: Int): String? = c.vm.saved?.items?.getOrNull(i)?.media?.id()
         override fun getPosition(key: String): Int {
-            c.mm.saved?.items?.forEachIndexed { i, item ->
+            c.vm.saved?.items?.forEachIndexed { i, item ->
                 if (item.media.id() == key) return@getPosition i
             }
             return -1
@@ -230,19 +230,19 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         when (item.itemId) {
             R.id.mtUnsaveDownload ->
                 enqueueSelectedMedia(
-                    c, c.mm.saved, unsave = true, download = true, onDeleteItems = ::onDeleteItems
+                    c, c.vm.saved, unsave = true, download = true, onDeleteItems = ::onDeleteItems
                 )
             R.id.mtDownload ->
-                enqueueSelectedMedia(c, c.mm.saved, download = true)
+                enqueueSelectedMedia(c, c.vm.saved, download = true)
             R.id.mtUnsave ->
-                enqueueSelectedMedia(c, c.mm.saved, unsave = true, onDeleteItems = ::onDeleteItems)
+                enqueueSelectedMedia(c, c.vm.saved, unsave = true, onDeleteItems = ::onDeleteItems)
             R.id.mtLike ->
-                enqueueSelectedMedia(c, c.mm.saved, like = true)
+                enqueueSelectedMedia(c, c.vm.saved, like = true)
             R.id.mtUnlike ->
-                enqueueSelectedMedia(c, c.mm.saved, unlike = true)
+                enqueueSelectedMedia(c, c.vm.saved, unlike = true)
 
-            R.id.mtSelectAll -> if (c.mm.saved != null)
-                tracker?.setItemsSelected(c.mm.saved!!.items.map { it.media.id() }, true)
+            R.id.mtSelectAll -> if (c.vm.saved != null)
+                tracker?.setItemsSelected(c.vm.saved!!.items.map { it.media.id() }, true)
             R.id.mtDeselectAll ->
                 tracker?.clearSelection()
         }
@@ -253,17 +253,17 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         c.c.incrementCounter(Settings.spUnsaveCount, deletion.size.toLong())
         var errored = false
         for (del in deletion.reversed()) try {
-            c.mm.saved?.items?.removeAt(del)
+            c.vm.saved?.items?.removeAt(del)
             b.rv.adapter?.notifyItemRemoved(del)
-            c.mm.saved?.items?.size?.also { total ->
+            c.vm.saved?.items?.size?.also { total ->
                 b.rv.adapter?.notifyItemRangeChanged(del, total)
             }
-            c.mm.savedCount.value = c.mm.savedCount.value?.let { it - 1 }
+            c.vm.savedCount.value = c.vm.savedCount.value?.let { it - 1 }
             onListResized()
         } catch (_: IndexOutOfBoundsException) {
             errored = true
         }
-        if (!errored) c.mm.saved?.also { pickle.save(it) }
+        if (!errored) c.vm.saved?.also { pickle.save(it) }
     }
 
     override fun goBack(): Boolean {

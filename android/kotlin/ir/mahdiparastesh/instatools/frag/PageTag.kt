@@ -43,10 +43,10 @@ class PageTag : BasePageViewer(), Selective {
     override val dialogContext: Context get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = c.mm.tagged != null
-    override fun isModelEmpty(): Boolean = c.mm.tagged?.edges?.isEmpty() == true
+    override fun isModelLoaded(): Boolean = c.vm.tagged != null
+    override fun isModelEmpty(): Boolean = c.vm.tagged?.edges?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListTag(c, this)
-    override fun canLoadMore(): Boolean = c.mm.tagged?.page_info?.has_next_page != false
+    override fun canLoadMore(): Boolean = c.vm.tagged?.page_info?.has_next_page != false
 
     companion object {
         var handler: Handler? = null
@@ -65,9 +65,9 @@ class PageTag : BasePageViewer(), Selective {
                     ForegroundService.HANDLE_ITEM_UPDATED -> {
                         val id = msg.obj as Long
                         var index = -1
-                        c.mm.tagged?.edges?.forEachIndexed { i, tag ->
+                        c.vm.tagged?.edges?.forEachIndexed { i, tag ->
                             if (tag.node.uid == id) {
-                                Command.applyChangesOnMedia(tag.node, msg.arg1)
+                                Command.applyChangesToMedia(tag.node, msg.arg1)
                                 index = i
                                 return@forEachIndexed; }
                         }
@@ -76,9 +76,9 @@ class PageTag : BasePageViewer(), Selective {
 
                         CoroutineScope(Dispatchers.IO).launch {
                             val pickle = Pickle(
-                                c.cacheDir, c.c.acc!!.id, Pickle.Type.TAGGED, c.mm.user!!.id!!
+                                c.cacheDir, c.c.acc!!.id, Pickle.Type.TAGGED, c.vm.user!!.id!!
                             )
-                            c.mm.tagged?.also { pickle.save(it) }
+                            c.vm.tagged?.also { pickle.save(it) }
                         }
                     }
                 }
@@ -88,28 +88,28 @@ class PageTag : BasePageViewer(), Selective {
 
     override suspend fun fetch(reset: Boolean) {
         // first read from cache if available
-        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.TAGGED, c.mm.user!!.id!!)
-        val cache = if (c.mm.tagged == null && !reset) pickle.restore<Page<Media>>() else null
+        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.TAGGED, c.vm.user!!.id!!)
+        val cache = if (c.vm.tagged == null && !reset) pickle.restore<Page<Media>>() else null
         if (cache != null) {
-            c.mm.tagged = cache
+            c.vm.tagged = cache
             withContext(Dispatchers.Main) { onLoaded() }
             return; }
 
         // fetch online tagged posts
-        val cursor = if (!reset) c.mm.tagged?.edges?.lastOrNull()?.node?.id() else null
+        val cursor = if (!reset) c.vm.tagged?.edges?.lastOrNull()?.node?.id() else null
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
-                GraphQlQuery.PROFILE_TAGGED.body(c.mm.user!!.id!!, "36")
+                GraphQlQuery.PROFILE_TAGGED.body(c.vm.user!!.id!!, "36")
             else
-                GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.mm.user!!.id!!, "36", cursor)
+                GraphQlQuery.PROFILE_TAGGED_CURSORED.body(c.vm.user!!.id!!, "36", cursor)
         ).data!!.xdt_api__v1__usertags__user_id__feed_connection!!
 
         // update the data model and the UI
-        if (c.mm.tagged == null || reset) {
-            c.mm.tagged = page
+        if (c.vm.tagged == null || reset) {
+            c.vm.tagged = page
             withContext(Dispatchers.Main) { onLoaded() }
-        } else c.mm.tagged?.apply {
+        } else c.vm.tagged?.apply {
             val lastBefore = edges.size
             edges.addAll(page.edges)
             page_info.has_next_page = page.page_info.has_next_page
@@ -117,13 +117,13 @@ class PageTag : BasePageViewer(), Selective {
         }
 
         // cache the data model
-        c.mm.tagged?.also { pickle.save(it) }
+        c.vm.tagged?.also { pickle.save(it) }
     }
 
-    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_CACHED) {
-        override fun getKey(i: Int): String? = c.mm.tagged?.edges?.getOrNull(i)?.node?.id()
+    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_MAPPED) {
+        override fun getKey(i: Int): String? = c.vm.tagged?.edges?.getOrNull(i)?.node?.id()
         override fun getPosition(key: String): Int {
-            c.mm.tagged?.edges?.forEachIndexed { i, edge ->
+            c.vm.tagged?.edges?.forEachIndexed { i, edge ->
                 if (edge.node.id() == key) return@getPosition i
             }
             return -1
@@ -136,19 +136,19 @@ class PageTag : BasePageViewer(), Selective {
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload ->
-                enqueueSelectedMedia(c, c.mm.tagged, download = true)
+                enqueueSelectedMedia(c, c.vm.tagged, download = true)
             R.id.vtLike ->
-                enqueueSelectedMedia(c, c.mm.tagged, like = true)
+                enqueueSelectedMedia(c, c.vm.tagged, like = true)
             R.id.vtUnlike ->
-                enqueueSelectedMedia(c, c.mm.tagged, unlike = true)
+                enqueueSelectedMedia(c, c.vm.tagged, unlike = true)
             R.id.vtSave ->
-                enqueueSelectedMedia(c, c.mm.tagged, save = true)
+                enqueueSelectedMedia(c, c.vm.tagged, save = true)
             R.id.vtUnsave ->
-                enqueueSelectedMedia(c, c.mm.tagged, unsave = true)
+                enqueueSelectedMedia(c, c.vm.tagged, unsave = true)
 
             R.id.vtSelectAll ->
-                if (c.mm.tagged?.edges != null)
-                    tracker?.setItemsSelected(c.mm.tagged!!.edges.map { it.node.id() }, true)
+                if (c.vm.tagged?.edges != null)
+                    tracker?.setItemsSelected(c.vm.tagged!!.edges.map { it.node.id() }, true)
             R.id.vtDeselectAll ->
                 tracker?.clearSelection()
         }
