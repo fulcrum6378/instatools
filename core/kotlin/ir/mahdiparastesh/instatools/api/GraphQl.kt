@@ -16,6 +16,7 @@ class GraphQl(
     class GraphQlData(
         val highlights: Page<Story>?,
         val user: User?,
+        val xdt_api__v1__fbsearch__topsearch_connection: SearchResults?,
         val xdt_api__v1__feed__reels_media: Story.Wrapper?, // daily stories
         val xdt_api__v1__feed__reels_media__connection: Page<Story>?, // highlighted stories
         val xdt_api__v1__feed__reels_tray: FeedTray?, // feed stories
@@ -33,9 +34,9 @@ class GraphQl(
         //val xdt_block_many: Array<UserInteraction>?, // block
         //val xdt_create_friendship: UserInteraction?, // follow
         //val xdt_destroy_friendship: UserInteraction?, // unfollow
-        //val xdt_set_besties: Array<UserInteraction>?, // close friends
+        //val xdt_set_besties: Array<UserInteraction>?, // update close friends
         //val xdt_unblock: UserInteraction?, // unblock
-        //val xdt_update_feed_favorites: Array<UserInteraction>?, // favourites
+        //val xdt_update_feed_favorites: Array<UserInteraction>?, // update favourites
         //val xdt_user_mute_posts: UserInteractionWrapper?, // mute posts
         //val xdt_user_mute_story: UserInteractionWrapper?, // mute story
         //val xdt_user_unmute_posts: UserInteractionWrapper?, // unmute posts
@@ -97,4 +98,18 @@ class GraphQl(
 
     @Serializable
     class FeedTray(/*val broadcasts: List<Any>,*/ val tray: List<Story>)
+
+    @Serializable
+    class SearchResults(
+        //val see_more: Any?,
+        //val inform_module: Any?,
+        //val hashtags: Array<Any>,
+        //val places: Array<Any>,
+        val users: List<ItemUser>,
+        //val rank_token: String,
+    ) {
+
+        @Serializable
+        class ItemUser(val position: Int, val user: User)
+    }
 }

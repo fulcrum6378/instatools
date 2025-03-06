@@ -78,17 +78,4 @@ interface Rest {
         //val status: Boolean?, // as Rest, only in show(one)
         //val subscribed: Boolean?, // only in mute/unmute and show(one)
     )*/
-
-    @Serializable
-    class Search(
-        //val places: Array<HashMap<String, *>>,
-        //val hashtags: Array<HashMap<String, *>>,
-        //val rank_token: String,
-        //val has_more: Boolean,
-        val users: Array<ItemUser>,
-        override val status: String
-    ) : Rest
-
-    @Serializable
-    class ItemUser(val position: Int, val user: User)
 }

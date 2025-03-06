@@ -173,15 +173,13 @@ class InstaTools : Application() {
   * Some of ListPost's selected items do not appear to be selected and
   *     the same items might appear as selected at another selection!!
   *     Related to: Selection indicator invisible after Expandable collapses
-  * Search doesn't work at all
-  * Invalid Pickle data detected in posts!
+  *     ListTag is as bad as ListVwr
+  * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * -
   * Extension:
-  * A simple following list Activity
   * A new proper logo
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
-  * Percentage of downloads
   * Make CommandService cancellable and pausable
   * Switch to ComponentActivity
   *

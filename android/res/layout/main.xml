@@ -59,6 +59,7 @@
             android:layout_height="?actionBarSize"
             android:alpha="0.4"
             android:padding="3dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/searchRes"
             app:layout_constraintLeft_toLeftOf="@id/searchRes"
             app:layout_constraintRight_toRightOf="@id/searchRes"

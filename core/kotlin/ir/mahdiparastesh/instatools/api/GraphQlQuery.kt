@@ -9,7 +9,27 @@ enum class GraphQlQuery(
 ) {
 
     /**
+     * PolarisSearchBoxRefetchableQuery
+     * @param query search query
+     * @return [GraphQlData.xdt_api__v1__fbsearch__topsearch_connection]
+     */
+    SEARCH(
+        "9346396502107496",
+        "{\"data\":" +
+            "{" +
+            "\"context\":\"blended\"," +
+            "\"include_reel\":\"false\"," + // true
+            "\"query\":\"%s\"," +
+            "\"rank_token\":\"\"," +
+            "\"search_surface\":\"web_top_search\"" +
+            "}," +
+            "\"hasQuery\":true" +
+            "}"
+    ),
+
+    /**
      * PolarisStoriesV3TrayContainerQuery
+     * @return [GraphQlData.xdt_api__v1__feed__reels_tray]
      */
     FEED_TRAY(
         "8876958245693138",
@@ -21,6 +41,7 @@ enum class GraphQlQuery(
      * @param username [User.username]
      * @param count default: 12, maximum: 33
      * @param after [Media.id] of the last item in the previous fetch
+     * @return [GraphQlData.xdt_api__v1__feed__user_timeline_graphql_connection]
      */
     PROFILE_POSTS(
         "8934560356598281",
@@ -36,6 +57,7 @@ enum class GraphQlQuery(
      * PolarisProfileTaggedTabContentQuery (first fetch)
      * @param user_id [User.id]
      * @param count default: 12
+     * @return [GraphQlData.xdt_api__v1__usertags__user_id__feed_connection]
      */
     PROFILE_TAGGED(
         "8626574937464773",
@@ -47,6 +69,7 @@ enum class GraphQlQuery(
      * @param user_id [User.id]
      * @param count default: 12
      * @param after [Media.id] of the last item in the previous fetch
+     * @return [GraphQlData.xdt_api__v1__usertags__user_id__feed_connection]
      */
     PROFILE_TAGGED_CURSORED(
         "8786107121469577",
@@ -56,6 +79,7 @@ enum class GraphQlQuery(
     /**
      * PolarisPostRootQuery
      * @param shortcode
+     * @return [GraphQlData.xdt_api__v1__media__shortcode__web_info]
      */
     POST_ROOT(
         "18086740648321782",
@@ -65,6 +89,7 @@ enum class GraphQlQuery(
     /**
      * PolarisStoriesV3ReelPageStandaloneQuery
      * @param user_id `"\"[User.id]\""` separated by `,`
+     * @return [GraphQlData.xdt_api__v1__feed__reels_media]
      */
     STORY(
         "27760393576942150",
@@ -74,6 +99,7 @@ enum class GraphQlQuery(
     /**
      * PolarisProfileStoryHighlightsTrayContentQuery
      * @param user_id [User.id]
+     * @return [GraphQlData.highlights]
      */
     PROFILE_HIGHLIGHTS_TRAY(
         "8198469583554901",
@@ -84,6 +110,7 @@ enum class GraphQlQuery(
      * PolarisStoriesV3HighlightsPageQuery
      * @param reel_ids `\"[Story.id]\"`
      * @param initial_reel_id `\"[Story.id]\"` separated by `,`
+     * @return [GraphQlData.xdt_api__v1__feed__reels_media__connection]
      */
     HIGHLIGHTS(
         "29001692012763642",
@@ -98,6 +125,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisToggleFollowUserFollowMutation
      * @param target_user_id [User.id]
+     * @return [GraphQlData.xdt_create_friendship]
      */
     FOLLOW(
         "8681003828679375",
@@ -107,6 +135,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisToggleFollowUserUnfollowMutation
      * @param target_user_id [User.id]
+     * @return [GraphQlData.xdt_destroy_friendship]
      */
     UNFOLLOW(
         "8965103070189304",
@@ -117,6 +146,7 @@ enum class GraphQlQuery(
      * usePolarisSetBestiesMutation
      * @param add `\"[User.id]\"` separated by `,`
      * @param remove `\"[User.id]\"` separated by `,`
+     * @return [GraphQlData.xdt_set_besties]
      */
     BESTIES(
         "7489805084467496",
@@ -127,6 +157,7 @@ enum class GraphQlQuery(
      * usePolarisUpdateFeedFavoritesMutation
      * @param add `\"[User.id]\"` separated by `,`
      * @param remove `\"[User.id]\"` separated by `,`
+     * @return [GraphQlData.xdt_update_feed_favorites]
      */
     FAVORITE(
         "25141617315482520",
@@ -136,6 +167,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisMutePostsMutation
      * @param target_posts_author_id [User.id]
+     * @return [GraphQlData.xdt_user_mute_posts]
      */
     MUTE_POSTS(
         "7845855428811431",
@@ -145,6 +177,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisUnmutePostsMutation
      * @param target_posts_author_id [User.id]
+     * @return [GraphQlData.xdt_user_unmute_posts]
      */
     UNMUTE_POSTS(
         "7752090331521095",
@@ -154,6 +187,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisMuteStoryMutation
      * @param target_reel_author_id [User.id]
+     * @return [GraphQlData.xdt_user_mute_story]
      */
     MUTE_STORY(
         "7811910972202346",
@@ -163,6 +197,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisUnmuteStoryMutation
      * @param target_reel_author_id [User.id]
+     * @return [GraphQlData.xdt_user_unmute_story]
      */
     UNMUTE_STORY(
         "7696114017140185",
@@ -172,6 +207,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisRestrictMutation
      * @param target_user_ids `\"[User.id]\"` separated by `,`
+     * @return [GraphQlData.xdt_api__v1__restrict_action__restrict_many]
      */
     RESTRICT(
         "7456259841095672",
@@ -181,6 +217,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisUnrestrictMutation
      * @param [User.id]
+     * @return [GraphQlData.xdt_api__v1__restrict_action__unrestrict]
      */
     UNRESTRICT(
         "7189308067834241",
@@ -190,6 +227,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisBlockManyMutation
      * @param target_user_ids `\"[User.id]\"` separated by `,`
+     * @return [GraphQlData.xdt_block_many]
      */
     BLOCK(
         "7582138121880080",
@@ -199,6 +237,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisUnblockMutation
      * @param target_user_id [User.id]
+     * @return [GraphQlData.xdt_unblock]
      */
     UNBLOCK(
         "7978259088859181",
@@ -208,6 +247,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisLikeMediaLikeMutation
      * @param media_id [Media.id]
+     * @return [GraphQlData.xdt_api__v1__media__media_id__like]
      */
     LIKE_POST(
         "8552604541488484",
@@ -217,6 +257,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisLikeMediaUnlikeMutation
      * @param media_id [Media.id]
+     * @return [GraphQlData.xdt_api__v1__media__media_id__unlike]
      */
     UNLIKE_POST(
         "8525474704176507",
@@ -226,6 +267,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisStoriesV3LikeMutationLikeMutation
      * @param mediaId [Media.id]
+     * @return [GraphQlData.xdt_api__v1__story_interactions__send_story_like]
      *
      * Applicable for both daily and highlighted stories.
      * BEWARE that it's `mediaId` not 'media_id'!!
@@ -238,6 +280,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisStoriesV3LikeMutationUnlikeMutation
      * @param mediaId [Media.id]
+     * @return [GraphQlData.xdt_api__v1__story_interactions__unsend_story_like]
      *
      * Applicable for both daily and highlighted stories.
      * BEWARE that it's `mediaId` not 'media_id'!!
@@ -250,6 +293,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisSaveMediaSaveMutation
      * @param media_id [Media.id]
+     * @return [GraphQlData.xdt_api__v1__web__save__media_id__save]
      */
     SAVE(
         "7658071600908962",
@@ -259,6 +303,7 @@ enum class GraphQlQuery(
     /**
      * usePolarisSaveMediaUnsaveMutation
      * @param media_id [Media.id]
+     * @return [GraphQlData.xdt_api__v1__web__save__media_id__unsave]
      */
     UNSAVE(
         "8122123554479056",

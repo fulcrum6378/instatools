@@ -28,6 +28,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.DownloadHistory
@@ -50,7 +52,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
-    NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener, MenuItem.OnActionExpandListener,
+    SearchView.OnQueryTextListener {
+
     lateinit var b: MainBinding
     val vm: MyModel by viewModels()
     private lateinit var toggleNav: ActionBarDrawerToggle
@@ -73,8 +77,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     @SuppressLint("RestrictedApi")
     lateinit var searchInput: SearchView.SearchAutoComplete
     private lateinit var searchClose: ImageView
-    var schRes: Array<Rest.ItemUser>? = null
-    var searchErrored = false
 
     override val menuRes = R.menu.main_tlb
     override var currentPage: Int
@@ -88,6 +90,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         val savedCount = MutableLiveData<Int?>(null)
         var currentPage = Settings.defSpMainPage
+
+        // search
+        var schQuery: CharSequence? = null
+        var schRes: List<GraphQl.SearchResults.ItemUser>? = null
+        var schErrored = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -235,80 +242,93 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
-        (b.toolbar.menu.findItem(R.id.mtSearch)?.actionView as SearchView?)?.apply {
-            searchInput = findViewById(androidx.appcompat.R.id.search_src_text)
+        b.toolbar.menu.findItem(R.id.mtSearch)?.apply {
+            val searchView = actionView as SearchView
+
+            searchInput = searchView.findViewById(androidx.appcompat.R.id.search_src_text)
             // useless: search_button, search_go_btn, search_mag_icon
-            searchClose = findViewById(androidx.appcompat.R.id.search_close_btn)
+            searchClose = searchView.findViewById(androidx.appcompat.R.id.search_close_btn)
             searchInput.setHint(R.string.mtSearch)
             searchInput.textSize = dimen(R.dimen.searchFont)
-
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String) = true
-
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onQueryTextChange(newText: String): Boolean {
-                    if (newText == "") {
-                        schRes = null
-                        if (b.searchRes.adapter == null)
-                            b.searchRes.adapter = ListSch(this@Main)
-                        else b.searchRes.adapter?.notifyDataSetChanged()
-                        return true
-                    }
-                    UiTools.userNameFromUrl(newText)?.also {
-                        searchInput.setText(it)
-                        return true // onQueryTextChange will be invoked again by setText!
-                    }
-                    if (newText.startsWith("@")) {
-                        searchInput.setText(newText.substring(1)); return true; }
-
-                    if (searchErrored) b.searchStatus.setAnimation(R.raw.pending)
-                    searchErrored = false
-                    b.searchStatus.playAnimation()
-                    b.searchStatus.vis()
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val rest =
-                                Api.json<Rest.Search>(Api.Endpoint.SEARCH.url.format(newText))
-                            withContext(Dispatchers.Main) {
-                                b.searchStatus.vis(false)
-                                b.searchStatus.pauseAnimation()
-                                schRes = rest.users.sortedBy { it.position }.toTypedArray()
-                                b.searchRes.adapter?.notifyDataSetChanged()
-                            }
-                        } catch (_: Api.FailureException) {
-                            withContext(Dispatchers.Main) {
-                                searchErrored = true
-                                b.searchStatus.setAnimation(R.raw.failed)
-                            }
-                        }
-                    }
-                    return true
-                }
-            })
             colorAc.value?.also {
                 val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
                 searchInput.setTextColor(it)
                 searchInput.setHintTextColor(weaken(it))
                 searchClose.colorFilter = cf
             }
-        }
-        b.toolbar.menu.findItem(R.id.mtSearch)?.setOnActionExpandListener(object :
-            MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                b.searchRes.vis()
-                return true
+
+            setOnActionExpandListener(this@Main)
+
+            // after a configuration change
+            vm.schQuery?.also {
+                b.searchRes.adapter = ListSch(this@Main)
+                expandActionView()
+                searchInput.setText(vm.schQuery)
             }
 
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                b.searchRes.vis(false)
-                b.searchRes.adapter = null
-                schRes = null
-                b.searchStatus.vis(false)
-                b.searchStatus.pauseAnimation()
-                return true
+            searchView.setOnQueryTextListener(this@Main)
+        }
+        return true
+    }
+
+    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+        b.searchRes.vis()
+        vm.schQuery = ""
+        return true
+    }
+
+    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+        b.searchRes.vis(false)
+        b.searchRes.adapter = null
+        vm.schQuery = null
+        vm.schRes = null
+        vm.schErrored = false
+        b.searchStatus.vis(false)
+        b.searchStatus.pauseAnimation()
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean = true
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onQueryTextChange(newText: String): Boolean {
+        if (newText == "") {
+            vm.schRes = null
+            if (b.searchRes.adapter == null) b.searchRes.adapter = ListSch(this@Main)
+            else b.searchRes.adapter?.notifyDataSetChanged()
+            return true
+        }
+        UiTools.userNameFromUrl(newText)?.also {
+            searchInput.setText(it)
+            return true // onQueryTextChange will be invoked again by setText!
+        }
+        if (newText.startsWith("@")) {
+            searchInput.setText(newText.substring(1)); return true; }
+        vm.schQuery = searchInput.text
+
+        if (vm.schErrored) b.searchStatus.setAnimation(R.raw.pending)
+        vm.schErrored = false
+        b.searchStatus.playAnimation()
+        b.searchStatus.vis()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val results = Api.json<GraphQl>(
+                    Api.Endpoint.QUERY.url, true, GraphQlQuery.SEARCH.body(newText)
+                ).data!!.xdt_api__v1__fbsearch__topsearch_connection!!
+                withContext(Dispatchers.Main) {
+                    b.searchStatus.vis(false)
+                    b.searchStatus.pauseAnimation()
+                    vm.schRes = results.users.sortedBy { it.position }
+                    b.searchRes.adapter?.notifyDataSetChanged()
+                }
+            } catch (_: Api.FailureException) {
+                withContext(Dispatchers.Main) {
+                    vm.schErrored = true
+                    b.searchStatus.setAnimation(R.raw.failed)
+                }
             }
-        })
+        }
         return true
     }
 
