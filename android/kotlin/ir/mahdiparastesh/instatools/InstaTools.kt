@@ -184,5 +184,5 @@ class InstaTools : Application() {
   * Switch to ComponentActivity
   *
   * NOTES:
-  * - Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
+  * Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
 */

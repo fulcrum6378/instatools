@@ -22,7 +22,7 @@ android {
         applicationId = "ir.mahdiparastesh.instatools"
         minSdk = 26
         targetSdk = 35
-        versionCode = 77
+        versionCode = 78
         versionName = "37.2.5"
         signingConfig = signingConfigs.getByName("main")
     }
@@ -54,6 +54,7 @@ android {
             )
         }
     }
+    lint  { checkReleaseBuilds = false }
 }
 androidComponents.beforeVariants { variantBuilder ->
     if (variantBuilder.buildType in listOf("debug", "androidTest"))
@@ -63,7 +64,7 @@ androidComponents.beforeVariants { variantBuilder ->
 dependencies {
     implementation(project(":core"))
 
-    implementation(libs.ktx.activity) // only for ActivityResultLauncher
+    implementation(libs.ktx.activity)
     implementation(libs.ktx.core)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
