@@ -231,7 +231,7 @@ class PageVwr : BasePageViewer(), Selective {
 
             // profile
             b.proPic.layoutParams = b.proPic.layoutParams
-                .apply { height = c.c.dm.widthPixels }
+                .apply { height = c.dm.widthPixels }
             b.proClick.setOnClickListener { v ->
                 val picture = c.vm.user?.originalPicture() ?: return@setOnClickListener
                 MaterialMenu(c, v, R.menu.viewer_pic_more,
@@ -290,8 +290,8 @@ class PageVwr : BasePageViewer(), Selective {
                 )
                 h.b.privateAcc.layoutParams =
                     (h.b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                        val vPad = ((c.c.dm.heightPixels.toFloat()
-                            - c.c.dm.widthPixels.toFloat()) * 0.19f).toInt()
+                        val vPad = ((c.dm.heightPixels.toFloat()
+                            - c.dm.widthPixels.toFloat()) * 0.19f).toInt()
                         topMargin = vPad
                         bottomMargin = vPad
                     }

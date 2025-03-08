@@ -3,7 +3,7 @@
     <cloud-backup disableIfNoEncryptionCapabilities="true">
         <include
             domain="file"
-            path="cache.json" />
+            path="." />
         <include
             domain="sharedpref"
             path="." />
@@ -14,7 +14,7 @@
     <device-transfer>
         <include
             domain="file"
-            path="cache.json" />
+            path="." />
         <include
             domain="sharedpref"
             path="." />

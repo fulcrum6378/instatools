@@ -47,8 +47,8 @@ abstract class ListPost<Activity, Fragment>(
         : AnyViewHolder<ListPostBinding> {
         val b = ListPostBinding.inflate(inflater, parent, false)
         b.root.layoutParams = b.root.layoutParams.apply {
-            width = c.c.dm.widthPixels / 3
-            height = c.c.dm.widthPixels / 3
+            width = c.dm.widthPixels / 3
+            height = c.dm.widthPixels / 3
         }
         return AnyViewHolder<ListPostBinding>(b)
     }

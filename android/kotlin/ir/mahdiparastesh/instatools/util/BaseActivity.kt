@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.*
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
@@ -33,6 +34,7 @@ import kotlin.reflect.KClass
 /** Abstract class for all Activity instances in this app and it extends [AppCompatActivity]. */
 abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
     val c: InstaTools by lazy { applicationContext as InstaTools }
+    val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
 
@@ -146,7 +148,7 @@ abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListen
         PorterDuffColorFilter(ContextCompat.getColor(this, res), PorterDuff.Mode.SRC_IN)
 
     /** Only use it for TextView.textSize. */
-    fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / c.dm.density
+    fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density
 
     /** Helper function for starting an Activity. */
     fun goTo(

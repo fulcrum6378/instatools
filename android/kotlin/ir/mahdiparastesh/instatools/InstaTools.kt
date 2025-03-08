@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.StatFs
-import android.util.DisplayMetrics
 import androidx.annotation.MainThread
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
@@ -46,9 +45,6 @@ class InstaTools : Application() {
     /** List of all [Favourite]s */
     var fav: MutableLiveData<HashSet<Favourite>?> = MutableLiveData(null)
     private var favPickle: Pickle? = null
-
-    /** Screen dimensions */
-    val dm: DisplayMetrics by lazy { resources.displayMetrics }
 
 
     override fun onCreate() {
@@ -179,6 +175,7 @@ class InstaTools : Application() {
   * Extension:
   * A new proper logo
   * Choose download qualities in the Toolbar of Downloads
+  * PageTry
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
   * Switch to ComponentActivity

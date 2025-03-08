@@ -21,7 +21,7 @@ abstract class BasePage<Activity> : Fragment(), Lister, Toolbar.OnMenuItemClickL
     override var shouldShowJumper: Boolean = false
     override var anJumper: ObjectAnimator? = null
 
-    override fun screenHeight(): Int = c.c.dm.heightPixels
+    override fun screenHeight(): Int = c.dm.heightPixels
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

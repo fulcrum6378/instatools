@@ -72,7 +72,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun isModelLoaded(): Boolean = false
     override fun isModelEmpty(): Boolean = c.downloads.isEmpty<Download>()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListQud(this)
-    override fun screenHeight(): Int = c.dm.heightPixels
+    override fun screenHeight(): Int = dm.heightPixels
 
     companion object {
 

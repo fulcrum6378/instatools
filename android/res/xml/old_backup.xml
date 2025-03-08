@@ -2,7 +2,7 @@
 <full-backup-content>
     <include
         domain="file"
-        path="cache.json" />
+        path="." />
     <include
         domain="sharedpref"
         path="." />
