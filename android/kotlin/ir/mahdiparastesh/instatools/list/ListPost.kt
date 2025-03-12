@@ -1,12 +1,10 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.ItemDetailsLookup.ItemDetails
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -128,23 +126,18 @@ abstract class ListPost<Activity, Fragment>(
         override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
             val view = rv.findChildViewUnder(e.x, e.y) ?: return null
             val h = rv.getChildViewHolder(view) as AnyViewHolder<*>
+            if (h.bindingAdapterPosition == RecyclerView.NO_POSITION)
+                return null
+
             return if (rv.adapter is ListPost<*, *>)
                 object : ItemDetails<String>() {
-                    private val adapter = rv.adapter as ListPost<*, *>
-                    override fun getPosition(): Int = h.layoutPosition
-                    override fun getSelectionKey(): String? = adapter[position]?.id()
+                    override fun getPosition(): Int = h.bindingAdapterPosition
+                    override fun getSelectionKey(): String? = h.itemId.toString()
                 }
             else
                 object : ItemDetails<String>() {
-                    private val adapter =
-                        (rv.adapter as ConcatAdapter).adapters[1] as ListPost<*, *>
-
-                    override fun getPosition(): Int {
-                        Log.println(Log.ASSERT, "ESPINELA", "${h.bindingAdapterPosition}")
-                        return h.bindingAdapterPosition
-                    }
-
-                    override fun getSelectionKey(): String? = adapter[position]?.id()
+                    override fun getPosition(): Int = h.bindingAdapterPosition
+                    override fun getSelectionKey(): String? = view.tag.toString()
                 }
         }
     }

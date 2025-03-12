@@ -20,7 +20,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import ir.mahdiparastesh.instatools.*
+import ir.mahdiparastesh.instatools.Downloads
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
@@ -32,8 +33,10 @@ import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
 import ir.mahdiparastesh.instatools.list.ListVwr
-import ir.mahdiparastesh.instatools.util.*
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.BasePageViewer
+import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
@@ -234,7 +237,8 @@ class PageVwr : BasePageViewer(), Selective {
                 .apply { height = c.dm.widthPixels }
             b.proClick.setOnClickListener { v ->
                 val picture = c.vm.user?.originalPicture() ?: return@setOnClickListener
-                MaterialMenu(c, v, R.menu.viewer_pic_more,
+                MaterialMenu(
+                    c, v, R.menu.viewer_pic_more,
                     R.id.vpDownload to {
                         CoroutineScope(Dispatchers.IO).launch {
                             c.c.downloads.add<Download>(

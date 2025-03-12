@@ -166,16 +166,14 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Some of ListPost's selected items do not appear to be selected and
-  *     the same items might appear as selected at another selection!!
-  *     Related to: Selection indicator invisible after Expandable collapses
-  *     ListTag is as bad as ListVwr
+  * isSelected in ListVwr sometimes returns false positive
+  *     it's all related to ListPost$PostDetailsLookup
+  * Selection indicator invisible after Expandable collapses in PageSvd and PageTag
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * -
   * Extension:
-  * A new proper logo
-  * Choose download qualities in the Toolbar of Downloads
   * PageTry
+  * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
   * Switch to ComponentActivity

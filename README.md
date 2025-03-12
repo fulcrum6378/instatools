@@ -1,17 +1,19 @@
 # InstaTools
 
-InstaTools is a project containing applications which help people retrieve contents from
+InstaTools is a project containing applications which help you retrieve contents from
 [Instagram](https://www.instagram.com/). Using these applications you can:
 
 1. Download anyone's posts, reels, stories and highlights
 2. Manage your saved posts
+3. Monitor your feed stories tray
 
 This project is written in pure Kotlin and contains these modules:
 
-1. [**CORE**](core): containing the core tools for interacting with Instagram's private API.
-2. [**ANDROID**](android): a full-fledged Android application for
-3. [**CLI**](cli): an interactive command-line interface deployed as a JAR.
-4. ~~JAVAFX~~: A GUI desktop application powered by JavaFX. (!not yet developed!)
+1. [**CORE**](core): containing the core utilities.
+2. [**ANDROID**](android): a full-fledged Android application.
+3. [**CLI**](cli): an interactive command-line interface deployed as a JAR
+   or as an EXE via [GraalVM](https://www.graalvm.org/).
+4. ~~JAVAFX~~: A GUI desktop application powered by JavaFX. (!cancelled!)
 
 ## Android Application
 
@@ -45,7 +47,8 @@ This activity contains 3 fragments:
    [Downloader.kt](android/kotlin/ir/mahdiparastesh/instatools/job/Downloader.kt)
    is the service implemented mainly by Downloads (or it can run from anywhere).
    It queues the download items and downloads them one by one.
-3.
+3. **Reels Tray** ([PageTry.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageTry.kt)) :
+   lists stories from your feed.
 
 ### [Viewer.kt](android/kotlin/ir/mahdiparastesh/instatools/Viewer.kt)
 
@@ -79,33 +82,32 @@ and also settings of the current account (`sp)`.
 
 ### Localisation
 
-It currently supports these languages:
+This app only supports these languages:
 
 - English (en-GB)
 - Persian (fa)
 
 ### Unlucky Publishing Story
 
-I started this project of course for a commercial purpose,
-I mean I wanted to earn money using Google AdMob, but alas...
-due to the fu-king [U.S. sanctions on Iran](https://www.state.gov/iran-sanctions/) I failed to do so!!
+- Google Play removed this app 2 times because of *"copyright infringement"*;
+  they said I had stolen Instagram's trademark!!!
+  That the icon is too similar to that of Instagram and the name *"Insta"* belongs to Instagram.
 
-This app also got suspended in Google Play for 2 times for *"copyright infringement"*;
-first because of using the word "Insta" in InstaTools and its icon being similar to Instagram,
-then I changed the icon and the name to "Downloader for Instagram" and also wrote a legal disclaimer,
-and published it with an app ID suffix *.beth*,
-it was fu-king suspended again because of using "for Instagram" in the app title.
-So I was disappointed. Similar things happened in Galaxy Store for perhaps tens of times
-with those as-hole reviewers!
+- Galaxy Store removed this app tens of times because I just used the word "Instagram" inside my app!
 
-I continued the app in the 2 Iranian app stores { Bazaar & Myket }.
+- Myket didn't allow me to republish it because it was against the laws of IRI!
+
+- [Bazaar](https://cafebazaar.ir/app/ir.mahdiparastesh.instatools) still accepts updates
+  but most of its users aren't interested in such apps!!
 
 ### Removed Features
 
-1. InstaTools could track users' unfollowers in the past but this feature was removed
-   because of Instagram's hypersensitivity.
-2. InstaTools could export direct messages in TXT, PDF and HTML but this feature was removed
-   because Instagram moved away from the old DM API and switched to WebSockets.
+- Following numerous IG accounts slowly and one by one; this feature was removed
+  because of Instagram's hypersensitivity.
+- Analysing users' unfollowers; this feature was removed
+  because of Instagram's hypersensitivity.
+- Exporting direct messages in HTML, PDF and TXT; this feature was removed
+  because Instagram moved away from the old DM API and switched to encrypted WebSockets.
 
 ## Command-Line Interface
 
