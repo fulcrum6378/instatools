@@ -1,7 +1,7 @@
 package ir.mahdiparastesh.instatools.list
 
-import android.net.Uri
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C.USAGE_MEDIA
@@ -71,7 +71,7 @@ class ListCar(
                         AudioAttributes.Builder().setUsage(USAGE_MEDIA).build(), false
                     ).build()
                 ).setId(med.id()).build().apply {
-                    player.setMediaItem(MediaItem.fromUri(Uri.parse(it)))
+                    player.setMediaItem(MediaItem.fromUri(it.toUri()))
                     player.volume = if (muteSound.value == true) 0f else 1f
                     h.b.video.setPlayer(player)
                     player.prepare()

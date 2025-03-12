@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -18,6 +17,7 @@ import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.core.view.forEach
 import androidx.core.view.get
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
@@ -29,7 +29,6 @@ import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.Utils
-import java.util.*
 
 object UiTools {
     const val IG_OPENABLE = "https://www.instagram.com/"
@@ -79,7 +78,7 @@ object UiTools {
     /** Opens an IG profile in Instagram, if Instagram is installed. */
     fun openProfile(c: Activity, user: String): Boolean = try {
         c.startActivity(
-            Intent(Intent.ACTION_VIEW, Uri.parse(Utils.PROFILE.format(user)))
+            Intent(Intent.ACTION_VIEW, Utils.PROFILE.format(user).toUri())
                 .setPackage(INSTA_PACKAGE)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
@@ -92,7 +91,7 @@ object UiTools {
     fun openLink(c: Activity, link: String) {
         try {
             c.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(link)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                Intent(Intent.ACTION_VIEW, link.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } catch (_: ActivityNotFoundException) {
         }

@@ -1,9 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +12,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.Player
 import androidx.recyclerview.widget.ConcatAdapter
@@ -255,14 +255,10 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, u.username!!).apply {
                         setIntent(
-                            Intent(Intent.ACTION_VIEW, Uri.parse(Utils.PROFILE.format(u.username)))
+                            Intent(Intent.ACTION_VIEW, Utils.PROFILE.format(u.username).toUri())
                                 .setPackage(UiTools.INSTA_PACKAGE)
                         )
-                        setIcon(
-                            IconCompat.createWithBitmap(
-                                Bitmap.createScaledBitmap(bmp, 128, 128, true)
-                            )
-                        )
+                        setIcon(IconCompat.createWithBitmap(bmp.scale(128, 128)))
                         setShortLabel(u.full_name!!.ifBlank { u.username!! })
                     }.build(), null
                 )

@@ -2,9 +2,9 @@ package ir.mahdiparastesh.instatools.job
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -24,7 +24,7 @@ import java.io.FileOutputStream
 
 class DownloadService : ForegroundService(), Downloader {
     private var dest: String? = null
-    private val stem by lazy { DocumentFile.fromTreeUri(c, Uri.parse(dest))!! }
+    private val stem by lazy { DocumentFile.fromTreeUri(c, dest!!.toUri())!! }
     private val aliases = HashMap<String, String>()
     private var des: ParcelFileDescriptor? = null
 
@@ -69,9 +69,9 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun prepareOutput(q: Download): LazyFile<FileOutputStream>? {
         val branch: DocumentFile = when {
-            q.owner in aliases && DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.owner]))
+            q.owner in aliases && DocumentFile.fromTreeUri(c, aliases[q.owner]!!.toUri())
                 ?.exists() == true ->
-                DocumentFile.fromTreeUri(c, Uri.parse(aliases[q.owner]))
+                DocumentFile.fromTreeUri(c, aliases[q.owner]!!.toUri())
             !q.isMainFile() -> stem
             @Suppress("KotlinConstantConditions")
             c.bPreference(
@@ -192,7 +192,7 @@ class DownloadService : ForegroundService(), Downloader {
                 Settings.spAutoDeleteEmptyDirsCb, Settings.defSpAutoDeleteEmptyDirsCb
             )
         ) {
-            val stem = DocumentFile.fromTreeUri(c, Uri.parse(dest))!!
+            val stem = DocumentFile.fromTreeUri(c, dest!!.toUri())!!
             for (branch in stem.listFiles())
                 if (branch.isDirectory && branch.listFiles().isEmpty())
                     branch.delete()

@@ -102,15 +102,15 @@ abstract class ListPost<Activity, Fragment>(
         h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
 
         // clicks
-        h.b.click.setOnClickListener {
-            expand(it, h.bindingAdapterPosition)
+        h.b.click.setOnClickListener { v ->
+            expand(v, h.bindingAdapterPosition)
         }
-        h.b.click.setOnLongClickListener {
+        h.b.click.setOnLongClickListener { v ->
             if (firstLongClickSelect) {
                 firstLongClickSelect = false
                 return@setOnLongClickListener false
             }
-            expand(it, h.bindingAdapterPosition)
+            expand(v, h.bindingAdapterPosition)
             true
         }
     }

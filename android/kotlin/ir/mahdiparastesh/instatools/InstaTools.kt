@@ -175,6 +175,8 @@ class InstaTools : Application() {
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
   * Switch to ComponentActivity
+  * -
+  * Take the audio Download and the profile Download to :core
   *
   * NOTES:
   * Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

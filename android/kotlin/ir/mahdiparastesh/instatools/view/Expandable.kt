@@ -9,10 +9,10 @@ import android.content.Intent
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
-import android.net.Uri
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
@@ -111,7 +111,7 @@ class Expandable(
             media?.link()?.also {
                 try {
                     c.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(it)).apply {
+                        Intent(Intent.ACTION_VIEW, it.toUri()).apply {
                             if (it.startsWith(UiTools.IG_OPENABLE) &&
                                 !it.startsWith("https://www.instagram.com/stories/highlights/")
                             ) setPackage(UiTools.INSTA_PACKAGE)

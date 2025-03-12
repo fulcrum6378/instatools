@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.DownloadHistory
@@ -88,7 +89,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spUsedVersion = "used_version"
 
 
-        // Settigns
+        // Settings
         const val EXTRA_IS_GLOBAL = "isGlobal"
         const val EXTRA_SELECT_PATH = "selectPath"
         const val GSP = "global"
@@ -109,10 +110,10 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 ?: hashMapOf()
             val removal = arrayListOf<String>()
             map.forEach { (k, v) ->
-                val ex = DocumentFile.fromTreeUri(c, Uri.parse(v))?.exists()
+                val ex = DocumentFile.fromTreeUri(c, v.toUri())?.exists()
                 val ax = c.isPathAccessible(v)
                 if (!ax || ex != true) {
-                    if (ex != true && ax) Uri.parse(v).release(c, global)
+                    if (ex != true && ax) v.toUri().release(c, global)
                     removal.add(k)
                 }
             }
@@ -164,7 +165,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             ) == PackageManager.PERMISSION_GRANTED &&
                 DocumentFile.fromTreeUri(this, uri)?.exists() == true
 
-        fun Context.isPathAccessible(path: String) = isPathAccessible(Uri.parse(path))
+        fun Context.isPathAccessible(path: String) = isPathAccessible(path.toUri())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -189,10 +190,11 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stMainPath.setOnClickListener { v ->
             if ((v as TextView).text.isEmpty())
                 selectPath()
-            else MaterialMenu(this@Settings, v, R.menu.settings_main_path,
+            else MaterialMenu(
+                this@Settings, v, R.menu.settings_main_path,
                 R.id.smpChange to { selectPath() },
                 R.id.smpRemove to {
-                    val uri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
+                    val uri = prf.getString(spStorage, null)?.toUri()
                     if (uri != null) {
                         prf.edit { remove(spStorage) }
                         updateMainPath("")
@@ -353,7 +355,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                     val ba = convertView?.let { ListAliasBinding.bind(it) }
                         ?: ListAliasBinding.inflate(layoutInflater, parent, false)
                     ba.profile.text = getItem(i)?.key
-                    ba.path.text = getItem(i)?.value?.let { Uri.parse(it) }?.folderName()
+                    ba.path.text = getItem(i)?.value?.toUri()?.folderName()
                     ba.root.setOnClickListener { editAlias(getItem(i)?.key) }
                     return ba.root
                 }
@@ -371,7 +373,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             bfa!!.aliasProfile.setText(u)
             c.fav.value?.also { fav ->
                 bfa!!.aliasProfile.setAdapter(
-                    ArrayAdapter(this@Settings, android.R.layout.simple_dropdown_item_1line,
+                    ArrayAdapter(
+                        this@Settings, android.R.layout.simple_dropdown_item_1line,
                         fav.map { it.user })
                 )
             }
@@ -392,8 +395,8 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             }
             setNegativeButton(R.string.cancel, null)
             setNeutralButton(R.string.remove) { _, _ ->
-                val uri = u?.let { aliases?.getOrNull(it) }?.let { Uri.parse(it) }
-                    ?: return@setNeutralButton
+                val uri = u?.let { aliases?.getOrNull(it) }?.toUri() ?: return@setNeutralButton
+
                 val br = AlsoRevokePermBinding.inflate(layoutInflater)
                 MaterialAlertDialogBuilder(this@Settings).apply {
                     setTitle(R.string.remove)
@@ -436,7 +439,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         when (selectingPathFor) {
             0 -> {
                 // Remove the previous path if existed
-                val prevUri = prf.getString(spStorage, null)?.let { Uri.parse(it) }
+                val prevUri = prf.getString(spStorage, null)?.toUri()
                 if (prevUri != null) CoroutineScope(Dispatchers.IO).launch {
                     DownloadHistory.folderRemoved(c, uri)
                     uri.release(c, globalMode)
