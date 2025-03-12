@@ -166,9 +166,7 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * isSelected in ListVwr sometimes returns false positive
-  *     it's all related to ListPost$PostDetailsLookup
-  * Selection indicator invisible after Expandable collapses in PageSvd and PageTag
+  * Selection indicator invisible after Expandable collapses in all PostSelectors
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * -
   * Extension:

@@ -25,13 +25,13 @@ import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.BasePageViewer
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.view.Selective
+import ir.mahdiparastesh.instatools.view.PostSelector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageTag : BasePageViewer(), Selective {
+class PageTag : BasePageViewer(), PostSelector {
     private lateinit var b: PageTagBinding
 
     override val root: ConstraintLayout? get() = b.root

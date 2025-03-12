@@ -14,7 +14,7 @@ import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
-import ir.mahdiparastesh.instatools.view.Selective
+import ir.mahdiparastesh.instatools.view.PostSelector
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
@@ -34,7 +34,7 @@ abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister {
     }
 
     @SuppressLint("UnsafeOptInUsageError")
-    fun createSelectionObserver() = if (this !is Selective) null
+    fun createSelectionObserver() = if (this !is PostSelector) null
     else object : SelectionTracker.SelectionObserver<Long>() {
 
         override fun onItemStateChanged(key: Long, selected: Boolean) {

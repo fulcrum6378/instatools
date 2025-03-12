@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -39,15 +40,15 @@ import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.PostSelector
 import ir.mahdiparastesh.instatools.view.SafeGridManager
-import ir.mahdiparastesh.instatools.view.Selective
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PageVwr : BasePageViewer(), Selective {
+class PageVwr : BasePageViewer(), PostSelector {
     lateinit var b: PageVwrBinding
     private var showPv: Boolean = false
 
@@ -204,6 +205,17 @@ class PageVwr : BasePageViewer(), Selective {
         }
         return super.onMenuItemClick(item)
     }
+
+    override fun selectionKeyProvider(): ItemKeyProvider<Long> =
+        object : ItemKeyProvider<Long>(SCOPE_MAPPED) {
+            override fun getKey(i: Int): Long? = c.vm.posts?.edges?.getOrNull(i - 1)?.node?.uid
+            override fun getPosition(key: Long): Int {
+                c.vm.posts?.edges?.forEachIndexed { i, edge ->
+                    if (edge.node.uid == key) return@getPosition i + 1
+                }
+                return -1
+            }
+        }
 
     override fun goBack(): Boolean {
         return onGoBackWithSelection()

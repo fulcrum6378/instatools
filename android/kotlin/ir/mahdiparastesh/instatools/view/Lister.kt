@@ -14,6 +14,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
@@ -133,7 +134,7 @@ interface Lister {
         else rv!!.adapter!!.notifyDataSetChanged()
 
         onListResized()
-        if (this is Selective && tracker == null) buildSelection()
+        if (this is PostSelector && tracker == null) buildSelection()
     }
 
     fun onListResized() {
@@ -164,7 +165,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     fun hasReachedBottom() = !rv!!.canScrollVertically(1)
 
     fun canRefresh(): Boolean =
-        !rv!!.canScrollVertically(-1) && !(this is Selective && tracker?.hasSelection() == true)
+        !rv!!.canScrollVertically(-1) && !(this is PostSelector && tracker?.hasSelection() == true)
 
     override fun load(reset: Boolean) {
         if ((!canLoadMore() && !reset) || job?.isActive == true) return
@@ -264,7 +265,7 @@ interface ServiceOwner : Lister {
 }
 
 /** Helper interface for selection mode of [RecyclerView]. */
-interface Selective : Lister {
+interface PostSelector : Lister {
     var tracker: SelectionTracker<Long>?
     var selectivity: Boolean
     val dialogContext: Context
@@ -274,7 +275,7 @@ interface Selective : Lister {
         tracker = SelectionTracker.Builder(
             this::class.java.simpleName,
             rv!!,
-            StableIdKeyProvider(rv!!),
+            selectionKeyProvider(),
             ListPost.PostDetailsLookup(rv!!),
             StorageStrategy.createLongStorage()
         ).build().also { tracker ->
@@ -283,6 +284,9 @@ interface Selective : Lister {
             }
         }
     }
+
+    fun selectionKeyProvider(): ItemKeyProvider<Long> =
+        StableIdKeyProvider(rv!!)
 
     fun selectionObserver(): SelectionTracker.SelectionObserver<Long>?
 
