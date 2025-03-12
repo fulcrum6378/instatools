@@ -1,12 +1,12 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -37,7 +37,7 @@ abstract class ListPost<Activity, Fragment>(
     var firstLongClickSelect = false
 
     abstract val inflater: LayoutInflater
-    abstract val tracker: SelectionTracker<String>?
+    abstract val tracker: SelectionTracker<Long>?
     abstract val expandable: Expandable
     abstract val expanded: ExpandableBinding
 
@@ -57,7 +57,10 @@ abstract class ListPost<Activity, Fragment>(
      */
     override fun onBindViewHolder(h: AnyViewHolder<ListPostBinding>, i: Int) {
         val med = this[i] ?: return
-        val norm = tracker?.isSelected(med.id()) != true
+        val norm = tracker?.isSelected(med.uid) != true
+
+        // set media ID as View tag
+        h.b.root.tag = getItemId(i)
 
         // load thumbnail
         if (med.thumb() != null) Glide.with(c.c)
@@ -121,24 +124,23 @@ abstract class ListPost<Activity, Fragment>(
         expandable.expand(this[i], v)
     }
 
-    class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<String>() {
+    class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<Long>() {
 
-        override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
+        override fun getItemDetails(e: MotionEvent): ItemDetails<Long>? {
             val view = rv.findChildViewUnder(e.x, e.y) ?: return null
+            Log.println(Log.ASSERT, "ESPINELA", "ID: ${view.tag as Long}")
             val h = rv.getChildViewHolder(view) as AnyViewHolder<*>
             if (h.bindingAdapterPosition == RecyclerView.NO_POSITION)
                 return null
 
-            return if (rv.adapter is ListPost<*, *>)
-                object : ItemDetails<String>() {
-                    override fun getPosition(): Int = h.bindingAdapterPosition
-                    override fun getSelectionKey(): String? = h.itemId.toString()
+            return object : ItemDetails<Long>() {
+                override fun getPosition(): Int {
+                    val i = h.bindingAdapterPosition
+                    Log.println(Log.ASSERT, "ESPINELA", "Pos: $i")
+                    return i
                 }
-            else
-                object : ItemDetails<String>() {
-                    override fun getPosition(): Int = h.bindingAdapterPosition
-                    override fun getSelectionKey(): String? = view.tag.toString()
-                }
+                override fun getSelectionKey(): Long? = view.tag as Long
+            }
         }
     }
 

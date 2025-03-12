@@ -217,7 +217,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            //Log.println(Log.ASSERT, "ESPINELA", url)
             if (url != HOST && !url.startsWith("$HOST?") && !url.startsWith("$HOST#")) return
 
             if (browsePurpose != BROWSE_THE_WEB) try {

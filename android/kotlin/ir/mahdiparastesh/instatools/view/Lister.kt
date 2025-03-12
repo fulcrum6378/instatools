@@ -14,8 +14,8 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.contains
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -265,7 +265,7 @@ interface ServiceOwner : Lister {
 
 /** Helper interface for selection mode of [RecyclerView]. */
 interface Selective : Lister {
-    var tracker: SelectionTracker<String>?
+    var tracker: SelectionTracker<Long>?
     var selectivity: Boolean
     val dialogContext: Context
 
@@ -274,9 +274,9 @@ interface Selective : Lister {
         tracker = SelectionTracker.Builder(
             this::class.java.simpleName,
             rv!!,
-            selectionKeyProvider(),
+            StableIdKeyProvider(rv!!),
             ListPost.PostDetailsLookup(rv!!),
-            StorageStrategy.createStringStorage()
+            StorageStrategy.createLongStorage()
         ).build().also { tracker ->
             selectionObserver()?.also { observer ->
                 tracker.addObserver(observer)
@@ -284,9 +284,7 @@ interface Selective : Lister {
         }
     }
 
-    fun selectionObserver(): SelectionTracker.SelectionObserver<String>?
-
-    fun selectionKeyProvider(): ItemKeyProvider<String>
+    fun selectionObserver(): SelectionTracker.SelectionObserver<Long>?
 
     fun enqueueSelectedMedia(
         c: BaseActivity,
@@ -331,7 +329,7 @@ interface Selective : Lister {
             // enqueue
             for (pos in indices) {
                 val med = getter(pos)
-                if (med.id() !in selection) continue
+                if (med.uid !in selection) continue
                 if (download) c.c.downloads.addAll<Download>(med.queue(), false)
                 if (save || unsave || like || unlike) {
                     c.c.commands.add<Command>(

@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
@@ -24,7 +23,8 @@ import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListTag
-import ir.mahdiparastesh.instatools.util.*
+import ir.mahdiparastesh.instatools.util.BasePageViewer
+import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Selective
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +38,7 @@ class PageTag : BasePageViewer(), Selective {
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
-    override var tracker: SelectionTracker<String>? = null
+    override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
     override val dialogContext: Context get() = c
 
@@ -120,17 +120,7 @@ class PageTag : BasePageViewer(), Selective {
         c.vm.tagged?.also { pickle.save(it) }
     }
 
-    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_MAPPED) {
-        override fun getKey(i: Int): String? = c.vm.tagged?.edges?.getOrNull(i)?.node?.id()
-        override fun getPosition(key: String): Int {
-            c.vm.tagged?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.id() == key) return@getPosition i
-            }
-            return -1
-        }
-    }
-
-    override fun selectionObserver(): SelectionTracker.SelectionObserver<String>? =
+    override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =
         createSelectionObserver()
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -148,7 +138,7 @@ class PageTag : BasePageViewer(), Selective {
 
             R.id.vtSelectAll ->
                 if (c.vm.tagged?.edges != null)
-                    tracker?.setItemsSelected(c.vm.tagged!!.edges.map { it.node.id() }, true)
+                    tracker?.setItemsSelected(c.vm.tagged!!.edges.map { it.node.uid }, true)
             R.id.vtDeselectAll ->
                 tracker?.clearSelection()
         }

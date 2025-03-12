@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
-import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -28,8 +27,10 @@ import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.list.ListSvd
-import ir.mahdiparastesh.instatools.util.*
+import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
+import ir.mahdiparastesh.instatools.util.BasePageMain
+import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.SafeGridManager
@@ -63,7 +64,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         }
     }
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
-    override var tracker: SelectionTracker<String>? = null
+    override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
     override val dialogContext: Context
         get() = android.view.ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Secondary)
@@ -175,19 +176,9 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
         if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
     }
 
-    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_MAPPED) {
-        override fun getKey(i: Int): String? = c.vm.saved?.items?.getOrNull(i)?.media?.id()
-        override fun getPosition(key: String): Int {
-            c.vm.saved?.items?.forEachIndexed { i, item ->
-                if (item.media.id() == key) return@getPosition i
-            }
-            return -1
-        }
-    }
-
     @SuppressLint("UnsafeOptInUsageError")
-    override fun selectionObserver() = object : SelectionTracker.SelectionObserver<String>() {
-        override fun onItemStateChanged(key: String, selected: Boolean) {
+    override fun selectionObserver() = object : SelectionTracker.SelectionObserver<Long>() {
+        override fun onItemStateChanged(key: Long, selected: Boolean) {
             if (c.tbTitle == null) return
             BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
             if (c.tbTitle?.parent == null) return
@@ -242,7 +233,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, Select
                 enqueueSelectedMedia(c, c.vm.saved, unlike = true)
 
             R.id.mtSelectAll -> if (c.vm.saved != null)
-                tracker?.setItemsSelected(c.vm.saved!!.items.map { it.media.id() }, true)
+                tracker?.setItemsSelected(c.vm.saved!!.items.map { it.media.uid }, true)
             R.id.mtDeselectAll ->
                 tracker?.clearSelection()
         }

@@ -35,9 +35,9 @@ abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister {
 
     @SuppressLint("UnsafeOptInUsageError")
     fun createSelectionObserver() = if (this !is Selective) null
-    else object : SelectionTracker.SelectionObserver<String>() {
+    else object : SelectionTracker.SelectionObserver<Long>() {
 
-        override fun onItemStateChanged(key: String, selected: Boolean) {
+        override fun onItemStateChanged(key: Long, selected: Boolean) {
             if (c.tbTitle == null) return
             BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
             if (c.tbTitle?.parent == null) return

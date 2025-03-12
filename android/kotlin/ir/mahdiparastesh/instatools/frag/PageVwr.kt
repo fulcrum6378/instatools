@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.MainThread
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -56,7 +55,7 @@ class PageVwr : BasePageViewer(), Selective {
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = null
     override val jumper: ImageView? get() = b.jumper
-    override var tracker: SelectionTracker<String>? = null
+    override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
     override val dialogContext: Context get() = c
 
@@ -181,17 +180,7 @@ class PageVwr : BasePageViewer(), Selective {
         c.load(reset = true)
     }
 
-    override fun selectionKeyProvider() = object : ItemKeyProvider<String>(SCOPE_MAPPED) {
-        override fun getKey(i: Int): String? = c.vm.posts?.edges?.getOrNull(i)?.node?.id()
-        override fun getPosition(key: String): Int {
-            c.vm.posts?.edges?.forEachIndexed { i, edge ->
-                if (edge.node.id() == key) return@getPosition i
-            }
-            return -1
-        }
-    }
-
-    override fun selectionObserver(): SelectionTracker.SelectionObserver<String>? =
+    override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =
         createSelectionObserver()
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
@@ -209,7 +198,7 @@ class PageVwr : BasePageViewer(), Selective {
 
             R.id.vtSelectAll ->
                 if (c.vm.posts?.edges != null)
-                    tracker?.setItemsSelected(c.vm.posts!!.edges.map { it.node.id() }, true)
+                    tracker?.setItemsSelected(c.vm.posts!!.edges.map { it.node.uid }, true)
             R.id.vtDeselectAll ->
                 tracker?.clearSelection()
         }

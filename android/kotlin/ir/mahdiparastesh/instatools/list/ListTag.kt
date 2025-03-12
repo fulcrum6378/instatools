@@ -10,7 +10,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 
 class ListTag(c: Viewer, f: PageTag) : ListPost<Viewer, PageTag>(c, f) {
     override val inflater: LayoutInflater by lazy { c.layoutInflater }
-    override val tracker: SelectionTracker<String>? get() = f.tracker
+    override val tracker: SelectionTracker<Long>? get() = f.tracker
     override val expandable: Expandable get() = c.expandable
     override val expanded: ExpandableBinding = c.b.expanded
 

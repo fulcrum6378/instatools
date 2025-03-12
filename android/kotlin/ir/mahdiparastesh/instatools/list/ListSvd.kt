@@ -10,7 +10,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 
 class ListSvd(c: Main, f: PageSvd) : ListPost<Main, PageSvd>(c, f) {
     override val inflater: LayoutInflater by lazy { f.inflater }
-    override val tracker: SelectionTracker<String>? get() = f.tracker
+    override val tracker: SelectionTracker<Long>? get() = f.tracker
     override val expandable: Expandable get() = f.expandable
     override val expanded: ExpandableBinding = f.b.expanded
 
