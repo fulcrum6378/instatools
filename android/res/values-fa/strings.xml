@@ -58,6 +58,7 @@
     <string name="likeAll">لایک همه</string>
     <string name="unlike">آنلایک</string>
     <string name="unlikeAll">آنلایک همه</string>
+    <string name="couldNotLoadOriginal">بارگذاری عکس بزرگ امکان پذیر نیست!</string>
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>

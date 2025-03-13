@@ -70,14 +70,14 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
 
         // actions
         h.b.downloadAll.setOnClickListener {
-            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListRel, true)
+            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory, true)
         }
 
         // ListRel: initiation
         if (h.b.reel.adapter == null)
-            h.b.reel.adapter = ListRel(c, story)
+            h.b.reel.adapter = ListStory(c, story)
         else
-            (h.b.reel.adapter!! as ListRel).story = story
+            (h.b.reel.adapter!! as ListStory).story = story
         h.b.reel.adapter?.notifyDataSetChanged()
 
         // ListRel: open/close
@@ -87,12 +87,12 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
         }
         h.b.reel.vis(story.opened)
         if (story.opened && isHL)
-            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListRel)
+            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory)
         h.b.header.setOnClickListener {
             (story.anSlide as? ObjectAnimator)?.cancel()
             story.opened = !story.opened
             if (story.opened && isHL)
-                fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListRel)
+                fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory)
             ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f).apply {
                 story.anSlide = this
                 addUpdateListener {
@@ -125,7 +125,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
     private fun fetchHighlights(
         story: Story,
         i: Int,
-        listRel: ListRel,
+        listStory: ListStory,
         downloadAll: Boolean = false
     ) {
         if (story.items != null && !downloadAll) return
@@ -161,7 +161,7 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
 
             withContext(Dispatchers.Main) {
                 this@ListSto.notifyItemChanged(i)
-                listRel.notifyDataSetChanged()
+                listStory.notifyDataSetChanged()
             }
         }
     }

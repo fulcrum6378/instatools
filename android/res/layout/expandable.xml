@@ -11,97 +11,113 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/slider"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
 
-    <View
+    <ImageView
+        android:id="@+id/thumb"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/expandableHeaderBg"
-        app:layout_constraintBottom_toBottomOf="@id/buttons"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:transformPivotX="0dp"
+        android:transformPivotY="0dp" />
 
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/button"
-        android:gravity="center_vertical|start"
-        android:lineSpacingExtra="0sp"
-        android:paddingHorizontal="10sp"
-        android:textAppearance="@style/TextAppearance.InstaTools.Bold"
-        android:textSize="16.5sp"
-        app:layout_constraintBottom_toBottomOf="@id/buttons"
-        app:layout_constraintEnd_toStartOf="@id/buttons"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:visibility="gone">
 
-    <LinearLayout
-        android:id="@+id/buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5.5dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="UnusedAttribute">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/expandableHeaderBg"
+            app:layout_constraintBottom_toBottomOf="@id/buttons"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/volume"
-            style="@style/expandableButton"
-            android:src="@drawable/volume_up"
-            android:tooltipText="@string/muteSound"
-            android:visibility="gone" />
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/button"
+            android:gravity="center_vertical|start"
+            android:lineSpacingExtra="0sp"
+            android:paddingHorizontal="10sp"
+            android:textAppearance="@style/TextAppearance.InstaTools.Bold"
+            android:textSize="16.5sp"
+            app:layout_constraintBottom_toBottomOf="@id/buttons"
+            app:layout_constraintEnd_toStartOf="@id/buttons"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/download"
-            style="@style/expandableButton"
-            android:src="@drawable/download"
-            android:tooltipText="@string/download"
-            android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5.5dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UnusedAttribute">
 
-        <ImageView
-            android:id="@+id/downloadThis"
-            style="@style/expandableButton"
-            android:src="@drawable/download_one"
-            android:tooltipText="@string/downloadThis"
-            android:visibility="gone" />
+            <ImageView
+                android:id="@+id/volume"
+                style="@style/expandableButton"
+                android:src="@drawable/volume_up"
+                android:tooltipText="@string/muteSound"
+                android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/downloadAll"
-            style="@style/expandableButton"
-            android:src="@drawable/download_all"
-            android:tooltipText="@string/downloadAll"
-            android:visibility="gone" />
+            <ImageView
+                android:id="@+id/download"
+                style="@style/expandableButton"
+                android:src="@drawable/download"
+                android:tooltipText="@string/download"
+                android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/downloadAudio"
-            style="@style/expandableButton"
-            android:src="@drawable/download_audio"
-            android:tooltipText="@string/downloadAudio"
-            android:visibility="gone" />
+            <ImageView
+                android:id="@+id/downloadThis"
+                style="@style/expandableButton"
+                android:src="@drawable/download_one"
+                android:tooltipText="@string/downloadThis"
+                android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/viewInInsta"
-            style="@style/expandableButton"
-            android:src="@drawable/instagram"
-            android:tooltipText="@string/viewInInsta" />
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/downloadAll"
+                style="@style/expandableButton"
+                android:src="@drawable/download_all"
+                android:tooltipText="@string/downloadAll"
+                android:visibility="gone" />
 
-    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
-        android:id="@+id/indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:visibility="gone"
-        app:dotsColor="?attr/colorAccent"
-        app:dotsCornerRadius="6dp"
-        app:dotsSize="12dp"
-        app:dotsSpacing="3dp"
-        app:dotsWidthFactor="2.5"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progressMode="true"
-        app:selectedDotColor="?attr/colorAccent" />
+            <ImageView
+                android:id="@+id/downloadAudio"
+                style="@style/expandableButton"
+                android:src="@drawable/download_audio"
+                android:tooltipText="@string/downloadAudio"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/viewInInsta"
+                style="@style/expandableButton"
+                android:src="@drawable/instagram"
+                android:tooltipText="@string/viewInInsta" />
+        </LinearLayout>
+
+        <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            app:dotsColor="?attr/colorAccent"
+            app:dotsCornerRadius="6dp"
+            app:dotsSize="12dp"
+            app:dotsSpacing="3dp"
+            app:dotsWidthFactor="2.5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:progressMode="true"
+            app:selectedDotColor="?attr/colorAccent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,8 +2,8 @@ package ir.mahdiparastesh.instatools.list
 
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ConcatAdapter
@@ -68,8 +68,8 @@ abstract class ListPost<Activity, Fragment>(
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .signature(ObjectKey(med.id()))
             .centerCrop()
-            .addListener(GlideShimmer(h.b.root, h.b.thumbnail))
-            .into(h.b.thumbnail)
+            .addListener(GlideShimmer(h.b.root, h.b.thumb))
+            .into(h.b.thumb)
 
         // media type
         h.b.type.setImageDrawable(
@@ -102,15 +102,15 @@ abstract class ListPost<Activity, Fragment>(
         h.b.click.setBackgroundResource(if (norm) R.drawable.button else R.drawable.selected)
 
         // clicks
-        h.b.click.setOnClickListener { v ->
-            expand(v, h.bindingAdapterPosition)
+        h.b.click.setOnClickListener {
+            expand(h.b.thumb, h.bindingAdapterPosition)
         }
-        h.b.click.setOnLongClickListener { v ->
+        h.b.click.setOnLongClickListener {
             if (firstLongClickSelect) {
                 firstLongClickSelect = false
                 return@setOnLongClickListener false
             }
-            expand(v, h.bindingAdapterPosition)
+            expand(h.b.thumb, h.bindingAdapterPosition)
             true
         }
     }
@@ -120,8 +120,8 @@ abstract class ListPost<Activity, Fragment>(
 
     abstract operator fun get(position: Int): Media?
 
-    private fun expand(v: View, i: Int) {
-        expandable.expand(this[i], v)
+    private fun expand(v: ImageView, i: Int) {
+        expandable.expand(this[i] ?: return, v)
     }
 
     class PostDetailsLookup(private val rv: RecyclerView) : ItemDetailsLookup<Long>() {

@@ -166,7 +166,6 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Selection indicator invisible after Expandable collapses in all PostSelectors
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * -
   * Extension:

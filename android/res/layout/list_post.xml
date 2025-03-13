@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/thumbnail"
+            android:id="@+id/thumb"
             style="@style/shimmerIv" />
 
         <View

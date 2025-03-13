@@ -11,6 +11,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
@@ -30,22 +31,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 
-/** A ViewGroup that pops up and shows an IG post or reel. */
+/** A ViewGroup that pops up and shows an IG post or story. */
 class Expandable(
-    private val c: BaseActivity,
+    val c: BaseActivity,
     val b: ExpandableBinding,
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
     var zoomed = false
-    private var media: Media? = null
+    var media: Media? = null
     private var mediaOwner: String? = null
-    private var thumb: View? = null
-    private var currentAnimator: Animator? = null
+    var currentAnimator: Animator? = null
     private var startScale: Float? = null
     private var startBounds: RectF? = null
-    private val muteSound = MutableLiveData(false)
-    private val zoomDur = 200L
+    val muteSound = MutableLiveData(false)
+    private val zoomDur = 400L
 
     init {
         b.volume.setOnClickListener { muteSound.value = muteSound.value != true }
@@ -55,95 +55,103 @@ class Expandable(
                 ?.forEach { it?.player?.volume = if (bb) 0f else 1f }
         }
         b.download.setOnClickListener {
-            media?.also { med ->
-                CoroutineScope(Dispatchers.IO).launch {
-                    c.c.downloads.addAll<Download>(med.queue(owner = mediaOwner), true)
-                    Downloads.initService(c)
-                }
+            val med = media ?: return@setOnClickListener
+            CoroutineScope(Dispatchers.IO).launch {
+                c.c.downloads.addAll<Download>(med.queue(owner = mediaOwner), true)
+                Downloads.initService(c)
             }
         }
         b.downloadThis.setOnClickListener {
-            media?.also { med ->
-                CoroutineScope(Dispatchers.IO).launch {
-                    c.c.downloads.addAll<Download>(
-                        med.queue(onlyOneSlide = b.slider.currentItem), true
-                    )
-                    Downloads.initService(c)
-                }
+            val med = media ?: return@setOnClickListener
+            CoroutineScope(Dispatchers.IO).launch {
+                c.c.downloads.addAll<Download>(med.queue(onlyOneSlide = b.slider.currentItem), true)
+                Downloads.initService(c)
             }
-
         }
         b.downloadAll.setOnClickListener {
-            media?.also { med ->
-                CoroutineScope(Dispatchers.IO).launch {
-                    c.c.downloads.addAll<Download>(med.queue(), true)
-                    Downloads.initService(c)
-                }
+            val med = media ?: return@setOnClickListener
+            CoroutineScope(Dispatchers.IO).launch {
+                c.c.downloads.addAll<Download>(med.queue(), true)
+                Downloads.initService(c)
             }
         }
         b.downloadAudio.setOnClickListener {
-            val car = media?.carousel_media?.getOrNull(b.slider.currentItem)
+            val med = media ?: return@setOnClickListener
+            val car = med.carousel_media?.getOrNull(b.slider.currentItem)
             val audioUrl = (car ?: media)?.audioUrl()?.let { StringEscapeUtils.unescapeXml(it) }
                 ?: return@setOnClickListener
-            media?.apply {
-                CoroutineScope(Dispatchers.IO).launch {
-                    @Suppress("DEPRECATION")
-                    c.c.downloads.add<Download>(
-                        Download(
-                            id(),
-                            Utils.compileSecondsTS(taken_at!!),
-                            audioUrl,
-                            0x3,
-                            mediaOwner ?: owner().username!!,
-                            caption?.text,
-                            link() ?: audioUrl,
-                            thumb(),
-                            video_duration,
-                            latitude(),
-                            longitude(),
-                        ), true
-                    )
-                    Downloads.initService(c)
-                }
+
+            CoroutineScope(Dispatchers.IO).launch {
+                c.c.downloads.add<Download>(
+                    Download(
+                        med.id(),
+                        Utils.compileSecondsTS(med.taken_at!!),
+                        audioUrl,
+                        0x3,
+                        mediaOwner ?: med.owner().username!!,
+                        med.caption?.text,
+                        med.link() ?: audioUrl,
+                        med.thumb(),
+                        med.video_duration,
+                        med.latitude(),
+                        med.longitude(),
+                    ), true
+                )
+                Downloads.initService(c)
             }
         }
         b.viewInInsta.setOnClickListener {
-            media?.link()?.also {
-                try {
-                    c.startActivity(
-                        Intent(Intent.ACTION_VIEW, it.toUri()).apply {
-                            if (it.startsWith(UiTools.IG_OPENABLE) &&
-                                !it.startsWith("https://www.instagram.com/stories/highlights/")
-                            ) setPackage(UiTools.INSTA_PACKAGE)
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
-                    )
-                } catch (_: ActivityNotFoundException) {
-                }
+            val link = media?.link() ?: return@setOnClickListener
+            try {
+                c.startActivity(
+                    Intent(Intent.ACTION_VIEW, link.toUri()).apply {
+                        if (link.startsWith(UiTools.IG_OPENABLE) &&
+                            !link.startsWith("https://www.instagram.com/stories/highlights/")
+                        ) setPackage(UiTools.INSTA_PACKAGE)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                )
+            } catch (_: ActivityNotFoundException) {
             }
         }
     }
 
     fun expand(
-        media: Media?,
-        thumb: View?,
+        media: Media,
+        thumb: ImageView,
         /** used only for stories and highlights */
         mediaOwner: String? = null,
         /** used only for stories and highlights */
         mediaOwnerId: String? = null
     ) {
-        if (thumb == null || media == null || zoomed) return
+        if (zoomed) return
         zoomed = true
+
+        // initial configurations
         this.media = media
         this.mediaOwner = mediaOwner
         onZoomChanged(true)
         currentAnimator?.cancel()
-        b.username.text = ""
 
-        b.slider.adapter = ListCar(c, media, muteSound)
+        // thumbnail expansion
+        b.thumb.setImageDrawable(thumb.drawable)
+        b.thumb.vish()
+        b.root.vish()
+
+        // main layouts
+        b.slider.adapter = ListCar(this)
         b.indicator.attachTo(b.slider)
-        b.buttons.vis()
-        b.username.vis()
+        b.panel.vis()
+
+        // media details
+        val u = media.owner()
+        b.username.text = "@${u.username ?: mediaOwner}"
+        b.username.setOnClickListener {
+            if (!UiTools.openProfile(c, u.username ?: mediaOwner!!) && c !is Viewer)
+                Viewer.comeHere(c, mediaOwnerId ?: u.id())
+        }
+
+        // buttons
         val isSlider = media.carousel_media != null
         b.indicator.vis(isSlider)
         b.downloadAll.vis(isSlider)
@@ -152,18 +160,13 @@ class Expandable(
         val hasAudio = media.hasAudio() == true
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
-        val u = media.owner()
-        b.username.text = "@${u.username ?: mediaOwner}"
-        b.username.setOnClickListener {
-            if (!UiTools.openProfile(c, u.username ?: mediaOwner!!) && c !is Viewer)
-                Viewer.comeHere(c, mediaOwnerId ?: u.id())
-        }
+
+        /* --- beginning of coordination --- */
 
         val startBoundsInt = Rect()
         val finalBoundsInt = Rect()
         val globalOffset = Point()
 
-        b.root.vish()
         thumb.getGlobalVisibleRect(startBoundsInt)
         b.root.getGlobalVisibleRect(finalBoundsInt, globalOffset)
         startBoundsInt.offset(-globalOffset.x, -globalOffset.y)
@@ -186,30 +189,37 @@ class Expandable(
             startBounds!!.bottom += deltaHeight.toInt()
         }
 
-        thumb.alpha = 0f
-        b.slider.pivotX = 0f
-        b.slider.pivotY = 0f
+        /* --- end of coordination --- */
 
+        /* --- beginning of animation --- */
+
+        val firstWave = AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(b.thumb, View.X, startBounds!!.left, finalBounds.left),
+                ObjectAnimator.ofFloat(b.thumb, View.Y, startBounds!!.top, finalBounds.top),
+                ObjectAnimator.ofFloat(b.thumb, View.SCALE_X, startScale!!, 1f),
+                ObjectAnimator.ofFloat(b.thumb, View.SCALE_Y, startScale!!, 1f),
+                ObjectAnimator.ofArgb(
+                    b.root, "backgroundColor", c.color(android.R.color.transparent), colorBg
+                ),
+            )
+        }
+        val secondWave = AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(b.panel, View.ALPHA, 0f, 1f),
+            )
+        }
         currentAnimator = AnimatorSet().apply {
-            play(
-                ObjectAnimator.ofFloat(b.slider, View.X, startBounds!!.left, finalBounds.left)
-            ).apply {
-                with(
-                    ObjectAnimator.ofFloat(b.slider, View.Y, startBounds!!.top, finalBounds.top)
-                )
-                with(ObjectAnimator.ofFloat(b.slider, View.SCALE_X, startScale!!, 1f))
-                with(ObjectAnimator.ofFloat(b.slider, View.SCALE_Y, startScale!!, 1f))
-                with(
-                    ObjectAnimator.ofArgb(
-                        b.slider, "backgroundColor", c.color(android.R.color.transparent), colorBg
-                    )
-                ) // IT WORKS BITCH
-            }
+            playSequentially(firstWave, secondWave)
             duration = zoomDur
             interpolator = DecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     currentAnimator = null
+
+                    b.slider.vish(true)
+                    if ((b.slider.adapter as ListCar?)?.loading == false)
+                        b.thumb.vish(false)
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
@@ -218,22 +228,30 @@ class Expandable(
             })
             start()
         }
+
+        /* --- end of animation --- */
     }
 
     fun collapse() {
         if (startBounds == null || startScale == null || !zoomed) return
+        currentAnimator?.cancel()
         media = null
         mediaOwner = null
-        b.indicator.vis(false)
-        b.buttons.vis(false)
-        b.username.vis(false)
-        currentAnimator?.cancel()
+        b.slider.adapter = null
+        b.thumb.vish()
+
+        // fade + shrink animation
         currentAnimator = AnimatorSet().apply {
-            play(ObjectAnimator.ofFloat(b.slider, View.X, startBounds!!.left)).apply {
-                with(ObjectAnimator.ofFloat(b.slider, View.Y, startBounds!!.top))
-                with(ObjectAnimator.ofFloat(b.slider, View.SCALE_X, startScale!!))
-                with(ObjectAnimator.ofFloat(b.slider, View.SCALE_Y, startScale!!))
-            }
+            playTogether(
+                ObjectAnimator.ofFloat(b.thumb, View.X, startBounds!!.left),
+                ObjectAnimator.ofFloat(b.thumb, View.Y, startBounds!!.top),
+                ObjectAnimator.ofFloat(b.thumb, View.SCALE_X, startScale!!),
+                ObjectAnimator.ofFloat(b.thumb, View.SCALE_Y, startScale!!),
+                ObjectAnimator.ofArgb(
+                    b.root, "backgroundColor", colorBg, c.color(android.R.color.transparent)
+                ),
+                ObjectAnimator.ofFloat(b.panel, View.ALPHA, 1f, 0f),
+            )
             duration = zoomDur
             interpolator = DecelerateInterpolator()
             addListener(object : AnimatorListenerAdapter() {
@@ -250,10 +268,9 @@ class Expandable(
     }
 
     private fun zoomedOut() {
-        thumb?.alpha = 1f
-        thumb = null
         b.root.vish(false)
-        b.slider.adapter = null
+        b.panel.vis(false)
+        b.slider.vish(false)
         currentAnimator = null
         zoomed = false
         onZoomChanged(false)

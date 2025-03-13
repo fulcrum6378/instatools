@@ -7,18 +7,18 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Story
-import ir.mahdiparastesh.instatools.databinding.ListRelBinding
+import ir.mahdiparastesh.instatools.databinding.ListStoryBinding
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 
-class ListRel(private val c: Viewer, var story: Story) :
-    RecyclerView.Adapter<AnyViewHolder<ListRelBinding>>() {
+class ListStory(private val c: Viewer, var story: Story) :
+    RecyclerView.Adapter<AnyViewHolder<ListStoryBinding>>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
-    ): AnyViewHolder<ListRelBinding> =
-        AnyViewHolder(ListRelBinding.inflate(c.layoutInflater, parent, false))
+    ): AnyViewHolder<ListStoryBinding> =
+        AnyViewHolder(ListStoryBinding.inflate(c.layoutInflater, parent, false))
 
-    override fun onBindViewHolder(h: AnyViewHolder<ListRelBinding>, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<ListStoryBinding>, i: Int) {
         val med = story.items?.getOrNull(i) ?: return
         h.b.number.text = "${i + 1}"
 
@@ -31,7 +31,7 @@ class ListRel(private val c: Viewer, var story: Story) :
         h.b.click.setOnClickListener {
             c.expandable.expand(
                 story.items?.getOrNull(h.layoutPosition) ?: return@setOnClickListener,
-                h.b.root,
+                h.b.thumb,
                 c.vm.user?.username, // these Media instances do not contains User information!
                 c.vm.user?.id()
             )
