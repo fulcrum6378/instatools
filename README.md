@@ -15,9 +15,24 @@ This project is written in pure Kotlin and contains these modules:
    or as an EXE via [GraalVM](https://www.graalvm.org/).
 4. ~~JAVAFX~~: A GUI desktop application powered by JavaFX. (!cancelled!)
 
+### Subpackages
+
+- [**api**](android/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
+  including back-end data models, endpoint addresses and their related utilities.
+- [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) : data models
+- [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
+- [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
+- [**list**](android/kotlin/ir/mahdiparastesh/instatools/list) : all RecyclerView adapters
+- [**util**](android/kotlin/ir/mahdiparastesh/instatools/util) : UX-related utilities
+- [**view**](android/kotlin/ir/mahdiparastesh/instatools/view) : UI-related utilities
+
 ## Android Application
 
-### [Login.kt](android/kotlin/ir/mahdiparastesh/instatools/Login.kt)
+#### [InstaTools.kt](android/kotlin/ir/mahdiparastesh/instatools/InstaTools.kt)
+
+Subclass of *Application*, controls data repositories and different Instagram accounts a user possesses.
+
+#### [Login.kt](android/kotlin/ir/mahdiparastesh/instatools/Login.kt)
 
 This app lets its users log in to their Instagram account using a WebView.
 As soon as the authentication process is done,
@@ -31,29 +46,25 @@ These data are used later for dealing with Instagram's private API.
 This app supports multiple accounts; each account has its own app data and shared preferences.
 That's why the JSON file mentioned above is an array of multiple Account instances.
 
-### [Main.kt](android/kotlin/ir/mahdiparastesh/instatools/Main.kt)
+#### [Main.kt](android/kotlin/ir/mahdiparastesh/instatools/Main.kt)
 
 This activity contains 3 fragments:
 
 1. **Favourites** ([PageFav.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageFav.kt)) :
    Displays a local list of favourite Instagram profiles
    (its data is only stored locally not online on Instagram).
-   Its theme is the yellow-brown one called Theme.InstaTools.Primary.
-2. **Saved Posts** [PageSvd.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageSvd.kt) :
+   Its theme is the yellow-brown one: `Theme.InstaTools.Primary`.
+2. **Saved Posts** ([PageSvd.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageSvd.kt)) :
    lists the saved posts and lets the users unsave and/or download them.
-   [Downloads.kt](android/kotlin/ir/mahdiparastesh/instatools/Downloads.kt)
-   can download any Instagram content, including post, story, reels, TV and profile picture.
-   Their theme is the pink one called Theme.InstaTools.Secondary.
-   [Downloader.kt](android/kotlin/ir/mahdiparastesh/instatools/job/Downloader.kt)
-   is the service implemented mainly by Downloads (or it can run from anywhere).
-   It queues the download items and downloads them one by one.
+   Its theme is the pink-purple one: `Theme.InstaTools.Secondary`.
 3. **Reels Tray** ([PageTry.kt](android/kotlin/ir/mahdiparastesh/instatools/frag/PageTry.kt)) :
    lists stories from your feed.
+   Its theme is the blue one called: `Theme.InstaTools.Tertiary`.
 
-### [Viewer.kt](android/kotlin/ir/mahdiparastesh/instatools/Viewer.kt)
+#### [Viewer.kt](android/kotlin/ir/mahdiparastesh/instatools/Viewer.kt)
 
-This activity VIEWs any Instagram profile,
-it uses the pink theme of Downloads and has 3 fragments like Main.kt:
+This activity displays any Instagram profile,
+it uses the pink-purple theme of *PageSvd* and has 3 fragments like Main.kt:
 
 1. [PageSto](android/kotlin/ir/mahdiparastesh/instatools/frag/PageSto.kt)
    shows their main story on top and then their highlighted stories.
@@ -62,23 +73,22 @@ it uses the pink theme of Downloads and has 3 fragments like Main.kt:
 3. [PageTag](android/kotlin/ir/mahdiparastesh/instatools/frag/PageTag.kt)
    shows their tagged posts.
 
-### [Settings.kt](android/kotlin/ir/mahdiparastesh/instatools/Settings.kt)
+#### [Downloads.kt](android/kotlin/ir/mahdiparastesh/instatools/Downloads.kt)
+
+This activity can download IG posts and reels via their links and can receive link shares from Instagram.
+it uses the pink-purple theme of *PageSvd*.
+Also it shows any ongoing download and it can directly control
+[DownloadService](android/kotlin/ir/mahdiparastesh/instatools/job/DownloadService.kt),
+which is an Android Service that queues [Download](core/kotlin/ir/mahdiparastesh/instatools/data/Download.kt)
+items and downloads them one by one.
+
+#### [Settings.kt](android/kotlin/ir/mahdiparastesh/instatools/Settings.kt)
 
 There are different shared preference files related to each account
 and there is also a global shared preference.
 This activity controls both global settings (`gsp`)
 and also settings of the current account (`sp)`.
-
-### Subpackages
-
-- [**api**](android/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
-  including back-end data models, endpoint addresses and their related utilities.
-- [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) : data models
-- [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
-- [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
-- [**list**](android/kotlin/ir/mahdiparastesh/instatools/list) : all RecyclerView adapters
-- [**util**](android/kotlin/ir/mahdiparastesh/instatools/util) : UX-related utilities
-- [**view**](android/kotlin/ir/mahdiparastesh/instatools/view) : UI-related utilities
+it uses the blue theme of *PageTry*.
 
 ### Localisation
 
@@ -87,7 +97,7 @@ This app only supports these languages:
 - English (en-GB)
 - Persian (fa)
 
-### Unlucky Publishing Story
+### The Unlucky Publishing Story
 
 - Google Play removed this app 2 times because of *"copyright infringement"*;
   they said I had stolen Instagram's trademark!!!
