@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -33,8 +34,8 @@ import ir.mahdiparastesh.instatools.util.BasePageMain
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
-import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.PostSelector
+import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -174,6 +175,16 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override fun onLazilyLoaded(start: Int, size: Int) {
         super.onLazilyLoaded(start, size)
         if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
+    }
+
+    override fun selectionKeyProvider() = object : ItemKeyProvider<Long>(SCOPE_MAPPED) {
+        override fun getKey(i: Int): Long? = c.vm.saved?.items?.getOrNull(i)?.media?.uid
+        override fun getPosition(key: Long): Int {
+            c.vm.saved?.items?.forEachIndexed { i, item ->
+                if (item.media.uid == key) return@getPosition i
+            }
+            return -1
+        }
     }
 
     @SuppressLint("UnsafeOptInUsageError")

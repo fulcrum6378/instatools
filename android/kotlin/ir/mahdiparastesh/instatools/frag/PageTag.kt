@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
@@ -118,6 +119,16 @@ class PageTag : BasePageViewer(), PostSelector {
 
         // cache the data model
         c.vm.tagged?.also { pickle.save(it) }
+    }
+
+    override fun selectionKeyProvider() = object : ItemKeyProvider<Long>(SCOPE_MAPPED) {
+        override fun getKey(i: Int): Long? = c.vm.tagged?.edges?.getOrNull(i)?.node?.uid
+        override fun getPosition(key: Long): Int {
+            c.vm.tagged?.edges?.forEachIndexed { i, edge ->
+                if (edge.node.uid == key) return@getPosition i
+            }
+            return -1
+        }
     }
 
     override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =
