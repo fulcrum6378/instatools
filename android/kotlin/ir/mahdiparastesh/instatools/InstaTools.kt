@@ -170,6 +170,7 @@ class InstaTools : Application() {
   * -
   * Extension:
   * PageTry
+  * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable

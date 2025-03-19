@@ -17,7 +17,7 @@ This project is written in pure Kotlin and contains these modules:
 
 ### Subpackages
 
-- [**api**](android/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
+- [**api**](core/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
   including back-end data models, endpoint addresses and their related utilities.
 - [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) : data models
 - [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
@@ -30,7 +30,8 @@ This project is written in pure Kotlin and contains these modules:
 
 #### [InstaTools.kt](android/kotlin/ir/mahdiparastesh/instatools/InstaTools.kt)
 
-Subclass of *Application*, controls data repositories and different Instagram accounts a user possesses.
+Subclass of *Application*, controls data repositories and different Instagram accounts a user
+possesses.
 
 #### [Login.kt](android/kotlin/ir/mahdiparastesh/instatools/Login.kt)
 
@@ -75,12 +76,14 @@ it uses the pink-purple theme of *PageSvd* and has 3 fragments like Main.kt:
 
 #### [Downloads.kt](android/kotlin/ir/mahdiparastesh/instatools/Downloads.kt)
 
-This activity can download IG posts and reels via their links and can receive link shares from Instagram.
-it uses the pink-purple theme of *PageSvd*.
+This activity can download IG posts and reels via their links and can receive link shares from
+Instagram.
+It uses the pink-purple theme of *PageSvd*.
 Also it shows any ongoing download and it can directly control
 [DownloadService](android/kotlin/ir/mahdiparastesh/instatools/job/DownloadService.kt),
-which is an Android Service that queues [Download](core/kotlin/ir/mahdiparastesh/instatools/data/Download.kt)
-items and downloads them one by one.
+which is an Android Service
+that queues [Download](core/kotlin/ir/mahdiparastesh/instatools/data/Download.kt) items
+and downloads them one by one.
 
 #### [Settings.kt](android/kotlin/ir/mahdiparastesh/instatools/Settings.kt)
 
@@ -103,7 +106,8 @@ This app only supports these languages:
   they said I had stolen Instagram's trademark!!!
   That the icon is too similar to that of Instagram and the name *"Insta"* belongs to Instagram.
 
-- Galaxy Store removed this app tens of times because I just used the word "Instagram" inside my app!
+- Galaxy Store suspended and removed this app tens of times
+  because I just used the word "Instagram" inside my app!
 
 - Myket didn't allow me to republish it because it was against the laws of IRI!
 

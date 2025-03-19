@@ -322,7 +322,7 @@ fun profileCommand(a: Array<String>, guide: String, lister: (Profile) -> Profile
 
         val a1UN = when {
             a[1].startsWith("@") -> a[1].substring(1)
-            a[1] == "reset" -> latestUser
+            a[1] in arrayOf("reset", "all") -> null
             a[1].isNotEmpty() && a[1][0].isLetter() -> a[1]
             else -> null
         }
