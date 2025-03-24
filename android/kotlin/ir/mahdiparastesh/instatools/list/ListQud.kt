@@ -44,10 +44,6 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
 
         // status
         syncStatus(h, q)
-        h.b.status.repeatCount = if (q.isFailed()) 0 else LottieDrawable.INFINITE
-        val pad =
-            if (!q.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
-        h.b.status.setPadding(pad, pad, pad, pad)
 
         // clicks
         h.b.root.setOnClickListener {
@@ -90,6 +86,10 @@ class ListQud(val c: Downloads) : RecyclerView.Adapter<AnyViewHolder<ListQudBind
             h.b.user.alpha = alpha
             h.b.date.alpha = alpha
         }
+        h.b.status.repeatCount = if (q.isFailed()) 0 else LottieDrawable.INFINITE
+        val pad =
+            if (!q.isFailed()) c.resources.getDimension(R.dimen.qudLoadingPad).toInt() else 0
+        h.b.status.setPadding(pad, pad, pad, pad)
     }
 
     override fun getItemCount() = c.c.downloads.size<Download>()

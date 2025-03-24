@@ -39,7 +39,7 @@
     <!-- Main -->
     <color name="primary">@color/CP</color>
     <color name="secondary">@color/CS</color>
-    <color name="tertiary">@color/CT</color>
+    <!--<color name="tertiary">@color/CT</color>-->
     <color name="navHeaderLL">#99FFFFFF</color>
 
     <!-- Viewer -->

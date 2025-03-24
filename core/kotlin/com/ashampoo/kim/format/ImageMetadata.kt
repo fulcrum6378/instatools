@@ -34,6 +34,7 @@ public data class ImageMetadata(
 
     public fun findStringValue(tagInfo: TagInfo): String? {
 
+        @Suppress("UNCHECKED_CAST")
         val strings = findTiffField(tagInfo)?.value as? List<String>
 
         /* Looks like Canon and Fuji OOC JPEGs have lens make in an array.  */

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "ir.mahdiparastesh.instatools"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     signingConfigs {
@@ -21,9 +21,9 @@ android {
     defaultConfig {
         applicationId = "ir.mahdiparastesh.instatools"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 78
-        versionName = "37.6.7"
+        versionName = "37.7.1"
         signingConfig = signingConfigs.getByName("main")
     }
     sourceSets.getByName("main") {

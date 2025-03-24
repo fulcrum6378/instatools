@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.util.Utils
-import java.lang.IllegalStateException
 
 /**
  * A structure for handling multiple items as a queue.
