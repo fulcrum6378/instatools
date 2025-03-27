@@ -5,15 +5,10 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.net.ConnectException
 import java.net.InetSocketAddress
-import java.net.ProtocolException
 import java.net.Proxy
-import java.net.SocketTimeoutException
 import java.net.URI
-import java.net.UnknownHostException
 import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLHandshakeException
 
 object Api {
     var cookies = ""
@@ -70,22 +65,14 @@ object Api {
             if (isPost && body != null)
                 con.outputStream.bufferedWriter().use { it.write(body) }
             con.responseCode
-        } catch (_: UnknownHostException) {
-            throw FailureException(ERR_NO_INTERNET)
-        } catch (_: ConnectException) {
-            throw FailureException(ERR_CON_PROXY)
-        } catch (_: SocketTimeoutException) {
-            throw FailureException(ERR_CON)
-        } catch (_: SSLHandshakeException) {
-            throw FailureException(ERR_BROKEN_CON)
-        } catch (_: ProtocolException) { // more than 20 redirections!
-            throw FailureException(ERR_LOGGED_OUT)
+        } catch (e: IOException) {
+            throw FailureException(e)
         }
 
         val text = if (responseCode == 200) try {
             con.inputStream.bufferedReader().readText()
-        } catch (_: IOException) {
-            throw FailureException(ERR_BROKEN_CON)
+        } catch (e: IOException) {
+            throw FailureException(ERR_BROKEN_CON, e)
         } else
             throw FailureException(responseCode)
 
@@ -121,25 +108,18 @@ object Api {
 
         val responseCode = try {
             con.responseCode
-        } catch (_: UnknownHostException) {
-            throw FailureException(ERR_NO_INTERNET)
-        } catch (_: ConnectException) {
-            throw FailureException(ERR_CON_PROXY)
-        } catch (_: SocketTimeoutException) {
-            throw FailureException(ERR_CON)
-        } catch (_: SSLHandshakeException) {
-            throw FailureException(ERR_BROKEN_CON)
-        } catch (_: ProtocolException) {
-            throw FailureException(ERR_LOGGED_OUT)
+        } catch (e: IOException) {
+            throw FailureException(e)
         }
 
         if (responseCode == 200) try {
             return con.inputStream.bufferedReader().readText()
-        } catch (_: IOException) {
-            throw FailureException(ERR_BROKEN_CON)
+        } catch (e: IOException) {
+            throw FailureException(ERR_BROKEN_CON, e)
         } else
             throw FailureException(responseCode)
     }
+
 
     enum class Endpoint(val url: String) {
         QUERY("https://www.instagram.com/graphql/query"),
@@ -150,31 +130,42 @@ object Api {
         SAVED("https://www.instagram.com/api/v1/feed/saved/posts/"),
         //MEDIA_INFO("https://www.instagram.com/api/v1/media/%s/info/"),
 
-        // friendships
-        //FOLLOWERS("https://www.instagram.com/api/v1/friendships/%1\$s/followers/?count=200&max_id=%2\$s"),
-        //FOLLOWING("https://www.instagram.com/api/v1/friendships/%1\$s/following/?count=200&max_id=%2\$s"),
-        //FRIENDSHIPS_MANY("https://www.instagram.com/api/v1/friendships/show_many/"),
-        //FRIENDSHIP("https://www.instagram.com/api/v1/friendships/show/%s/"),
-
         // logging in/out
         LOGOUT("https://www.instagram.com/accounts/logout/ajax/"),
     }
 
-    class FailureException(val code: Int) : IllegalStateException(
+
+    class FailureException(
+        val code: Int, e: IOException? = null
+    ) : IllegalStateException(
         "API ERROR: " + when (code) {
             ERR_NO_INTERNET -> "No internet connection!"
             ERR_CON_PROXY -> "Couldn't connect to the proxy server!"
             ERR_CON -> "Couldn't connect to Instagram!"
-            ERR_BROKEN_CON -> "Connection was broken!"
+            ERR_BROKEN_CON ->
+                "Connection was broken!" + (if (e != null) describeException(e) else "")
             ERR_LOGGED_OUT, 401 -> "You've been logged out!" +
                 (if (code == 401) " (HTTP error code $code)" else "")
             ERR_GRAPHQL_FAILED -> "Operation failed; presumably you've been logged out!"
             ERR_NO_COOKIES -> "No cookies are set!"
+            ERR_CON_UNKNOWN_ERR -> "Unknown connection error: ${describeException(e!!)}"
             404 -> "Not found!"
             429 -> "Too many requests!"
             else -> "HTTP error code $code!"
         }
-    ), Utils.InstaToolsException
+    ), Utils.InstaToolsException {
+
+        constructor(e: IOException) : this(
+            when (e) {
+                is java.net.UnknownHostException -> ERR_NO_INTERNET
+                is java.net.ConnectException -> ERR_CON_PROXY
+                is java.net.SocketTimeoutException -> ERR_CON
+                is javax.net.ssl.SSLHandshakeException, is java.net.SocketException -> ERR_BROKEN_CON
+                is java.net.ProtocolException -> ERR_LOGGED_OUT
+                else -> ERR_CON_UNKNOWN_ERR
+            }, e
+        )
+    }
 
     const val ERR_NO_INTERNET = -1
     const val ERR_CON_PROXY = -2
@@ -183,4 +174,8 @@ object Api {
     const val ERR_LOGGED_OUT = -5
     const val ERR_GRAPHQL_FAILED = -6
     const val ERR_NO_COOKIES = -10
+    const val ERR_CON_UNKNOWN_ERR = -11
+
+    private fun describeException(e: Exception): String =
+        e.javaClass.`package`.name + (if (e.message != null) ": ${e.message}" else "")
 }
