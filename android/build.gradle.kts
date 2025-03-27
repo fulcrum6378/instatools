@@ -9,6 +9,30 @@ android {
     compileSdk = 36
     buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
+    defaultConfig {
+        applicationId = "ir.mahdiparastesh.instatools"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 78
+        versionName = "37.8.8"
+    }
+
+    sourceSets.getByName("main") {
+        manifest.srcFile("AndroidManifest.xml")
+        kotlin.setSrcDirs(listOf("kotlin"))
+        res.setSrcDirs(listOf("res"))
+    }
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_23
+        targetCompatibility = JavaVersion.VERSION_23
+    }
+    kotlinOptions { jvmTarget = "23" }
+
     signingConfigs {
         create("main") {
             storeFile = file(System.getenv("JKS_PATH"))
@@ -17,34 +41,9 @@ android {
             keyPassword = System.getenv("JKS_PASS")
         }
     }
-
-    defaultConfig {
-        applicationId = "ir.mahdiparastesh.instatools"
-        minSdk = 26
-        targetSdk = 36
-        versionCode = 78
-        versionName = "37.8.8"
-        signingConfig = signingConfigs.getByName("main")
-    }
-    sourceSets.getByName("main") {
-        manifest.srcFile("AndroidManifest.xml")
-        kotlin.setSrcDirs(listOf("kotlin"))
-        res.setSrcDirs(listOf("res"))
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_23
-        targetCompatibility = JavaVersion.VERSION_23
-    }
-    kotlinOptions { jvmTarget = "23" }
-
-    buildFeatures {
-        buildConfig = true
-        viewBinding = true
-    }
     buildTypes {
-        create("debuggee") {
-            isDebuggable = true
-            isMinifyEnabled = false
+        debug {
+            signingConfig = signingConfigs.getByName("main")
         }
         release {
             isMinifyEnabled = true
@@ -52,13 +51,10 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("main")
         }
     }
-    lint  { checkReleaseBuilds = false }
-}
-androidComponents.beforeVariants { variantBuilder ->
-    if (variantBuilder.buildType in listOf("debug", "androidTest"))
-        variantBuilder.enable = false
+    lint { checkReleaseBuilds = false }
 }
 
 dependencies {

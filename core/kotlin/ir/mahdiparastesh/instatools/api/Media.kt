@@ -34,7 +34,7 @@ class Media(
     //val photo_of_you: Boolean?,
     private val pk: String?, // nullable in tagged carousel items
     val product_type: String?,
-    val taken_at: Long?, // nullable in tagged carousel items
+    val taken_at: Long?, // nullable in all tagged Media models
     val user: User?,
     val video_dash_manifest: String?,
     val video_duration: Float?, // in seconds
