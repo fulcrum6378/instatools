@@ -17,6 +17,8 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/jumperListPad"
             app:layoutManager="ir.mahdiparastesh.instatools.view.SafeGridManager"
             app:spanCount="3" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -63,7 +63,8 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
     override fun getItemCount() = c.accounts.size
 
     private fun more(v: View, acc: Account, i: Int): Boolean {
-        MaterialMenu(c, v, R.menu.acc_more,
+        MaterialMenu(
+            c, v, R.menu.acc_more,
             R.id.amOffline to {
                 c.c.onLoggedIn(acc, true)
                 acc.last = Utils.now()
@@ -122,7 +123,8 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
                 c.c.gsp.edit { remove(Login.SP_ACCOUNT) }
         }
         notifyItemRemoved(i)
-        notifyItemRangeChanged(i, c.accounts.size)
-        if (i > 0) notifyItemChanged(i - 1)
+        val total = c.accounts.size
+        if (total > i + 1) notifyItemRangeChanged(i, total - i - 1)
+        else if (i > 0) notifyItemChanged(i - 1)
     }
 }

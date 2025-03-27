@@ -14,7 +14,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             style="@style/rv"
-            android:padding="0dp" />
+            android:paddingTop="0dp" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView

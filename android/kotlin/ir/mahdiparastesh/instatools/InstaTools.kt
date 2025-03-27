@@ -74,8 +74,8 @@ class InstaTools : Application() {
     fun onLoggedOut() {
         fav.value = null
         favPickle = null
-        //commands = null  FIXME
-        //downloads = null  FIXME
+        commands.forget<Command>()
+        downloads.forget<Download>()
         sp = null
         gsp.edit { remove(Login.SP_ACCOUNT) }
         Api.cookies = ""
@@ -174,8 +174,10 @@ class InstaTools : Application() {
   * reset only posts at a first refresh, reset the user at a second refresh
   * Notify less silent when an error occurs
   * When you go back to Login, its WebView state remains as it was
+  * Clicking on external links will bring a "cleartext not permitted" error
   * -
   * Extension:
+  * Get rid of Material and AppCompat stuff
   * MIN_SDK => 28 (Android 9, Pie) + remove notification compat if possible
   * PageTry
   * A PageRel for Viewer for IG Reels of profile

@@ -66,6 +66,10 @@ class Queue<T>(val pickle: Pickle?) {
         save<R>()
     }
 
+    inline fun <reified R> forget() {
+        list<R>().clear()
+    }
+
     inline fun <reified R> save() {
         pickle?.save<List<R>>(list<R>().toList())
     }

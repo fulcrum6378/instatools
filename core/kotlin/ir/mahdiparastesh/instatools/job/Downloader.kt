@@ -25,12 +25,13 @@ import ir.mahdiparastesh.instatools.util.Utils
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.UnknownHostException
 import java.util.concurrent.CancellationException
 import javax.net.ssl.HttpsURLConnection
-import kotlin.io.copyTo
+import javax.net.ssl.SSLHandshakeException
 
 interface Downloader : Queuer<Download> {
 
@@ -66,9 +67,13 @@ interface Downloader : Queuer<Download> {
             val responseCode = try {
                 con.responseCode
             } catch (_: UnknownHostException) {
-                throw Api.FailureException(-1)
+                throw Api.FailureException(Api.ERR_NO_INTERNET)
+            } catch (_: ConnectException) {
+                throw Api.FailureException(Api.ERR_CON_PROXY)
             } catch (_: SocketTimeoutException) {
-                throw Api.FailureException(-2)
+                throw Api.FailureException(Api.ERR_CON)
+            } catch (_: SSLHandshakeException) {
+                throw Api.FailureException(Api.ERR_BROKEN_CON)
             }
 
             if (responseCode == 200) try {

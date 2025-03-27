@@ -28,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.util.Utils
 
 object UiTools {
@@ -182,14 +183,15 @@ object UiTools {
 
     fun apiError(c: InstaTools, code: Int): String = c.resources.getString(
         when (code) {
-            -1 -> R.string.noInternet
-            -2 -> R.string.connectionFailure
-            -3 -> R.string.connectionBroken
-            -4 -> {
+            Api.ERR_NO_INTERNET -> R.string.noInternet
+            Api.ERR_CON_PROXY -> R.string.vpnConnectionFailure
+            Api.ERR_CON -> R.string.connectionFailure
+            Api.ERR_BROKEN_CON -> R.string.connectionBroken
+            Api.ERR_LOGGED_OUT -> {
                 c.needAuthentication()
                 R.string.loggedOut
             }
-            -5 -> R.string.operationFailed
+            Api.ERR_GRAPHQL_FAILED -> R.string.operationFailed
             401 -> {
                 c.needAuthentication()
                 R.string.loggedOut401
@@ -199,24 +201,4 @@ object UiTools {
             else -> R.string.httpError
         }, code
     )
-
-    /*fun urlEncode(uriString: String?): String? {
-        if (uriString == null) return null
-        if (TextUtils.isEmpty(uriString)) return uriString
-        val allowedUrlCharacters = Pattern.compile(
-            "([A-Za-z\\d_.~:/?#\\[\\]@!$&'()*+,;" + "=-]|%[\\da-fA-F]{2})+"
-        )
-        val matcher = allowedUrlCharacters.matcher(uriString)
-        var validUri: String? = null
-        if (matcher.find()) validUri = matcher.group()
-        if (TextUtils.isEmpty(validUri) || uriString.length == validUri!!.length)
-            return uriString
-
-        val uri = Uri.parse(uriString)
-        val uriBuilder = Uri.Builder().scheme(uri.scheme).authority(uri.authority)
-        for (path in uri.pathSegments) uriBuilder.appendPath(path)
-        for (key in uri.queryParameterNames)
-            uriBuilder.appendQueryParameter(key, uri.getQueryParameter(key))
-        return uriBuilder.build().toString()
-    }*/
 }

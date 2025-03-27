@@ -43,7 +43,7 @@ object Api {
         isPost: Boolean = false,
         body: String? = null,
     ): JSON {
-        if (cookies.isBlank()) throw FailureException(-10)
+        if (cookies.isBlank()) throw FailureException(ERR_NO_COOKIES)
 
         val con = URI(url).toURL().openConnection(proxy) as HttpsURLConnection
         con.requestMethod = if (isPost) "POST" else "GET"
@@ -71,21 +71,21 @@ object Api {
                 con.outputStream.bufferedWriter().use { it.write(body) }
             con.responseCode
         } catch (_: UnknownHostException) {
-            throw FailureException(-1)
+            throw FailureException(ERR_NO_INTERNET)
         } catch (_: ConnectException) {
-            throw FailureException(if (proxy != Proxy.NO_PROXY) -11 else -2)
+            throw FailureException(ERR_CON_PROXY)
         } catch (_: SocketTimeoutException) {
-            throw FailureException(-2)
+            throw FailureException(ERR_CON)
         } catch (_: SSLHandshakeException) {
-            throw FailureException(-3)
+            throw FailureException(ERR_BROKEN_CON)
         } catch (_: ProtocolException) { // more than 20 redirections!
-            throw FailureException(-4)
+            throw FailureException(ERR_LOGGED_OUT)
         }
 
         val text = if (responseCode == 200) try {
             con.inputStream.bufferedReader().readText()
         } catch (_: IOException) {
-            throw FailureException(-3)
+            throw FailureException(ERR_BROKEN_CON)
         } else
             throw FailureException(responseCode)
 
@@ -94,10 +94,11 @@ object Api {
             //FileOutputStream(File("Downloads/1.json")).use { it.write(text.encodeToByteArray()) }
         }
         if (text.startsWith("<!DOCTYPE html>"))
-            throw FailureException(-4)
+            throw FailureException(ERR_LOGGED_OUT)
 
         val data = json.decodeFromString<JSON>(text)
-        if (data is GraphQl && data.data == null) throw FailureException(-5)
+        if (data is GraphQl && data.data == null)
+            throw FailureException(ERR_GRAPHQL_FAILED)
         return data
     }
 
@@ -121,19 +122,21 @@ object Api {
         val responseCode = try {
             con.responseCode
         } catch (_: UnknownHostException) {
-            throw FailureException(-1)
+            throw FailureException(ERR_NO_INTERNET)
         } catch (_: ConnectException) {
-            throw FailureException(if (proxy != Proxy.NO_PROXY) -10 else -2)
+            throw FailureException(ERR_CON_PROXY)
         } catch (_: SocketTimeoutException) {
-            throw FailureException(-1)
+            throw FailureException(ERR_CON)
+        } catch (_: SSLHandshakeException) {
+            throw FailureException(ERR_BROKEN_CON)
         } catch (_: ProtocolException) {
-            throw FailureException(-4)
+            throw FailureException(ERR_LOGGED_OUT)
         }
 
         if (responseCode == 200) try {
             return con.inputStream.bufferedReader().readText()
         } catch (_: IOException) {
-            throw FailureException(-3)
+            throw FailureException(ERR_BROKEN_CON)
         } else
             throw FailureException(responseCode)
     }
@@ -159,16 +162,25 @@ object Api {
 
     class FailureException(val code: Int) : IllegalStateException(
         "API ERROR: " + when (code) {
-            -1 -> "No internet connection!"
-            -2 -> "Couldn't connect to Instagram!"
-            -3 -> "Connection was broken!"
-            -4, 401 -> "You've been logged out!" + (if (code == 401) " (HTTP error code $code)" else "")
-            -5 -> "Operation failed; presumably you've been logged out!"
-            -10 -> "No cookies are set!"
-            -11 -> "Couldn't connect to the proxy server!"
+            ERR_NO_INTERNET -> "No internet connection!"
+            ERR_CON_PROXY -> "Couldn't connect to the proxy server!"
+            ERR_CON -> "Couldn't connect to Instagram!"
+            ERR_BROKEN_CON -> "Connection was broken!"
+            ERR_LOGGED_OUT, 401 -> "You've been logged out!" +
+                (if (code == 401) " (HTTP error code $code)" else "")
+            ERR_GRAPHQL_FAILED -> "Operation failed; presumably you've been logged out!"
+            ERR_NO_COOKIES -> "No cookies are set!"
             404 -> "Not found!"
             429 -> "Too many requests!"
             else -> "HTTP error code $code!"
         }
     ), Utils.InstaToolsException
+
+    const val ERR_NO_INTERNET = -1
+    const val ERR_CON_PROXY = -2
+    const val ERR_CON = -3
+    const val ERR_BROKEN_CON = -4
+    const val ERR_LOGGED_OUT = -5
+    const val ERR_GRAPHQL_FAILED = -6
+    const val ERR_NO_COOKIES = -10
 }

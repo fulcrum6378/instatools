@@ -108,8 +108,10 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     ForegroundService.HANDLE_ITEM_DELETED -> {
                         val index = msg.obj as Int
                         b.rv.adapter?.notifyItemRemoved(index)
-                        b.rv.adapter?.notifyItemRangeChanged(index, c.downloads.size<Download>())
-                        if (index > 0) b.rv.adapter?.notifyItemChanged(index - 1)
+                        val total = c.downloads.size<Download>()
+                        if (total > index + 1)
+                            b.rv.adapter?.notifyItemRangeChanged(index + 1, total - index - 1)
+                        else if (index > 0) b.rv.adapter?.notifyItemChanged(index - 1)
                         onListResized()
                     }
                 }
@@ -201,8 +203,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         when (item.itemId) {
             R.id.dtControl -> if (!c.downloads.isEmpty<Download>()) {
                 if (DownloadService.active.value == true)
-                    startService(Intent(c, DownloadService::class.java) // don't use stopService()
-                        .apply { action = ForegroundService.ACTION_STOP })
+                    startService(
+                        Intent(c, DownloadService::class.java) // don't use stopService()
+                            .apply { action = ForegroundService.ACTION_STOP })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }
@@ -361,8 +364,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
                 withContext(Dispatchers.Main) {
                     b.rv.adapter?.notifyItemRemoved(q)
-                    b.rv.adapter?.notifyItemRangeChanged(q, c.downloads.size<Download>() - 1)
-                    if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
+                    val total = c.downloads.size<Download>()
+                    if (total > q + 1) b.rv.adapter?.notifyItemRangeChanged(q, total - q - 1)
+                    else if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
                     onListResized()
                     cancelNotifications()
 

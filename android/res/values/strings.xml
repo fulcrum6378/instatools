@@ -62,6 +62,7 @@
 
     <!-- API -->
     <string name="noInternet">No internet connection!</string>
+    <string name="vpnConnectionFailure">Couldn\'t connect to the VPN!</string>
     <string name="connectionFailure">Couldn\'t connect to Instagram!</string>
     <string name="connectionBroken">Connection was broken!</string>
     <string name="loggedOut">You\'ve been logged out!</string>

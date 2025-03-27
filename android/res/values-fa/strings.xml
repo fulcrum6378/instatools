@@ -62,6 +62,7 @@
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>
+    <string name="vpnConnectionFailure">اتصال به VPN برقرار نشد!</string>
     <string name="connectionFailure">اتصال برقرار نشد!</string>
     <string name="connectionBroken">اتصال قطع شد!</string>
     <string name="loggedOut">شما از حسابتان خارج شده اید!</string>
