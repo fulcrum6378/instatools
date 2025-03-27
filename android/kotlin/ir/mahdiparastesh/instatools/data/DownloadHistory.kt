@@ -87,7 +87,7 @@ class DownloadHistory(private val file: File) {
     @WorkerThread
     fun add(fileName: String) {
         if (list.isNullOrEmpty()) return
-        list!!.add(fileName)
+        if (!list!!.add(fileName)) return
         FileOutputStream(file, true).use { fos ->
             fos.write(
                 "${if (list!!.isEmpty()) "" else "\n"}$fileName"

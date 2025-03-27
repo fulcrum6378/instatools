@@ -257,9 +257,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
         for (del in deletion.reversed()) try {
             c.vm.saved?.items?.removeAt(del)
             b.rv.adapter?.notifyItemRemoved(del)
-            c.vm.saved?.items?.size?.also { total ->
-                b.rv.adapter?.notifyItemRangeChanged(del, total)
-            }
             c.vm.savedCount.value = c.vm.savedCount.value?.let { it - 1 }
             onListResized()
         } catch (_: IndexOutOfBoundsException) {

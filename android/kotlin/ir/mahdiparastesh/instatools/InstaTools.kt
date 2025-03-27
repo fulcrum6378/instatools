@@ -170,8 +170,9 @@ class InstaTools : Application() {
 /* TODO:
   * Problems:
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
-  * Is ListPost notified twice?
   * reset only posts at a first refresh, reset the user at a second refresh
+  * Notify less silent when an error occurs
+  * When you go back to Login, its WebView state remains as it was
   * -
   * Extension:
   * MIN_SDK => 28 (Android 9, Pie) + remove notification compat if possible
