@@ -5,7 +5,6 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import java.net.URI
-import kotlin.jvm.Throws
 
 /**
  * @param id unique ID of a [Media]
@@ -37,6 +36,7 @@ class Download(
     var status: Byte = 0x0
 ) {
 
+    /** Synchronised with [Media.fileNameWithoutExt] */
     val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
     val ext: String by lazy {
         var ext = URI(url).path.split(".").last()

@@ -11,7 +11,6 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
-import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.LazyFile
 import ir.mahdiparastesh.instatools.util.Utils
@@ -118,8 +117,10 @@ class DownloadService : ForegroundService(), Downloader {
             if (success) HANDLE_ITEM_DELETED else HANDLE_ITEM_UPDATED,
             c.downloads.indexOf<Download>(q)
         )?.sendToTarget()
-        if (success) c.downloads.remove<Download>(q)
-        if (q.isMainFile()) c.downloadHistory?.add(q.fileName)
+        if (success) {
+            c.downloads.remove<Download>(q)
+            if (q.isMainFile()) c.downloadHistory.add(q.fileName)
+        }
         c.incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
     }
 
@@ -134,9 +135,6 @@ class DownloadService : ForegroundService(), Downloader {
 
         // clear cached pictures of Glide
         c.clearCacheIfNecessary("image_manager_disk_cache")
-
-        // save the download history
-        DownloadHistory.saveCache(c)
 
         if (proceed) {
             if (fatalError != null) {

@@ -48,6 +48,8 @@ class Media(
 
     fun owner(): User = owner ?: user!!
 
+    fun ownerNullable(): User? = owner ?: user
+
     fun isPostOrReel() = product_type in arrayOf("feed", "carousel_container", "clips")
 
     fun link(userName: String? = null) = when (product_type) {
@@ -137,6 +139,12 @@ class Media(
         )
         return list
     }
+
+    /** Synchronised with [Download.fileName] */
+    fun fileNameWithoutExt(parent: Media? = null) =
+        (ownerNullable()?.username ?: parent?.ownerNullable()?.username) +
+            "_${Utils.fileDateTime(Utils.compileSecondsTS(taken_at ?: parent?.taken_at!!))}" +
+            "_${id()}"
 
 
     @Serializable

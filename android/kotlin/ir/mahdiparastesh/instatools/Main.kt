@@ -32,7 +32,6 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
-import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
@@ -169,10 +168,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             ActivityCompat.requestPermissions(this, UiTools.reqPermissions, 0)
 
         // miscellaneous
-        if (c.downloadHistory == null) DownloadHistory.load(c)
-        if (c.gsp.getInt(
-                Settings.spUsedVersion, BuildConfig.VERSION_CODE
-            ) != BuildConfig.VERSION_CODE
+        c.downloadHistory.load(c)
+        if (c.gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE)
+            != BuildConfig.VERSION_CODE
             || !c.gsp.contains(Settings.spUsedVersion)
         ) c.gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
     }

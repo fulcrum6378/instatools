@@ -22,7 +22,6 @@ import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
@@ -199,7 +198,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         prf.edit { remove(spStorage) }
                         updateMainPath("")
                         CoroutineScope(Dispatchers.IO).launch {
-                            DownloadHistory.folderRemoved(c, uri)
+                            c.downloadHistory.folderRemoved(c, uri)
                             uri.release(c, globalMode)
                         }
                     }
@@ -406,7 +405,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                         saveAliases(prf, aliases)
                         if (br.root.isChecked) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                DownloadHistory.folderRemoved(c, uri)
+                                c.downloadHistory.folderRemoved(c, uri)
                                 uri.release(c, globalMode)
                             }
                             CoroutineScope(Dispatchers.IO).launch {
@@ -441,7 +440,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 // Remove the previous path if existed
                 val prevUri = prf.getString(spStorage, null)?.toUri()
                 if (prevUri != null) CoroutineScope(Dispatchers.IO).launch {
-                    DownloadHistory.folderRemoved(c, uri)
+                    c.downloadHistory.folderRemoved(c, uri)
                     uri.release(c, globalMode)
                 }
 
@@ -464,12 +463,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 bfa?.listPaths()
                 bfa?.folders?.setSelection(uriFolders!!.indexOfFirst { it.toString() == uri.toString() })
                 CoroutineScope(Dispatchers.IO).launch {
-                    DownloadHistory.folderAdded(c, uri)
+                    c.downloadHistory.folderAdded(c, uri)
                 }
             }
         }
-        c.downloadHistory = null
-        CoroutineScope(Dispatchers.IO).launch { DownloadHistory.saveCache(c) }
-        // this doesn't update the cache, it just clears it, it'll get updated automatically later.
     }
 }

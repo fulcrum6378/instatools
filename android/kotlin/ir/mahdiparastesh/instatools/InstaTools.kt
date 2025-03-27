@@ -12,6 +12,7 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Download
+import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.util.ForegroundService
@@ -21,9 +22,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.concurrent.CopyOnWriteArraySet
 
 class InstaTools : Application() {
+
     /** Current [Account] for using the Instagram API */
     var acc: Account? = null
 
@@ -40,7 +41,9 @@ class InstaTools : Application() {
     lateinit var commands: Queue<Command>
 
     /** A long list of locally stored media */
-    var downloadHistory: CopyOnWriteArraySet<String>? = null
+    val downloadHistory: DownloadHistory by lazy {
+        DownloadHistory(File(cacheDir, "download_history.txt"))
+    }
 
     /** List of all [Favourite]s */
     var fav: MutableLiveData<HashSet<Favourite>?> = MutableLiveData(null)
@@ -71,8 +74,8 @@ class InstaTools : Application() {
     fun onLoggedOut() {
         fav.value = null
         favPickle = null
-        //commands = null
-        //downloads = null
+        //commands = null  FIXME
+        //downloads = null  FIXME
         sp = null
         gsp.edit { remove(Login.SP_ACCOUNT) }
         Api.cookies = ""
@@ -167,8 +170,11 @@ class InstaTools : Application() {
 /* TODO:
   * Problems:
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
+  * Is ListPost notified twice?
+  * reset only posts at a first refresh, reset the user at a second refresh
   * -
   * Extension:
+  * MIN_SDK => 28 (Android 9, Pie) + remove notification compat if possible
   * PageTry
   * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads

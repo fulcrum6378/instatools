@@ -74,10 +74,10 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
 
         // caches
         SAVED(1f, isApiCache = true),
-        PROFILE(2f, false, true),
+        PROFILE(3f, false, true),
         POSTS(3f, false, true),
-        STORY(1f, false, true),
-        HIGHLIGHTS(5f, false, true),
+        STORY(0.5f, false, true),
+        HIGHLIGHTS(7f, false, true),
         TAGGED(5f, false, true);
 
         fun calculateLifespanInMillis(): Long = (lifespanInDays * 86400000f).toLong()

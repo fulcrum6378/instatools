@@ -81,15 +81,12 @@ abstract class ListPost<Activity, Fragment>(
         )
 
         // is media already downloaded?
-        val theirs = c.c.downloadHistory?.filter { it.startsWith("${med.owner().username}_") }
-            ?.map { it.substringBeforeLast(".").substringAfterLast("_") }
         h.b.stored.vis(
-            if (theirs == null)
+            if (c.c.downloadHistory.isEmpty())
                 false
-            else if (med.carousel_media != null)
-                med.carousel_media!!.any { it.id() in theirs }
-            else
-                med.id() in theirs
+            else med.carousel_media
+                ?.any { c.c.downloadHistory.anyStartsWith(it.fileNameWithoutExt(med)) }
+                ?: c.c.downloadHistory.anyStartsWith(med.fileNameWithoutExt())
         )
 
         // is media liked?
