@@ -4,7 +4,7 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.widget.Toolbar
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.view.Lister
 

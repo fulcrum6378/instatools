@@ -184,7 +184,6 @@ class InstaTools : Application() {
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
-  * Switch to ComponentActivity
   * -
   * Take the audio Download and the profile Download to :core
   *

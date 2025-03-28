@@ -13,11 +13,11 @@
         <item name="android:textAppearance">@style/TextAppearance.InstaTools.Medium</item>
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:editTextColor">?attr/colorAccent</item>
-        <item name="titleTextColor">?attr/colorAccent</item>
+        <item name="android:titleTextColor">?attr/colorAccent</item>
         <item name="android:checkboxStyle">@style/Theme.InstaTools.Checkbox</item>
         <item name="android:radioButtonStyle">@style/Theme.InstaTools.Radio</item>
         <item name="switchStyle">@style/Theme.InstaTools.Switch</item>
-        <item name="popupTheme">@style/Theme.InstaTools.Popup.Secondary</item>
+        <item name="android:popupTheme">@style/Theme.InstaTools.Popup.Secondary</item>
         <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
     </style>
 

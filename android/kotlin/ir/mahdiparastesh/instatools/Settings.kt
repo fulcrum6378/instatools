@@ -29,7 +29,7 @@ import ir.mahdiparastesh.instatools.databinding.SettingsBinding
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils.getOrNull
-import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.UiTools.showBytes
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
@@ -189,7 +189,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stMainPath.setOnClickListener { v ->
             if ((v as TextView).text.isEmpty())
                 selectPath()
-            else MaterialMenu(
+            else EasyPopupMenu(
                 this@Settings, v, R.menu.settings_main_path,
                 R.id.smpChange to { selectPath() },
                 R.id.smpRemove to {

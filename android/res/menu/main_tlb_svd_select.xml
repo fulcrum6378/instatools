@@ -1,48 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedAttribute">
+    tools:ignore="AppCompatResource,UnusedAttribute">
     <item
         android:id="@+id/mtUnsaveDownload"
         android:icon="@drawable/unsave_download"
+        android:showAsAction="ifRoom"
         android:title="@string/unsaveDownload"
-        android:tooltipText="@string/unsaveDownload"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/unsaveDownload" />
     <item
         android:id="@+id/mtDownload"
         android:icon="@drawable/download"
+        android:showAsAction="ifRoom"
         android:title="@string/downloadOnly"
-        android:tooltipText="@string/downloadOnly"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/downloadOnly" />
     <item
         android:id="@+id/mtUnsave"
         android:icon="@drawable/saved_off"
+        android:showAsAction="ifRoom"
         android:title="@string/unsaveOnly"
-        android:tooltipText="@string/unsave"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/unsave" />
     <item
         android:id="@+id/mtSelectAll"
         android:icon="@drawable/select_all"
+        android:showAsAction="ifRoom"
         android:title="@string/selectAll"
-        android:tooltipText="@string/selectAll"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/selectAll" />
     <item
         android:id="@+id/mtDeselectAll"
         android:icon="@drawable/deselect_all"
+        android:showAsAction="ifRoom"
         android:title="@string/deselectAll"
-        android:tooltipText="@string/deselectAll"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/deselectAll" />
     <item
         android:id="@+id/mtLike"
         android:icon="@drawable/favourite_on_themed"
+        android:showAsAction="ifRoom"
         android:title="@string/likeAll"
-        android:tooltipText="@string/likeAll"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/likeAll" />
     <item
         android:id="@+id/mtUnlike"
         android:icon="@drawable/favourite_off_themed"
+        android:showAsAction="ifRoom"
         android:title="@string/unlikeAll"
-        android:tooltipText="@string/unlikeAll"
-        app:showAsAction="ifRoom" />
+        android:tooltipText="@string/unlikeAll" />
 </menu>

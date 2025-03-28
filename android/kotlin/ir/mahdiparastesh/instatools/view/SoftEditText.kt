@@ -1,16 +1,18 @@
+@file:SuppressLint("AppCompatCustomView")
+
 package ir.mahdiparastesh.instatools.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import androidx.annotation.AttrRes
-import androidx.appcompat.R
-import androidx.appcompat.widget.AppCompatAutoCompleteTextView
-import androidx.appcompat.widget.AppCompatEditText
 
 class SoftEditText(
     c: Context, attrs: AttributeSet?, @AttrRes defStyleAttr: Int
-) : AppCompatEditText(c, attrs, defStyleAttr) {
-    constructor(c: Context, attrs: AttributeSet?) : this(c, attrs, R.attr.editTextStyle)
+) : EditText(c, attrs, defStyleAttr) {
+    constructor(c: Context, attrs: AttributeSet?) : this(c, attrs, android.R.attr.editTextStyle)
     constructor(c: Context) : this(c, null, android.R.attr.editTextStyle)
 
     override fun isTextSelectable(): Boolean = false
@@ -18,11 +20,11 @@ class SoftEditText(
 
 class SoftAutoCompleteTextView(
     c: Context, attrs: AttributeSet?, @AttrRes defStyleAttr: Int
-) : AppCompatAutoCompleteTextView(c, attrs, defStyleAttr) {
+) : AutoCompleteTextView(c, attrs, defStyleAttr) {
     constructor(c: Context, attrs: AttributeSet?) :
-        this(c, attrs, R.attr.autoCompleteTextViewStyle)
+        this(c, attrs, android.R.attr.autoCompleteTextViewStyle)
 
-    constructor(c: Context) : this(c, null, R.attr.autoCompleteTextViewStyle)
+    constructor(c: Context) : this(c, null, android.R.attr.autoCompleteTextViewStyle)
 
     override fun isTextSelectable(): Boolean = false
 }

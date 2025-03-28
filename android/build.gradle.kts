@@ -14,11 +14,12 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 78
-        versionName = "38.0.1"
+        versionName = "38.0.8"
     }
 
     sourceSets.getByName("main") {
         manifest.srcFile("AndroidManifest.xml")
+        java.setSrcDirs(listOf("java"))
         kotlin.setSrcDirs(listOf("kotlin"))
         res.setSrcDirs(listOf("res"))
     }

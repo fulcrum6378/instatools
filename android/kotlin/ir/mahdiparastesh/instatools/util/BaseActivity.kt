@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -8,8 +9,14 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.*
+import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toolbar
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,8 +24,6 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -26,21 +31,29 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.forEach
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
-import ir.mahdiparastesh.instatools.*
+import ir.mahdiparastesh.instatools.InstaTools
+import ir.mahdiparastesh.instatools.Login
+import ir.mahdiparastesh.instatools.Main
+import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import kotlin.reflect.KClass
 
-/** Abstract class for all Activity instances in this app and it extends [AppCompatActivity]. */
-abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListener {
+/** Abstract class for all Activity instances in this app and it extends [FragmentActivity]. */
+abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListener {
     val c: InstaTools by lazy { applicationContext as InstaTools }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
     val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
+    lateinit var toolbar: Toolbar
+    var tbTitle: TextView? = null
 
     abstract val menuRes: Int?
 
     companion object {
+        // TODO move to InstaTools?
         fun Context.night(): Boolean = resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
@@ -80,11 +93,10 @@ abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListen
             else ViewGroup.LAYOUT_DIRECTION_RTL
     }
 
-    var tbTitle: TextView? = null
-    lateinit var toolbar: Toolbar
+    @SuppressLint("UseSupportActionBar")
     fun initToolbar(tb: Toolbar, title: Int, changeTitleTo: String? = null) {
         toolbar = tb
-        setSupportActionBar(tb)
+        setActionBar(tb)
         for (g in 0 until tb.childCount) {
             val getTitle = tb.getChildAt(g)
             if (getTitle is TextView && getTitle.text.toString() == getString(title))
@@ -92,7 +104,7 @@ abstract class BaseActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListen
         }
         if (changeTitleTo != null) tbTitle?.text = changeTitleTo
         if (this !is Main) {
-            supportActionBar?.apply {
+            actionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
             }

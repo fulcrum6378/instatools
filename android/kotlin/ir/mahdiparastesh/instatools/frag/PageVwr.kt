@@ -39,7 +39,7 @@ import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.GlideShimmer
-import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.PostSelector
 import ir.mahdiparastesh.instatools.view.SafeGridManager
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -238,7 +238,7 @@ class PageVwr : BasePageViewer(), PostSelector {
                 .apply { height = c.dm.widthPixels }
             b.proClick.setOnClickListener { v ->
                 val picture = c.vm.user?.originalPicture() ?: return@setOnClickListener
-                MaterialMenu(
+                EasyPopupMenu(
                     c, v, R.menu.viewer_pic_more,
                     R.id.vpDownload to {
                         CoroutineScope(Dispatchers.IO).launch {

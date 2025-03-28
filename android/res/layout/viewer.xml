@@ -6,10 +6,10 @@
     tools:context=".Viewer"
     tools:ignore="MissingConstraints">
 
-    <androidx.appcompat.widget.Toolbar
+    <android.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
-        app:title="@string/vwTitle" />
+        android:title="@string/vwTitle" />
 
     <FrameLayout
         android:id="@+id/frame"

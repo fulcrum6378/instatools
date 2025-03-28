@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="AppCompatResource">
     <item
         android:id="@+id/dtControl"
         android:icon="@drawable/play"
-        android:title="@string/start"
-        app:showAsAction="ifRoom" />
+        android:showAsAction="ifRoom"
+        android:title="@string/start" />
     <item
         android:id="@+id/dtRetryAll"
         android:title="@string/dtRetryAll" />

@@ -11,12 +11,12 @@
         android:layout_height="match_parent"
         tools:ignore="MissingConstraints">
 
-        <androidx.appcompat.widget.Toolbar
+        <android.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/toolbar"
-            app:title="@string/app_name"
-            app:titleMarginTop="@dimen/tbTitleMainMarginTop"
-            app:titleTextAppearance="@style/TextAppearance.InstaTools.Toolbar.Main" />
+            android:title="@string/app_name"
+            android:titleMarginTop="@dimen/tbTitleMainMarginTop"
+            android:titleTextAppearance="@style/TextAppearance.InstaTools.Toolbar.Main" />
 
         <FrameLayout
             android:id="@+id/frame"

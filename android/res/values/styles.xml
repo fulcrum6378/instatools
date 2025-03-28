@@ -54,9 +54,9 @@
 
     <style name="toolbar">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?actionBarSize</item>
+        <item name="android:layout_height">?android:actionBarSize</item>
+        <item name="android:titleTextAppearance">@style/TextAppearance.InstaTools.Toolbar</item>
         <item name="layout_constraintTop_toTopOf">parent</item>
-        <item name="titleTextAppearance">@style/TextAppearance.InstaTools.Toolbar</item>
     </style>
 
     <style name="sep">

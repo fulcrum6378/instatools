@@ -6,10 +6,10 @@
     tools:context=".Downloads"
     tools:ignore="ContentDescription,MissingConstraints">
 
-    <androidx.appcompat.widget.Toolbar
+    <android.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
-        app:title="@string/downloads" />
+        android:title="@string/downloads" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pasteBar"

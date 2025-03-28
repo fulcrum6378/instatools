@@ -19,7 +19,7 @@ import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.ListAccBinding
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
-import ir.mahdiparastesh.instatools.view.MaterialMenu
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +63,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
     override fun getItemCount() = c.accounts.size
 
     private fun more(v: View, acc: Account, i: Int): Boolean {
-        MaterialMenu(
+        EasyPopupMenu(
             c, v, R.menu.acc_more,
             R.id.amOffline to {
                 c.c.onLoggedIn(acc, true)

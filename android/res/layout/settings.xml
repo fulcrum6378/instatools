@@ -6,11 +6,11 @@
     tools:context=".Settings"
     tools:ignore="MissingConstraints">
 
-    <androidx.appcompat.widget.Toolbar
+    <android.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
-        app:popupTheme="@style/Theme.InstaTools.Popup.Tertiary"
-        app:title="@string/settings" />
+        android:popupTheme="@style/Theme.InstaTools.Popup.Tertiary"
+        android:title="@string/settings" />
 
     <ScrollView
         android:id="@+id/sv"
