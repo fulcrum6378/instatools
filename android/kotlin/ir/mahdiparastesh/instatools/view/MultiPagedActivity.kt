@@ -85,7 +85,7 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
 
     /**
      * Changes the "selective" mode;
-     * in this mode the activity shows utilities for selection in RecyclerView.
+     * in this mode the activity shows utilities for selection in a RecyclerView.
      *
      * @param bb true if you just turned the selection on, false if you turned it off.
      * @return false if the selective mode was already changed to "bb".

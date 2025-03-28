@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
@@ -20,16 +19,12 @@ import android.widget.Toolbar
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -41,7 +36,7 @@ import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import kotlin.reflect.KClass
 
-/** Abstract class for all Activity instances in this app and it extends [FragmentActivity]. */
+/** Abstract class for all Activities in this app and it extends [FragmentActivity]. */
 abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListener {
     val c: InstaTools by lazy { applicationContext as InstaTools }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
@@ -179,9 +174,6 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         // The phone's home screen may appear if there are no active activities at the moment.
         return true
     }
-
-    /** @return a weakened version of the colour using an alpha value. */
-    fun weaken(@ColorInt it: Int, alpha: Int = 100) = Color.argb(alpha, it.red, it.green, it.blue)
 
     /** Helper function for registering a "startActivityForResult" action. */
     fun launcherForResult(callback: ActivityResultCallback<ActivityResult>) =

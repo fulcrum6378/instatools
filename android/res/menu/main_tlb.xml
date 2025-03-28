@@ -4,8 +4,7 @@
     tools:ignore="AppCompatResource">
     <item
         android:id="@+id/mtSearch"
-        android:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:icon="@drawable/search"
+        android:icon="@drawable/search_user"
         android:showAsAction="ifRoom|collapseActionView"
         android:title="@string/search" />
 </menu>

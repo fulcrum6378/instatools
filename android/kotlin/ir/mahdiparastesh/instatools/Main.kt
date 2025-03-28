@@ -3,17 +3,14 @@ package ir.mahdiparastesh.instatools
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
@@ -58,9 +55,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     val vm: MyModel by viewModels()
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
+    private lateinit var searchView: SearchView
     private var exiting = false
 
-    // themes
+    // theming
     private var anTheme: ValueAnimator? = null
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
@@ -71,11 +69,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         R.style.Theme_InstaTools_Popup_Secondary,
         R.style.Theme_InstaTools_Popup_Tertiary
     )
-
-    // search
-    @SuppressLint("RestrictedApi")
-    lateinit var searchInput: SearchView.SearchAutoComplete
-    private lateinit var searchClose: ImageView
 
     override val menuRes = R.menu.main_tlb
     override var currentPage: Int
@@ -129,12 +122,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         } else colorAc.observe(this) {
             if (it == null) return@observe
             styliseToolbar()
-            if (::searchInput.isInitialized) {
-                searchInput.setTextColor(it)
-                searchInput.setHintTextColor(weaken(it))
-            }
-            if (::searchClose.isInitialized)
-                searchClose.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
         }
         if (night()) colorBG.value = bg[vm.currentPage]
         else colorAc.value = ca[vm.currentPage]
@@ -241,27 +228,16 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
         b.toolbar.menu.findItem(R.id.mtSearch)?.apply {
-            val searchView = actionView as SearchView
-
-            searchInput = searchView.findViewById(androidx.appcompat.R.id.search_src_text)
-            // useless: search_button, search_go_btn, search_mag_icon
-            searchClose = searchView.findViewById(androidx.appcompat.R.id.search_close_btn)
-            searchInput.setHint(R.string.mtSearch)
-            searchInput.textSize = dimen(R.dimen.searchFont)
-            colorAc.value?.also {
-                val cf = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
-                searchInput.setTextColor(it)
-                searchInput.setHintTextColor(weaken(it))
-                searchClose.colorFilter = cf
-            }
-
+            searchView = SearchView(wrapTheme(currentTheme()), null, R.style.searchView)
+            actionView = searchView
+            searchView.queryHint = getString(R.string.mtSearch)
             setOnActionExpandListener(this@Main)
 
             // after a configuration change
             vm.schQuery?.also {
                 b.searchRes.adapter = ListSch(this@Main)
                 expandActionView()
-                searchInput.setText(vm.schQuery)
+                searchView.setQuery(vm.schQuery, false)
             }
 
             searchView.setOnQueryTextListener(this@Main)
@@ -271,7 +247,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
         b.searchRes.vis()
-        vm.schQuery = ""
+        if (vm.schQuery == null) vm.schQuery = ""
         return true
     }
 
@@ -297,12 +273,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             return true
         }
         UiTools.userNameFromUrl(newText)?.also {
-            searchInput.setText(it)
+            searchView.setQuery(it, true)
             return true // onQueryTextChange will be invoked again by setText!
         }
         if (newText.startsWith("@")) {
-            searchInput.setText(newText.substring(1)); return true; }
-        vm.schQuery = searchInput.text
+            searchView.setQuery(newText.substring(1), true); return true; }
+        vm.schQuery = newText
 
         if (vm.schErrored) b.searchStatus.setAnimation(R.raw.pending)
         vm.schErrored = false
@@ -328,6 +304,13 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             }
         }
         return true
+    }
+
+    private fun currentTheme() = when (vm.currentPage) {
+        0 -> Theme.PRIMARY
+        1 -> Theme.SECONDARY
+        2 -> Theme.TERTIARY
+        else -> throw IllegalArgumentException()
     }
 
     override fun turnToPage(i: Int): Boolean {
@@ -388,13 +371,21 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             b.root.closeDrawer(GravityCompat.START)
             toggleNav.syncState()
             return; }
+
+        val searchMenuItem = b.toolbar.menu.findItem(R.id.mtSearch)
+        if (searchMenuItem?.isActionViewExpanded == true) {
+            searchMenuItem.collapseActionView()
+            return; }
+
         if (pageGoBack()) return
+
         if (!exiting) {
             exiting = true
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch { c.clearCacheIfNecessary() }
             return; }
+
         @Suppress("DEPRECATION") super.onBackPressed() // Do NOT kill the process
     }
 }
