@@ -14,7 +14,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 78
-        versionName = "38.1.5"
+        versionName = "38.1.6"
     }
 
     sourceSets.getByName("main") {
@@ -62,12 +62,16 @@ dependencies {
     implementation(project(":core"))
 
     implementation(libs.ktx.activity)
+    implementation(libs.constraintlayout)
     implementation(libs.ktx.core)
+    implementation(libs.drawerlayout)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
     implementation(libs.media3.ui)
+    implementation(libs.recyclerview)
     implementation(libs.recyclerview.selection)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.viewpager2)
     implementation(libs.webkit)
     implementation(libs.lottie)
     implementation(libs.shimmer)
@@ -75,5 +79,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.dotsindicator)
     implementation(libs.commons.text) // StringEscapeUtils
+    implementation(libs.coroutines)
     implementation(libs.serialization.json)
 }

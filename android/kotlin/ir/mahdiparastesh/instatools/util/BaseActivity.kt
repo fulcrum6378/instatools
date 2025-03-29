@@ -81,9 +81,9 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         return true // shall pass
     }
 
-    override fun setContentView(root: View?) {
-        super.setContentView(root)
-        root?.layoutDirection =
+    override fun setContentView(view: View?) {
+        super.setContentView(view)
+        view?.layoutDirection =
             if (!dirRtl) ViewGroup.LAYOUT_DIRECTION_LTR
             else ViewGroup.LAYOUT_DIRECTION_RTL
     }

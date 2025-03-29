@@ -2,10 +2,14 @@
 kotlin = "2.1.20"
 agp = "8.9.1"
 activityKtx = "1.10.1"
+constraintLayout = "2.2.1"
 coreKtx = "1.15.0"
-media3 = "1.5.1"
+drawerLayout = "1.2.0"
+media3 = "1.6.0"
+recyclerView = "1.4.0"
 selection = "1.1.0"
 swipeRefreshLayout = "1.1.0"
+viewPager2 = "1.1.0"
 webkit = "1.13.0"
 lottie = "6.6.0"
 shimmer = "0.5.0"
@@ -13,6 +17,7 @@ glide = "4.16.0"
 material = "1.12.0"
 dotsIndicator = "5.1.0"
 commonsText = "1.11.0"
+coroutines = "1.10.1"
 serializationJson = "1.8.0"
 
 [plugins]
@@ -23,12 +28,16 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 
 [libraries]
 ktx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
 ktx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawerLayout" }
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerView" }
 recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "selection" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swipeRefreshLayout" }
+viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewPager2" }
 webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
@@ -36,4 +45,5 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 dotsindicator = { group = "com.tbuonomo", name = "dotsindicator", version.ref = "dotsIndicator" }
 commons-text = { group = "org.apache.commons", name = "commons-text", version.ref = "commonsText" }
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }

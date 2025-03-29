@@ -169,6 +169,7 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Minimised fonts in Viewer and Expandable
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * reset only posts at a first refresh, reset the user at a second refresh
