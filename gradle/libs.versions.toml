@@ -45,5 +45,5 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 dotsindicator = { group = "com.tbuonomo", name = "dotsindicator", version.ref = "dotsIndicator" }
 commons-text = { group = "org.apache.commons", name = "commons-text", version.ref = "commonsText" }
-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }

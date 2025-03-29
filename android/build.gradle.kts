@@ -14,7 +14,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 78
-        versionName = "38.1.6"
+        versionName = "38.1.7"
     }
 
     sourceSets.getByName("main") {
@@ -79,6 +79,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.dotsindicator)
     implementation(libs.commons.text) // StringEscapeUtils
-    implementation(libs.coroutines)
+    implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
 }

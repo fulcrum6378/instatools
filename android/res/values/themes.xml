@@ -4,6 +4,9 @@
     <style name="Theme.InstaTools.Base" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/defCA</item>
         <item name="colorPrimaryDark">?attr/colorPrimary</item>
+        <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="colorPrimaryHigh">@color/CSH</item>
+
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
@@ -24,14 +27,12 @@
         <item name="android:radioButtonStyle">@style/Theme.InstaTools.Radio</item>
         <item name="switchStyle">@style/Theme.InstaTools.Switch</item>
         <item name="android:popupTheme">@style/Theme.InstaTools.Popup.Secondary</item>
-        <!--<item name="android:searchViewStyle">@style/Theme.InstaTools.SearchView</item>-->
         <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
+        <!--<item name="android:searchViewStyle">@style/Theme.InstaTools.SearchView</item>-->
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
         <item name="colorAccent">?attr/colorPrimary</item>
-        <item name="colorPrimaryWeak">@color/CSW</item>
-        <item name="colorPrimaryHigh">@color/CSH</item>
         <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
         <item name="android:windowLightStatusBar">true</item>
