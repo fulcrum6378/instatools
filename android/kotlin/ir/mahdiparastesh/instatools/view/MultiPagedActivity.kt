@@ -36,8 +36,8 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
     }
 
-    override fun setContentView(root: View?) {
-        super.setContentView(root)
+    override fun setContentView(view: View?) {
+        super.setContentView(view)
 
         // create the initial page if it doesn't exist
         if (currentPage() == null) {

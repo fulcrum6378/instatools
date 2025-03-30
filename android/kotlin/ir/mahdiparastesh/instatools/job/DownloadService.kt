@@ -1,7 +1,5 @@
 package ir.mahdiparastesh.instatools.job
 
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
 import androidx.core.net.toUri
@@ -141,7 +139,7 @@ class DownloadService : ForegroundService(), Downloader {
                 if (fatalError !is Utils.InstaToolsException) throw fatalError
 
                 // report the fatal error
-                eventNotification(Notify.ID_DOWNLOADER_ERROR) {
+                notifyFailure(Notify.ID_DOWNLOADER_ERROR, Downloader::class) {
                     setContentTitle(getString(R.string.download))
                     setContentText(
                         when (fatalError) {
@@ -152,28 +150,18 @@ class DownloadService : ForegroundService(), Downloader {
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
-                    setContentIntent(
-                        PendingIntent.getActivity(
-                            c, 0, Intent(c, Downloads::class.java), ntfMutability()
-                        )
-                    )
-                    addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                 }
             } else {
                 // report if some downloads failed
                 val failedSum = c.downloads.count<Download> { it.isFailed() }
-                if (failedSum != 0) eventNotification(Notify.ID_DOWNLOADER_SOME_FAILED) {
+                if (failedSum != 0) notifyFailure(
+                    Notify.ID_DOWNLOADER_SOME_FAILED, Downloader::class
+                ) {
                     setContentTitle(
                         resources.getQuantityString(
                             R.plurals.downloaderSomeFailed, failedSum, failedSum
                         )
                     )
-                    setContentIntent(
-                        PendingIntent.getActivity(
-                            c, 0, Intent(c, Downloads::class.java), ntfMutability()
-                        )
-                    )
-                    addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                 }
             }
         }

@@ -115,7 +115,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
                 if (fatalError !is Utils.InstaToolsException) throw fatalError
 
                 // report the fatal error
-                eventNotification(Notify.ID_COMMANDER_ERROR) {
+                notifyFailure(Notify.ID_COMMANDER_ERROR, null) {
                     setContentTitle(
                         getString(
                             when {
@@ -137,18 +137,16 @@ class CommandService : ForegroundService(), Queuer<Command> {
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
-                    addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                 }
             } else {
                 // report if some commands failed
                 val failedSum = c.commands.size<Command>()
-                if (failedSum != 0) eventNotification(Notify.ID_COMMANDER_SOME_FAILED) {
+                if (failedSum != 0) notifyFailure(Notify.ID_COMMANDER_SOME_FAILED, null) {
                     setContentTitle(
                         resources.getQuantityString(
                             R.plurals.commanderSomeFailed, failedSum, failedSum
                         )
                     )
-                    addAction(0, getString(R.string.tryAgain), pi(c, ACTION_START))
                 }
             }
         }

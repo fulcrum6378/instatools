@@ -164,7 +164,7 @@
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
     <string name="stResetDataSure">
-        This includes the unfollowers list, the favourite accounts list, the download queue and the export queue.
+        This includes the list of favourite accounts and the download queue.
         But you won\'t be signed out of your account. Proceed?
     </string>
     <string name="stResetSettings">Reset my settings</string>
@@ -209,9 +209,12 @@
 
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">Long-Running Tasks</string>
-    <string name="servicesChannelGroupDesc">Examples are downloading and exporting.</string>
+    <string name="servicesChannelGroupDesc">
+        Examples are downloading and sending IG commands.
+    </string>
     <string name="taskResultChannel">Task Results</string>
     <string name="taskResultChannelDesc">
-        Notifies anything resulted from a long-running task, like downloading and exporting.
+        Notifies anything resulted from a long-running task,
+        like downloading and sending commands to Instagram.
     </string>
 </resources>

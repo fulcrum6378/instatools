@@ -165,7 +165,7 @@
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
     <string name="stResetDataSure">
-        حذف لیست آنفالورها، لیست پروفایل های مورد علاقه، صف دانلود و صف استخراج می باشد،
+        این عملیات شامل حذف لیست پروفایل های مورد علاقه و صف دانلود می باشد،
         ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟
     </string>
     <string name="stResetSettings">بازنشانی تنظیمات</string>
@@ -200,7 +200,7 @@
     <!-- Commander -->
     <string name="commanderChannel">دستورات اینستاگرام</string>
     <string name="commanderChannelDesc">
-        به اینستاگرام فرمان های خاصی را  پشت سرهم ارسال میکند.
+        به اینستاگرام فرمان های خاصی را  پشت سرهم ارسال می کند.
     </string>
     <string name="commanderTitle">درحال ارسال فرمان ها&#8230;</string>
     <string name="commanderSubtitle">%1$s (%2$d از %3$d)</string>
@@ -211,7 +211,9 @@
 
     <!-- Other Notifications -->
     <string name="servicesChannelGroup">کارهای طولانی</string>
-    <string name="servicesChannelGroupDesc">عملیات های طولانی مانند دانلود و استخراج.</string>
+    <string name="servicesChannelGroupDesc">
+        عملیات های طولانی مانند دانلود و ارسال فرمان به اینستاگرام.
+    </string>
     <string name="taskResultChannel">نتایج عملیات</string>
     <string name="taskResultChannelDesc">
         هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.

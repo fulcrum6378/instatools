@@ -173,7 +173,6 @@ class InstaTools : Application() {
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * reset only posts at a first refresh, reset the user at a second refresh
-  * Notify less silent when an error occurs
   * When you go back to Login, its WebView state remains as it was
   * Clicking on external links will bring a "cleartext not permitted" error
   * -

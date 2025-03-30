@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.util
 
+import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -8,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.annotation.MainThread
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.R
@@ -102,12 +102,11 @@ abstract class ForegroundService : Service() {
     }
 
     private fun notification(progress: Pair<Int, Int>?) =
-        NotificationCompat.Builder(c, ntfChannel.id).apply {
+        Notification.Builder(c, ntfChannel.id).apply {
             setSmallIcon(ntfSmallIcon)
             setContentTitle(ntfTitle)
             ntfSmallText?.also { setContentText(it) }
-            setStyle(NotificationCompat.BigTextStyle().bigText(ntfText))
-            priority = NotificationCompat.PRIORITY_LOW
+            setStyle(Notification.BigTextStyle().bigText(ntfText))
             // setSound(null) setSilent(true)
             setOngoing(true)
             setProgress(progress?.second ?: 0, progress?.first ?: 0, progress == null)
@@ -119,20 +118,31 @@ abstract class ForegroundService : Service() {
                     }, ntfMutability()
                 )
             )
-            for (pair in ntfActions)
-                addAction(0, getString(pair.first), pi(c, pair.second))
+            for (pair in ntfActions) addAction(
+                Notification.Action.Builder(null, getString(pair.first), pi(c, pair.second)).build()
+            )
         }.build()
 
     fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
         c, 0, Intent(c, this::class.java).apply { action = code }, ntfMutability()
     )
 
-    protected fun eventNotification(id: Int, func: NotificationCompat.Builder.() -> Unit) {
+    protected fun notifyFailure(
+        id: Int, activity: KClass<*>?, func: Notification.Builder.() -> Unit
+    ) {
         ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
         ntfManager.notify(
-            id, NotificationCompat.Builder(c, Notify.Channel.RESULT.id).apply {
+            id, Notification.Builder(c, Notify.Channel.RESULT.id).apply {
                 setSmallIcon(R.drawable.notification)
                 func()
+                if (activity != null) setContentIntent(
+                    PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability())
+                )
+                addAction(
+                    Notification.Action.Builder(
+                        null, getString(R.string.tryAgain), pi(c, ACTION_START)
+                    ).build()
+                )
             }.build()
         )
     }

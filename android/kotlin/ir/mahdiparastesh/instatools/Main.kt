@@ -162,11 +162,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         ) c.gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
     }
 
-    override fun setContentView(root: View?) {
+    override fun setContentView(view: View?) {
         vm.currentPage = intent.extras?.getInt(EXTRA_TURN_TO_PAGE)
             ?: c.sp?.getInt(spMainPage, Settings.defSpMainPage)
                 ?: Settings.defSpMainPage
-        super.setContentView(root)
+        super.setContentView(view)
     }
 
     override fun onNewIntent(intent: Intent) {

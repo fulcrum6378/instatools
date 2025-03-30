@@ -35,12 +35,16 @@ class Notify {
             groupId = ChannelGroup.SERVICES.id
         ),
 
-        RESULT("result", R.string.taskResultChannel, R.string.taskResultChannelDesc);
+        RESULT(
+            "result", R.string.taskResultChannel, R.string.taskResultChannelDesc,
+            NotificationManager.IMPORTANCE_HIGH
+        );
 
         fun create(c: Context) = NotificationChannel(id, c.resources.getString(rName), importance)
             .apply {
                 description = c.resources.getString(rDesc)
                 group = groupId
+                setSound(null, null) // all notification are silent in this app.
             }
     }
 
