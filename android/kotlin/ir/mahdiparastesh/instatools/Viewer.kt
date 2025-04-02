@@ -139,6 +139,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
 
     @MainThread
     fun load(userId: String? = null, userName: String? = null, reset: Boolean = false) {
+        if (c.acc == null) return
         vm.user?.also { u ->
             if (!reset && (userId == u.id || userName == u.username)) return@load
         }

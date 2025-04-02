@@ -71,8 +71,9 @@ class InstaTools : Application() {
         }
     }
 
+    @MainThread
     fun onLoggedOut() {
-        fav.value = null
+        fav.value = null  // must be run on the main thread
         favPickle = null
         commands.forget<Command>()
         downloads.forget<Download>()
@@ -149,11 +150,13 @@ class InstaTools : Application() {
     fun needAuthentication() {
         ForegroundService.terminateTasks(this)
         gsp.edit { remove(Login.SP_ACCOUNT) }
-        onLoggedOut()
-        startActivity(Intent(this, Login::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(Login.EXTRA_NEED_AUTH, true)
-        })
+        CoroutineScope(Dispatchers.Main).launch {
+            onLoggedOut()
+            startActivity(Intent(this@InstaTools, Login::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra(Login.EXTRA_NEED_AUTH, true)
+            })
+        }
     }
 
     fun deletePickles(accountId: String = acc!!.id.toString()) {
