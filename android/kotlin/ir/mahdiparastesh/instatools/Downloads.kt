@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -75,10 +74,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun screenHeight(): Int = dm.heightPixels
 
     companion object {
-
-        val exportQueueMime =
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
-            else "application/json"
 
         var handler: Handler? = null
 
@@ -232,7 +227,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             R.id.dtExportLinks -> if (!c.downloads.isEmpty<Download>())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = exportQueueMime
+                    type = "application/json"
                     putExtra(
                         Intent.EXTRA_TITLE,
                         "instatools_download_list_${Utils.fileDateTime(Utils.now())}.json"
@@ -242,7 +237,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
 
             R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = exportQueueMime
+                type = "application/json"
             })
 
             R.id.dtClearAll -> if (!c.downloads.isEmpty<Download>())

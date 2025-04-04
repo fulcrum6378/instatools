@@ -181,7 +181,6 @@ class InstaTools : Application() {
   * -
   * Extension:
   * Get rid of Material and AppCompat stuff
-  * MIN_SDK => 29 (Android 10)
   * PageTry
   * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads

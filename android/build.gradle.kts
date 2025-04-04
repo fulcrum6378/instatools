@@ -11,10 +11,10 @@ android {
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.instatools"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 36
         versionCode = 78
-        versionName = "38.2.6"
+        versionName = "38.2.9"
     }
 
     sourceSets.getByName("main") {

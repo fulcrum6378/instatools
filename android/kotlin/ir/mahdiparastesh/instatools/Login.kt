@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
 import android.os.Process.killProcess
 import android.os.Process.myPid
@@ -77,7 +76,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 "Chrome/133.0.0.0 Safari/537.36"
         }
         b.web.webViewClient = myClient
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && night()) {
+        if (night()) {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING))
                 WebSettingsCompat.setAlgorithmicDarkeningAllowed(b.web.settings, true)
             else b.web.isForceDarkAllowed = true

@@ -19,7 +19,7 @@ import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 
 /**
- * Abstract class for all foreground services in this app.
+ * Abstract class for all foreground services in this app
  * Most functions do not require to be called on the main thread.
  */
 abstract class ForegroundService : Service() {

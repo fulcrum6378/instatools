@@ -1,14 +1,14 @@
 package ir.mahdiparastesh.instatools.view
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.annotation.StringRes
 import ir.mahdiparastesh.instatools.R
 
-/** Helper class for maintaining Notifications. */
+/** Helper class for maintaining [Notification]s */
 class Notify {
     companion object {
         const val ID_DOWNLOADER = 1
@@ -58,8 +58,7 @@ class Notify {
         );
 
         fun create(c: Context) = NotificationChannelGroup(id, c.resources.getString(rName)).apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                description = c.resources.getString(rDesc)
+            description = c.resources.getString(rDesc)
         }
     }
 }
