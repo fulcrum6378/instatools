@@ -4,7 +4,7 @@ package ir.mahdiparastesh.instatools.util
 
 import androidx.documentfile.provider.DocumentFile
 import java.io.IOException
-import java.util.*
+import java.util.ArrayDeque
 
 class DocFileTreeWalk private constructor(
     private val start: DocumentFile,

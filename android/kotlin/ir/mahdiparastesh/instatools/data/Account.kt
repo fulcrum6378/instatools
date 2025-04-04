@@ -23,7 +23,6 @@ class Account(
     var pict: String? = null,
     var cook: String? = null,
     var last: Long = 0L,
-    // var mfrw: Int = 0,
     // keep in mind to update the fields whose data need to persist after another Login
 ) {
     @MainThread
@@ -68,5 +67,4 @@ class Account(
     }
 
     class Secured(c: Context) : File(c.filesDir, "cache.json")
-    // Since this file is stored in the internal storage, using EncryptedFile is not urgent so much.
 }

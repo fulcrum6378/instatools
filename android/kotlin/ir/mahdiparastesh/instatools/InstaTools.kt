@@ -52,7 +52,7 @@ class InstaTools : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (acc == null) acc = Account.selected(this)
+        if (acc == null) Account.selected(this)
             ?.also { onLoggedIn(it, false) }
     }
 
@@ -181,7 +181,7 @@ class InstaTools : Application() {
   * -
   * Extension:
   * Get rid of Material and AppCompat stuff
-  * MIN_SDK => 28 (Android 9, Pie) + remove notification compat if possible
+  * MIN_SDK => 29 (Android 10)
   * PageTry
   * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads

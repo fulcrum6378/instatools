@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.material)
     implementation(libs.dotsindicator)
-    implementation(libs.commons.text) // StringEscapeUtils
+    implementation(libs.commons.text)  // StringEscapeUtils
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
 }

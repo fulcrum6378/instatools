@@ -63,7 +63,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved) // R.id.to_direct
+    private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved)  // R.id.to_direct
     private val popupThemes = arrayOf(
         R.style.Theme_InstaTools_Popup_Primary,
         R.style.Theme_InstaTools_Popup_Secondary,
@@ -99,7 +99,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
         // bottom navigation bar
         b.bnv.selectedItemId = bnvButtons[vm.currentPage]
-        b.bnv.itemIconTintList = null // It seems impossible to do this via XML.
+        b.bnv.itemIconTintList = null  // It seems impossible to do this via XML.
         b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
         vm.savedCount.observe(this) { bnvBadge(1, it) }
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
@@ -109,9 +109,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             if (it == null) return@observe
             window.decorView.setBackgroundColor(it)
             @Suppress("DEPRECATION")
-            window.statusBarColor = it // FIXME won't affect Android 15+
+            window.statusBarColor = it  // FIXME won't affect Android 15+
             @Suppress("DEPRECATION")
-            window.navigationBarColor = it // FIX ME won't affect Android 15+
+            window.navigationBarColor = it  // FIX-ME won't affect Android 15+
             styliseToolbar()
             onPrepareOptionsMenu(b.toolbar.menu)
             b.nav.setBackgroundColor(it)

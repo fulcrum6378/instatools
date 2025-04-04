@@ -9,7 +9,13 @@ import android.os.Process.killProcess
 import android.os.Process.myPid
 import android.view.View
 import android.view.ViewStub
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.ValueCallback
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
@@ -45,7 +51,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val HOST = "https://www.instagram.com/"
         const val RAW_HOST = "https://instagram.com/"
         const val LOGIN_URL = "${HOST}accounts/login/"
-        const val SP_ACCOUNT = "account" // String
+        const val SP_ACCOUNT = "account"  // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val BROWSE_FOR_ADD = 0
         const val BROWSE_ACC_EXIST = 1
@@ -54,7 +60,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         var browsePurpose: Int? = null
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         b = LoginBinding.inflate(layoutInflater)
@@ -62,12 +67,15 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.welcomeStub.setOnInflateListener(this)
 
         // WebView
-        b.web.settings.javaScriptEnabled = true
-        b.web.settings.domStorageEnabled = true
-        b.web.settings.cacheMode = WebSettings.LOAD_NO_CACHE
-        b.web.settings.userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-            "AppleWebKit/537.36 (KHTML, like Gecko) " +
-            "Chrome/133.0.0.0 Safari/537.36"
+        @SuppressLint("SetJavaScriptEnabled")
+        b.web.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            cacheMode = WebSettings.LOAD_NO_CACHE
+            userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/133.0.0.0 Safari/537.36"
+        }
         b.web.webViewClient = myClient
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && night()) {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING))
@@ -79,7 +87,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         // what to show?
         accounts = Account.load(c)
         when {
-            browsePurpose != null -> { // on configuration changed while browsing
+            browsePurpose != null -> {  // on configuration changed while browsing
                 b.refresher.vis()
                 if (::bw.isInitialized) bw.root.vis(false)
             }
@@ -107,7 +115,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)
 
-        // Add Account
+        // add Account
         bw.addAccount.setOnClickListener { browse(BROWSE_FOR_ADD) }
     }
 
