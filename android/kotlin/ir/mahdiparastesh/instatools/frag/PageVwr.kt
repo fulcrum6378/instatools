@@ -156,7 +156,13 @@ class PageVwr : BasePageViewer(), PostSelector {
         // update the data model and the UI
         if (c.vm.posts == null || reset) {
             c.vm.posts = page
-            withContext(Dispatchers.Main) { onLazilyLoaded(0, page.edges.size) }
+            withContext(Dispatchers.Main) {
+                if (reset && !c.vm.reloadUser) {
+                    c.vm.reloadUser = true
+                    onLoaded()
+                } else
+                    onLazilyLoaded(0, page.edges.size)
+            }
         } else c.vm.posts?.apply {
             val lastBefore = edges.size
             edges.addAll(page.edges)
@@ -176,7 +182,8 @@ class PageVwr : BasePageViewer(), PostSelector {
     fun gridAdapter() = (rv?.adapter as ConcatAdapter?)?.adapters?.get(1) as ListVwr?
 
     override fun onRefresh() {
-        c.load(reset = true)
+        if (!c.vm.reloadUser) load(true)
+        else c.load(reset = true)
     }
 
     override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =

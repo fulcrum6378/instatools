@@ -74,8 +74,8 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
 
         // caches
         SAVED(1f, isApiCache = true),
-        PROFILE(3f, false, true),
-        POSTS(3f, false, true),
+        PROFILE(5f, false, true),
+        POSTS(2f, false, true),
         STORY(0.5f, false, true),
         HIGHLIGHTS(7f, false, true),
         TAGGED(5f, false, true);

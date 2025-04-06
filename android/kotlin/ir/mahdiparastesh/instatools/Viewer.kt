@@ -71,6 +71,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         var tagged: Page<Media>? = null
         var currentPage = 1
         var fav: Favourite? = null
+        var reloadUser = false
 
         fun reset() {
             user = null
@@ -81,6 +82,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             tagged = null
             currentPage = 1
             fav = null
+            reloadUser = false
         }
     }
 
@@ -151,7 +153,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             var userReplaced = false
 
             var pickle: Pickle? = null
-            if (userId_ != null) { // if the parameter `userId` is used
+            if (userId_ != null) {  // if the parameter `userId` is used
                 vm.user?.also { oldUser ->
                     userReplaced = oldUser.id!! != userId_
                 }
@@ -177,7 +179,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                     }
                 }
 
-            } else { // if the parameter `userName` is used
+            } else {  // if the parameter `userName` is used
                 vm.user?.also { oldUser ->
                     userReplaced = oldUser.username!! != userName_
                 }
@@ -208,6 +210,8 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             }
             if (!userReplaced)
                 vm.fav = c.fav.value?.find { it.id == vm.user!!.id!! }
+            else
+                vm.reloadUser = false
 
             withContext(Dispatchers.Main) {
                 if (userReplaced) (currentPage() as BasePageViewer?)?.clear()
@@ -222,7 +226,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         withContext(Dispatchers.Main) {
             if (vm.user != null) {
                 (currentPage() as? PageVwr)?.b?.refresher?.isRefreshing =
-                    false // in case of a refresh
+                    false  // in case of a refresh
                 UiTools.snackbar(b.root, UiTools.apiError(c, code))
             } else {
                 Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()

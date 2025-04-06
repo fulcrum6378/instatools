@@ -174,7 +174,6 @@ class InstaTools : Application() {
   * Problems:
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
-  * reset only posts at a first refresh, reset the user at a second refresh
   * Clicking on external links will bring a "cleartext not permitted" error
   * Delete long-forgotten cached Pickles
   * -
@@ -186,7 +185,4 @@ class InstaTools : Application() {
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
   * Metadata for HEIC and MP4?
-  *
-  * NOTES:
-  * Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!
 */
