@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <dimen name="tbTitleMain">22sp</dimen>
     <dimen name="tbTitle">22sp</dimen>
     <dimen name="tbTitleMainMarginTop">3sp</dimen>

@@ -172,7 +172,6 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Minimised fonts in Viewer and Expandable
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * reset only posts at a first refresh, reset the user at a second refresh
@@ -186,8 +185,6 @@ class InstaTools : Application() {
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
-  * -
-  * Take the audio Download and the profile Download to :core
   *
   * NOTES:
   * Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

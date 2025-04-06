@@ -1,8 +1,11 @@
 package ir.mahdiparastesh.instatools
 
+import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.Menu
@@ -10,9 +13,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
@@ -56,6 +59,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     private lateinit var toggleNav: ActionBarDrawerToggle
     private lateinit var bh: MainNavHeaderBinding
     private lateinit var searchView: SearchView
+    private val ntfPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
     private var exiting = false
 
     // theming
@@ -150,9 +155,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             UiTools.openLink(this, Utils.PROFILE.format(c.acc!!.user!!))
         }
 
-        // permissions
-        if (UiTools.reqPermissions.isNotEmpty())
-            ActivityCompat.requestPermissions(this, UiTools.reqPermissions, 0)
+        // request permission for notifications
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
+        ) ntfPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
 
         // miscellaneous
         c.downloadHistory.load(c)

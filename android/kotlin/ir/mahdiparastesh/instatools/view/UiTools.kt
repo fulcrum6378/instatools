@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.view
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
@@ -40,10 +39,6 @@ object UiTools {
 
     val accFromUrl = arrayOf(Login.RAW_HOST, Login.HOST)
     val materialTheme = com.google.android.material.R.style.Theme_MaterialComponents_DayNight
-    val reqPermissions =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS)
-        else arrayOf()
 
     /** Gets the IG user name from a link. */
     fun userNameFromUrl(url: String): String? {

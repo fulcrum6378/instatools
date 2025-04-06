@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 
-/** A ViewGroup that pops up and shows an IG post or story. */
+/** A ViewGroup that pops up and shows an IG post or story */
 class Expandable(
     val c: BaseActivity,
     val b: ExpandableBinding,
@@ -147,8 +147,10 @@ class Expandable(
         val u = media.owner()
         b.username.text = "@${u.username ?: mediaOwner}"
         b.username.setOnClickListener {
-            if (!UiTools.openProfile(c, u.username ?: mediaOwner!!) && c !is Viewer)
+            if (c !is Viewer)
                 Viewer.comeHere(c, mediaOwnerId ?: u.id())
+            else
+                UiTools.openProfile(c, u.username ?: mediaOwner!!)
         }
 
         // buttons

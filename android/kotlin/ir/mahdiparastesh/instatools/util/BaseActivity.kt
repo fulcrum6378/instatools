@@ -25,6 +25,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.text.layoutDirection
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -34,13 +35,14 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
+import java.util.Locale
 import kotlin.reflect.KClass
 
 /** Abstract class for all Activities in this app and it extends [FragmentActivity]. */
 abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListener {
     val c: InstaTools by lazy { applicationContext as InstaTools }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
-    val dirRtl by lazy { c.resources.getBoolean(R.bool.dirRtl) }
+    val dirRtl by lazy { Locale.getDefault().layoutDirection == View.LAYOUT_DIRECTION_RTL }
     val colorAc = MutableLiveData<Int?>(null)
     lateinit var toolbar: Toolbar
     var tbTitle: TextView? = null
@@ -154,7 +156,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     fun pdcf(@ColorRes res: Int) =
         PorterDuffColorFilter(ContextCompat.getColor(this, res), PorterDuff.Mode.SRC_IN)
 
-    /** Only use it for TextView.textSize. */
+    /** Only use it for [TextView.textSize]. */
     fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density
 
     /** Helper function for starting an Activity. */
@@ -175,11 +177,11 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         return true
     }
 
-    /** Helper function for registering a "startActivityForResult" action. */
+    /** Helper function for registering a "startActivityForResult" action */
     fun launcherForResult(callback: ActivityResultCallback<ActivityResult>) =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
 
-    /** All themes used in this app. */
+    /** All themes used in this app */
     @Suppress("unused")
     enum class Theme(val res: Int) {
         DEFAULT(R.style.Theme_InstaTools),

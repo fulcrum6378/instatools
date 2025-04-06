@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <!-- Login -->
     <fraction name="welLogoHeight">0.36</fraction>
     <fraction name="welLogoVBias">0.05</fraction>

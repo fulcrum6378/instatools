@@ -36,7 +36,6 @@ import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.BasePageViewer
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.GlideShimmer
@@ -237,24 +236,12 @@ class PageVwr : BasePageViewer(), PostSelector {
             b.proPic.layoutParams = b.proPic.layoutParams
                 .apply { height = c.dm.widthPixels }
             b.proClick.setOnClickListener { v ->
-                val picture = c.vm.user?.originalPicture() ?: return@setOnClickListener
+                val download = c.vm.user?.downloadOriginalPicture() ?: return@setOnClickListener
                 EasyPopupMenu(
                     c, v, R.menu.viewer_pic_more,
                     R.id.vpDownload to {
                         CoroutineScope(Dispatchers.IO).launch {
-                            c.c.downloads.add<Download>(
-                                Download(
-                                    Utils.PROFILE_PHOTO,
-                                    Utils.now(),
-                                    picture,
-                                    0x1,
-                                    c.vm.user!!.username!!,
-                                    c.vm.user!!.biography,
-                                    Utils.PROFILE.format(c.vm.user!!.username!!),
-                                    c.vm.user!!.profile_pic_url,
-                                    null, null, null
-                                ), true
-                            )
+                            c.c.downloads.add<Download>(download, true)
                             Downloads.initService(c)
                         }
                     }

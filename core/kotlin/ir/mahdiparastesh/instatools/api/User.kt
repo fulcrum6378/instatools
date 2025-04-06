@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.instatools.api
 
+import ir.mahdiparastesh.instatools.data.Download
+import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import java.text.DecimalFormat
 
@@ -7,32 +9,44 @@ import java.text.DecimalFormat
 class User(
     //val bio_links: Array<BioLink>?,
     val biography: String?,
-    val edge_follow: ProfileEdge?, // available via PROFILE_INFO
-    val edge_followed_by: ProfileEdge?, // available via PROFILE_INFO
-    val edge_owner_to_timeline_media: ProfileEdge?, // available via PROFILE_INFO
-    val followed_by_viewer: Boolean?, // available via PROFILE_INFO
+    val edge_follow: ProfileEdge?,  // available via PROFILE_INFO
+    val edge_followed_by: ProfileEdge?,  // available via PROFILE_INFO
+    val edge_owner_to_timeline_media: ProfileEdge?,  // available via PROFILE_INFO
+    val followed_by_viewer: Boolean?,  // available via PROFILE_INFO
     //val friendship_status: FriendshipStatus?,
     val full_name: String?,
-    val hd_profile_pic_url_info: Media.Url?, // available via USER_INFO (highest quality)
-    val hd_profile_pic_versions: Array<Media.Version>?, // available via USER_INFO
+    val hd_profile_pic_url_info: Media.Url?,  // available via USER_INFO (highest quality)
+    val hd_profile_pic_versions: Array<Media.Version>?,  // available via USER_INFO
     val id: String?,
     val is_private: Boolean?,
     //val is_unpublished: Boolean?,
-    val pk: String?, // missing in PROFILE_INFO
+    val pk: String?,  // missing in PROFILE_INFO
     val profile_pic_url: String?,
-    val profile_pic_url_hd: String?, // available via PROFILE_INFO
+    val profile_pic_url_hd: String?,  // available via PROFILE_INFO
     val pronouns: Array<String>?,
     val username: String?,
 ) {
 
     fun id(): String = id ?: pk!!
 
+    fun pv() = is_private == true
+
     fun originalPicture(): String = hd_profile_pic_url_info?.url
         ?: hd_profile_pic_versions?.let { list -> Media.Version.best(list) }
         ?: profile_pic_url_hd
         ?: profile_pic_url!!
 
-    fun pv() = is_private == true
+    fun downloadOriginalPicture(): Download? = Download(
+        Utils.PROFILE_PHOTO,
+        Utils.now(),
+        originalPicture(),
+        0x1,
+        username!!,
+        biography,
+        Utils.PROFILE.format(username),
+        profile_pic_url,
+        null, null, null
+    )
 
 
     /*class BioLink(val title: String, val url: String)*/
@@ -64,7 +78,7 @@ class User(
             count > 1000000 -> DecimalFormat("#.##").format(count / 1000000) + "M"
             count > 1000 -> DecimalFormat("#.##").format(count / 1000) + "K"
             else -> count.toInt().toString()
-        } // Cannot move to strings.xml without Context
+        }  // cannot move it to strings.xml without Context
     }
 
     //class EdgeFollowMutual(count: Long, val edges: Array<Any>) : EdgeFollow(count)
