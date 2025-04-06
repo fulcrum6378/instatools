@@ -22,7 +22,7 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-/** Abstract [RecyclerView.Adapter] that lists Instagram [Media]s in a grid. */
+/** Abstract [RecyclerView.Adapter] that lists Instagram [Media]s in a grid */
 abstract class ListPost<Activity, Fragment>(
     protected val c: Activity, protected val f: Fragment
 ) : RecyclerView.Adapter<AnyViewHolder<ListPostBinding>>()

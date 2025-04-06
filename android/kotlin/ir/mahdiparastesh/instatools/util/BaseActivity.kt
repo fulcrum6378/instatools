@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.util
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.PorterDuff
@@ -23,7 +22,6 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.text.layoutDirection
 import androidx.core.view.forEach
@@ -38,22 +36,23 @@ import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import java.util.Locale
 import kotlin.reflect.KClass
 
-/** Abstract class for all Activities in this app and it extends [FragmentActivity]. */
+/** Abstract class for all Activities in this app and it extends [FragmentActivity] */
 abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListener {
     val c: InstaTools by lazy { applicationContext as InstaTools }
     val dm: DisplayMetrics by lazy { resources.displayMetrics }
-    val dirRtl by lazy { Locale.getDefault().layoutDirection == View.LAYOUT_DIRECTION_RTL }
+    val night: Boolean by lazy {
+        resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    }
+    val dirRtl by lazy {
+        Locale.getDefault().layoutDirection == View.LAYOUT_DIRECTION_RTL
+    }
     val colorAc = MutableLiveData<Int?>(null)
     lateinit var toolbar: Toolbar
     var tbTitle: TextView? = null
 
     abstract val menuRes: Int?
 
-    companion object {
-        // TODO move to InstaTools?
-        fun Context.night(): Boolean = resources.configuration.uiMode and
-            Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (this !is Login && c.acc == null)
@@ -80,7 +79,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
 
     var resolvedIntent: Boolean? = null
     open fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
-        return true // shall pass
+        return true  // shall pass
     }
 
     override fun setContentView(view: View?) {
@@ -113,7 +112,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         val ca = colorAc.value ?: themeColor()
         val cf = PorterDuffColorFilter(ca, PorterDuff.Mode.SRC_IN)
         toolbar.navigationIcon?.colorFilter = cf
-        if (!night() && this is Main) {
+        if (!night && this is Main) {
             tbTitle?.setTextColor(ca)
             toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
         }
@@ -145,21 +144,22 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(wrapTheme(which))
 
-    /** Helper function for getting a colour from resources. */
-    fun color(@ColorRes res: Int) = ContextCompat.getColor(this, res)
+    /** Helper function for getting a colour from resources */
+    fun color(@ColorRes res: Int) = resources.getColor(res, theme)
 
-    /** Helper function for getting a drawable from resources with an optional colour filter. */
+    /** Helper function for getting a drawable from resources with an optional colour filter */
+    @SuppressLint("UseCompatLoadingForDrawables")
     fun drawable(@DrawableRes res: Int, @ColorRes cf: Int? = null) =
-        ContextCompat.getDrawable(this, res)?.apply { cf?.let { colorFilter = pdcf(it) } }
+        resources.getDrawable(res, theme)?.apply { cf?.let { colorFilter = pdcf(it) } }
 
-    /** Helper function for making a colour filter for the color resource. */
+    /** Helper function for making a colour filter for the color resource */
     fun pdcf(@ColorRes res: Int) =
-        PorterDuffColorFilter(ContextCompat.getColor(this, res), PorterDuff.Mode.SRC_IN)
+        PorterDuffColorFilter(resources.getColor(res, theme), PorterDuff.Mode.SRC_IN)
 
     /** Only use it for [TextView.textSize]. */
     fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density
 
-    /** Helper function for starting an Activity. */
+    /** Helper function for starting an Activity */
     fun goTo(
         activity: KClass<*>,
         finish: Boolean = false, // USE THIS CAREFULLY

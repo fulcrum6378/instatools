@@ -8,7 +8,7 @@ import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import ir.mahdiparastesh.instatools.view.Lister
 
-/** Abstract class for all page fragments which reside inside a [BaseActivity]. */
+/** Abstract class for all page fragments which reside inside a [BaseActivity] */
 abstract class BasePage<Activity> : Fragment(), Lister, Toolbar.OnMenuItemClickListener
     where Activity : BaseActivity {
 

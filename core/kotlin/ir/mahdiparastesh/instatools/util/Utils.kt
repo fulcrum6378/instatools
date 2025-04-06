@@ -9,7 +9,7 @@ object Utils {
     const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s/"
     const val PROFILE_PHOTO = "profile_photo"
 
-    /** Helper class for turning 1 to "01". */
+    /** Helper class for turning 1 to "01" */
     fun z(n: Int): String {
         val s = n.toString()
         return if (s.length == 1) "0$s" else s
@@ -29,7 +29,7 @@ object Utils {
             "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
     }
 
-    /** @return a datetime text to be used in a file name. */
+    /** @return a datetime text to be used in a file name */
     fun fileDateTime(time: Long): String {
         val cal = calendar(time)
         return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +

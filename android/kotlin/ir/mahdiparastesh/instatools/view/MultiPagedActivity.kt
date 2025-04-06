@@ -17,7 +17,7 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
 
     private val classes = arrayOf(*classes)
 
-    /** A LiveData whose value indicates the current page and must never be null. */
+    /** A LiveData whose value indicates the current page and must never be null */
     abstract var currentPage: Int
 
     /** Indicates the index of the last fragment before switching to a new one. */
@@ -32,7 +32,7 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
     companion object {
         const val CURRENT_PAGE = "current_page"
 
-        /** Extra value for an intent to turn to a specific page after creation. */
+        /** Extra value for an intent to turn to a specific page after creation */
         const val EXTRA_TURN_TO_PAGE = "turnToPage"
     }
 

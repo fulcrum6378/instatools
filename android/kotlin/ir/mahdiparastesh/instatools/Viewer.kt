@@ -47,7 +47,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
     lateinit var b: ViewerBinding
     val vm: MyModel by viewModels()
     val expandable: Expandable by lazy {
-        Expandable(this, b.expanded, color(if (!night()) R.color.defBG else R.color.CS)) {
+        Expandable(this, b.expanded, color(if (!night) R.color.defBG else R.color.CS)) {
             (currentPage() as BasePageViewer?)?.apply {
                 updateShadow()
                 updateJumper()

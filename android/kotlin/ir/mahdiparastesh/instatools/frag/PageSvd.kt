@@ -29,7 +29,6 @@ import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageSvdBinding
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.BasePageMain
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.Expandable
@@ -59,7 +58,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override val jumper: ImageView? get() = b.jumper
     override val emptyIcon: Int = R.drawable.done_svd
     override val expandable: Expandable by lazy {
-        Expandable(c, b.expanded, c.color(if (!c.night()) R.color.defBG else R.color.CS)) {
+        Expandable(c, b.expanded, c.color(if (!c.night) R.color.defBG else R.color.CS)) {
             updateShadow()
             updateJumper()
         }
@@ -200,7 +199,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
                 ).apply {
                     number = tracker?.selection?.size() ?: 0
                     backgroundColor = c.ca[1]
-                    badgeTextColor = if (c.night()) c.bg[1] else c.color(R.color.defBG)
+                    badgeTextColor = if (c.night) c.bg[1] else c.color(R.color.defBG)
                     c.selectionBadge = this
                     maxCharacterCount = UiTools.MAX_BADGE_CHAR
                 }, c.tbTitle!!

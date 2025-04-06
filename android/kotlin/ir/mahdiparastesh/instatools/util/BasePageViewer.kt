@@ -11,7 +11,6 @@ import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListTag
-import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.PostSelector
@@ -20,7 +19,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import kotlinx.coroutines.Job
 
-/** Subclass of [BasePage], from which all pages of [Viewer] extend. */
+/** Subclass of [BasePage], from which all pages of [Viewer] extend */
 abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister {
 
     override val tbShadow: View? by lazy { c.b.tbShadow }
@@ -47,7 +46,7 @@ abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister {
                     number = tracker?.selection?.size() ?: 0
                     backgroundColor = c.themeColor(android.R.attr.colorAccent)
                     badgeTextColor =
-                        if (c.night()) c.themeColor(android.R.attr.colorPrimary)
+                        if (c.night) c.themeColor(android.R.attr.colorPrimary)
                         else c.color(R.color.defBG)
                     c.selectionBadge = this
                     maxCharacterCount = UiTools.MAX_BADGE_CHAR

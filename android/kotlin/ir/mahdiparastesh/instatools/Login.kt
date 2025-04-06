@@ -76,7 +76,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 "Chrome/133.0.0.0 Safari/537.36"
         }
         b.web.webViewClient = myClient
-        if (night()) {
+        if (night) {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING))
                 WebSettingsCompat.setAlgorithmicDarkeningAllowed(b.web.settings, true)
             else b.web.isForceDarkAllowed = true
@@ -109,7 +109,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
-        if (night()) bw.logo.colorFilter = pdcf(R.color.defCA)
+        if (night) bw.logo.colorFilter = pdcf(R.color.defCA)
         accounts.sortByDescending { it.last.toString() }
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)

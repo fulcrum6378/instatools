@@ -8,7 +8,7 @@ import androidx.annotation.StyleRes
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.BaseActivity
 
-/** Helper class for creating [PopupMenu]s more easily. */
+/** Helper class for creating [PopupMenu]s more easily */
 class EasyPopupMenu(
     c: BaseActivity, v: View, res: Int, vararg actions: Pair<Int, (item: MenuItem) -> Unit>,
     @StyleRes theme: Int = R.style.Theme_InstaTools_Popup,

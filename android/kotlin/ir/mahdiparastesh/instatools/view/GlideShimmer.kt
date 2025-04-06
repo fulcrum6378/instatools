@@ -9,7 +9,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.shimmer.ShimmerFrameLayout
 
-/** Helper class for adding a shimmer effect on the [Glide] library during loading. */
+/** Helper class for adding a shimmer effect on the [Glide] library during loading */
 class GlideShimmer(
     private val layout: ShimmerFrameLayout, private val image: ImageView,
     private val moreover: ((succeeded: Boolean) -> Unit)? = null

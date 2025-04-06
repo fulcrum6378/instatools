@@ -185,6 +185,7 @@ class InstaTools : Application() {
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
+  * Metadata for HEIC and MP4?
   *
   * NOTES:
   * Inconsistency is detected in a RecyclerView whenever you don't notify it completely of the changes!

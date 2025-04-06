@@ -11,7 +11,7 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.list.ListCar
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 
-/** Subclass of [BasePage], from which all pages of [Main] extend. */
+/** Subclass of [BasePage], from which all pages of [Main] extend */
 abstract class BasePageMain(private val theme: BaseActivity.Theme) : BasePage<Main>() {
 
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }

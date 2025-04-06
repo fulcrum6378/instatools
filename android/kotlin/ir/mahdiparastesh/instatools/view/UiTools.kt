@@ -49,7 +49,7 @@ object UiTools {
         return null
     }
 
-    /** @return TextView instances of a BottomNavigationView for applying custom styles on them. */
+    /** @return [TextView] instances of a [BottomNavigationView] for applying custom styles on them */
     @SuppressLint("RestrictedApi")
     fun bnvTitles(bnv: BottomNavigationView): List<TextView> {
         val list = ArrayList<TextView>()
@@ -93,7 +93,7 @@ object UiTools {
         }
     }
 
-    /** Helper class for vibrations of any duration. */
+    /** Helper class for vibrations of any duration */
     @Suppress("DEPRECATION")
     fun Context.shake(dur: Long = 48L) {
         val vib = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
@@ -150,14 +150,14 @@ object UiTools {
         return units[unit].format(nominalSize.toInt())
     }
 
-    /** @return a colour from a theme using an attribute resource. */
+    /** @return a colour from a theme using an attribute resource */
     @ColorInt
     fun ContextThemeWrapper.themeColor(@AttrRes attr: Int = android.R.attr.colorAccent) =
         TypedValue().apply {
             theme.resolveAttribute(attr, this, true)
         }.data
 
-    /** Helper function for showing a Snackbar. */
+    /** Helper function for showing a [Snackbar] */
     fun snackbar(view: View, text: String, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG) {
         try {
             Snackbar.make(
@@ -169,7 +169,7 @@ object UiTools {
         }
     }
 
-    /** Helper function for showing a Snackbar. */
+    /** Helper function for showing a [Snackbar] */
     fun snackbar(
         view: View, @StringRes res: Int, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG
     ) {

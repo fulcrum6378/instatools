@@ -110,7 +110,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // theming
-        if (night()) colorBG.observe(this) {
+        if (night) colorBG.observe(this) {
             if (it == null) return@observe
             window.decorView.setBackgroundColor(it)
             @Suppress("DEPRECATION")
@@ -128,7 +128,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             if (it == null) return@observe
             styliseToolbar()
         }
-        if (night()) colorBG.value = bg[vm.currentPage]
+        if (night) colorBG.value = bg[vm.currentPage]
         else colorAc.value = ca[vm.currentPage]
         b.toolbar.popupTheme = popupThemes[vm.currentPage]
 
@@ -326,11 +326,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         b.toolbar.popupTheme = popupThemes[i]
 
         anTheme?.cancel()
-        val col = if (night()) bg else ca
+        val col = if (night) bg else ca
         anTheme = ValueAnimator.ofArgb(col[lastPage], col[vm.currentPage]).apply {
             duration = resources.getInteger(R.integer.transFrag).toLong()
             addUpdateListener {
-                if (night()) colorBG.value = it.animatedValue as Int
+                if (night) colorBG.value = it.animatedValue as Int
                 else colorAc.value = it.animatedValue as Int
             }
             start()
@@ -344,7 +344,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         isVisible = num != null
         number = num ?: 0
         backgroundColor = ca[i]
-        badgeTextColor = if (!night()) bg[i] else color(R.color.defBG)
+        badgeTextColor = if (!night) bg[i] else color(R.color.defBG)
         maxCharacterCount = UiTools.MAX_BADGE_CHAR
     }
 

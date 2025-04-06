@@ -35,7 +35,6 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
@@ -263,7 +262,7 @@ interface ServiceOwner : Lister {
     }
 }
 
-/** Helper interface for selection mode of [RecyclerView]. */
+/** Helper interface for selection mode of [RecyclerView] */
 interface PostSelector : Lister {
     var tracker: SelectionTracker<Long>?
     var selectivity: Boolean
@@ -397,7 +396,7 @@ interface Counter {
                 number = n
                 backgroundColor = c.themeColor(android.R.attr.colorAccent)
                 badgeTextColor =
-                    if (c.night()) c.themeColor(android.R.attr.colorPrimary)
+                    if (c.night) c.themeColor(android.R.attr.colorPrimary)
                     else c.color(R.color.defBG)
                 countBadge = this
                 maxCharacterCount = UiTools.MAX_BADGE_CHAR

@@ -119,7 +119,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             handleLink(b.pasteLink.text.toString())
             b.pasteLink.setText("")
         }
-        if (!night()) color(R.color.CS).apply {
+        if (!night) color(R.color.CS).apply {
             b.pasteLink.setTextColor(this)
             b.pasteLink.setHintTextColor(Color.argb(100, red, green, blue))
         }

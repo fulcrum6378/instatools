@@ -33,7 +33,6 @@ import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
 import ir.mahdiparastesh.instatools.list.ListVwr
-import ir.mahdiparastesh.instatools.util.BaseActivity.Companion.night
 import ir.mahdiparastesh.instatools.util.BasePageViewer
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
@@ -277,7 +276,7 @@ class PageVwr : BasePageViewer(), PostSelector {
             if (showPv_) {
                 h.b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
                     null, c.drawable(
-                        R.drawable.private_account, if (c.night()) R.color.defCA else null
+                        R.drawable.private_account, if (c.night) R.color.defCA else null
                     )!!, null, null
                 )
                 h.b.privateAcc.layoutParams =

@@ -81,7 +81,6 @@ interface Downloader : Queuer<Download> {
                 "png" -> writePng(q, stream.readBytes(), output)
                 "webp" -> writeWebP(q, stream.readBytes(), output)
                 else -> stream.copyTo(output.open())
-                // TODO metadata for HEIC and MP4?
             }
         } catch (_: IOException) {
             return false

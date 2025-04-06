@@ -52,7 +52,7 @@ interface Queuer<Item> {
         }
     }
 
-    /** @return a [Collection.iterator] from the queue. */
+    /** @return a [Collection.iterator] from the queue */
     fun iterator(): Iterator<Item>
 
     /** Is this item qualified for [Queuer.handle]? */
