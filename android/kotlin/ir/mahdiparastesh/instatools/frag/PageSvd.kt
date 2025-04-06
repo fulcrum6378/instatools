@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -67,7 +68,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
     override val dialogContext: Context
-        get() = android.view.ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Secondary)
+        get() = ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Secondary)
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.vm.saved != null
@@ -194,9 +195,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
             if (c.tbTitle?.parent == null) return
             // to avoid NullPointerException in BadgeDrawable.updateAnchorParentToNotClip
             BadgeUtils.attachBadgeDrawable(
-                BadgeDrawable.create(
-                    androidx.appcompat.view.ContextThemeWrapper(c, UiTools.materialTheme)
-                ).apply {
+                BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
                     number = tracker?.selection?.size() ?: 0
                     backgroundColor = c.ca[1]
                     badgeTextColor = if (c.night) c.bg[1] else c.color(R.color.defBG)

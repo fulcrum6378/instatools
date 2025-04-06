@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.Color
@@ -20,7 +21,6 @@ import androidx.core.graphics.red
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Settings.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.api.Api
@@ -132,7 +132,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
             if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
-                MaterialAlertDialogBuilder(this).apply {
+                AlertDialog.Builder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
                     setNeutralButton(R.string.ok, null)
@@ -241,7 +241,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             })
 
             R.id.dtClearAll -> if (!c.downloads.isEmpty<Download>())
-                MaterialAlertDialogBuilder(this).apply {
+                AlertDialog.Builder(this).apply {
                     setTitle(R.string.listClear)
                     setMessage(R.string.listClearSure)
                     setNegativeButton(R.string.no, null)
@@ -337,7 +337,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
         override fun onSwiped(h: RecyclerView.ViewHolder, direction: Int) {
             if (!askedForDelete) {
                 val q = c.downloads.getOrNull<Download>(h.layoutPosition) ?: return
-                MaterialAlertDialogBuilder(this@Downloads).apply {
+                AlertDialog.Builder(this@Downloads).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.deleteItemSure)
                     setCancelable(false)

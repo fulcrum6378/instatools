@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 78
-        versionName = "38.4.5"
+        versionName = "38.4.8"
     }
 
     sourceSets.getByName("main") {
@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.ktx.activity)
     implementation(libs.constraintlayout)
     implementation(libs.ktx.core)
+    implementation(libs.documentfile)
     implementation(libs.drawerlayout)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)

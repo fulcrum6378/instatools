@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -18,7 +19,6 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
 import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
@@ -94,7 +94,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
             intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
                 .apply {
-                    MaterialAlertDialogBuilder(this@Login).apply {
+                    AlertDialog.Builder(this@Login).apply {
                         setTitle(R.string.loggedOut)
                         setMessage(getString(R.string.needAuthentication))
                         setNeutralButton(R.string.ok, null)

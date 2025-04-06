@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.view
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.view.ContextThemeWrapper
@@ -22,7 +23,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.R
@@ -372,7 +372,7 @@ interface PostSelector : Lister {
             if (tracker!!.selection.size() < UiTools.DESELECT_MIN_ASK)
                 tracker?.clearSelection()
             else {
-                MaterialAlertDialogBuilder(dialogContext).apply {
+                AlertDialog.Builder(dialogContext).apply {
                     setTitle(R.string.deselectAll)
                     setMessage(R.string.deselectAllSure)
                     setNegativeButton(R.string.no, null)

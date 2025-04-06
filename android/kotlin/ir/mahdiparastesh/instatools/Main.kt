@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools
 import android.Manifest
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -23,7 +24,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
@@ -194,7 +194,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         R.id.mnGSettings -> goTo(Settings::class)
         R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
         R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
-            MaterialAlertDialogBuilder(
+            AlertDialog.Builder(
                 ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
             ).apply {
                 setTitle(R.string.backgroundTasks)
@@ -212,7 +212,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             val bd = AlsoDeleteDataBinding.inflate(
                 layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
             )
-            MaterialAlertDialogBuilder(
+            AlertDialog.Builder(
                 ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
             ).apply {
                 setTitle(R.string.signOut)
@@ -372,8 +372,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         c.onLoggedOut()
     }
 
+    @SuppressLint("RtlHardcoded")
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
+        //val drawerGravity = if (!dirRtl) Gravity.LEFT else Gravity.RIGHT
         if (::b.isInitialized && b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START)
             toggleNav.syncState()

@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
@@ -7,7 +8,6 @@ import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.instatools.BuildConfig
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
@@ -84,7 +84,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
             },
             R.id.amSignOut to {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)
-                MaterialAlertDialogBuilder(c).apply {
+                AlertDialog.Builder(c).apply {
                     setTitle(R.string.signOut)
                     setMessage(R.string.signOutSure)
                     setView(bd.root)
