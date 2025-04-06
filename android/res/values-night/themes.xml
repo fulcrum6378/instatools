@@ -1,9 +1,9 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
         <item name="colorAccent">@color/defCA</item>
         <item name="backgroundColor">?attr/colorPrimary</item>
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 

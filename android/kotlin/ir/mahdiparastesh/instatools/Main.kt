@@ -113,10 +113,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         if (night) colorBG.observe(this) {
             if (it == null) return@observe
             window.decorView.setBackgroundColor(it)
-            @Suppress("DEPRECATION")
-            window.statusBarColor = it  // FIXME won't affect Android 15+
-            @Suppress("DEPRECATION")
-            window.navigationBarColor = it  // FIX-ME won't affect Android 15+
+            @Suppress("DEPRECATION")  // works fine on Android 15!
+            window.statusBarColor = it
+            @Suppress("DEPRECATION")  // works fine on Android 15!
+            window.navigationBarColor = it
             styliseToolbar()
             onPrepareOptionsMenu(b.toolbar.menu)
             b.nav.setBackgroundColor(it)

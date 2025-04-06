@@ -9,6 +9,11 @@
         <item name="android:windowBackground">?attr/backgroundColor</item>
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">
+            @drawable/logo_splash
+        </item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/defBG</item>
 
         <!-- texts -->
         <item name="android:editTextColor">?attr/colorAccent</item>
@@ -33,7 +38,7 @@
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="backgroundColor">@color/defBG</item>
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:itemBackground">@drawable/menu_item</item>
     </style>

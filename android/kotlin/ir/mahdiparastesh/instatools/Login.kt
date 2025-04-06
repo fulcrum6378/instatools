@@ -56,6 +56,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         const val BROWSE_ACC_EXIST = 1
         const val BROWSE_AUTH_REQ = 2
         const val BROWSE_THE_WEB = 3
+
+        /** Remember to set this to null when you're finished. */
         var browsePurpose: Int? = null
     }
 
@@ -253,7 +255,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         @Throws(IllegalStateException::class)
         private fun collect(html: String) {
             val u = SimpleJobs.userFromHtml(
-                StringEscapeUtils.unescapeJson(html) // UnicodeUnescaper fucks up!
+                StringEscapeUtils.unescapeJson(html)  // UnicodeUnescaper fucks up!
             ) ?: throw IllegalStateException("Couldn't extract user information!")
 
             val id = u.id().toLong()
@@ -271,6 +273,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             goTo(Main::class, true)
             c.clearCacheIfNecessary("WebView")
             improperLoading = 0
+            browsePurpose = null
         }
 
         private fun failed(e: Exception, reload: Boolean = true) {
