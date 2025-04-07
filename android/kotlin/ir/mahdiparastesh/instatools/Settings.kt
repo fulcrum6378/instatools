@@ -345,18 +345,17 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     }
 
     private fun showAliases() {
-        b.stAliases.adapter = aliases?.let { aliases ->
-            object : ArrayAdapter<Map.Entry<String, String>>(
-                this, 0, aliases.toSortedMap().entries.toList()
-            ) {
-                override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
-                    val ba = convertView?.let { ListAliasBinding.bind(it) }
-                        ?: ListAliasBinding.inflate(layoutInflater, parent, false)
-                    ba.profile.text = getItem(i)?.key
-                    ba.path.text = getItem(i)?.value?.toUri()?.folderName()
-                    ba.root.setOnClickListener { editAlias(getItem(i)?.key) }
-                    return ba.root
-                }
+        val aliases = aliases ?: return
+        b.stAliases.adapter = object : ArrayAdapter<Map.Entry<String, String>>(
+            this, 0, aliases.toSortedMap().entries.toList()
+        ) {
+            override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
+                val ba = convertView?.let { ListAliasBinding.bind(it) }
+                    ?: ListAliasBinding.inflate(layoutInflater, parent, false)
+                ba.profile.text = getItem(i)?.key
+                ba.path.text = getItem(i)?.value?.toUri()?.folderName()
+                ba.root.setOnClickListener { editAlias(getItem(i)?.key) }
+                return ba.root
             }
         }
     }

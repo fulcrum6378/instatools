@@ -12,6 +12,8 @@ import android.view.ContextThemeWrapper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,18 +33,18 @@ import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
+import ir.mahdiparastesh.instatools.databinding.ListDrawerNavBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.frag.PageSvd
-import ir.mahdiparastesh.instatools.list.ListDrawerNav
 import ir.mahdiparastesh.instatools.list.ListSch
-import ir.mahdiparastesh.instatools.list.NavItem
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.ActionBarDrawerToggle
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.NavItem
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -150,9 +152,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         b.drwLL.setOnClickListener {
             UiTools.openLink(this, Utils.PROFILE.format(c.acc!!.user!!))
         }
-        b.drwNav.adapter = ListDrawerNav(
-            this,
-
+        val drwNavItems: List<NavItem> = listOf(
             NavItem(
                 R.id.mnDownloads, R.drawable.download, R.string.downloads
             ) { goTo(Downloads::class) },
@@ -205,6 +205,16 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 }.show()
             },
         )
+        b.drwNav.adapter = object : ArrayAdapter<NavItem>(this, 0, drwNavItems) {
+            override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
+                val b = convertView?.let { ListDrawerNavBinding.bind(it) }
+                    ?: ListDrawerNavBinding.inflate(layoutInflater)
+                b.icon.setImageResource(drwNavItems[i].icon)
+                b.text.setText(drwNavItems[i].text)
+                b.root.setOnClickListener(drwNavItems[i].listener)
+                return b.root
+            }
+        }
 
         // request permission for notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -243,7 +253,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
         b.toolbar.menu.findItem(R.id.mtSearch)?.apply {
-            searchView = SearchView(c/*todo wrapTheme(currentTheme())*/, null, R.style.searchView)
+            searchView = SearchView(wrapTheme(currentTheme()))  // TODO fucked up
             actionView = searchView
             searchView.queryHint = getString(R.string.mtSearch)
             setOnActionExpandListener(this@Main)

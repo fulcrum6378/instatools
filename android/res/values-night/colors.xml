@@ -16,6 +16,7 @@
     </array>
 
     <!-- #GLOBAL -->
+    <color name="menuItem">#F0F0F0</color>
     <color name="expandableHeaderBg">@android:color/transparent</color>
     <color name="fastScrollLine">#11FFFFFF</color>
 

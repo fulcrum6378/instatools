@@ -22,10 +22,6 @@
         <item name="android:fontFamily">@font/logo</item>
     </style>
 
-    <style name="TextAppearance.InstaTools.Nav" parent="@style/TextAppearance.InstaTools.Medium">
-        <item name="android:textSize">@dimen/navFont</item>
-    </style>
-
     <style name="TextAppearance.InstaTools.BNV.Active" parent="@style/TextAppearance.InstaTools.Medium">
         <item name="android:fontFamily">@font/bold</item>
         <item name="android:textSize">@dimen/bnvTextActive</item>

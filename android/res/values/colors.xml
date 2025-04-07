@@ -1,4 +1,5 @@
 <resources>
+
     <color name="CP">#705000</color>
     <!--<color name="CPL">#FFD453</color>-->
     <color name="CPW">#44FFD453</color>
@@ -30,6 +31,7 @@
     <color name="weakWhite">#EEFFFFFF</color>
 
     <!-- #GLOBAL -->
+    <color name="menuItem">#444</color>
     <color name="selectedTick">#FFF</color>
     <color name="shimmerIvBg">#DADADA</color>
     <color name="expandableHeaderBg">#AAFFFFFF</color>

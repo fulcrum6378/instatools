@@ -15,6 +15,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import androidx.core.view.forEach
@@ -195,5 +197,14 @@ object UiTools {
             429 -> R.string.manyRequests
             else -> R.string.httpError
         }, code
+    )
+
+
+    /** Data model for a navigation button used in simple menus. */
+    data class NavItem(
+        @IdRes val id: Int,
+        @DrawableRes val icon: Int,
+        @StringRes val text: Int,
+        val listener: View.OnClickListener
     )
 }
