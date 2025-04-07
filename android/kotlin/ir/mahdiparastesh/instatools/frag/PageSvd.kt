@@ -68,7 +68,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
     override val dialogContext: Context
-        get() = ContextThemeWrapper(c, R.style.Theme_InstaTools_Dialog_Secondary)
+        get() = ContextThemeWrapper(c, R.style.Theme_InstaTools_Secondary)
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.vm.saved != null

@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:visibility="gone"
-            app:dotsColor="?attr/colorAccent"
+            app:dotsColor="?android:colorAccent"
             app:dotsCornerRadius="6dp"
             app:dotsSize="12dp"
             app:dotsSpacing="3dp"
@@ -117,6 +117,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:progressMode="true"
-            app:selectedDotColor="?attr/colorAccent" />
+            app:selectedDotColor="?android:colorAccent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

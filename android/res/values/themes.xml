@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.InstaTools.Base" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.InstaTools.Base" parent="android:Theme.DeviceDefault.NoActionBar">
         <item name="colorPrimary">@color/defCA</item>
         <item name="colorPrimaryDark">?attr/colorPrimary</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
@@ -16,15 +16,15 @@
         <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/defBG</item>
 
         <!-- texts -->
-        <item name="android:editTextColor">?attr/colorAccent</item>
+        <item name="android:editTextColor">?android:colorAccent</item>
         <item name="android:fontFamily">@font/medium</item>
         <item name="android:textAppearance">@style/TextAppearance.InstaTools.Light</item>
         <item name="android:textAppearanceLarge">@style/TextAppearance.InstaTools.Medium</item>
-        <item name="android:textAppearanceMedium">@style/TextAppearance.InstaTools.Medium</item>
-        <item name="android:textAppearanceSmall">@style/TextAppearance.InstaTools.Medium</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textAppearanceMedium">@style/TextAppearance.InstaTools.Light</item>
+        <item name="android:textAppearanceSmall">@style/TextAppearance.InstaTools.Light</item>
+        <item name="android:textColor">?android:colorAccent</item>
         <item name="android:textColorHint">?attr/colorPrimaryHigh</item>
-        <item name="android:titleTextColor">?attr/colorAccent</item>
+        <item name="android:titleTextColor">?android:colorAccent</item>
 
         <!-- components -->
         <item name="android:checkboxStyle">@style/Theme.InstaTools.Checkbox</item>
@@ -36,7 +36,7 @@
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
-        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="android:colorAccent">?attr/colorPrimary</item>
         <item name="backgroundColor">@color/defBG</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -47,14 +47,14 @@
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
         <item name="colorPrimaryHigh">@color/CPH</item>
-        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
+        <!--<item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="colorPrimaryHigh">@color/CSH</item>
-        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
+        <!--<item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
@@ -62,7 +62,7 @@
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="colorPrimaryHigh">@color/CTH</item>
         <item name="defCA">@color/defCA</item>
-        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
+        <!--<item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>-->
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
@@ -112,13 +112,13 @@
 
     <!-- miscellaneous -->
     <style name="Theme.InstaTools.Checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="android:textColor">?attr/colorAccent</item>
-        <item name="buttonTint">?attr/colorAccent</item>
+        <item name="android:textColor">?android:colorAccent</item>
+        <item name="buttonTint">?android:colorAccent</item>
     </style>
 
     <style name="Theme.InstaTools.Radio" parent="Widget.AppCompat.CompoundButton.RadioButton">
-        <item name="android:textColor">?attr/colorAccent</item>
-        <item name="buttonTint">?attr/colorAccent</item>
+        <item name="android:textColor">?android:colorAccent</item>
+        <item name="buttonTint">?android:colorAccent</item>
     </style>
 
     <style name="Theme.InstaTools.Snackbar" parent="Widget.MaterialComponents.Snackbar">
@@ -127,7 +127,7 @@
     </style>
 
     <style name="Theme.InstaTools.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">?android:colorAccent</item>
     </style>
 
     <style name="Theme.InstaTools.BNV" parent="Theme.MaterialComponents.DayNight" />

@@ -1,8 +1,8 @@
 <resources>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
-        <item name="colorAccent">@color/defCA</item>
         <item name="backgroundColor">?attr/colorPrimary</item>
+        <item name="android:colorAccent">@color/defCA</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
@@ -10,27 +10,27 @@
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
-        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>
+        <!--<item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
-        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>
+        <!--<item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
         <item name="colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
-        <item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>
+        <!--<item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>-->
     </style>
 
 
     <!-- PopupMenu -->
     <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
         <item name="android:fontFamily">@font/medium</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">?android:colorAccent</item>
         <item name="colorPrimaryWeak">@color/weakWhite</item>
         <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
@@ -49,19 +49,5 @@
     <style name="Theme.InstaTools.Popup.Tertiary" parent="Theme.InstaTools.Popup">
         <item name="colorPrimary">@color/CT</item>
         <item name="colorAccent">@color/defCA</item>
-    </style>
-
-
-    <!-- AlertDialog -->
-    <style name="Theme.InstaTools.Dialog.Primary" parent="@style/Theme.InstaTools.Dialog">
-        <item name="colorPrimary">@color/defCA</item>
-    </style>
-
-    <style name="Theme.InstaTools.Dialog.Secondary" parent="@style/Theme.InstaTools.Dialog">
-        <item name="colorPrimary">@color/defCA</item>
-    </style>
-
-    <style name="Theme.InstaTools.Dialog.Tertiary" parent="@style/Theme.InstaTools.Dialog">
-        <item name="colorPrimary">@color/defCA</item>
     </style>
 </resources>

@@ -15,7 +15,7 @@
         style="@style/stSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="?attr/colorAccent" />
+        android:backgroundTint="?android:colorAccent" />
 
     <TextView
         android:id="@+id/aliasAddFolder"

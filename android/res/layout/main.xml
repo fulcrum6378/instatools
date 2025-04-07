@@ -54,8 +54,8 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/searchStatus"
-            android:layout_width="?actionBarSize"
-            android:layout_height="?actionBarSize"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="?android:actionBarSize"
             android:alpha="0.4"
             android:padding="3dp"
             android:visibility="gone"
@@ -67,7 +67,7 @@
             app:lottie_rawRes="@raw/pending" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.navigation.NavigationView
+    <!--<com.google.android.material.navigation.NavigationView
         android:id="@+id/nav"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -75,5 +75,62 @@
         app:headerLayout="@layout/main_nav_header"
         app:itemRippleColor="@color/defRipple"
         app:itemTextAppearance="@style/TextAppearance.InstaTools.Nav"
-        app:menu="@menu/main_nav" />
+        app:menu="@menu/main_nav" />-->
+
+    <LinearLayout
+        android:id="@+id/drawer"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="?android:windowBackground"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/drwUserPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:id="@+id/drwLL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/drawer_header"
+                android:orientation="vertical"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/drwUserPhoto">
+
+                <TextView
+                    android:id="@+id/drwUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.InstaTools.Light"
+                    android:textColor="@color/defCALight"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/drwUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/defCALight"
+                    android:textSize="17sp" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ListView
+            android:id="@+id/drwNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

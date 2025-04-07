@@ -16,7 +16,6 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
@@ -24,7 +23,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -34,10 +32,11 @@ import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.databinding.AlsoDeleteDataBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
-import ir.mahdiparastesh.instatools.databinding.MainNavHeaderBinding
 import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.frag.PageSvd
+import ir.mahdiparastesh.instatools.list.ListDrawerNav
 import ir.mahdiparastesh.instatools.list.ListSch
+import ir.mahdiparastesh.instatools.list.NavItem
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
@@ -51,13 +50,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
-    NavigationView.OnNavigationItemSelectedListener, MenuItem.OnActionExpandListener,
-    SearchView.OnQueryTextListener {
+    MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener {
 
     lateinit var b: MainBinding
     val vm: MyModel by viewModels()
-    private lateinit var toggleNav: ActionBarDrawerToggle
-    private lateinit var bh: MainNavHeaderBinding
+    private lateinit var drawerToggle: ActionBarDrawerToggle
     private lateinit var searchView: SearchView
     private val ntfPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
@@ -119,7 +116,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             window.navigationBarColor = it
             styliseToolbar()
             onPrepareOptionsMenu(b.toolbar.menu)
-            b.nav.setBackgroundColor(it)
+            b.drawer.setBackgroundColor(it)
             b.searchRes.setBackgroundColor(it)
             b.bnv.setBackgroundColor(it)
             (currentPage() as? PageSvd)
@@ -132,28 +129,82 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         else colorAc.value = ca[vm.currentPage]
         b.toolbar.popupTheme = popupThemes[vm.currentPage]
 
-        // navigation
-        toggleNav = ActionBarDrawerToggle(
+        // drawer
+        drawerToggle = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
         ).apply {
             b.root.addDrawerListener(this)
             isDrawerIndicatorEnabled = true
             syncState()
         }
-        b.nav.setNavigationItemSelectedListener(this)
-        bh = MainNavHeaderBinding.bind(b.nav.getHeaderView(0) as ConstraintLayout)
         Glide.with(c)
             .load(c.acc!!.pict)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .placeholder(drawable(R.drawable.transparent_square))
-            .into(bh.pict)
-        bh.user.text = c.acc!!.user
+            .into(b.drwUserPhoto)
+        b.drwUser.text = c.acc!!.user
         if (!c.acc!!.name.isNullOrBlank())
-            bh.name.text = c.acc!!.name
-        else bh.name.vis(false)
-        bh.ll.setOnClickListener {
+            b.drwUserName.text = c.acc!!.name
+        else
+            b.drwUserName.vis(false)
+        b.drwLL.setOnClickListener {
             UiTools.openLink(this, Utils.PROFILE.format(c.acc!!.user!!))
         }
+        b.drwNav.adapter = ListDrawerNav(
+            this,
+
+            NavItem(
+                R.id.mnDownloads, R.drawable.download, R.string.downloads
+            ) { goTo(Downloads::class) },
+
+            NavItem(
+                R.id.mnGSettings, R.drawable.settings, R.string.gSettings
+            ) { goTo(Settings::class) },
+
+            NavItem(
+                R.id.mnSettings, R.drawable.settings, R.string.aSettings
+            ) { goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) } },
+
+            NavItem(R.id.mnSwitchAccount, R.drawable.switch_account, R.string.switchAccount) {
+                if (ForegroundService.anyRunning())
+                    AlertDialog.Builder(
+                        ContextThemeWrapper(this, R.style.Theme_InstaTools_Tertiary)
+                    ).apply {
+                        setTitle(R.string.backgroundTasks)
+                        setMessage(R.string.terminateBgTasks)
+                        setNegativeButton(R.string.no, null)
+                        setPositiveButton(R.string.yes) { _, _ ->
+                            ForegroundService.terminateTasks(c)
+                            switchAcc()
+                        }
+                    }.show()
+                else
+                    switchAcc()
+            },
+
+            NavItem(R.id.mnSignOut, R.drawable.exit, R.string.signOut) {
+                val bd = AlsoDeleteDataBinding.inflate(
+                    layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
+                )
+                AlertDialog.Builder(
+                    ContextThemeWrapper(this, R.style.Theme_InstaTools_Tertiary)
+                ).apply {
+                    setTitle(R.string.signOut)
+                    setMessage(R.string.signOutSure)
+                    setView(bd.root)
+                    setNegativeButton(R.string.no, null)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            Api.json<Rest.QuickResponse>(
+                                Api.Endpoint.LOGOUT.url,
+                                true, "one_tap_app_login=1&user_id=${c.acc!!.id}",
+                            )
+                        }
+                        signOut(bd.root.isChecked)
+                    }
+                }.show()
+            },
+        )
 
         // request permission for notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -189,53 +240,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             recreate(); return; }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mnDownloads -> goTo(Downloads::class)
-        R.id.mnGSettings -> goTo(Settings::class)
-        R.id.mnSettings -> goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) }
-        R.id.mnSwitchAccount -> if (ForegroundService.anyRunning()) {
-            AlertDialog.Builder(
-                ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
-            ).apply {
-                setTitle(R.string.backgroundTasks)
-                setMessage(R.string.terminateBgTasks)
-                setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ ->
-                    ForegroundService.terminateTasks(c)
-                    switchAcc()
-                }
-            }.show()
-            true
-        } else {
-            switchAcc(); true; }
-        R.id.mnSignOut -> {
-            val bd = AlsoDeleteDataBinding.inflate(
-                layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
-            )
-            AlertDialog.Builder(
-                ContextThemeWrapper(this, R.style.Theme_InstaTools_Dialog_Tertiary)
-            ).apply {
-                setTitle(R.string.signOut)
-                setMessage(R.string.signOutSure)
-                setView(bd.root)
-                setNegativeButton(R.string.no, null)
-                setPositiveButton(R.string.yes) { _, _ ->
-                    CoroutineScope(Dispatchers.IO).launch {
-                        Api.json<Rest.QuickResponse>(
-                            Api.Endpoint.LOGOUT.url,
-                            true, "one_tap_app_login=1&user_id=${c.acc!!.id}",
-                        )
-                    }
-                    signOut(bd.root.isChecked)
-                }
-            }.show(); true; }
-        else -> super.onOptionsItemSelected(item)
-    }
-
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
         b.toolbar.menu.findItem(R.id.mtSearch)?.apply {
-            searchView = SearchView(wrapTheme(currentTheme()), null, R.style.searchView)
+            searchView = SearchView(c/*todo wrapTheme(currentTheme())*/, null, R.style.searchView)
             actionView = searchView
             searchView.queryHint = getString(R.string.mtSearch)
             setOnActionExpandListener(this@Main)
@@ -351,7 +359,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     override fun selective(bb: Boolean): Boolean {
         if (!super.selective(bb)) return false
         b.bnv.menu.forEach { it.isEnabled = !bb }
-        toggleNav.isDrawerIndicatorEnabled = !bb
+        drawerToggle.isDrawerIndicatorEnabled = !bb
         return true
     }
 
@@ -378,7 +386,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         //val drawerGravity = if (!dirRtl) Gravity.LEFT else Gravity.RIGHT
         if (::b.isInitialized && b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START)
-            toggleNav.syncState()
+            drawerToggle.syncState()
             return; }
 
         val searchMenuItem = b.toolbar.menu.findItem(R.id.mtSearch)
@@ -395,6 +403,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             CoroutineScope(Dispatchers.IO).launch { c.clearCacheIfNecessary() }
             return; }
 
-        @Suppress("DEPRECATION") super.onBackPressed() // Do NOT kill the process
+        @Suppress("DEPRECATION")
+        super.onBackPressed()  // do NOT kill the process
     }
 }

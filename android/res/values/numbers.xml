@@ -6,6 +6,11 @@
 
     <!-- Main -->
     <integer name="transFrag">120</integer>
+    <id name="mnDownloads" />
+    <id name="mnGSettings" />
+    <id name="mnSettings" />
+    <id name="mnSwitchAccount" />
+    <id name="mnSignOut" />
 
     <!-- Settings -->
     <integer name="stCacheMin">5</integer>
