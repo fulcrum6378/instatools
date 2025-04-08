@@ -172,6 +172,7 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Snackbar causes crashes!
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * Clicking on external links will bring a "cleartext not permitted" error

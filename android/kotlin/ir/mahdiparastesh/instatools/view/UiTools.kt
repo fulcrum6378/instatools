@@ -11,8 +11,10 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
+import android.view.InflateException
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
@@ -168,6 +170,11 @@ object UiTools {
             ).setAnchorView(anchor).setTextMaxLines(5).show()
         } catch (_: IllegalArgumentException) {
             // No suitable parent found from the given view. Please provide a valid view.
+        } catch (_: InflateException) {
+            Toast.makeText(
+                view.context, text,
+                if (dur == Snackbar.LENGTH_LONG) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

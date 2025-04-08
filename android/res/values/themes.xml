@@ -32,7 +32,6 @@
         <item name="switchStyle">@style/Theme.InstaTools.Switch</item>
         <item name="android:popupTheme">@style/Theme.InstaTools.Popup.Secondary</item>
         <!-- if you add overflow menu for PageUnf or PageBox; you're gonna have trouble with this! -->
-        <!--<item name="android:searchViewStyle">@style/Theme.InstaTools.SearchView</item>-->
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
