@@ -172,14 +172,13 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Snackbar causes crashes!
+  * Get rid of the Material stuff: Snackbar, BottomNavigationView, BadgeDrawable
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * Clicking on external links will bring a "cleartext not permitted" error
   * Delete long-forgotten cached Pickles
   * -
   * Extension:
-  * Get rid of Material and AppCompat stuff
   * PageTry
   * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads

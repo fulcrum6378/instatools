@@ -8,7 +8,7 @@
     <android.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
-        android:popupTheme="@style/Theme.InstaTools.Popup.Tertiary"
+        android:popupTheme="@style/Widget.InstaTools.Popup.Tertiary"
         android:title="@string/settings" />
 
     <ScrollView
@@ -17,7 +17,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        tools:ignore="NotSibling,UnknownId">
+        tools:ignore="NotSibling,UnknownId,UseSwitchCompatOrMaterialXml">
 
         <LinearLayout
             android:id="@+id/ll"
@@ -38,11 +38,11 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout style="@style/stSubItem">
 
-                    <com.google.android.material.checkbox.MaterialCheckBox
+                    <CheckBox
                         android:id="@+id/stBranchingCb"
                         style="@style/stCheck" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/stBranching"
                         style="@style/stSwitch"
                         android:text="@string/stBranching"
@@ -51,11 +51,11 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout style="@style/stSubItem">
 
-                    <com.google.android.material.checkbox.MaterialCheckBox
+                    <CheckBox
                         android:id="@+id/stAutoDeleteEmptyDirsCb"
                         style="@style/stCheck" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <Switch
                         android:id="@+id/stAutoDeleteEmptyDirs"
                         style="@style/stSwitch"
                         android:text="@string/stAutoDeleteEmptyDirs"

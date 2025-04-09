@@ -1,53 +1,50 @@
 <resources>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
-        <item name="backgroundColor">?attr/colorPrimary</item>
+        <item name="backgroundColor">?android:colorPrimary</item>
         <item name="android:colorAccent">@color/defCA</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
-        <item name="colorPrimary">@color/CP</item>
+        <item name="android:colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
-        <!--<item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Primary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
-        <item name="colorPrimary">@color/CS</item>
+        <item name="android:colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
-        <!--<item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Secondary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
-        <item name="colorPrimary">@color/CT</item>
+        <item name="android:colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
-        <!--<item name="alertDialogTheme">@style/Theme.InstaTools.Dialog.Tertiary</item>-->
     </style>
 
 
     <!-- PopupMenu -->
-    <style name="Theme.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu">
+    <style name="Widget.InstaTools.Popup" parent="android:Widget.DeviceDefault.PopupMenu">
         <item name="android:fontFamily">@font/medium</item>
         <item name="android:textColor">?android:colorAccent</item>
         <item name="colorPrimaryWeak">@color/weakWhite</item>
         <item name="android:itemBackground">@drawable/menu_item</item>
     </style>
 
-    <style name="Theme.InstaTools.Popup.Primary" parent="Theme.InstaTools.Popup">
-        <item name="colorPrimary">@color/CP</item>
-        <item name="colorAccent">@color/defCA</item>
+    <style name="Widget.InstaTools.Popup.Primary" parent="Widget.InstaTools.Popup">
+        <item name="android:colorPrimary">@color/CP</item>
+        <item name="android:colorAccent">@color/defCA</item>
     </style>
 
-    <style name="Theme.InstaTools.Popup.Secondary" parent="Theme.InstaTools.Popup">
-        <item name="colorPrimary">@color/CS</item>
-        <item name="colorAccent">@color/defCA</item>
+    <style name="Widget.InstaTools.Popup.Secondary" parent="Widget.InstaTools.Popup">
+        <item name="android:colorPrimary">@color/CS</item>
+        <item name="android:colorAccent">@color/defCA</item>
         <item name="android:itemBackground">@drawable/menu_item_secondary_night</item>
     </style>
 
-    <style name="Theme.InstaTools.Popup.Tertiary" parent="Theme.InstaTools.Popup">
-        <item name="colorPrimary">@color/CT</item>
-        <item name="colorAccent">@color/defCA</item>
+    <style name="Widget.InstaTools.Popup.Tertiary" parent="Widget.InstaTools.Popup">
+        <item name="android:colorPrimary">@color/CT</item>
+        <item name="android:colorAccent">@color/defCA</item>
     </style>
 </resources>

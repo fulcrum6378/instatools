@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,7 +18,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
@@ -166,6 +166,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         fun Context.isPathAccessible(path: String) = isPathAccessible(path.toUri())
     }
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent.extras?.getBoolean(EXTRA_IS_GLOBAL)?.let { globalMode = it }

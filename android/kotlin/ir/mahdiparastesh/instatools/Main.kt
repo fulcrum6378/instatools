@@ -69,9 +69,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     private val colorBG = MutableLiveData<Int?>(null)
     private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved)  // R.id.to_direct
     private val popupThemes = arrayOf(
-        R.style.Theme_InstaTools_Popup_Primary,
-        R.style.Theme_InstaTools_Popup_Secondary,
-        R.style.Theme_InstaTools_Popup_Tertiary
+        R.style.Widget_InstaTools_Popup_Primary,
+        R.style.Widget_InstaTools_Popup_Secondary,
+        R.style.Widget_InstaTools_Popup_Tertiary
     )
 
     override val menuRes = R.menu.main_tlb
