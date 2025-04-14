@@ -28,18 +28,40 @@
             android:id="@+id/tbShadow"
             style="@style/tbShadow" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
+        <View
+            style="@style/shadow"
+            android:rotationX="180"
+            app:layout_constraintBottom_toTopOf="@id/bnv" />
+
+        <LinearLayout
             android:id="@+id/bnv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bnv"
-            android:background="@color/defBG"
-            android:saveEnabled="false"
-            android:theme="@style/Theme.InstaTools.BNV"
-            app:itemRippleColor="@color/defRipple"
-            app:itemTextAppearanceActive="@style/TextAppearance.InstaTools.BNV.Active"
-            app:itemTextAppearanceInactive="@style/TextAppearance.InstaTools.BNV.Inactive"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/main_bnv" />
+            android:layout_marginHorizontal="20dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/toFavourites"
+                style="@style/bnvButton"
+                android:drawableTop="@drawable/favourite"
+                android:text="@string/favourites"
+                android:theme="@style/Theme.InstaTools.Primary" />
+
+            <TextView
+                android:id="@+id/toSaved"
+                style="@style/bnvButton"
+                android:drawableTop="@drawable/saved"
+                android:text="@string/saved"
+                android:theme="@style/Theme.InstaTools.Secondary" />
+
+            <!--<TextView
+                android:id="@+id/toFeed"
+                style="@style/bnvButton"
+                android:drawableTop="@drawable/favourite"
+                android:theme="@style/Theme.InstaTools.Tertiary" />-->
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchRes"

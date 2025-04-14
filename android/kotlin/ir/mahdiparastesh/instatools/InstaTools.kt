@@ -172,7 +172,7 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Get rid of the Material stuff: Snackbar, BottomNavigationView, BadgeDrawable
+  * Get rid of the Material stuff: Snackbar and BadgeDrawable
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * Clicking on external links will bring a "cleartext not permitted" error

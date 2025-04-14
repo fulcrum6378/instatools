@@ -11,7 +11,7 @@ import ir.mahdiparastesh.instatools.util.Delay
 import kotlin.reflect.KClass
 
 /**
- * A subclass of [BaseActivity] which handles multiple [Fragment]s inside a FrameLayout.
+ * Subclass of [BaseActivity] which handles multiple [Fragment]s inside a FrameLayout
  */
 abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
 

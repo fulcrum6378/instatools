@@ -21,6 +21,7 @@ import androidx.activity.viewModels
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
+import androidx.core.view.forEachIndexed
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
@@ -67,7 +68,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    private val bnvButtons = arrayOf(R.id.to_favourites, R.id.to_saved)  // R.id.to_direct
     private val popupThemes = arrayOf(
         R.style.Widget_InstaTools_Popup_Primary,
         R.style.Widget_InstaTools_Popup_Secondary,
@@ -102,13 +102,12 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
 
         // bottom navigation bar
-        b.bnv.selectedItemId = bnvButtons[vm.currentPage]
-        b.bnv.itemIconTintList = null  // It seems impossible to do this via XML.
-        b.bnv.setOnItemSelectedListener { turnToPage(bnvButtons.indexOf(it.itemId)) }
+        b.toFavourites.setOnClickListener { turnToPage(0) }
+        b.toSaved.setOnClickListener { turnToPage(1) }
         vm.savedCount.observe(this) { bnvBadge(1, it) }
-        UiTools.bnvTitles(b.bnv).forEachIndexed { i, it -> it.setTextColor(ca[i / 2]) }
 
         // theming
+        applyPageStyles(vm.currentPage)
         if (night) colorBG.observe(this) {
             if (it == null) return@observe
             window.decorView.setBackgroundColor(it)
@@ -120,7 +119,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             onPrepareOptionsMenu(b.toolbar.menu)
             b.drawer.setBackgroundColor(it)
             b.searchRes.setBackgroundColor(it)
-            b.bnv.setBackgroundColor(it)
             (currentPage() as? PageSvd)
                 ?.apply { if (isBInitialised()) b.expanded.root.setBackgroundColor(it) }
         } else colorAc.observe(this) {
@@ -129,7 +127,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         }
         if (night) colorBG.value = bg[vm.currentPage]
         else colorAc.value = ca[vm.currentPage]
-        b.toolbar.popupTheme = popupThemes[vm.currentPage]
 
         // drawer
         drawerToggle = ActionBarDrawerToggle(
@@ -341,7 +338,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     override fun turnToPage(i: Int): Boolean {
         if (!super.turnToPage(i)) return true
         c.sp?.edit { putInt(spMainPage, vm.currentPage) }
-        b.toolbar.popupTheme = popupThemes[i]
+        applyPageStyles(i)
 
         anTheme?.cancel()
         val col = if (night) bg else ca
@@ -357,18 +354,29 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         return true
     }
 
+    private fun applyPageStyles(i: Int) {
+        b.bnv.forEachIndexed { vi, v ->
+            v.isSelected = vi == i
+            /*todo (v as TextView).setTextAppearance(
+                if (vi == i) R.style.TextAppearance_InstaTools_BNV_Active
+                else R.style.TextAppearance_InstaTools_BNV_Inactive
+            )*/
+        }
+        b.toolbar.popupTheme = popupThemes[i]
+    }
+
     @Suppress("SameParameterValue")
-    private fun bnvBadge(i: Int, num: Int?) = b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
+    private fun bnvBadge(i: Int, num: Int?) = null /*todo b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
         isVisible = num != null
         number = num ?: 0
         backgroundColor = ca[i]
         badgeTextColor = if (!night) bg[i] else color(R.color.defBG)
         maxCharacterCount = UiTools.MAX_BADGE_CHAR
-    }
+    }*/
 
     override fun selective(bb: Boolean): Boolean {
         if (!super.selective(bb)) return false
-        b.bnv.menu.forEach { it.isEnabled = !bb }
+        b.bnv.forEach { it.isClickable = !bb }
         drawerToggle.isDrawerIndicatorEnabled = !bb
         return true
     }

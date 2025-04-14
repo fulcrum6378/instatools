@@ -86,7 +86,4 @@
         <item name="android:fontFamily">@font/light</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
-
-    <style name="Theme.InstaTools.BNV" parent="Theme.MaterialComponents.DayNight" />
-    <!-- don't use Widget.MaterialComponents -->
 </resources>
