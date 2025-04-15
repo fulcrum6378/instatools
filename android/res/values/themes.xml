@@ -82,8 +82,8 @@
 
 
     <!-- material -->
-    <style name="Theme.InstaTools.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+    <!--<style name="Theme.InstaTools.Snackbar" parent="Widget.MaterialComponents.Snackbar">
         <item name="android:fontFamily">@font/light</item>
         <item name="android:textColor">@android:color/white</item>
-    </style>
+    </style>-->
 </resources>

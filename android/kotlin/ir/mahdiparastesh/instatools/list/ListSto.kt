@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.animation.addListener
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,7 +20,6 @@ import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
-import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
@@ -28,7 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ListSto(private val c: Viewer, private val f: PageSto) :
+class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
     RecyclerView.Adapter<AnyViewHolder<ListStoBinding>>() {
     private val hlNumAdd: Int by lazy { if (c.vm.story != null) 0 else 1 }
 
@@ -139,7 +139,8 @@ class ListSto(private val c: Viewer, private val f: PageSto) :
                     ).data!!.xdt_api__v1__feed__reels_media__connection!!.edges.first().node
                 } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
-                        UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
+                        Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG).show()
+                        //UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
                     }
                     return@launch
                 }

@@ -13,6 +13,7 @@ import android.os.Message
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.edit
 import androidx.core.graphics.blue
@@ -21,7 +22,6 @@ import androidx.core.graphics.red
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.Settings.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
@@ -222,7 +222,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         //if (item.itemId != R.id.dtPauseAll) initService(this@Downloads)
                     }
                 }
-                else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
+                else
+                //  UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
+                    Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
             R.id.dtExportLinks -> if (!c.downloads.isEmpty<Download>())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -233,7 +235,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         "instatools_download_list_${Utils.fileDateTime(Utils.now())}.json"
                     )
                 })
-            else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
+            else
+            //  UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
+                Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
 
             R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
@@ -256,7 +260,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                         }
                     }
                 }.show()
-            else UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
+            else
+            //  UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
+                Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
         }
         return super.onMenuItemClick(item)
     }
@@ -277,9 +283,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 initService(this@Downloads)
             } catch (e: Api.FailureException) {
                 withContext(Dispatchers.Main) {
-                    UiTools.snackbar(
-                        b.root, UiTools.apiError(c, e.code), dur = Snackbar.LENGTH_LONG
-                    )
+                    //UiTools.snackbar(b.root, UiTools.apiError(c, e.code))
+                    Toast.makeText(c, UiTools.apiError(c, e.code), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -307,11 +312,8 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                 withContext(Dispatchers.Main) { onLoaded() }
             }.onFailure {
                 withContext(Dispatchers.Main) {
-                    UiTools.snackbar(
-                        b.root,
-                        R.string.importReadError,
-                        dur = Snackbar.LENGTH_LONG
-                    )
+                    //UiTools.snackbar(b.root, R.string.importReadError)
+                    Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
                 }
             }
         }

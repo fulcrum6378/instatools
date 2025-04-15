@@ -154,7 +154,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
 
     override fun onLoaded() {
         super<OnlineLister>.onLoaded()
-        if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
+        //if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
 
         // teach the user how to select items
         if (!isModelEmpty() && !c.c.gsp.getBoolean(Settings.spLearntSelection, false)
@@ -174,7 +174,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
 
     override fun onLazilyLoaded(start: Int, size: Int) {
         super.onLazilyLoaded(start, size)
-        if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
+        //if (!canLoadMore()) c.vm.savedCount.value = c.vm.saved?.items?.size ?: 0
     }
 
     override fun selectionKeyProvider() = object : ItemKeyProvider<Long>(SCOPE_MAPPED) {
@@ -255,7 +255,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
         for (del in deletion.reversed()) try {
             c.vm.saved?.items?.removeAt(del)
             b.rv.adapter?.notifyItemRemoved(del)
-            c.vm.savedCount.value = c.vm.savedCount.value?.let { it - 1 }
+            //c.vm.savedCount.value = c.vm.savedCount.value?.let { it - 1 }
             onListResized()
         } catch (_: IndexOutOfBoundsException) {
             errored = true

@@ -16,6 +16,7 @@
 
 package ir.mahdiparastesh.instatools.view;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -31,14 +32,8 @@ import androidx.annotation.DoNotInline;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-/**
- * @noinspection unused
- */
 public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
 
     public interface DelegateProvider {
@@ -109,6 +104,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
         mHomeAsUpIndicator = getThemeUpIndicator();
     }
 
+    @SuppressLint("WrongConstant")
     public void syncState() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) setPosition(1);
         else setPosition(0);
@@ -132,6 +128,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
         return false;
     }
 
+    @SuppressLint("WrongConstant")
     void toggle() {
         int drawerLockMode = mDrawerLayout.getDrawerLockMode(GravityCompat.START);
         if (mDrawerLayout.isDrawerVisible(GravityCompat.START)
@@ -154,9 +151,11 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
             setActionBarUpIndicator(mHomeAsUpIndicator, 0);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     public void setHomeAsUpIndicator(int resId) {
         Drawable indicator = null;
-        if (resId != 0) indicator = ContextCompat.getDrawable(mDrawerLayout.getContext(), resId);
+        if (resId != 0) indicator = mDrawerLayout.getContext().getResources()
+                .getDrawable(resId, mDrawerLayout.getContext().getTheme());
         setHomeAsUpIndicator(indicator);
     }
 
@@ -164,6 +163,7 @@ public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {
         return mDrawerIndicatorEnabled;
     }
 
+    @SuppressLint("WrongConstant")
     public void setDrawerIndicatorEnabled(boolean enable) {
         if (enable != mDrawerIndicatorEnabled) {
             if (enable) {

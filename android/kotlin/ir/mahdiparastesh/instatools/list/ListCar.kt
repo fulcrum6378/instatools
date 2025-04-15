@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.list
 
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C.USAGE_MEDIA
@@ -20,7 +21,6 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.databinding.ListCarBinding
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
@@ -70,7 +70,7 @@ class ListCar(
                     .load(it)
                     .timeout(10000)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .listener(OnImageLoadedListener(h.b.root))
+                    .listener(OnImageLoadedListener(/*h.b.root*/))
                     .into(h.b.image)
             }
             Media.Type.VIDEO -> slides[i].url?.also {
@@ -103,7 +103,7 @@ class ListCar(
 
     data class Slide(val url: String?, val type: Media.Type)
 
-    inner class OnImageLoadedListener(private val root: ViewGroup) : RequestListener<Drawable> {
+    inner class OnImageLoadedListener/*(private val root: ViewGroup)*/ : RequestListener<Drawable> {
 
         override fun onLoadFailed(
             e: GlideException?,
@@ -112,7 +112,8 @@ class ListCar(
             isFirstResource: Boolean
         ): Boolean {
             if (x.currentAnimator != null) return true
-            UiTools.snackbar(root, R.string.couldNotLoadOriginal)
+            //UiTools.snackbar(root, R.string.couldNotLoadOriginal)
+            Toast.makeText(x.c, R.string.couldNotLoadOriginal, Toast.LENGTH_LONG).show()
             loading = false
             return false
         }

@@ -30,7 +30,7 @@ class PageSto : BasePageViewer() {
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.vm.story != null && c.vm.highlights != null
     override fun isModelEmpty(): Boolean = c.vm.story == null && c.vm.highlights?.isEmpty() == true
-    override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c, this)
+    override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c)
     override fun canLoadMore(): Boolean = !isModelLoaded()
 
     override fun onCreateView(inf: LayoutInflater, parent: ViewGroup?, state: Bundle?): View =

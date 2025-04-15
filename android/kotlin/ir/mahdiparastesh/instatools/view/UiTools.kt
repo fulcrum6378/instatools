@@ -161,8 +161,8 @@ object UiTools {
             theme.resolveAttribute(attr, this, true)
         }.data
 
-    /** Helper function for showing a [Snackbar] */
-    fun snackbar(view: View, text: String, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG) {
+    /* Helper function for showing a [Snackbar] */
+    /*fun snackbar(view: View, text: String, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG) {
         try {
             Snackbar.make(
                 ContextThemeWrapper(view.context, R.style.Theme_InstaTools_Snackbar),
@@ -170,20 +170,15 @@ object UiTools {
             ).setAnchorView(anchor).setTextMaxLines(5).show()
         } catch (_: IllegalArgumentException) {
             // No suitable parent found from the given view. Please provide a valid view.
-        } catch (_: InflateException) {
-            Toast.makeText(
-                view.context, text,
-                if (dur == Snackbar.LENGTH_LONG) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
-            ).show()
         }
-    }
+    }*/
 
-    /** Helper function for showing a [Snackbar] */
-    fun snackbar(
+    /* Helper function for showing a [Snackbar] */
+    /*fun snackbar(
         view: View, @StringRes res: Int, anchor: View? = null, dur: Int = Snackbar.LENGTH_LONG
     ) {
         snackbar(view, view.context.getString(res), anchor, dur)
-    }
+    }*/
 
     fun apiError(c: InstaTools, code: Int): String = c.resources.getString(
         when (code) {

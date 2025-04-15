@@ -224,12 +224,13 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
 
     private suspend fun onError(code: Int) {
         withContext(Dispatchers.Main) {
+            Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
             if (vm.user != null) {
                 (currentPage() as? PageVwr)?.b?.refresher?.isRefreshing =
                     false  // in case of a refresh
-                UiTools.snackbar(b.root, UiTools.apiError(c, code))
+                //UiTools.snackbar(b.root, UiTools.apiError(c, code))
             } else {
-                Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
+                //Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
                 @Suppress("DEPRECATION") super.onBackPressed()
             }
         }

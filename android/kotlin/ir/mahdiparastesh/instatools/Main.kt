@@ -19,7 +19,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.edit
-import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
 import androidx.lifecycle.MutableLiveData
@@ -43,6 +42,7 @@ import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.ActionBarDrawerToggle
+import ir.mahdiparastesh.instatools.view.GravityCompat
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.NavItem
@@ -84,7 +84,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     class MyModel : ViewModel() {
         var favourites: List<Favourite> = listOf()
         var saved: Rest.LazyList<Rest.SavedItem>? = null
-        val savedCount = MutableLiveData<Int?>(null)
+        //val savedCount = MutableLiveData<Int?>(null)
         var currentPage = Settings.defSpMainPage
 
         // search
@@ -104,7 +104,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         // bottom navigation bar
         b.toFavourites.setOnClickListener { turnToPage(0) }
         b.toSaved.setOnClickListener { turnToPage(1) }
-        vm.savedCount.observe(this) { bnvBadge(1, it) }
+        //vm.savedCount.observe(this) { bnvBadge(1, it) }
 
         // theming
         applyPageStyles(vm.currentPage)
@@ -365,15 +365,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         b.toolbar.popupTheme = popupThemes[i]
     }
 
-    @Suppress("SameParameterValue")
-    private fun bnvBadge(i: Int, num: Int?) = null /*todo b.bnv.getOrCreateBadge(bnvButtons[i]).apply {
-        isVisible = num != null
-        number = num ?: 0
-        backgroundColor = ca[i]
-        badgeTextColor = if (!night) bg[i] else color(R.color.defBG)
-        maxCharacterCount = UiTools.MAX_BADGE_CHAR
-    }*/
-
     override fun selective(bb: Boolean): Boolean {
         if (!super.selective(bb)) return false
         b.bnv.forEach { it.isClickable = !bb }
@@ -398,10 +389,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         c.onLoggedOut()
     }
 
-    @SuppressLint("RtlHardcoded")
+    @SuppressLint("WrongConstant")
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
-        //val drawerGravity = if (!dirRtl) Gravity.LEFT else Gravity.RIGHT
         if (::b.isInitialized && b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START)
             drawerToggle.syncState()

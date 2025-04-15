@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -204,9 +205,14 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     @MainThread
     fun onFailed(statusCode: Int) {
         refresher?.isRefreshing = false
-        UiTools.snackbar(
+        /*UiTools.snackbar(
             root!!, UiTools.apiError(root!!.context.applicationContext as InstaTools, statusCode)
-        )
+        )*/
+        Toast.makeText(
+            root!!.context,
+            UiTools.apiError(root!!.context.applicationContext as InstaTools, statusCode),
+            Toast.LENGTH_LONG
+        ).show()
         error?.vis()
         error?.setOnClickListener {
             refresher?.isRefreshing = true
@@ -222,9 +228,14 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     @MainThread
     fun onLazilyFailed(statusCode: Int) {
         refresher?.isRefreshing = false // in case of a refresh
-        UiTools.snackbar(
+        /*UiTools.snackbar(
             root!!, UiTools.apiError(root!!.context.applicationContext as InstaTools, statusCode)
-        )
+        )*/
+        Toast.makeText(
+            root!!.context,
+            UiTools.apiError(root!!.context.applicationContext as InstaTools, statusCode),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun onRefresh() {
