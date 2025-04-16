@@ -191,4 +191,5 @@ class InstaTools : Application() {
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
   * Metadata for HEIC and MP4?
+  * Test on a wide tablet
 */

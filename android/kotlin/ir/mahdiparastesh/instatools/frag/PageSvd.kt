@@ -140,7 +140,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
             withContext(Dispatchers.Main) { onLoaded() }
         } else c.vm.saved?.apply {
             val lastBefore = items.size
-            items.addAll(lazyList.items)
+            items.addAll(lazyList.items.filter { it !in this.items })
             more_available = lazyList.more_available
             next_max_id = lazyList.next_max_id
             withContext(Dispatchers.Main) {

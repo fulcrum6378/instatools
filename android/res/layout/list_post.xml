@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/shimmer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="120dp"
     android:padding="@dimen/padGallery"
     tools:ignore="ContentDescription,MissingConstraints">
 
