@@ -175,7 +175,6 @@ class InstaTools : Application() {
   * AlertDialogs are not themes properly
   * Switches' background colors are white
   * Toolbar's back icon cannot be theme when the action view is expanded (unrelated to SearchView)
-  * when some items have explicitly failed, "Try Again" won't do anything but to repeat itself!
   * When clicked on error notifications, no activity is opened
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes

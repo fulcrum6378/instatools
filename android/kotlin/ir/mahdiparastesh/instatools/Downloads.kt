@@ -74,7 +74,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override fun screenHeight(): Int = dm.heightPixels
 
     companion object {
-
         var handler: Handler? = null
 
         /** It can be called from any kind of thread. */
@@ -145,7 +144,7 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             } else
                 goTo(Login::class)
         }
-        return super.resolveIntent(intent, false)
+        return true  // shall pass
     }
 
     override fun onResume() {
@@ -154,9 +153,9 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     }
 
     private fun cancelNotifications() {
-        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).apply {
-            cancel(Notify.ID_DOWNLOADER_ERROR)
-            cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).also { nm ->
+            nm.cancel(Notify.ID_DOWNLOADER_ERROR)
+            nm.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
         }
     }
 

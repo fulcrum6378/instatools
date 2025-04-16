@@ -128,7 +128,10 @@ abstract class ForegroundService : Service() {
     )
 
     protected fun notifyFailure(
-        id: Int, activity: KClass<*>?, func: Notification.Builder.() -> Unit
+        id: Int,
+        activity: KClass<*>?,
+        canTryAgain: Boolean = true,
+        func: Notification.Builder.() -> Unit
     ) {
         ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
         ntfManager.notify(
@@ -136,9 +139,9 @@ abstract class ForegroundService : Service() {
                 setSmallIcon(R.drawable.notification)
                 func()
                 if (activity != null) setContentIntent(
-                    PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability())
+                    PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))
                 )
-                addAction(
+                if (canTryAgain) addAction(
                     Notification.Action.Builder(
                         null, getString(R.string.tryAgain), pi(c, ACTION_START)
                     ).build()

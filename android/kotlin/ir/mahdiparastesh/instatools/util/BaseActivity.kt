@@ -23,7 +23,6 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.edit
-import androidx.core.text.layoutDirection
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -33,7 +32,6 @@ import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
-import java.util.Locale
 import kotlin.reflect.KClass
 
 /** Abstract class for all Activities in this app and it extends [FragmentActivity] */
@@ -44,9 +42,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         resources.configuration.uiMode and
             Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
-    val dirRtl by lazy {
-        Locale.getDefault().layoutDirection == View.LAYOUT_DIRECTION_RTL
-    }
+    val dirRtl by lazy { resources.getBoolean(R.bool.dirRtl) }
     val colorAc = MutableLiveData<Int?>(null)
     lateinit var toolbar: Toolbar
     var tbTitle: TextView? = null
@@ -62,7 +58,11 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         super.onCreate(savedInstanceState)
         resolvedIntent = resolveIntent(intent, true)
         if (resolvedIntent == false) {
-            @Suppress("DEPRECATION") super.onBackPressed(); finish(); return; }
+            @Suppress("DEPRECATION")
+            super.onBackPressed()
+            finish()
+            return
+        }
 
         if (intent.action in arrayOf(Intent.ACTION_MAIN, Intent.ACTION_SEND, Intent.ACTION_VIEW)) {
             c.incrementCounter(Settings.spOpenAppCount)
@@ -104,7 +104,10 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
             }
-            toolbar.setNavigationOnClickListener { @Suppress("DEPRECATION") onBackPressed() }
+            toolbar.setNavigationOnClickListener {
+                @Suppress("DEPRECATION")
+                onBackPressed()
+            }
         }
     }
 

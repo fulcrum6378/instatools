@@ -155,7 +155,8 @@ class DownloadService : ForegroundService(), Downloader {
                 // report if some downloads failed
                 val failedSum = c.downloads.count<Download> { it.isFailed() }
                 if (failedSum != 0) notifyFailure(
-                    Notify.ID_DOWNLOADER_SOME_FAILED, Downloader::class
+                    Notify.ID_DOWNLOADER_SOME_FAILED, Downloader::class,
+                    failedSum < c.downloads.size<Download>()
                 ) {
                     setContentTitle(
                         resources.getQuantityString(
