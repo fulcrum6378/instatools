@@ -59,6 +59,7 @@
     <string name="unlike">آنلایک</string>
     <string name="unlikeAll">آنلایک همه</string>
     <string name="couldNotLoadOriginal">بارگذاری عکس بزرگ امکان پذیر نیست!</string>
+    <string name="profilePicture">عکس پروفایل</string>
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>
@@ -132,7 +133,6 @@
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
     <string name="vwShare">نمایش پروفایل</string>
-    <string name="vwProfilePicture">عکس پروفایل</string>
     <string name="vwPosts">پست</string>
     <string name="vwFollowers">دنبال کننده</string>
     <string name="vwFollowing">دنبال شونده</string>

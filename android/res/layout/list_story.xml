@@ -20,7 +20,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:paddingEnd="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
 
     <View
         android:id="@+id/click"
@@ -31,4 +33,28 @@
         app:layout_constraintLeft_toLeftOf="@id/thumb"
         app:layout_constraintRight_toRightOf="@id/thumb"
         app:layout_constraintTop_toTopOf="@id/thumb" />
+
+    <ImageView
+        android:id="@+id/stored"
+        style="@style/parentConstraint"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/save"
+        android:visibility="gone"
+        app:layout_constraintHeight_percent="0.14"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintWidth_percent="0.14" />
+
+    <ImageView
+        android:id="@+id/liked"
+        style="@style/parentConstraint"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/favourite_icon"
+        android:visibility="gone"
+        app:layout_constraintHeight_percent="0.14"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintVertical_bias="0.98"
+        app:layout_constraintWidth_percent="0.14" />
 </androidx.constraintlayout.widget.ConstraintLayout>

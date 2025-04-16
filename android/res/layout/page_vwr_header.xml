@@ -16,8 +16,8 @@
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:background="@color/shimmerIvBg"
-            android:contentDescription="@string/vwProfilePicture"
-            android:tooltipText="@string/vwProfilePicture" />
+            android:contentDescription="@string/profilePicture"
+            android:tooltipText="@string/profilePicture" />
 
         <View
             android:id="@+id/proClick"

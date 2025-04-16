@@ -1,17 +1,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/button"
-    android:paddingHorizontal="@dimen/mainPadH"
-    tools:ignore="ContentDescription">
+    android:paddingHorizontal="@dimen/mainPadH">
 
     <ImageView
         android:id="@+id/photo"
         android:layout_width="@dimen/profilePhoto"
         android:layout_height="@dimen/profilePhoto"
         android:layout_marginVertical="@dimen/userPadV"
+        android:contentDescription="@string/profilePicture"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +24,7 @@
         android:textAlignment="viewStart"
         android:textSize="@dimen/userFont"
         app:layout_constraintBottom_toTopOf="@id/user"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/unFav"
         app:layout_constraintStart_toEndOf="@id/photo"
         app:layout_constraintTop_toTopOf="@id/photo"
         app:layout_constraintVertical_chainStyle="packed" />
@@ -39,7 +38,7 @@
         android:textDirection="ltr"
         android:textSize="@dimen/userDescFont"
         app:layout_constraintBottom_toBottomOf="@id/photo"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/unFav"
         app:layout_constraintStart_toStartOf="@id/name"
         app:layout_constraintTop_toBottomOf="@id/name" />
 
@@ -48,8 +47,10 @@
         android:layout_width="@dimen/favAction"
         android:layout_height="@dimen/favAction"
         android:background="@drawable/button_round"
+        android:contentDescription="@string/addToFav"
         android:padding="11dp"
         android:src="@drawable/favourite_on"
+        android:tooltipText="@string/addToFav"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

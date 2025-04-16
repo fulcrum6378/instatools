@@ -59,6 +59,7 @@
     <string name="unlike">Unlike</string>
     <string name="unlikeAll">Unlike all</string>
     <string name="couldNotLoadOriginal">Couldn\'t load the original image!</string>
+    <string name="profilePicture">Profile picture</string>
 
     <!-- API -->
     <string name="noInternet">No internet connection!</string>
@@ -130,7 +131,6 @@
     <!-- Viewer -->
     <string name="vwTitle">Profile Viewer</string>
     <string name="vwShare">View Profile</string>
-    <string name="vwProfilePicture">Profile Picture</string>
     <string name="vwPosts">Posts</string>
     <string name="vwFollowers">Followers</string>
     <string name="vwFollowing">Following</string>
