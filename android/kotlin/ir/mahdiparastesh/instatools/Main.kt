@@ -31,6 +31,7 @@ import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Favourite
@@ -86,7 +87,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     class MyModel : ViewModel() {
         var currentPage = Settings.defSpMainPage
         var favourites: List<Favourite> = listOf()
-        var saved: Rest.LazyList<Rest.SavedItem>? = null
+        var saved: Rest.LazyList<Media.Wrapper>? = null
         //val savedCount = MutableLiveData<Int?>(null)
 
         // search

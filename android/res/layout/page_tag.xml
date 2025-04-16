@@ -24,7 +24,8 @@
 
     <ImageView
         android:id="@+id/jumper"
-        style="@style/jumper" />
+        style="@style/jumper"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/empty"

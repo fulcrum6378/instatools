@@ -132,16 +132,21 @@
     <!-- Viewer -->
     <string name="vwTitle">پروفایل</string>
     <string name="vwShare">نمایش پروفایل</string>
+    <string name="vwProfilePicture">عکس پروفایل</string>
     <string name="vwPosts">پست</string>
     <string name="vwFollowers">دنبال کننده</string>
     <string name="vwFollowing">دنبال شونده</string>
+    <string name="vwStory">استوری ها</string>
+    <string name="vwReels">ریل ها</string>
+    <string name="vwTagged">پست های تگ شده</string>
     <string name="vwPrivate">این پروفایل خصوصی است!</string>
     <string name="vwStoryReel">استوری های اصلی</string>
     <plurals name="vwReelDesc">
         <item quantity="one">دارای %d استوری</item>
         <item quantity="other">دارای %d استوری</item>
     </plurals>
-    <string name="vwNoReels">این پروفایل هیچ استوری ای ندارد!</string>
+    <string name="vwNoStories">این پروفایل هیچ استوری ای ندارد!</string>
+    <string name="vwNoReels">این پروفایل ریل ندارد!</string>
     <string name="vwNoTagged">این پروفایل هیچ پست تگ شده ای ندارد!</string>
     <string name="vwLinkNotProfile">این لینک یک پروفایل اینستاگرام نیست!</string>
     <string name="saveAll">سیو همه</string>

@@ -171,6 +171,7 @@
         <item name="android:layout_marginBottom">@dimen/jumperBottom</item>
         <item name="android:background">@drawable/button_round_bg</item>
         <item name="android:elevation">5dp</item>
+        <!--<item name="android:importantForAccessibility">no</item>-->
         <item name="android:padding">@dimen/jumperPad</item>
         <item name="android:src">@drawable/up</item>
         <item name="layout_constraintBottom_toBottomOf">parent</item>
@@ -257,7 +258,6 @@
         <item name="android:background">@drawable/button_round_bg</item>
         <item name="android:elevation">5dp</item>
         <item name="android:padding">@dimen/vwPagerPad</item>
-        <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
 

@@ -25,6 +25,7 @@ import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ViewerBinding
+import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.frag.PageSto
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
@@ -41,7 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class),
+class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class, PageTag::class),
     Toolbar.OnMenuItemClickListener {
 
     lateinit var b: ViewerBinding
@@ -68,6 +69,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
         var posts: Page<Media>? = null
         var story: Story? = null
         var highlights: Page<Story>? = null
+        var reels: Page<Media.Wrapper>? = null
         var tagged: Page<Media>? = null
         var currentPage = 1
         var fav: Favourite? = null
@@ -79,6 +81,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
             posts = null
             story = null
             highlights = null
+            reels = null
             tagged = null
             currentPage = 1
             fav = null
@@ -206,6 +209,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageTag::class
                 vm.posts = null
                 vm.story = null
                 vm.highlights = null
+                vm.reels = null
                 vm.tagged = null
             }
             if (!userReplaced)

@@ -78,6 +78,7 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         POSTS(2f, false, true),
         STORY(0.5f, false, true),
         HIGHLIGHTS(7f, false, true),
+        REELS(2f, false, true),
         TAGGED(5f, false, true);
 
         fun calculateLifespanInMillis(): Long = (lifespanInDays * 86400000f).toLong()

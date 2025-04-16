@@ -88,6 +88,7 @@ class PageTag : BasePageViewer(), PostSelector {
     }
 
     override suspend fun fetch(reset: Boolean) {
+
         // first read from cache if available
         val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.TAGGED, c.vm.user!!.id!!)
         val cache = if (c.vm.tagged == null && !reset) pickle.restore<Page<Media>>() else null

@@ -148,6 +148,16 @@ class Media(
 
 
     @Serializable
+    class Wrapper(val media: Media) {
+
+        override fun hashCode(): Int =
+            media.uid.hashCode()
+
+        override fun equals(other: Any?): Boolean =
+            if (other is Wrapper) media.uid == other.media.uid else false
+    }
+
+    @Serializable
     class Caption(
         //val created_at: Long,
         //val pk: String?,

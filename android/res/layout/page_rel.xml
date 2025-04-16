@@ -8,13 +8,18 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
-            style="@style/rv"
-            android:isScrollContainer="true"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/jumperListPad"
+            app:layoutManager="ir.mahdiparastesh.instatools.view.SafeGridManager"
+            app:spanCount="3" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView
@@ -25,7 +30,7 @@
     <TextView
         android:id="@+id/empty"
         style="@style/emptyList"
-        android:text="@string/vwNoStories" />
+        android:text="@string/vwNoReels" />
 
     <ImageView
         android:id="@+id/error"

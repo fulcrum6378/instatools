@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".frag.PageVwr"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:context=".frag.PageVwr">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
@@ -22,18 +21,36 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView
+        android:id="@+id/toPageSto"
+        style="@style/vwPager"
+        android:contentDescription="@string/vwStory"
+        android:src="@drawable/metered_video"
+        android:tooltipText="@string/vwStory"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/toPageRel"
         style="@style/vwPager"
-        android:src="@drawable/metered_video"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:contentDescription="@string/vwReels"
+        android:src="@drawable/reels"
+        android:tooltipText="@string/vwReels"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/toPageTag"
         style="@style/vwPager"
+        android:layout_marginTop="2dp"
+        android:contentDescription="@string/vwTagged"
         android:src="@drawable/tagged"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:tooltipText="@string/vwTagged"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toPageRel" />
 
     <ImageView
         android:id="@+id/jumper"
-        style="@style/jumper" />
+        style="@style/jumper"
+        android:importantForAccessibility="no"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>

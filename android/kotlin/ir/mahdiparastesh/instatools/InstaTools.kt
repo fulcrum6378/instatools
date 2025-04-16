@@ -185,7 +185,6 @@ class InstaTools : Application() {
   * Non-badge count numbers for saved and favourites
   * Get rid of the Material stuff: BadgeDrawable
   * PageTry
-  * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable

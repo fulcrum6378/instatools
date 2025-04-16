@@ -22,16 +22,6 @@ interface Rest {
     ) : Rest
 
     @Serializable
-    class SavedItem(val media: Media) {
-
-        override fun hashCode(): Int =
-            media.uid.hashCode()
-
-        override fun equals(other: Any?): Boolean =
-            if (other is SavedItem) media.uid == other.media.uid else false
-    }
-
-    @Serializable
     class UserInfo(
         val user: User,
         override val status: String

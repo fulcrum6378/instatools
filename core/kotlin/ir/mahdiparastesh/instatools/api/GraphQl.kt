@@ -16,6 +16,7 @@ class GraphQl(
     class GraphQlData(
         val highlights: Page<Story>?,
         val user: User?,
+        val xdt_api__v1__clips__user__connection_v2: Page<Media.Wrapper>?, // profile reels
         val xdt_api__v1__fbsearch__topsearch_connection: SearchResults?,
         val xdt_api__v1__feed__reels_media: Story.Wrapper?, // daily stories
         val xdt_api__v1__feed__reels_media__connection: Page<Story>?, // highlighted stories

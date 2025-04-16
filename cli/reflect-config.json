@@ -9,7 +9,7 @@
     "allPublicFields": true
   },
   {
-    "name": "ir.mahdiparastesh.instatools.api.Rest$SavedItem$$serializer",
+    "name": "ir.mahdiparastesh.instatools.api.Media$Wrapper$$serializer",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,

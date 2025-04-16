@@ -54,6 +54,17 @@ enum class GraphQlQuery(
     ),
 
     /**
+     * PolarisProfileReelsTabContentQuery
+     * @param target_user_id [User.id]
+     * @param count default: 12
+     * @return [GraphQlData.xdt_api__v1__clips__user__connection_v2]
+     */
+    PROFILE_REELS(
+        "29938381755760668",
+        "{\"data\":{\"include_feed_video\":true,\"page_size\":%2\$s,\"target_user_id\":\"%1\$s\"}}"
+    ),
+
+    /**
      * PolarisProfileTaggedTabContentQuery (first fetch)
      * @param user_id [User.id]
      * @param count default: 12
@@ -65,7 +76,7 @@ enum class GraphQlQuery(
     ),
 
     /**
-     * PolarisProfileTaggedTabContentQuery (second and later fetches)
+     * PolarisProfileTaggedTabContentQuery_connection (second and later fetches)
      * @param user_id [User.id]
      * @param count default: 12
      * @param after [Media.id] of the last item in the previous fetch

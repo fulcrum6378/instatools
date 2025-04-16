@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:ignore="ContentDescription,MissingConstraints">
+    android:orientation="vertical">
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/proPic"
@@ -16,7 +15,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:background="@color/shimmerIvBg" />
+            android:background="@color/shimmerIvBg"
+            android:contentDescription="@string/vwProfilePicture"
+            android:tooltipText="@string/vwProfilePicture" />
 
         <View
             android:id="@+id/proClick"
@@ -28,7 +29,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints">
 
         <androidx.constraintlayout.widget.ConstraintLayout style="@style/vwFlwCl">
 

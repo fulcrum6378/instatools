@@ -321,10 +321,10 @@ interface PostSelector : Lister {
             val indices: IntRange
             val getter: (Int) -> Media
             when (dataModel) {
-                is Rest.LazyList<*> -> { // Rest.SavedItem
+                is Rest.LazyList<*> -> { // Media.Wrapper
                     indices = dataModel.items.indices
                     getter = {
-                        (dataModel.items[it] as Rest.SavedItem).media
+                        (dataModel.items[it] as Media.Wrapper).media
                     }
                 }
                 is GraphQl.Page<*> -> { // Media

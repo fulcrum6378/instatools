@@ -108,8 +108,9 @@ class PageVwr : BasePageViewer(), PostSelector {
         }
 
         // buttons for other pages
-        b.toPageRel.setOnClickListener { if (isModelLoaded()) c.turnToPage(0) }
-        b.toPageTag.setOnClickListener { if (isModelLoaded()) c.turnToPage(2) }
+        b.toPageSto.setOnClickListener { if (isModelLoaded()) c.turnToPage(0) }
+        b.toPageRel.setOnClickListener { if (isModelLoaded()) c.turnToPage(2) }
+        b.toPageTag.setOnClickListener { if (isModelLoaded()) c.turnToPage(3) }
 
         showProfile()
     }

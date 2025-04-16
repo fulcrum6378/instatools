@@ -24,6 +24,7 @@ import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
 import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Pickle
@@ -121,9 +122,10 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
         super.canRefresh() && selectionGuide == null
 
     override suspend fun fetch(reset: Boolean) {
+
         // first read from cache if available
         val cache =
-            if (c.vm.saved == null && !reset) pickle.restore<Rest.LazyList<Rest.SavedItem>>()
+            if (c.vm.saved == null && !reset) pickle.restore<Rest.LazyList<Media.Wrapper>>()
             else null
         if (cache != null) {
             c.vm.saved = cache
@@ -132,7 +134,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
 
         // fetch online saved posts
         val cursor = if (!reset) (c.vm.saved?.next_max_id?.let { "?max_id=$it" } ?: "") else ""
-        val lazyList = Api.json<Rest.LazyList<Rest.SavedItem>>(Api.Endpoint.SAVED.url + cursor)
+        val lazyList = Api.json<Rest.LazyList<Media.Wrapper>>(Api.Endpoint.SAVED.url + cursor)
 
         // update the data model and the UI
         if (c.vm.saved == null || reset) {
