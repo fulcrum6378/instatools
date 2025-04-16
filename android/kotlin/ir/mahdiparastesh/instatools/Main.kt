@@ -82,10 +82,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         }
 
     class MyModel : ViewModel() {
+        var currentPage = Settings.defSpMainPage
         var favourites: List<Favourite> = listOf()
         var saved: Rest.LazyList<Rest.SavedItem>? = null
         //val savedCount = MutableLiveData<Int?>(null)
-        var currentPage = Settings.defSpMainPage
 
         // search
         var schQuery: CharSequence? = null
@@ -221,10 +221,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
         // miscellaneous
         c.downloadHistory.load(c)
-        if (c.gsp.getInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE)
-            != BuildConfig.VERSION_CODE
-            || !c.gsp.contains(Settings.spUsedVersion)
-        ) c.gsp.edit { putInt(Settings.spUsedVersion, BuildConfig.VERSION_CODE) }
+        if (c.gsp.contains("used_version")) c.gsp.edit { remove("used_version") }
     }
 
     override fun setContentView(view: View?) {

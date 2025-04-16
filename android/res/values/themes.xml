@@ -25,6 +25,9 @@
         <item name="android:textColor">?android:colorAccent</item>
         <item name="android:textColorHint">?colorPrimaryHigh</item>
         <item name="android:titleTextColor">?android:colorAccent</item>
+
+        <!-- material -->
+        <item name="drawerArrowStyle">@style/Widget.InstaTools.DrawerArrowToggle</item>
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
@@ -82,6 +85,41 @@
 
 
     <!-- material -->
+    <declare-styleable name="DrawerArrowToggle">
+        <!-- The drawing color for the bars -->
+        <attr name="color" format="color" />
+        <!-- Whether bars should rotate or not during transition -->
+        <attr name="spinBars" format="boolean" />
+        <!-- The total size of the drawable -->
+        <attr name="drawableSize" format="dimension" />
+        <!-- The max gap between the bars when they are parallel to each other -->
+        <attr name="gapBetweenBars" format="dimension" />
+        <!-- The length of the arrow head when formed to make an arrow -->
+        <attr name="arrowHeadLength" format="dimension" />
+        <!-- The length of the shaft when formed to make an arrow -->
+        <attr name="arrowShaftLength" format="dimension" />
+        <!-- The length of the bars when they are parallel to each other -->
+        <attr name="barLength" format="dimension" />
+        <!-- The thickness (stroke size) for the bar paint -->
+        <attr name="thickness" format="dimension" />
+    </declare-styleable>
+
+    <attr name="drawerArrowStyle" format="reference" />
+
+    <style name="Widget.InstaTools.DrawerArrowToggle.Base">
+        <item name="color">?android:attr/textColorSecondary</item>
+        <item name="spinBars">true</item>
+        <item name="thickness">2dp</item>
+        <item name="arrowShaftLength">16dp</item>
+        <item name="arrowHeadLength">8dp</item>
+    </style>
+
+    <style name="Widget.InstaTools.DrawerArrowToggle" parent="Widget.InstaTools.DrawerArrowToggle.Base">
+        <item name="barLength">18dp</item>
+        <item name="gapBetweenBars">3dp</item>
+        <item name="drawableSize">24dp</item>
+    </style>
+
     <!--<style name="Theme.InstaTools.Snackbar" parent="Widget.MaterialComponents.Snackbar">
         <item name="android:fontFamily">@font/light</item>
         <item name="android:textColor">@android:color/white</item>

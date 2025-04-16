@@ -172,13 +172,15 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Get rid of the Material stuff: BadgeDrawable
+  * when some items have explicitly failed, "Try Again" won't do anything but to repeat itself!
+  * When clicked on error notifications, no activity is opened
   * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
   * Clicking on external links will bring a "cleartext not permitted" error
   * Delete long-forgotten cached Pickles
   * -
   * Extension:
+  * Get rid of the Material stuff: BadgeDrawable
   * PageTry
   * A PageRel for Viewer for IG Reels of profile
   * Choose download qualities in the Toolbar of Downloads

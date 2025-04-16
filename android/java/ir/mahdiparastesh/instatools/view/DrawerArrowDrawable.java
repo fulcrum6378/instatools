@@ -17,6 +17,7 @@
 package ir.mahdiparastesh.instatools.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
@@ -30,6 +31,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+
+import ir.mahdiparastesh.instatools.R;
 
 /**
  * A drawable that can draw a "Drawer hamburger" menu or an arrow and animate between them.
@@ -102,7 +105,7 @@ public class DrawerArrowDrawable extends Drawable {
     // wont look different
     private final Path mPath = new Path();
     // The reported intrinsic size of the drawable.
-    private final int mSize = 0;
+    private final int mSize;
     // Whether we should mirror animation when animation is reversed.
     private boolean mVerticalMirror = false;
     // The interpolated version of the original progress
@@ -114,7 +117,6 @@ public class DrawerArrowDrawable extends Drawable {
 
     /**
      * @param context used to get the configuration for the drawable from
-     * @noinspection CommentedOutCode
      */
     public DrawerArrowDrawable(Context context) {
         mPaint.setStyle(Paint.Style.STROKE);
@@ -122,9 +124,10 @@ public class DrawerArrowDrawable extends Drawable {
         mPaint.setStrokeCap(Paint.Cap.BUTT);
         mPaint.setAntiAlias(true);
 
-        /*FIXME final TypedArray a = context.getTheme().obtainStyledAttributes(null,
+        //noinspection resource
+        final TypedArray a = context.getTheme().obtainStyledAttributes(null,
                 R.styleable.DrawerArrowToggle, R.attr.drawerArrowStyle,
-                R.style.Base_Widget_AppCompat_DrawerArrowToggle);
+                R.style.Widget_InstaTools_DrawerArrowToggle_Base);
 
         setColor(a.getColor(R.styleable.DrawerArrowToggle_color, 0));
         setBarThickness(a.getDimension(R.styleable.DrawerArrowToggle_thickness, 0));
@@ -139,7 +142,7 @@ public class DrawerArrowDrawable extends Drawable {
         mArrowHeadLength = Math.round(a.getDimension(
                 R.styleable.DrawerArrowToggle_arrowHeadLength, 0));
         mArrowShaftLength = a.getDimension(R.styleable.DrawerArrowToggle_arrowShaftLength, 0);
-        a.recycle();*/
+        a.recycle();
     }
 
     /**

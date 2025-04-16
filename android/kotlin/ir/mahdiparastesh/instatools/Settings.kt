@@ -84,7 +84,6 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         const val spShortcutCount = "shortcut_count" // def: 0L
         const val spLearntSelection = "learnt_selection" // def: false
         const val spLearntSwipeDelete = "learnt_swipe_delete" // def: false
-        const val spUsedVersion = "used_version"
 
 
         // Settings
