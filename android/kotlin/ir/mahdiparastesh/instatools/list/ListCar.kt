@@ -112,8 +112,8 @@ class ListCar(
             isFirstResource: Boolean
         ): Boolean {
             if (x.currentAnimator != null) return true
-            //UiTools.snackbar(root, R.string.couldNotLoadOriginal)
-            Toast.makeText(x.c, R.string.couldNotLoadOriginal, Toast.LENGTH_LONG).show()
+            //UiTools.snackbar(root, R.string.couldNotLoadOriginal, dur = Snackbar.LENGTH_SHORT)
+            Toast.makeText(x.c, R.string.couldNotLoadOriginal, Toast.LENGTH_SHORT).show()
             loading = false
             return false
         }

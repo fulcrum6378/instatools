@@ -14,7 +14,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
 import android.widget.SearchView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -247,7 +249,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
         b.toolbar.menu.findItem(R.id.mtSearch)?.apply {
-            searchView = SearchView(wrapTheme(currentTheme()))  // TODO fucked up
+            searchView = SearchView(wrapTheme(currentTheme()))
             actionView = searchView
             searchView.queryHint = getString(R.string.mtSearch)
             setOnActionExpandListener(this@Main)
@@ -257,6 +259,18 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
                 b.searchRes.adapter = ListSch(this@Main)
                 expandActionView()
                 searchView.setQuery(vm.schQuery, false)
+            }
+
+            // apply styles
+            try {
+                val searchET = (((searchView
+                    .getChildAt(0) as LinearLayout)
+                    .getChildAt(2) as LinearLayout)
+                    .getChildAt(1) as LinearLayout)
+                    .getChildAt(0) as TextView
+                searchET.setTextAppearance(R.style.TextAppearance_InstaTools_Search)
+            } catch (_: IndexOutOfBoundsException) {
+            } catch (_: ClassCastException) {
             }
 
             searchView.setOnQueryTextListener(this@Main)
@@ -354,10 +368,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     private fun applyPageStyles(i: Int) {
         b.bnv.forEachIndexed { vi, v ->
             v.isSelected = vi == i
-            /*todo (v as TextView).setTextAppearance(
+            (v as TextView).setTextAppearance(
                 if (vi == i) R.style.TextAppearance_InstaTools_BNV_Active
                 else R.style.TextAppearance_InstaTools_BNV_Inactive
-            )*/
+            )
         }
         b.toolbar.popupTheme = popupThemes[i]
     }

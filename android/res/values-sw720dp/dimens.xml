@@ -15,6 +15,7 @@
     <dimen name="bnv">90dp</dimen>
     <dimen name="bnvTextInactive">16sp</dimen>
     <dimen name="bnvTextActive">17sp</dimen>
+    <dimen name="searchText">19sp</dimen>
     <dimen name="mainPadH">32dp</dimen>
     <dimen name="padGallery">3dp</dimen>
     <dimen name="favAction">@dimen/moreAction</dimen>

@@ -18,18 +18,27 @@
     </style>
 
     <style name="TextAppearance.InstaTools.Toolbar.Main" parent="@android:style/TextAppearance">
-        <item name="android:textSize">@dimen/tbTitleMain</item>
         <item name="android:fontFamily">@font/logo</item>
+        <item name="android:textSize">@dimen/tbTitleMain</item>
     </style>
 
-    <style name="TextAppearance.InstaTools.BNV.Active" parent="@style/TextAppearance.InstaTools.Medium">
-        <item name="android:fontFamily">@font/bold</item>
+    <style name="TextAppearance.InstaTools.BNV.Active" parent="@style/TextAppearance.InstaTools.Bold">
+        <item name="android:textColor">?android:textColor</item>
         <item name="android:textSize">@dimen/bnvTextActive</item>
     </style>
 
     <style name="TextAppearance.InstaTools.BNV.Inactive" parent="@style/TextAppearance.InstaTools.Medium">
-        <item name="android:fontFamily">@font/medium</item>
+        <item name="android:textColor">?android:textColor</item>
         <item name="android:textSize">@dimen/bnvTextInactive</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Search" parent="@style/TextAppearance.InstaTools.Medium">
+        <item name="android:textColor">?android:textColor</item>
+        <item name="android:textSize">@dimen/searchText</item>
+    </style>
+
+    <style name="TextAppearance.InstaTools.Switch" parent="@style/TextAppearance.InstaTools.Medium">
+        <item name="android:textColor">?android:textColor</item>
     </style>
 
 
@@ -308,6 +317,7 @@
     <style name="stSwitch">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?android:textColor</item>
         <item name="android:textSize">@dimen/stSubItemFont</item>
         <item name="layout_constraintTop_toTopOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>

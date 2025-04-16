@@ -26,7 +26,12 @@
         <item name="android:textColorHint">?colorPrimaryHigh</item>
         <item name="android:titleTextColor">?android:colorAccent</item>
 
-        <!-- material -->
+        <!-- widgets -->
+        <item name="android:colorControlActivated">?android:colorAccent</item>
+        <item name="android:colorControlNormal">?android:colorAccent</item>
+        <item name="android:searchViewStyle">@style/Widget.InstaTools.SearchView</item>
+        <!-- Theme.DeviceDefault has nothing for SearchViews -->
+        <item name="android:switchTextAppearance">@style/TextAppearance.InstaTools.Switch</item>
         <item name="drawerArrowStyle">@style/Widget.InstaTools.DrawerArrowToggle</item>
     </style>
 
@@ -82,6 +87,16 @@
         <item name="android:colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
     </style>
+
+
+    <!-- widget -->
+    <style name="Widget.InstaTools.SearchView" parent="android:Widget.Material.SearchView">
+        <item name="android:textColor">#F00</item>
+    </style>
+
+    <!--<style name="Widget.InstaTools.Switch" parent="android:Widget.DeviceDefault.CompoundButton.Switch">
+        <item name=""></item>
+    </style>-->
 
 
     <!-- material -->
