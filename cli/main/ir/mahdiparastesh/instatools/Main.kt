@@ -28,19 +28,20 @@ Copyright © Mahdi Parastesh - All Rights Reserved.
     if (interactive) println(
         """
 >> List of settings:
-set cookies {PATH}             Loads the required cookies from a path. (default: `./cookies.txt`)
-set proxy {URL}                Sets an HTTP proxy (e.g. `set proxy http://127.0.0.1:8580/`)
+set cookies {PATH}             Load the required cookies from a path. (default: `./cookies.txt`)
+set proxy {URL}                Set an HTTP proxy (e.g. `set proxy http://127.0.0.1:8580/`)
 
 >> List of commands: (type `-h` after each command to see a detailed guide)
-d, download <LINK> {OPTIONS}   Downloads a post or a reel via a link.  help: `d -h`
-s, saved                       Lists your saved posts.                 help: `s -h`
-u, user <@USERNAME|REST_ID>    Shows details about an IG account.      e.g. `u 8337021434`
-p, posts <@USERNAME>           Lists main posts of a profile.          help: `p -h`
-t, tagged <@USERNAME>          Lists tagged posts of a profile.        help: `t -h`
-r, story <@USERNAME>           Lists daily story of a profile.         help: `r -h`
-h, highlight <@USERNAME>       Lists highlighted stories of a profile. help: `h -h`
-y, tray                        Lists users which have stories in your feed.
-q, quit                        Quits the application.
+d, download <LINK> {OPTIONS}   Download a post or a reel via a link.   help: `d -h`
+s, saved                       List your saved posts.                  help: `s -h`
+u, user <@USERNAME|REST_ID>    Show details about an IG account.       e.g. `u 8337021434`
+p, posts <@USERNAME>           List main posts of a profile.           help: `p -h`
+r, reels <@USERNAME>           List reel posts of a profile.           help: `r -h`
+t, tagged <@USERNAME>          List tagged posts of a profile.         help: `t -h`
+o, story <@USERNAME>           List daily story of a profile.          help: `o -h`
+h, highlight <@USERNAME>       List highlighted stories of a profile.  help: `h -h`
+y, tray                        List users which have stories in your feed.
+q, quit                        Quit the application.
 
     """.trimIndent()
     )
@@ -236,11 +237,11 @@ ${u.biography}
             /* ---------- BEGIN POSTS ---------- */
             "p", "posts" -> profileCommand(
                 a, """
-p, posts <@USERNAME>           List main posts of a profile. (e.g. `p @fulcrum6378`)
+p, posts <@USERNAME>           Lists main posts of a profile. (e.g. `p @fulcrum6378`)
   p, posts                     Load more posts from the latest user.
   p <@USERNAME> reset          Forget previously loaded main posts of a user and load them again.
   p reset                      Forget previously loaded main posts of the latest user and load them again.
-  p <NUMBER(s)> {OPTIONS}      Download the post in that position.
+  p <NUMBER(s)> {OPTIONS}      Download the post(s) in that position.
     -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
     -l, --like                           Ensure that the post is liked.
 $numbersGuide
@@ -250,6 +251,21 @@ $qualitiesGuide
             /* ----------- END POSTS ----------- */
 
 
+            /* ---------- BEGIN REELS ---------- */
+            "r", "reels" -> profileCommand(
+                a, """
+r, reels <@USERNAME>           List reels of a profile. (e.g. `r fulcrum6378`)
+  r, reels                     Load more reels from the latest user.
+  r <@USERNAME> reset          Forget previously loaded reels of the latest user and load them again.
+  r reset                      Forget previously loaded reels of the latest user and load them again.
+  r <NUMBERS> {OPTIONS}        Download the reel(s) in that position.
+    -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
+    -l, --like                           Ensure that the reel is liked.
+            """.trimIndent()
+            ) { profile -> profile.reels }
+            /* ----------- END REELS ----------- */
+
+
             /* ---------- BEGIN TAGGED ---------- */
             "t", "tagged" -> profileCommand(
                 a, """
@@ -257,7 +273,7 @@ t, tagged <@USERNAME>          List tagged posts of a profile. (e.g. `t fulcrum6
   t, tagged                    Load more tagged posts from the latest user.
   t <@USERNAME> reset          Forget previously loaded tagged posts of the latest user and load them again.
   t reset                      Forget previously loaded tagged posts of the latest user and load them again.
-  t <NUMBERS> {OPTIONS}        Download the tagged post in that position.
+  t <NUMBERS> {OPTIONS}        Download the tagged post(s) in that position.
     -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
     -l, --like                           Ensure that the tagged post is liked.
             """.trimIndent()
@@ -266,10 +282,10 @@ t, tagged <@USERNAME>          List tagged posts of a profile. (e.g. `t fulcrum6
 
 
             /* ---------- BEGIN STORY ---------- */
-            "r", "story" -> profileCommand(
+            "o", "story" -> profileCommand(
                 a, """
-r, story <@USERNAME>           List daily story of a profile. (e.g. `r @fulcrum6378`)
-  r <NUMBER(s)> {OPTIONS}      Download the story item in that position.
+o, story <@USERNAME>           List daily story of a profile. (e.g. `o @fulcrum6378`)
+  o <NUMBER(s)> {OPTIONS}      Download the story item in that position.
     -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
     -l, --like                           Ensure that the story is liked.
 $numbersGuide
@@ -283,7 +299,7 @@ $qualitiesGuide
             "h", "highlight" -> profileCommand(
                 a, """
 h, highlight <@USERNAME>       List highlighted stories of a profile. (e.g. `h @fulcrum6378`)
-  h <HL-ID> <NUMBERS> {OPTIONS}Download the highlight story item in that position.
+  h <HL-ID> <NUMBERS> {OPTIONS}Download the highlighted story(es) item in that position.
     -q, --quality=<QUALITY>              A valid quality value (e.g. `-q=high`) (default: `high`)
     -l, --like                           Ensure that the highlighted story is liked.
 $numbersGuide

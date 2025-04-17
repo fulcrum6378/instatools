@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.util
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.Highlights
 import ir.mahdiparastesh.instatools.list.Posts
+import ir.mahdiparastesh.instatools.list.Reels
 import ir.mahdiparastesh.instatools.list.Stories
 import ir.mahdiparastesh.instatools.list.Tagged
 
@@ -10,6 +11,7 @@ class Profile(var userName: String) {
     var userId: String? = null
 
     val posts: Posts by lazy { Posts(this) }
+    val reels: Reels by lazy { Reels(this) }
     val tagged: Tagged by lazy { Tagged(this) }
     val story: Stories by lazy { Stories(this) }
     val highlights: Highlights by lazy { Highlights(this) }

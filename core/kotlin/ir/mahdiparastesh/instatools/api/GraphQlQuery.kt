@@ -37,13 +37,35 @@ enum class GraphQlQuery(
     ),
 
     /**
-     * PolarisProfilePostsQuery
+     * PolarisProfilePostsQuery (first fetch)
+     * @param username [User.username]
+     * @param count default: 12, maximum: 33
+     * @return [GraphQlData.xdt_api__v1__feed__user_timeline_graphql_connection]
+     */
+    PROFILE_POSTS_INITIAL(
+        "9457449154339084",
+        "{" +
+            "\"data\":{" +
+            "\"count\":%2\$s," +
+            "\"include_reel_media_seen_timestamp\":true," +
+            "\"include_relationship_info\":true," +
+            "\"latest_besties_reel_media\":true," +
+            "\"latest_reel_media\":true" +
+            "}," +
+            "\"username\":\"%1\$s\"," +
+            "\"__relay_internal__pv__PolarisIsLoggedInrelayprovider\":true," +
+            "\"__relay_internal__pv__PolarisShareSheetV3relayprovider\":true" +
+            "}"
+    ),
+
+    /**
+     * PolarisProfilePostsTabContentQuery_connection (second and later fetches)
      * @param username [User.username]
      * @param count default: 12, maximum: 33
      * @param after [Media.id] of the last item in the previous fetch
      * @return [GraphQlData.xdt_api__v1__feed__user_timeline_graphql_connection]
      */
-    PROFILE_POSTS(
+    PROFILE_POSTS_MORE(
         "8934560356598281",
         "{" +
             "\"after\":\"%3\$s\"," +
@@ -54,23 +76,46 @@ enum class GraphQlQuery(
     ),
 
     /**
-     * PolarisProfileReelsTabContentQuery
+     * PolarisProfileReelsTabContentQuery (first fetch)
      * @param target_user_id [User.id]
-     * @param count default: 12
+     * @param count default: 12, maximum: 12
      * @return [GraphQlData.xdt_api__v1__clips__user__connection_v2]
      */
-    PROFILE_REELS(
+    PROFILE_REELS_INITIAL(
         "29938381755760668",
         "{\"data\":{\"include_feed_video\":true,\"page_size\":%2\$s,\"target_user_id\":\"%1\$s\"}}"
     ),
 
     /**
+     * PolarisProfileReelsTabContentQuery_connection (second and later fetches)
+     * @param target_user_id [User.id]
+     * @param count default: 12, maximum: 12
+     * @param after a non-replicable hashed cursor
+     * @return [GraphQlData.xdt_api__v1__clips__user__connection_v2]
+     */
+    PROFILE_REELS_MORE(
+        "8931245513664134",
+        "{" +
+            "\"after\":\"%3\$s\"," +
+            "\"before\":null," +
+            "\"data\":" +
+            "{" +
+            "\"include_feed_video\":true," +
+            "\"page_size\":%2\$s," +
+            "\"target_user_id\":\"%1\$s\"" +
+            "}," +
+            "\"first\":4," +
+            "\"last\":null" +
+            "}"
+    ),
+
+    /**
      * PolarisProfileTaggedTabContentQuery (first fetch)
      * @param user_id [User.id]
-     * @param count default: 12
+     * @param count default: 12, maximum: 12
      * @return [GraphQlData.xdt_api__v1__usertags__user_id__feed_connection]
      */
-    PROFILE_TAGGED(
+    PROFILE_TAGGED_INITIAL(
         "8626574937464773",
         "{\"count\":%2\$s,\"user_id\":\"%1\$s\"}"
     ),
@@ -78,13 +123,22 @@ enum class GraphQlQuery(
     /**
      * PolarisProfileTaggedTabContentQuery_connection (second and later fetches)
      * @param user_id [User.id]
-     * @param count default: 12
+     * @param count default: 12, maximum: 21
      * @param after [Media.id] of the last item in the previous fetch
      * @return [GraphQlData.xdt_api__v1__usertags__user_id__feed_connection]
      */
-    PROFILE_TAGGED_CURSORED(
+    PROFILE_TAGGED_MORE(
         "8786107121469577",
-        "{\"after\":\"%3\$s\",\"first\":12,\"count\":%2\$s,\"user_id\":\"%1\$s\"}"
+        "{" +
+            "\"after\":\"%3\$s\"," +
+            "\"before\":null," +
+            "\"count\":%2\$s," +
+            "\"first\":12," +
+            // `first` might not be identical to `count`; because in the original `PROFILE_REELS_MORE`,
+            // `first` is "4" while `count` is "12"!
+            "\"last\":null," +
+            "\"user_id\":\"%1\$s\"" +
+            "}"
     ),
 
     /**

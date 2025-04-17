@@ -16,7 +16,7 @@ class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
     override fun fetch() {
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
-            GraphQlQuery.PROFILE_POSTS.body(p.userName, "33", cursor.toString())
+            GraphQlQuery.PROFILE_POSTS_MORE.body(p.userName, "33", cursor.toString())
         ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!
         if (p.userId == null && page.edges.isNotEmpty())
             p.userId = page.edges.first().node.user?.pk
