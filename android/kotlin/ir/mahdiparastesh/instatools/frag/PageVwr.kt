@@ -148,10 +148,13 @@ class PageVwr : BasePageViewer(), PostSelector {
             return; }
 
         // fetch online posts
-        val cursor = if (!reset) c.vm.posts?.edges?.lastOrNull()?.node?.id().toString() else "null"
+        val cursor = if (!reset) c.vm.posts?.edges?.lastOrNull()?.node?.id().toString() else null
         val page = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url,
-            true, GraphQlQuery.PROFILE_POSTS_MORE.body(c.vm.user!!.username!!, "33", cursor)
+            Api.Endpoint.QUERY.url, true,
+            if (cursor == null)
+                GraphQlQuery.PROFILE_POSTS_INITIAL.body(c.vm.user!!.username!!, "33")
+            else
+                GraphQlQuery.PROFILE_POSTS_MORE.body(c.vm.user!!.username!!, "33", cursor)
         ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!
 
         // update the data model and the UI

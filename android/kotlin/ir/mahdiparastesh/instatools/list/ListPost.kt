@@ -81,13 +81,18 @@ abstract class ListPost<Activity, Fragment>(
         )
 
         // is media already downloaded?
-        h.b.stored.vis(
-            if (c.c.downloadHistory.isEmpty())
-                false
-            else med.carousel_media
-                ?.any { c.c.downloadHistory.anyStartsWith(it.fileNameWithoutExt(med)) }
-                ?: c.c.downloadHistory.anyStartsWith(med.fileNameWithoutExt())
-        )
+        try {
+            h.b.stored.vis(
+                if (c.c.downloadHistory.isEmpty())
+                    false
+                else med.carousel_media
+                    ?.any { c.c.downloadHistory.anyStartsWith(it.fileNameWithoutExt(med)) }
+                    ?: c.c.downloadHistory.anyStartsWith(med.fileNameWithoutExt())
+            )
+        } catch (_: NullPointerException) {
+            h.b.stored.setImageResource(R.drawable.error)
+            h.b.stored.vis()
+        }
 
         // is media liked?
         h.b.liked.vis(med.has_liked == true)

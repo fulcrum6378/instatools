@@ -15,11 +15,14 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageRelBinding
-import ir.mahdiparastesh.instatools.list.ListSto
+import ir.mahdiparastesh.instatools.list.ListRel
 import ir.mahdiparastesh.instatools.util.BasePageViewer
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.view.PostSelector
@@ -40,7 +43,7 @@ class PageRel : BasePageViewer(), PostSelector {
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.vm.reels != null
     override fun isModelEmpty(): Boolean = c.vm.reels?.edges?.isEmpty() == true
-    override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c)  // FIXME
+    override fun createAdapter(): RecyclerView.Adapter<*> = ListRel(c, this)
     override fun canLoadMore(): Boolean = c.vm.reels?.page_info?.has_next_page != false
 
     companion object {
@@ -75,8 +78,29 @@ class PageRel : BasePageViewer(), PostSelector {
             withContext(Dispatchers.Main) { onLoaded() }
             return; }
 
-        // fetch online tagged posts
-        // TODO
+        // fetch online reels
+        val cursor = if (!reset) c.vm.reels?.page_info?.end_cursor else null
+        val page = Api.json<GraphQl>(
+            Api.Endpoint.QUERY.url, true,
+            if (cursor == null)
+                GraphQlQuery.PROFILE_REELS_INITIAL.body(c.vm.user!!.id!!, "12")
+            else
+                GraphQlQuery.PROFILE_REELS_MORE.body(c.vm.user!!.id!!, "12", cursor)
+        ).data!!.xdt_api__v1__clips__user__connection_v2!!
+
+        // update the data model and the UI
+        if (c.vm.reels == null || reset) {
+            c.vm.reels = page
+            withContext(Dispatchers.Main) { onLoaded() }
+        } else c.vm.reels?.apply {
+            val lastBefore = edges.size
+            edges.addAll(page.edges)
+            page_info.has_next_page = page.page_info.has_next_page
+            withContext(Dispatchers.Main) { onLazilyLoaded(lastBefore, edges.size) }
+        }
+
+        // cache the data model
+        c.vm.reels?.also { pickle.save(it) }
     }
 
     override fun selectionKeyProvider() = object : ItemKeyProvider<Long>(SCOPE_MAPPED) {

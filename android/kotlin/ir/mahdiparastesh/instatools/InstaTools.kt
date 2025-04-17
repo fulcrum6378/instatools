@@ -176,8 +176,7 @@ class InstaTools : Application() {
   * Switches' background colors are white
   * Toolbar's back icon cannot be theme when the action view is expanded (unrelated to SearchView)
   * When clicked on error notifications, no activity is opened
-  * TAGGED POSTS ARE NOT DOWNLOADABLE!!!
-  * PageVwr replaces lazily loaded posts with entire previously loaded posts sometimes
+  * REELS AND TAGGED POSTS ARE NEITHER DOWNLOADABLE NOR ABLE TO BE FOUND IN THE DOWNLOAD HISTORY!!!
   * Clicking on external links will bring a "cleartext not permitted" error
   * Delete long-forgotten cached Pickles
   * -

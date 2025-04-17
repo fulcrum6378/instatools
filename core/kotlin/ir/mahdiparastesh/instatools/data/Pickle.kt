@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools.data
 
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.util.Utils
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
@@ -49,8 +50,8 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
                 FileInputStream(leaf).use { it.readBytes().toString(Charsets.UTF_8) }
             )
         } catch (e: Exception) {
-            throw e
-            //null
+            if (e !is SerializationException) throw e
+            null
         }
     }
 

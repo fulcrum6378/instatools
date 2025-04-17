@@ -18,9 +18,9 @@ class Tagged(override val p: Profile) : LazyLister<Media>(), Profile.Section {
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
-                GraphQlQuery.PROFILE_TAGGED_INITIAL.body(p.userId!!, "36")
+                GraphQlQuery.PROFILE_TAGGED_INITIAL.body(p.userId!!, "12")
             else
-                GraphQlQuery.PROFILE_TAGGED_MORE.body(p.userId!!, "36", cursor!!)
+                GraphQlQuery.PROFILE_TAGGED_MORE.body(p.userId!!, "21", cursor!!)
         ).data!!.xdt_api__v1__usertags__user_id__feed_connection!!
 
         var caption: String
@@ -44,6 +44,7 @@ class Tagged(override val p: Profile) : LazyLister<Media>(), Profile.Section {
         a: Array<String>, offsetOfClauses: Int, opt: HashMap<String, String?>?
     ) {
         this[a[offsetOfClauses]].forEach { med ->
+            // TODO this Media model is incomplete
             downloadTask.download(med, Option.quality(opt?.get(Option.QUALITY.key)))
             if (opt?.contains(Option.LIKE.key) == true)
                 SimpleTasks.actionMedia(med, GraphQlQuery.LIKE_POST)

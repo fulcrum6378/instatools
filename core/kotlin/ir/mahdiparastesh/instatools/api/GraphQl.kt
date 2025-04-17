@@ -70,7 +70,7 @@ class GraphQl(
 
     @Serializable
     class PageInfo(
-        //val end_cursor: String,
+        val end_cursor: String?,
         var has_next_page: Boolean,
         //val has_previous_page: Boolean,
         //val start_cursor: String?,

@@ -102,9 +102,9 @@ class PageTag : BasePageViewer(), PostSelector {
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
-                GraphQlQuery.PROFILE_TAGGED_INITIAL.body(c.vm.user!!.id!!, "36")
+                GraphQlQuery.PROFILE_TAGGED_INITIAL.body(c.vm.user!!.id!!, "12")
             else
-                GraphQlQuery.PROFILE_TAGGED_MORE.body(c.vm.user!!.id!!, "36", cursor)
+                GraphQlQuery.PROFILE_TAGGED_MORE.body(c.vm.user!!.id!!, "21", cursor)
         ).data!!.xdt_api__v1__usertags__user_id__feed_connection!!
 
         // update the data model and the UI
