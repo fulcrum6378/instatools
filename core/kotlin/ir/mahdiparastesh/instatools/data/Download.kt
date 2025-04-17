@@ -36,7 +36,6 @@ class Download(
     var status: Byte = 0x0
 ) {
 
-    /** Synchronised with [Media.fileNameWithoutExt] */
     val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
     val ext: String by lazy {
         var ext = URI(url).path.split(".").last()

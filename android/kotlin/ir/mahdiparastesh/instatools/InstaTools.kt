@@ -172,12 +172,11 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Font for PopupMenus
   * AlertDialogs are not themes properly
   * Switches' background colors are white
-  * Toolbar's back icon cannot be theme when the action view is expanded (unrelated to SearchView)
-  * When clicked on error notifications, no activity is opened
-  * REELS AND TAGGED POSTS ARE NEITHER DOWNLOADABLE NOR ABLE TO BE FOUND IN THE DOWNLOAD HISTORY!!!
-  * Clicking on external links will bring a "cleartext not permitted" error
+  * Services get messed up when needAuthentication() is invoked
+  * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * Delete long-forgotten cached Pickles
   * -
   * Extension:
@@ -187,6 +186,11 @@ class InstaTools : Application() {
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
-  * Metadata for HEIC and MP4?
   * Test on a wide tablet
+  * -
+  * Too Complicated:
+  * Toolbar's back icon cannot be themed when the action view is expanded (unrelated to SearchView)
+  * When clicked on error notifications, no activity is opened
+  * Clicking on external links will bring a "cleartext not permitted" error
+  * Metadata for HEIC and MP4?
 */

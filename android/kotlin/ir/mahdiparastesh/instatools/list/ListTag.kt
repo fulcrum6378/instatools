@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import androidx.recyclerview.selection.SelectionTracker
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.view.Expandable
@@ -19,4 +20,9 @@ class ListTag(c: Viewer, f: PageTag) : ListPost<Viewer, PageTag>(c, f) {
 
     override fun getItemCount(): Int =
         c.vm.tagged?.edges?.size ?: 0
+
+    override fun isDownloaded(med: Media, downloadHistory: DownloadHistory): Boolean =
+        med.carousel_media?.any { car ->
+            c.c.downloadHistory.anyContains("_${car.id()}.")
+        } ?: c.c.downloadHistory.anyContains("_${med.id()}.")
 }

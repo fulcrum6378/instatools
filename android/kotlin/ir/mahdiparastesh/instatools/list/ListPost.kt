@@ -13,10 +13,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePage
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
@@ -81,18 +83,10 @@ abstract class ListPost<Activity, Fragment>(
         )
 
         // is media already downloaded?
-        try {
-            h.b.stored.vis(
-                if (c.c.downloadHistory.isEmpty())
-                    false
-                else med.carousel_media
-                    ?.any { c.c.downloadHistory.anyStartsWith(it.fileNameWithoutExt(med)) }
-                    ?: c.c.downloadHistory.anyStartsWith(med.fileNameWithoutExt())
-            )
-        } catch (_: NullPointerException) {
-            h.b.stored.setImageResource(R.drawable.error)
-            h.b.stored.vis()
-        }
+        h.b.downloaded.vis(
+            if (c.c.downloadHistory.isEmpty()) false
+            else isDownloaded(med, c.c.downloadHistory)
+        )
 
         // is media liked?
         h.b.liked.vis(med.has_liked == true)
@@ -121,6 +115,19 @@ abstract class ListPost<Activity, Fragment>(
         this[position]?.uid ?: RecyclerView.NO_ID
 
     abstract operator fun get(position: Int): Media?
+
+    open fun isDownloaded(med: Media, downloadHistory: DownloadHistory): Boolean =
+        med.carousel_media?.any { car ->
+            c.c.downloadHistory.anyStartsWith(
+                med.owner!!.username!! +
+                    "_${Utils.fileDateTime(Utils.compileSecondsTS(car.taken_at!!))}_" +
+                    car.id()
+            )
+        } ?: c.c.downloadHistory.anyStartsWith(
+            med.owner!!.username!! +
+                "_${Utils.fileDateTime(Utils.compileSecondsTS(med.taken_at!!))}_" +
+                med.id()
+        )
 
     private fun expand(v: ImageView, i: Int) {
         expandable.expand(this[i] ?: return, v)

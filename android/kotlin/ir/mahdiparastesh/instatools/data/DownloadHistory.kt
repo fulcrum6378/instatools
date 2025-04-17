@@ -122,8 +122,18 @@ class DownloadHistory(private val file: File) {
 
     fun anyStartsWith(q: String): Boolean {
         if (list.isNullOrEmpty()) return false
+        //Log.d("ESPINELA", q)
         for (s in list)
             if (s.startsWith(q))
+                return true
+        return false
+    }
+
+    fun anyContains(q: String): Boolean {
+        if (list.isNullOrEmpty()) return false
+        //Log.d("ESPINELA", q)
+        for (s in list)
+            if (s.contains(q))
                 return true
         return false
     }

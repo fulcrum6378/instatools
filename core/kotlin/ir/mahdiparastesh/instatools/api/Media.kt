@@ -7,7 +7,7 @@ import kotlin.math.abs
 
 @Serializable
 class Media(
-    //val can_reply: Boolean?,
+    //val can_reply: Boolean?,  // nullable in tagged
     val caption: Caption?,
     val carousel_media: Array<Media>?,
     //val carousel_media_count: Int?,
@@ -18,7 +18,7 @@ class Media(
     val has_audio: Boolean?,
     var has_liked: Boolean?,
     var has_viewer_saved: Boolean?,
-    private val id: String, // <media ID>_<user ID>
+    private val id: String,  // <media ID>_<user ID>
     //val invited_coauthor_producers: Array<User>?,
     val image_versions2: ImageVersions2,
     private val lat: Double?,
@@ -28,16 +28,16 @@ class Media(
     val media_type: Int,
     //val number_of_qualities: Int?,
     //val organic_tracking_token: String?,
-    val original_height: Int?, // nullable in tagged carousel items
-    val original_width: Int?, // nullable in tagged carousel items
-    val owner: User?,
+    val original_height: Int?,  // nullable in tagged carousel items
+    val original_width: Int?,  // nullable in tagged carousel items
+    val owner: User?,  // nullable in tagged
     //val photo_of_you: Boolean?,
-    private val pk: String?, // nullable in tagged carousel items
+    private val pk: String?,  // nullable in tagged carousel items
     val product_type: String?,
-    val taken_at: Long?, // nullable in all tagged Media models
+    val taken_at: Long?,  // nullable in all tagged Media models
     val user: User?,
     val video_dash_manifest: String?,
-    val video_duration: Float?, // in seconds
+    val video_duration: Float?,  // in seconds
     val video_versions: Array<Version>?,
     //val view_count: Long?,
 ) {
@@ -47,8 +47,6 @@ class Media(
     fun id(): String = pk ?: id.substringBefore("_")
 
     fun owner(): User = owner ?: user!!
-
-    fun ownerNullable(): User? = owner ?: user
 
     fun isPostOrReel() = product_type in arrayOf("feed", "carousel_container", "clips")
 
@@ -139,12 +137,6 @@ class Media(
         )
         return list
     }
-
-    /** Synchronised with [Download.fileName] */
-    fun fileNameWithoutExt(parent: Media? = null) =
-        (ownerNullable()?.username ?: parent?.ownerNullable()?.username) +
-            "_${Utils.fileDateTime(Utils.compileSecondsTS(taken_at ?: parent?.taken_at!!))}" +
-            "_${id()}"
 
 
     @Serializable

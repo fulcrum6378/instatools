@@ -33,7 +33,7 @@
             app:layout_constraintWidth_percent="0.14" />
 
         <ImageView
-            android:id="@+id/stored"
+            android:id="@+id/downloaded"
             style="@style/parentConstraint"
             android:layout_width="0dp"
             android:layout_height="0dp"
