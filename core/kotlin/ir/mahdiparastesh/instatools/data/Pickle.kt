@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.data
 
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -14,13 +15,16 @@ import java.io.FileOutputStream
  *
  * Structure:
  * 4. Leaf: a [Pickle] JSON file storing object-oriented data
- * 3. Branch: a directory where pickle files are group separated between numerous third-party
+ * 3. Branch: a directory where pickle files are group separated between numerous third-person
  *            profiles. It can be ignored and pickles can be stored in a Tree!
  * 2. Tree: a directory related to an InstaTools user's Account.
  * 1. Root: where all Trees are stored. There can be multiple Roots;
  *          e.g. one for main files and another for cache files.
  *
  * @param root a root directory to store pickle trees.
+ * @param acc [User.id] of the first-person user (owner of the device)
+ * @param type data type of the Pickle
+ * @param id [User.id] of the third-person user whose content is being viewed and saved (pickled)
  */
 class Pickle(root: File, acc: Long, val type: Type, id: String?) {
     val branch: File
@@ -41,10 +45,21 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         }
     }
 
+    /**
+     * @return the Pickle data if the specified file is available and not expired, null otherwise
+     */
     inline fun <reified DATA> restore(): DATA? {
+
+        // return null if the Pickle doesn't exist
         if (!leaf.exists()) return null
-        val lifespan = type.calculateLifespanInMillis()
-        if (lifespan != 0L && (Utils.now() - leaf.lastModified()) >= lifespan) return null
+
+        // avoid using the Pickle if it is expired
+        if (type.lifespanInDays >= 0f) {
+            val lifespan = type.calculateLifespanInMillis()
+            if ((Utils.now() - leaf.lastModified()) >= lifespan) return null
+        }
+
+        // load the Pickle
         return try {
             jsonEngine.decodeFromString<DATA>(
                 FileInputStream(leaf).use { it.readBytes().toString(Charsets.UTF_8) }
@@ -56,8 +71,8 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
     }
 
     /**
-     * @param lifespanInDays set it to zero to make it never expire.
-     *                       remember that media URLs get expired eventually.
+     * @param lifespanInDays set it to a negative number to make it never expire.
+     *                       remember that IG Media URLs get expired eventually.
      * @param isSingleFile is the data related to the user?
      *                     or is it related to multiple third-party profiles on the internet?
      * @param isApiCache is the data created by the Instagram API?
@@ -69,8 +84,8 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
     ) {
 
         // user data
-        FAVOURITES(0f),
-        DOWNLOAD_LIST(0f),
+        FAVOURITES(-1f),
+        DOWNLOAD_LIST(-1f),
         COMMAND_LIST(7f),
 
         // caches

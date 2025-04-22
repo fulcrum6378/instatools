@@ -285,6 +285,11 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
                     //UiTools.snackbar(b.root, UiTools.apiError(c, e.code))
                     Toast.makeText(c, UiTools.apiError(c, e.code), Toast.LENGTH_LONG).show()
                 }
+            } catch (_: IllegalArgumentException) {
+                withContext(Dispatchers.Main) {
+                    //UiTools.snackbar(b.root, R.string.nonPostUrl)
+                    Toast.makeText(c, R.string.nonPostUrl, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

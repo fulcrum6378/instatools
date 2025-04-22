@@ -244,8 +244,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 }
 
 /**
- * Observes the lifecycle a [ir.mahdiparastesh.instatools.util.ForegroundService]
- * and switches start and stop buttons accordingly.
+ * Observes the lifecycle a [ForegroundService] and switches start and stop buttons accordingly.
  */
 interface ServiceOwner : Lister {
     val serviceActive: MutableLiveData<Boolean>

@@ -123,6 +123,7 @@
     </string>
     <string name="downloadsHelp2">تا بلافاصله دانلود شود!</string>
     <string name="nonInstagramUrl">این اپ فقط از اینستاگرام، محتوا دریافت میکند!</string>
+    <string name="nonPostUrl">فقط لینک پست ها و ریل ها مجاز است!</string>
     <string name="dtRetryAll">امتحان دوباره همه</string>
     <string name="dtPauseAll">توقف همه</string>
     <string name="dtResumeAll">ادامه دادن همه</string>
