@@ -293,10 +293,11 @@ interface PostSelector : Lister {
         }
     }
 
-    fun selectionKeyProvider(): ItemKeyProvider<Long> // StableIdKeyProvider(rv!!) sucks!!
+    fun selectionKeyProvider(): ItemKeyProvider<Long>  // StableIdKeyProvider(rv!!) sucks!!
 
     fun selectionObserver(): SelectionTracker.SelectionObserver<Long>?
 
+    @Suppress("UNCHECKED_CAST")
     fun enqueueSelectedMedia(
         c: BaseActivity,
         dataModel: Any?,
@@ -320,21 +321,30 @@ interface PostSelector : Lister {
             val indices: IntRange
             val getter: (Int) -> Media
             when (dataModel) {
-                is Rest.LazyList<*> -> { // Media.Wrapper
+                is Rest.LazyList<*> -> {  // from PageSvd
                     indices = dataModel.items.indices
                     getter = {
                         (dataModel.items[it] as Media.Wrapper).media
                     }
                 }
-                is GraphQl.Page<*> -> { // Media
-                    indices = dataModel.edges.indices
-                    getter = {
-                        @Suppress("UNCHECKED_CAST")
-                        (dataModel.edges[it] as GraphQl.Edge<Media>).node
+                is GraphQl.Page<*> -> {
+                    when (dataModel.edges[0].node) {
+                        is Media -> {  // from PageVwr and PageTag
+                            indices = dataModel.edges.indices
+                            getter = {
+                                (dataModel.edges[it] as GraphQl.Edge<Media>).node
+                            }
+                        }
+                        is Media.Wrapper -> {  // from PageRel
+                            indices = dataModel.edges.indices
+                            getter = {
+                                (dataModel.edges[it] as GraphQl.Edge<Media.Wrapper>).node.media
+                            }
+                        }
+                        else -> throw IllegalStateException()
                     }
                 }
-                else ->
-                    throw IllegalStateException()
+                else -> throw IllegalStateException()
             }
 
             // enqueue

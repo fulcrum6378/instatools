@@ -8,8 +8,10 @@ import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.frag.PageRel
 import ir.mahdiparastesh.instatools.frag.PageTag
 import ir.mahdiparastesh.instatools.frag.PageVwr
+import ir.mahdiparastesh.instatools.list.ListRel
 import ir.mahdiparastesh.instatools.list.ListTag
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
@@ -67,6 +69,7 @@ abstract class BasePageViewer : BasePage<Viewer>(), OnlineLister {
             if (status)
                 when (this@BasePageViewer) {
                     is PageVwr -> gridAdapter()
+                    is PageRel -> (rv?.adapter as ListRel?)
                     is PageTag -> (rv?.adapter as ListTag?)
                     else -> throw IllegalStateException()
                 }?.firstLongClickSelect = true

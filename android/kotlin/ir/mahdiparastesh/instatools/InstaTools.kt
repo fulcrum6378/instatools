@@ -180,6 +180,7 @@ class InstaTools : Application() {
   * Delete long-forgotten cached Pickles
   * -
   * Extension:
+  * A button for indexing a folder
   * ListStory must create a fake carousel and pass it to Expandable
   * Non-badge count numbers for saved and favourites
   * Get rid of the Material stuff: BadgeDrawable

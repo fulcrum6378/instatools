@@ -59,9 +59,9 @@ class PageVwr : BasePageViewer(), PostSelector {
     override val dialogContext: Context get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun shouldLoadOnPrepare(): Boolean = c.vm.user != null || c.vm.profile != null
+    override fun shouldLoadOnPrepare(): Boolean = false
     override fun isModelLoaded(): Boolean = c.vm.posts != null
-    override fun isModelEmpty(): Boolean = c.vm.posts?.edges?.isEmpty() == true
+    override fun isModelEmpty(): Boolean = c.vm.posts?.edges?.isEmpty() != false
     override fun canLoadMore(): Boolean = c.vm.posts?.page_info?.has_next_page != false
 
     companion object {
@@ -127,7 +127,7 @@ class PageVwr : BasePageViewer(), PostSelector {
         b.rv.vis(!showPv)
         if (!showPv) {
             if (reset) gridAdapter()?.notifyDataSetChanged()
-            load(reset)
+            if (!isModelLoaded()) load(reset)
         }
 
         // update Favourite
@@ -138,17 +138,22 @@ class PageVwr : BasePageViewer(), PostSelector {
         ConcatAdapter(Header(), ListVwr(c, this))
 
     override suspend fun fetch(reset: Boolean) {
+        //Log.d("ESPINELA", "PageVwr: fetch (reset: $reset)")
 
         // first read from cache if available
         val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.user!!.id!!)
         val cache = if (c.vm.posts == null && !reset) pickle.restore<Page<Media>>() else null
+        //Log.d("ESPINELA", "PageVwr: fetch: is cache available?: ${cache != null}")
         if (cache != null) {
+            //Log.d("ESPINELA", "PageVwr: fetch: ${cache.edges.size} cached edges")
             c.vm.posts = cache
             withContext(Dispatchers.Main) { onLazilyLoaded(0, cache.edges.size) }
             return; }
 
         // fetch online posts
+        //Log.d("ESPINELA", "PageVwr: fetch: ${c.vm.posts?.edges?.size ?: 0} edges exist in the VM")
         val cursor = if (!reset) c.vm.posts?.edges?.lastOrNull()?.node?.id().toString() else null
+        //Log.d("ESPINELA", "PageVwr: fetch: is cursor available?: ${cursor != null}")
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
@@ -167,15 +172,24 @@ class PageVwr : BasePageViewer(), PostSelector {
                 } else
                     onLazilyLoaded(0, page.edges.size)
             }
-        } else c.vm.posts?.apply {
-            val lastBefore = edges.size
-            edges.addAll(page.edges)
-            page_info.has_next_page = page.page_info.has_next_page
+        } else {
+            val lastBefore = c.vm.posts!!.edges.size
+            //Log.d("ESPINELA", "PageVwr: fetch: pre-addAll: ${c.vm.posts!!.edges.size} edges")
+            c.vm.posts!!.edges.addAll(page.edges)
+            //Log.d("ESPINELA", "PageVwr: fetch: post-addAll: ${c.vm.posts!!.edges.size} edges")
+            c.vm.posts!!.page_info.has_next_page = page.page_info.has_next_page
             withContext(Dispatchers.Main) { onLazilyLoaded(lastBefore, page.edges.size) }
         }
 
         // cache the data model
-        c.vm.posts?.also { pickle.save(it) }
+        pickle.save(c.vm.posts!!)
+    }
+
+    override fun onLoaded() {
+        super<PostSelector>.onLoaded()
+        b.refresher.isRefreshing = false
+        // do not inherit OnlineLister; because it calls load() which is conditional in
+        // showProfile().
     }
 
     override fun onLazilyLoaded(start: Int, size: Int) {
