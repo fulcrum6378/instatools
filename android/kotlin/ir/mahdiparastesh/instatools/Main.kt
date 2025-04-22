@@ -224,7 +224,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
         // miscellaneous
         c.downloadHistory.load(c)
-        if (c.gsp.contains("used_version")) c.gsp.edit { remove("used_version") }
     }
 
     override fun setContentView(view: View?) {
@@ -420,7 +419,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
             exiting = true
             Delay(4000L) { exiting = false }
             Toast.makeText(c, R.string.toExit, Toast.LENGTH_SHORT).show()
-            CoroutineScope(Dispatchers.IO).launch { c.clearCacheIfNecessary() }
             return; }
 
         @Suppress("DEPRECATION")

@@ -27,16 +27,10 @@ import java.io.FileOutputStream
  * @param id [User.id] of the third-person user whose content is being viewed and saved (pickled)
  */
 class Pickle(root: File, acc: Long, val type: Type, id: String?) {
-    val branch: File
-    val leaf: File
-    val jsonEngine: Json
 
-    init {
-        val tree = File(root, DIR_PREFIX + acc)
-        branch = if (type.isSingleFile) tree else File(tree, type.name.lowercase())
-        leaf = File(branch, "${if (type.isSingleFile) type.name.lowercase() else id}.json")
-        jsonEngine = if (type.isApiCache) Api.json else Json
-    }
+    val branch: File = branch(root, type, acc)
+    val leaf: File = File(branch, "${if (type.isSingleFile) type.name.lowercase() else id}.json")
+    val jsonEngine: Json = if (type.isApiCache) Api.json else Json
 
     inline fun <reified DATA> save(data: DATA) {
         if (!branch.exists()) branch.mkdirs()
@@ -53,11 +47,8 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         // return null if the Pickle doesn't exist
         if (!leaf.exists()) return null
 
-        // avoid using the Pickle if it is expired
-        if (type.lifespanInDays >= 0f) {
-            val lifespan = type.calculateLifespanInMillis()
-            if ((Utils.now() - leaf.lastModified()) >= lifespan) return null
-        }
+        // avoid using the pickle if it is expired
+        if (type.lifespan >= 0f && (Utils.now() - leaf.lastModified()) >= type.lifespan) return null
 
         // load the Pickle
         return try {
@@ -71,36 +62,42 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
     }
 
     /**
-     * @param lifespanInDays set it to a negative number to make it never expire.
-     *                       remember that IG Media URLs get expired eventually.
+     * @param lifespan after N milliseconds the pickle is considered as expired.
+     *                 set it to a negative number to make it never expire.
+     *                 remember that IG Media URLs get expired eventually.
+     *                 all API cache files MUST have an expiration time.
      * @param isSingleFile is the data related to the user?
      *                     or is it related to multiple third-party profiles on the internet?
      * @param isApiCache is the data created by the Instagram API?
      */
     enum class Type(
-        val lifespanInDays: Float,
+        val lifespan: Float,
         val isSingleFile: Boolean = true,
         val isApiCache: Boolean = false,
     ) {
 
         // user data
-        FAVOURITES(-1f),
-        DOWNLOAD_LIST(-1f),
-        COMMAND_LIST(7f),
+        FAVOURITES(-1f * DAY),
+        DOWNLOAD_LIST(-1f * DAY),
+        COMMAND_LIST(7f * DAY),
 
-        // caches
-        SAVED(1f, isApiCache = true),
-        PROFILE(5f, false, true),
-        POSTS(2f, false, true),
-        STORY(0.5f, false, true),
-        HIGHLIGHTS(7f, false, true),
-        REELS(2f, false, true),
-        TAGGED(5f, false, true);
-
-        fun calculateLifespanInMillis(): Long = (lifespanInDays * 86400000f).toLong()
+        // API cache
+        SAVED(1f * DAY, isApiCache = true),
+        PROFILE(5f * DAY, false, true),
+        POSTS(2f * DAY, false, true),
+        STORY(0.5f * DAY, false, true),
+        HIGHLIGHTS(7f * DAY, false, true),
+        REELS(2f * DAY, false, true),
+        TAGGED(5f * DAY, false, true)
     }
 
     companion object {
         const val DIR_PREFIX = "pickle_"
+        const val DAY = 86400000f
+
+        fun branch(root: File, type: Type, acc: Long): File {
+            val tree = File(root, DIR_PREFIX + acc)
+            return if (type.isSingleFile) tree else File(tree, type.name.lowercase())
+        }
     }
 }

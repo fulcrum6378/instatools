@@ -116,7 +116,7 @@ class Expandable(
         }
     }
 
-    fun expand(media: Media, thumb: ImageView) {
+    fun expand(media: Media, thumb: ImageView, carouselItem: Int = 0) {
         if (zoomed) return
         zoomed = true
 
@@ -132,6 +132,7 @@ class Expandable(
 
         // main layouts
         b.slider.adapter = ListCar(this)
+        b.slider.currentItem = carouselItem
         b.indicator.attachTo(b.slider)
         b.panel.vis()
 

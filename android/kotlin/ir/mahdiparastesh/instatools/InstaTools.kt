@@ -17,6 +17,7 @@ import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Queue
+import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -123,11 +124,10 @@ class InstaTools : Application() {
         }
     }
 
-    fun clearCacheIfNecessary(subdir: String? = null): Boolean {
+    fun clearCacheIfNecessary(subdir: String): Boolean {
         if (cacheSize() <= gsp.getLong(Settings.spCacheLimit, defaultCacheLimit()))
             return false
-        (if (subdir != null) File(cacheDir, subdir) else cacheDir)
-            .deleteRecursively()
+        File(cacheDir, subdir).deleteRecursively()
         return true
     }
 
@@ -142,6 +142,19 @@ class InstaTools : Application() {
         if (ret > maxie.toBytes()) ret = maxie.toBytes()
         return ret
     } ?: Settings.defSpCacheLimit
+
+    fun deleteExpiredCachePickles(acc: Long) {
+        val now = Utils.now()
+        for (pickleType in Pickle.Type.entries) {
+            if (!pickleType.isApiCache) continue
+            val branch = Pickle.branch(cacheDir, pickleType, acc)
+            if (!branch.exists()) continue
+
+            for (leaf in branch.listFiles()!!)
+                if ((now - leaf.lastModified()) >= pickleType.lifespan)
+                    leaf.delete()
+        }
+    }
 
     /**
      * If Instagram detects the app as a robot, this method must be invoked for the proper actions
@@ -177,7 +190,6 @@ class InstaTools : Application() {
   * Switches' background colors are white
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
-  * Delete long-forgotten cached Pickles
   * -
   * Extension:
   * A button for indexing a folder

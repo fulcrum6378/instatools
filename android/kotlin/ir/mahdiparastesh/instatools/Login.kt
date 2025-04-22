@@ -271,9 +271,13 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
 
             goTo(Main::class, true)
-            c.clearCacheIfNecessary("WebView")
             improperLoading = 0
             browsePurpose = null
+
+            CoroutineScope(Dispatchers.IO).launch {
+                c.clearCacheIfNecessary("WebView")
+                c.deleteExpiredCachePickles(id)
+            }
         }
 
         private fun failed(e: Exception, reload: Boolean = true) {

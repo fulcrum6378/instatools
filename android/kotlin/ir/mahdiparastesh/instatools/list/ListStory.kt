@@ -48,7 +48,11 @@ class ListStory(private val c: Viewer, var story: Story) :
 
         // clicks
         h.b.click.setOnClickListener {
-            c.expandable.expand(story.carousel() ?: return@setOnClickListener, h.b.thumb)
+            c.expandable.expand(
+                story.carousel() ?: return@setOnClickListener,
+                h.b.thumb,
+                h.layoutPosition
+            )
         }
     }
 
