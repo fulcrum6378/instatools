@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.view
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -11,28 +10,16 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
-import android.view.InflateException
 import android.view.View
-import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
-import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.core.net.toUri
-import androidx.core.view.forEach
-import androidx.core.view.get
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.internal.BaselineLayout
-import com.google.android.material.snackbar.Snackbar
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.util.Utils
+import java.text.DecimalFormat
 
 object UiTools {
     const val IG_OPENABLE = "https://www.instagram.com/"
@@ -51,20 +38,6 @@ object UiTools {
             if (url.startsWith(host))
                 return url.substringAfter(host).substringBefore("/").substringBefore("?")
         return null
-    }
-
-    /** @return [TextView] instances of a [BottomNavigationView] for applying custom styles on them */
-    @SuppressLint("RestrictedApi")
-    fun bnvTitles(bnv: BottomNavigationView): List<TextView> {
-        val list = ArrayList<TextView>()
-        (bnv[0] as BottomNavigationMenuView).forEach {
-            val item = it as BottomNavigationItemView
-            // 0 => FrameLayout (icon) and 1 => BaselineLayout (title)
-            val title = item[1] as BaselineLayout // has 2 AppCompatTextView
-            list.add(title[0] as TextView) // normal state
-            list.add(title[1] as TextView) // selected state
-        }
-        return list.toList()
     }
 
     fun View.vis(bb: Boolean = true) {
@@ -201,12 +174,10 @@ object UiTools {
         }, code
     )
 
-
-    /** Data model for a navigation button used in simple menus. */
-    data class NavItem(
-        @IdRes val id: Int,
-        @DrawableRes val icon: Int,
-        @StringRes val text: Int,
-        val listener: View.OnClickListener
-    )
+    /** Converts large numbers into IG-style kilo, giga units. */
+    fun displayLargeNumber(n: Long, c: Context) = when {
+        n > 1000000 -> DecimalFormat("#.##").format(n / 1000000) + "M"
+        n > 1000 -> DecimalFormat("#.##").format(n / 1000) + "K"
+        else -> n.toInt().toString()
+    }  // TODO localise in string resources
 }

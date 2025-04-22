@@ -27,6 +27,7 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.User
 import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
@@ -40,6 +41,7 @@ import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.GlideShimmer
 import ir.mahdiparastesh.instatools.view.PostSelector
 import ir.mahdiparastesh.instatools.view.SafeGridManager
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -289,12 +291,9 @@ class PageVwr : BasePageViewer(), PostSelector {
                 h.b.proPicIv.setImageDrawable(null)
 
             // followers & following
-            h.b.postsNum.text = c.vm.profile?.edge_owner_to_timeline_media?.toString()
-                ?: getString(R.string.vwFlwZero)
-            h.b.followersNum.text = c.vm.profile?.edge_followed_by?.toString()
-                ?: getString(R.string.vwFlwZero)
-            h.b.followingNum.text = c.vm.profile?.edge_follow?.toString()
-                ?: getString(R.string.vwFlwZero)
+            h.b.postsNum.text = c.vm.profile?.edge_owner_to_timeline_media.print()
+            h.b.followersNum.text = c.vm.profile?.edge_followed_by.print()
+            h.b.followingNum.text = c.vm.profile?.edge_follow.print()
 
             val showPv_ = showPv && c.vm.profile != null
             h.b.privateAcc.vis(showPv_)
@@ -315,5 +314,9 @@ class PageVwr : BasePageViewer(), PostSelector {
         }
 
         override fun getItemCount(): Int = 1
+
+        fun User.ProfileEdge?.print() =
+            this?.count?.let { UiTools.displayLargeNumber(it, c) }
+                ?: c.getString(R.string.vwFlwZero)
     }
 }

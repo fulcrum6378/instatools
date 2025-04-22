@@ -47,8 +47,8 @@ import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.ActionBarDrawerToggle
 import ir.mahdiparastesh.instatools.view.GravityCompat
 import ir.mahdiparastesh.instatools.view.MultiPagedActivity
+import ir.mahdiparastesh.instatools.view.NavItem
 import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.NavItem
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,8 +87,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
     class MyModel : ViewModel() {
         var currentPage = Settings.defSpMainPage
         var favourites: List<Favourite> = listOf()
+        val favCount = MutableLiveData<Int>(0)
         var saved: Rest.LazyList<Media.Wrapper>? = null
-        //val savedCount = MutableLiveData<Int?>(null)
+        val savedCount = MutableLiveData<Int?>(null)
 
         // search
         var schQuery: CharSequence? = null
@@ -107,7 +108,14 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         // bottom navigation bar
         b.toFavourites.setOnClickListener { turnToPage(0) }
         b.toSaved.setOnClickListener { turnToPage(1) }
-        //vm.savedCount.observe(this) { bnvBadge(1, it) }
+        vm.savedCount.observe(this) {
+            b.toSaved.text = getString(R.string.saved) + (if (it != null && it > 0) " {${
+                UiTools.displayLargeNumber(it.toLong(), c)
+            }}" else "")
+        }
+        vm.favCount.observe(this) {
+            b.toFavourites.text = getString(R.string.favourites) + (if (it > 0) " {$it}" else "")
+        }
 
         // theming
         applyPageStyles(vm.currentPage)

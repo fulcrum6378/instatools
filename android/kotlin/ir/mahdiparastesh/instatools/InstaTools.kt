@@ -193,8 +193,7 @@ class InstaTools : Application() {
   * -
   * Extension:
   * A button for indexing a folder
-  * Non-badge count numbers for saved and favourites
-  * Get rid of the Material stuff: BadgeDrawable
+  * Get rid of BadgeDrawable in selections and Downloads; then remove the material library
   * PageTry
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services

@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.instatools.util
 
-import java.util.*
+import java.util.Calendar
 
 object Utils {
     const val PROFILE = "https://www.instagram.com/%s/"
@@ -43,7 +43,8 @@ object Utils {
     /** Converts a timestamp of seconds to a timestamp of millisecond. */
     fun compileSecondsTS(seconds: Long) = seconds * 1000L
 
-    fun <T> Map<String, T>.getOrNull(key: String): T? = if (containsKey(key)) this[key] else null
+    fun <T> Map<String, T>.getOrNull(key: String): T? =
+        if (containsKey(key)) this[key] else null
 
     interface InstaToolsException
 }

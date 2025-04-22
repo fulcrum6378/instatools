@@ -39,8 +39,13 @@ class ListFav(val c: Main, private val f: PageFav) :
         }
         h.b.unFav.setOnClickListener {
             fav.tempDeleted = !fav.tempDeleted
-            if (fav.tempDeleted) c.c.removeFavourite(fav)
-            else c.c.addFavourite(fav)
+            if (fav.tempDeleted) {
+                c.c.removeFavourite(fav)
+                c.vm.favCount.value = c.vm.favCount.value!! - 1
+            } else {
+                c.c.addFavourite(fav)
+                c.vm.favCount.value = c.vm.favCount.value!! + 1
+            }
             h.b.updateIcon(fav.tempDeleted)
         }
         h.b.updateIcon(fav.tempDeleted)

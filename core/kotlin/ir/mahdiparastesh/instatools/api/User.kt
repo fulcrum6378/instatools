@@ -3,7 +3,6 @@ package ir.mahdiparastesh.instatools.api
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
-import java.text.DecimalFormat
 
 @Serializable
 class User(
@@ -73,13 +72,7 @@ class User(
     )*/
 
     @Serializable
-    class ProfileEdge(val count: Long) {
-        override fun toString(): String = when {
-            count > 1000000 -> DecimalFormat("#.##").format(count / 1000000) + "M"
-            count > 1000 -> DecimalFormat("#.##").format(count / 1000) + "K"
-            else -> count.toInt().toString()
-        }  // cannot move it to strings.xml without Context
-    }
+    class ProfileEdge(val count: Long)
 
     //class EdgeFollowMutual(count: Long, val edges: Array<Any>) : EdgeFollow(count)
 }
