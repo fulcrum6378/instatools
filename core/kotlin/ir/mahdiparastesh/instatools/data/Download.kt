@@ -38,9 +38,12 @@ class Download(
 
     val fileName: String by lazy { "${owner}_${Utils.fileDateTime(date)}_$id.$ext" }
     val ext: String by lazy {
-        var ext = URI(url).path.split(".").last()
-        if (ext == "webp" && url.contains("stp=dst-jpg")) ext = "jpg"
-        ext
+        if (type != 3.toByte()) {
+            var ext = URI(url).path.split(".").last()
+            if (ext == "webp" && url.contains("stp=dst-jpg")) ext = "jpg"
+            ext
+        } else
+            "m4a"
     }
 
     fun isFailed() = status == 1.toByte()

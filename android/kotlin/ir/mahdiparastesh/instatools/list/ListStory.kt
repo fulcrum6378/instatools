@@ -48,12 +48,7 @@ class ListStory(private val c: Viewer, var story: Story) :
 
         // clicks
         h.b.click.setOnClickListener {
-            c.expandable.expand(
-                story.items?.getOrNull(h.layoutPosition) ?: return@setOnClickListener,
-                h.b.thumb,
-                c.vm.user?.username, // these Media instances do not contains User information!
-                c.vm.user?.id()
-            )
+            c.expandable.expand(story.carousel() ?: return@setOnClickListener, h.b.thumb)
         }
     }
 

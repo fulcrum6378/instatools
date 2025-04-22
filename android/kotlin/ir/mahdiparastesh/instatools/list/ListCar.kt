@@ -24,9 +24,8 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 
-class ListCar(
-    private val x: Expandable,
-) : RecyclerView.Adapter<AnyViewHolder<ListCarBinding>>() {
+class ListCar(private val x: Expandable) : RecyclerView.Adapter<AnyViewHolder<ListCarBinding>>() {
+
     private val slides = arrayListOf<Slide>()
     val sessions: ArrayList<MediaSession?>
     var loading = true
@@ -35,12 +34,14 @@ class ListCar(
         if (x.media!!.carousel_media != null)
             for (slide in x.media!!.carousel_media) slides.add(
                 Slide(
+                    slide.id(),
                     slide.nearest(),
                     Media.Type.entries.find { it.num == (slide.media_type).toInt().toByte() }!!
                 )
             )
         else slides.add(
             Slide(
+                x.media!!.id(),
                 x.media!!.nearest(),
                 Media.Type.entries
                     .find { it.num == (x.media!!.media_type).toInt().toByte() }!!
@@ -79,7 +80,7 @@ class ListCar(
                     x.c, ExoPlayer.Builder(x.c).setAudioAttributes(
                         AudioAttributes.Builder().setUsage(USAGE_MEDIA).build(), false
                     ).build()
-                ).setId(x.media!!.id()).build().apply {
+                ).setId(slides[i].id).build().apply {
                     player.setMediaItem(MediaItem.fromUri(it.toUri()))
                     player.volume = if (x.muteSound.value == true) 0f else 1f
                     h.b.video.setPlayer(player)
@@ -101,9 +102,14 @@ class ListCar(
         }
     }
 
-    data class Slide(val url: String?, val type: Media.Type)
+    private data class Slide(
+        val id: String,
+        val url: String?,
+        val type: Media.Type
+    )
 
-    inner class OnImageLoadedListener/*(private val root: ViewGroup)*/ : RequestListener<Drawable> {
+    private inner class OnImageLoadedListener/*(private val root: ViewGroup)*/ :
+        RequestListener<Drawable> {
 
         override fun onLoadFailed(
             e: GlideException?,

@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 
-/** A ViewGroup that pops up and shows an IG post or story */
+/** Controls a ViewGroup that pops up and displays an IG [Media]. */
 class Expandable(
     val c: BaseActivity,
     val b: ExpandableBinding,
@@ -40,7 +40,6 @@ class Expandable(
 ) {
     var zoomed = false
     var media: Media? = null
-    private var mediaOwner: String? = null
     var currentAnimator: Animator? = null
     private var startScale: Float? = null
     private var startBounds: RectF? = null
@@ -57,7 +56,7 @@ class Expandable(
         b.download.setOnClickListener {
             val med = media ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
-                c.c.downloads.addAll<Download>(med.queue(owner = mediaOwner), true)
+                c.c.downloads.addAll<Download>(med.queue(), true)
                 Downloads.initService(c)
             }
         }
@@ -76,25 +75,26 @@ class Expandable(
             }
         }
         b.downloadAudio.setOnClickListener {
-            val med = media ?: return@setOnClickListener
-            val car = med.carousel_media?.getOrNull(b.slider.currentItem)
-            val audioUrl = (car ?: media)?.audioUrl()?.let { StringEscapeUtils.unescapeXml(it) }
+            val mainMed = media ?: return@setOnClickListener
+            val car = mainMed.carousel_media?.getOrNull(b.slider.currentItem)
+            val med = car ?: media
+            val audioUrl = med?.audioUrl()?.let { StringEscapeUtils.unescapeXml(it) }
                 ?: return@setOnClickListener
 
             CoroutineScope(Dispatchers.IO).launch {
                 c.c.downloads.add<Download>(
                     Download(
                         med.id(),
-                        Utils.compileSecondsTS(med.taken_at!!),
+                        Utils.compileSecondsTS(med.taken_at ?: mainMed.taken_at!!),
                         audioUrl,
                         0x3,
-                        mediaOwner ?: med.owner().username!!,
-                        med.caption?.text,
-                        med.link() ?: audioUrl,
+                        mainMed.owner().username!!,
+                        mainMed.caption?.text,
+                        mainMed.link(slide = b.slider.currentItem) ?: audioUrl,
                         med.thumb(),
                         med.video_duration,
-                        med.latitude(),
-                        med.longitude(),
+                        mainMed.latitude(),
+                        mainMed.longitude(),
                     ), true
                 )
                 Downloads.initService(c)
@@ -106,7 +106,7 @@ class Expandable(
                 c.startActivity(
                     Intent(Intent.ACTION_VIEW, link.toUri()).apply {
                         if (link.startsWith(UiTools.IG_OPENABLE) &&
-                            !link.startsWith("https://www.instagram.com/stories/highlights/")
+                            !link.startsWith(Utils.STORY_HL_STARTER)
                         ) setPackage(UiTools.INSTA_PACKAGE)
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
@@ -116,20 +116,12 @@ class Expandable(
         }
     }
 
-    fun expand(
-        media: Media,
-        thumb: ImageView,
-        /** used only for stories and highlights */
-        mediaOwner: String? = null,
-        /** used only for stories and highlights */
-        mediaOwnerId: String? = null
-    ) {
+    fun expand(media: Media, thumb: ImageView) {
         if (zoomed) return
         zoomed = true
 
         // initial configurations
         this.media = media
-        this.mediaOwner = mediaOwner
         onZoomChanged(true)
         currentAnimator?.cancel()
 
@@ -145,12 +137,10 @@ class Expandable(
 
         // media details
         val u = media.owner()
-        b.username.text = "@${u.username ?: mediaOwner}"
+        b.username.text = "@${u.username}"
         b.username.setOnClickListener {
-            if (c !is Viewer)
-                Viewer.comeHere(c, mediaOwnerId ?: u.id())
-            else
-                UiTools.openProfile(c, u.username ?: mediaOwner!!)
+            if (c !is Viewer) Viewer.comeHere(c, u.id())
+            else UiTools.openProfile(c, u.username!!)
         }
 
         // buttons
@@ -238,7 +228,6 @@ class Expandable(
         if (startBounds == null || startScale == null || !zoomed) return
         currentAnimator?.cancel()
         media = null
-        mediaOwner = null
         b.slider.adapter = null
         b.thumb.vish()
 

@@ -5,8 +5,11 @@ import java.util.*
 object Utils {
     const val PROFILE = "https://www.instagram.com/%s/"
     const val POST_LINK = "https://www.instagram.com/p/%s/"
+    const val POST_STARTER = "https://www.instagram.com/p/"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
+    const val REEL_STARTER = "https://www.instagram.com/reel/"
     const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s/"
+    const val STORY_HL_STARTER = "https://www.instagram.com/stories/highlights/"
     const val PROFILE_PHOTO = "profile_photo"
 
     /** Helper class for turning 1 to "01" */

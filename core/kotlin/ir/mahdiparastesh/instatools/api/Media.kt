@@ -50,12 +50,17 @@ class Media(
 
     fun isPostOrReel() = product_type in arrayOf("feed", "carousel_container", "clips")
 
-    fun link(userName: String? = null) = when (product_type) {
+    fun link(
+        userName: String? = null,
+        slide: Int? = null,
+    ) = when (product_type) {
         "feed", "carousel_container" -> Utils.POST_LINK.format(code)
         "clips" -> Utils.REEL_LINK.format(code)
         "story" -> Utils.STORY_LINK.format(userName ?: owner().username, pk)
         // highlights are considered "story" but they don't have unique links of their own,
         // also their Media cannot be distinguished from daily stories!
+        "instatools_story_carousel" ->
+            Utils.STORY_LINK.format(userName ?: owner().username, carousel_media!![slide!!].pk)
         null -> nearest(Version.BEST)
         else -> throw IllegalStateException("New product type: $product_type ?!?")
     }
@@ -102,6 +107,7 @@ class Media(
     ): ArrayList<Download> {
         val list = arrayListOf<Download>()
         val u = owner ?: owner().username!!
+
         if (carousel_media != null) for (slide in carousel_media.indices) {
             if (onlyOneSlide != null && onlyOneSlide != slide) continue
             val car = carousel_media[slide]
@@ -113,7 +119,7 @@ class Media(
                     car.media_type.toInt().toByte(),
                     u,
                     caption?.text,
-                    link ?: link()!!,
+                    link ?: link(slide = slide)!!,
                     car.thumb(),
                     car.video_duration,
                     latitude(),

@@ -148,10 +148,12 @@ interface Downloader : Queuer<Download> {
             add(ExifTag.EXIF_TAG_SOFTWARE, "InstaTools")
         }
         outputSet.getOrCreateExifDirectory().apply { // directory ExifIFD
-            removeField(ExifTag.EXIF_TAG_SITE)
-            add(ExifTag.EXIF_TAG_SITE, q.link)
-            removeField(ExifTag.EXIF_TAG_USER_COMMENT)
-            add(ExifTag.EXIF_TAG_USER_COMMENT, q.link)
+            if (q.link.startsWith(Utils.POST_STARTER) || q.link.startsWith(Utils.REEL_STARTER)) {
+                removeField(ExifTag.EXIF_TAG_SITE)
+                add(ExifTag.EXIF_TAG_SITE, q.link)
+                removeField(ExifTag.EXIF_TAG_USER_COMMENT)
+                add(ExifTag.EXIF_TAG_USER_COMMENT, q.link)
+            }
             removeField(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED)
             add(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED, exifDateFormat.format(q.date))
         }
