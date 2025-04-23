@@ -212,9 +212,15 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
                 vm.reels = null
                 vm.tagged = null
             }
-            if (!userReplaced)
-                vm.fav = c.fav.value?.find { it.id == vm.user!!.id!! }
-            else
+            if (!userReplaced) {
+                // find out if this user is in the favourites list
+                // and update its details if it is in the list
+                vm.fav = c.fav.value?.find { it.id == vm.user!!.id!! }?.also {
+                    it.user = vm.user!!.username!!
+                    it.name = vm.user!!.full_name!!
+                    it.photo = vm.user!!.profile_pic_url!!
+                }
+            } else
                 vm.reloadUser = false
 
             withContext(Dispatchers.Main) {

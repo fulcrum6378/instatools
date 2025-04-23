@@ -190,10 +190,11 @@ class InstaTools : Application() {
   * Switches' background colours are white
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
+  * Tagged(/reel?) videos cannot be watched
   * -
   * Extension:
-  * A button for indexing a folder
   * Get rid of BadgeDrawable in selections; then remove the material library
+  * A button for indexing a folder
   * PageTry
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services

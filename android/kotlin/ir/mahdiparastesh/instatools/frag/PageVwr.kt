@@ -131,9 +131,6 @@ class PageVwr : BasePageViewer(), PostSelector {
             if (reset) gridAdapter()?.notifyDataSetChanged()
             if (!isModelLoaded()) load(reset)
         }
-
-        // update Favourite
-        c.vm.fav?.also { c.c.addFavourite(it) }
     }
 
     override fun createAdapter(): RecyclerView.Adapter<*> =
