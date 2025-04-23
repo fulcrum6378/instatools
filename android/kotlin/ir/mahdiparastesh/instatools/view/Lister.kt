@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
@@ -22,8 +21,6 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.R
@@ -38,7 +35,6 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -405,22 +401,9 @@ interface PostSelector : Lister {
     }
 }
 
-interface Counter {
-    var countBadge: BadgeDrawable?
+interface CounterActivity {
 
-    @SuppressLint("UnsafeOptInUsageError")
     fun updateCount(c: BaseActivity, n: Int) {
-        BadgeUtils.detachBadgeDrawable(countBadge, c.tbTitle!!)
-        BadgeUtils.attachBadgeDrawable(
-            BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
-                number = n
-                backgroundColor = c.themeColor(android.R.attr.colorAccent)
-                badgeTextColor =
-                    if (c.night) c.themeColor(android.R.attr.colorPrimary)
-                    else c.color(R.color.defBG)
-                countBadge = this
-                maxCharacterCount = UiTools.MAX_BADGE_CHAR
-            }, c.tbTitle!!
-        )
+        c.tbTitle!!.text = c.getString(R.string.downloads) + (if (n > 0) " {$n}" else "")
     }
 }

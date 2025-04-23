@@ -187,18 +187,18 @@ class InstaTools : Application() {
   * Problems:
   * Font for PopupMenus
   * AlertDialogs are not themes properly
-  * Switches' background colors are white
+  * Switches' background colours are white
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * -
   * Extension:
   * A button for indexing a folder
-  * Get rid of BadgeDrawable in selections and Downloads; then remove the material library
+  * Get rid of BadgeDrawable in selections; then remove the material library
   * PageTry
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
-  * Test on a wide tablet
+  * Test on a tablet
   * -
   * Too Complicated:
   * Toolbar's back icon cannot be themed when the action view is expanded (unrelated to SearchView)

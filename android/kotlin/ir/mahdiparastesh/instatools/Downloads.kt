@@ -21,7 +21,6 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.badge.BadgeDrawable
 import ir.mahdiparastesh.instatools.Settings.Companion.isPathAccessible
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.data.Download
@@ -34,7 +33,7 @@ import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Utils
-import ir.mahdiparastesh.instatools.view.Counter
+import ir.mahdiparastesh.instatools.view.CounterActivity
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.ServiceOwner
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -46,7 +45,7 @@ import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class Downloads : BaseActivity(), ServiceOwner, Counter {
+class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
     private lateinit var b: DownloadsBinding
     private val statusPlan =
         mapOf<Int, Byte>(R.id.dtRetryAll to 0, R.id.dtPauseAll to 2, R.id.dtResumeAll to 0)
@@ -65,7 +64,6 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
     override val expandable = null
     override val serviceActive = DownloadService.active
     override val controller: MenuItem? get() = b.toolbar.menu.findItem(R.id.dtControl)
-    override var countBadge: BadgeDrawable? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = false
@@ -317,7 +315,10 @@ class Downloads : BaseActivity(), ServiceOwner, Counter {
             }.onFailure {
                 withContext(Dispatchers.Main) {
                     //UiTools.snackbar(b.root, R.string.importReadError)
-                    Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, R.string.importReadError,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }

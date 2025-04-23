@@ -33,6 +33,13 @@
         <!-- Theme.DeviceDefault has nothing for SearchViews -->
         <item name="android:switchTextAppearance">@style/TextAppearance.InstaTools.Switch</item>
         <item name="drawerArrowStyle">@style/Widget.InstaTools.DrawerArrowToggle</item>
+
+        <!--<item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.InstaTools.Medium
+        </item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.InstaTools.Medium
+        </item>
+        <item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup</item>
+        <item name="android:contextPopupMenuStyle">@style/Widget.InstaTools.Popup</item>-->
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
@@ -47,12 +54,14 @@
         <item name="android:colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
         <item name="colorPrimaryHigh">@color/CPH</item>
+        <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Primary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="android:colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="colorPrimaryHigh">@color/CSH</item>
+        <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Secondary</item>-->
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
@@ -60,6 +69,7 @@
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="colorPrimaryHigh">@color/CTH</item>
         <item name="defCA">@color/defCA</item>
+        <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Tertiary</item>-->
     </style>
 
     <attr name="colorPrimaryWeak" format="reference|color" />
@@ -68,9 +78,10 @@
 
 
     <!-- PopupMenu -->
-    <style name="Widget.InstaTools.Popup" parent="Widget.MaterialComponents.PopupMenu"><!--FIXME-->
+    <style name="Widget.InstaTools.Popup" parent="android:Widget.DeviceDefault.PopupMenu">
         <item name="android:fontFamily">@font/medium</item>
         <item name="android:textColor">?android:colorPrimary</item>
+        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Medium</item>
     </style>
 
     <style name="Widget.InstaTools.Popup.Primary" parent="Widget.InstaTools.Popup">
