@@ -185,6 +185,7 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Cannot like IGTVs
   * Font for PopupMenus
   * AlertDialogs are not themes properly
   * Switches' background colours are white

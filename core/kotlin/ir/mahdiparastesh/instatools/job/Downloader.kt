@@ -148,7 +148,7 @@ interface Downloader : Queuer<Download> {
             add(ExifTag.EXIF_TAG_SOFTWARE, "InstaTools")
         }
         outputSet.getOrCreateExifDirectory().apply { // directory ExifIFD
-            if (q.link.startsWith(Utils.POST_STARTER) || q.link.startsWith(Utils.REEL_STARTER)) {
+            if (q.link.startsWith(Utils.POST_STARTER)) {
                 removeField(ExifTag.EXIF_TAG_SITE)
                 add(ExifTag.EXIF_TAG_SITE, q.link)
                 removeField(ExifTag.EXIF_TAG_USER_COMMENT)

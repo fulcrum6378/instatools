@@ -56,6 +56,7 @@ class Media(
     ) = when (product_type) {
         "feed", "carousel_container" -> Utils.POST_LINK.format(code)
         "clips" -> Utils.REEL_LINK.format(code)
+        "igtv" -> Utils.IGTV_LINK.format(code)  // there are still rare IGTVs out there!
         "story" -> Utils.STORY_LINK.format(userName ?: owner().username, pk)
         // highlights are considered "story" but they don't have unique links of their own,
         // also their Media cannot be distinguished from daily stories!

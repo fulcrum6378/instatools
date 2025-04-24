@@ -7,7 +7,7 @@ object Utils {
     const val POST_LINK = "https://www.instagram.com/p/%s/"
     const val POST_STARTER = "https://www.instagram.com/p/"
     const val REEL_LINK = "https://www.instagram.com/reel/%s/"
-    const val REEL_STARTER = "https://www.instagram.com/reel/"
+    const val IGTV_LINK = "https://www.instagram.com/tv/%s/"
     const val STORY_LINK = "https://www.instagram.com/stories/%1\$s/%2\$s/"
     const val STORY_HL_STARTER = "https://www.instagram.com/stories/highlights/"
     const val PROFILE_PHOTO = "profile_photo"
