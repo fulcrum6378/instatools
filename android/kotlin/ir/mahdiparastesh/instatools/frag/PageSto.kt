@@ -28,7 +28,9 @@ class PageSto : BasePageViewer() {
     override val jumper: ImageView? get() = b.jumper
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun isModelLoaded(): Boolean = c.vm.story != null && c.vm.highlights != null
+
+    /** Remember that c.vm.story can be queried and yet be null. */
+    override fun isModelLoaded(): Boolean = c.vm.highlights != null
     override fun isModelEmpty(): Boolean = c.vm.story == null && c.vm.highlights?.isEmpty() == true
     override fun createAdapter(): RecyclerView.Adapter<*> = ListSto(c)
     override fun canLoadMore(): Boolean = !isModelLoaded()

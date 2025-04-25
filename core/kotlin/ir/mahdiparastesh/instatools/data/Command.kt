@@ -28,6 +28,7 @@ data class Command(
 
     /** Check if this [Command] is even valid. */
     fun needsHandling(): Boolean {
+        if ((like || unlike) && media.product_type == "igtv") return false
         if (save && media.has_viewer_saved == true) save = false
         if (unsave && media.has_viewer_saved == false) unsave = false
         if (like && media.has_liked == true) like = false

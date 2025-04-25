@@ -185,7 +185,6 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Cannot like IGTVs
   * Font for PopupMenus
   * AlertDialogs are not themes properly
   * Switches' background colours are white
@@ -207,4 +206,7 @@ class InstaTools : Application() {
   * When clicked on error notifications, no activity is opened
   * Clicking on external links will bring a "cleartext not permitted" error
   * Metadata for HEIC and MP4?
+  * -
+  * Notes:
+  * The GraphQL queries cannot like or unlike old IGTVs.
 */
