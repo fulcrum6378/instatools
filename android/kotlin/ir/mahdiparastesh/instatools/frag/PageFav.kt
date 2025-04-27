@@ -41,7 +41,7 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
 
     override fun onLoaded() {
         c.vm.favourites = c.c.fav.value?.toList()?.sortedBy { it.user } ?: listOf()
-        c.vm.favCount.value = c.vm.favourites.size
+        //c.vm.favCount.value = c.vm.favourites.size
         super.onLoaded()
     }
 }

@@ -98,7 +98,7 @@ class GraphQl(
     class MediaInteraction(val __typename: String)*/ // always "XDTEmptyRecord"
 
     @Serializable
-    class FeedTray(/*val broadcasts: List<Any>,*/ val tray: List<Story>)
+    class FeedTray(/*val broadcasts: List<Any>,*/ val tray: /*Mutable*/List<Story>)
 
     @Serializable
     class SearchResults(

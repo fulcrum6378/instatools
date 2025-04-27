@@ -37,6 +37,7 @@
             android:id="@+id/bnv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bnv"
+            android:layout_marginHorizontal="@dimen/bnvPadH"
             android:orientation="horizontal"
             android:weightSum="3"
             app:layout_constraintBottom_toBottomOf="parent">

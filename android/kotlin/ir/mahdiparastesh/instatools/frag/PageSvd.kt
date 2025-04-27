@@ -268,7 +268,8 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
         (b.rv.adapter as? ListSvd)?.also {
             if (it.expandable.zoomed) {
                 b.jumper.vis(true)
-                it.expandable.collapse(); return@goBack true; }
+                it.expandable.collapse()
+                return@goBack true; }
         }
         return onGoBackWithSelection()
     }

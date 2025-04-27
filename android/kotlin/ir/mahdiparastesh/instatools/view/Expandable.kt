@@ -101,7 +101,7 @@ class Expandable(
             }
         }
         b.viewInInsta.setOnClickListener {
-            val link = media?.link() ?: return@setOnClickListener
+            val link = media?.link(slide = b.slider.currentItem) ?: return@setOnClickListener
             try {
                 c.startActivity(
                     Intent(Intent.ACTION_VIEW, link.toUri()).apply {

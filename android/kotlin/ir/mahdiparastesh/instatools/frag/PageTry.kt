@@ -19,6 +19,7 @@ import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePageMain
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
+import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
@@ -63,6 +64,7 @@ class PageTry : BasePageMain(BaseActivity.Theme.TERTIARY), OnlineLister {
         // fetch an online tray and update the data model
         c.vm.tray = Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, GraphQlQuery.FEED_TRAY.body())
             .data!!.xdt_api__v1__feed__reels_tray
+        //c.vm.tray?.tray?.sortBy { it.seen_ranked_position!! }
 
         // update the UI
         withContext(Dispatchers.Main) { onLoaded() }
@@ -71,8 +73,17 @@ class PageTry : BasePageMain(BaseActivity.Theme.TERTIARY), OnlineLister {
         c.vm.tray?.also { pickle.save(it) }
     }
 
-    override fun onLoaded() {
+    /*override fun onLoaded() {
         super<OnlineLister>.onLoaded()
         c.vm.trayCount.value = c.vm.tray?.tray?.size
+    }*/
+
+    override fun goBack(): Boolean {
+        if (expandable.zoomed) {
+            b.jumper.vis(true)
+            expandable.collapse()
+            return true
+        }
+        return super.goBack()
     }
 }

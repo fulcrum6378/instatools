@@ -45,7 +45,7 @@ class ListTry(private val c: Main, private val f: PageTry) :
             .load(user.profile_pic_url)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .into(h.b.icon)
-        h.b.title.text = user.username  // user.full_name is always null!
+        h.b.title.text = "${i + 1}. ${user.username}"  // user.full_name is always null!
         h.b.desc.text = if (!story.items.isNullOrEmpty()) c.resources.getQuantityString(
             R.plurals.vwReelDesc, story.items!!.size, story.items!!.size
         ) else ""

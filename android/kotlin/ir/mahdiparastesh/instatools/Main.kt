@@ -91,11 +91,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
 
         // pages
         var favourites: List<Favourite> = listOf()
-        val favCount = MutableLiveData<Int>(0)
         var saved: Rest.LazyList<Media.Wrapper>? = null
         val savedCount = MutableLiveData<Int?>(null)
         var tray: FeedTray? = null
-        val trayCount = MutableLiveData<Int?>(null)
+        //val favCount = MutableLiveData<Int>(0)
+        //val trayCount = MutableLiveData<Int?>(null)
 
         // search
         var schQuery: CharSequence? = null
@@ -115,17 +115,17 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         b.toFavourites.setOnClickListener { turnToPage(0) }
         b.toSaved.setOnClickListener { turnToPage(1) }
         b.toTray.setOnClickListener { turnToPage(2) }
-        vm.favCount.observe(this) {
+        /*vm.favCount.observe(this) {
             b.toFavourites.text = getString(R.string.favourites) + (if (it > 0) " {$it}" else "")
-        }
+        }*/
         vm.savedCount.observe(this) {
             b.toSaved.text = getString(R.string.saved) + (if (it != null && it > 0) " {${
                 UiTools.displayLargeNumber(it.toLong(), c)
             }}" else "")
         }
-        vm.trayCount.observe(this) {
+        /*vm.trayCount.observe(this) {
             b.toTray.text = getString(R.string.tray) + (if (it != null && it > 0) " {$it}" else "")
-        }
+        }*/
 
         // theming
         applyPageStyles(vm.currentPage)

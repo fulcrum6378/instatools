@@ -21,6 +21,8 @@
     <!-- Main -->
     <dimen name="navFont">15sp</dimen>
     <dimen name="bnv">66dp</dimen>
+    <dimen name="bnvPadH">20dp</dimen>
+    <dimen name="bnvIconSize">24dp</dimen>
     <dimen name="bnvTextInactive">15sp</dimen>
     <dimen name="bnvTextActive">16sp</dimen>
     <dimen name="searchText">18sp</dimen>

@@ -13,8 +13,10 @@
     <!-- Main -->
     <dimen name="navFont">17sp</dimen>
     <dimen name="bnv">90dp</dimen>
-    <dimen name="bnvTextInactive">16sp</dimen>
-    <dimen name="bnvTextActive">17sp</dimen>
+    <dimen name="bnvPadH">100dp</dimen>
+    <dimen name="bnvIconSize">32dp</dimen>
+    <dimen name="bnvTextInactive">18sp</dimen>
+    <dimen name="bnvTextActive">19sp</dimen>
     <dimen name="searchText">19sp</dimen>
     <dimen name="mainPadH">32dp</dimen>
     <dimen name="padGallery">3dp</dimen>
@@ -42,7 +44,7 @@
     <dimen name="favEmpty">20sp</dimen>
 
     <!-- Settings -->
-    <dimen name="stPadH">48dp</dimen>
+    <dimen name="stPadH">100dp</dimen>
     <dimen name="stItemName">17sp</dimen>
     <dimen name="stStarter">24dp</dimen>
     <dimen name="stSubItemFont">20sp</dimen>

@@ -184,13 +184,15 @@ class InstaTools : Application() {
 }
 
 /* TODO:
-  * Problems:
-  * Font for PopupMenus
-  * AlertDialogs are not themes properly
-  * Switches' background colours are white
+  * UX Problems:
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * Tagged(/reel?) videos cannot be watched
+  * -
+  * UI Problems:
+  * Font for PopupMenus
+  * AlertDialogs are not themes properly
+  * Switches' background colours are white
   * SwipeRefreshLayout's spinner should be themed
   * -
   * Extension:
@@ -199,7 +201,7 @@ class InstaTools : Application() {
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
-  * Test on a tablet
+  * https://stackoverflow.com/questions/34891352/android-choose-file-button-in-webview
   * -
   * Too Complicated:
   * Toolbar's back icon cannot be themed when the action view is expanded (unrelated to SearchView)
