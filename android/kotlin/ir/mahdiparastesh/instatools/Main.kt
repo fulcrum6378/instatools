@@ -30,6 +30,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.Settings.Companion.spMainPage
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQl.FeedTray
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
@@ -40,6 +41,7 @@ import ir.mahdiparastesh.instatools.databinding.ListDrawerNavBinding
 import ir.mahdiparastesh.instatools.databinding.MainBinding
 import ir.mahdiparastesh.instatools.frag.PageFav
 import ir.mahdiparastesh.instatools.frag.PageSvd
+import ir.mahdiparastesh.instatools.frag.PageTry
 import ir.mahdiparastesh.instatools.list.ListSch
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.ForegroundService
@@ -55,7 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
+class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
     MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener {
 
     lateinit var b: MainBinding
@@ -86,10 +88,14 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
 
     class MyModel : ViewModel() {
         var currentPage = Settings.defSpMainPage
+
+        // pages
         var favourites: List<Favourite> = listOf()
         val favCount = MutableLiveData<Int>(0)
         var saved: Rest.LazyList<Media.Wrapper>? = null
         val savedCount = MutableLiveData<Int?>(null)
+        var tray: FeedTray? = null
+        val trayCount = MutableLiveData<Int?>(null)
 
         // search
         var schQuery: CharSequence? = null
@@ -108,13 +114,17 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class),
         // bottom navigation bar
         b.toFavourites.setOnClickListener { turnToPage(0) }
         b.toSaved.setOnClickListener { turnToPage(1) }
+        b.toTray.setOnClickListener { turnToPage(2) }
+        vm.favCount.observe(this) {
+            b.toFavourites.text = getString(R.string.favourites) + (if (it > 0) " {$it}" else "")
+        }
         vm.savedCount.observe(this) {
             b.toSaved.text = getString(R.string.saved) + (if (it != null && it > 0) " {${
                 UiTools.displayLargeNumber(it.toLong(), c)
             }}" else "")
         }
-        vm.favCount.observe(this) {
-            b.toFavourites.text = getString(R.string.favourites) + (if (it > 0) " {$it}" else "")
+        vm.trayCount.observe(this) {
+            b.toTray.text = getString(R.string.tray) + (if (it != null && it > 0) " {$it}" else "")
         }
 
         // theming

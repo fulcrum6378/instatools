@@ -37,9 +37,8 @@
             android:id="@+id/bnv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bnv"
-            android:layout_marginHorizontal="20dp"
             android:orientation="horizontal"
-            android:weightSum="2"
+            android:weightSum="3"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
@@ -56,11 +55,12 @@
                 android:text="@string/saved"
                 android:theme="@style/Theme.InstaTools.Secondary" />
 
-            <!--<TextView
-                android:id="@+id/toFeed"
+            <TextView
+                android:id="@+id/toTray"
                 style="@style/bnvButton"
-                android:drawableTop="@drawable/favourite"
-                android:theme="@style/Theme.InstaTools.Tertiary" />-->
+                android:drawableTop="@drawable/metered_video"
+                android:text="@string/tray"
+                android:theme="@style/Theme.InstaTools.Tertiary" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

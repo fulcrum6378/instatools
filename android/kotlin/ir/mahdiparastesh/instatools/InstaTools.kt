@@ -191,11 +191,11 @@ class InstaTools : Application() {
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * Tagged(/reel?) videos cannot be watched
+  * SwipeRefreshLayout's spinner should be themed
   * -
   * Extension:
   * Get rid of BadgeDrawable in selections; then remove the material library
   * A button for indexing a folder
-  * PageTry
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
@@ -206,7 +206,7 @@ class InstaTools : Application() {
   * When clicked on error notifications, no activity is opened
   * Clicking on external links will bring a "cleartext not permitted" error
   * Metadata for HEIC and MP4?
-  * -
+  *
   * Notes:
   * The GraphQL queries cannot like or unlike old IGTVs.
 */

@@ -1,31 +1,37 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
-import ir.mahdiparastesh.instatools.Viewer
+import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.databinding.ListStoryBinding
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
+import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
-class ListStory(private val c: Viewer, var story: Story) :
-    RecyclerView.Adapter<AnyViewHolder<ListStoryBinding>>() {
+class ListStory(
+    private val c: InstaTools,
+    private val inflater: LayoutInflater,
+    private val expandable: Expandable,
+    var story: Story
+) : RecyclerView.Adapter<AnyViewHolder<ListStoryBinding>>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListStoryBinding> =
-        AnyViewHolder(ListStoryBinding.inflate(c.layoutInflater, parent, false))
+        AnyViewHolder(ListStoryBinding.inflate(inflater, parent, false))
 
     override fun onBindViewHolder(h: AnyViewHolder<ListStoryBinding>, i: Int) {
         val med = story.items?.getOrNull(i) ?: return
         h.b.number.text = "${i + 1}"
 
         // load thumbnail
-        Glide.with(c.c)
+        Glide.with(c)
             .load(med.thumb())
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .signature(ObjectKey(med.id()))
@@ -33,10 +39,10 @@ class ListStory(private val c: Viewer, var story: Story) :
 
         // is media already downloaded?
         h.b.stored.vis(
-            if (c.c.downloadHistory.isEmpty())
+            if (c.downloadHistory.isEmpty())
                 false
             else
-                c.c.downloadHistory.anyStartsWith(
+                c.downloadHistory.anyStartsWith(
                     "${story.user.username}_" +
                         Utils.fileDateTime(Utils.compileSecondsTS(med.taken_at!!)) +
                         "_${med.id()}"
@@ -48,7 +54,7 @@ class ListStory(private val c: Viewer, var story: Story) :
 
         // clicks
         h.b.click.setOnClickListener {
-            c.expandable.expand(
+            expandable.expand(
                 story.carousel() ?: return@setOnClickListener,
                 h.b.thumb,
                 h.layoutPosition

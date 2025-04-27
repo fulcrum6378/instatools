@@ -89,12 +89,14 @@
     </string>
 
     <!-- Main -->
-    <string name="favourites">Favourites</string>
+    <string name="favourites">Favorites</string>
     <string name="saved">Saved</string>
+    <string name="tray">Tray</string>
     <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
     <string name="mtSearch">Enter a profile name or link&#8230;</string>
     <string name="terminateBgTasks">
         Some tasks are running in the background. Are you sure you want to terminate them all?
+        (You can resume them later)
     </string>
     <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="toExit">Double tap to exit&#8230;</string>
@@ -109,6 +111,9 @@
     <string name="downloadOnly">Download Only</string>
     <string name="unsaveDownload">Unsave &amp; Download</string>
     <string name="svdEmpty">You have no saved posts!</string>
+
+    <!-- PageTry -->
+    <string name="tryEmpty">Story tray of your feed s empty!</string>
 
     <!-- Downloads -->
     <string name="downloads">Downloads</string>

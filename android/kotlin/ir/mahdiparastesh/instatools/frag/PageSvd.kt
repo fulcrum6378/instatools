@@ -58,7 +58,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override var job: Job? = null
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
-    override val emptyIcon: Int = R.drawable.done_svd
     override val expandable: Expandable by lazy {
         Expandable(c, b.expanded, c.color(if (!c.night) R.color.defBG else R.color.CS)) {
             updateShadow()

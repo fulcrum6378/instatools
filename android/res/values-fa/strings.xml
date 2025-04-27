@@ -91,11 +91,13 @@
 
     <!-- Main -->
     <string name="favourites">مورد علاقه</string>
-    <string name="saved">ذخیره شده</string>
+    <string name="saved">ذخیره ها</string>
+    <string name="tray">تایم لاین</string>
     <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
     <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
     <string name="terminateBgTasks">
         تعدادی کار ناتمام در پشت صحنه هنوز در حال انجام هستند. آیا میخواهید تمام آنها را متوقف کنید؟
+        (بعدا میتوانید آنها را دوباره از سر بگیرید)
     </string>
     <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
@@ -111,6 +113,9 @@
     <string name="downloadOnly">فقط دانلود</string>
     <string name="unsaveDownload">آنسیو &amp; دانلود</string>
     <string name="svdEmpty">شما هیچ پستی را ذخیره نکرده اید!</string>
+
+    <!-- PageTry -->
+    <string name="tryEmpty">هیچ استوری ای در تایم لاین شما وجود ندارد!</string>
 
     <!-- Downloads -->
     <string name="downloads">دانلودها</string>

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.databinding.PageFavBinding
 import ir.mahdiparastesh.instatools.list.ListFav
 import ir.mahdiparastesh.instatools.util.BaseActivity
@@ -20,12 +19,10 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     override val rv: RecyclerView? get() = b.rv
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
-    override val emptyIcon: Int = R.drawable.favourite_on
     override val expandable = null
     override val selectiveMenuRes: Int? = null
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
-    override fun shouldLoadOnPrepare(): Boolean = true
     override fun isModelLoaded(): Boolean = c.c.fav.value != null
     override fun isModelEmpty(): Boolean = c.vm.favourites.isEmpty()
     override fun createAdapter(): RecyclerView.Adapter<*> = ListFav(c, this)

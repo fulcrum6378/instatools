@@ -16,7 +16,6 @@ abstract class BasePageMain(private val theme: BaseActivity.Theme) : BasePage<Ma
 
     val inflater: LayoutInflater by lazy { c.themeInflater(theme, c.layoutInflater) }
     override val tbShadow: View? by lazy { c.b.tbShadow }
-    abstract val emptyIcon: Int
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

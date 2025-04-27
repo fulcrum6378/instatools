@@ -76,10 +76,11 @@ object Api {
         } else
             throw FailureException(responseCode)
 
-        if (System.getenv("debug") == "1") {
+        if (System.getenv("debug") == "1")
             println(text)
-            //FileOutputStream(File("Downloads/1.json")).use { it.write(text.encodeToByteArray()) }
-        }
+        /*FileOutputStream(File("Downloads/1.json"))
+            .use { it.write(text.encodeToByteArray()) }*/
+
         if (text.startsWith("<!DOCTYPE html>"))
             throw FailureException(ERR_LOGGED_OUT)
 
