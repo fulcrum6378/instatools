@@ -1,11 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.InstaTools.Base" parent="android:Theme.DeviceDefault.NoActionBar">
+    <style name="Theme.InstaTools.Base" parent="android:Theme.DeviceDefault.DayNight">
         <item name="android:colorPrimary">@color/defCA</item>
         <item name="android:colorPrimaryDark">?android:colorPrimary</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="colorPrimaryHigh">@color/CSH</item>
 
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">?backgroundColor</item>
         <item name="android:navigationBarColor">?backgroundColor</item>
         <item name="android:statusBarColor">?backgroundColor</item>
@@ -30,9 +32,11 @@
         <item name="android:colorControlActivated">?android:colorAccent</item>
         <item name="android:colorControlNormal">?android:colorAccent</item>
         <item name="android:searchViewStyle">@style/Widget.InstaTools.SearchView</item>
-        <!-- Theme.DeviceDefault has nothing for SearchViews -->
         <item name="android:switchTextAppearance">@style/TextAppearance.InstaTools.Switch</item>
         <item name="drawerArrowStyle">@style/Widget.InstaTools.DrawerArrowToggle</item>
+
+        <!-- misc -->
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert</item>
 
         <!--<item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.InstaTools.Medium
         </item>
@@ -54,6 +58,7 @@
         <item name="android:colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
         <item name="colorPrimaryHigh">@color/CPH</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Primary</item>
         <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Primary</item>-->
     </style>
 
@@ -61,6 +66,7 @@
         <item name="android:colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="colorPrimaryHigh">@color/CSH</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Secondary</item>
         <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Secondary</item>-->
     </style>
 
@@ -69,6 +75,7 @@
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="colorPrimaryHigh">@color/CTH</item>
         <item name="defCA">@color/defCA</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Tertiary</item>
         <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Tertiary</item>-->
     </style>
 
@@ -76,6 +83,28 @@
     <attr name="colorPrimaryWeak" format="reference|color" />
     <attr name="colorPrimaryHigh" format="reference|color" />
     <attr name="defCA" format="reference|color" />
+
+
+    <!-- AlertDialog -->
+    <style name="Theme.InstaTools.Dialog.Alert" parent="android:Theme.DeviceDefault.Light.Dialog.Alert">
+        <!-- android:textAppearanceButton didn't work! -->
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Alert.Primary" parent="Theme.InstaTools.Dialog.Alert">
+        <!-- Theme.DeviceDefault.Dialog.Alert.DayNight is private :( -->
+        <item name="android:colorPrimaryDark">@color/CP</item><!-- title text colour -->
+        <item name="android:colorAccent">@color/CP</item><!-- button text colour -->
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Alert.Secondary" parent="Theme.InstaTools.Dialog.Alert">
+        <item name="android:colorPrimaryDark">@color/CS</item>
+        <item name="android:colorAccent">@color/CS</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Alert.Tertiary" parent="Theme.InstaTools.Dialog.Alert">
+        <item name="android:colorPrimaryDark">@color/CT</item>
+        <item name="android:colorAccent">@color/CT</item>
+    </style>
 
 
     <!-- PopupMenu -->
@@ -102,6 +131,7 @@
 
 
     <!-- widget -->
+    <!-- Theme.DeviceDefault has nothing for SearchViews -->
     <style name="Widget.InstaTools.SearchView" parent="android:Widget.Material.SearchView">
         <item name="android:textColor">#F00</item>
     </style>

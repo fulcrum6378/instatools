@@ -10,17 +10,40 @@
     <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
         <item name="android:colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Primary</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
         <item name="android:colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Secondary</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
         <item name="android:colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Tertiary</item>
+    </style>
+
+
+    <!-- AlertDialog -->
+    <style name="Theme.InstaTools.Dialog.Alert" parent="android:Theme.DeviceDefault.Dialog.Alert">
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Alert.Primary" parent="Theme.InstaTools.Dialog.Alert">
+        <item name="android:colorPrimaryDark">@color/CP</item><!-- title text colour -->
+        <item name="android:colorAccent">@color/CP</item><!-- button text colour -->
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Alert.Secondary" parent="Theme.InstaTools.Dialog.Alert">
+        <item name="android:colorPrimaryDark">@color/CS</item>
+        <item name="android:colorAccent">@color/CS</item>
+    </style>
+
+    <style name="Theme.InstaTools.Dialog.Alert.Tertiary" parent="Theme.InstaTools.Dialog.Alert">
+        <item name="android:colorPrimaryDark">@color/CT</item>
+        <item name="android:colorAccent">@color/CT</item>
     </style>
 
 

@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 78
-        versionName = "40.2.8"
+        versionName = "40.3.5"
     }
 
     sourceSets.getByName("main") {
@@ -78,7 +78,15 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.glide)
     implementation(libs.dotsindicator)
-    implementation(libs.commons.text)  // StringEscapeUtils
+    implementation(libs.commons.text)  // for StringEscapeUtils
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
+
+    /*
+     * - `androidx.appcompat` is required by lottie for AppCompatImageView as a supertype of
+     * LottieAnimationView.
+     * - `androidx.core` is required by activity-ktx, drawerlayout, recyclerview,
+     * swiperefreshlayout, viewpager2, webkit and glide.
+     * - `com.google.guava` is required by media3.
+     */
 }

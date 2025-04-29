@@ -191,8 +191,7 @@ class InstaTools : Application() {
   * -
   * UI Problems:
   * Font for PopupMenus
-  * AlertDialogs are not themes properly
-  * Switches' background colours are white
+  * SeekBar should be themed
   * SwipeRefreshLayout's spinner should be themed
   * -
   * Extension:
@@ -203,7 +202,6 @@ class InstaTools : Application() {
   * https://stackoverflow.com/questions/34891352/android-choose-file-button-in-webview
   * -
   * Too Complicated:
-  * Toolbar's back icon cannot be themed when the action view is expanded (unrelated to SearchView)
   * When clicked on error notifications, no activity is opened
   * Clicking on external links will bring a "cleartext not permitted" error
   * Metadata for HEIC and MP4?
