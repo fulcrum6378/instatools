@@ -135,6 +135,10 @@ class PageTag : BasePageViewer(), PostSelector {
     override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =
         createSelectionObserver()
 
+    override fun onSelectionStarted() {
+        (b.rv.adapter as ListTag).firstLongClickSelect = true
+    }
+
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.vtDownload ->

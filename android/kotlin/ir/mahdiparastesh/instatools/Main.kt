@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.edit
@@ -85,8 +86,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         set(i) {
             vm.currentPage = i
         }
-    override val selectionCountView: TextView
-        get() = b.selectionCount
 
     class MyModel : ViewModel() {
         var currentPage = Settings.defSpMainPage
@@ -396,11 +395,16 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         b.toolbar.popupTheme = popupThemes[i]
     }
 
-    override fun selective(bb: Boolean, selectiveMenuRes: Int?): Boolean {
-        if (!super.selective(bb, selectiveMenuRes)) return false
+    override fun selective(
+        bb: Boolean,
+        selectiveToolbarMenuRes: Int?,
+        selectiveToolbarListener: Toolbar.OnMenuItemClickListener?
+    ): Boolean {
+        if (!super.selective(bb, selectiveToolbarMenuRes, selectiveToolbarListener)) return false
         styliseToolbar()
         b.bnv.forEach { it.isClickable = !bb }
         drawerToggle.isDrawerIndicatorEnabled = !bb
+        if (bb) b.selectionCount.setTextColor(ca[vm.currentPage])
         return true
     }
 

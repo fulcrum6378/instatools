@@ -14,7 +14,7 @@ import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.base.BasePage
-import ir.mahdiparastesh.instatools.base.MultiPagedActivity
+import ir.mahdiparastesh.instatools.base.SelectiveActivity
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
@@ -28,7 +28,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 abstract class ListPost<Activity, Fragment>(
     protected val c: Activity, protected val f: Fragment
 ) : RecyclerView.Adapter<AnyViewHolder<ListPostBinding>>()
-    where Activity : MultiPagedActivity, Fragment : BasePage<Activity> {
+    where Activity : SelectiveActivity, Fragment : BasePage<Activity> {
 
     init {
         setHasStableIds(true)

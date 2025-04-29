@@ -21,7 +21,7 @@ This project is written in pure Kotlin and contains these modules:
   everything related to the Instagram API, including its messy data models
   including back-end data models, endpoint addresses and their related utilities.
 - [**base**](android/kotlin/ir/mahdiparastesh/instatools/base) :
-  abstract classes from which high level components of the application must extend
+  abstract classes and interfaces from which high level components of the application must extend
   (not any abstract class) (:android only)
 - [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) :
   InstaTools data models (not Instagram's)

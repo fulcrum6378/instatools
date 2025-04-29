@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.edit
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
@@ -45,7 +46,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     private val pickle: Pickle by lazy {
         Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.SAVED, null)
     }
-    var selectionGuide: LottieAnimationView? = null
+    private var selectionGuide: LottieAnimationView? = null
 
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
@@ -183,6 +184,15 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     }
 
     override fun selectionObserver() = createSelectionObserver()
+
+    override fun onSelectionStarted() {
+        if (selectionGuide != null) {
+            b.root.removeView(selectionGuide)
+            c.c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
+            b.rv.suppressLayout(false)
+        }
+        (b.rv.adapter as ListSvd).firstLongClickSelect = true
+    }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {

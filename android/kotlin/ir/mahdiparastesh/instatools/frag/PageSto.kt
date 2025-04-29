@@ -27,6 +27,7 @@ class PageSto : BasePageViewer() {
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
 
+    override fun onSelectionStarted() {}
     override fun isBInitialised(): Boolean = ::b.isInitialized
 
     /** Remember that c.vm.story can be queried and yet be null. */
