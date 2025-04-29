@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 78
-        versionName = "40.2.5"
+        versionName = "40.2.8"
     }
 
     sourceSets.getByName("main") {
@@ -77,7 +77,6 @@ dependencies {
     implementation(libs.lottie)
     implementation(libs.shimmer)
     implementation(libs.glide)
-    implementation(libs.material)
     implementation(libs.dotsindicator)
     implementation(libs.commons.text)  // StringEscapeUtils
     implementation(libs.coroutines.android)

@@ -72,6 +72,7 @@
         <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Tertiary</item>-->
     </style>
 
+    <attr name="backgroundColor" format="reference|color" />
     <attr name="colorPrimaryWeak" format="reference|color" />
     <attr name="colorPrimaryHigh" format="reference|color" />
     <attr name="defCA" format="reference|color" />

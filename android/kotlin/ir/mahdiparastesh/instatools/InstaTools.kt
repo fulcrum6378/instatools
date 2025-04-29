@@ -196,7 +196,6 @@ class InstaTools : Application() {
   * SwipeRefreshLayout's spinner should be themed
   * -
   * Extension:
-  * Remove the material library
   * A button for indexing a folder
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
