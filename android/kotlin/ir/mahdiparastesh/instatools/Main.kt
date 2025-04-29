@@ -85,6 +85,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         set(i) {
             vm.currentPage = i
         }
+    override val selectionCountView: TextView
+        get() = b.selectionCount
 
     class MyModel : ViewModel() {
         var currentPage = Settings.defSpMainPage
@@ -394,8 +396,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         b.toolbar.popupTheme = popupThemes[i]
     }
 
-    override fun selective(bb: Boolean): Boolean {
-        if (!super.selective(bb)) return false
+    override fun selective(bb: Boolean, selectiveMenuRes: Int?): Boolean {
+        if (!super.selective(bb, selectiveMenuRes)) return false
+        styliseToolbar()
         b.bnv.forEach { it.isClickable = !bb }
         drawerToggle.isDrawerIndicatorEnabled = !bb
         return true

@@ -13,7 +13,6 @@
     <color name="CTW">#44406AC9</color>
     <color name="CTH">#99002680</color>
 
-    <color name="shadow">#55000000</color>
     <color name="defBG">#FFF</color>
     <color name="defCALight">#262626</color>
     <color name="defCA">@color/defCALight</color>

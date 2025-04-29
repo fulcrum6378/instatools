@@ -46,7 +46,7 @@
     <style name="root">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layoutDirection">locale</item>
+        <item name="android:layoutDirection">ltr</item>
     </style>
 
     <style name="parentConstraint">
@@ -75,7 +75,6 @@
     <style name="shadow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">3dp</item>
-        <item name="android:alpha">0.6</item>
         <item name="android:background">@drawable/shadow</item>
     </style>
 
@@ -194,6 +193,16 @@
         <item name="android:orientation">vertical</item>
         <item name="android:paddingHorizontal">20dp</item>
         <item name="android:paddingVertical">5dp</item>
+    </style>
+
+    <style name="selectionCount">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/light</item>
+        <item name="android:paddingVertical">4sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:visibility">gone</item>
     </style>
 
 

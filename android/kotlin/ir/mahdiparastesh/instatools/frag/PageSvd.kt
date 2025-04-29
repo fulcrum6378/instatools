@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -13,14 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.edit
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.api.Api
@@ -37,8 +33,6 @@ import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.PostSelector
 import ir.mahdiparastesh.instatools.view.SafeGridManager
-import ir.mahdiparastesh.instatools.view.UiTools
-import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +45,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     private val pickle: Pickle by lazy {
         Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.SAVED, null)
     }
-    private var selectionGuide: LottieAnimationView? = null
+    var selectionGuide: LottieAnimationView? = null
 
     override val root: ConstraintLayout? get() = b.root
     override val rv: RecyclerView? get() = b.rv
@@ -188,44 +182,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
         }
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
-    override fun selectionObserver() = object : SelectionTracker.SelectionObserver<Long>() {
-        override fun onItemStateChanged(key: Long, selected: Boolean) {
-            if (c.tbTitle == null) return
-            BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
-            if (c.tbTitle?.parent == null) return
-            // to avoid NullPointerException in BadgeDrawable.updateAnchorParentToNotClip
-            BadgeUtils.attachBadgeDrawable(
-                BadgeDrawable.create(ContextThemeWrapper(c, UiTools.materialTheme)).apply {
-                    number = tracker?.selection?.size() ?: 0
-                    backgroundColor = c.ca[1]
-                    badgeTextColor = if (c.night) c.bg[1] else c.color(R.color.defBG)
-                    c.selectionBadge = this
-                    maxCharacterCount = UiTools.MAX_BADGE_CHAR
-                }, c.tbTitle!!
-            )
-        }
-
-        override fun onSelectionChanged() {
-            super.onSelectionChanged()
-            val status = tracker?.hasSelection() == true
-            if (selectivity == status) return
-            selectivity = status
-            c.selective(status)
-            c.shake()
-            if (status) {
-                (b.rv.adapter as ListSvd?)?.firstLongClickSelect = true
-                if (selectionGuide != null) {
-                    b.root.removeView(selectionGuide)
-                    c.c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
-                    b.rv.suppressLayout(false)
-                }
-            } else {
-                BadgeUtils.detachBadgeDrawable(c.selectionBadge, c.tbTitle!!)
-                c.selectionBadge = null
-            }
-        }
-    }
+    override fun selectionObserver() = createSelectionObserver()
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {

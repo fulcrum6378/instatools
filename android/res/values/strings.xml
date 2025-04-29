@@ -3,8 +3,8 @@
     <string name="app_name" translatable="false">InstaTools</string>
 
     <!-- #GLOBAL -->
-    <string name="navOpen">Open</string>
-    <string name="navClose">Close</string>
+    <string name="navOpen">Open menu</string>
+    <string name="navClose">Close menu</string>
     <string name="search">Search</string>
     <string name="switchAccount">Switch Account</string>
     <string name="signOut">Sign Out</string>
@@ -60,6 +60,10 @@
     <string name="unlikeAll">Unlike all</string>
     <string name="couldNotLoadOriginal">Couldn\'t load the original image!</string>
     <string name="profilePicture">Profile picture</string>
+    <plurals name="selectionCount">
+        <item quantity="one">%d item selected</item>
+        <item quantity="other">%d items selected</item>
+    </plurals>
 
     <!-- API -->
     <string name="noInternet">No internet connection!</string>

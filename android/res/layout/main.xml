@@ -21,7 +21,7 @@
             android:id="@+id/frame"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/bnv"
+            app:layout_constraintBottom_toTopOf="@id/selectionCount"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <View
@@ -31,6 +31,11 @@
         <View
             style="@style/shadow"
             android:rotationX="180"
+            app:layout_constraintBottom_toTopOf="@id/selectionCount" />
+
+        <TextView
+            android:id="@+id/selectionCount"
+            style="@style/selectionCount"
             app:layout_constraintBottom_toTopOf="@id/bnv" />
 
         <LinearLayout

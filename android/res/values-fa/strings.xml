@@ -60,6 +60,10 @@
     <string name="unlikeAll">آنلایک همه</string>
     <string name="couldNotLoadOriginal">بارگذاری عکس بزرگ امکان پذیر نیست!</string>
     <string name="profilePicture">عکس پروفایل</string>
+    <plurals name="selectionCount">
+        <item quantity="one">%d مورد انتخاب شد</item>
+        <item quantity="other">%d مورد انتخاب شد</item>
+    </plurals>
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>

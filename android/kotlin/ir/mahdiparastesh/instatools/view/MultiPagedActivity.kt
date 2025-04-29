@@ -1,17 +1,20 @@
 package ir.mahdiparastesh.instatools.view
 
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.google.android.material.badge.BadgeDrawable
-import ir.mahdiparastesh.instatools.Main
+import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePage
 import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.view.UiTools.shake
+import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlin.reflect.KClass
 
 /**
- * Subclass of [BaseActivity] which handles multiple [Fragment]s inside a FrameLayout
+ * Subclass of [BaseActivity] which handles multiple [Fragment]s inside a [FrameLayout]
  */
 abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
 
@@ -26,8 +29,8 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
     /** @see MultiPagedActivity.selective */
     private var isSelective = false
 
-    /** Holds the BadgeDrawable which enumerates the selected items in RecyclerView. */
-    var selectionBadge: BadgeDrawable? = null
+    /** Holds a [TextView] which enumerates selected items in [RecyclerView]. */
+    abstract val selectionCountView: TextView
 
     companion object {
         const val CURRENT_PAGE = "current_page"
@@ -90,16 +93,26 @@ abstract class MultiPagedActivity(vararg classes: KClass<*>) : BaseActivity() {
      * @param bb true if you just turned the selection on, false if you turned it off.
      * @return false if the selective mode was already changed to "bb".
      */
-    open fun selective(bb: Boolean): Boolean {
+    open fun selective(bb: Boolean, selectiveMenuRes: Int?): Boolean {
         if (isSelective == bb) return false
         isSelective = bb
+
+        // selectionCount
+        selectionCountView.vis(bb)
+
+        // Toolbar actions
         toolbar.menu.clear()
         val page = currentPage()!!
-        toolbar.inflateMenu(if (bb) page.selectiveMenuRes!! else menuRes!!)
+        toolbar.inflateMenu(if (bb) selectiveMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(if (isSelective) page else this)
-        if (this is Main) styliseToolbar()
         Delay(100) { onPrepareOptionsMenu(toolbar.menu) }
+
+        shake()
         return true
+    }
+
+    fun selectionCountChanged(n: Int) {
+        selectionCountView.text = resources.getQuantityString(R.plurals.selectionCount, n, n)
     }
 
     /**

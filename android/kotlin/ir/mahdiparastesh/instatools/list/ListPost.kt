@@ -16,19 +16,19 @@ import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
-import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.BasePage
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
+import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
 /** Abstract [RecyclerView.Adapter] that lists Instagram [Media]s in a grid */
 abstract class ListPost<Activity, Fragment>(
     protected val c: Activity, protected val f: Fragment
 ) : RecyclerView.Adapter<AnyViewHolder<ListPostBinding>>()
-    where Activity : BaseActivity, Fragment : BasePage<Activity> {
+    where Activity : MultiPagedActivity, Fragment : BasePage<Activity> {
 
     init {
         setHasStableIds(true)

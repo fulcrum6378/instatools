@@ -5,7 +5,7 @@
     tools:context=".Viewer"
     tools:ignore="MissingConstraints">
 
-    <android.widget.Toolbar
+    <Toolbar
         android:id="@+id/toolbar"
         style="@style/toolbar"
         android:title="@string/vwTitle" />
@@ -14,12 +14,17 @@
         android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/selectionCount"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <View
         android:id="@+id/tbShadow"
         style="@style/tbShadow" />
+
+    <TextView
+        android:id="@+id/selectionCount"
+        style="@style/selectionCount"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <include
         android:id="@+id/expanded"
