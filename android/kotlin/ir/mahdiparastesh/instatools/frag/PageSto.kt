@@ -12,10 +12,10 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
+import ir.mahdiparastesh.instatools.base.BasePageViewer
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageStoBinding
 import ir.mahdiparastesh.instatools.list.ListSto
-import ir.mahdiparastesh.instatools.util.BasePageViewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

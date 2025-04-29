@@ -9,13 +9,13 @@ import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import ir.mahdiparastesh.instatools.Settings.Companion.toBytes
 import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.base.ForegroundService
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
-import ir.mahdiparastesh.instatools.util.ForegroundService
 import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.coroutines.CoroutineScope

@@ -20,13 +20,13 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.base.BasePageViewer
+import ir.mahdiparastesh.instatools.base.ForegroundService
+import ir.mahdiparastesh.instatools.base.PostSelector
 import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageTagBinding
 import ir.mahdiparastesh.instatools.list.ListTag
-import ir.mahdiparastesh.instatools.util.BasePageViewer
-import ir.mahdiparastesh.instatools.util.ForegroundService
-import ir.mahdiparastesh.instatools.view.PostSelector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

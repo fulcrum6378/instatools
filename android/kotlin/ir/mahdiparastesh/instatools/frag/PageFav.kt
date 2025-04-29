@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import ir.mahdiparastesh.instatools.base.BaseActivity
+import ir.mahdiparastesh.instatools.base.BasePageMain
 import ir.mahdiparastesh.instatools.databinding.PageFavBinding
 import ir.mahdiparastesh.instatools.list.ListFav
-import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.BasePageMain
 
 class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     private lateinit var b: PageFavBinding

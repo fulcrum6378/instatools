@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.util
+package ir.mahdiparastesh.instatools.base
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -14,7 +14,6 @@ import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.job.DownloadService
-import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.Notify
 import kotlin.reflect.KClass
 

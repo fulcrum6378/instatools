@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.util
+package ir.mahdiparastesh.instatools.base
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -31,6 +31,8 @@ import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
+import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import kotlin.reflect.KClass
 

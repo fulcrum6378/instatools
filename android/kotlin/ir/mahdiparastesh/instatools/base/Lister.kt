@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.view
+package ir.mahdiparastesh.instatools.base
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -32,9 +32,9 @@ import ir.mahdiparastesh.instatools.data.Command
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.job.CommandService
 import ir.mahdiparastesh.instatools.list.ListPost
-import ir.mahdiparastesh.instatools.util.BaseActivity
 import ir.mahdiparastesh.instatools.util.Delay
-import ir.mahdiparastesh.instatools.util.ForegroundService
+import ir.mahdiparastesh.instatools.view.Expandable
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope

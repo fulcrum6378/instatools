@@ -13,15 +13,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.base.BasePage
+import ir.mahdiparastesh.instatools.base.MultiPagedActivity
 import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
 import ir.mahdiparastesh.instatools.databinding.ListPostBinding
-import ir.mahdiparastesh.instatools.util.BasePage
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.GlideShimmer
-import ir.mahdiparastesh.instatools.view.MultiPagedActivity
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
 /** Abstract [RecyclerView.Adapter] that lists Instagram [Media]s in a grid */

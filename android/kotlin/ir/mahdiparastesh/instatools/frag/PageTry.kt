@@ -12,13 +12,13 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.FeedTray
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.base.BaseActivity
+import ir.mahdiparastesh.instatools.base.BasePageMain
+import ir.mahdiparastesh.instatools.base.OnlineLister
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageTryBinding
 import ir.mahdiparastesh.instatools.list.ListTry
-import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.BasePageMain
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.OnlineLister
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

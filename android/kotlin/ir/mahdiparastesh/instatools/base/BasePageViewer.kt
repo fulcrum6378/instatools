@@ -1,11 +1,10 @@
-package ir.mahdiparastesh.instatools.util
+package ir.mahdiparastesh.instatools.base
 
 import android.annotation.SuppressLint
 import android.view.View
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.view.Expandable
-import ir.mahdiparastesh.instatools.view.OnlineLister
 import kotlinx.coroutines.Job
 
 /** Subclass of [BasePage], from which all pages of [Viewer] extend */

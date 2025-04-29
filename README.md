@@ -17,14 +17,24 @@ This project is written in pure Kotlin and contains these modules:
 
 ### Subpackages
 
-- [**api**](core/kotlin/ir/mahdiparastesh/instatools/api) : everything related to API,
+- [**api**](core/kotlin/ir/mahdiparastesh/instatools/api) :
+  everything related to the Instagram API, including its messy data models
   including back-end data models, endpoint addresses and their related utilities.
-- [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) : data models
-- [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) : all Fragments.
-- [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) : long-running tasks
-- [**list**](android/kotlin/ir/mahdiparastesh/instatools/list) : all RecyclerView adapters
-- [**util**](android/kotlin/ir/mahdiparastesh/instatools/util) : UX-related utilities
-- [**view**](android/kotlin/ir/mahdiparastesh/instatools/view) : UI-related utilities
+- [**base**](android/kotlin/ir/mahdiparastesh/instatools/base) :
+  abstract classes from which high level components of the application must extend
+  (not any abstract class) (:android only)
+- [**data**](android/kotlin/ir/mahdiparastesh/instatools/data) :
+  InstaTools data models (not Instagram's)
+- [**frag**](android/kotlin/ir/mahdiparastesh/instatools/frag) :
+  all Fragments (:android only)
+- [**job**](android/kotlin/ir/mahdiparastesh/instatools/job) :
+  long-running tasks
+- [**list**](android/kotlin/ir/mahdiparastesh/instatools/list) :
+  all RecyclerView adapters (:android only)
+- [**util**](android/kotlin/ir/mahdiparastesh/instatools/util) :
+  UX-related utilities
+- [**view**](android/kotlin/ir/mahdiparastesh/instatools/view) :
+  UI-related utilities (:android only)
 
 ## Android Application
 

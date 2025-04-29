@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.view
+package ir.mahdiparastesh.instatools.base
 
 import android.view.View
 import android.widget.FrameLayout
@@ -6,8 +6,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.util.BaseActivity
-import ir.mahdiparastesh.instatools.util.BasePage
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis

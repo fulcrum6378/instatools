@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.StyleRes
 import ir.mahdiparastesh.instatools.R
-import ir.mahdiparastesh.instatools.util.BaseActivity
+import ir.mahdiparastesh.instatools.base.BaseActivity
 
 /** Helper class for creating [PopupMenu]s more easily */
 class EasyPopupMenu(

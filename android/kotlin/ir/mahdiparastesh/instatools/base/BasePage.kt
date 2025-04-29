@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.instatools.util
+package ir.mahdiparastesh.instatools.base
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
@@ -16,11 +16,8 @@ import ir.mahdiparastesh.instatools.frag.PageVwr
 import ir.mahdiparastesh.instatools.list.ListRel
 import ir.mahdiparastesh.instatools.list.ListSvd
 import ir.mahdiparastesh.instatools.list.ListTag
-import ir.mahdiparastesh.instatools.view.Lister
-import ir.mahdiparastesh.instatools.view.MultiPagedActivity
-import ir.mahdiparastesh.instatools.view.PostSelector
 
-/** Abstract class for all page fragments which reside inside a [MultiPagedActivity] */
+/** Abstract class for all page [Fragment]s which reside inside a [MultiPagedActivity] */
 abstract class BasePage<Activity> : Fragment(), Lister, Toolbar.OnMenuItemClickListener
     where Activity : MultiPagedActivity {
 
