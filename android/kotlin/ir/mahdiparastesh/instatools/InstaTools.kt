@@ -184,14 +184,12 @@ class InstaTools : Application() {
 }
 
 /* TODO:
-  * UX Problems:
+  * Problems:
+  * androidx.compose is being mysteriously imported making the app bloated!
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * Tagged(/reel?) videos cannot be watched
   * SearchView should search only when the search button in keyboards is pressed
-  * -
-  * UI Problems:
-  * Custom font for PopupMenus and AlertDialog buttons
   * -
   * Extension:
   * A button for indexing a folder
@@ -206,5 +204,6 @@ class InstaTools : Application() {
   * Metadata for HEIC and MP4?
   *
   * Notes:
-  * The GraphQL queries cannot like or unlike old IGTVs.
+  * - The GraphQL queries cannot like or unlike old IGTVs.
+  * - Either Android 11 or Samsung devices don't detect custom fonts for PopupMenus.
 */

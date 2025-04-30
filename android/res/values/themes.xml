@@ -16,6 +16,7 @@
             @drawable/logo_splash
         </item>
         <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/defBG</item>
+        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert</item>
 
         <!-- texts -->
         <item name="android:editTextColor">?android:colorAccent</item>
@@ -31,19 +32,10 @@
         <!-- widgets -->
         <item name="android:colorControlActivated">?android:colorAccent</item>
         <item name="android:colorControlNormal">?android:colorAccent</item>
+        <item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup</item>
         <item name="android:searchViewStyle">@style/Widget.InstaTools.SearchView</item>
         <item name="android:switchTextAppearance">@style/TextAppearance.InstaTools.Switch</item>
         <item name="drawerArrowStyle">@style/Widget.InstaTools.DrawerArrowToggle</item>
-
-        <!-- misc -->
-        <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert</item>
-
-        <!--<item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.InstaTools.Medium
-        </item>
-        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.InstaTools.Medium
-        </item>
-        <item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup</item>
-        <item name="android:contextPopupMenuStyle">@style/Widget.InstaTools.Popup</item>-->
     </style>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
@@ -59,7 +51,7 @@
         <item name="colorPrimaryWeak">@color/CPW</item>
         <item name="colorPrimaryHigh">@color/CPH</item>
         <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Primary</item>
-        <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Primary</item>-->
+        <item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Primary</item>
     </style>
 
     <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
@@ -67,7 +59,7 @@
         <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="colorPrimaryHigh">@color/CSH</item>
         <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Secondary</item>
-        <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Secondary</item>-->
+        <item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Secondary</item>
     </style>
 
     <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
@@ -76,7 +68,7 @@
         <item name="colorPrimaryHigh">@color/CTH</item>
         <item name="defCA">@color/defCA</item>
         <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Tertiary</item>
-        <!--<item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Tertiary</item>-->
+        <item name="android:popupMenuStyle">@style/Widget.InstaTools.Popup.Tertiary</item>
     </style>
 
     <attr name="backgroundColor" format="reference|color" />
@@ -109,9 +101,7 @@
 
     <!-- PopupMenu -->
     <style name="Widget.InstaTools.Popup" parent="android:Widget.DeviceDefault.PopupMenu">
-        <item name="android:fontFamily">@font/medium</item>
         <item name="android:textColor">?android:colorPrimary</item>
-        <item name="android:textAppearance">@style/TextAppearance.InstaTools.Medium</item>
     </style>
 
     <style name="Widget.InstaTools.Popup.Primary" parent="Widget.InstaTools.Popup">

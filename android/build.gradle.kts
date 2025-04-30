@@ -13,8 +13,8 @@ android {
         applicationId = "ir.mahdiparastesh.instatools"
         minSdk = 29
         targetSdk = 36
-        versionCode = 78
-        versionName = "40.4.0"
+        versionCode = 79
+        versionName = "40.4.2"
     }
 
     sourceSets.getByName("main") {

@@ -219,7 +219,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
                                 true, "one_tap_app_login=1&user_id=${c.acc!!.id}",
                             )
                         }
-                        signOut(bd.root.isChecked)
+                        signOut(bd.tick.isChecked)
                     }
                 }.show()
             },

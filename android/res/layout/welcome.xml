@@ -45,6 +45,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_margin="10dp"
+            android:labelFor="@id/addAccTv"
             android:src="@drawable/add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

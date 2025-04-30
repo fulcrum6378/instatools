@@ -102,7 +102,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
                             }
                             Api.cookies = ""
                         }
-                        signOut(acc, i, bd.root.isChecked)
+                        signOut(acc, i, bd.tick.isChecked)
                     }
                 }.show()
             }
