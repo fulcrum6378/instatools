@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/vwReelWidth"
     android:layout_height="@dimen/vwReelHeight"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
 
     <TextView
         android:id="@+id/number"

@@ -122,7 +122,7 @@
     <!-- Downloads -->
     <string name="downloads">Downloads</string>
     <string name="dwShare">@string/download</string>
-    <string name="pasteLink">Paste a link&#8230;</string>
+    <string name="pasteLink">Paste a link here&#8230;</string>
     <string name="downloadsHelp1">
         1. Open Instagram,
         \n2. Choose a post or story,

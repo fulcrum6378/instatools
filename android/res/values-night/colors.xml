@@ -2,7 +2,6 @@
 
     <color name="defBG">#111</color>
     <color name="defCA">#FFF</color>
-    <color name="defCAHigh" tools:ignore="MissingDefaultResource">#99FFFFFF</color>
     <color name="defRipple">#11FFFFFF</color>
     <array name="BG">
         <item>@color/CP</item>

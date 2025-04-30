@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".frag.PageFav"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
@@ -24,5 +24,6 @@
 
     <ImageView
         android:id="@+id/jumper"
-        style="@style/jumper" />
+        style="@style/jumper"
+        android:importantForAccessibility="no" />
 </androidx.constraintlayout.widget.ConstraintLayout>

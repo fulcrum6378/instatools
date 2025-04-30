@@ -33,7 +33,7 @@
     </style>
 
     <style name="TextAppearance.InstaTools.Search" parent="@style/TextAppearance.InstaTools.Medium">
-        <item name="android:textColor">?android:textColor</item>
+        <item name="android:textColor">?android:colorAccent</item>
         <item name="android:textSize">@dimen/searchText</item>
     </style>
 

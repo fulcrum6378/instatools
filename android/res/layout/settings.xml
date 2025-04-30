@@ -96,7 +96,10 @@
                 <SeekBar
                     android:id="@+id/stCacheLimit"
                     style="@style/stSubItem"
-                    android:max="@integer/stCacheMaxNominal" />
+                    android:max="@integer/stCacheMaxNominal"
+                    android:progressBackgroundTint="?colorPrimaryWeak"
+                    android:progressTint="?android:colorAccent"
+                    android:thumbTint="?android:colorAccent" />
 
                 <TextView
                     android:id="@+id/stCacheLimitTv"

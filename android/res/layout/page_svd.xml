@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".frag.PageSvd"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresher"
@@ -17,7 +17,8 @@
 
     <ImageView
         android:id="@+id/jumper"
-        style="@style/jumper" />
+        style="@style/jumper"
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/empty"

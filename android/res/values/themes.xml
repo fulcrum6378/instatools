@@ -87,7 +87,7 @@
 
     <!-- AlertDialog -->
     <style name="Theme.InstaTools.Dialog.Alert" parent="android:Theme.DeviceDefault.Light.Dialog.Alert">
-        <!-- android:textAppearanceButton didn't work! -->
+        <!-- setting .Bold on android:textAppearanceButton didn't work! -->
     </style>
 
     <style name="Theme.InstaTools.Dialog.Alert.Primary" parent="Theme.InstaTools.Dialog.Alert">
@@ -133,7 +133,7 @@
     <!-- widget -->
     <!-- Theme.DeviceDefault has nothing for SearchViews -->
     <style name="Widget.InstaTools.SearchView" parent="android:Widget.Material.SearchView">
-        <item name="android:textColor">#F00</item>
+        <!--<item name="android:textColor">#F00</item>-->
     </style>
 
     <!--<style name="Widget.InstaTools.Switch" parent="android:Widget.DeviceDefault.CompoundButton.Switch">

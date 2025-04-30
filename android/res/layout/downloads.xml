@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/root"
     tools:context=".Downloads"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
 
     <android.widget.Toolbar
         android:id="@+id/toolbar"
@@ -24,9 +24,11 @@
             android:layout_height="@dimen/pasteLink"
             android:background="@null"
             android:focusedByDefault="true"
+            android:fontFamily="@font/light"
             android:hint="@string/pasteLink"
             android:importantForAutofill="no"
             android:inputType="textUri"
+            android:textColorHint="?colorPrimaryHigh"
             android:textSize="@dimen/pasteLinkFont"
             app:layout_constraintEnd_toStartOf="@id/linkButton"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,6 +39,7 @@
             android:layout_width="@dimen/pasteLink"
             android:layout_height="@dimen/pasteLink"
             android:background="@drawable/button_round"
+            android:contentDescription="@string/download"
             android:padding="@dimen/pasteLinkPad"
             android:src="@drawable/download"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -83,7 +86,8 @@
 
     <ImageView
         android:id="@+id/jumper"
-        style="@style/jumper" />
+        style="@style/jumper"
+        android:importantForAccessibility="no" />
 
     <ViewStub
         android:id="@+id/guideSwipeDeleteStub"

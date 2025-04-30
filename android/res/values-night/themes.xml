@@ -3,6 +3,7 @@
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
         <item name="backgroundColor">?android:colorPrimary</item>
         <item name="android:colorAccent">@color/defCA</item>
+        <item name="colorPrimaryHigh">#99FFFFFF</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
@@ -32,18 +33,18 @@
     </style>
 
     <style name="Theme.InstaTools.Dialog.Alert.Primary" parent="Theme.InstaTools.Dialog.Alert">
-        <item name="android:colorPrimaryDark">@color/CP</item><!-- title text colour -->
-        <item name="android:colorAccent">@color/CP</item><!-- button text colour -->
+        <item name="android:colorPrimaryDark">@color/defCA</item><!-- title text colour -->
+        <item name="android:colorAccent">@color/defCA</item><!-- button text colour -->
     </style>
 
     <style name="Theme.InstaTools.Dialog.Alert.Secondary" parent="Theme.InstaTools.Dialog.Alert">
-        <item name="android:colorPrimaryDark">@color/CS</item>
-        <item name="android:colorAccent">@color/CS</item>
+        <item name="android:colorPrimaryDark">@color/defCA</item>
+        <item name="android:colorAccent">@color/defCA</item>
     </style>
 
     <style name="Theme.InstaTools.Dialog.Alert.Tertiary" parent="Theme.InstaTools.Dialog.Alert">
-        <item name="android:colorPrimaryDark">@color/CT</item>
-        <item name="android:colorAccent">@color/CT</item>
+        <item name="android:colorPrimaryDark">@color/defCA</item>
+        <item name="android:colorAccent">@color/defCA</item>
     </style>
 
 

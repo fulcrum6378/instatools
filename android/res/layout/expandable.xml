@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="invisible"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
     <!-- visibility=gone results in IllegalArgumentException: Cannot set 'scaleX' to Float.NaN -->
 
     <androidx.viewpager2.widget.ViewPager2

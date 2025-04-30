@@ -188,11 +188,10 @@ class InstaTools : Application() {
   * Services get messed up when needAuthentication() is invoked
   * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
   * Tagged(/reel?) videos cannot be watched
+  * SearchView should search only when the search button in keyboards is pressed
   * -
   * UI Problems:
-  * Font for PopupMenus
-  * SeekBar should be themed
-  * SwipeRefreshLayout's spinner should be themed
+  * Custom font for PopupMenus and AlertDialog buttons
   * -
   * Extension:
   * A button for indexing a folder

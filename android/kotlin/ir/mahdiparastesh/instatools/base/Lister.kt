@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
@@ -35,6 +36,7 @@ import ir.mahdiparastesh.instatools.list.ListPost
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.view.Expandable
 import ir.mahdiparastesh.instatools.view.UiTools
+import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -147,9 +149,15 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
 
     override fun prepareListing(c: BaseActivity) {
         super.prepareListing(c)
-        refresher?.setOnRefreshListener(this)
-        refresher?.setOnClickListener { onRefresh() }
-        refresher?.setOnChildScrollUpCallback { _, _ -> !canRefresh() }
+
+        // refresher
+        refresher?.apply {
+            setOnRefreshListener(this@OnlineLister)
+            setOnClickListener { onRefresh() }
+            setOnChildScrollUpCallback { _, _ -> !canRefresh() }
+            val colour = (context as ContextThemeWrapper).themeColor(android.R.attr.colorPrimary)
+            setColorSchemeColors(colour, colour, colour)
+        }
     }
 
     override fun onScroll() {
