@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "40.4.2"
+        versionName = "40.6.0"
     }
 
     sourceSets.getByName("main") {
@@ -63,7 +63,7 @@ dependencies {
 
     implementation(libs.ktx.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.ktx.core)
+    implementation(libs.ktx.core)  // used by many UI libraries
     implementation(libs.documentfile)
     implementation(libs.drawerlayout)
     implementation(libs.media3.exoplayer)
@@ -74,10 +74,20 @@ dependencies {
     implementation(libs.swiperefreshlayout)
     implementation(libs.viewpager2)
     implementation(libs.webkit)
-    implementation(libs.lottie)
+    implementation(libs.lottie) {
+        exclude(group = "androidx.appcompat")
+    }
     implementation(libs.shimmer)
     implementation(libs.glide)
-    implementation(libs.dotsindicator)
+    implementation(libs.dotsindicator) {
+        exclude(group = "androidx.activity", module = "activity-compose")
+        exclude(group = "androidx.appcompat")
+        //exclude(group = "androidx.dynamicanimation")  // necessary
+        exclude(group = "androidx.cardview")
+        exclude(group = "androidx.compose")
+        exclude(group = "androidx.compose.ui")
+        exclude(group = "androidx.compose.material3")
+    }
     implementation(libs.commons.text)  // for StringEscapeUtils
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
@@ -85,8 +95,9 @@ dependencies {
     /*
      * - `androidx.appcompat` is required by lottie for AppCompatImageView as a supertype of
      * LottieAnimationView.
-     * - `androidx.core` is required by activity-ktx, drawerlayout, recyclerview,
-     * swiperefreshlayout, viewpager2, webkit and glide.
-     * - `com.google.guava` is required by media3.
      */
+}
+
+configurations.all {
+    exclude(group = "androidx.appcompat")
 }
