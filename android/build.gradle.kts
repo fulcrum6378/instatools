@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "40.6.5"
+        versionName = "40.7.0"
     }
 
     sourceSets.getByName("main") {
@@ -79,14 +79,12 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.dotsindicator) {
         exclude(group = "androidx.activity", module = "activity-compose")
-        exclude(group = "androidx.appcompat")
         exclude(group = "androidx.dynamicanimation")
         exclude(group = "androidx.cardview")
         exclude(group = "androidx.compose")
         exclude(group = "androidx.compose.ui")
         exclude(group = "androidx.compose.material3")
     }
-    implementation(libs.commons.text)  // for StringEscapeUtils
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
 }
