@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ir.mahdiparastesh.instatools.view;
+package androidx.appcompat.graphics.drawable;
 
 import android.content.Context;
 import android.content.res.TypedArray;

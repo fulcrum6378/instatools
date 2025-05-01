@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ir.mahdiparastesh.instatools.view;
+package androidx.appcompat.app;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -32,6 +32,8 @@ import androidx.annotation.DoNotInline;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 public class ActionBarDrawerToggle implements DrawerLayout.DrawerListener {

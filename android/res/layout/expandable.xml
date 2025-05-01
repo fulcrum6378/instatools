@@ -17,6 +17,7 @@
         android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:importantForAccessibility="no"
         android:transformPivotX="0dp"
         android:transformPivotY="0dp" />
 
@@ -63,6 +64,7 @@
             <ImageView
                 android:id="@+id/volume"
                 style="@style/expandableButton"
+                android:contentDescription="@string/muteSound"
                 android:src="@drawable/volume_up"
                 android:tooltipText="@string/muteSound"
                 android:visibility="gone" />
@@ -70,6 +72,7 @@
             <ImageView
                 android:id="@+id/download"
                 style="@style/expandableButton"
+                android:contentDescription="@string/download"
                 android:src="@drawable/download"
                 android:tooltipText="@string/download"
                 android:visibility="gone" />
@@ -77,6 +80,7 @@
             <ImageView
                 android:id="@+id/downloadThis"
                 style="@style/expandableButton"
+                android:contentDescription="@string/downloadThis"
                 android:src="@drawable/download_one"
                 android:tooltipText="@string/downloadThis"
                 android:visibility="gone" />
@@ -84,6 +88,7 @@
             <ImageView
                 android:id="@+id/downloadAll"
                 style="@style/expandableButton"
+                android:contentDescription="@string/downloadAll"
                 android:src="@drawable/download_all"
                 android:tooltipText="@string/downloadAll"
                 android:visibility="gone" />
@@ -91,6 +96,7 @@
             <ImageView
                 android:id="@+id/downloadAudio"
                 style="@style/expandableButton"
+                android:contentDescription="@string/downloadAudio"
                 android:src="@drawable/download_audio"
                 android:tooltipText="@string/downloadAudio"
                 android:visibility="gone" />
@@ -98,11 +104,13 @@
             <ImageView
                 android:id="@+id/viewInInsta"
                 style="@style/expandableButton"
+                android:contentDescription="@string/viewInInsta"
                 android:src="@drawable/instagram"
                 android:tooltipText="@string/viewInInsta" />
         </LinearLayout>
 
-        <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+        <!-- SpringDotsIndicator and WormDotsIndicator require androidx.dynamicanimation. -->
+        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

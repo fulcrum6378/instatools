@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "40.6.0"
+        versionName = "40.6.5"
     }
 
     sourceSets.getByName("main") {
@@ -74,15 +74,13 @@ dependencies {
     implementation(libs.swiperefreshlayout)
     implementation(libs.viewpager2)
     implementation(libs.webkit)
-    implementation(libs.lottie) {
-        exclude(group = "androidx.appcompat")
-    }
+    implementation(libs.lottie)
     implementation(libs.shimmer)
     implementation(libs.glide)
     implementation(libs.dotsindicator) {
         exclude(group = "androidx.activity", module = "activity-compose")
         exclude(group = "androidx.appcompat")
-        //exclude(group = "androidx.dynamicanimation")  // necessary
+        exclude(group = "androidx.dynamicanimation")
         exclude(group = "androidx.cardview")
         exclude(group = "androidx.compose")
         exclude(group = "androidx.compose.ui")
@@ -91,11 +89,6 @@ dependencies {
     implementation(libs.commons.text)  // for StringEscapeUtils
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)
-
-    /*
-     * - `androidx.appcompat` is required by lottie for AppCompatImageView as a supertype of
-     * LottieAnimationView.
-     */
 }
 
 configurations.all {

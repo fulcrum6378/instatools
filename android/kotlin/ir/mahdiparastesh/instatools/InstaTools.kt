@@ -207,18 +207,4 @@ class InstaTools : Application() {
   * Notes:
   * - The GraphQL queries cannot like or unlike old IGTVs.
   * - Either Android 11 or Samsung devices don't detect custom fonts for PopupMenus.
-  * - androidx.appcompat took ~1.2mb!
-  *
-  * The `androidx.compose`'s META-INF appeared in our obfuscated APKs long ago in a commit
-  * between 2023.06.20 - 1 and 2023.08.12 - 5, namely during a change between releases 69 -> 70!
-  * Changes during this period:
-  * - Lottie 6.0.0 -> 6.0.1 -> 6.1.0
-  * - chipslayoutmanager:0.4.5 -> chipslayoutmanager:0.5.0 (ir.mahdiparastesh)
-  * - dotsindicator:4.2 -> dotsindicator:5.0 (plus adding `matchingFallbacks`)
-  * - Gradle 8.1.1 -> 8.2 -> 8.2.1
-  * - Room 2.5.1 -> 2.5.2
-  * - Java 17 -> 19
-  * - Coroutines 1.7.1 -> 1.7.2 -> 1.7.3
-  * - AGP 8.0.2 -> 8.1.0
-  * - Moving KAPT to the project's build.gradle
 */
