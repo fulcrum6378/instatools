@@ -11,6 +11,7 @@ import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.base.ForegroundService
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.LazyFile
+import ir.mahdiparastesh.instatools.util.StorageManager
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -132,7 +133,7 @@ class DownloadService : ForegroundService(), Downloader {
         updateNotification()
 
         // clear cached pictures of Glide
-        c.clearCacheIfNecessary("image_manager_disk_cache")
+        c.storageManager.clearCacheIfNecessary(StorageManager.CacheSubdir.IMAGE)
 
         if (proceed) {
             if (fatalError != null) {

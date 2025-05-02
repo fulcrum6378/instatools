@@ -162,7 +162,6 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
             var userId_: String? = if (!reset) userId else vm.profile!!.id()
             var userName_: String = if (!reset) userName!! else vm.profile!!.username!!
             var profileReplaced = false
-            val userIdWasAvailableAtFirst = userId_ != null
 
             // check if this is the same user that was previously loaded
             vm.profile?.also { oldUser ->
@@ -181,7 +180,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
             vm.profile = cache ?: try {
                 SimpleJobs.profileInfo(userName_)
             } catch (e: Api.FailureException) {
-                if (userIdWasAvailableAtFirst && e.code == 404) {
+                if (e.code == 404 && userId_ != null) {
                     // detect a recently changed user name
                     try {
                         SimpleJobs.profileInfo(

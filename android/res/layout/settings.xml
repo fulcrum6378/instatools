@@ -111,9 +111,14 @@
                     android:textSize="13sp" />
 
                 <TextView
-                    android:id="@+id/stClearCache"
+                    android:id="@+id/stClearImageCache"
                     style="@style/stButton"
-                    android:text="@string/stClearCache" />
+                    android:text="@string/stClearImageCache" />
+
+                <TextView
+                    android:id="@+id/stClearWebCache"
+                    style="@style/stButton"
+                    android:text="@string/stClearWebCache" />
             </LinearLayout>
 
             <View

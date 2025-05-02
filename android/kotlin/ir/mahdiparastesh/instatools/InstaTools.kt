@@ -3,11 +3,9 @@ package ir.mahdiparastesh.instatools
 import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.StatFs
 import androidx.annotation.MainThread
 import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
-import ir.mahdiparastesh.instatools.Settings.Companion.toBytes
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.base.ForegroundService
 import ir.mahdiparastesh.instatools.data.Account
@@ -17,7 +15,7 @@ import ir.mahdiparastesh.instatools.data.DownloadHistory
 import ir.mahdiparastesh.instatools.data.Favourite
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.util.Queue
-import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.util.StorageManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,12 +41,15 @@ class InstaTools : Application() {
 
     /** A long list of locally stored media */
     val downloadHistory: DownloadHistory by lazy {
-        DownloadHistory(File(cacheDir, "download_history.txt"))
+        DownloadHistory(File(filesDir, "download_history.txt"))
     }
 
     /** List of all [Favourite]s */
     var fav: MutableLiveData<HashSet<Favourite>?> = MutableLiveData(null)
     private var favPickle: Pickle? = null
+
+    /** Manages files inside the private internal storage. */
+    val storageManager: StorageManager by lazy { StorageManager(this) }
 
 
     override fun onCreate() {
@@ -124,38 +125,6 @@ class InstaTools : Application() {
         }
     }
 
-    fun clearCacheIfNecessary(subdir: String): Boolean {
-        if (cacheSize() <= gsp.getLong(Settings.spCacheLimit, defaultCacheLimit()))
-            return false
-        File(cacheDir, subdir).deleteRecursively()
-        return true
-    }
-
-    fun cacheSize() = cacheDir.walk().sumOf { it.length() } - 4096L
-
-    fun defaultCacheLimit(): Long = getExternalFilesDir(null)?.let {
-        val minie = resources.getInteger(R.integer.stCacheMin)
-        val maxie = resources.getInteger(R.integer.stCacheMaxNominal) + minie
-        val stat = StatFs(it.path)
-        var ret = (stat.blockSizeLong * stat.availableBlocksLong) / 275L
-        if (ret < minie.toBytes()) ret = minie.toBytes()
-        if (ret > maxie.toBytes()) ret = maxie.toBytes()
-        return ret
-    } ?: Settings.defSpCacheLimit
-
-    fun deleteExpiredCachePickles(acc: Long) {
-        val now = Utils.now()
-        for (pickleType in Pickle.Type.entries) {
-            if (!pickleType.isApiCache) continue
-            val branch = Pickle.branch(cacheDir, pickleType, acc)
-            if (!branch.exists()) continue
-
-            for (leaf in branch.listFiles()!!)
-                if ((now - leaf.lastModified()) >= pickleType.lifespan)
-                    leaf.delete()
-        }
-    }
-
     /**
      * If Instagram detects the app as a robot, this method must be invoked for the proper actions
      * to be taken right away!
@@ -171,16 +140,6 @@ class InstaTools : Application() {
             })
         }
     }
-
-    fun deletePickles(accountId: String = acc!!.id.toString()) {
-        File(filesDir, Pickle.DIR_PREFIX + accountId).deleteRecursively()
-        File(cacheDir, Pickle.DIR_PREFIX + accountId).deleteRecursively()
-    }
-
-    fun deleteSp(accountId: String = acc!!.id.toString()) {
-        File(getDir("shared_prefs", MODE_PRIVATE), "$accountId.xml")
-            .apply { if (exists()) delete() }
-    }
 }
 
 /* TODO:
@@ -190,7 +149,6 @@ class InstaTools : Application() {
   * Services get messed up when needAuthentication() is invoked
   * -
   * Extension:
-  * Clear Cache -> { Clear Image Cache, Clear Web Cache }
   * A button for indexing a folder
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services

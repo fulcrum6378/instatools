@@ -20,7 +20,9 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  * Caches paths of downloaded files in order to show to the user that their related posts are
  * already downloaded.
- * @see [ir.mahdiparastesh.instatools.list.ListPost]
+ *
+ * @see ir.mahdiparastesh.instatools.list.ListPost
+ * @see ir.mahdiparastesh.instatools.list.ListStory
  */
 class DownloadHistory(private val file: File) {
 

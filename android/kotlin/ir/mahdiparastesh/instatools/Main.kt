@@ -417,8 +417,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         ForegroundService.terminateTasks(c)
         CoroutineScope(Dispatchers.IO).launch {
             if (bd && c.acc != null) {
-                c.deletePickles()
-                c.deleteSp()
+                c.storageManager.deletePickles()
+                c.storageManager.deleteSp()
             }
             Account.save(c, Account.load(c).apply { removeAll { it.id == c.acc?.id } })
             withContext(Dispatchers.Main) { switchAcc() }

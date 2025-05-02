@@ -114,8 +114,8 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         CoroutineScope(Dispatchers.IO).launch {
             val sid = acc.id.toString()
             if (bd) {
-                c.c.deletePickles(sid)
-                c.c.deleteSp(sid)
+                c.c.storageManager.deletePickles(sid)
+                c.c.storageManager.deleteSp(sid)
             }
             c.accounts.removeAll { it.id == acc.id }
             Account.save(c, c.accounts)

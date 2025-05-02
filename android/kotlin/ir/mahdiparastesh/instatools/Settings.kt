@@ -18,6 +18,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
+import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
@@ -27,9 +29,10 @@ import ir.mahdiparastesh.instatools.databinding.AlsoRevokePermBinding
 import ir.mahdiparastesh.instatools.databinding.FolderAliasBinding
 import ir.mahdiparastesh.instatools.databinding.ListAliasBinding
 import ir.mahdiparastesh.instatools.databinding.SettingsBinding
+import ir.mahdiparastesh.instatools.util.StorageManager
 import ir.mahdiparastesh.instatools.util.Utils.getOrNull
 import ir.mahdiparastesh.instatools.view.EasyPopupMenu
-import ir.mahdiparastesh.instatools.view.UiTools.showBytes
+import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import ir.mahdiparastesh.instatools.view.UiTools.vish
 import kotlinx.coroutines.CoroutineScope
@@ -101,6 +104,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
 
         fun Int.toBytes() = this * MB
 
+        @WorkerThread
         fun loadAliases(c: InstaTools, global: Boolean): HashMap<String, String> {
             val map = (if (global) c.gsp else c.sp!!).getString(spAliases, null)
                 ?.let { Json.decodeFromString<HashMap<String, String>>(it) }
@@ -243,7 +247,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stAddAlias.setOnClickListener { editAlias(null) }
 
         // caching
-        cacheLimit = c.gsp.getLong(spCacheLimit, c.defaultCacheLimit())
+        cacheLimit = c.gsp.getLong(spCacheLimit, c.storageManager.defaultCacheLimit())
         b.stCacheLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (!fromUser) return
@@ -259,9 +263,13 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         if (!globalMode) {
             b.stCache.vis(false)
             b.stSepCache.vis(false)
-        } else b.stClearCache.setOnClickListener {
-            clearCache()
-            updateCacheSize()
+        } else {
+            b.stClearImageCache.setOnClickListener {
+                clearCache(StorageManager.CacheSubdir.IMAGE, it)
+            }
+            b.stClearWebCache.setOnClickListener {
+                clearCache(StorageManager.CacheSubdir.WEB, it)
+            }
         }
 
         // user data
@@ -273,7 +281,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
                 setNegativeButton(R.string.no, null)
                 setPositiveButton(R.string.yes) { _, _ ->
                     ForegroundService.terminateTasks(c)
-                    CoroutineScope(Dispatchers.IO).launch { c.deletePickles() }
+                    CoroutineScope(Dispatchers.IO).launch { c.storageManager.deletePickles() }
                     recreateMain = true
                 }
             }.show()
@@ -319,18 +327,40 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         b.stMainPath.text = Uri.decode(value ?: prf.getString(spStorage, ""))
     }
 
-    private var clearingCache = false
-    fun Context.clearCache() {
-        clearingCache = true
-        CoroutineScope(Dispatchers.IO)
-            .launch { cacheDir.deleteRecursively() }
-            .invokeOnCompletion { clearingCache = false }
+    @MainThread
+    private fun clearCache(subdir: StorageManager.CacheSubdir, button: View) {
+        button.isClickable = false
+        button.alpha = 0.6f
+
+        CoroutineScope(Dispatchers.IO).launch {
+            c.storageManager.clearCache(subdir)
+
+            val cacheSize = printCacheSize()
+            withContext(Dispatchers.Main) {
+                displayCacheSize(cacheSize)
+                button.isClickable = true
+                button.alpha = 1f
+            }
+        }
     }
 
+    @WorkerThread
+    private fun printCacheSize(): String = getString(
+        R.string.stCache, UiTools.showBytes(c, c.storageManager.cacheSize())
+    )
+
+    @MainThread
+    private fun displayCacheSize(text: String) {
+        b.stCaching.text = text
+    }
+
+    @MainThread
     private fun updateCacheSize() {
         CoroutineScope(Dispatchers.IO).launch {
-            val cacheSize = getString(R.string.stCache, c.showBytes(c.cacheSize()))
-            withContext(Dispatchers.Main) { b.stCaching.text = cacheSize }
+            val cacheSize = printCacheSize()
+            withContext(Dispatchers.Main) {
+                displayCacheSize(cacheSize)
+            }
         }
     }
 
@@ -344,6 +374,7 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
         if (updateSb) b.stCacheLimit.progress = limitInMbs - cacheMin
     }
 
+    @MainThread
     private fun showAliases() {
         val aliases = aliases ?: return
         b.stAliases.adapter = object : ArrayAdapter<Map.Entry<String, String>>(

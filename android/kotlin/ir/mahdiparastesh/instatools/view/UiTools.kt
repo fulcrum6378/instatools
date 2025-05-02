@@ -113,8 +113,8 @@ object UiTools {
     }*/
 
     /** Explains bytes for humans. */
-    fun Context.showBytes(length: Long): String {
-        val units = resources.getStringArray(R.array.bytes)
+    fun showBytes(c: Context, length: Long): String {
+        val units = c.resources.getStringArray(R.array.bytes)
         var unit = 0
         var nominalSize = length.toDouble()
         while ((nominalSize / 1024.0) > 1.0) {

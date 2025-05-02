@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "40.8.5"
+        versionName = "40.9.5"
     }
 
     sourceSets.getByName("main") {

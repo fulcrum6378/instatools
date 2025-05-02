@@ -175,7 +175,8 @@
     <string name="stAliasProfile">Enter profile user-name</string>
     <string name="addFolder">Add Folder</string>
     <string name="stCache">Caching (current size: %s)</string>
-    <string name="stClearCache">Clear Cache</string>
+    <string name="stClearImageCache">Clear image cache</string>
+    <string name="stClearWebCache">Clear web cache</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
     <string name="stResetDataSure">

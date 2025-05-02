@@ -26,6 +26,7 @@ import ir.mahdiparastesh.instatools.databinding.WelcomeBinding
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.StorageManager
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -275,8 +276,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             browsePurpose = null
 
             CoroutineScope(Dispatchers.IO).launch {
-                c.clearCacheIfNecessary("WebView")
-                c.deleteExpiredCachePickles(id)
+                c.storageManager.clearCacheIfNecessary(StorageManager.CacheSubdir.WEB)
+                c.storageManager.deleteExpiredCachePickles(id)
             }
         }
 

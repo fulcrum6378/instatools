@@ -176,7 +176,8 @@
     </string>
     <string name="stAliasProfile">آیدی یک پروفایل را وارد کنید</string>
     <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
-    <string name="stClearCache">پاک کردن حافظه پنهان</string>
+    <string name="stClearImageCache">پاکسازی کش تصاویر</string>
+    <string name="stClearWebCache">پاکسازی کش وب</string>
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
     <string name="stResetDataSure">
