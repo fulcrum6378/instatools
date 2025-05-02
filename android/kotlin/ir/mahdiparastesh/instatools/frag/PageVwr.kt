@@ -128,11 +128,7 @@ class PageVwr : BasePageViewer(), PostSelector {
         // is the page private and not followed?
         showPv = c.vm.profile?.pv() == true && c.vm.profile?.followed_by_viewer == false
             && c.vm.profile?.username != c.c.acc?.user
-        b.rv.vis(!showPv)
-        if (!showPv) {
-            if (reset) gridAdapter()?.notifyDataSetChanged()
-            if (!isModelLoaded()) load(reset)
-        }
+        if (!showPv && !isModelLoaded()) load(reset)
     }
 
     override fun createAdapter(): RecyclerView.Adapter<*> =

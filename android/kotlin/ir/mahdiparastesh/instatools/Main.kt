@@ -314,7 +314,37 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         return true
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean = true
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onQueryTextSubmit(query: String): Boolean {
+        vm.schQuery = query
+
+        if (vm.schErrored) b.searchStatus.setAnimation(R.raw.pending)
+        vm.schErrored = false
+        b.searchStatus.playAnimation()
+        b.searchStatus.vis()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val results = Api.json<GraphQl>(
+                    Api.Endpoint.QUERY.url, true, GraphQlQuery.SEARCH.body(query)
+                ).data!!.xdt_api__v1__fbsearch__topsearch_connection!!
+                withContext(Dispatchers.Main) {
+                    b.searchStatus.vis(false)
+                    b.searchStatus.pauseAnimation()
+                    vm.schRes = results.users.sortedBy { it.position }
+                    b.searchRes.adapter?.notifyDataSetChanged()
+                }
+            } catch (e: Api.FailureException) {
+                withContext(Dispatchers.Main) {
+                    //UiTools.snackbar(b.root, UiTools.apiError(c, e.code))
+                    Toast.makeText(c, UiTools.apiError(c, e.code), Toast.LENGTH_LONG).show()
+                    vm.schErrored = true
+                    b.searchStatus.setAnimation(R.raw.failed)
+                }
+            }
+        }
+        return true
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onQueryTextChange(newText: String): Boolean {
@@ -330,31 +360,6 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         }
         if (newText.startsWith("@")) {
             searchView.setQuery(newText.substring(1), true); return true; }
-        vm.schQuery = newText
-
-        if (vm.schErrored) b.searchStatus.setAnimation(R.raw.pending)
-        vm.schErrored = false
-        b.searchStatus.playAnimation()
-        b.searchStatus.vis()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val results = Api.json<GraphQl>(
-                    Api.Endpoint.QUERY.url, true, GraphQlQuery.SEARCH.body(newText)
-                ).data!!.xdt_api__v1__fbsearch__topsearch_connection!!
-                withContext(Dispatchers.Main) {
-                    b.searchStatus.vis(false)
-                    b.searchStatus.pauseAnimation()
-                    vm.schRes = results.users.sortedBy { it.position }
-                    b.searchRes.adapter?.notifyDataSetChanged()
-                }
-            } catch (_: Api.FailureException) {
-                withContext(Dispatchers.Main) {
-                    vm.schErrored = true
-                    b.searchStatus.setAnimation(R.raw.failed)
-                }
-            }
-        }
         return true
     }
 

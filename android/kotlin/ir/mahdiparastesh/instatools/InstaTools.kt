@@ -185,10 +185,9 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
+  * Download Media of Reels and Tagger posts before passing them to Expandable
+  * Progress dialogs for Downloader, ListRel, ListTag and PageVwr.Header
   * Services get messed up when needAuthentication() is invoked
-  * REELS AND TAGGED POSTS ARE NOT DOWNLOADABLE!!!
-  * Tagged(/reel?) videos cannot be watched
-  * SearchView should search only when the search button in keyboards is pressed
   * -
   * Extension:
   * Clear Cache -> { Clear Image Cache, Clear Web Cache }
