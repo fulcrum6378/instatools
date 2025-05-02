@@ -64,7 +64,6 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
         }
 
     class MyModel : ViewModel() {
-        var user: User? = null
         var profile: User? = null
         var posts: Page<Media>? = null
         var story: Story? = null
@@ -73,10 +72,9 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
         var tagged: Page<Media>? = null
         var currentPage = 1
         var fav: Favourite? = null
-        var reloadUser = false
+        //var reloadUser = false
 
         fun reset() {
-            user = null
             profile = null
             posts = null
             story = null
@@ -85,15 +83,19 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
             tagged = null
             currentPage = 1
             fav = null
-            reloadUser = false
+            //reloadUser = false
         }
     }
 
     companion object {
         private const val EXTRA_USER_ID = "userId"
+        private const val EXTRA_USER_NAME = "userName"
 
-        fun comeHere(c: BaseActivity, userId: String) {
-            c.goTo(Viewer::class) { putExtra(EXTRA_USER_ID, userId) }
+        fun comeHere(c: BaseActivity, userId: String, userName: String) {
+            c.goTo(Viewer::class) {
+                putExtra(EXTRA_USER_ID, userId)
+                putExtra(EXTRA_USER_NAME, userName)
+            }
         }
     }
 
@@ -105,7 +107,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
         initToolbar(b.toolbar, R.string.vwTitle)
 
         // if the user is already loaded
-        vm.user?.also {
+        vm.profile?.also {
             b.toolbar.title = it.username
             fixTbMenu()
         }
@@ -125,8 +127,10 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
-        intent.extras?.getString(EXTRA_USER_ID)?.also { userId ->
-            load(userId = userId)
+        if (intent.hasExtra(EXTRA_USER_ID)) {
+            val userId = intent.getStringExtra(EXTRA_USER_ID)!!
+            val userName = intent.getStringExtra(EXTRA_USER_NAME)!!
+            load(userId, userName)
             return true
         }
         intent.data?.also { data ->
@@ -143,90 +147,84 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
     }
 
     @MainThread
-    fun load(userId: String? = null, userName: String? = null, reset: Boolean = false) {
+    fun load(
+        userId: String? = null,
+        userName: String? = null,
+        reset: Boolean = false
+    ) {
         if (c.acc == null) return
-        vm.user?.also { u ->
+        vm.profile?.also { u ->
             if (!reset && (userId == u.id || userName == u.username)) return@load
         }
         if (::b.isInitialized && expandable.zoomed) expandable.collapse()
 
         CoroutineScope(Dispatchers.IO).launch {
-            var userId_: String? = if (!reset) userId else vm.user!!.id()
-            var userName_: String? = userName
-            var userReplaced = false
+            var userId_: String? = if (!reset) userId else vm.profile!!.id()
+            var userName_: String = if (!reset) userName!! else vm.profile!!.username!!
+            var profileReplaced = false
+            val userIdWasAvailableAtFirst = userId_ != null
 
+            // check if this is the same user that was previously loaded
+            vm.profile?.also { oldUser ->
+                profileReplaced = oldUser.username!! != userName_
+            }
+
+            // load from a pickle only if a user ID is provided
             var pickle: Pickle? = null
-            if (userId_ != null) {  // if the parameter `userId` is used
-                vm.user?.also { oldUser ->
-                    userReplaced = oldUser.id!! != userId_
-                }
+            var cache: User? = null
+            if (userId_ != null) {
                 pickle = Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_)
-                val cache = if (!userReplaced && !reset) pickle.restore<Array<User>>() else null
-                if (cache != null && cache.size == 2) {
-                    vm.user = cache[0]
-                    vm.profile = cache[1]
+                cache = if (!profileReplaced && !reset) pickle.restore<User>() else null
+            }
+
+            // fetch profile info if a Pickle cache is not available
+            vm.profile = cache ?: try {
+                SimpleJobs.profileInfo(userName_)
+            } catch (e: Api.FailureException) {
+                if (userIdWasAvailableAtFirst && e.code == 404) {
+                    // detect a recently changed user name
+                    try {
+                        SimpleJobs.profileInfo(
+                            SimpleJobs.userInfo(userId_).username!!
+                        )
+                    } catch (e: Api.FailureException) {
+                        onError(e.code)
+                        return@launch
+                    }
                 } else {
-                    vm.user = try {
-                        SimpleJobs.userInfo(userId_)
-                    } catch (e: Api.FailureException) {
-                        onError(e.code)
-                        return@launch
-                    }
-                    userName_ = vm.user!!.username!!
-
-                    vm.profile = try {
-                        SimpleJobs.profileInfo(userName_)
-                    } catch (e: Api.FailureException) {
-                        onError(e.code)
-                        return@launch
-                    }
-                }
-
-            } else {  // if the parameter `userName` is used
-                vm.user?.also { oldUser ->
-                    userReplaced = oldUser.username!! != userName_
-                }
-                vm.profile = try {
-                    SimpleJobs.profileInfo(userName_!!)
-                } catch (e: Api.FailureException) {
-                    onError(e.code)
-                    return@launch
-                }
-                userId_ = vm.profile!!.id!!
-                if (vm.user == null) vm.user = try {
-                    SimpleJobs.userInfo(userId_)
-                } catch (e: Api.FailureException) {
                     onError(e.code)
                     return@launch
                 }
             }
 
+            // save as a pickle
             if (pickle == null) pickle =
-                Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_)
-            pickle.save(arrayOf(vm.user!!, vm.profile!!))
+                Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, vm.profile!!.id())
+            pickle.save(vm.profile!!)
 
-            if (reset || userReplaced) {
+            // clear the data models if this is a different profile or a reset action is demanded
+            if (reset || profileReplaced) {
                 vm.posts = null
                 vm.story = null
                 vm.highlights = null
                 vm.reels = null
                 vm.tagged = null
             }
-            if (!userReplaced) {
+            if (!profileReplaced) {
                 // find out if this user is in the favourites list
                 // and update its details if it is in the list
-                vm.fav = c.fav.value?.find { it.id == vm.user!!.id!! }?.also {
-                    it.user = vm.user!!.username!!
-                    it.name = vm.user!!.full_name!!
-                    it.photo = vm.user!!.profile_pic_url!!
+                vm.fav = c.fav.value?.find { it.id == vm.profile!!.id!! }?.also {
+                    it.user = vm.profile!!.username!!
+                    it.name = vm.profile!!.full_name!!
+                    it.photo = vm.profile!!.profile_pic_url!!
                 }
-            } else
-                vm.reloadUser = false
+            } /*else
+                vm.reloadUser = false*/
 
             withContext(Dispatchers.Main) {
-                if (userReplaced) (currentPage() as BasePageViewer?)?.clear()
+                if (profileReplaced) (currentPage() as BasePageViewer?)?.clear()
                 (currentPage() as? PageVwr)?.showProfile(reset)
-                b.toolbar.title = vm.user?.username
+                b.toolbar.title = vm.profile?.username
                 fixTbMenu()
             }
         }
@@ -235,7 +233,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
     private suspend fun onError(code: Int) {
         withContext(Dispatchers.Main) {
             Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
-            if (vm.user != null) {
+            if (vm.profile != null) {
                 (currentPage() as? PageVwr)?.b?.refresher?.isRefreshing =
                     false  // in case of a refresh
                 //UiTools.snackbar(b.root, UiTools.apiError(c, code))
@@ -248,8 +246,8 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtInsta -> vm.user?.username?.also { UiTools.openProfile(this, it) }
-            R.id.vtFav -> vm.user?.also { u ->
+            R.id.vtInsta -> vm.profile?.username?.also { UiTools.openProfile(this, it) }
+            R.id.vtFav -> vm.profile?.also { u ->
                 if (vm.fav == null) {
                     vm.fav = Favourite(
                         u.id(),
@@ -264,7 +262,7 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
                 }
                 fixTbMenu()
             }
-            R.id.vtShortcut -> vm.user?.also { u ->
+            R.id.vtShortcut -> vm.profile?.also { u ->
                 val header = ((currentPage() as? PageVwr)?.b?.rv?.adapter as ConcatAdapter?)
                     ?.adapters[0] as PageVwr.Header? ?: return@also
                 val bmp = (header.proPic.drawable as BitmapDrawable?)?.bitmap ?: return@also

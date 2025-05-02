@@ -37,7 +37,7 @@ class ListSch(val c: Main) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>
         h.b.user.vis(u.username != "")
         h.b.user.text = u.username
         h.b.root.setOnClickListener {
-            Viewer.comeHere(c, u.id())
+            Viewer.comeHere(c, u.id(), u.username!!)
         }
         h.b.sep.vis(i < itemCount - 1)
     }

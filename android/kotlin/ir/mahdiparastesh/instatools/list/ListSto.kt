@@ -149,7 +149,7 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
 
                 story.items = newStory.items
                 c.vm.highlights?.also {
-                    Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.vm.user!!.id!!)
+                    Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.vm.profile!!.id!!)
                         .save(it)
                 }
             }

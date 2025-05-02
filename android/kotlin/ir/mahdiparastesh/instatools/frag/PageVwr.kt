@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -36,6 +37,7 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.PageVwrBinding
 import ir.mahdiparastesh.instatools.databinding.PageVwrHeaderBinding
+import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListVwr
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.EasyPopupMenu
@@ -100,7 +102,7 @@ class PageVwr : BasePageViewer(), PostSelector {
 
                         CoroutineScope(Dispatchers.IO).launch {
                             val pickle = Pickle(
-                                c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.user!!.id!!
+                                c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.profile!!.id!!
                             )
                             c.vm.posts?.also { pickle.save(it) }
                         }
@@ -120,12 +122,12 @@ class PageVwr : BasePageViewer(), PostSelector {
     @SuppressLint("NotifyDataSetChanged")
     @MainThread
     fun showProfile(reset: Boolean = false) {
-        if (c.vm.user == null || c.vm.profile == null || !isBInitialised()) return
+        if (c.vm.profile == null || !isBInitialised()) return
         onLoaded()
 
         // is the page private and not followed?
-        showPv = c.vm.user?.pv() == true && c.vm.profile?.followed_by_viewer == false
-            && c.vm.user?.username != c.c.acc?.user
+        showPv = c.vm.profile?.pv() == true && c.vm.profile?.followed_by_viewer == false
+            && c.vm.profile?.username != c.c.acc?.user
         b.rv.vis(!showPv)
         if (!showPv) {
             if (reset) gridAdapter()?.notifyDataSetChanged()
@@ -140,7 +142,7 @@ class PageVwr : BasePageViewer(), PostSelector {
         //Log.d("ESPINELA", "PageVwr: fetch (reset: $reset)")
 
         // first read from cache if available
-        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.user!!.id!!)
+        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.POSTS, c.vm.profile!!.id!!)
         val cache = if (c.vm.posts == null && !reset) pickle.restore<Page<Media>>() else null
         //Log.d("ESPINELA", "PageVwr: fetch: is cache available?: ${cache != null}")
         if (cache != null) {
@@ -156,21 +158,15 @@ class PageVwr : BasePageViewer(), PostSelector {
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
-                GraphQlQuery.PROFILE_POSTS_INITIAL.body(c.vm.user!!.username!!, "33")
+                GraphQlQuery.PROFILE_POSTS_INITIAL.body(c.vm.profile!!.username!!, "33")
             else
-                GraphQlQuery.PROFILE_POSTS_MORE.body(c.vm.user!!.username!!, "33", cursor)
+                GraphQlQuery.PROFILE_POSTS_MORE.body(c.vm.profile!!.username!!, "33", cursor)
         ).data!!.xdt_api__v1__feed__user_timeline_graphql_connection!!
 
         // update the data model and the UI
         if (c.vm.posts == null || reset) {
             c.vm.posts = page
-            withContext(Dispatchers.Main) {
-                if (reset && !c.vm.reloadUser) {
-                    c.vm.reloadUser = true
-                    onLoaded()
-                } else
-                    onLazilyLoaded(0, page.edges.size)
-            }
+            withContext(Dispatchers.Main) { onLazilyLoaded(0, page.edges.size) }
         } else {
             val lastBefore = c.vm.posts!!.edges.size
             //Log.d("ESPINELA", "PageVwr: fetch: pre-addAll: ${c.vm.posts!!.edges.size} edges")
@@ -199,8 +195,8 @@ class PageVwr : BasePageViewer(), PostSelector {
     fun gridAdapter() = (rv?.adapter as ConcatAdapter?)?.adapters?.get(1) as ListVwr?
 
     override fun onRefresh() {
-        if (!c.vm.reloadUser) load(true)
-        else c.load(reset = true)
+        /*if (!c.vm.reloadUser) load(true)
+        else*/ c.load(reset = true)
     }
 
     override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =
@@ -263,11 +259,25 @@ class PageVwr : BasePageViewer(), PostSelector {
             b.proPic.layoutParams = b.proPic.layoutParams
                 .apply { height = c.dm.widthPixels }
             b.proClick.setOnClickListener { v ->
-                val download = c.vm.user?.downloadOriginalPicture() ?: return@setOnClickListener
                 EasyPopupMenu(
                     c, v, R.menu.viewer_pic_more,
                     R.id.vpDownload to {
                         CoroutineScope(Dispatchers.IO).launch {
+                            val download = c.vm.profile?.id?.let {
+                                try {
+                                    SimpleJobs.userInfo(it)
+                                } catch (e: Api.FailureException) {
+                                    withContext(Dispatchers.Main) {
+                                        //UiTools.snackbar(b.root, UiTools.apiError(c, e.code))
+                                        Toast.makeText(
+                                            c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                    null
+                                }
+                            }
+                                ?.downloadOriginalPicture()
+                                ?: return@launch
                             c.c.downloads.add<Download>(download, true)
                             Downloads.initService(c)
                         }

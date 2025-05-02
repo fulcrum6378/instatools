@@ -35,7 +35,7 @@ class ListFav(val c: Main, private val f: PageFav) :
         h.b.name.text = "${i + 1}. ${fav.name}"
         h.b.user.text = fav.user
         h.b.root.setOnClickListener {
-            Viewer.comeHere(c, fav.id)
+            Viewer.comeHere(c, fav.id, fav.user)
         }
         h.b.unFav.setOnClickListener {
             fav.tempDeleted = !fav.tempDeleted

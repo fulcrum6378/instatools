@@ -140,7 +140,7 @@ class Expandable(
         val u = media.owner()
         b.username.text = "@${u.username}"
         b.username.setOnClickListener {
-            if (c !is Viewer) Viewer.comeHere(c, u.id())
+            if (c !is Viewer) Viewer.comeHere(c, u.id(), u.username!!)
             else UiTools.openProfile(c, u.username!!)
         }
 

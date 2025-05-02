@@ -40,10 +40,10 @@ class PageSto : BasePageViewer() {
         PageStoBinding.inflate(inf, parent, false).let { b = it; it.root }
 
     override suspend fun fetch(reset: Boolean) {
-        val uid = c.vm.user?.id() ?: return
+        val uid = c.vm.profile?.id() ?: return
 
         // load their story into the data model
-        val pickle1 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.STORY, c.vm.user!!.id!!)
+        val pickle1 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.STORY, c.vm.profile!!.id!!)
         val cache1 = if (!reset) pickle1.restore<Story>() else null
         if (cache1 != null) // read from cache
             c.vm.story = cache1
@@ -56,7 +56,7 @@ class PageSto : BasePageViewer() {
         }
 
         // load their highlights into the data model
-        val pickle2 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.vm.user!!.id!!)
+        val pickle2 = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.HIGHLIGHTS, c.vm.profile!!.id!!)
         val cache2 = if (!reset) pickle2.restore<Page<Story>>() else null
         if (cache2 != null) // read from cache
             c.vm.highlights = cache2

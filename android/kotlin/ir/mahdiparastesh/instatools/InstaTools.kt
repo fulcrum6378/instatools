@@ -191,6 +191,7 @@ class InstaTools : Application() {
   * SearchView should search only when the search button in keyboards is pressed
   * -
   * Extension:
+  * Clear Cache -> { Clear Image Cache, Clear Web Cache }
   * A button for indexing a folder
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services

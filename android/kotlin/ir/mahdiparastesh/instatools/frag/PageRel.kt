@@ -70,7 +70,7 @@ class PageRel : BasePageViewer(), PostSelector {
     override suspend fun fetch(reset: Boolean) {
 
         // first read from cache if available
-        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.REELS, c.vm.user!!.id!!)
+        val pickle = Pickle(c.cacheDir, c.c.acc!!.id, Pickle.Type.REELS, c.vm.profile!!.id!!)
         val cache =
             if (c.vm.reels == null && !reset) pickle.restore<Page<Media.Wrapper>>() else null
         if (cache != null) {
@@ -83,9 +83,9 @@ class PageRel : BasePageViewer(), PostSelector {
         val page = Api.json<GraphQl>(
             Api.Endpoint.QUERY.url, true,
             if (cursor == null)
-                GraphQlQuery.PROFILE_REELS_INITIAL.body(c.vm.user!!.id!!, "12")
+                GraphQlQuery.PROFILE_REELS_INITIAL.body(c.vm.profile!!.id!!, "12")
             else
-                GraphQlQuery.PROFILE_REELS_MORE.body(c.vm.user!!.id!!, "12", cursor)
+                GraphQlQuery.PROFILE_REELS_MORE.body(c.vm.profile!!.id!!, "12", cursor)
         ).data!!.xdt_api__v1__clips__user__connection_v2!!
 
         // update the data model and the UI
