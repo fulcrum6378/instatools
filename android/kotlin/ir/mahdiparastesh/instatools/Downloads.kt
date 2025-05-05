@@ -128,7 +128,11 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.also {
-            if (!it.startsWith(UiTools.IG_OPENABLE) && !it.startsWith(Login.RAW_HOST)) {
+            var link = it
+            if (' ' in link)  // post was shared with caption
+                link = link.split(' ').last()  // exclude its caption
+
+            if (!link.startsWith(UiTools.IG_OPENABLE) && !link.startsWith(Login.RAW_HOST)) {
                 AlertDialog.Builder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
@@ -137,7 +141,7 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 return@also
             }
             if (c.acc != null) {
-                handleLink(it)
+                handleLink(link)
                 initService(this)
             } else
                 goTo(Login::class)

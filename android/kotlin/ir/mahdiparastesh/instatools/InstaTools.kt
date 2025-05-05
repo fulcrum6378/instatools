@@ -148,7 +148,8 @@ class InstaTools : Application() {
   * Progress dialogs for Downloader, ListRel, ListTag and PageVwr.Header
   * Services get messed up when needAuthentication() is invoked
   * -
-  * Extension:
+  * Extensions:
+  * Reloading for each ListTry item
   * A button for indexing a folder
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
@@ -165,4 +166,5 @@ class InstaTools : Application() {
   * Notes:
   * - The GraphQL queries cannot like or unlike old IGTVs.
   * - Either Android 11 or Samsung devices don't detect custom fonts for PopupMenus.
+  * - Even the official Instagram app sometimes receives duplicate lazy-list content.
 */
