@@ -98,7 +98,7 @@ class PageVwr : BasePageViewer(), PostSelector {
                                 return@forEachIndexed; }
                         }
                         if (index == -1) return
-                        gridAdapter()?.notifyItemChanged(index)
+                        gridAdapter().notifyItemChanged(index)
 
                         CoroutineScope(Dispatchers.IO).launch {
                             val pickle = Pickle(
@@ -112,17 +112,21 @@ class PageVwr : BasePageViewer(), PostSelector {
         }
 
         // buttons for other pages
-        b.toPageSto.setOnClickListener { if (isModelLoaded()) c.turnToPage(0) }
-        b.toPageRel.setOnClickListener { if (isModelLoaded()) c.turnToPage(2) }
-        b.toPageTag.setOnClickListener { if (isModelLoaded()) c.turnToPage(3) }
+        b.toPageSto.setOnClickListener { if (c.vm.profile != null) c.turnToPage(0) }
+        b.toPageRel.setOnClickListener { if (c.vm.profile != null) c.turnToPage(2) }
+        b.toPageTag.setOnClickListener { if (c.vm.profile != null) c.turnToPage(3) }
 
         showProfile()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    /**
+     * Displays the loaded profile and triggers loading its posts.
+     * @param reset manual reset or a new profile is replaced
+     */
     @MainThread
     fun showProfile(reset: Boolean = false) {
-        if (c.vm.profile == null || !isBInitialised()) return
+        if (c.vm.profile == null || !isBInitialised() || (b.rv.adapter != null && !reset)) return
+        //Log.d("ESPINELA", "PageVwr: showProfile: reset=${reset}")
         onLoaded()
 
         // is the page private and not followed?
@@ -134,6 +138,7 @@ class PageVwr : BasePageViewer(), PostSelector {
     override fun createAdapter(): RecyclerView.Adapter<*> =
         ConcatAdapter(Header(), ListVwr(c, this))
 
+    @SuppressLint("NotifyDataSetChanged")
     override suspend fun fetch(reset: Boolean) {
         //Log.d("ESPINELA", "PageVwr: fetch (reset: $reset)")
 
@@ -162,7 +167,11 @@ class PageVwr : BasePageViewer(), PostSelector {
         // update the data model and the UI
         if (c.vm.posts == null || reset) {
             c.vm.posts = page
-            withContext(Dispatchers.Main) { onLazilyLoaded(0, page.edges.size) }
+            withContext(Dispatchers.Main) {
+                if (!reset) onLazilyLoaded(0, page.edges.size)
+                else gridAdapter().notifyDataSetChanged()
+                onListResized()
+            }
         } else {
             val lastBefore = c.vm.posts!!.edges.size
             //Log.d("ESPINELA", "PageVwr: fetch: pre-addAll: ${c.vm.posts!!.edges.size} edges")
@@ -177,18 +186,19 @@ class PageVwr : BasePageViewer(), PostSelector {
     }
 
     override fun onLoaded() {
-        super<PostSelector>.onLoaded()
+        // do not inherit any of the supers
+        if (b.rv.adapter == null) b.rv.adapter = createAdapter()
+        else b.rv.adapter!!.notifyItemChanged(0)  // do not call notifyDataSetChanged.
+        if (tracker == null) buildSelection()
         b.refresher.isRefreshing = false
-        // do not inherit OnlineLister; because it calls load() which is conditional in
-        // showProfile().
     }
 
     override fun onLazilyLoaded(start: Int, size: Int) {
-        if (size > 0) gridAdapter()?.notifyItemRangeInserted(start, size)
+        if (size > 0) gridAdapter().notifyItemRangeInserted(start, size)
         if (isModelEmpty() && hasReachedBottom()) load()
     }
 
-    fun gridAdapter() = (rv?.adapter as ConcatAdapter?)?.adapters?.get(1) as ListVwr?
+    fun gridAdapter() = (b.rv.adapter as ConcatAdapter).adapters[1] as ListVwr
 
     override fun onRefresh() {
         /*if (!c.vm.reloadUser) load(true)
@@ -199,7 +209,7 @@ class PageVwr : BasePageViewer(), PostSelector {
         createSelectionObserver()
 
     override fun onSelectionStarted() {
-        gridAdapter()!!.firstLongClickSelect = true
+        gridAdapter().firstLongClickSelect = true
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

@@ -115,6 +115,12 @@ class InstaTools : Application() {
         }
     }
 
+    fun onFavouritesUpdated() {
+        fav.value?.also { favourites ->
+            favPickle?.save(favourites)
+        }
+    }
+
     @MainThread
     fun removeFavourite(item: Favourite) {
         fav.value?.also { favourites ->
@@ -144,20 +150,18 @@ class InstaTools : Application() {
 
 /* TODO:
   * Problems:
-  * Download Media of Reels and Tagger posts before passing them to Expandable
+  * Download Media of Reels and Tagged posts before passing them to Expandable
   * Progress dialogs for Downloader, ListRel, ListTag and PageVwr.Header
-  * Services get messed up when needAuthentication() is invoked
   * -
   * Extensions:
   * Reloading for each ListTry item
-  * A button for indexing a folder
   * Choose download qualities in the Toolbar of Downloads
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
   * https://stackoverflow.com/questions/34891352/android-choose-file-button-in-webview
   * -
   * Too Complicated:
-  * When clicked on error notifications, no activity is opened
+  * When clicked on error notifications, no activity is opened, but it's not so on progress ntfs!!
   * Clicking on external links will bring a "cleartext not permitted" error
   * Metadata for HEIC and MP4?
   * -

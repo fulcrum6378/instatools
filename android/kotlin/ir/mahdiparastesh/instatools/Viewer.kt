@@ -209,20 +209,19 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
                 vm.reels = null
                 vm.tagged = null
             }
-            if (!profileReplaced) {
-                // find out if this user is in the favourites list
-                // and update its details if it is in the list
-                vm.fav = c.fav.value?.find { it.id == vm.profile!!.id!! }?.also {
-                    it.user = vm.profile!!.username!!
-                    it.name = vm.profile!!.full_name!!
-                    it.photo = vm.profile!!.profile_pic_url!!
-                }
-            } /*else
-                vm.reloadUser = false*/
 
+            // if this user is in the favourites, update their information
+            vm.fav = c.fav.value?.find { it.id == vm.profile!!.id!! }?.also {
+                it.user = vm.profile!!.username!!
+                it.name = vm.profile!!.full_name!!
+                it.photo = vm.profile!!.profile_pic_url!!
+                c.onFavouritesUpdated()
+            }
+
+            // update the UI
             withContext(Dispatchers.Main) {
                 if (profileReplaced) (currentPage() as BasePageViewer?)?.clear()
-                (currentPage() as? PageVwr)?.showProfile(reset)
+                (currentPage() as? PageVwr)?.showProfile(reset || profileReplaced)
                 b.toolbar.title = vm.profile?.username
                 fixTbMenu()
             }
