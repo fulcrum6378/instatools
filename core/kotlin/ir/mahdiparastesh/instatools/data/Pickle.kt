@@ -84,7 +84,7 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         // API cache
         SAVED(1f * DAY, isApiCache = true),
         TRAY(0.125f * DAY, isApiCache = true),  // 3 hours
-        PROFILE(3f * DAY, false, true),  // 5 days didn't suffice
+        PROFILE(5f * DAY, false, true),
         POSTS(2f * DAY, false, true),
         STORY(0.5f * DAY, false, true),
         HIGHLIGHTS(7f * DAY, false, true),
