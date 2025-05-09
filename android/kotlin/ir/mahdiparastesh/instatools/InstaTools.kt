@@ -147,29 +147,3 @@ class InstaTools : Application() {
         }
     }
 }
-
-/* TODO:
-  * Problems:
-  * Download Media of Reels and Tagged posts before passing them to Expandable
-  * Progress dialogs for Downloader, ListRel, ListTag and PageVwr.Header
-  * PopupMenus by EasyPopupMenu have wrong corner strokes
-  * -
-  * Extensions:
-  * Migrate to java.time
-  * Reloading for each ListTry item
-  * Choosing download qualities through long clicks on download buttons
-  * Custom icons for the Services
-  * Make CommandService cancellable and pausable
-  * Trace the last raster icon: unsave_download
-  * https://stackoverflow.com/questions/34891352/android-choose-file-button-in-webview
-  * -
-  * Too Complicated:
-  * When clicked on error notifications, no activity is opened, but it's not so on progress ntfs!!
-  * Clicking on external links will bring a "cleartext not permitted" error
-  * Metadata for HEIC and MP4?
-  *
-  * Notes:
-  * - The GraphQL queries cannot like or unlike old IGTVs.
-  * - Either Android 11 or Samsung devices don't detect custom fonts for PopupMenus.
-  * - Even the official Instagram app sometimes receives duplicate lazy-list content.
-*/
