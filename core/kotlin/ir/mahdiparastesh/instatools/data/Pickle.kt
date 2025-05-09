@@ -11,7 +11,7 @@ import java.io.FileOutputStream
 
 /**
  * Caches data models in order to reduce the number of API requests.
- * Used as an object-oriented data storage as well!
+ * Also used as an object-oriented data storage!
  *
  * Structure:
  * 4. Leaf: a [Pickle] JSON file storing object-oriented data

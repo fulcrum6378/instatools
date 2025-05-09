@@ -155,9 +155,10 @@ class InstaTools : Application() {
   * -
   * Extensions:
   * Reloading for each ListTry item
-  * Choose download qualities in the Toolbar of Downloads
+  * Choosing download qualities through long clicks on download buttons
   * Custom icons for the Services
   * Make CommandService cancellable and pausable
+  * Trace the last raster icon: unsave_download
   * https://stackoverflow.com/questions/34891352/android-choose-file-button-in-webview
   * -
   * Too Complicated:
@@ -165,7 +166,7 @@ class InstaTools : Application() {
   * Clicking on external links will bring a "cleartext not permitted" error
   * Metadata for HEIC and MP4?
   * -
-  * PickleTest and DownloadHistoryTest and QueuerTest
+  * QueuerTest
   *
   * Notes:
   * - The GraphQL queries cannot like or unlike old IGTVs.
