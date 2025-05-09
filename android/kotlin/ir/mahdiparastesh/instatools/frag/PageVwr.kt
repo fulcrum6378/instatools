@@ -316,9 +316,7 @@ class PageVwr : BasePageViewer(), PostSelector {
             h.b.privateAcc.vis(showPv_)
             if (showPv_) {
                 h.b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
-                    null, c.drawable(
-                        R.drawable.private_account, if (c.night) R.color.defCA else null
-                    )!!, null, null
+                    null, c.drawable(R.drawable.private_account)!!, null, null
                 )
                 h.b.privateAcc.layoutParams =
                     (h.b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {

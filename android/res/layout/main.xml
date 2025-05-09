@@ -13,6 +13,7 @@
         <android.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/toolbar"
+            android:popupTheme="@style/Widget.InstaTools.Popup.Secondary"
             android:title="@string/app_name"
             android:titleMarginTop="@dimen/tbTitleMainMarginTop"
             android:titleTextAppearance="@style/TextAppearance.InstaTools.Toolbar.Main" />

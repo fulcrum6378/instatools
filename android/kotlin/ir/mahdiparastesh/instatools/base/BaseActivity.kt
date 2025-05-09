@@ -149,17 +149,12 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     fun themeInflater(which: Theme, inf: LayoutInflater = layoutInflater): LayoutInflater =
         inf.cloneInContext(wrapTheme(which))
 
-    /** Helper function for getting a colour from resources */
+    /** Helper function for retrieving a colour from resources */
     fun color(@ColorRes res: Int) = resources.getColor(res, theme)
 
-    /** Helper function for getting a drawable from resources with an optional colour filter */
+    /** Helper function for retrieving a drawable from resources */
     @SuppressLint("UseCompatLoadingForDrawables")
-    fun drawable(@DrawableRes res: Int, @ColorRes cf: Int? = null) =
-        resources.getDrawable(res, theme)?.apply { cf?.let { colorFilter = pdcf(it) } }
-
-    /** Helper function for making a colour filter for the color resource */
-    fun pdcf(@ColorRes res: Int) =
-        PorterDuffColorFilter(resources.getColor(res, theme), PorterDuff.Mode.SRC_IN)
+    fun drawable(@DrawableRes res: Int) = resources.getDrawable(res, theme)!!
 
     /** Only use it for [TextView.textSize]. */
     fun dimen(@DimenRes res: Int): Float = resources.getDimension(res) / dm.density

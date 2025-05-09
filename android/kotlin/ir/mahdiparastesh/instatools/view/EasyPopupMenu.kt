@@ -5,7 +5,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.StyleRes
-import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.base.BaseActivity
 
 /** Helper class for creating [PopupMenu]s more easily */
@@ -14,8 +13,8 @@ class EasyPopupMenu(
     v: View,
     res: Int,
     vararg actions: Pair<Int, (item: MenuItem) -> Unit>,
-    @StyleRes theme: Int = R.style.Widget_InstaTools_Popup,
-) : PopupMenu(ContextThemeWrapper(c, theme), v) {
+    @StyleRes theme: Int? = null,
+) : PopupMenu(theme?.let { ContextThemeWrapper(c, it) } ?: c, v) {
 
     init {
         val map = hashMapOf<Int, (item: MenuItem) -> Unit>()

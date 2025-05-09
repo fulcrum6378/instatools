@@ -112,7 +112,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
-        if (night) bw.logo.colorFilter = pdcf(R.color.defCA)
+        if (night) bw.logo.drawable.setTint(color(R.color.defCA))
         accounts.sortByDescending { it.last.toString() }
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)

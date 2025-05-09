@@ -1,5 +1,5 @@
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/defBG" />
+    <background android:drawable="@color/defBGLight" />
     <foreground android:drawable="@drawable/launcher" />
     <monochrome android:drawable="@drawable/launcher" />
 </adaptive-icon>

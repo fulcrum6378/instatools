@@ -152,8 +152,10 @@ class InstaTools : Application() {
   * Problems:
   * Download Media of Reels and Tagged posts before passing them to Expandable
   * Progress dialogs for Downloader, ListRel, ListTag and PageVwr.Header
+  * PopupMenus by EasyPopupMenu have wrong corner strokes
   * -
   * Extensions:
+  * Migrate to java.time
   * Reloading for each ListTry item
   * Choosing download qualities through long clicks on download buttons
   * Custom icons for the Services
@@ -165,8 +167,6 @@ class InstaTools : Application() {
   * When clicked on error notifications, no activity is opened, but it's not so on progress ntfs!!
   * Clicking on external links will bring a "cleartext not permitted" error
   * Metadata for HEIC and MP4?
-  * -
-  * QueuerTest
   *
   * Notes:
   * - The GraphQL queries cannot like or unlike old IGTVs.

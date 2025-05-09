@@ -74,11 +74,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
     val bg: IntArray by lazy { resources.getIntArray(R.array.BG) }
     val ca: IntArray by lazy { resources.getIntArray(R.array.CA) }
     private val colorBG = MutableLiveData<Int?>(null)
-    private val popupThemes = arrayOf(
+    /*private val popupThemes = arrayOf(
         R.style.Widget_InstaTools_Popup_Primary,
         R.style.Widget_InstaTools_Popup_Secondary,
         R.style.Widget_InstaTools_Popup_Tertiary
-    )
+    )*/
 
     override val menuRes = R.menu.main_tlb
     override var currentPage: Int
@@ -397,7 +397,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
                 else R.style.TextAppearance_InstaTools_BNV_Inactive
             )
         }
-        b.toolbar.popupTheme = popupThemes[i]
+        //b.toolbar.popupTheme = popupThemes[i]
     }
 
     override fun selective(
