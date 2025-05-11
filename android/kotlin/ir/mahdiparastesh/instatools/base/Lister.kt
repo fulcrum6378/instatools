@@ -155,8 +155,7 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
             setOnRefreshListener(this@OnlineLister)
             setOnClickListener { onRefresh() }
             setOnChildScrollUpCallback { _, _ -> !canRefresh() }
-            val colour = (context as ContextThemeWrapper).themeColor(android.R.attr.colorPrimary)
-            setColorSchemeColors(colour, colour, colour)
+            setColorSchemeColors((context as ContextThemeWrapper).themeColor(android.R.attr.colorPrimary))
         }
     }
 

@@ -13,7 +13,6 @@
 * Choosing download qualities through long clicks on download buttons
 * Custom icons for the `Service`s
 * Make `CommandService` cancellable and pausable
-* Trace the last raster icon: unsave_download
 * https://stackoverflow.com/questions/34891352/android-choose-file-button-in-webview
 
 ### Too Complicated
@@ -21,8 +20,6 @@
 * When clicked on error notifications, no activity is opened, but it's not so on progress ntfs!!
 * Clicking on external links will bring a "cleartext not permitted" error
 * Metadata for HEIC and MP4?
-
----
 
 ### Notes
 
