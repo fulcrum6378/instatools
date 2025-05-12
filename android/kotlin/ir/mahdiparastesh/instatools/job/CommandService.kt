@@ -22,6 +22,9 @@ class CommandService : ForegroundService(), Queuer<Command> {
     override val com: ForegroundServiceCompanion<Command> get() = Companion
     override val ntfChannel: Notify.Channel = Notify.Channel.COMMANDER
     override val ntfId: Int = Notify.ID_COMMANDER
+    override val ntfIcon: Int = R.drawable.notification
+    override val ntfFailureIcon: Int = R.drawable.notification
+    override val ntfTint: Int = R.color.CTL
     override lateinit var ntfTitle: String
     override var ntfText: String? = null
     override var ntfSmallText: String? = null

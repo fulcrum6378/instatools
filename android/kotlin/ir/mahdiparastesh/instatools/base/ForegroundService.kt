@@ -28,11 +28,13 @@ abstract class ForegroundService : Service() {
     abstract val com: ForegroundServiceCompanion<*>
     abstract val ntfChannel: Notify.Channel
     abstract val ntfId: Int
+    abstract val ntfIcon: Int
+    abstract val ntfFailureIcon: Int
+    abstract val ntfTint: Int
     abstract var ntfTitle: String
     abstract var ntfText: String?
     abstract var ntfSmallText: String?
     abstract val ntfActions: Array<Pair<Int, String>>
-    open val ntfSmallIcon: Int = R.drawable.notification
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -102,7 +104,8 @@ abstract class ForegroundService : Service() {
 
     private fun notification(progress: Pair<Int, Int>?) =
         Notification.Builder(c, ntfChannel.id).apply {
-            setSmallIcon(ntfSmallIcon)
+            setSmallIcon(ntfIcon)
+            setColor(resources.getColor(ntfTint, theme))
             setContentTitle(ntfTitle)
             ntfSmallText?.also { setContentText(it) }
             setStyle(Notification.BigTextStyle().bigText(ntfText))
@@ -135,7 +138,8 @@ abstract class ForegroundService : Service() {
         ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
         ntfManager.notify(
             id, Notification.Builder(c, Notify.Channel.RESULT.id).apply {
-                setSmallIcon(R.drawable.notification)
+                setColor(resources.getColor(ntfTint, theme))
+                setSmallIcon(ntfFailureIcon)
                 func()
                 if (activity != null) setContentIntent(
                     PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))

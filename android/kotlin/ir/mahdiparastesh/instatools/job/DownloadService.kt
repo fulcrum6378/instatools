@@ -29,6 +29,9 @@ class DownloadService : ForegroundService(), Downloader {
     override val com: ForegroundServiceCompanion<Download> get() = Companion
     override val ntfChannel = Notify.Channel.DOWNLOADER
     override val ntfId = Notify.ID_DOWNLOADER
+    override val ntfIcon: Int = R.drawable.downloader
+    override val ntfFailureIcon: Int = R.drawable.notification
+    override val ntfTint: Int = R.color.CSL
     override lateinit var ntfTitle: String
     override var ntfText: String? = null
     override var ntfSmallText: String? = null
