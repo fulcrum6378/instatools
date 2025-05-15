@@ -122,8 +122,8 @@ class PageRel : BasePageViewer(), PostSelector {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload ->
-                enqueueSelectedMedia(c, c.vm.reels, download = true)
+            /*R.id.vtDownload ->
+                enqueueSelectedMedia(c, c.vm.reels, download = true)*/
             R.id.vtLike ->
                 enqueueSelectedMedia(c, c.vm.reels, like = true)
             R.id.vtUnlike ->

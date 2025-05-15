@@ -141,8 +141,8 @@ class PageTag : BasePageViewer(), PostSelector {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.vtDownload ->
-                enqueueSelectedMedia(c, c.vm.tagged, download = true)
+            /*R.id.vtDownload ->
+                enqueueSelectedMedia(c, c.vm.tagged, download = true)*/
             R.id.vtLike ->
                 enqueueSelectedMedia(c, c.vm.tagged, like = true)
             R.id.vtUnlike ->

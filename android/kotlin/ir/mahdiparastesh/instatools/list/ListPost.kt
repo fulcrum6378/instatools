@@ -125,7 +125,7 @@ abstract class ListPost<Activity, Fragment>(
             "${med.owner!!.username!!}_${Utils.fileDateTime(med.taken_at!!)}_${med.id()}"
         )
 
-    private fun expand(v: ImageView, i: Int) {
+    open fun expand(v: ImageView, i: Int) {
         expandable.expand(this[i] ?: return, v)
     }
 
@@ -135,7 +135,8 @@ abstract class ListPost<Activity, Fragment>(
             val view = rv.findChildViewUnder(e.x, e.y) ?: return null
             val h = rv.getChildViewHolder(view) as AnyViewHolder<*>
             if (h.layoutPosition == RecyclerView.NO_POSITION ||
-                (h.layoutPosition == 0 && rv.adapter is ConcatAdapter) // don't let Header be selected
+                (h.layoutPosition == 0 && rv.adapter is ConcatAdapter)
+            // don't let Header be selected
             ) return null
 
             return object : ItemDetails<Long>() {

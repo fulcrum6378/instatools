@@ -147,7 +147,7 @@ class Media(
 
 
     @Serializable
-    class Wrapper(val media: Media) {
+    class Wrapper(var media: Media) {
 
         override fun hashCode(): Int =
             media.uid.hashCode()

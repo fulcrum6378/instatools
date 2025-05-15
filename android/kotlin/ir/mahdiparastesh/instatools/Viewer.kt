@@ -121,9 +121,13 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
 
     @MainThread
     fun fixTbMenu() {
-        b.toolbar.menu.findItem(R.id.vtFav)?.setIcon(
-            if (vm.fav != null) R.drawable.favourite_on_themed else R.drawable.favourite_off_themed
-        )
+        b.toolbar.menu.also { menu ->
+            menu.findItem(R.id.vtFav)?.setIcon(
+                if (vm.fav != null) R.drawable.favourite_on_themed
+                else R.drawable.favourite_off_themed
+            )
+            menu.findItem(R.id.vtDownload)?.isVisible = vm.currentPage !in arrayOf(2, 3)
+        }
     }
 
     override fun resolveIntent(intent: Intent, onCreation: Boolean): Boolean {

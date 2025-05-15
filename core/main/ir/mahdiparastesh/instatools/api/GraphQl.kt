@@ -66,7 +66,7 @@ class GraphQl(
     }
 
     @Serializable
-    class Edge<Node>(val node: Node)
+    class Edge<Node>(var node: Node)
 
     @Serializable
     class PageInfo(
