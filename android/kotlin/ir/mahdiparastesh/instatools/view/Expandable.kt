@@ -85,7 +85,7 @@ class Expandable(
                 c.c.downloads.add<Download>(
                     Download(
                         med.id(),
-                        Utils.compileSecondsTS(med.taken_at ?: mainMed.taken_at!!),
+                        med.taken_at ?: mainMed.taken_at!!,
                         audioUrl,
                         0x3,
                         mainMed.owner().username!!,

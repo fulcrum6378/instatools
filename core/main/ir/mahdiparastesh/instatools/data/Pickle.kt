@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.data
 
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.User
-import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -48,7 +47,9 @@ class Pickle(root: File, acc: Long, val type: Type, id: String?) {
         if (!leaf.exists()) return null
 
         // avoid using the pickle if it is expired
-        if (type.lifespan >= 0f && (Utils.now() - leaf.lastModified()) >= type.lifespan) return null
+        if (type.lifespan >= 0f &&
+            (System.currentTimeMillis() - leaf.lastModified()) >= type.lifespan
+        ) return null
 
         // load the Pickle
         return try {

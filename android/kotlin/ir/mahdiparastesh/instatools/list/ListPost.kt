@@ -34,8 +34,8 @@ abstract class ListPost<Activity, Fragment>(
         setHasStableIds(true)
     }
 
-    protected val typeVideo = c.drawable(R.drawable.video)!!
-    protected val typeStack = c.drawable(R.drawable.stack)!!
+    protected val typeVideo = c.drawable(R.drawable.video)
+    protected val typeStack = c.drawable(R.drawable.stack)
     var firstLongClickSelect = false
 
     abstract val inflater: LayoutInflater
@@ -119,14 +119,10 @@ abstract class ListPost<Activity, Fragment>(
     open fun isDownloaded(med: Media, downloadHistory: DownloadHistory): Boolean =
         med.carousel_media?.any { car ->
             c.c.downloadHistory.anyStartsWith(
-                med.owner!!.username!! +
-                    "_${Utils.fileDateTime(Utils.compileSecondsTS(car.taken_at!!))}_" +
-                    car.id()
+                "${med.owner!!.username!!}_${Utils.fileDateTime(car.taken_at!!)}_${car.id()}"
             )
         } ?: c.c.downloadHistory.anyStartsWith(
-            med.owner!!.username!! +
-                "_${Utils.fileDateTime(Utils.compileSecondsTS(med.taken_at!!))}_" +
-                med.id()
+            "${med.owner!!.username!!}_${Utils.fileDateTime(med.taken_at!!)}_${med.id()}"
         )
 
     private fun expand(v: ImageView, i: Int) {

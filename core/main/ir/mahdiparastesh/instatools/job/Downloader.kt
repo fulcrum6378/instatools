@@ -133,21 +133,21 @@ interface Downloader : Queuer<Download> {
     private fun instilExif(q: Download, outputSet: TiffOutputSet) {
         val lacksGps = outputSet
             .getDirectories().none { it.type == TiffConstants.TIFF_DIRECTORY_GPS }
-        outputSet.getOrCreateRootDirectory().apply { // directory IFD0
-            removeField(TiffTag.TIFF_TAG_ARTIST) // Authors
+        outputSet.getOrCreateRootDirectory().apply {  // directory IFD0
+            removeField(TiffTag.TIFF_TAG_ARTIST)  // Authors
             add(TiffTag.TIFF_TAG_ARTIST, q.owner)
             removeField(TiffTag.TIFF_TAG_COPYRIGHT)
             add(TiffTag.TIFF_TAG_COPYRIGHT, "IG: @${q.owner}")
             q.caption?.also {
-                removeField(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION) // Title + Subject
+                removeField(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION)  // Title + Subject
                 add(TiffTag.TIFF_TAG_IMAGE_DESCRIPTION, it)
             }
-            removeField(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE) // belongs in the root dir
+            removeField(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE)  // belongs in the root dir
             add(ExifTag.EXIF_TAG_PROCESSING_SOFTWARE, "Instagram")
-            removeField(ExifTag.EXIF_TAG_SOFTWARE) // belongs in the root dir
+            removeField(ExifTag.EXIF_TAG_SOFTWARE)  // belongs in the root dir
             add(ExifTag.EXIF_TAG_SOFTWARE, "InstaTools")
         }
-        outputSet.getOrCreateExifDirectory().apply { // directory ExifIFD
+        outputSet.getOrCreateExifDirectory().apply {  // directory ExifIFD
             if (q.link.startsWith(Utils.POST_STARTER)) {
                 removeField(ExifTag.EXIF_TAG_SITE)
                 add(ExifTag.EXIF_TAG_SITE, q.link)

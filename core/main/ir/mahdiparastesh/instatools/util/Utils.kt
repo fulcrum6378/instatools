@@ -1,6 +1,9 @@
 package ir.mahdiparastesh.instatools.util
 
-import java.util.Calendar
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoField
 
 object Utils {
     const val PROFILE = "https://www.instagram.com/%s/"
@@ -12,36 +15,36 @@ object Utils {
     const val STORY_HL_STARTER = "https://www.instagram.com/stories/highlights/"
     const val PROFILE_PHOTO = "profile_photo"
 
+
     /** Helper class for turning 1 to "01" */
     fun z(n: Int): String {
         val s = n.toString()
         return if (s.length == 1) "0$s" else s
     }
 
-    fun now() = System.currentTimeMillis() // Calendar.getInstance().timeInMillis
+    fun now(): Long = System.currentTimeMillis() / 1000L
 
-    /** Converts a timestamp to a Calendar instance. */
-    fun calendar(time: Long): Calendar =
-        Calendar.getInstance().apply { timeInMillis = time }
+    private fun zonedDateTime(time: Long): ZonedDateTime =
+        Instant.ofEpochSecond(time).atZone(ZoneId.systemDefault())
 
-    /** Converts a timestamp to a human-readable date. */
+    /** Converts a seconds timestamp to a human-readable date. */
     fun date(time: Long): String {
-        val cal = calendar(time)
-        return "${cal[Calendar.YEAR]}.${z(cal[Calendar.MONTH] + 1)}." +
-            "${z(cal[Calendar.DAY_OF_MONTH])} - ${z(cal[Calendar.HOUR_OF_DAY])}:" +
-            "${z(cal[Calendar.MINUTE])}:${z(cal[Calendar.SECOND])}"
+        val dt = zonedDateTime(time)
+        return "${dt[ChronoField.YEAR]}.${z(dt[ChronoField.MONTH_OF_YEAR])}." +
+            "${z(dt[ChronoField.DAY_OF_MONTH])} - ${z(dt[ChronoField.HOUR_OF_DAY])}:" +
+            "${z(dt[ChronoField.MINUTE_OF_HOUR])}:${z(dt[ChronoField.SECOND_OF_MINUTE])}"
     }
 
-    /** @return a datetime text to be used in a file name */
+    /**
+     * @param time a seconds timestamp
+     * @return a datetime text to be used in a file name
+     */
     fun fileDateTime(time: Long): String {
-        val cal = calendar(time)
-        return "${cal[Calendar.YEAR]}${z(cal[Calendar.MONTH] + 1)}" +
-            "${z(cal[Calendar.DAY_OF_MONTH])}_${z(cal[Calendar.HOUR_OF_DAY])}" +
-            "${z(cal[Calendar.MINUTE])}${z(cal[Calendar.SECOND])}"
+        val dt = zonedDateTime(time)
+        return "${dt[ChronoField.YEAR]}${z(dt[ChronoField.MONTH_OF_YEAR])}" +
+            "${z(dt[ChronoField.DAY_OF_MONTH])}_${z(dt[ChronoField.HOUR_OF_DAY])}" +
+            "${z(dt[ChronoField.MINUTE_OF_HOUR])}${z(dt[ChronoField.SECOND_OF_MINUTE])}"
     }
-
-    /** Converts a timestamp of seconds to a timestamp of millisecond. */
-    fun compileSecondsTS(seconds: Long) = seconds * 1000L
 
     fun <T> Map<String, T>.getOrNull(key: String): T? =
         if (containsKey(key)) this[key] else null

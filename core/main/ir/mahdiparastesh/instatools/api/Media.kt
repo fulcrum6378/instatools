@@ -115,7 +115,7 @@ class Media(
             list.add(
                 Download(
                     car.id(),
-                    Utils.compileSecondsTS(car.taken_at ?: taken_at!!),
+                    car.taken_at ?: taken_at!!,
                     car.nearest(idealSize)!!,
                     car.media_type.toInt().toByte(),
                     u,
@@ -130,7 +130,7 @@ class Media(
         } else list.add(
             Download(
                 id(),
-                Utils.compileSecondsTS(taken_at!!),
+                taken_at!!,
                 nearest(idealSize)!!,
                 media_type.toInt().toByte(),
                 u,

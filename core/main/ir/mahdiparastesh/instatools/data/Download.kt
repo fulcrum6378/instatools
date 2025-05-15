@@ -8,7 +8,7 @@ import java.net.URI
 
 /**
  * @param id unique ID of a [Media]
- * @param date date posted on Instagram
+ * @param date timestamp of when posted on Instagram in seconds
  * @param url of the desired version
  * @param type [Media.Type.num]
  * @param owner user name of the owner

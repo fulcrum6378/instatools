@@ -31,7 +31,7 @@ class StorageManager(private val c: InstaTools) {
 
     @WorkerThread
     fun deleteExpiredCachePickles(acc: Long) {
-        val now = Utils.now()
+        val now = System.currentTimeMillis()
         for (pickleType in Pickle.Type.entries) {
             if (!pickleType.isApiCache) continue
             val branch = Pickle.branch(c.cacheDir, pickleType, acc)

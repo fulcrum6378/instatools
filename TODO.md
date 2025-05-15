@@ -9,7 +9,6 @@
 
 ### Extensions
 
-* Migrate to `java.time`
 * Reloading for each `ListTry` item
 * Choosing download qualities through long clicks on download buttons
 * Make `CommandService` cancellable and pausable

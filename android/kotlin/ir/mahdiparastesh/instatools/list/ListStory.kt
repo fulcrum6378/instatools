@@ -41,12 +41,9 @@ class ListStory(
         h.b.stored.vis(
             if (c.downloadHistory.isEmpty())
                 false
-            else
-                c.downloadHistory.anyStartsWith(
-                    "${story.user.username}_" +
-                        Utils.fileDateTime(Utils.compileSecondsTS(med.taken_at!!)) +
-                        "_${med.id()}"
-                )
+            else c.downloadHistory.anyStartsWith(
+                "${story.user.username}_${Utils.fileDateTime(med.taken_at!!)}_${med.id()}"
+            )
         )
 
         // is media liked?
