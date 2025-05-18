@@ -64,6 +64,7 @@
         <item quantity="one">%d item selected</item>
         <item quantity="other">%d items selected</item>
     </plurals>
+    <string name="reload">Reload</string>
 
     <!-- API -->
     <string name="noInternet">No internet connection!</string>

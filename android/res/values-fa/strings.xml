@@ -64,6 +64,7 @@
         <item quantity="one">%d مورد انتخاب شد</item>
         <item quantity="other">%d مورد انتخاب شد</item>
     </plurals>
+    <string name="reload">بارگذاری دوباره</string>
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>

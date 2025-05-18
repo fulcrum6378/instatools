@@ -34,7 +34,8 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListStoBinding> =
-        AnyViewHolder(ListStoBinding.inflate(c.layoutInflater, parent, false))
+        AnyViewHolder(ListStoBinding.inflate(c.layoutInflater, parent, false)
+            .apply { reload.vis(false) })
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(h: AnyViewHolder<ListStoBinding>, i: Int) {

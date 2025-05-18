@@ -51,8 +51,15 @@ class ListTry(private val c: Main, private val f: PageTry) :
         ) else ""
 
         // actions
+        h.b.reload.setOnClickListener {
+            storyAction(
+                StoryAction.RELOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
+            )
+        }
         h.b.downloadAll.setOnClickListener {
-            fetchStory(story, h.layoutPosition, h.b.reel.adapter!! as ListStory, true)
+            storyAction(
+                StoryAction.DOWNLOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
+            )
         }
 
         // ListStory: initiation
@@ -69,13 +76,15 @@ class ListTry(private val c: Main, private val f: PageTry) :
             height = if (story.opened) c.resources.getDimension(R.dimen.vwReelHeight).toInt() else 0
         }
         h.b.reel.vis(story.opened)
-        if (story.opened)
-            fetchStory(story, h.layoutPosition, h.b.reel.adapter!! as ListStory)
+        if (story.opened) storyAction(
+            StoryAction.FETCH, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
+        )
         h.b.header.setOnClickListener {
             (story.anSlide as? ObjectAnimator)?.cancel()
             story.opened = !story.opened
-            if (story.opened)
-                fetchStory(story, h.layoutPosition, h.b.reel.adapter!! as ListStory)
+            if (story.opened) storyAction(
+                StoryAction.FETCH, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
+            )
             ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f).apply {
                 story.anSlide = this
                 addUpdateListener {
@@ -103,16 +112,17 @@ class ListTry(private val c: Main, private val f: PageTry) :
     override fun getItemCount(): Int = c.vm.tray?.tray?.size ?: 0
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun fetchStory(
+    private fun storyAction(
+        action: StoryAction,
         story: Story,
         i: Int,
         listStory: ListStory,
-        downloadAll: Boolean = false
     ) {
-        if (story.items != null && !downloadAll) return
+        val fetch = story.items == null || action == StoryAction.RELOAD
+        if (!fetch && action != StoryAction.DOWNLOAD) return
 
         CoroutineScope(Dispatchers.IO).launch {
-            if (story.items == null) {
+            if (fetch) {
                 val newStory = try {
                     Api.json<GraphQl>(
                         Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(story.user.id())
@@ -129,10 +139,9 @@ class ListTry(private val c: Main, private val f: PageTry) :
                 c.vm.tray?.also { f.pickle.save(it) }
             }
 
-            if (downloadAll) {
-                for (reel in story.items!!) c.c.downloads.addAll<Download>(
-                    reel.queue(owner = story.user.username), false
-                )
+            if (action == StoryAction.DOWNLOAD) {
+                for (reel in story.items!!)
+                    c.c.downloads.addAll<Download>(reel.queue(owner = story.user.username), false)
                 c.c.downloads.save<Download>()
                 Downloads.initService(c)
             }
@@ -143,4 +152,6 @@ class ListTry(private val c: Main, private val f: PageTry) :
             }
         }
     }
+
+    enum class StoryAction { FETCH, RELOAD, DOWNLOAD }
 }

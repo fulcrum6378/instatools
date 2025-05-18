@@ -2,13 +2,12 @@
 
 ### Problems
 
-* `ProgressBar`s for `ListLazyPost`, `Downloader` and `PageVwr.Header`
+* `ProgressBar`s for `ListLazyPost`, `Downloader`, `PageVwr.Header` and `ListTry.StoryAction.RELOAD`
 * `PopupMenu`s by `EasyPopupMenu` have wrong corner strokes
 * ForegroundService::terminateTasks() doesn't work!
 
 ### Extensions
 
-* Reloading for each `ListTry` item
 * Choosing download qualities through long clicks on download buttons
 * Default download quality in Settings
 * Make `CommandService` cancellable and pausable

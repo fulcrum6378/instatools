@@ -31,8 +31,7 @@
             android:textColorHint="?colorPrimaryHigh"
             android:textSize="@dimen/pasteLinkFont"
             app:layout_constraintEnd_toStartOf="@id/linkButton"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="UnusedAttribute" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/linkButton"

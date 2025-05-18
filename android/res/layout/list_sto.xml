@@ -28,7 +28,7 @@
             android:layout_marginEnd="10dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/downloadAll"
+            app:layout_constraintEnd_toStartOf="@id/reload"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -51,6 +51,19 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/reload"
+            android:layout_width="@dimen/favAction"
+            android:layout_height="@dimen/favAction"
+            android:background="@drawable/button_round"
+            android:contentDescription="@string/reload"
+            android:padding="15dp"
+            android:src="@drawable/reload"
+            android:tooltipText="@string/reload"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/downloadAll"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
             android:id="@+id/downloadAll"
             android:layout_width="@dimen/favAction"
             android:layout_height="@dimen/favAction"
@@ -61,8 +74,7 @@
             android:tooltipText="@string/downloadAll"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UnusedAttribute" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
