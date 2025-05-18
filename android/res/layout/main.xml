@@ -65,7 +65,7 @@
             <TextView
                 android:id="@+id/toTray"
                 style="@style/bnvButton"
-                android:drawableTop="@drawable/metered_video"
+                android:drawableTop="@drawable/tray"
                 android:text="@string/tray"
                 android:theme="@style/Theme.InstaTools.Tertiary" />
         </LinearLayout>

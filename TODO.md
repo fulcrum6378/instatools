@@ -2,7 +2,7 @@
 
 ### Problems
 
-* ProgressBars for `Expandable`, `Downloader`, `ListRel`, `ListTag` and `PageVwr.Header`
+* `ProgressBar`s for `ListLazyPost`, `Downloader` and `PageVwr.Header`
 * `PopupMenu`s by `EasyPopupMenu` have wrong corner strokes
 * ForegroundService::terminateTasks() doesn't work!
 
