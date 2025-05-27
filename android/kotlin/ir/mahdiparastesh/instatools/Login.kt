@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.os.Process.killProcess
 import android.os.Process.myPid
@@ -11,14 +12,15 @@ import android.view.View
 import android.view.ViewStub
 import android.webkit.CookieManager
 import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import ir.mahdiparastesh.instatools.base.BaseActivity
 import ir.mahdiparastesh.instatools.data.Account
 import ir.mahdiparastesh.instatools.databinding.LoginBinding
@@ -44,6 +46,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var cookieManager: CookieManager
     var accBrowsingWeb: Account? = null
     var injectingCookieForAcc: Long? = null
+    private var uploadCallback: ValueCallback<Array<out Uri?>?>? = null
 
     override val menuRes: Int? = null
 
@@ -69,21 +72,25 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         b.welcomeStub.setOnInflateListener(this)
 
         // WebView
-        @SuppressLint("SetJavaScriptEnabled")
         b.web.settings.apply {
+            userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/136.0.0.0 Safari/537.36"
+            // check https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
             javaScriptEnabled = true
             domStorageEnabled = true
             cacheMode = WebSettings.LOAD_NO_CACHE
-            userAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/133.0.0.0 Safari/537.36"
+
+            // for file upload:
+            allowFileAccess = true
+
+            // todo for WebSockets (IG Direct):
+            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            safeBrowsingEnabled = false
         }
         b.web.webViewClient = myClient
-        if (night) {
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING))
-                WebSettingsCompat.setAlgorithmicDarkeningAllowed(b.web.settings, true)
-            else b.web.isForceDarkAllowed = true
-        }
+        b.web.webChromeClient = myChromeClient
+        if (night) b.web.isForceDarkAllowed = true
         b.refresher.setOnRefreshListener { b.web.reload() }
 
         // what to show?
@@ -172,6 +179,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also { cm ->
             cm.setAcceptCookie(true)
+            cm.setAcceptThirdPartyCookies(b.web, true)  // todo for WebSockets (IG Direct)
             cm.removeAllCookies(object : ValueCallback<Boolean> {
                 private val settable by lazy { withCookie?.split("; ") }
                 private var i = 0
@@ -306,6 +314,43 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             sb.append("${e.key}=${e.value}; ")
         return sb.toString().trimEnd()
     }
+
+    private val myChromeClient = object : WebChromeClient() {
+
+        override fun onShowFileChooser(
+            webView: WebView?,
+            filePathCallback: ValueCallback<Array<out Uri?>?>?,
+            fileChooserParams: FileChooserParams?
+        ): Boolean {
+            uploadCallback = filePathCallback
+            val intent = fileChooserParams?.createIntent()
+            if (intent != null) {
+                fileChooserLauncher.launch(intent)
+                return true
+            }
+            return false
+        }
+    }
+
+    private val fileChooserLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (uploadCallback == null) return@registerForActivityResult
+
+            var results: Array<Uri>? = null
+            if (result.resultCode == RESULT_OK) result.data?.also { intent ->
+                if (intent.dataString != null)
+                    results = arrayOf(intent.dataString!!.toUri())
+                else intent.clipData?.also { clipData ->
+                    val uriList = mutableListOf<Uri>()
+                    for (i in 0 until clipData.itemCount)
+                        uriList.add(clipData.getItemAt(i).uri)
+                    results = uriList.toTypedArray()
+                }
+            }
+            uploadCallback?.onReceiveValue(results)
+            uploadCallback = null
+        }
+
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)

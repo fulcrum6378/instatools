@@ -8,10 +8,10 @@ documentFile = "1.1.0"
 drawerLayout = "1.2.0"
 media3 = "1.7.1"
 recyclerView = "1.4.0"
-selection = "1.1.0"
+selection = "1.2.0"
 swipeRefreshLayout = "1.1.0"
 viewPager2 = "1.1.0"
-webkit = "1.13.0"
+#webkit = "1.13.0"
 lottie = "6.6.0"
 shimmer = "0.5.0"
 glide = "4.16.0"
@@ -39,7 +39,7 @@ recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version
 recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "selection" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swipeRefreshLayout" }
 viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewPager2" }
-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
+#webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
