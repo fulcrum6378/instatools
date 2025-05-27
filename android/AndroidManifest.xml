@@ -100,5 +100,15 @@
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:stopWithTask="false" />
+
+
+        <receiver
+            android:name=".job.NotificationActions"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="ir.mahdiparastesh.instatools.FORGET_COMMANDS" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

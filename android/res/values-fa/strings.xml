@@ -22,7 +22,8 @@
     <string name="viewInInsta">باز کردن در اینستاگرام</string>
     <string name="addToFav">اضافه به مورد علاقه</string>
     <string name="start">شروع</string>
-    <string name="stop">توقف</string>
+    <string name="pause">یه لحظه وایسا</string>
+    <string name="stop">کنسل</string>
     <string name="sContinue">ادامه</string>
     <!--<string-array name="inaccurateTime">
         <item>%d ماه</item>
@@ -49,6 +50,8 @@
     <string name="addShortcut">اضافه کردن میانبر</string>
     <string name="save">ذخیره</string>
     <string name="tryAgain">تلاش دوباره</string>
+    <string name="resume">ازسرگیری</string>
+    <string name="forget">فراموش کن</string>
     <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
     <string name="listClear">پاک کردن همه</string>
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
@@ -208,6 +211,7 @@
         <item quantity="one">در حال دانلود %d مورد&#8230;</item>
         <item quantity="other">در حال دانلود %d مورد&#8230;</item>
     </plurals>
+    <string name="downloaderPaused">دانلود متوقف شد</string>
     <plurals name="downloaderSomeFailed">
         <item quantity="one">دانلود %d فایل ممکن نشد!</item>
         <item quantity="other">دانلود %d فایل ممکن نشد!</item>
@@ -221,6 +225,7 @@
     </string>
     <string name="commanderTitle">درحال ارسال فرمان ها&#8230;</string>
     <string name="commanderSubtitle">%1$s (%2$d از %3$d)</string>
+    <string name="commanderPaused">ارسال فرمان ها متوقف شد</string>
     <plurals name="commanderSomeFailed">
         <item quantity="one">پردازش %d فرمان ممکن نشد!</item>
         <item quantity="other">پردازش %d فرمان ممکن نشد!</item>
@@ -231,6 +236,15 @@
     <string name="servicesChannelGroupDesc">
         عملیات های طولانی مانند دانلود و ارسال فرمان به اینستاگرام.
     </string>
+    <string name="taskSuspensionChannel">توقف موقت عملیات</string>
+    <string name="taskSuspensionChannelDesc">
+        یک نوتیفیکیشن که وقتی کاربر عملیاتی را موقتا متوقف می کند ظاهر میشود
+        و به کاربر اجازه ازسرگیری عملیات را می دهد.
+    </string>
+    <plurals name="taskPausedCount">
+        <item quantity="one">%d مورد در صف&#8230;</item>
+        <item quantity="other">%d مورد در صف&#8230;</item>
+    </plurals>
     <string name="taskResultChannel">نتایج عملیات</string>
     <string name="taskResultChannelDesc">
         هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.

@@ -146,4 +146,6 @@ class InstaTools : Application() {
             })
         }
     }
+
+    fun areCommandsLoaded() = ::commands.isInitialized
 }

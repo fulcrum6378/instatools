@@ -1,5 +1,8 @@
 package ir.mahdiparastesh.instatools.job
 
+import android.app.Notification
+import android.app.PendingIntent
+import android.content.Intent
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQl
@@ -110,13 +113,13 @@ class CommandService : ForegroundService(), Queuer<Command> {
 
     override fun onPause() {
         onCancel()
-        notifySuspension(Notify.ID_COMMANDER_PAUSED, null) {
+        val remaining = c.commands.size<Command>()
+        if (remaining > 0) notifySuspension(Notify.ID_COMMANDER_PAUSED, null) {
             setContentTitle(getString(R.string.commanderPaused))
-            val remaining = c.commands.size<Command>()
             setContentText(
                 resources.getQuantityString(R.plurals.taskPausedCount, remaining, remaining)
             )
-            // TODO addAction(FORGET...)
+            addAction(forgetAction())
         }
     }
 
@@ -155,6 +158,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
+                    addAction(forgetAction())
                 }
             } else {
                 // report if some commands failed
@@ -165,6 +169,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
                             R.plurals.commanderSomeFailed, failedSum, failedSum
                         )
                     )
+                    addAction(forgetAction())
                 }
             }
         }
@@ -172,4 +177,14 @@ class CommandService : ForegroundService(), Queuer<Command> {
         // end the foreground service via the worker thread
         destroy()
     }
+
+    private fun forgetAction() = Notification.Action.Builder(
+        null, getString(R.string.forget),
+        PendingIntent.getBroadcast(
+            c, 0, Intent(c, NotificationActions::class.java)
+                .setAction(NotificationActions.FORGET_COMMANDS)
+                .putExtra(NotificationActions.EXTRA_ACC_ID, c.acc?.id ?: -1L),
+            ntfMutability(true)
+        )
+    ).build()
 }

@@ -139,7 +139,6 @@ abstract class ForegroundService : Service() {
         val ntf = Notification.Builder(c, Notify.Channel.TASK_SUSPENSION.id).apply {
             setColor(resources.getColor(ntfTint, theme))
             setSmallIcon(ntfIcon)
-            func()
             if (activity != null) setContentIntent(
                 PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))
             )
@@ -148,6 +147,7 @@ abstract class ForegroundService : Service() {
                     null, getString(R.string.resume), pi(c, ACTION_START)
                 ).build()
             )
+            func()
         }.build()
 
         ntfManager.createNotificationChannel(Notify.Channel.TASK_SUSPENSION.create(c))

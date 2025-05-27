@@ -51,6 +51,7 @@
     <string name="save">Save</string>
     <string name="tryAgain">Try Again</string>
     <string name="resume">Resume</string>
+    <string name="forget">Forget</string>
     <string name="deleteItemSure">Are you sure you want to delete this item?</string>
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>

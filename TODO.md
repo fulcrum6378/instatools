@@ -10,7 +10,6 @@
 
 * Choosing download qualities through long clicks on download buttons
 * Default download quality in Settings
-* Make `CommandService` cancellable
 
 ### Too Complicated
 
