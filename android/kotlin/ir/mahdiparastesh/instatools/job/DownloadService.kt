@@ -35,7 +35,8 @@ class DownloadService : ForegroundService(), Downloader {
     override lateinit var ntfTitle: String
     override var ntfText: String? = null
     override var ntfSmallText: String? = null
-    override val ntfActions: Array<Pair<Int, String>> = arrayOf(R.string.stop to ACTION_STOP)
+    override val ntfActions: Array<Pair<Int, String>> =
+        arrayOf(R.string.pause to ACTION_PAUSE, R.string.stop to ACTION_CANCEL)
     override var handledItems: Int = 0
 
     @Volatile
@@ -49,12 +50,14 @@ class DownloadService : ForegroundService(), Downloader {
         dest = c.sPreference(Settings.spStorage)
         if (dest == null) return
 
+        ntfManager.cancel(Notify.ID_DOWNLOADER_PAUSED)
         ntfManager.cancel(Notify.ID_DOWNLOADER_ERROR)
         ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
         ntfTitle = getString(R.string.downloaderTitle)
         initialNotification(Downloads::class)
 
         CoroutineScope(Dispatchers.IO).launch {
+
             // load the map of alias folders
             Settings.loadAliases(c, true)
                 .forEach { (k, v) -> aliases[k] = v }
@@ -124,6 +127,17 @@ class DownloadService : ForegroundService(), Downloader {
             if (q.isMainFile()) c.downloadHistory.add(q.fileName)
         }
         c.incrementCounter(if (success) Settings.spDownloadCount else Settings.spDlErrorCount)
+    }
+
+    override fun onPause() {
+        onCancel()
+        notifySuspension(Notify.ID_DOWNLOADER_PAUSED, null) {
+            setContentTitle(getString(R.string.downloaderPaused))
+            val remaining = c.commands.size<Download>()
+            setContentText(
+                resources.getQuantityString(R.plurals.taskPausedCount, remaining, remaining)
+            )
+        }
     }
 
     override fun onCancel() {

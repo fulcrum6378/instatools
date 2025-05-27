@@ -5,13 +5,12 @@
 * Do the WebSocket solutions work?
 * `ProgressBar`s for `ListLazyPost`, `Downloader`, `PageVwr.Header` and `ListTry.StoryAction.RELOAD`
 * `PopupMenu`s by `EasyPopupMenu` have wrong corner strokes
-* ForegroundService::terminateTasks() doesn't work!
 
 ### Extensions
 
 * Choosing download qualities through long clicks on download buttons
 * Default download quality in Settings
-* Make `CommandService` cancellable and pausable
+* Make `CommandService` cancellable
 
 ### Too Complicated
 

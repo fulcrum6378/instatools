@@ -49,7 +49,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     lateinit var toolbar: Toolbar
     var tbTitle: TextView? = null
 
-    abstract val menuRes: Int?
+    protected abstract val menuRes: Int?
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,7 +92,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     }
 
     @SuppressLint("UseSupportActionBar")
-    fun initToolbar(tb: Toolbar, title: Int, changeTitleTo: String? = null) {
+    protected fun initToolbar(tb: Toolbar, title: Int, changeTitleTo: String? = null) {
         toolbar = tb
         setActionBar(tb)
         for (g in 0 until tb.childCount) {
@@ -113,7 +113,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
         }
     }
 
-    open fun styliseToolbar() {
+    protected open fun styliseToolbar() {
         val ca = colorAc.value ?: themeColor()
         val cf = PorterDuffColorFilter(ca, PorterDuff.Mode.SRC_IN)
         toolbar.navigationIcon?.colorFilter = cf
@@ -178,7 +178,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     }
 
     /** Helper function for registering a "startActivityForResult" action */
-    fun launcherForResult(callback: ActivityResultCallback<ActivityResult>) =
+    protected fun launcherForResult(callback: ActivityResultCallback<ActivityResult>) =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
 
     /** All themes used in this app */

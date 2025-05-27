@@ -22,6 +22,7 @@
     <string name="viewInInsta">View in Instagram</string>
     <string name="addToFav">Add to favourites</string>
     <string name="start">Start</string>
+    <string name="pause">Pause</string>
     <string name="stop">Stop</string>
     <string name="sContinue">Continue</string>
     <!--<string-array name="inaccurateTime">
@@ -49,6 +50,7 @@
     <string name="addShortcut">Add shortcut</string>
     <string name="save">Save</string>
     <string name="tryAgain">Try Again</string>
+    <string name="resume">Resume</string>
     <string name="deleteItemSure">Are you sure you want to delete this item?</string>
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
@@ -206,6 +208,7 @@
         <item quantity="one">Downloading %d item&#8230;</item>
         <item quantity="other">Downloading %d items&#8230;</item>
     </plurals>
+    <string name="downloaderPaused">Download paused</string>
     <plurals name="downloaderSomeFailed">
         <item quantity="one">Couldn\'t download %d item!</item>
         <item quantity="other">Couldn\'t download %d items!</item>
@@ -219,6 +222,7 @@
     </string>
     <string name="commanderTitle">Sending commands to Instagram&#8230;</string>
     <string name="commanderSubtitle">%1$s (%2$d of %3$d)</string>
+    <string name="commanderPaused">Sending commands paused</string>
     <plurals name="commanderSomeFailed">
         <item quantity="one">Couldn\'t process %d command!</item>
         <item quantity="other">Couldn\'t process %d commands!</item>
@@ -229,6 +233,14 @@
     <string name="servicesChannelGroupDesc">
         Examples are downloading and sending IG commands.
     </string>
+    <string name="taskSuspensionChannel">Task Suspension</string>
+    <string name="taskSuspensionChannelDesc">
+        A notification that pops up when a task is paused letting the user resume it anytime.
+    </string>
+    <plurals name="taskPausedCount">
+        <item quantity="one">%d item in the queue&#8230;</item>
+        <item quantity="other">%d items in the queue&#8230;</item>
+    </plurals>
     <string name="taskResultChannel">Task Results</string>
     <string name="taskResultChannelDesc">
         Notifies anything resulted from a long-running task,

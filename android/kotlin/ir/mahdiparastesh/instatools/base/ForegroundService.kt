@@ -19,26 +19,27 @@ import kotlin.reflect.KClass
 
 /**
  * Abstract class for all foreground services in this app
- * Most functions do not require to be called on the main thread.
+ * Most methods do not require to be called on the main thread.
  */
 abstract class ForegroundService : Service() {
     protected val c: InstaTools by lazy { applicationContext as InstaTools }
     protected lateinit var ntfManager: NotificationManager
 
-    abstract val com: ForegroundServiceCompanion<*>
-    abstract val ntfChannel: Notify.Channel
-    abstract val ntfId: Int
-    abstract val ntfIcon: Int
-    abstract val ntfFailureIcon: Int
-    abstract val ntfTint: Int
-    abstract var ntfTitle: String
-    abstract var ntfText: String?
-    abstract var ntfSmallText: String?
-    abstract val ntfActions: Array<Pair<Int, String>>
+    protected abstract val com: ForegroundServiceCompanion<*>
+    protected abstract val ntfChannel: Notify.Channel
+    protected abstract val ntfId: Int
+    protected abstract val ntfIcon: Int
+    protected abstract val ntfFailureIcon: Int
+    protected abstract val ntfTint: Int
+    protected abstract var ntfTitle: String
+    protected abstract var ntfText: String?
+    protected abstract var ntfSmallText: String?
+    protected abstract val ntfActions: Array<Pair<Int, String>>
 
     companion object {
         const val ACTION_START = "ACTION_START"
-        const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_PAUSE = "ACTION_PAUSE"
+        const val ACTION_CANCEL = "ACTION_CANCEL"
         const val HANDLE_ITEM_UPDATED = 2
         const val HANDLE_ITEM_DELETED = 3
 
@@ -49,8 +50,8 @@ abstract class ForegroundService : Service() {
 
         fun terminateTasks(c: Context) {
             services.forEach { service ->
-                c.stopService(Intent(c, service.java).apply { action = ACTION_STOP })
-            }
+                c.startService(Intent(c, service.java).apply { action = ACTION_CANCEL })
+            }  // don't use stopService()
         }
 
         fun ntfMutability(bb: Boolean = true): Int = when {
@@ -62,7 +63,7 @@ abstract class ForegroundService : Service() {
     }
 
     /**
-     * Abstract class from which all companion objects of [ForegroundService] subclasses must extend.
+     * Abstract class from which all companion objects of [ForegroundService] subclasses must extend
      */
     abstract class ForegroundServiceCompanion<Item> {
         val active = MutableLiveData(false)
@@ -75,7 +76,8 @@ abstract class ForegroundService : Service() {
         super.onStartCommand(intent, flags, startId)
         if (intent.action != null) when (intent.action) {
             ACTION_START -> {}
-            ACTION_STOP -> onCancel()
+            ACTION_PAUSE -> onPause()
+            ACTION_CANCEL -> onCancel()
         }
         return START_NOT_STICKY
     }
@@ -88,7 +90,7 @@ abstract class ForegroundService : Service() {
 
     private var ntfActivity: KClass<*>? = null
     private var ntfPage: Int? = null
-    fun initialNotification(
+    protected fun initialNotification(
         openActivity: KClass<*>? = null, turnToPage: Int? = null, progress: Pair<Int, Int>? = null
     ) {
         ntfActivity = openActivity
@@ -98,7 +100,7 @@ abstract class ForegroundService : Service() {
         startForeground(ntfId, notification(progress))
     }
 
-    fun updateNotification(progress: Pair<Int, Int>? = null) {
+    protected fun updateNotification(progress: Pair<Int, Int>? = null) {
         ntfManager.notify(ntfId, notification(progress))
     }
 
@@ -125,9 +127,32 @@ abstract class ForegroundService : Service() {
             )
         }.build()
 
-    fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
+    private fun pi(c: Context, code: String): PendingIntent = PendingIntent.getService(
         c, 0, Intent(c, this::class.java).apply { action = code }, ntfMutability()
     )
+
+    protected fun notifySuspension(
+        id: Int,
+        activity: KClass<*>?,
+        func: Notification.Builder.() -> Unit
+    ) {
+        val ntf = Notification.Builder(c, Notify.Channel.TASK_SUSPENSION.id).apply {
+            setColor(resources.getColor(ntfTint, theme))
+            setSmallIcon(ntfIcon)
+            func()
+            if (activity != null) setContentIntent(
+                PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))
+            )
+            addAction(
+                Notification.Action.Builder(
+                    null, getString(R.string.resume), pi(c, ACTION_START)
+                ).build()
+            )
+        }.build()
+
+        ntfManager.createNotificationChannel(Notify.Channel.TASK_SUSPENSION.create(c))
+        ntfManager.notify(id, ntf)
+    }
 
     protected fun notifyFailure(
         id: Int,
@@ -135,28 +160,31 @@ abstract class ForegroundService : Service() {
         canTryAgain: Boolean = true,
         func: Notification.Builder.() -> Unit
     ) {
-        ntfManager.createNotificationChannel(Notify.Channel.RESULT.create(c))
-        ntfManager.notify(
-            id, Notification.Builder(c, Notify.Channel.RESULT.id).apply {
-                setColor(resources.getColor(ntfTint, theme))
-                setSmallIcon(ntfFailureIcon)
-                func()
-                if (activity != null) setContentIntent(
-                    PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))
-                )
-                if (canTryAgain) addAction(
-                    Notification.Action.Builder(
-                        null, getString(R.string.tryAgain), pi(c, ACTION_START)
-                    ).build()
-                )
-            }.build()
-        )
+        val ntf = Notification.Builder(c, Notify.Channel.TASK_RESULTS.id).apply {
+            setColor(resources.getColor(ntfTint, theme))
+            setSmallIcon(ntfFailureIcon)
+            func()
+            if (activity != null) setContentIntent(
+                PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))
+            )
+            if (canTryAgain) addAction(
+                Notification.Action.Builder(
+                    null, getString(R.string.tryAgain), pi(c, ACTION_START)
+                ).build()
+            )
+        }.build()
+
+        ntfManager.createNotificationChannel(Notify.Channel.TASK_RESULTS.create(c))
+        ntfManager.notify(id, ntf)
     }
 
     @MainThread
-    abstract fun onCancel()
+    protected abstract fun onPause()
 
-    fun destroy() {
+    @MainThread
+    protected abstract fun onCancel()
+
+    protected fun destroy() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

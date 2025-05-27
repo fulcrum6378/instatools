@@ -28,7 +28,8 @@ class CommandService : ForegroundService(), Queuer<Command> {
     override lateinit var ntfTitle: String
     override var ntfText: String? = null
     override var ntfSmallText: String? = null
-    override val ntfActions: Array<Pair<Int, String>> = arrayOf(R.string.stop to ACTION_STOP)
+    override val ntfActions: Array<Pair<Int, String>> =
+        arrayOf(R.string.pause to ACTION_PAUSE, R.string.stop to ACTION_CANCEL)
     override var handledItems: Int = 0
 
     @Volatile
@@ -40,7 +41,9 @@ class CommandService : ForegroundService(), Queuer<Command> {
         super.onCreate()
         if (c.acc == null) return
 
+        ntfManager.cancel(Notify.ID_COMMANDER_PAUSED)
         ntfManager.cancel(Notify.ID_COMMANDER_ERROR)
+        ntfManager.cancel(Notify.ID_DOWNLOADER_SOME_FAILED)
         ntfTitle = getString(R.string.commanderTitle)
         initialNotification()
 
@@ -103,6 +106,18 @@ class CommandService : ForegroundService(), Queuer<Command> {
     override fun onHandled(q: Command, success: Boolean) {
         processingItem = null
         c.commands.remove<Command>(q)
+    }
+
+    override fun onPause() {
+        onCancel()
+        notifySuspension(Notify.ID_COMMANDER_PAUSED, null) {
+            setContentTitle(getString(R.string.commanderPaused))
+            val remaining = c.commands.size<Command>()
+            setContentText(
+                resources.getQuantityString(R.plurals.taskPausedCount, remaining, remaining)
+            )
+            // TODO addAction(FORGET...)
+        }
     }
 
     override fun onCancel() {

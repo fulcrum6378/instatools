@@ -200,8 +200,8 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
             R.id.dtControl -> if (!c.downloads.isEmpty<Download>()) {
                 if (DownloadService.active.value == true)
                     startService(
-                        Intent(c, DownloadService::class.java) // don't use stopService()
-                            .apply { action = ForegroundService.ACTION_STOP })
+                        Intent(c, DownloadService::class.java)  // don't use stopService()
+                            .apply { action = ForegroundService.ACTION_CANCEL })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }
