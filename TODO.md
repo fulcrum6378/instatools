@@ -2,14 +2,14 @@
 
 ### Problems
 
-* Do the WebSocket solutions work?
+* Posts pop up on long click in the new selection library version
+* `21:27:53.597  W  Stable ids in the adapter will be ignored as the ConcatAdapter is configured not to have stable ids`
 * `ProgressBar`s for `ListLazyPost`, `Downloader`, `PageVwr.Header` and `ListTry.StoryAction.RELOAD`
 * `PopupMenu`s by `EasyPopupMenu` have wrong corner strokes
 
 ### Extensions
 
-* Choosing download qualities through long clicks on download buttons
-* Default download quality in Settings
+* Download as image for `Expandable`
 
 ### Too Complicated
 

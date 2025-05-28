@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -54,7 +53,9 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
     override val expandable: Expandable by lazy {
-        Expandable(c, b.expanded, c.color(if (!c.night) R.color.defBG else R.color.CS)) {
+        Expandable(
+            c, b.expanded, c.color(if (!c.night) R.color.defBG else R.color.CS), dialogContext
+        ) {
             updateShadow()
             updateJumper()
         }
@@ -62,7 +63,7 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
     override val selectiveMenuRes: Int = R.menu.main_tlb_svd_select
     override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
-    override val dialogContext: Context
+    override val dialogContext: ContextThemeWrapper
         get() = ContextThemeWrapper(c, R.style.Theme_InstaTools_Secondary)
 
     override fun isBInitialised(): Boolean = ::b.isInitialized

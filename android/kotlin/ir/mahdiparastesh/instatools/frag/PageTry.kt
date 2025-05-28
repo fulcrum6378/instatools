@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +37,10 @@ class PageTry : BasePageMain(BaseActivity.Theme.TERTIARY), OnlineLister {
     override val empty: View? get() = b.empty
     override val jumper: ImageView? get() = b.jumper
     override val expandable: Expandable by lazy {
-        Expandable(c, b.expanded, c.color(if (!c.night) R.color.defBG else R.color.CT)) {
+        Expandable(
+            c, b.expanded, c.color(if (!c.night) R.color.defBG else R.color.CT),
+            ContextThemeWrapper(c, R.style.Theme_InstaTools_Tertiary)
+        ) {
             updateShadow()
             updateJumper()
         }

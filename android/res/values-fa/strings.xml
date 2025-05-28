@@ -68,6 +68,8 @@
         <item quantity="other">%d مورد انتخاب شد</item>
     </plurals>
     <string name="reload">بارگذاری دوباره</string>
+    <string name="versionPickerTitle">سایز ها</string>
+    <string name="versionPickerItem">%1$d در %2$d پیکسل</string>
 
     <!-- API -->
     <string name="noInternet">اینترنت قطع است!</string>

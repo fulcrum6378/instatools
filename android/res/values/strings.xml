@@ -68,6 +68,8 @@
         <item quantity="other">%d items selected</item>
     </plurals>
     <string name="reload">Reload</string>
+    <string name="versionPickerTitle">Versions</string>
+    <string name="versionPickerItem">%1$d x %2$d pixels</string>
 
     <!-- API -->
     <string name="noInternet">No internet connection!</string>

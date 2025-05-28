@@ -83,10 +83,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
 
             // for file upload:
             allowFileAccess = true
-
-            // todo for WebSockets (IG Direct):
-            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            safeBrowsingEnabled = false
         }
         b.web.webViewClient = myClient
         b.web.webChromeClient = myChromeClient
@@ -179,7 +175,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         if (::bw.isInitialized) bw.root.vis(false)
         cookieManager = CookieManager.getInstance().also { cm ->
             cm.setAcceptCookie(true)
-            cm.setAcceptThirdPartyCookies(b.web, true)  // todo for WebSockets (IG Direct)
             cm.removeAllCookies(object : ValueCallback<Boolean> {
                 private val settable by lazy { withCookie?.split("; ") }
                 private var i = 0

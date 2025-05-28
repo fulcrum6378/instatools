@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -38,7 +39,7 @@ class PageRel : BasePageViewer(), PostSelector {
     override val jumper: ImageView? get() = b.jumper
     override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
-    override val dialogContext: Context get() = c
+    override val dialogContext: ContextThemeWrapper get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.vm.reels != null

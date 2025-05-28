@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Command" type="JetRunConfigurationType">
+    <envs>
+      <env name="debug" value="0" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="ir.mahdiparastesh.instatools.MainKt" />
     <module name="InstaTools.cli.main" />
     <shortenClasspath name="NONE" />

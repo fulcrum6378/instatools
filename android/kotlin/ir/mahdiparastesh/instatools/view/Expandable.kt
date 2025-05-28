@@ -4,11 +4,13 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
@@ -19,6 +21,7 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.Media.Version.Companion.hasOnlyOneCandidate
 import ir.mahdiparastesh.instatools.base.BaseActivity
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.databinding.ExpandableBinding
@@ -36,6 +39,7 @@ class Expandable(
     val c: BaseActivity,
     val b: ExpandableBinding,
     @ColorInt private val colorBg: Int = c.color(R.color.defBG),
+    private val dialogContext: ContextThemeWrapper = c,
     private val onZoomChanged: (zoomed: Boolean) -> Unit = {}
 ) {
     var zoomed = false
@@ -60,12 +64,18 @@ class Expandable(
                 Downloads.initService(c)
             }
         }
+        b.download.setOnLongClickListener {
+            versionPicker(media ?: return@setOnLongClickListener false)
+        }
         b.downloadThis.setOnClickListener {
             val med = media ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
                 c.c.downloads.addAll<Download>(med.queue(onlyOneSlide = b.slider.currentItem), true)
                 Downloads.initService(c)
             }
+        }
+        b.downloadThis.setOnLongClickListener {
+            versionPicker(media ?: return@setOnLongClickListener false, b.slider.currentItem)
         }
         b.downloadAll.setOnClickListener {
             val med = media ?: return@setOnClickListener
@@ -223,6 +233,32 @@ class Expandable(
         }
 
         /* --- end of animation --- */
+    }
+
+    /** @return false if the candidates are duplicate */
+    private fun versionPicker(
+        mainMedia: Media,
+        onlyOneSlide: Int? = null
+    ): Boolean {
+        val med = onlyOneSlide?.let { mainMedia.carousel_media?.get(onlyOneSlide) } ?: mainMedia
+        val list = med.video_versions ?: med.image_versions2.candidates
+        if (list.hasOnlyOneCandidate()) return false
+
+        AlertDialog.Builder(dialogContext).apply {
+            setTitle(R.string.versionPickerTitle)
+            setItems(
+                list.map { c.getString(R.string.versionPickerItem, it.width, it.height) }
+                    .toTypedArray()
+            ) { dialog, i ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    c.c.downloads.addAll<Download>(
+                        mainMedia.queue(i, onlyOneSlide = b.slider.currentItem), true
+                    )
+                    Downloads.initService(c)
+                }
+            }
+        }.show()
+        return true
     }
 
     fun collapse() {

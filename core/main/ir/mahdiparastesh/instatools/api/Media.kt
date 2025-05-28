@@ -1,5 +1,8 @@
 package ir.mahdiparastesh.instatools.api
 
+import ir.mahdiparastesh.instatools.api.Media.Version.Companion.BEST
+import ir.mahdiparastesh.instatools.api.Media.Version.Companion.MEDIUM
+import ir.mahdiparastesh.instatools.api.Media.Version.Companion.WORST
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
@@ -62,11 +65,11 @@ class Media(
         // also their Media cannot be distinguished from daily stories!
         "instatools_story_carousel" ->
             Utils.STORY_LINK.format(userName ?: owner().username, carousel_media!![slide!!].pk)
-        null -> nearest(Version.BEST)
+        null -> nearest(BEST)
         else -> throw IllegalStateException("New product type: $product_type ?!?")
     }
 
-    fun nearest(ideal: Int = Version.BEST, justImage: Boolean = false): String? {
+    fun nearest(ideal: Int = BEST, justImage: Boolean = false): String? {
         var ret: String? = null
         val original = original_width?.let { Pair(original_width, original_height!!) }
         if (!justImage && video_versions != null)
@@ -77,8 +80,8 @@ class Media(
     }
 
     fun thumb() =
-        carousel_media?.getOrNull(0)?.nearest(Version.WORST, true)
-            ?: nearest(Version.WORST, true)
+        carousel_media?.getOrNull(0)?.nearest(WORST, true)
+            ?: nearest(WORST, true)
 
     fun hasAudio() =
         has_audio == true || (carousel_media != null && carousel_media.any { it.media_type == 2 })
@@ -97,11 +100,12 @@ class Media(
 
     /**
      * Adds this item to the download queue.
+     *
      * @param owner must be specified in stories and highlights.
      * @param onlyOneSlide whether this position of the slider should downloaded, null otherwise
      */
     fun queue(
-        idealSize: Int = Version.BEST,
+        idealSize: Int = BEST,
         link: String? = null,
         owner: String? = null,
         onlyOneSlide: Int? = null
@@ -172,36 +176,59 @@ class Media(
     class Version(
         //val bandwidth: Int?, // in some video_versions, e.g. 1060902
         //val id: String?, // in some video_versions, e.g. "615736350802035v"
-        val type: Int?,
+        val type: Int?, // nullable when dimensions are available
         val url: String,
         val height: Int?, // nullable in stories, in that case `type` is provided
         val width: Int?, // --
     ) {
-        @Suppress("MemberVisibilityCanBePrivate")
-        companion object {
-            const val WORST = 0
-            const val MEDIUM = -1
-            const val BEST = -2
-            // Any positive number except these, represents an ideal width,
-            // Any negative number except these, represents an ideal height.
 
+        companion object {
+            const val WORST = -1
+            const val MEDIUM = -2
+            const val BEST = -3
+
+            fun Array<Version>.hasOnlyOneCandidate(): Boolean =
+                size == 1 || (this[0].type != null && areDuplicates())
+
+            /** Removes bullshit triple candidates from Instagram! */
+            private fun Array<Version>.areDuplicates(): Boolean {
+                val set = mutableSetOf<String>()
+                for (v in this) set.add(v.url)
+                return set.size == 1
+            }
+
+            /**
+             * Picks a URL String out of a list of [Version]s.
+             *
+             * @param list [Media.ImageVersions2.candidates] or [Media.video_versions];
+             *             Instagram has never sent an empty array.
+             * @param ideal [WORST], [MEDIUM], [BEST] (less than 0),
+             *              position of the candidate in the [list] (less than 10)
+             *              or a dimension (greater than 10)
+             * @param original original dimensions of the [Media]
+             */
             fun pick(
                 list: Array<Version>,
                 ideal: Int,
                 original: Pair<Int, Int>? = null,
-            ): String? = when (ideal) {
-                BEST -> best(list, original)
-                MEDIUM -> medium(list)
-                WORST -> worst(list)
-                else -> nearest(list, ideal, original)
+            ): String? {
+                if (list.hasOnlyOneCandidate()) return list[0].url
+                return when {
+                    ideal == BEST -> best(list, original)
+                    ideal == MEDIUM -> medium(list)
+                    ideal == WORST -> worst(list)
+                    ideal < 10 -> list[ideal].url
+                    else -> nearest(list, ideal, original)
+                }
             }
 
+            /** @return the URL String of the best item in a list of [Version]s */
             fun best(
                 list: Array<Version>,
                 original: Pair<Int, Int>? = null,
             ): String? {
                 if (list[0].width == null)
-                    return list.minBy { it.type!! }.url
+                    return list.first().url  // we absolutely don't know which one is the best!
 
                 var ret: String?
                 ret =
@@ -218,13 +245,14 @@ class Media(
                 return ret
             }
 
+            /** @return the URL String of the medium item in a list of [Version]s */
             fun medium(list: Array<Version>): String? =
                 list.getOrNull(if (list.size <= 1) 0 else list.size / 2)?.url
 
-
+            /** @return the URL String of the worst item in a list of [Version]s */
             fun worst(list: Array<Version>): String? {
                 if (list[0].width == null)
-                    return list.maxBy { it.type!! }.url
+                    return list.last().url  // we absolutely don't know which one is the worst!
 
                 var minW = 1000
                 var minH = 1000
@@ -236,6 +264,10 @@ class Media(
                     ?: list.getOrNull(0)?.url
             }
 
+            /**
+             * @return the URL String of the nearest item to some specific dimensions in
+             *         a list of [Version]s
+             */
             fun nearest(
                 list: Array<Version>,
                 ideal: Int,

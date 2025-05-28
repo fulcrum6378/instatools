@@ -1,11 +1,11 @@
 package ir.mahdiparastesh.instatools.frag
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -60,7 +60,7 @@ class PageVwr : BasePageViewer(), PostSelector {
     override val jumper: ImageView? get() = b.jumper
     override var tracker: SelectionTracker<Long>? = null
     override var selectivity = false
-    override val dialogContext: Context get() = c
+    override val dialogContext: ContextThemeWrapper get() = c
 
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun shouldLoadOnPrepare(): Boolean = false
@@ -316,7 +316,7 @@ class PageVwr : BasePageViewer(), PostSelector {
             h.b.privateAcc.vis(showPv_)
             if (showPv_) {
                 h.b.privateAcc.setCompoundDrawablesWithIntrinsicBounds(
-                    null, c.drawable(R.drawable.private_account)!!, null, null
+                    null, c.drawable(R.drawable.private_account), null, null
                 )
                 h.b.privateAcc.layoutParams =
                     (h.b.privateAcc.layoutParams as ViewGroup.MarginLayoutParams).apply {

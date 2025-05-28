@@ -279,7 +279,7 @@ interface ServiceOwner : Lister {
 interface PostSelector : Lister {
     var tracker: SelectionTracker<Long>?
     var selectivity: Boolean
-    val dialogContext: Context
+    val dialogContext: ContextThemeWrapper
 
     fun buildSelection() {
         // created only once, except after FragmentTransaction::attach()

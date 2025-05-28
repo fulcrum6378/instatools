@@ -14,7 +14,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "41.6.6"
+        versionName = "41.7.5"
     }
 
     sourceSets.getByName("main") {
@@ -73,7 +73,6 @@ dependencies {
     implementation(libs.recyclerview.selection)
     implementation(libs.swiperefreshlayout)
     implementation(libs.viewpager2)
-    //implementation(libs.webkit)
     implementation(libs.lottie)
     implementation(libs.shimmer)
     implementation(libs.glide)
