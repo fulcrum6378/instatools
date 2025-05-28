@@ -17,6 +17,7 @@ import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
+import androidx.viewpager2.widget.ViewPager2
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
@@ -110,6 +111,18 @@ class Expandable(
                 Downloads.initService(c)
             }
         }
+        b.downloadPicture.setOnClickListener {
+            val med = media ?: return@setOnClickListener
+            CoroutineScope(Dispatchers.IO).launch {
+                c.c.downloads.addAll<Download>(
+                    med.queue(onlyOneSlide = b.slider.currentItem, justImage = true), true
+                )
+                Downloads.initService(c)
+            }
+        }
+        b.downloadPicture.setOnLongClickListener {
+            versionPicker(media ?: return@setOnLongClickListener false, b.slider.currentItem, true)
+        }
         b.viewInInsta.setOnClickListener {
             val link = media?.link(slide = b.slider.currentItem) ?: return@setOnClickListener
             try {
@@ -124,6 +137,14 @@ class Expandable(
             } catch (_: ActivityNotFoundException) {
             }
         }
+
+        b.slider.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    organiseButtonsPerPage(position)
+                }
+            }
+        )
     }
 
     fun expand(media: Media, thumb: ImageView, carouselItem: Int = 0) {
@@ -160,9 +181,7 @@ class Expandable(
         b.downloadAll.vis(isSlider)
         b.downloadThis.vis(isSlider)
         b.download.vis(!isSlider)
-        val hasAudio = media.hasAudio() == true
-        b.downloadAudio.vis(hasAudio)
-        b.volume.vis(hasAudio)
+        organiseButtonsPerPage(carouselItem)
 
         /* --- beginning of coordination --- */
 
@@ -178,7 +197,9 @@ class Expandable(
         startBounds = RectF(startBoundsInt)
         val finalBounds = RectF(finalBoundsInt)
 
-        if ((finalBounds.width() / finalBounds.height() > startBounds!!.width() / startBounds!!.height())) {
+        if (finalBounds.width() / finalBounds.height() >
+            startBounds!!.width() / startBounds!!.height()
+        ) {
             startScale = startBounds!!.height() / finalBounds.height()
             val startWidth: Float = startScale!! * finalBounds.width()
             val deltaWidth: Float = (startWidth - startBounds!!.width()) / 2
@@ -235,13 +256,22 @@ class Expandable(
         /* --- end of animation --- */
     }
 
+    private fun organiseButtonsPerPage(page: Int) {
+        val med = media?.carousel_media?.get(page) ?: media ?: return
+        val hasAudio = med.hasAudio() == true
+        b.downloadAudio.vis(hasAudio)
+        b.volume.vis(hasAudio)
+        b.downloadPicture.vis(med.video_versions != null)
+    }
+
     /** @return false if the candidates are duplicate */
     private fun versionPicker(
         mainMedia: Media,
-        onlyOneSlide: Int? = null
+        onlyOneSlide: Int? = null,
+        justImage: Boolean = false,
     ): Boolean {
         val med = onlyOneSlide?.let { mainMedia.carousel_media?.get(onlyOneSlide) } ?: mainMedia
-        val list = med.video_versions ?: med.image_versions2.candidates
+        val list = (if (!justImage) med.video_versions else null) ?: med.image_versions2.candidates
         if (list.hasOnlyOneCandidate()) return false
 
         AlertDialog.Builder(dialogContext).apply {
@@ -252,7 +282,9 @@ class Expandable(
             ) { dialog, i ->
                 CoroutineScope(Dispatchers.IO).launch {
                     c.c.downloads.addAll<Download>(
-                        mainMedia.queue(i, onlyOneSlide = b.slider.currentItem), true
+                        mainMedia.queue(
+                            i, onlyOneSlide = b.slider.currentItem, justImage = justImage
+                        ), true
                     )
                     Downloads.initService(c)
                 }

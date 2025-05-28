@@ -1,0 +1,10 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/download"
+        android:right="5dp"
+        android:top="5dp" />
+    <item
+        android:bottom="27dp"
+        android:drawable="@drawable/picture"
+        android:left="27dp" />
+</layer-list>

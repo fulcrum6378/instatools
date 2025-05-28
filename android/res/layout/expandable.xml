@@ -93,6 +93,14 @@
                 android:visibility="gone" />
 
             <ImageView
+                android:id="@+id/downloadPicture"
+                style="@style/expandableButton"
+                android:contentDescription="@string/downloadPicture"
+                android:src="@drawable/download_picture"
+                android:tooltipText="@string/downloadPicture"
+                android:visibility="gone" />
+
+            <ImageView
                 android:id="@+id/downloadAudio"
                 style="@style/expandableButton"
                 android:contentDescription="@string/downloadAudio"

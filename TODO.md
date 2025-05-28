@@ -1,15 +1,14 @@
 # InstaTools To-Do List
 
-### Problems
+### Improvements
 
 * Posts pop up on long click in the new selection library version
 * `21:27:53.597  W  Stable ids in the adapter will be ignored as the ConcatAdapter is configured not to have stable ids`
+* Perhaps going to the accounts centre makes the app forget its credentials
+* `DownloadService` doesn't send pause notifications
+* Ability to like stories
 * `ProgressBar`s for `ListLazyPost`, `Downloader`, `PageVwr.Header` and `ListTry.StoryAction.RELOAD`
 * `PopupMenu`s by `EasyPopupMenu` have wrong corner strokes
-
-### Extensions
-
-* Download as image for `Expandable`
 
 ### Too Complicated
 

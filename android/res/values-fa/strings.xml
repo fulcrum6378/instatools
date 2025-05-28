@@ -37,6 +37,7 @@
     <string name="downloadAll">دانلود تمام اسلایدها</string>
     <string name="downloadThis">دانلود این اسلاید</string>
     <string name="downloadAudio">دانلود فایل صدا فقط</string>
+    <string name="downloadPicture">دانلود اولین فریم</string>
     <string name="muteSound">پخش/قطع صدا</string>
     <string-array name="bytes">
         <item>%d بایت</item>

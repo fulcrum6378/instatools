@@ -37,6 +37,7 @@
     <string name="downloadAll">Download all slides</string>
     <string name="downloadThis">Download only this slide</string>
     <string name="downloadAudio">Download audio</string>
+    <string name="downloadPicture">Download first frame</string>
     <string name="muteSound">Play/mute sound</string>
     <string-array name="bytes" translatable="false">
         <item>%d B</item>

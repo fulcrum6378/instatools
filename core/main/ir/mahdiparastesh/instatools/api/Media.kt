@@ -108,7 +108,8 @@ class Media(
         idealSize: Int = BEST,
         link: String? = null,
         owner: String? = null,
-        onlyOneSlide: Int? = null
+        onlyOneSlide: Int? = null,
+        justImage: Boolean = false,
     ): ArrayList<Download> {
         val list = arrayListOf<Download>()
         val u = owner ?: owner().username!!
@@ -120,7 +121,7 @@ class Media(
                 Download(
                     car.id(),
                     car.taken_at ?: taken_at!!,
-                    car.nearest(idealSize)!!,
+                    car.nearest(idealSize, justImage)!!,
                     car.media_type.toInt().toByte(),
                     u,
                     caption?.text,
@@ -135,7 +136,7 @@ class Media(
             Download(
                 id(),
                 taken_at!!,
-                nearest(idealSize)!!,
+                nearest(idealSize, justImage)!!,
                 media_type.toInt().toByte(),
                 u,
                 caption?.text,
