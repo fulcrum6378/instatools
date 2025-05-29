@@ -8,6 +8,11 @@ import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
 
+/**
+ * May represent an IG post or an item of the slider of a post
+ * (a parent [Media] with many [Media] children), also a reel or contents of a story.
+ * @see [Story]
+ */
 @Serializable
 class Media(
     //val can_reply: Boolean?,  // nullable in tagged

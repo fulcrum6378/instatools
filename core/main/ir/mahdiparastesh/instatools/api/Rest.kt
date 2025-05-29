@@ -4,6 +4,7 @@ import ir.mahdiparastesh.instatools.util.CopyOnWriteArrayListSerializer
 import kotlinx.serialization.Serializable
 import java.util.concurrent.CopyOnWriteArrayList
 
+/** Template for a REST API response (belonging to the old Instagram API) */
 interface Rest {
     val status: String
 

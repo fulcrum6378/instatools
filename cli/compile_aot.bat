@@ -6,7 +6,7 @@ if [%VC_VARS_LOADED%] == [] (
 
 if not exist build\graalvm mkdir build\graalvm
 
-call "D:\Programs\graalvm-jdk-23.0.2+7.1\bin\native-image.cmd" ^
+call "D:\Programming\graalvm-jdk-24.0.1+9.1\bin\native-image.cmd" ^
     -jar build\libs\InstaTools-%1.jar ^
     -o build\graalvm\InstaTools-%1 ^
     --enable-url-protocols=https ^

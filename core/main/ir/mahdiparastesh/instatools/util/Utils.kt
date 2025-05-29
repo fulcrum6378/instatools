@@ -22,6 +22,7 @@ object Utils {
         return if (s.length == 1) "0$s" else s
     }
 
+    /** Returns the current timestamp in seconds. */
     fun now(): Long = System.currentTimeMillis() / 1000L
 
     private fun zonedDateTime(time: Long): ZonedDateTime =

@@ -1,5 +1,9 @@
 package ir.mahdiparastesh.instatools.api
 
+import ir.mahdiparastesh.instatools.api.Api.Endpoint.QUERY
+import ir.mahdiparastesh.instatools.api.Api.cookies
+import ir.mahdiparastesh.instatools.api.Api.html
+import ir.mahdiparastesh.instatools.api.Api.json
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -10,6 +14,11 @@ import java.net.Proxy
 import java.net.URI
 import javax.net.ssl.HttpsURLConnection
 
+/**
+ * A static class that handles all calls to the new and old Instagram APIs efficiently via [json].
+ * Also opens Instagram web pages via [html].
+ * [cookies] are required for this class to work.
+ */
 object Api {
     var cookies = ""
     var proxy: Proxy = Proxy.NO_PROXY
@@ -32,6 +41,7 @@ object Api {
             }
     }
 
+    /** Makes a call to the new and old Instagram APIs. */
     @Throws(FailureException::class)
     inline fun <reified JSON> json(
         url: String,
@@ -90,6 +100,7 @@ object Api {
         return data
     }
 
+    /** Opens an Instagram webpage and reads its contents. */
     @Throws(FailureException::class)
     fun html(url: String): String {
         val con = URI(url).toURL().openConnection(proxy) as HttpsURLConnection
@@ -122,6 +133,13 @@ object Api {
     }
 
 
+    /**
+     * [QUERY] exclusively belongs to the new Instagram API calls.
+     * Other endpoints contact the old API.
+     * Some of the old API endpoints stopped working or raised Instagram's suspicion.
+     * It is recommended to migrate to calling the new API where Instagram isn't that suspicious.
+     * Although the new API can make Instagram suspicious as well.
+     */
     enum class Endpoint(val url: String) {
         QUERY("https://www.instagram.com/graphql/query"),
 
@@ -136,6 +154,7 @@ object Api {
     }
 
 
+    /** Gets thrown when any error occurs while contacting the Instagram APIs. */
     class FailureException(
         val code: Int, e: IOException? = null
     ) : IllegalStateException(

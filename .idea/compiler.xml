@@ -2,13 +2,13 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="22">
-      <module name="InstaTools.android" target="23" />
-      <module name="InstaTools.cli" target="23" />
-      <module name="InstaTools.cli.main" target="23" />
-      <module name="InstaTools.cli.test" target="23" />
-      <module name="InstaTools.core" target="23" />
-      <module name="InstaTools.core.main" target="23" />
-      <module name="InstaTools.core.test" target="23" />
+      <module name="InstaTools.android" target="24" />
+      <module name="InstaTools.cli" target="24" />
+      <module name="InstaTools.cli.main" target="24" />
+      <module name="InstaTools.cli.test" target="24" />
+      <module name="InstaTools.core" target="24" />
+      <module name="InstaTools.core.main" target="24" />
+      <module name="InstaTools.core.test" target="24" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -3,6 +3,7 @@ package ir.mahdiparastesh.instatools.api
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+/** Represents a daily story or a highlighted story. */
 @Serializable
 class Story(
     val cover_media: Cover?, // null in stories
@@ -65,6 +66,7 @@ class Story(
     }
 
 
+    /** Cover image of a highlighted story */
     @Serializable
     class Cover(
         val cropped_image_version: Media.Url,

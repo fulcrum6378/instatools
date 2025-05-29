@@ -4,6 +4,7 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.Serializable
 
+/** Represents an Instagram account and is used in many API data models. */
 @Serializable
 class User(
     //val bio_links: Array<BioLink>?,

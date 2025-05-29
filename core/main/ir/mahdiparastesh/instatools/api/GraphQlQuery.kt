@@ -2,6 +2,11 @@ package ir.mahdiparastesh.instatools.api
 
 import java.net.URLEncoder
 
+/**
+ * Difficultly deciphered GraphQL queries out of the new Instagram API
+ *
+ * Note: these GraphQL queries cannot like or unlike old IGTVs.
+ */
 @Suppress("KDocUnresolvedReference", "unused")
 enum class GraphQlQuery(
     private val doc_id: String,

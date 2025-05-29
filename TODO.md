@@ -18,6 +18,5 @@
 
 ### Notes
 
-> - The GraphQL queries cannot like or unlike old IGTVs.
 > - Either Android 11 or Samsung devices don't detect custom fonts for PopupMenus.
 > - Even the official Instagram app sometimes receives duplicate lazy-list content.

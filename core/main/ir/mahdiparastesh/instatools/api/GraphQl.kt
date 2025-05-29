@@ -4,6 +4,7 @@ import ir.mahdiparastesh.instatools.util.CopyOnWriteArrayListSerializer
 import kotlinx.serialization.Serializable
 import java.util.concurrent.CopyOnWriteArrayList
 
+/** Template for all GraphQL responses */
 @Serializable
 class GraphQl(
     val data: GraphQlData?,
@@ -12,6 +13,10 @@ class GraphQl(
     override val status: String // can be "ok" with HTTP code 200 while having errors!!!
 ) : Rest {
 
+    /**
+     * If an instance of this class is available in a GraphQL response,
+     * it means the request has been successful (MOSTLY).
+     */
     @Serializable
     class GraphQlData(
         val highlights: Page<Story>?,
