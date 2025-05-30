@@ -50,7 +50,8 @@ abstract class BasePage<Activity> : Fragment(), Lister, Toolbar.OnMenuItemClickL
             }
         }
 
-    abstract fun onSelectionStarted()
+    open fun onSelectionStarted() {
+    }
 
     /**
      * Handle onBackPressed action for this page.

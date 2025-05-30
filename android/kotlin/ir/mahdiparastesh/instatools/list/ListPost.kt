@@ -36,7 +36,6 @@ abstract class ListPost<Activity, Fragment>(
 
     protected val typeVideo = c.drawable(R.drawable.video)
     protected val typeStack = c.drawable(R.drawable.stack)
-    var firstLongClickSelect = false
 
     abstract val inflater: LayoutInflater
     abstract val tracker: SelectionTracker<Long>?
@@ -100,14 +99,6 @@ abstract class ListPost<Activity, Fragment>(
         // clicks
         h.b.click.setOnClickListener {
             expand(h.b.thumb, h.bindingAdapterPosition)
-        }
-        h.b.click.setOnLongClickListener {
-            if (firstLongClickSelect) {
-                firstLongClickSelect = false
-                return@setOnLongClickListener false
-            }
-            expand(h.b.thumb, h.bindingAdapterPosition)
-            true
         }
     }
 

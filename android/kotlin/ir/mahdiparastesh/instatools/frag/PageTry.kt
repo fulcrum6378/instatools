@@ -47,7 +47,6 @@ class PageTry : BasePageMain(BaseActivity.Theme.TERTIARY), OnlineLister {
     }
     override val selectiveMenuRes: Int? = null
 
-    override fun onSelectionStarted() {}
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.vm.tray != null
     override fun isModelEmpty(): Boolean = c.vm.tray?.tray?.isEmpty() == true

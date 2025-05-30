@@ -192,7 +192,6 @@ class PageSvd : BasePageMain(BaseActivity.Theme.SECONDARY), OnlineLister, PostSe
             c.c.gsp.edit { putBoolean(Settings.spLearntSelection, true) }
             b.rv.suppressLayout(false)
         }
-        (b.rv.adapter as ListSvd).firstLongClickSelect = true
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {

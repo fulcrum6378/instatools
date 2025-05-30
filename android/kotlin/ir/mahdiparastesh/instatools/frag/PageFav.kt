@@ -22,7 +22,6 @@ class PageFav : BasePageMain(BaseActivity.Theme.PRIMARY) {
     override val expandable = null
     override val selectiveMenuRes: Int? = null
 
-    override fun onSelectionStarted() {}
     override fun isBInitialised(): Boolean = ::b.isInitialized
     override fun isModelLoaded(): Boolean = c.c.fav.value != null
     override fun isModelEmpty(): Boolean = c.vm.favourites.isEmpty()

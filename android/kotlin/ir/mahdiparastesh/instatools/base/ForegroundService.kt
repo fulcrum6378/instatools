@@ -163,7 +163,6 @@ abstract class ForegroundService : Service() {
         val ntf = Notification.Builder(c, Notify.Channel.TASK_RESULTS.id).apply {
             setColor(resources.getColor(ntfTint, theme))
             setSmallIcon(ntfFailureIcon)
-            func()
             if (activity != null) setContentIntent(
                 PendingIntent.getActivity(c, 0, Intent(c, activity.java), ntfMutability(false))
             )
@@ -172,6 +171,7 @@ abstract class ForegroundService : Service() {
                     null, getString(R.string.tryAgain), pi(c, ACTION_START)
                 ).build()
             )
+            func()
         }.build()
 
         ntfManager.createNotificationChannel(Notify.Channel.TASK_RESULTS.create(c))

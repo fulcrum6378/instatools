@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.instatools.frag
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -116,10 +115,6 @@ class PageRel : BasePageViewer(), PostSelector {
 
     override fun selectionObserver(): SelectionTracker.SelectionObserver<Long>? =
         createSelectionObserver()
-
-    override fun onSelectionStarted() {
-        (b.rv.adapter as ListRel).firstLongClickSelect = true
-    }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         when (item.itemId) {
