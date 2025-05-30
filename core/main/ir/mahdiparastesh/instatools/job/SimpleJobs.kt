@@ -1,6 +1,11 @@
 package ir.mahdiparastesh.instatools.job
 
-import ir.mahdiparastesh.instatools.api.*
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQl
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.User
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -39,7 +44,12 @@ object SimpleJobs {
                 head = (it as JsonArray)[0] as JsonPrimitive
                 head.isString && head.content == "PolarisViewer"
             } as JsonArray)[2] as JsonObject
-            Api.json.decodeFromJsonElement<User>(polarisViewer["data"] as JsonObject)
+
+            val polarisData = polarisViewer["data"]
+            if (polarisData is JsonObject)
+                Api.json.decodeFromJsonElement<User>(polarisData)
+            else  // when the user switches between pages rapidly
+                null  // kotlinx.serialization.json.JsonNull
         } catch (_: SerializationException) {
             null
         }

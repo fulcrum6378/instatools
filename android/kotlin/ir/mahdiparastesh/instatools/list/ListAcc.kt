@@ -24,6 +24,7 @@ import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAccBinding>>() {
 
@@ -90,19 +91,22 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
                     setView(bd.root)
                     setNegativeButton(R.string.no, null)
                     setPositiveButton(R.string.yes) { _, _ ->
-                        if (acc.cook != null) CoroutineScope(Dispatchers.IO).launch {
-                            Api.cookies = acc.cook ?: ""
-                            try {
-                                Api.json<Rest.QuickResponse>(
-                                    Api.Endpoint.LOGOUT.url,
-                                    true, "one_tap_app_login=1&user_id=${acc.id}"
-                                )
-                            } catch (e: Api.FailureException) {
-                                if (BuildConfig.DEBUG) throw e
+                        CoroutineScope(Dispatchers.IO).launch {
+                            if (!acc.cook.isNullOrBlank()) {
+                                Api.cookies = acc.cook!!
+                                try {
+                                    Api.json<Rest.QuickResponse>(
+                                        Api.Endpoint.LOGOUT.url,
+                                        true, "one_tap_app_login=1&user_id=${acc.id}"
+                                    )
+                                } catch (e: Api.FailureException) {
+                                    if (BuildConfig.DEBUG) throw e
+                                }
+                                Api.cookies = ""
                             }
-                            Api.cookies = ""
+
+                            signOut(acc, i, bd.tick.isChecked)
                         }
-                        signOut(acc, i, bd.tick.isChecked)
                     }
                 }.show()
             }
@@ -110,21 +114,22 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         return true
     }
 
-    private fun signOut(acc: Account, i: Int, bd: Boolean) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val sid = acc.id.toString()
-            if (bd) {
-                c.c.storageManager.deletePickles(sid)
-                c.c.storageManager.deleteSp(sid)
-            }
-            c.accounts.removeAll { it.id == acc.id }
-            Account.save(c, c.accounts)
-            if (c.c.gsp.getString(Login.SP_ACCOUNT, null) == sid)
-                c.c.gsp.edit { remove(Login.SP_ACCOUNT) }
+    private suspend fun signOut(acc: Account, i: Int, bd: Boolean) {
+        val sid = acc.id.toString()
+        if (bd) {
+            c.c.storageManager.deletePickles(sid)
+            c.c.storageManager.deleteSp(sid)
         }
-        notifyItemRemoved(i)
-        val total = c.accounts.size
-        if (total > i + 1) notifyItemRangeChanged(i, total - i - 1)
-        else if (i > 0) notifyItemChanged(i - 1)
+        c.accounts.removeAll { it.id == acc.id }
+        Account.save(c, c.accounts)
+        if (c.c.gsp.getString(Login.SP_ACCOUNT, null) == sid)
+            c.c.gsp.edit { remove(Login.SP_ACCOUNT) }
+
+        withContext(Dispatchers.Main) {
+            notifyItemRemoved(i)
+            val total = c.accounts.size
+            if (total > i + 1) notifyItemRangeChanged(i, total - i - 1)
+            else if (i > 0) notifyItemChanged(i - 1)
+        }
     }
 }

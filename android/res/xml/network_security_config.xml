@@ -2,5 +2,7 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">instagram.com</domain>
+        <domain includeSubdomains="true">cdninstagram.com</domain>
+        <domain includeSubdomains="true">fbcdn.net</domain>
     </domain-config>
 </network-security-config>
