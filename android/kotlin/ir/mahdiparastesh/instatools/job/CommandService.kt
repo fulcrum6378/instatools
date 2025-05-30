@@ -20,6 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
 
+/**
+ * A [ForegroundService] which queues [Command]s and executes them one after another
+ */
 class CommandService : ForegroundService(), Queuer<Command> {
 
     override val com: ForegroundServiceCompanion<Command> get() = Companion

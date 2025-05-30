@@ -13,6 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * Handles requests sent from the action buttons inside Notifications.
+ */
 class NotificationActions : BroadcastReceiver() {
 
     companion object {

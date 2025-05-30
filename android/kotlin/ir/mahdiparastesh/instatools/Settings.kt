@@ -43,6 +43,10 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 
+/**
+ * Is in charge of storing all user preferences, controlling all app data and cache files
+ * and registering scoped-storage directories.
+ */
 class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
     private lateinit var b: SettingsBinding
     private lateinit var prf: SharedPreferences

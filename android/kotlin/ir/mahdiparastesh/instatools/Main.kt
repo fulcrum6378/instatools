@@ -58,6 +58,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * The main Activity of this application which contains 3 Fragments:
+ *
+ * | Fragment  | Displaying:           | Theme colour |
+ * |-----------|-----------------------|--------------|
+ * | [PageFav] | Favourite IG accounts | Yellow       |
+ * | [PageSvd] | Saved posts & reels   | Pink         |
+ * | [PageTry] | Story tray of feed    | Blue         |
+ *
+ * [Main] changes its own theme colours based on its page changes;
+ * for example its background colour changes to blue in night mode when you switch to [PageTry].
+ */
 class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
     MenuItem.OnActionExpandListener, SearchView.OnQueryTextListener {
 

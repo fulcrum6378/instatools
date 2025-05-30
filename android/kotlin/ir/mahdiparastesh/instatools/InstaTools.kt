@@ -22,6 +22,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+/**
+ * The [Application] subclass of this app
+ *
+ * This class will hold on to the most crucial data used across most components of this app.
+ */
 class InstaTools : Application() {
 
     /** Current [Account] for using the Instagram API */

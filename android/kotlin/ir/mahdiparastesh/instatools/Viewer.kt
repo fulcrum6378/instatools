@@ -42,6 +42,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Opens any Instagram account and loads their:
+ *
+ * | Data                | Fragment   |
+ * |---------------------|------------|
+ * | Profile pictures    | [PageVwr]  |
+ * | Posts               | [PageVwr]^ |
+ * | Daily stories       | [PageSto]  |
+ * | Highlighted stories | [PageSto]^ |
+ * | Reels               | [PageRel]  |
+ * | Tagged posts        | [PageTag]  |
+ */
 class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class, PageTag::class),
     Toolbar.OnMenuItemClickListener {
 

@@ -39,6 +39,13 @@ import org.apache.commons.text.StringEscapeUtils
 import java.io.FileInputStream
 import kotlin.system.exitProcess
 
+/**
+ * Lists and controls all [Account]s and opens a [WebView] for signing in to Instagram
+ * and storing cookies. Also lets the user freely browse Instagram using their own account.
+ *
+ * Note: Going to the Instagram Accounts Centre inside a WebView will drop you out of login;
+ * it doesn't erase cookies.
+ */
 class Login : BaseActivity(), ViewStub.OnInflateListener {
     private lateinit var b: LoginBinding
     private lateinit var bw: WelcomeBinding

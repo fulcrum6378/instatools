@@ -20,6 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 
+/**
+ * A [ForegroundService] which queues [Download]s and performs them one after another
+ */
 class DownloadService : ForegroundService(), Downloader {
     private var dest: String? = null
     private val stem by lazy { DocumentFile.fromTreeUri(c, dest!!.toUri())!! }

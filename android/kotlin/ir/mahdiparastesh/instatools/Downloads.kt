@@ -34,6 +34,7 @@ import ir.mahdiparastesh.instatools.job.DownloadService
 import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListQud
 import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.util.Queue
 import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.Notify
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -45,6 +46,9 @@ import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
+/**
+ * Lists and manipulates the [Queue] of [Download]s and controls [DownloadService].
+ */
 class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
     private lateinit var b: DownloadsBinding
     private val statusPlan =

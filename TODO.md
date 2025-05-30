@@ -14,4 +14,3 @@
 #### Notes
 
 > - Either Android 11 or Samsung devices don't detect custom fonts for PopupMenus.
-> - Going to the Accounts Centre in a WebView will drop you out of login; it doesn't erase cookies.
