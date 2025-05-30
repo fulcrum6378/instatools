@@ -136,7 +136,12 @@ class PageVwr : BasePageViewer(), PostSelector {
     }
 
     override fun createAdapter(): RecyclerView.Adapter<*> =
-        ConcatAdapter(Header(), ListVwr(c, this))
+        ConcatAdapter(
+            ConcatAdapter.Config.Builder()
+                .setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+                .build(),
+            Header(), ListVwr(c, this)
+        )
 
     @SuppressLint("NotifyDataSetChanged")
     override suspend fun fetch(reset: Boolean) {
@@ -257,6 +262,10 @@ class PageVwr : BasePageViewer(), PostSelector {
     inner class Header : RecyclerView.Adapter<AnyViewHolder<PageVwrHeaderBinding>>() {
         lateinit var proPic: ImageView
 
+        init {
+            setHasStableIds(true)
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             AnyViewHolder<PageVwrHeaderBinding> {
             val b = PageVwrHeaderBinding.inflate(c.layoutInflater, parent, false)
@@ -329,6 +338,8 @@ class PageVwr : BasePageViewer(), PostSelector {
         }
 
         override fun getItemCount(): Int = 1
+
+        override fun getItemId(position: Int): Long = 0
 
         fun User.ProfileEdge?.print() =
             this?.count?.let { UiTools.displayLargeNumber(it, c) }

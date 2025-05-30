@@ -131,7 +131,7 @@ class DownloadService : ForegroundService(), Downloader {
 
     override fun onPause() {
         onCancel()
-        val remaining = c.commands.size<Download>()
+        val remaining = c.downloads.size<Download>()
         if (remaining > 0) notifySuspension(Notify.ID_DOWNLOADER_PAUSED, null) {
             setContentTitle(getString(R.string.downloaderPaused))
             setContentText(
