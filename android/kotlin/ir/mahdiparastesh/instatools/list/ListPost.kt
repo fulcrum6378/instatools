@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
@@ -34,8 +35,8 @@ abstract class ListPost<Activity, Fragment>(
         setHasStableIds(true)
     }
 
-    protected val typeVideo = c.drawable(R.drawable.video)
-    protected val typeStack = c.drawable(R.drawable.stack)
+    private val typeVideo: Drawable by lazy { c.drawable(R.drawable.video) }
+    private val typeStack: Drawable by lazy { c.drawable(R.drawable.stack) }
 
     abstract val inflater: LayoutInflater
     abstract val tracker: SelectionTracker<Long>?

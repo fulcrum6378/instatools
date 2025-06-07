@@ -206,6 +206,14 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="mediaStatusIcon" parent="parentConstraint">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:visibility">gone</item>
+        <item name="layout_constraintWidth_percent">0.14</item>
+        <item name="layout_constraintHeight_percent">0.14</item>
+    </style>
+
 
     <!-- Main -->
     <style name="bnvButton">

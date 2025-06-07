@@ -24,48 +24,30 @@
 
         <ImageView
             android:id="@+id/type"
-            style="@style/parentConstraint"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.14"
+            style="@style/mediaStatusIcon"
+            android:visibility="visible"
             app:layout_constraintHorizontal_bias="0.95"
-            app:layout_constraintVertical_bias="0.05"
-            app:layout_constraintWidth_percent="0.14" />
+            app:layout_constraintVertical_bias="0.05" />
 
         <ImageView
             android:id="@+id/downloaded"
-            style="@style/parentConstraint"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            style="@style/mediaStatusIcon"
             android:src="@drawable/save"
-            android:visibility="gone"
-            app:layout_constraintHeight_percent="0.14"
             app:layout_constraintHorizontal_bias="0.05"
-            app:layout_constraintVertical_bias="0.05"
-            app:layout_constraintWidth_percent="0.14" />
+            app:layout_constraintVertical_bias="0.05" />
 
         <ImageView
             android:id="@+id/liked"
-            style="@style/parentConstraint"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            style="@style/mediaStatusIcon"
             android:src="@drawable/favourite_icon"
-            android:visibility="gone"
-            app:layout_constraintHeight_percent="0.14"
             app:layout_constraintHorizontal_bias="0.95"
-            app:layout_constraintVertical_bias="0.95"
-            app:layout_constraintWidth_percent="0.14" />
+            app:layout_constraintVertical_bias="0.95" />
 
         <ImageView
             android:id="@+id/saved"
-            style="@style/parentConstraint"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            style="@style/mediaStatusIcon"
             android:src="@drawable/saved_icon"
-            android:visibility="gone"
-            app:layout_constraintHeight_percent="0.14"
             app:layout_constraintHorizontal_bias="0.05"
-            app:layout_constraintVertical_bias="0.95"
-            app:layout_constraintWidth_percent="0.14" />
+            app:layout_constraintVertical_bias="0.95" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>

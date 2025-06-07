@@ -8,7 +8,8 @@ documentFile = "1.1.0"
 drawerLayout = "1.2.0"
 media3 = "1.7.1"
 recyclerView = "1.4.0"
-selection = "1.2.0"
+#noinspection GradleDependency
+selection = "1.1.0"  # 1.2.0 is buggy while clicking!
 swipeRefreshLayout = "1.1.0"
 viewPager2 = "1.1.0"
 lottie = "6.6.0"

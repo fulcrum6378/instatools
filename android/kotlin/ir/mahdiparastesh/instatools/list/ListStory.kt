@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.instatools.list
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -7,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.signature.ObjectKey
 import ir.mahdiparastesh.instatools.InstaTools
+import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.databinding.ListStoryBinding
 import ir.mahdiparastesh.instatools.util.Utils
@@ -20,6 +22,8 @@ class ListStory(
     private val expandable: Expandable,
     var story: Story
 ) : RecyclerView.Adapter<AnyViewHolder<ListStoryBinding>>() {
+
+    private val typeVideo: Drawable by lazy { expandable.c.drawable(R.drawable.video) }
 
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
@@ -36,6 +40,11 @@ class ListStory(
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .signature(ObjectKey(med.id()))
             .into(h.b.thumb)
+
+        // media type
+        h.b.type.setImageDrawable(
+            if (med.video_versions != null) typeVideo else null
+        )
 
         // is media already downloaded?
         h.b.stored.vis(
