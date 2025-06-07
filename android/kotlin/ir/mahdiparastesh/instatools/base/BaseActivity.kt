@@ -21,11 +21,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.MainThread
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.edit
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelLazy
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login
 import ir.mahdiparastesh.instatools.Main
@@ -51,6 +54,14 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
 
     protected abstract val menuRes: Int?
 
+
+    @MainThread
+    inline fun <reified VM : ViewModel> viewModels(): Lazy<VM> = ViewModelLazy(
+        VM::class,
+        { viewModelStore },
+        { defaultViewModelProviderFactory },
+        { defaultViewModelCreationExtras }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (this !is Login && c.acc == null)

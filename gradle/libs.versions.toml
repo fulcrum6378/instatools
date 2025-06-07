@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.2.0-RC"
 agp = "8.9.3"
-activityKtx = "1.10.1"
+activity = "1.10.1"
 constraintLayout = "2.2.1"
 coreKtx = "1.16.0"
 documentFile = "1.1.0"
@@ -26,7 +26,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [libraries]
-ktx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
 ktx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentFile" }

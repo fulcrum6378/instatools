@@ -69,7 +69,7 @@ android {
 dependencies {
     implementation(project(":core"))
 
-    implementation(libs.ktx.activity)
+    implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.ktx.core)  // used by many UI libraries
     implementation(libs.documentfile)

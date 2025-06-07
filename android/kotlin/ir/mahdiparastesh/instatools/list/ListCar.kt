@@ -77,9 +77,11 @@ class ListCar(private val x: Expandable) : RecyclerView.Adapter<AnyViewHolder<Li
             Media.Type.VIDEO -> slides[i].url?.also {
                 h.b.video.vis()
                 sessions[i] = MediaSession.Builder(
-                    x.c, ExoPlayer.Builder(x.c).setAudioAttributes(
-                        AudioAttributes.Builder().setUsage(USAGE_MEDIA).build(), false
-                    ).build()
+                    x.c, ExoPlayer.Builder(x.c)
+                        .setAudioAttributes(
+                            AudioAttributes.Builder().setUsage(USAGE_MEDIA).build(), false
+                        )
+                        .build()
                 ).setId(slides[i].id).build().apply {
                     player.setMediaItem(MediaItem.fromUri(it.toUri()))
                     player.volume = if (x.muteSound.value == true) 0f else 1f
@@ -88,7 +90,7 @@ class ListCar(private val x: Expandable) : RecyclerView.Adapter<AnyViewHolder<Li
                 }
                 loading = false
             }
-            else -> { // IMPOSSIBLE
+            else -> {  // IMPOSSIBLE
             }
         }
     }
