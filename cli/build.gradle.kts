@@ -1,16 +1,9 @@
-import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
-}
-
-tasks.named<KotlinJvmCompile>("compileKotlin") {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_24)
-    }
 }
 
 group = "ir.mahdiparastesh"
@@ -21,6 +14,12 @@ sourceSets.getByName("test") { kotlin.srcDirs("test") }
 
 dependencies {
     implementation(project(":core"))
+}
+
+tasks.named<KotlinJvmCompile>("compileKotlin") {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_24)
+    }
 }
 
 tasks.jar {
@@ -40,3 +39,4 @@ tasks.jar {
 tasks.register("compileAot", Exec::class) {
     commandLine("${workingDir.absolutePath}/compile_aot.bat", version)
 }
+// Kotlin Native does not support Java utilities and requires the crowded multiplatform plugin.
