@@ -13,11 +13,10 @@ This project is written in pure Kotlin and contains these modules:
 2. [**ANDROID**](android): a full-fledged Android application.
 3. [**CLI**](cli): an interactive command-line interface deployed as a JAR
    or as an EXE via [GraalVM](https://www.graalvm.org/).
-4. ~~JAVAFX~~: A GUI desktop application powered by JavaFX. (!cancelled!)
 
 ### Subpackages
 
-- [**api**](core/kotlin/ir/mahdiparastesh/instatools/api) :
+- [**api**](core/main/ir/mahdiparastesh/instatools/api) :
   everything related to the Instagram API, including its messy data models
   including back-end data models, endpoint addresses and their related utilities.
 - [**base**](android/kotlin/ir/mahdiparastesh/instatools/base) :
@@ -92,7 +91,7 @@ It uses the pink-purple theme of *PageSvd*.
 Also it shows any ongoing download and it can directly control
 [DownloadService](android/kotlin/ir/mahdiparastesh/instatools/job/DownloadService.kt),
 which is an Android Service
-that queues [Download](core/kotlin/ir/mahdiparastesh/instatools/data/Download.kt) items
+that queues [Download](core/main/ir/mahdiparastesh/instatools/data/Download.kt) items
 and downloads them one by one.
 
 #### [Settings.kt](android/kotlin/ir/mahdiparastesh/instatools/Settings.kt)

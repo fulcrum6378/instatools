@@ -16,7 +16,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "41.9.1"
+        versionName = "41.9.3"
     }
 
     sourceSets.getByName("main") {
@@ -86,11 +86,11 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.dotsindicator) {
         exclude(group = "androidx.activity", module = "activity-compose")
-        exclude(group = "androidx.dynamicanimation")
         exclude(group = "androidx.cardview")
         exclude(group = "androidx.compose")
-        exclude(group = "androidx.compose.ui")
         exclude(group = "androidx.compose.material3")
+        exclude(group = "androidx.compose.ui")
+        exclude(group = "androidx.dynamicanimation")
     }
     implementation(libs.coroutines.android)
     implementation(libs.serialization.json)

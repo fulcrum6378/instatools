@@ -96,10 +96,8 @@ class ListTry(private val c: Main, private val f: PageTry) :
                 addListener(
                     onStart = {
                         h.b.reel.vis(true)
-                        if (story.opened) h.b.shadow.vis()
                     }, onEnd = {
                         h.b.reel.vis(story.opened)
-                        if (!story.opened) h.b.shadow.vis(false)
                     }
                 )
                 start()

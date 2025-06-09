@@ -1,7 +1,7 @@
 # InstaTools To-Do List
 
 * Expand icons for all posts in the selection mode
-* Ability to mark stories as seen (and like them automatically if needed for stealth)
+* Ability to mark stories as seen (and like them automatically if needed) (a 'more' button)
 * Export cookies to TXT
 * Open external links in a browser instead
 * Organise the string resources
@@ -13,7 +13,6 @@
 #### Too Complicated
 
 * When clicked on error notifications, no activity is opened, but it's not so on progress ntfs!!
-* Clicking on external links will bring a "cleartext not permitted" error
 * Metadata for HEIC and MP4?
 
 #### Store Listing
