@@ -91,10 +91,12 @@
     <string name="addAccount">افزودن اکانت جدید</string>
     <string name="enterWithoutAuth">ورود آفلاین</string>
     <string name="browseInTheWeb">بازکردن در مرورگر</string>
-    <string name="injectCookies">تزریق کوکی (TXT)</string>
+    <string name="injectCookies">تزریق کوکی (txt)</string>
     <string name="cookieInjectionSuccess">
         کوکی های جدید ذخیره شدند. حالا میتوانید وارد اکانت خود شوید.
     </string>
+    <string name="exportCookies">استخراج کوکی (txt)</string>
+    <string name="noCookies">این اکانت هیچ کوکی ذخیره شده ای در این اپ ندارد.</string>
     <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
     <string name="needAuthentication">
         اینستاگرام اجازه ورود نمی دهد. برای ادامه نیاز به لوگین دارید&#8230;

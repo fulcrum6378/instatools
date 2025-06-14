@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -80,8 +81,24 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
                 c.injectingCookieForAcc = acc.id
                 c.injectCookies.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "txt"
+                    type = "text/plain"
                 })
+            },
+            R.id.amExportCookies to {
+                if (acc.cook.isNullOrBlank())
+                    Toast.makeText(c, R.string.noCookies, Toast.LENGTH_LONG).show()
+                else {
+                    c.injectingCookieForAcc = acc.id
+                    c.exportCookies.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "text/plain"
+                        putExtra(
+                            Intent.EXTRA_TITLE,
+                            "Instagram cookies of @${acc.user} as of " +
+                                "${Utils.fileDateTime(Utils.now())}.txt"
+                        )
+                    })
+                }
             },
             R.id.amSignOut to {
                 val bd = AlsoDeleteDataBinding.inflate(c.layoutInflater)

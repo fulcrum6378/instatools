@@ -237,7 +237,7 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                     type = "application/json"
                     putExtra(
                         Intent.EXTRA_TITLE,
-                        "instatools_download_list_${Utils.fileDateTime(Utils.now())}.json"
+                        "InstaTools download queue - ${Utils.fileDateTime(Utils.now())}.json"
                     )
                 })
             else

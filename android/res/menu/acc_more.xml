@@ -9,6 +9,9 @@
         android:id="@+id/amInjectCookies"
         android:title="@string/injectCookies" />
     <item
+        android:id="@+id/amExportCookies"
+        android:title="@string/exportCookies" />
+    <item
         android:id="@+id/amSignOut"
         android:title="@string/signOut" />
 </menu>

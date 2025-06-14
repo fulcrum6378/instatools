@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.text.StringEscapeUtils
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import kotlin.system.exitProcess
 
 /**
@@ -154,7 +155,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                     ).show()
                 }
             }.onFailure {
-                injectingCookieForAcc = null
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         c, R.string.importReadError, Toast.LENGTH_LONG
@@ -162,6 +162,19 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
             }
         }
+        injectingCookieForAcc = null
+    }
+    val exportCookies = launcherForResult {
+        val acc = injectingCookieForAcc?.let { id -> accounts.find { it.id == id } }
+            ?: return@launcherForResult
+        if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
+            contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
+                FileOutputStream(des.fileDescriptor).use { fos ->
+                    fos.write((acc.cook ?: "").encodeToByteArray())
+                }
+            }
+        }
+        injectingCookieForAcc = null
     }
 
     fun selectAccount(acc: Account) {

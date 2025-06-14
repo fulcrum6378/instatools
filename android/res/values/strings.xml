@@ -90,10 +90,12 @@
     <string name="addAccount">Add Account</string>
     <string name="enterWithoutAuth">Enter offline</string>
     <string name="browseInTheWeb">Browse the web</string>
-    <string name="injectCookies">Inject cookies (TXT)</string>
+    <string name="injectCookies">Inject cookies (txt)</string>
     <string name="cookieInjectionSuccess">
         New cookies were saved. You may enter your account now.
     </string>
+    <string name="exportCookies">Export cookies (txt)</string>
+    <string name="noCookies">This Instagram cookies has no cookies loaded in this app.</string>
     <string name="unknownError">Sorry, an unknown error occurred: %s</string>
     <string name="needAuthentication">
         Instagram doesn\'t let us in. You need to login to continue&#8230;

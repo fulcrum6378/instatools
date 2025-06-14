@@ -1,8 +1,9 @@
 # InstaTools To-Do List
 
+* Emptiness indicator for `Login`
+* `Expandable` never survives any configuration changes
 * Expand icons for all posts in the selection mode
 * Ability to mark stories as seen (and like them automatically if needed) (a 'more' button)
-* Export cookies to TXT
 * Open external links in a browser instead
 * Organise the string resources
 * Ability to view a post while selection
@@ -18,7 +19,7 @@
 #### Store Listing
 
 * A new icon for Bazaar
-* A `preview` build with `MockData`
+* A special preview `Account` (like the guest mode) with mock data
 
 #### Notes
 
