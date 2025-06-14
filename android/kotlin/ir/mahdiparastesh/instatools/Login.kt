@@ -2,6 +2,7 @@ package ir.mahdiparastesh.instatools
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
@@ -315,6 +316,14 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
             }
         }
+
+        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
+            if (request.url.host == HOST || request.url.host == RAW_HOST)
+                false
+            else {
+                startActivity(Intent(Intent.ACTION_VIEW, request.url))
+                true
+            }
     }
 
     fun CookieManager.getCookieOrganised(url: String): String {
