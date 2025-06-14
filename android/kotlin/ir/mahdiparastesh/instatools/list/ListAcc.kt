@@ -38,6 +38,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         // apparently even the most static kinds of list adapters need to be null-safe.
         val acc = c.accounts.getOrNull(i) ?: return
 
+        // details
         Glide.with(c.c)
             .load(acc.pict)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -49,7 +50,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
             c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
         }
 
-        // clicks
+        // actions
         h.b.more.setOnClickListener {
             val a = c.accounts.getOrNull(h.layoutPosition) ?: return@setOnClickListener
             more(it, a, h.layoutPosition)
@@ -57,6 +58,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         h.b.root.setOnLongClickListener {
             val a = c.accounts.getOrNull(h.layoutPosition) ?: return@setOnLongClickListener true
             more(it, a, h.layoutPosition)
+            true
         }
 
         h.b.sep.vis(i < itemCount - 1)
@@ -64,7 +66,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
 
     override fun getItemCount() = c.accounts.size
 
-    private fun more(v: View, acc: Account, i: Int): Boolean {
+    private fun more(v: View, acc: Account, i: Int) {
         EasyPopupMenu(
             c, v, R.menu.acc_more,
             R.id.amOffline to {
@@ -128,7 +130,6 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
                 }.show()
             }
         ).show()
-        return true
     }
 
     private suspend fun signOut(acc: Account, i: Int, bd: Boolean) {

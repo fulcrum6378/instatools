@@ -20,6 +20,7 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
 import ir.mahdiparastesh.instatools.frag.PageTry
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -51,15 +52,23 @@ class ListTry(private val c: Main, private val f: PageTry) :
         ) else ""
 
         // actions
-        h.b.reload.setOnClickListener {
-            storyAction(
-                StoryAction.RELOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
-            )
-        }
-        h.b.downloadAll.setOnClickListener {
-            storyAction(
-                StoryAction.DOWNLOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
-            )
+        h.b.more.setOnClickListener { button ->
+            EasyPopupMenu(
+                c, button, R.menu.story_more,
+                R.id.smDownloadAll to {
+                    storyAction(
+                        StoryAction.DOWNLOAD,
+                        story,
+                        h.layoutPosition,
+                        h.b.reel.adapter!! as ListStory
+                    )
+                },
+                R.id.smReload to {
+                    storyAction(
+                        StoryAction.RELOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
+                    )
+                },
+            ).show()
         }
 
         // ListStory: initiation

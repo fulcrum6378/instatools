@@ -21,6 +21,7 @@ import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.UiTools
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
@@ -34,8 +35,7 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
     override fun onCreateViewHolder(
         parent: ViewGroup, viewType: Int
     ): AnyViewHolder<ListStoBinding> =
-        AnyViewHolder(ListStoBinding.inflate(c.layoutInflater, parent, false)
-            .apply { reload.vis(false) })
+        AnyViewHolder(ListStoBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(h: AnyViewHolder<ListStoBinding>, i: Int) {
@@ -71,8 +71,15 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
         ) else ""
 
         // actions
-        h.b.downloadAll.setOnClickListener {
-            fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory, true)
+        h.b.more.setOnClickListener { button ->
+            EasyPopupMenu(
+                c, button, R.menu.story_more,
+                R.id.smDownloadAll to {
+                    fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory, true)
+                },
+            ).apply {
+                menu.removeItem(R.id.smReload)
+            }.show()
         }
 
         // ListStory: initiation
