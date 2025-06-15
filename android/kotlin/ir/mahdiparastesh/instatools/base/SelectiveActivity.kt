@@ -3,8 +3,10 @@ package ir.mahdiparastesh.instatools.base
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
+import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.util.Delay
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu.Companion.applyFont
 import ir.mahdiparastesh.instatools.view.UiTools.shake
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 
@@ -37,6 +39,7 @@ abstract class SelectiveActivity : BaseActivity() {
         toolbar.menu.clear()
         toolbar.inflateMenu(if (bb) selectiveToolbarMenuRes!! else menuRes!!)
         toolbar.setOnMenuItemClickListener(if (isSelective) selectiveToolbarListener else this)
+        if (this !is Main) toolbar.menu.applyFont(this)  // automatically applied on Main
         Delay(100) { onPrepareOptionsMenu(toolbar.menu) }
 
         shake()

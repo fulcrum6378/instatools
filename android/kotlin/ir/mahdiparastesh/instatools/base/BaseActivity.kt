@@ -36,6 +36,7 @@ import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Settings
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.Utils
+import ir.mahdiparastesh.instatools.view.EasyPopupMenu.Companion.applyFont
 import ir.mahdiparastesh.instatools.view.UiTools.themeColor
 import kotlin.reflect.KClass
 
@@ -133,6 +134,7 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
             toolbar.menu.forEach { item -> item.icon?.colorFilter = cf }
         }
         toolbar.overflowIcon?.colorFilter = cf
+        toolbar.menu.applyFont(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

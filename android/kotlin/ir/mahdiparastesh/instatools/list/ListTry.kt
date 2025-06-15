@@ -68,6 +68,7 @@ class ListTry(private val c: Main, private val f: PageTry) :
                         StoryAction.RELOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
                     )
                 },
+                theme = R.style.Widget_InstaTools_Popup_Tertiary
             ).show()
         }
 
