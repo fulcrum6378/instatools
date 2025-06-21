@@ -4,7 +4,6 @@
 * `Expandable` never survives any configuration changes
 * Expand icons for all posts in the selection mode
 * Ability to mark stories as seen (and like them automatically if needed)
-* Organise the string resources
 * `ProgressBar`s for `ListLazyPost`, `Downloader`, `PageVwr.Header` and `ListTry.StoryAction.RELOAD`
 * When clicked on error notifications, no activity is opened, but it's not so on progress ntfs!!
 

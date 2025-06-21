@@ -311,7 +311,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             else {
                 if (BuildConfig.DEBUG) throw e
                 else {
-                    Toast.makeText(c, R.string.unknownError, Toast.LENGTH_LONG).show()
+                    Toast.makeText(c, R.string.couldNotLogin, Toast.LENGTH_LONG).show()
                     welcome()
                 }
             }

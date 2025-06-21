@@ -2,77 +2,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" tools:ignore="Untranslatable">اینستاتولز</string>
 
-    <!-- #GLOBAL -->
-    <string name="navOpen">باز کردن</string>
-    <string name="navClose">بستن</string>
-    <string name="search">جستجو</string>
-    <string name="switchAccount">تعویض اکانت</string>
-    <string name="signOut">خروج از اکانت</string>
-    <string name="download">دانلود</string>
-    <string name="remove">حذف</string>
+    <!-- general -->
     <string name="ok">باشه</string>
     <string name="cancel">لغو</string>
     <string name="no">نه</string>
     <string name="yes">آره</string>
-    <string name="unsave">آنسیو</string>
-    <string name="backgroundTasks">کار های پشت صحنه</string>
-    <string name="selectAll">انتخاب همه</string>
-    <string name="deselectAllSure">آیا مطمئنید میخواهید تمام علامت ها را بردارید؟</string>
-    <string name="deselectAll">انتخاب هیچ کدام</string>
-    <string name="viewInInsta">باز کردن در اینستاگرام</string>
-    <string name="addToFav">اضافه به مورد علاقه</string>
-    <string name="start">شروع</string>
-    <string name="pause">یه لحظه وایسا</string>
-    <string name="stop">کنسل</string>
+    <string name="remove">حذف</string>
     <string name="sContinue">ادامه</string>
-    <!--<string-array name="inaccurateTime">
-        <item>%d ماه</item>
-        <item>%d هفته</item>
-        <item>%d روز</item>
-        <item>%d ساعت</item>
-        <item>%d دقیقه</item>
-        <item>%d ثانیه</item>
-    </string-array>-->
-    <!--<string name="inaccurateTimeSep">،&#160;</string>-->
-    <string name="downloadAll">دانلود تمام اسلایدها</string>
-    <string name="downloadThis">دانلود این اسلاید</string>
-    <string name="downloadAudio">دانلود فایل صدا فقط</string>
-    <string name="downloadPicture">دانلود اولین فریم</string>
-    <string name="muteSound">پخش/قطع صدا</string>
-    <string-array name="bytes">
-        <item>%d بایت</item>
-        <item>%d کیلوبایت</item>
-        <item>%d مگابایت</item>
-        <item>%d گیگابایت</item>
-        <item>%d ترابایت</item>
-    </string-array>
-    <string name="maximum">حداکثر: %s</string>
-    <string name="unlimited">بی نهایت</string>
-    <string name="addShortcut">اضافه کردن میانبر</string>
-    <string name="save">ذخیره</string>
-    <string name="tryAgain">تلاش دوباره</string>
-    <string name="resume">ازسرگیری</string>
-    <string name="forget">فراموش کن</string>
-    <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
-    <string name="listClear">پاک کردن همه</string>
-    <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
-    <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
     <string name="change">تغییر</string>
-    <string name="like">لایک</string>
-    <string name="likeAll">لایک همه</string>
-    <string name="unlike">آنلایک</string>
-    <string name="unlikeAll">آنلایک همه</string>
-    <string name="couldNotLoadOriginal">بارگذاری عکس بزرگ امکان پذیر نیست!</string>
-    <string name="profilePicture">عکس پروفایل</string>
-    <plurals name="selectionCount">
-        <item quantity="one">%d مورد انتخاب شد</item>
-        <item quantity="other">%d مورد انتخاب شد</item>
-    </plurals>
-    <string name="reload">بارگذاری دوباره</string>
-    <string name="versionPickerTitle">سایز ها</string>
-    <string name="versionPickerItem">%1$d در %2$d پیکسل</string>
+    <string name="importReadError">متاسفانه هنگام خواندن فایل خطایی رخ داد!</string>
 
-    <!-- API -->
+    <!-- Api messages -->
     <string name="noInternet">اینترنت قطع است!</string>
     <string name="vpnConnectionFailure">اتصال به VPN برقرار نشد!</string>
     <string name="connectionFailure">اتصال برقرار نشد!</string>
@@ -87,8 +27,52 @@
     </string>
     <string name="httpError">خطای %s!</string>
 
+    <!-- content display -->
+    <string name="reload">بارگذاری دوباره</string>
+    <string name="viewInInsta">باز کردن در اینستاگرام</string>
+    <string name="couldNotLoadOriginal">بارگذاری عکس بزرگ امکان پذیر نیست!</string>
+    <string name="profilePicture">عکس پروفایل</string>
+    <string name="muteSound">پخش/قطع صدا</string>
+    <string name="addShortcut">اضافه کردن میانبر</string>
+    <!--<string-array name="inaccurateTime">
+        <item>%d ماه</item>
+        <item>%d هفته</item>
+        <item>%d روز</item>
+        <item>%d ساعت</item>
+        <item>%d دقیقه</item>
+        <item>%d ثانیه</item>
+    </string-array>-->
+    <!--<string name="inaccurateTimeSep">،&#160;</string>-->
+
+    <!-- commands and downloads -->
+    <string name="selectAll">انتخاب همه</string>
+    <string name="deselectAll">انتخاب هیچ کدام</string>
+    <string name="deselectAllSure">آیا مطمئنید میخواهید تمام علامت ها را بردارید؟</string>
+    <plurals name="selectionCount">
+        <item quantity="one">%d مورد انتخاب شد</item>
+        <item quantity="other">%d مورد انتخاب شد</item>
+    </plurals>
+    <string name="download">دانلود</string>
+    <string name="downloadAll">دانلود تمام اسلایدها</string>
+    <string name="downloadThis">دانلود این اسلاید</string>
+    <string name="downloadAudio">دانلود فایل صدا فقط</string>
+    <string name="downloadPicture">دانلود اولین فریم</string>
+    <string name="versionPickerTitle">سایز ها</string>
+    <string name="versionPickerItem">%1$d در %2$d پیکسل</string>
+    <string name="save">ذخیره</string>
+    <string name="unsave">آنسیو</string>
+    <string name="like">لایک</string>
+    <string name="likeAll">لایک همه</string>
+    <string name="unlike">آنلایک</string>
+    <string name="unlikeAll">آنلایک همه</string>
+    <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
+    <string name="listClear">پاک کردن همه</string>
+    <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
+
+
     <!-- Login -->
     <string name="addAccount">افزودن اکانت جدید</string>
+    <string name="couldNotLogin">ذخیره اطلاعات اکانت امکان پذیر نیست!</string>
     <string name="enterWithoutAuth">ورود آفلاین</string>
     <string name="browseInTheWeb">بازکردن در مرورگر</string>
     <string name="injectCookies">تزریق کوکی (txt)</string>
@@ -97,22 +81,26 @@
     </string>
     <string name="exportCookies">استخراج کوکی (txt)</string>
     <string name="noCookies">این اکانت هیچ کوکی ذخیره شده ای در این اپ ندارد.</string>
-    <string name="unknownError">متاسفانه خطایی رخ داد: %s</string>
+    <string name="signOut">خروج از اکانت</string>
+    <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
+    <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="needAuthentication">
         اینستاگرام اجازه ورود نمی دهد. برای ادامه نیاز به لوگین دارید&#8230;
     </string>
 
     <!-- Main -->
+    <string name="search">جستجو</string>
+    <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
+    <string name="navOpen">باز کردن</string>
+    <string name="navClose">بستن</string>
+    <string name="switchAccount">تعویض اکانت</string>
     <string name="favourites">مورد علاقه</string>
     <string name="saved">ذخیره ها</string>
     <string name="tray">تایم لاین</string>
-    <string name="signOutSure">آیا مطمئنید که می خواهید از حساب اینستاگرام خود خارج شوید؟</string>
-    <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
     <string name="terminateBgTasks">
         تعدادی کار ناتمام در پشت صحنه هنوز در حال انجام هستند. آیا میخواهید تمام آنها را متوقف کنید؟
         (بعدا میتوانید آنها را دوباره از سر بگیرید)
     </string>
-    <string name="alsoDeleteData">همچنین اطلاعات ذخیره شده من و تنظیمات را حذف کن</string>
     <string name="toExit">برای خروج دوباره ضربه بزنید&#8230;</string>
 
     <!-- PageFav -->
@@ -120,6 +108,7 @@
         یک پروفایل را در اینستاتولز باز کنید
         و دکمه «لایک/قلب» را در بالا سمت راست فشار دهید تا آن پروفایل به این لیست اضافه شود.
     </string>
+    <string name="addToFav">اضافه به مورد علاقه</string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">فقط آنسیو</string>
@@ -185,12 +174,21 @@
     </string>
     <string name="stAliasProfile">آیدی یک پروفایل را وارد کنید</string>
     <string name="stCache">حافظه موقت/پنهان (اندازه فعلی: %s)</string>
+    <string-array name="bytes">
+        <item>%d بایت</item>
+        <item>%d کیلوبایت</item>
+        <item>%d مگابایت</item>
+        <item>%d گیگابایت</item>
+        <item>%d ترابایت</item>
+    </string-array>
+    <string name="maximum">حداکثر: %s</string>
+    <string name="unlimited">بی نهایت</string>
     <string name="stClearImageCache">پاکسازی کش تصاویر</string>
     <string name="stClearWebCache">پاکسازی کش وب</string>
     <string name="stUserData">اطلاعات من</string>
     <string name="stResetData">حذف اطلاعات من</string>
     <string name="stResetDataSure">
-        این عملیات شامل حذف لیست پروفایل های مورد علاقه و صف دانلود می باشد،
+        این عملیات شامل حذف لیست پروفایل های مورد علاقه و صف دانلود ها و فرمان ها می باشد،
         ولی شما از حسابتان خارج نخواهید شد. ادامه می دهید؟
     </string>
     <string name="stResetSettings">بازنشانی تنظیمات</string>
@@ -207,6 +205,32 @@
         (این کار، تمام استثناهای دیگر که به این فولدر مربوط هستند را نیز حذف میکند)
     </string>
 
+
+    <!-- services -->
+    <string name="backgroundTasks">کار های پشت صحنه</string>
+    <string name="start">شروع</string>
+    <string name="pause">یه لحظه وایسا</string>
+    <string name="stop">کنسل</string>
+    <string name="tryAgain">تلاش دوباره</string>
+    <string name="resume">ازسرگیری</string>
+    <string name="forget">فراموش کن</string>
+    <string name="servicesChannelGroup">کارهای طولانی</string>
+    <string name="servicesChannelGroupDesc">
+        عملیات های طولانی مانند دانلود و ارسال فرمان به اینستاگرام.
+    </string>
+    <string name="taskSuspensionChannel">توقف موقت عملیات</string>
+    <string name="taskSuspensionChannelDesc">
+        یک نوتیفیکیشن که وقتی کاربر عملیاتی را موقتا متوقف می کند ظاهر میشود
+        و به کاربر اجازه ازسرگیری عملیات را می دهد.
+    </string>
+    <plurals name="taskPausedCount">
+        <item quantity="one">%d مورد در صف&#8230;</item>
+        <item quantity="other">%d مورد در صف&#8230;</item>
+    </plurals>
+    <string name="taskResultChannel">نتایج عملیات</string>
+    <string name="taskResultChannelDesc">
+        هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.
+    </string>
 
     <!-- Downloader -->
     <string name="downloaderChannel">صف دانلود</string>
@@ -235,23 +259,4 @@
         <item quantity="one">پردازش %d فرمان ممکن نشد!</item>
         <item quantity="other">پردازش %d فرمان ممکن نشد!</item>
     </plurals>
-
-    <!-- Other Notifications -->
-    <string name="servicesChannelGroup">کارهای طولانی</string>
-    <string name="servicesChannelGroupDesc">
-        عملیات های طولانی مانند دانلود و ارسال فرمان به اینستاگرام.
-    </string>
-    <string name="taskSuspensionChannel">توقف موقت عملیات</string>
-    <string name="taskSuspensionChannelDesc">
-        یک نوتیفیکیشن که وقتی کاربر عملیاتی را موقتا متوقف می کند ظاهر میشود
-        و به کاربر اجازه ازسرگیری عملیات را می دهد.
-    </string>
-    <plurals name="taskPausedCount">
-        <item quantity="one">%d مورد در صف&#8230;</item>
-        <item quantity="other">%d مورد در صف&#8230;</item>
-    </plurals>
-    <string name="taskResultChannel">نتایج عملیات</string>
-    <string name="taskResultChannelDesc">
-        هر نتیجه ای که از انجام عملیات های مختلف اطلاع رسانی می شود.
-    </string>
 </resources>

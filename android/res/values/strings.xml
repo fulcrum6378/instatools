@@ -2,77 +2,17 @@
 <resources>
     <string name="app_name" translatable="false">InstaTools</string>
 
-    <!-- #GLOBAL -->
-    <string name="navOpen">Open menu</string>
-    <string name="navClose">Close menu</string>
-    <string name="search">Search</string>
-    <string name="switchAccount">Switch Account</string>
-    <string name="signOut">Sign Out</string>
-    <string name="download">Download</string>
+    <!-- general -->
     <string name="remove">Remove</string>
     <string name="ok">OK</string><!--DO NOT DELETE-->
     <string name="cancel">Cancel</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
-    <string name="unsave">Unsave</string>
-    <string name="backgroundTasks">Background Tasks</string>
-    <string name="selectAll">Select all</string>
-    <string name="deselectAll">Deselect all</string>
-    <string name="deselectAllSure">Are you sure you want to deselect all these items?</string>
-    <string name="viewInInsta">View in Instagram</string>
-    <string name="addToFav">Add to favourites</string>
-    <string name="start">Start</string>
-    <string name="pause">Pause</string>
-    <string name="stop">Stop</string>
     <string name="sContinue">Continue</string>
-    <!--<string-array name="inaccurateTime">
-        <item>%d months</item>
-        <item>%d weeks</item>
-        <item>%d days</item>
-        <item>%d hours</item>
-        <item>%d minutes</item>
-        <item>%d seconds</item>
-    </string-array>-->
-    <!--<string name="inaccurateTimeSep">,&#160;</string>-->
-    <string name="downloadAll">Download all slides</string>
-    <string name="downloadThis">Download only this slide</string>
-    <string name="downloadAudio">Download audio</string>
-    <string name="downloadPicture">Download first frame</string>
-    <string name="muteSound">Play/mute sound</string>
-    <string-array name="bytes" translatable="false">
-        <item>%d B</item>
-        <item>%d KB</item>
-        <item>%d MB</item>
-        <item>%d GB</item>
-        <item>%d TB</item>
-    </string-array>
-    <string name="maximum">Maximum: %s</string>
-    <string name="unlimited">Unlimited</string>
-    <string name="addShortcut">Add shortcut</string>
-    <string name="save">Save</string>
-    <string name="tryAgain">Try Again</string>
-    <string name="resume">Resume</string>
-    <string name="forget">Forget</string>
-    <string name="deleteItemSure">Are you sure you want to delete this item?</string>
-    <string name="listClear">Clear all</string>
-    <string name="listClearSure">Are you sure you want to remove all the items?</string>
-    <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="change">Change</string>
-    <string name="like">Like</string>
-    <string name="likeAll">Like all</string>
-    <string name="unlike">Unlike</string>
-    <string name="unlikeAll">Unlike all</string>
-    <string name="couldNotLoadOriginal">Couldn\'t load the original image!</string>
-    <string name="profilePicture">Profile picture</string>
-    <plurals name="selectionCount">
-        <item quantity="one">%d item selected</item>
-        <item quantity="other">%d items selected</item>
-    </plurals>
-    <string name="reload">Reload</string>
-    <string name="versionPickerTitle">Versions</string>
-    <string name="versionPickerItem">%1$d x %2$d pixels</string>
+    <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
 
-    <!-- API -->
+    <!-- Api messages -->
     <string name="noInternet">No internet connection!</string>
     <string name="vpnConnectionFailure">Couldn\'t connect to the VPN!</string>
     <string name="connectionFailure">Couldn\'t connect to Instagram!</string>
@@ -86,8 +26,52 @@
     </string>
     <string name="httpError">HTTP error code %s!</string>
 
+    <!-- content display -->
+    <string name="reload">Reload</string>
+    <string name="viewInInsta">View in Instagram</string>
+    <string name="profilePicture">Profile picture</string>
+    <string name="couldNotLoadOriginal">Couldn\'t load the original image!</string>
+    <string name="muteSound">Play/mute sound</string>
+    <string name="addShortcut">Add shortcut</string>
+    <!--<string-array name="inaccurateTime">
+        <item>%d months</item>
+        <item>%d weeks</item>
+        <item>%d days</item>
+        <item>%d hours</item>
+        <item>%d minutes</item>
+        <item>%d seconds</item>
+    </string-array>-->
+    <!--<string name="inaccurateTimeSep">,&#160;</string>-->
+
+    <!-- commands and downloads -->
+    <string name="selectAll">Select all</string>
+    <string name="deselectAll">Deselect all</string>
+    <string name="deselectAllSure">Are you sure you want to deselect all these items?</string>
+    <plurals name="selectionCount">
+        <item quantity="one">%d item selected</item>
+        <item quantity="other">%d items selected</item>
+    </plurals>
+    <string name="download">Download</string>
+    <string name="downloadAll">Download all slides</string>
+    <string name="downloadThis">Download only this slide</string>
+    <string name="downloadAudio">Download audio</string>
+    <string name="downloadPicture">Download first frame</string>
+    <string name="versionPickerTitle">Versions</string>
+    <string name="versionPickerItem">%1$d x %2$d pixels</string>
+    <string name="save">Save</string>
+    <string name="unsave">Unsave</string>
+    <string name="like">Like</string>
+    <string name="likeAll">Like all</string>
+    <string name="unlike">Unlike</string>
+    <string name="unlikeAll">Unlike all</string>
+    <string name="deleteItemSure">Are you sure you want to delete this item?</string>
+    <string name="listClear">Clear all</string>
+    <string name="listClearSure">Are you sure you want to remove all the items?</string>
+
+
     <!-- Login -->
     <string name="addAccount">Add Account</string>
+    <string name="couldNotLogin">Could not retrieve authentication keys for your account!</string>
     <string name="enterWithoutAuth">Enter offline</string>
     <string name="browseInTheWeb">Browse the web</string>
     <string name="injectCookies">Inject cookies (txt)</string>
@@ -96,28 +80,33 @@
     </string>
     <string name="exportCookies">Export cookies (txt)</string>
     <string name="noCookies">This Instagram cookies has no cookies loaded in this app.</string>
-    <string name="unknownError">Sorry, an unknown error occurred: %s</string>
+    <string name="signOut">Sign Out</string>
+    <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
+    <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="needAuthentication">
         Instagram doesn\'t let us in. You need to login to continue&#8230;
     </string>
 
     <!-- Main -->
+    <string name="search">Search</string>
+    <string name="mtSearch">Enter a profile name or link&#8230;</string>
+    <string name="navOpen">Open menu</string>
+    <string name="navClose">Close menu</string>
+    <string name="switchAccount">Switch Account</string>
     <string name="favourites">Favourites</string>
     <string name="saved">Saved</string>
     <string name="tray">Tray</string>
-    <string name="signOutSure">Are you sure you want to sign out of your Instagram account?</string>
-    <string name="mtSearch">Enter a profile name or link&#8230;</string>
     <string name="terminateBgTasks">
         Some tasks are running in the background. Are you sure you want to terminate them all?
         (You can resume them later)
     </string>
-    <string name="alsoDeleteData">Also delete my user data and settings</string>
     <string name="toExit">Double tap to exit&#8230;</string>
 
     <!-- PageFav -->
     <string name="favEmpty">
         Open a profile in InstaTools and tap the heart icon at top right to add them into this list.
     </string>
+    <string name="addToFav">Add to favourites</string>
 
     <!-- PageSvd -->
     <string name="unsaveOnly">Unsave Only</string>
@@ -176,20 +165,29 @@
     <string name="aSettings">Settings of This Account</string>
     <string name="stDlPath">Main download folder</string>
     <string name="stBranching">Divide downloaded files into branches</string>
+    <string name="addFolder">Add Folder</string>
     <string name="stAliasing">Assign specific folders for profiles</string>
     <string name="stAddAlias">Add new exception</string>
     <string name="stAliasingDesc">
         Any file downloaded from this profile will be saved into this folder.
     </string>
     <string name="stAliasProfile">Enter profile user-name</string>
-    <string name="addFolder">Add Folder</string>
     <string name="stCache">Caching (current size: %s)</string>
+    <string-array name="bytes" translatable="false">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
+    <string name="maximum">Maximum: %s</string>
+    <string name="unlimited">Unlimited</string>
     <string name="stClearImageCache">Clear image cache</string>
     <string name="stClearWebCache">Clear web cache</string>
     <string name="stUserData">User Data</string>
     <string name="stResetData">Reset all my user data</string>
     <string name="stResetDataSure">
-        This includes the list of favourite accounts and the download queue.
+        This includes the list of favourite accounts and the download and command queues.
         But you won\'t be signed out of your account. Proceed?
     </string>
     <string name="stResetSettings">Reset my settings</string>
@@ -205,6 +203,32 @@
         (this cancels any other exception related to this folder)
     </string>
 
+
+    <!-- services -->
+    <string name="backgroundTasks">Background Tasks</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="tryAgain">Try Again</string>
+    <string name="resume">Resume</string>
+    <string name="forget">Forget</string>
+    <string name="servicesChannelGroup">Long-Running Tasks</string>
+    <string name="servicesChannelGroupDesc">
+        Examples are downloading and sending IG commands.
+    </string>
+    <string name="taskSuspensionChannel">Task Suspension</string>
+    <string name="taskSuspensionChannelDesc">
+        A notification that pops up when a task is paused letting the user resume it anytime.
+    </string>
+    <plurals name="taskPausedCount">
+        <item quantity="one">%d item in the queue&#8230;</item>
+        <item quantity="other">%d items in the queue&#8230;</item>
+    </plurals>
+    <string name="taskResultChannel">Task Results</string>
+    <string name="taskResultChannelDesc">
+        Notifies anything resulted from a long-running task,
+        like downloading and sending commands to Instagram.
+    </string>
 
     <!-- Downloader -->
     <string name="downloaderChannel">Download queue</string>
@@ -233,23 +257,4 @@
         <item quantity="one">Couldn\'t process %d command!</item>
         <item quantity="other">Couldn\'t process %d commands!</item>
     </plurals>
-
-    <!-- Other Notifications -->
-    <string name="servicesChannelGroup">Long-Running Tasks</string>
-    <string name="servicesChannelGroupDesc">
-        Examples are downloading and sending IG commands.
-    </string>
-    <string name="taskSuspensionChannel">Task Suspension</string>
-    <string name="taskSuspensionChannelDesc">
-        A notification that pops up when a task is paused letting the user resume it anytime.
-    </string>
-    <plurals name="taskPausedCount">
-        <item quantity="one">%d item in the queue&#8230;</item>
-        <item quantity="other">%d items in the queue&#8230;</item>
-    </plurals>
-    <string name="taskResultChannel">Task Results</string>
-    <string name="taskResultChannelDesc">
-        Notifies anything resulted from a long-running task,
-        like downloading and sending commands to Instagram.
-    </string>
 </resources>
