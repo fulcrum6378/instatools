@@ -244,6 +244,10 @@
         <item quantity="other">Couldn\'t download %d items!</item>
     </plurals>
     <string name="downloaderCannot">Cannot download from Instagram!</string>
+    <plurals name="downloaderFatalErrorQueueSize">
+        <item quantity="one">%d item remains in the queue&#8230;</item>
+        <item quantity="other">%d items remain in the queue&#8230;</item>
+    </plurals>
 
     <!-- Commander -->
     <string name="commanderChannel">API Commands</string>

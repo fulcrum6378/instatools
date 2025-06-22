@@ -246,6 +246,10 @@
         <item quantity="other">دانلود %d فایل ممکن نشد!</item>
     </plurals>
     <string name="downloaderCannot">دانلود چیزی از اینستاگرام امکان پذیر نیست!</string>
+    <plurals name="downloaderFatalErrorQueueSize">
+        <item quantity="one">%d مورد در صف ماند&#8230;</item>
+        <item quantity="other">%d مورد در صف ماندند&#8230;</item>
+    </plurals>
 
     <!-- Commander -->
     <string name="commanderChannel">دستورات اینستاگرام</string>

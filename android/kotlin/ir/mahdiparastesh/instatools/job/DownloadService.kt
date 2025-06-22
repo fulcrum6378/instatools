@@ -160,7 +160,7 @@ class DownloadService : ForegroundService(), Downloader {
                 if (fatalError !is Utils.InstaToolsException) throw fatalError
 
                 // report the fatal error
-                notifyFailure(Notify.ID_DOWNLOADER_ERROR, Downloader::class) {
+                notifyFailure(Notify.ID_DOWNLOADER_ERROR, Downloads::class) {
                     setContentTitle(getString(R.string.download))
                     setContentText(
                         when (fatalError) {
@@ -171,12 +171,18 @@ class DownloadService : ForegroundService(), Downloader {
                             else -> throw IllegalStateException("IMPOSSIBLE?!")
                         }
                     )
+                    val queueSize = c.downloads.size<Download>()
+                    setSubText(
+                        resources.getQuantityString(
+                            R.plurals.downloaderFatalErrorQueueSize, queueSize, queueSize
+                        )
+                    )
                 }
             } else {
                 // report if some downloads failed
                 val failedSum = c.downloads.count<Download> { it.isFailed() }
                 if (failedSum != 0) notifyFailure(
-                    Notify.ID_DOWNLOADER_SOME_FAILED, Downloader::class,
+                    Notify.ID_DOWNLOADER_SOME_FAILED, Downloads::class,
                     failedSum < c.downloads.size<Download>()
                 ) {
                     setContentTitle(

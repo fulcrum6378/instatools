@@ -156,7 +156,7 @@ abstract class ForegroundService : Service() {
 
     protected fun notifyFailure(
         id: Int,
-        activity: KClass<*>?,
+        activity: KClass<out BaseActivity>?,
         canTryAgain: Boolean = true,
         func: Notification.Builder.() -> Unit
     ) {
