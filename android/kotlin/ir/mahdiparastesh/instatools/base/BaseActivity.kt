@@ -175,18 +175,19 @@ abstract class BaseActivity : FragmentActivity(), Toolbar.OnMenuItemClickListene
     /** Helper function for starting an Activity */
     fun goTo(
         activity: KClass<*>,
-        finish: Boolean = false, // USE THIS CAREFULLY
-        animate: Boolean = false,
+        finish: Boolean = false,  // USE THIS CAREFULLY
+        animate: Boolean = true,
         onIntent: (Intent.() -> Unit)? = null
     ): Boolean {
         val intent = Intent(this, activity.java)
         onIntent?.also { intent.it() }
-        if (animate) startActivity(
-            intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle()
-            // this animation is the cause of occasional ugly activity-on-activity accidents!
-        ) else startActivity(intent)
+        if (animate)
+            startActivity(
+                intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle()
+            )
+        else
+            startActivity(intent)
         if (finish) Delay(1000) { finish() }
-        // The phone's home screen may appear if there are no active activities at the moment.
         return true
     }
 

@@ -118,7 +118,7 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!c.gsp.contains(Login.SP_ACCOUNT)) {
-            goTo(Login::class, true); return; }
+            goTo(Login::class, finish = true, animate = false); return; }
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
         initToolbar(b.toolbar, R.string.app_name, getString(R.string.app_name))
@@ -195,45 +195,13 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
                 R.id.mnSettings, R.drawable.settings, R.string.aSettings
             ) { goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) } },
 
-            NavItem(R.id.mnSwitchAccount, R.drawable.switch_account, R.string.switchAccount) {
-                if (ForegroundService.anyRunning())
-                    AlertDialog.Builder(
-                        ContextThemeWrapper(this, R.style.Theme_InstaTools_Tertiary)
-                    ).apply {
-                        setTitle(R.string.backgroundTasks)
-                        setMessage(R.string.terminateBgTasks)
-                        setNegativeButton(R.string.no, null)
-                        setPositiveButton(R.string.yes) { _, _ ->
-                            ForegroundService.terminateTasks(c)
-                            switchAcc()
-                        }
-                    }.show()
-                else
-                    switchAcc()
-            },
+            NavItem(
+                R.id.mnSwitchAccount, R.drawable.switch_accounts, R.string.switchAccounts
+            ) { prepareSwitchingAccounts() },
 
-            NavItem(R.id.mnSignOut, R.drawable.exit, R.string.signOut) {
-                val bd = AlsoDeleteDataBinding.inflate(
-                    layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
-                )
-                AlertDialog.Builder(
-                    ContextThemeWrapper(this, R.style.Theme_InstaTools_Tertiary)
-                ).apply {
-                    setTitle(R.string.signOut)
-                    setMessage(R.string.signOutSure)
-                    setView(bd.root)
-                    setNegativeButton(R.string.no, null)
-                    setPositiveButton(R.string.yes) { _, _ ->
-                        CoroutineScope(Dispatchers.IO).launch {
-                            Api.json<Rest.QuickResponse>(
-                                Api.Endpoint.LOGOUT.url,
-                                true, "one_tap_app_login=1&user_id=${c.acc!!.id}",
-                            )
-                        }
-                        signOut(bd.tick.isChecked)
-                    }
-                }.show()
-            },
+            NavItem(
+                R.id.mnSignOut, R.drawable.exit, R.string.signOut
+            ) { prepareSigningOut() },
         )
         b.drwNav.adapter = object : ArrayAdapter<NavItem>(this, 0, drwNavItems) {
             override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
@@ -306,6 +274,13 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
             searchView.setOnQueryTextListener(this@Main)
         }
         return true
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.mtSwitchAccounts -> prepareSwitchingAccounts()
+        }
+        return super.onMenuItemClick(item)
     }
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
@@ -423,6 +398,51 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
         return true
     }
 
+    private fun prepareSwitchingAccounts() {
+        if (ForegroundService.anyRunning())
+            AlertDialog.Builder(
+                ContextThemeWrapper(this, R.style.Theme_InstaTools_Tertiary)
+            ).apply {
+                setTitle(R.string.backgroundTasks)
+                setMessage(R.string.terminateBgTasks)
+                setNegativeButton(R.string.no, null)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    ForegroundService.terminateTasks(c)
+                    switchAccounts()
+                }
+            }.show()
+        else
+            switchAccounts()
+    }
+
+    private fun switchAccounts() {
+        goTo(Login::class, true)
+        c.onLoggedOut()
+    }
+
+    private fun prepareSigningOut() {
+        val bd = AlsoDeleteDataBinding.inflate(
+            layoutInflater.cloneInContext(wrapTheme(Theme.TERTIARY))
+        )
+        AlertDialog.Builder(
+            ContextThemeWrapper(this, R.style.Theme_InstaTools_Tertiary)
+        ).apply {
+            setTitle(R.string.signOut)
+            setMessage(R.string.signOutSure)
+            setView(bd.root)
+            setNegativeButton(R.string.no, null)
+            setPositiveButton(R.string.yes) { _, _ ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    Api.json<Rest.QuickResponse>(
+                        Api.Endpoint.LOGOUT.url,
+                        true, "one_tap_app_login=1&user_id=${c.acc!!.id}",
+                    )
+                }
+                signOut(bd.tick.isChecked)
+            }
+        }.show()
+    }
+
     private fun signOut(bd: Boolean) {
         ForegroundService.terminateTasks(c)
         CoroutineScope(Dispatchers.IO).launch {
@@ -431,13 +451,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
                 c.storageManager.deleteSp()
             }
             Account.save(c, Account.load(c).apply { removeAll { it.id == c.acc?.id } })
-            withContext(Dispatchers.Main) { switchAcc() }
+            withContext(Dispatchers.Main) { switchAccounts() }
         }
-    }
-
-    private fun switchAcc() {
-        goTo(Login::class, true)
-        c.onLoggedOut()
     }
 
     @SuppressLint("WrongConstant")

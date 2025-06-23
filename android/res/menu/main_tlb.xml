@@ -4,4 +4,9 @@
         android:icon="@drawable/search_user"
         android:showAsAction="ifRoom|collapseActionView"
         android:title="@string/search" />
+    <item
+        android:id="@+id/mtSwitchAccounts"
+        android:icon="@drawable/switch_accounts"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:title="@string/switchAccounts" />
 </menu>

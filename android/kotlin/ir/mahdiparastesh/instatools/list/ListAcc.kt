@@ -47,7 +47,10 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         h.b.user.text = acc.user
         h.b.name.vis(acc.name != "")
         h.b.root.setOnClickListener {
-            c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
+            if ((Utils.now() - acc.last) > 86400000L)
+                c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
+            else
+                enterOffline(acc)
         }
 
         // actions
@@ -70,10 +73,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         EasyPopupMenu(
             c, v, R.menu.acc_more,
             R.id.amOffline to {
-                c.c.onLoggedIn(acc, true)
-                acc.last = Utils.now()
-                acc.saveMeInIO(c)
-                c.goTo(Main::class, true)
+                enterOffline(acc)
             },
             R.id.amBrowseWeb to {
                 c.accBrowsingWeb = acc
@@ -130,6 +130,13 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
                 }.show()
             }
         ).show()
+    }
+
+    private fun enterOffline(acc: Account) {
+        c.c.onLoggedIn(acc, true)
+        acc.last = Utils.now()
+        acc.saveMeInIO(c)
+        c.goTo(Main::class, true)
     }
 
     private suspend fun signOut(acc: Account, i: Int, bd: Boolean) {

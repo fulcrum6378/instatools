@@ -65,8 +65,8 @@
     <string name="likeAll">لایک همه</string>
     <string name="unlike">آنلایک</string>
     <string name="unlikeAll">آنلایک همه</string>
-    <string name="markAsSeen">علامت گذاری بعنوان دیده شده</string>
-    <string name="markedAsSeen">بعنوان دیده شده علامت گذاری شد.</string>
+    <string name="markAsSeen">سین کردن</string>
+    <string name="markedAsSeen">سین شد.</string>
     <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
     <string name="listClear">پاک کردن همه</string>
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>
@@ -91,11 +91,11 @@
     </string>
 
     <!-- Main -->
+    <string name="switchAccounts">تعویض اکانت</string>
     <string name="search">جستجو</string>
     <string name="mtSearch">نام یا لینک یک پروفایل را وارد کنید&#8230;</string>
     <string name="navOpen">باز کردن</string>
     <string name="navClose">بستن</string>
-    <string name="switchAccount">تعویض اکانت</string>
     <string name="favourites">مورد علاقه</string>
     <string name="saved">ذخیره ها</string>
     <string name="tray">تایم لاین</string>

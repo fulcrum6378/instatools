@@ -90,11 +90,11 @@
     </string>
 
     <!-- Main -->
+    <string name="switchAccounts">Switch Accounts</string>
     <string name="search">Search</string>
     <string name="mtSearch">Enter a profile name or link&#8230;</string>
     <string name="navOpen">Open menu</string>
     <string name="navClose">Close menu</string>
-    <string name="switchAccount">Switch Account</string>
     <string name="favourites">Favourites</string>
     <string name="saved">Saved</string>
     <string name="tray">Tray</string>
