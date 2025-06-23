@@ -65,6 +65,8 @@
     <string name="likeAll">لایک همه</string>
     <string name="unlike">آنلایک</string>
     <string name="unlikeAll">آنلایک همه</string>
+    <string name="markAsSeen">علامت گذاری بعنوان دیده شده</string>
+    <string name="markedAsSeen">بعنوان دیده شده علامت گذاری شد.</string>
     <string name="deleteItemSure">آیا از حذف این مورد اطمینان دارید؟</string>
     <string name="listClear">پاک کردن همه</string>
     <string name="listClearSure">آیا از حذف تمامی موارد اطمینان دارید؟</string>

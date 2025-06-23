@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.instatools.job
 
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 
@@ -43,7 +42,7 @@ object SimpleTasks {
 
     /** Fetches a list of stories in one's feed without their [Media]s. */
     fun feedTray(maxSpans: Int = 3) {
-        val gql = Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, GraphQlQuery.FEED_TRAY.body())
+        val gql = Api.graphQl(GraphQlQuery.FEED_TRAY.body())
         val sb = StringBuilder()
         var span = 0
         var u: String

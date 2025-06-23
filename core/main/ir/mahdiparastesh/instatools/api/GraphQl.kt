@@ -32,6 +32,7 @@ class GraphQl(
         val xdt_api__v1__media__shortcode__web_info: MediaShortcodeWebInfo?, // media info
         //val xdt_api__v1__restrict_action__restrict_many: Array<UserInteraction>?, // restrict
         //val xdt_api__v1__restrict_action__unrestrict: UserInteraction?, // unrestrict
+        //val xdt_api__v1__stories__reel__seen: MediaInteraction?, // story seen
         //val xdt_api__v1__story_interactions__send_story_like: MediaInteraction?, // like story
         //val xdt_api__v1__story_interactions__unsend_story_like: MediaInteraction?, // unlike story
         val xdt_api__v1__usertags__user_id__feed_connection: Page<Media>?, // tagged posts

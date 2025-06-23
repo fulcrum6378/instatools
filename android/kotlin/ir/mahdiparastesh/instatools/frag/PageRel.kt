@@ -16,7 +16,6 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
@@ -80,8 +79,7 @@ class PageRel : BasePageViewer(), PostSelector {
 
         // fetch online reels
         val cursor = if (!reset) c.vm.reels?.page_info?.end_cursor else null
-        val page = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true,
+        val page = Api.graphQl(
             if (cursor == null)
                 GraphQlQuery.PROFILE_REELS_INITIAL.body(c.vm.profile!!.id!!, "12")
             else

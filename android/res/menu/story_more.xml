@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/smDownloadAll"
@@ -6,4 +5,7 @@
     <item
         android:id="@+id/smReload"
         android:title="@string/reload" />
+    <item
+        android:id="@+id/smMarkAsSeen"
+        android:title="@string/markAsSeen" />
 </menu>

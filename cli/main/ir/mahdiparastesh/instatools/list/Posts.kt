@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.list
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.SimpleTasks
@@ -14,8 +13,7 @@ class Posts(override val p: Profile) : LazyLister<Media>(), Profile.Section {
     override val numberOfClauses: Int = 1
 
     override fun fetch() {
-        val page = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true,
+        val page = Api.graphQl(
             if (cursor == null)
                 GraphQlQuery.PROFILE_POSTS_INITIAL.body(p.userName, "33")
             else

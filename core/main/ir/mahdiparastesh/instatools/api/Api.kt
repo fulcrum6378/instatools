@@ -100,6 +100,9 @@ object Api {
         return data
     }
 
+    fun graphQl(body: String): GraphQl =
+        json<GraphQl>(QUERY.url, true, body)
+
     /** Opens an Instagram webpage and reads its contents. */
     @Throws(FailureException::class)
     fun html(url: String): String {

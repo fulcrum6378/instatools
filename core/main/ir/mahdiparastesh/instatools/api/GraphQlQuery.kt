@@ -6,6 +6,8 @@ import java.net.URLEncoder
  * Difficultly deciphered GraphQL queries out of the new Instagram API
  *
  * Note: these GraphQL queries cannot like or unlike old IGTVs.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/GraphQL">GraphQL - Wikipedia</a>
  */
 @Suppress("KDocUnresolvedReference", "unused")
 enum class GraphQlQuery(
@@ -373,6 +375,28 @@ enum class GraphQlQuery(
     UNSAVE(
         "8122123554479056",
         "{\"media_id\":\"%s\"}"
+    ),
+
+    /**
+     * PolarisStoriesV3SeenMutation
+     * @param reelId [Story.id]
+     * @param reelMediaId [Media.id]
+     * @param reelMediaOwnerId [User.id]
+     * @param reelMediaTakenAt [Media.taken_at]
+     * @param viewSeenAt a seconds timestamp
+     * @return [GraphQlData.xdt_api__v1__stories__reel__seen]
+     *
+     * This API seems applicable to but is not tested on highlighted stories.
+     */
+    STORY_SEEN(
+        "24372833149008516",
+        "{" +
+            "\"reelId\":\"%1\$s\"," +
+            "\"reelMediaId\":\"%2\$s\"," +
+            "\"reelMediaOwnerId\":\"%3\$s\"," +
+            "\"reelMediaTakenAt\":%4\$s," +
+            "\"viewSeenAt\":%5\$s" +
+            "}"
     );
 
     fun body(vararg params: String) =

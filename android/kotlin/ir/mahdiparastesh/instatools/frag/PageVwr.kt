@@ -24,7 +24,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
@@ -161,8 +160,7 @@ class PageVwr : BasePageViewer(), PostSelector {
         //Log.d("ESPINELA", "PageVwr: fetch: ${c.vm.posts?.edges?.size ?: 0} edges exist in the VM")
         val cursor = if (!reset) c.vm.posts?.edges?.lastOrNull()?.node?.id().toString() else null
         //Log.d("ESPINELA", "PageVwr: fetch: is cursor available?: ${cursor != null}")
-        val page = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true,
+        val page = Api.graphQl(
             if (cursor == null)
                 GraphQlQuery.PROFILE_POSTS_INITIAL.body(c.vm.profile!!.username!!, "33")
             else

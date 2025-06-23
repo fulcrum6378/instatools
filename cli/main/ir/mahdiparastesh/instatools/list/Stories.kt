@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.list
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.SimpleTasks
@@ -15,9 +14,8 @@ class Stories(override val p: Profile) : Lister<Media>(), Profile.Section {
 
     override fun fetch() {
         p.requireUserId()
-        val reels = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(p.userId!!)
-        ).data!!.xdt_api__v1__feed__reels_media!!.reels_media
+        val reels = Api.graphQl(GraphQlQuery.STORY.body(p.userId!!))
+            .data!!.xdt_api__v1__feed__reels_media!!.reels_media
 
         val media = reels.firstOrNull()?.items
         if (media.isNullOrEmpty())

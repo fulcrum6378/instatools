@@ -13,12 +13,12 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
 import ir.mahdiparastesh.instatools.frag.PageTry
+import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -57,15 +57,20 @@ class ListTry(private val c: Main, private val f: PageTry) :
                 c, button, R.menu.story_more,
                 R.id.smDownloadAll to {
                     storyAction(
-                        StoryAction.DOWNLOAD,
-                        story,
-                        h.layoutPosition,
+                        StoryAction.DOWNLOAD, story, h.layoutPosition,
                         h.b.reel.adapter!! as ListStory
                     )
                 },
                 R.id.smReload to {
                     storyAction(
-                        StoryAction.RELOAD, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
+                        StoryAction.RELOAD, story, h.layoutPosition,
+                        h.b.reel.adapter!! as ListStory
+                    )
+                },
+                R.id.smMarkAsSeen to {
+                    storyAction(
+                        StoryAction.MARK_AS_SEEN, story, h.layoutPosition,
+                        h.b.reel.adapter!! as ListStory
                     )
                 },
                 theme = R.style.Widget_InstaTools_Popup_Tertiary
@@ -127,14 +132,13 @@ class ListTry(private val c: Main, private val f: PageTry) :
         listStory: ListStory,
     ) {
         val fetch = story.items == null || action == StoryAction.RELOAD
-        if (!fetch && action != StoryAction.DOWNLOAD) return
+        if (!fetch && action == StoryAction.FETCH) return
 
         CoroutineScope(Dispatchers.IO).launch {
             if (fetch) {
                 val newStory = try {
-                    Api.json<GraphQl>(
-                        Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(story.user.id())
-                    ).data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
+                    Api.graphQl(GraphQlQuery.STORY.body(story.user.id()))
+                        .data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
                 } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG).show()
@@ -145,6 +149,10 @@ class ListTry(private val c: Main, private val f: PageTry) :
 
                 story.items = newStory?.items
                 c.vm.tray?.also { f.pickle.save(it) }
+                withContext(Dispatchers.Main) {
+                    this@ListTry.notifyItemChanged(i)
+                    listStory.notifyDataSetChanged()
+                }
             }
 
             if (action == StoryAction.DOWNLOAD) {
@@ -152,14 +160,25 @@ class ListTry(private val c: Main, private val f: PageTry) :
                     c.c.downloads.addAll<Download>(reel.queue(owner = story.user.username), false)
                 c.c.downloads.save<Download>()
                 Downloads.initService(c)
+                return@launch
             }
 
-            withContext(Dispatchers.Main) {
-                this@ListTry.notifyItemChanged(i)
-                listStory.notifyDataSetChanged()
+            if (action == StoryAction.MARK_AS_SEEN) try {
+                SimpleJobs.markStoryAsSeen(story, story.items!!.size - 1)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(c, R.string.markedAsSeen, Toast.LENGTH_LONG).show()
+                    //UiTools.snackbar(f.b.root, R.string.markedAsSeen)
+                }
+            } catch (e: Api.FailureException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG).show()
+                    //UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
+                }
+                return@launch
             }
         }
     }
 
-    enum class StoryAction { FETCH, RELOAD, DOWNLOAD }
+    enum class StoryAction { FETCH, RELOAD, DOWNLOAD, MARK_AS_SEEN }
 }

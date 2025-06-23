@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.base.ForegroundService
 import ir.mahdiparastesh.instatools.data.Command
@@ -88,7 +87,7 @@ class CommandService : ForegroundService(), Queuer<Command> {
             if (!proceed) throw CancellationException()
 
             // call the API
-            Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, post.body(q.media.id()))
+            Api.graphQl(post.body(q.media.id()))
             q.postHandling(post)
 
             // inform the UIs

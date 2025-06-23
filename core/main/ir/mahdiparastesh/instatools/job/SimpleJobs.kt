@@ -5,7 +5,9 @@ import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.api.Rest
+import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.api.User
+import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -74,9 +76,8 @@ object SimpleJobs {
             "/reel/" in link -> link.substringAfter("/reel/").substringBefore("/")
             else -> throw IllegalArgumentException("Links must be either for a post or a reel!")
         }
-        return Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true, GraphQlQuery.POST_ROOT.body(shortcode)
-        ).data!!.xdt_api__v1__media__shortcode__web_info!!.items[0]
+        return Api.graphQl(GraphQlQuery.POST_ROOT.body(shortcode))
+            .data!!.xdt_api__v1__media__shortcode__web_info!!.items[0]
     }
 
     /**
@@ -103,7 +104,21 @@ object SimpleJobs {
     fun actionMedia(
         med: Media, graphQlQuery: GraphQlQuery, result: (success: Boolean) -> Unit
     ) {
-        val gql = Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, graphQlQuery.body(med.id()))
+        val gql = Api.graphQl(graphQlQuery.body(med.id()))
         result(gql.data != null)
+    }
+
+    @Throws(Api.FailureException::class)
+    fun markStoryAsSeen(story: Story, item: Int) {
+        val media = story.items!![item]
+        Api.graphQl(
+            GraphQlQuery.STORY_SEEN.body(
+                story.id,
+                media.id(),
+                story.user.id(),
+                media.taken_at!!.toString(),
+                Utils.now().toString()
+            )
+        )
     }
 }

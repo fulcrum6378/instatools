@@ -336,9 +336,8 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val results = Api.json<GraphQl>(
-                    Api.Endpoint.QUERY.url, true, GraphQlQuery.SEARCH.body(query)
-                ).data!!.xdt_api__v1__fbsearch__topsearch_connection!!
+                val results = Api.graphQl(GraphQlQuery.SEARCH.body(query))
+                    .data!!.xdt_api__v1__fbsearch__topsearch_connection!!
                 withContext(Dispatchers.Main) {
                     b.searchStatus.vis(false)
                     b.searchStatus.pauseAnimation()

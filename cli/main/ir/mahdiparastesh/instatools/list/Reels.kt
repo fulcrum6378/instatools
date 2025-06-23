@@ -2,7 +2,6 @@ package ir.mahdiparastesh.instatools.list
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Media
 import ir.mahdiparastesh.instatools.job.SimpleTasks
@@ -15,8 +14,7 @@ class Reels(override val p: Profile) : LazyLister<Media>(), Profile.Section {
 
     override fun fetch() {
         p.requireUserId()
-        val page = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true,
+        val page = Api.graphQl(
             if (cursor == null)
                 GraphQlQuery.PROFILE_REELS_INITIAL.body(p.userId!!, "12")
             else

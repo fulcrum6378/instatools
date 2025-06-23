@@ -10,7 +10,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.FeedTray
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.base.BaseActivity
@@ -66,7 +65,7 @@ class PageTry : BasePageMain(BaseActivity.Theme.TERTIARY), OnlineLister {
             return; }
 
         // fetch an online tray and update the data model
-        c.vm.tray = Api.json<GraphQl>(Api.Endpoint.QUERY.url, true, GraphQlQuery.FEED_TRAY.body())
+        c.vm.tray = Api.graphQl(GraphQlQuery.FEED_TRAY.body())
             .data!!.xdt_api__v1__feed__reels_tray
         //c.vm.tray?.tray?.sortBy { it.seen_ranked_position!! }
 

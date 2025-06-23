@@ -1,7 +1,10 @@
 package ir.mahdiparastesh.instatools.list
 
 import ir.mahdiparastesh.instatools.Context.downloadTask
-import ir.mahdiparastesh.instatools.api.*
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.api.GraphQlQuery
+import ir.mahdiparastesh.instatools.api.Media
+import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.job.SimpleTasks
 import ir.mahdiparastesh.instatools.util.Lister
 import ir.mahdiparastesh.instatools.util.Option
@@ -17,9 +20,8 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
 
     override fun fetch() {
         p.requireUserId()
-        val hls = Api.json<GraphQl>(
-            Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(p.userId!!)
-        ).data!!.highlights!!.edges
+        val hls = Api.graphQl(GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(p.userId!!))
+            .data!!.highlights!!.edges
 
         if (hls.isEmpty()) println("This user has no highlighted stories.")
         else {
@@ -52,9 +54,8 @@ class Highlights(override val p: Profile) : Lister<Media>(), Profile.Section {
         val ready = trays[currentTray]?.items
         if (ready == null) {
             val apiId = "\"highlight:${currentTray}\""
-            val page = Api.json<GraphQl>(
-                Api.Endpoint.QUERY.url, true, GraphQlQuery.HIGHLIGHTS.body(apiId, apiId)
-            ).data!!.xdt_api__v1__feed__reels_media__connection!!
+            val page = Api.graphQl(GraphQlQuery.HIGHLIGHTS.body(apiId, apiId))
+                .data!!.xdt_api__v1__feed__reels_media__connection!!
             page.edges.forEach { tray ->
                 tray.node.items = ArrayList(tray.node.items!!)
                 trays[currentTray!!] = tray.node

@@ -8,7 +8,6 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQl.Page
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
@@ -48,9 +47,8 @@ class PageSto : BasePageViewer() {
             c.vm.story = cache1
         else {
             // fetch their story
-            c.vm.story = Api.json<GraphQl>(
-                Api.Endpoint.QUERY.url, true, GraphQlQuery.STORY.body(uid)
-            ).data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
+            c.vm.story = Api.graphQl(GraphQlQuery.STORY.body(uid))
+                .data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
             if (c.vm.story != null) pickle1.save(c.vm.story!!)
         }
 
@@ -61,9 +59,8 @@ class PageSto : BasePageViewer() {
             c.vm.highlights = cache2
         else {
             // fetch their highlights
-            c.vm.highlights = Api.json<GraphQl>(
-                Api.Endpoint.QUERY.url, true, GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid),
-            ).data!!.highlights!!
+            c.vm.highlights = Api.graphQl(GraphQlQuery.PROFILE_HIGHLIGHTS_TRAY.body(uid))
+                .data!!.highlights!!
             pickle2.save(c.vm.highlights!!)
         }
 

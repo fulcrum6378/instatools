@@ -14,12 +14,12 @@ import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.R
 import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Api
-import ir.mahdiparastesh.instatools.api.GraphQl
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
 import ir.mahdiparastesh.instatools.data.Download
 import ir.mahdiparastesh.instatools.data.Pickle
 import ir.mahdiparastesh.instatools.databinding.ListStoBinding
+import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.view.AnyViewHolder
 import ir.mahdiparastesh.instatools.view.EasyPopupMenu
 import ir.mahdiparastesh.instatools.view.UiTools
@@ -75,10 +75,35 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
             EasyPopupMenu(
                 c, button, R.menu.story_more,
                 R.id.smDownloadAll to {
-                    fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory, true)
+                    fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory) {
+                        for (reel in story.items!!) c.c.downloads.addAll<Download>(
+                            reel.queue(owner = story.user.username), false
+                        )
+                        c.c.downloads.save<Download>()
+                        Downloads.initService(c)
+                    }
+                },
+                R.id.smMarkAsSeen to {
+                    fetchHighlights(story, h.layoutPosition, h.b.reel.adapter!! as ListStory) {
+                        try {
+                            SimpleJobs.markStoryAsSeen(story, story.items!!.size - 1)
+
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(c, R.string.markedAsSeen, Toast.LENGTH_LONG).show()
+                                //UiTools.snackbar(f.b.root, R.string.markedAsSeen)
+                            }
+                        } catch (e: Api.FailureException) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG)
+                                    .show()
+                                //UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
+                            }
+                        }
+                    }
                 },
             ).apply {
                 menu.removeItem(R.id.smReload)
+                if (isHL) menu.removeItem(R.id.smMarkAsSeen)
             }.show()
         }
 
@@ -134,17 +159,16 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
         story: Story,
         i: Int,
         listStory: ListStory,
-        downloadAll: Boolean = false
+        then: (suspend () -> Unit)? = null
     ) {
-        if (story.items != null && !downloadAll) return
+        if (story.items != null && then == null) return
 
         CoroutineScope(Dispatchers.IO).launch {
             if (story.items == null) {
                 val apiId = "\"${story.id}\""
                 val newStory = try {
-                    Api.json<GraphQl>(
-                        Api.Endpoint.QUERY.url, true, GraphQlQuery.HIGHLIGHTS.body(apiId, apiId)
-                    ).data!!.xdt_api__v1__feed__reels_media__connection!!.edges.first().node
+                    Api.graphQl(GraphQlQuery.HIGHLIGHTS.body(apiId, apiId))
+                        .data!!.xdt_api__v1__feed__reels_media__connection!!.edges.first().node
                 } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG).show()
@@ -160,13 +184,7 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
                 }
             }
 
-            if (downloadAll) {
-                for (reel in story.items!!) c.c.downloads.addAll<Download>(
-                    reel.queue(owner = story.user.username), false
-                )
-                c.c.downloads.save<Download>()
-                Downloads.initService(c)
-            }
+            if (then != null) then()
 
             withContext(Dispatchers.Main) {
                 this@ListSto.notifyItemChanged(i)

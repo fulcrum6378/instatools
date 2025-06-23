@@ -64,6 +64,8 @@
     <string name="likeAll">Like all</string>
     <string name="unlike">Unlike</string>
     <string name="unlikeAll">Unlike all</string>
+    <string name="markAsSeen">Mark as seen</string>
+    <string name="markedAsSeen">Marked as seen.</string>
     <string name="deleteItemSure">Are you sure you want to delete this item?</string>
     <string name="listClear">Clear all</string>
     <string name="listClearSure">Are you sure you want to remove all the items?</string>
