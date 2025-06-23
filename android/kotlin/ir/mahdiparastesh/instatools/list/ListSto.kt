@@ -104,6 +104,7 @@ class ListSto(private val c: Viewer/*, private val f: PageSto*/) :
             ).apply {
                 menu.removeItem(R.id.smReload)
                 if (isHL) menu.removeItem(R.id.smMarkAsSeen)
+                menu.removeItem(R.id.smGoToProfile)
             }.show()
         }
 

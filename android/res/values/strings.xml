@@ -29,6 +29,7 @@
     <!-- content display -->
     <string name="reload">Reload</string>
     <string name="viewInInsta">View in Instagram</string>
+    <string name="goToProfile">Go to profile</string>
     <string name="profilePicture">Profile picture</string>
     <string name="couldNotLoadOriginal">Couldn\'t load the original image!</string>
     <string name="muteSound">Play/mute sound</string>

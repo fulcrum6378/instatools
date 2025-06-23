@@ -1,6 +1,5 @@
 # InstaTools To-Do List
 
-* `Go to profile` for `ListTry`
 * Marking stories as seen doesn't work
 * Emptiness indicator for `Login`, no need for an icon
 * `Expandable` never survives any configuration changes

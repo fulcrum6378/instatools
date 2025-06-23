@@ -30,6 +30,7 @@
     <!-- content display -->
     <string name="reload">بارگذاری دوباره</string>
     <string name="viewInInsta">باز کردن در اینستاگرام</string>
+    <string name="goToProfile">باز کردن پروفایل</string>
     <string name="couldNotLoadOriginal">بارگذاری عکس بزرگ امکان پذیر نیست!</string>
     <string name="profilePicture">عکس پروفایل</string>
     <string name="muteSound">پخش/قطع صدا</string>

@@ -12,6 +12,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import ir.mahdiparastesh.instatools.Downloads
 import ir.mahdiparastesh.instatools.Main
 import ir.mahdiparastesh.instatools.R
+import ir.mahdiparastesh.instatools.Viewer
 import ir.mahdiparastesh.instatools.api.Api
 import ir.mahdiparastesh.instatools.api.GraphQlQuery
 import ir.mahdiparastesh.instatools.api.Story
@@ -72,6 +73,9 @@ class ListTry(private val c: Main, private val f: PageTry) :
                         StoryAction.MARK_AS_SEEN, story, h.layoutPosition,
                         h.b.reel.adapter!! as ListStory
                     )
+                },
+                R.id.smGoToProfile to {
+                    Viewer.comeHere(c, user.id(), user.username!!)
                 },
                 theme = R.style.Widget_InstaTools_Popup_Tertiary
             ).show()
