@@ -47,7 +47,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
         h.b.user.text = acc.user
         h.b.name.vis(acc.name != "")
         h.b.root.setOnClickListener {
-            if ((Utils.now() - acc.last) > 86400000L)
+            if ((Utils.now() - acc.last_auth) > 86400000L)
                 c.accounts.getOrNull(h.layoutPosition)?.also { c.selectAccount(it) }
             else
                 enterOffline(acc)
@@ -134,7 +134,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
 
     private fun enterOffline(acc: Account) {
         c.c.onLoggedIn(acc, true)
-        acc.last = Utils.now()
+        acc.last_used = Utils.now()
         acc.saveMeInIO(c)
         c.goTo(Main::class, true)
     }

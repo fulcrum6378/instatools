@@ -5,11 +5,12 @@ import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import ir.mahdiparastesh.instatools.InstaTools
 import ir.mahdiparastesh.instatools.Login.Companion.SP_ACCOUNT
+import ir.mahdiparastesh.instatools.api.Api
+import ir.mahdiparastesh.instatools.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -22,7 +23,8 @@ class Account(
     var name: String? = null,
     var pict: String? = null,
     var cook: String? = null,
-    var last: Long = 0L,
+    var last_auth: Long = Utils.now(),
+    var last_used: Long = Utils.now(),
     // keep in mind to update the fields whose data need to persist after another Login
 ) {
     @MainThread
@@ -35,6 +37,12 @@ class Account(
         save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
     }
 
+    fun justAuthenticated() {
+        val now = Utils.now()
+        last_auth = now
+        last_used = now
+    }
+
     companion object {
         fun load(c: Context): ArrayList<Account> {
             val secured = Secured(c)
@@ -43,7 +51,11 @@ class Account(
                 runCatching {
                     FileInputStream(secured).use { it.readBytes() }
                 }.onSuccess { data = it }
-                data?.let { ArrayList(Json.decodeFromString<Array<Account>>(String(it)).toList()) }
+                data?.let {
+                    ArrayList(
+                        Api.json.decodeFromString<Array<Account>>(String(it)).toList()
+                    )
+                }
                     ?: arrayListOf()
             } else arrayListOf()
         }
@@ -55,7 +67,7 @@ class Account(
 
         fun save(c: Context, accounts: List<Account>) {
             FileOutputStream(Secured(c)).use { fos ->
-                fos.write(Json.encodeToString(accounts).encodeToByteArray())
+                fos.write(Api.json.encodeToString(accounts).encodeToByteArray())
             }
         }
 

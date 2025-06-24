@@ -30,7 +30,6 @@ import ir.mahdiparastesh.instatools.job.SimpleJobs
 import ir.mahdiparastesh.instatools.list.ListAcc
 import ir.mahdiparastesh.instatools.util.Delay
 import ir.mahdiparastesh.instatools.util.StorageManager
-import ir.mahdiparastesh.instatools.util.Utils
 import ir.mahdiparastesh.instatools.view.UiTools.vis
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -125,7 +124,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     override fun onInflate(stub: ViewStub, v: View) {
         bw = WelcomeBinding.bind(v)
         if (night) bw.logo.drawable.setTint(color(R.color.defCA))
-        accounts.sortByDescending { it.last.toString() }
+        accounts.sortByDescending { it.last_used.toString() }
         accounts.sortBy { it.id < 0L }
         bw.accounts.adapter = ListAcc(this)
 
@@ -271,7 +270,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             }
             // the user is just browsing the web
             else accBrowsingWeb?.also { accBrowsingWeb ->
-                accBrowsingWeb.last = Utils.now()
+                accBrowsingWeb.justAuthenticated()
                 accBrowsingWeb.cook = cookieManager.getCookieOrganised(HOST)
                 accBrowsingWeb.saveMeInIO(c)
             }
@@ -287,7 +286,6 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             c.acc = Account(
                 id, u.username, u.full_name, u.originalPicture(),
                 cookieManager.getCookieOrganised(HOST),
-                Utils.now()
             ).apply {
                 accounts.removeAll { it.id == id }
                 accounts.add(this)

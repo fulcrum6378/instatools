@@ -3,6 +3,7 @@
     <dimen name="tbTitleMain">22sp</dimen>
     <dimen name="tbTitle">22sp</dimen>
     <dimen name="tbTitleMainMarginTop">3sp</dimen>
+    <dimen name="tbIconSize">32dp</dimen>
     <dimen name="profilePhoto">80dp</dimen>
     <dimen name="thumbPhoto">90dp</dimen>
     <dimen name="userPadV">30dp</dimen>

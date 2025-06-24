@@ -1,6 +1,8 @@
 # InstaTools To-Do List
 
-* Marking stories as seen doesn't work
+* A better activity transition animation
+* Indicate if a story is unseen
+* Marking stories as seen doesn't work as expected
 * Emptiness indicator for `Login`, no need for an icon
 * `Expandable` never survives any configuration changes
 * Expand icons for all posts in the selection mode
