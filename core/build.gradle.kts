@@ -12,8 +12,13 @@ tasks.named<KotlinJvmCompile>("compileKotlin") {
     }
 }
 
-sourceSets.getByName("main") { kotlin.srcDirs("main") }
-sourceSets.getByName("test") { kotlin.srcDirs("test") }
+sourceSets.getByName("main") {
+    kotlin.srcDir("main")
+}
+sourceSets.getByName("test") {
+    kotlin.srcDir("test/kotlin")
+    resources.srcDir("test/resources")
+}
 
 dependencies {
     implementation(libs.serialization.json)

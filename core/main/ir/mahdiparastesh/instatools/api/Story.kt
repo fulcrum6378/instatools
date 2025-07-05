@@ -43,7 +43,7 @@ class Story(
             caption = null,
             carousel_media = items!!.toTypedArray(),
             code = null,
-            has_audio = items!!.any { it.has_audio == true } == true,
+            has_audio = items!!.any { it.has_audio == true },
             has_liked = false,
             has_viewer_saved = false,
             id = this.id,

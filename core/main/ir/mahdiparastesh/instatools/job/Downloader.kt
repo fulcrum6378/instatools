@@ -104,29 +104,35 @@ interface Downloader : Queuer<Download> {
                 .exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
         JpegRewriter.updateExifMetadataLossless(
-            ByteArrayByteReader(ba), OutputStreamByteWriter(out.open()), outputSet
+            ByteArrayByteReader(ba),
+            OutputStreamByteWriter(out.open()), outputSet
         )
         // NEVER reuse a ByteReader
     }
 
     private fun writePng(q: Download, ba: ByteArray, out: LazyFile<FileOutputStream>) {
-        val chunks = PngImageParser.readChunks(ByteArrayByteReader(ba), null) // NEVER filter
+        val chunks = PngImageParser.readChunks(
+            ByteArrayByteReader(ba), null
+        )  // NEVER filter
         val metadata = PngImageParser.parseMetadataFromChunks(chunks)
         val outputSet: TiffOutputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
         PngWriter.writeImage(
-            chunks, OutputStreamByteWriter(out.open()), exifBytes(metadata, outputSet), null, null
+            chunks, OutputStreamByteWriter(out.open()),
+            exifBytes(metadata, outputSet), null, null
         )
     }
 
     private fun writeWebP(q: Download, ba: ByteArray, out: LazyFile<FileOutputStream>) {
-        val chunks =
-            WebPImageParser.readChunks(ByteArrayByteReader(ba), false) // NEVER set it to true
+        val chunks = WebPImageParser.readChunks(
+            ByteArrayByteReader(ba), false
+        )  // NEVER set it to true
         val metadata = WebPImageParser.parseMetadataFromChunks(chunks)
         val outputSet = metadata.exif?.createOutputSet() ?: TiffOutputSet()
         instilExif(q, outputSet)
         WebPWriter.writeImage(
-            chunks, OutputStreamByteWriter(out.open()), exifBytes(metadata, outputSet), null
+            chunks, OutputStreamByteWriter(out.open()),
+            exifBytes(metadata, outputSet), null
         )
     }
 
@@ -155,7 +161,12 @@ interface Downloader : Queuer<Download> {
                 add(ExifTag.EXIF_TAG_USER_COMMENT, q.link)
             }
             removeField(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED)
-            add(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED, exifDateFormat.format(q.date))
+            println(exifDateFormat.format(q.date))  // TODO 1970:01:21 10:01:01
+            println(q.date)  // 1751461200
+            add(
+                ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED,
+                exifDateFormat.format(q.date)
+            )
         }
         if (q.lat != null && lacksGps)
             outputSet.setGpsCoordinates(q.coordinates())

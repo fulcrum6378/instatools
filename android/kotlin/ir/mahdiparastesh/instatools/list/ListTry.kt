@@ -104,7 +104,9 @@ class ListTry(private val c: Main, private val f: PageTry) :
             if (story.opened) storyAction(
                 StoryAction.FETCH, story, h.layoutPosition, h.b.reel.adapter!! as ListStory
             )
-            ObjectAnimator.ofFloat(h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f).apply {
+            ObjectAnimator.ofFloat(
+                h.b.reel, View.SCALE_Y, if (story.opened) 1f else 0f
+            ).apply {
                 story.anSlide = this
                 addUpdateListener {
                     h.b.reel.layoutParams = h.b.reel.layoutParams.apply {
@@ -145,7 +147,10 @@ class ListTry(private val c: Main, private val f: PageTry) :
                         .data!!.xdt_api__v1__feed__reels_media!!.reels_media.firstOrNull()
                 } catch (e: Api.FailureException) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            c, UiTools.apiError(c.c, e.code),
+                            Toast.LENGTH_LONG
+                        ).show()
                         //UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
                     }
                     return@launch
@@ -161,7 +166,9 @@ class ListTry(private val c: Main, private val f: PageTry) :
 
             if (action == StoryAction.DOWNLOAD) {
                 for (reel in story.items!!)
-                    c.c.downloads.addAll<Download>(reel.queue(owner = story.user.username), false)
+                    c.c.downloads.addAll<Download>(
+                        reel.queue(owner = story.user.username), false
+                    )
                 c.c.downloads.save<Download>()
                 Downloads.initService(c)
                 return@launch
@@ -171,12 +178,17 @@ class ListTry(private val c: Main, private val f: PageTry) :
                 SimpleJobs.markStoryAsSeen(story, story.items!!.size - 1)
 
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(c, R.string.markedAsSeen, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, R.string.markedAsSeen, Toast.LENGTH_LONG
+                    ).show()
                     //UiTools.snackbar(f.b.root, R.string.markedAsSeen)
                 }
             } catch (e: Api.FailureException) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(c, UiTools.apiError(c.c, e.code), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, UiTools.apiError(c.c, e.code),
+                        Toast.LENGTH_LONG
+                    ).show()
                     //UiTools.snackbar(f.b.root, UiTools.apiError(c.c, e.code))
                 }
                 return@launch

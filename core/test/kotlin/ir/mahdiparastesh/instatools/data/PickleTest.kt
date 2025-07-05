@@ -11,7 +11,7 @@ import java.io.File
 import java.io.FileInputStream
 
 object PickleTest {
-    val root = File("test_pickles")
+    private val root = File("test_pickles")
 
     @Test
     fun main() {

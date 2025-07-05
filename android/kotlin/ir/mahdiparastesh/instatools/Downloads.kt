@@ -85,7 +85,10 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 c.goTo(Settings::class) { putExtra(Settings.EXTRA_SELECT_PATH, 1) }
                 return; }
             c.startService(
-                Intent(c, DownloadService::class.java).setAction(ForegroundService.ACTION_START)
+                Intent(
+                    c, DownloadService::class.java
+                )
+                    .setAction(ForegroundService.ACTION_START)
             )
         }
     }
@@ -106,7 +109,9 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                         b.rv.adapter?.notifyItemRemoved(index)
                         val total = c.downloads.size<Download>()
                         if (total > index + 1)
-                            b.rv.adapter?.notifyItemRangeChanged(index + 1, total - index - 1)
+                            b.rv.adapter?.notifyItemRangeChanged(
+                                index + 1, total - index - 1
+                            )
                         else if (index > 0) b.rv.adapter?.notifyItemChanged(index - 1)
                         onListResized()
                     }
@@ -136,7 +141,9 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
             if (' ' in link)  // post was shared with caption
                 link = link.split(' ').last()  // exclude its caption
 
-            if (!link.startsWith(UiTools.IG_OPENABLE) && !link.startsWith(Login.RAW_HOST)) {
+            if (!link.startsWith(UiTools.IG_OPENABLE)
+                && !link.startsWith(Login.RAW_HOST)
+            ) {
                 AlertDialog.Builder(this).apply {
                     setTitle(R.string.downloads)
                     setMessage(R.string.nonInstagramUrl)
@@ -203,9 +210,10 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
         when (item.itemId) {
             R.id.dtControl -> if (!c.downloads.isEmpty<Download>()) {
                 if (DownloadService.active.value == true)
-                    startService(
-                        Intent(c, DownloadService::class.java)  // don't use stopService()
-                            .apply { action = ForegroundService.ACTION_CANCEL })
+                    startService(  // don't use stopService()
+                        Intent(
+                            c, DownloadService::class.java
+                        ).apply { action = ForegroundService.ACTION_CANCEL })
                 else initService(this@Downloads)
                 b.rv.adapter?.notifyDataSetChanged()
             }
@@ -229,7 +237,9 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 }
                 else
                 //  UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
-                    Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        c, R.string.dEmptyQueue, Toast.LENGTH_SHORT
+                    ).show()
 
             R.id.dtExportLinks -> if (!c.downloads.isEmpty<Download>())
                 exportLinks.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -242,12 +252,16 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 })
             else
             //  UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
-                Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    c, R.string.dEmptyQueue, Toast.LENGTH_SHORT
+                ).show()
 
-            R.id.dtImportLinks -> importLinks.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/json"
-            })
+            R.id.dtImportLinks -> importLinks.launch(
+                Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                }
+            )
 
             R.id.dtClearAll -> if (!c.downloads.isEmpty<Download>())
                 AlertDialog.Builder(this).apply {
@@ -267,7 +281,9 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 }.show()
             else
             //  UiTools.snackbar(b.root, R.string.dEmptyQueue, dur = Snackbar.LENGTH_SHORT)
-                Toast.makeText(c, R.string.dEmptyQueue, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    c, R.string.dEmptyQueue, Toast.LENGTH_SHORT
+                ).show()
         }
         return super.onMenuItemClick(item)
     }
@@ -277,7 +293,9 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
             try {
                 val addition: Int
                 c.downloads.addAll<Download>(
-                    SimpleJobs.handlePostLink(link).queue().also { addition = it.size }, true
+                    SimpleJobs.handlePostLink(link).queue()
+                        .also { addition = it.size },
+                    true
                 )
                 withContext(Dispatchers.Main) {
                     val first = c.downloads.size<Download>() - addition
@@ -289,12 +307,18 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
             } catch (e: Api.FailureException) {
                 withContext(Dispatchers.Main) {
                     //UiTools.snackbar(b.root, UiTools.apiError(c, e.code))
-                    Toast.makeText(c, UiTools.apiError(c, e.code), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, UiTools.apiError(c, e.code),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } catch (_: IllegalArgumentException) {
                 withContext(Dispatchers.Main) {
                     //UiTools.snackbar(b.root, R.string.nonPostUrl)
-                    Toast.makeText(c, R.string.nonPostUrl, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, R.string.nonPostUrl,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -375,7 +399,9 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 withContext(Dispatchers.Main) {
                     b.rv.adapter?.notifyItemRemoved(q)
                     val total = c.downloads.size<Download>()
-                    if (total > q + 1) b.rv.adapter?.notifyItemRangeChanged(q, total - q - 1)
+                    if (total > q + 1) b.rv.adapter?.notifyItemRangeChanged(
+                        q, total - q - 1
+                    )
                     else if (q > 0) b.rv.adapter?.notifyItemChanged(q - 1)
                     onListResized()
                     cancelNotifications()
