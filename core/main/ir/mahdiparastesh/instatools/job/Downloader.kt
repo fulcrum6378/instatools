@@ -161,11 +161,9 @@ interface Downloader : Queuer<Download> {
                 add(ExifTag.EXIF_TAG_USER_COMMENT, q.link)
             }
             removeField(ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED)
-            println(exifDateFormat.format(q.date))  // TODO 1970:01:21 10:01:01
-            println(q.date)  // 1751461200
             add(
                 ExifTag.EXIF_TAG_DATE_TIME_DIGITIZED,
-                exifDateFormat.format(q.date)
+                exifDateFormat.format(q.date * 1000L)
             )
         }
         if (q.lat != null && lacksGps)
