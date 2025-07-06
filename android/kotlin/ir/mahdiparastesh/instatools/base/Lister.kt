@@ -107,7 +107,8 @@ interface Lister {
             anJumper?.cancel()
             anJumper = jumper?.let { jumper ->
                 ObjectAnimator.ofFloat(
-                    jumper, View.TRANSLATION_Y, if (condition) 0f else jumperTrans(jumper.context)
+                    jumper, View.TRANSLATION_Y,
+                    if (condition) 0f else jumperTrans(jumper.context)
                 ).apply {
                     duration = 500L
                     interpolator = OvershootInterpolator(1.75f)
@@ -155,7 +156,10 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
             setOnRefreshListener(this@OnlineLister)
             setOnClickListener { onRefresh() }
             setOnChildScrollUpCallback { _, _ -> !canRefresh() }
-            setColorSchemeColors((context as ContextThemeWrapper).themeColor(android.R.attr.colorPrimary))
+            setColorSchemeColors(
+                (context as ContextThemeWrapper)
+                    .themeColor(android.R.attr.colorPrimary)
+            )
         }
     }
 
@@ -167,7 +171,8 @@ interface OnlineLister : Lister, SwipeRefreshLayout.OnRefreshListener {
     fun hasReachedBottom() = !rv!!.canScrollVertically(1)
 
     fun canRefresh(): Boolean =
-        !rv!!.canScrollVertically(-1) && !(this is PostSelector && tracker?.hasSelection() == true)
+        !rv!!.canScrollVertically(-1)
+            && !(this is PostSelector && tracker?.hasSelection() == true)
 
     override fun load(reset: Boolean) {
         if ((!canLoadMore() && !reset) || job?.isActive == true) return
@@ -318,7 +323,7 @@ interface PostSelector : Lister {
 
             // keep a list of deleted items only if needed
             var deletion: ArrayList<Int>? = null
-            if (onDeleteItems != null) deletion = arrayListOf<Int>()
+            if (onDeleteItems != null) deletion = arrayListOf()
 
             // determine how to deal with the data model
             val indices: IntRange
@@ -378,7 +383,8 @@ interface PostSelector : Lister {
             if (save || unsave || like || unlike) {
                 c.c.commands.save<Command>()
                 c.startService(
-                    Intent(c, CommandService::class.java).setAction(ForegroundService.ACTION_START)
+                    Intent(c, CommandService::class.java)
+                        .setAction(ForegroundService.ACTION_START)
                 )
             }
 

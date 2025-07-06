@@ -110,7 +110,7 @@ class InstaTools : Application() {
 
     @MainThread
     fun addFavourite(item: Favourite) {
-        if (fav.value == null) fav.value = hashSetOf<Favourite>()
+        if (fav.value == null) fav.value = hashSetOf()
         fav.value?.also { favourites ->
             favourites.remove(item)
             favourites.add(item)

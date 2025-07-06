@@ -53,13 +53,16 @@ import kotlinx.coroutines.withContext
  * | Reels               | [PageRel]  |
  * | Tagged posts        | [PageTag]  |
  */
-class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class, PageTag::class),
-    Toolbar.OnMenuItemClickListener {
+class Viewer : MultiPagedActivity(
+    PageSto::class, PageVwr::class, PageRel::class, PageTag::class
+), Toolbar.OnMenuItemClickListener {
 
     lateinit var b: ViewerBinding
     val vm: MyModel by viewModels()
     val expandable: Expandable by lazy {
-        Expandable(this, b.expanded, color(if (!night) R.color.defBG else R.color.CS)) {
+        Expandable(
+            this, b.expanded, color(if (!night) R.color.defBG else R.color.CS)
+        ) {
             (currentPage() as BasePageViewer?)?.apply {
                 updateShadow()
                 updateJumper()
@@ -152,7 +155,10 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
             val url = data.toString()
             val userName = UiTools.userNameFromUrl(url)
             if (userName == null) {
-                Toast.makeText(c, R.string.vwLinkNotProfile, Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    c, R.string.vwLinkNotProfile,
+                    Toast.LENGTH_LONG
+                ).show()
                 onBackPressed()
                 return@also; }
             load(userName = userName)
@@ -187,7 +193,9 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
             var pickle: Pickle? = null
             var cache: User? = null
             if (userId_ != null) {
-                pickle = Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_)
+                pickle = Pickle(
+                    c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, userId_
+                )
                 cache = if (!profileReplaced && !reset) pickle.restore<User>() else null
             }
 
@@ -212,8 +220,9 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
             }
 
             // save as a pickle
-            if (pickle == null) pickle =
-                Pickle(c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, vm.profile!!.id())
+            if (pickle == null) pickle = Pickle(
+                c.cacheDir, c.acc!!.id, Pickle.Type.PROFILE, vm.profile!!.id()
+            )
             pickle.save(vm.profile!!)
 
             // clear the data models if this is a different profile or a reset action is demanded
@@ -245,7 +254,9 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
 
     private suspend fun onError(code: Int) {
         withContext(Dispatchers.Main) {
-            Toast.makeText(c, UiTools.apiError(c, code), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                c, UiTools.apiError(c, code), Toast.LENGTH_LONG
+            ).show()
             if (vm.profile != null) {
                 (currentPage() as? PageVwr)?.b?.refresher?.isRefreshing =
                     false  // in case of a refresh
@@ -282,7 +293,10 @@ class Viewer : MultiPagedActivity(PageSto::class, PageVwr::class, PageRel::class
                 ShortcutManagerCompat.requestPinShortcut(
                     c, ShortcutInfoCompat.Builder(c, u.username!!).apply {
                         setIntent(
-                            Intent(Intent.ACTION_VIEW, Utils.PROFILE.format(u.username).toUri())
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Utils.PROFILE.format(u.username).toUri()
+                            )
                                 .setPackage(UiTools.INSTA_PACKAGE)
                         )
                         setIcon(IconCompat.createWithBitmap(bmp.scale(128, 128)))

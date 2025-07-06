@@ -459,8 +459,9 @@ class Settings : BaseActivity(), ActivityResultCallback<ActivityResult> {
             .sortedBy { it.folderName() })
         //uriFolders?.removeAll { it.toString() == prf.getString(spStorage, "null") }
         folders.adapter = ArrayAdapter(
-            this@Settings, R.layout.spinner, uriFolders!!.map { it.folderName() })
-            .apply { setDropDownViewResource(R.layout.spinner_dd_tertiary) }
+            this@Settings, R.layout.spinner,
+            uriFolders!!.map { it.folderName() }
+        ).apply { setDropDownViewResource(R.layout.spinner_dd_tertiary) }
     }
 
     override fun onActivityResult(result: ActivityResult) {

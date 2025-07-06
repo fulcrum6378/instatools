@@ -104,19 +104,20 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 b.refresher.vis()
                 if (::bw.isInitialized) bw.root.vis(false)
             }
-            intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(EXTRA_NEED_AUTH, -1L)
-                .apply {
-                    AlertDialog.Builder(this@Login).apply {
-                        setTitle(R.string.loggedOut)
-                        setMessage(getString(R.string.needAuthentication))
-                        setNeutralButton(R.string.ok, null)
-                    }.show()
-                    val signedOutFrom =
-                        if (this != -1L) accounts.find { it.id == this } else null
-                    if (signedOutFrom == null || accounts.size <= 1) {
-                        browse(BROWSE_AUTH_REQ)
-                    } else selectAccount(signedOutFrom)
-                }
+            intent.hasExtra(EXTRA_NEED_AUTH) -> intent.getLongExtra(
+                EXTRA_NEED_AUTH, -1L
+            ).apply {
+                AlertDialog.Builder(this@Login).apply {
+                    setTitle(R.string.loggedOut)
+                    setMessage(getString(R.string.needAuthentication))
+                    setNeutralButton(R.string.ok, null)
+                }.show()
+                val signedOutFrom =
+                    if (this != -1L) accounts.find { it.id == this } else null
+                if (signedOutFrom == null || accounts.size <= 1) {
+                    browse(BROWSE_AUTH_REQ)
+                } else selectAccount(signedOutFrom)
+            }
             else -> welcome()
         }
     }
@@ -139,7 +140,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     val injectCookies = launcherForResult {
-        val acc = injectingCookieForAcc?.let { id -> accounts.find { it.id == id } }
+        val acc = injectingCookieForAcc?.let { id -> accounts.find { a -> a.id == id } }
         if (it.resultCode != RESULT_OK || acc == null) return@launcherForResult
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -151,13 +152,15 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 acc.saveMe(c)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
-                        c, R.string.cookieInjectionSuccess, Toast.LENGTH_LONG
+                        c, R.string.cookieInjectionSuccess,
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }.onFailure {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
-                        c, R.string.importReadError, Toast.LENGTH_LONG
+                        c, R.string.importReadError,
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }
@@ -165,7 +168,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         injectingCookieForAcc = null
     }
     val exportCookies = launcherForResult {
-        val acc = injectingCookieForAcc?.let { id -> accounts.find { it.id == id } }
+        val acc = injectingCookieForAcc?.let { id -> accounts.find { a -> a.id == id } }
             ?: return@launcherForResult
         if (it.resultCode == RESULT_OK) CoroutineScope(Dispatchers.IO).launch {
             contentResolver.openFileDescriptor(it.data!!.data!!, "w")!!.use { des ->
@@ -250,7 +253,8 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            if (url != HOST && !url.startsWith("$HOST?") && !url.startsWith("$HOST#")) return
+            if (url != HOST && !url.startsWith("$HOST?") && !url.startsWith("$HOST#"))
+                return
 
             if (browsePurpose != BROWSE_THE_WEB) try {
                 view.evaluateJavascript(
@@ -309,7 +313,10 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             else {
                 if (BuildConfig.DEBUG) throw e
                 else {
-                    Toast.makeText(c, R.string.couldNotLogin, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, R.string.couldNotLogin,
+                        Toast.LENGTH_LONG
+                    ).show()
                     welcome()
                 }
             }
@@ -354,24 +361,25 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
     }
 
-    private val fileChooserLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (uploadCallback == null) return@registerForActivityResult
+    private val fileChooserLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (uploadCallback == null) return@registerForActivityResult
 
-            var results: Array<Uri>? = null
-            if (result.resultCode == RESULT_OK) result.data?.also { intent ->
-                if (intent.dataString != null)
-                    results = arrayOf(intent.dataString!!.toUri())
-                else intent.clipData?.also { clipData ->
-                    val uriList = mutableListOf<Uri>()
-                    for (i in 0 until clipData.itemCount)
-                        uriList.add(clipData.getItemAt(i).uri)
-                    results = uriList.toTypedArray()
-                }
+        var results: Array<Uri>? = null
+        if (result.resultCode == RESULT_OK) result.data?.also { intent ->
+            if (intent.dataString != null)
+                results = arrayOf(intent.dataString!!.toUri())
+            else intent.clipData?.also { clipData ->
+                val uriList = mutableListOf<Uri>()
+                for (i in 0 until clipData.itemCount)
+                    uriList.add(clipData.getItemAt(i).uri)
+                results = uriList.toTypedArray()
             }
-            uploadCallback?.onReceiveValue(results)
-            uploadCallback = null
         }
+        uploadCallback?.onReceiveValue(results)
+        uploadCallback = null
+    }
 
 
     override fun onConfigurationChanged(newConfig: Configuration) {

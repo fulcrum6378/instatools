@@ -71,12 +71,18 @@ class Expandable(
         b.downloadThis.setOnClickListener {
             val med = media ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
-                c.c.downloads.addAll<Download>(med.queue(onlyOneSlide = b.slider.currentItem), true)
+                c.c.downloads.addAll<Download>(
+                    med.queue(onlyOneSlide = b.slider.currentItem),
+                    true
+                )
                 Downloads.initService(c)
             }
         }
         b.downloadThis.setOnLongClickListener {
-            versionPicker(media ?: return@setOnLongClickListener false, b.slider.currentItem)
+            versionPicker(
+                media ?: return@setOnLongClickListener false,
+                b.slider.currentItem
+            )
         }
         b.downloadAll.setOnClickListener {
             val med = media ?: return@setOnClickListener
@@ -115,13 +121,18 @@ class Expandable(
             val med = media ?: return@setOnClickListener
             CoroutineScope(Dispatchers.IO).launch {
                 c.c.downloads.addAll<Download>(
-                    med.queue(onlyOneSlide = b.slider.currentItem, justImage = true), true
+                    med.queue(onlyOneSlide = b.slider.currentItem, justImage = true),
+                    true
                 )
                 Downloads.initService(c)
             }
         }
         b.downloadPicture.setOnLongClickListener {
-            versionPicker(media ?: return@setOnLongClickListener false, b.slider.currentItem, true)
+            versionPicker(
+                media ?: return@setOnLongClickListener false,
+                b.slider.currentItem,
+                true
+            )
         }
         b.viewInInsta.setOnClickListener {
             val link = media?.link(slide = b.slider.currentItem) ?: return@setOnClickListener
@@ -171,8 +182,10 @@ class Expandable(
         val u = media.owner()
         b.username.text = "@${u.username}"
         b.username.setOnClickListener {
-            if (c !is Viewer) Viewer.comeHere(c, u.id(), u.username!!)
-            else UiTools.openProfile(c, u.username!!)
+            if (c !is Viewer || u.username != c.vm.profile?.username) {
+                Viewer.comeHere(c, u.id(), u.username!!)
+            } else
+                UiTools.openProfile(c, u.username!!)
         }
 
         // buttons
@@ -219,12 +232,21 @@ class Expandable(
 
         val firstWave = AnimatorSet().apply {
             playTogether(
-                ObjectAnimator.ofFloat(b.thumb, View.X, startBounds!!.left, finalBounds.left),
-                ObjectAnimator.ofFloat(b.thumb, View.Y, startBounds!!.top, finalBounds.top),
-                ObjectAnimator.ofFloat(b.thumb, View.SCALE_X, startScale!!, 1f),
-                ObjectAnimator.ofFloat(b.thumb, View.SCALE_Y, startScale!!, 1f),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.X, startBounds!!.left, finalBounds.left
+                ),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.Y, startBounds!!.top, finalBounds.top
+                ),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.SCALE_X, startScale!!, 1f
+                ),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.SCALE_Y, startScale!!, 1f
+                ),
                 ObjectAnimator.ofArgb(
-                    b.root, "backgroundColor", c.color(android.R.color.transparent), colorBg
+                    b.root, "backgroundColor",
+                    c.color(android.R.color.transparent), colorBg
                 ),
             )
         }
@@ -258,7 +280,7 @@ class Expandable(
 
     private fun organiseButtonsPerPage(page: Int) {
         val med = media?.carousel_media?.get(page) ?: media ?: return
-        val hasAudio = med.hasAudio() == true
+        val hasAudio = med.hasAudio()
         b.downloadAudio.vis(hasAudio)
         b.volume.vis(hasAudio)
         b.downloadPicture.vis(med.video_versions != null)
@@ -303,12 +325,21 @@ class Expandable(
         // fade + shrink animation
         currentAnimator = AnimatorSet().apply {
             playTogether(
-                ObjectAnimator.ofFloat(b.thumb, View.X, startBounds!!.left),
-                ObjectAnimator.ofFloat(b.thumb, View.Y, startBounds!!.top),
-                ObjectAnimator.ofFloat(b.thumb, View.SCALE_X, startScale!!),
-                ObjectAnimator.ofFloat(b.thumb, View.SCALE_Y, startScale!!),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.X, startBounds!!.left
+                ),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.Y, startBounds!!.top
+                ),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.SCALE_X, startScale!!
+                ),
+                ObjectAnimator.ofFloat(
+                    b.thumb, View.SCALE_Y, startScale!!
+                ),
                 ObjectAnimator.ofArgb(
-                    b.root, "backgroundColor", colorBg, c.color(android.R.color.transparent)
+                    b.root, "backgroundColor",
+                    colorBg, c.color(android.R.color.transparent)
                 ),
                 ObjectAnimator.ofFloat(b.panel, View.ALPHA, 1f, 0f),
             )

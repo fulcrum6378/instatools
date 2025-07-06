@@ -16,7 +16,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 79
-        versionName = "42.5.2"
+        versionName = "42.5.5"
     }
 
     sourceSets.getByName("main") {
@@ -38,6 +38,7 @@ android {
         target {
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_24)
+                freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
             }
         }
     }

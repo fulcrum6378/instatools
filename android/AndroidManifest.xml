@@ -64,7 +64,6 @@
         <activity
             android:name=".Viewer"
             android:exported="true"
-            android:launchMode="singleTop"
             android:theme="@style/Theme.InstaTools.Secondary">
 
             <intent-filter

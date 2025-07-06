@@ -193,7 +193,11 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
 
             NavItem(
                 R.id.mnSettings, R.drawable.settings, R.string.aSettings
-            ) { goTo(Settings::class) { putExtra(Settings.EXTRA_IS_GLOBAL, false) } },
+            ) {
+                goTo(Settings::class) {
+                    putExtra(Settings.EXTRA_IS_GLOBAL, false)
+                }
+            },
 
             NavItem(
                 R.id.mnSwitchAccount, R.drawable.switch_accounts, R.string.switchAccounts
@@ -203,7 +207,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
                 R.id.mnSignOut, R.drawable.exit, R.string.signOut
             ) { prepareSigningOut() },
         )
-        b.drwNav.adapter = object : ArrayAdapter<NavItem>(this, 0, drwNavItems) {
+        b.drwNav.adapter = object : ArrayAdapter<NavItem>(
+            this, 0, drwNavItems
+        ) {
             override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
                 val b = convertView?.let { ListDrawerNavBinding.bind(it) }
                     ?: ListDrawerNavBinding.inflate(layoutInflater)
@@ -322,7 +328,10 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
             } catch (e: Api.FailureException) {
                 withContext(Dispatchers.Main) {
                     //UiTools.snackbar(b.root, UiTools.apiError(c, e.code))
-                    Toast.makeText(c, UiTools.apiError(c, e.code), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        c, UiTools.apiError(c, e.code),
+                        Toast.LENGTH_LONG
+                    ).show()
                     vm.schErrored = true
                     b.searchStatus.setAnimation(R.raw.failed)
                 }
@@ -344,7 +353,9 @@ class Main : MultiPagedActivity(PageFav::class, PageSvd::class, PageTry::class),
             return true // onQueryTextChange will be invoked again by setText!
         }
         if (newText.startsWith("@")) {
-            searchView.setQuery(newText.substring(1), true); return true; }
+            searchView.setQuery(newText.substring(1), true)
+            return true
+        }
         return true
     }
 
