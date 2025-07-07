@@ -144,6 +144,10 @@ class InstaTools : Application() {
         ForegroundService.terminateTasks(this)
         gsp.edit { remove(Login.SP_ACCOUNT) }
         CoroutineScope(Dispatchers.Main).launch {
+            acc?.apply {
+                resetAuthDate()
+                saveMe(this@InstaTools)
+            }
             onLoggedOut()
             startActivity(Intent(this@InstaTools, Login::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

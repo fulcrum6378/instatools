@@ -142,7 +142,7 @@ class Downloads : BaseActivity(), ServiceOwner, CounterActivity {
                 link = link.split(' ').last()  // exclude its caption
 
             if (!link.startsWith(UiTools.IG_OPENABLE)
-                && !link.startsWith(Login.RAW_HOST)
+                && !link.startsWith(Login.IG_HOME_NO_WWW)
             ) {
                 AlertDialog.Builder(this).apply {
                     setTitle(R.string.downloads)

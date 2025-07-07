@@ -27,14 +27,15 @@ object UiTools {
     const val DESELECT_MIN_ASK = 5
     //private const val maxInaccurateTimeItems = 2
 
-    val accFromUrl = arrayOf(Login.RAW_HOST, Login.HOST)
+    val accFromUrl = arrayOf(Login.IG_HOME, Login.IG_HOME_NO_WWW)
 
     /** Gets the IG user name from a link. */
     fun userNameFromUrl(url: String): String? {
         if ("/p/" in url || "/reel/" in url || "/stories/" in url) return null
         for (host in accFromUrl)
             if (url.startsWith(host))
-                return url.substringAfter(host).substringBefore("/").substringBefore("?")
+                return url.substringAfter(host)
+                    .substringBefore("/").substringBefore("?")
         return null
     }
 
@@ -62,7 +63,8 @@ object UiTools {
     fun openLink(c: Activity, link: String) {
         try {
             c.startActivity(
-                Intent(Intent.ACTION_VIEW, link.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                Intent(Intent.ACTION_VIEW, link.toUri())
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } catch (_: ActivityNotFoundException) {
         }
@@ -72,9 +74,14 @@ object UiTools {
     @Suppress("DEPRECATION")
     fun Context.shake(dur: Long = 48L) {
         val vib = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager)
+                .defaultVibrator
         else getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
-        vib.vibrate(VibrationEffect.createOneShot(dur, VibrationEffect.DEFAULT_AMPLITUDE))
+        vib.vibrate(
+            VibrationEffect.createOneShot(
+                dur, VibrationEffect.DEFAULT_AMPLITUDE
+            )
+        )
     }
 
     /** Makes an easily readable datetime. */
@@ -161,7 +168,13 @@ object UiTools {
                 c.needAuthentication()
                 R.string.loggedOut
             }
-            Api.ERR_GRAPHQL_FAILED -> R.string.operationFailed
+            Api.ERR_GRAPHQL_FAILED -> {
+                c.acc?.apply {
+                    resetAuthDate()
+                    saveMeInIO(c)
+                }
+                R.string.operationFailed
+            }
             401 -> {
                 c.needAuthentication()
                 R.string.loggedOut401

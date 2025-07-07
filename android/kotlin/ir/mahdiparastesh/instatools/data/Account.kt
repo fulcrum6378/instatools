@@ -27,6 +27,7 @@ class Account(
     var last_used: Long = Utils.now(),
     // keep in mind to update the fields whose data need to persist after another Login
 ) {
+
     @MainThread
     fun saveMeInIO(c: Context) {
         CoroutineScope(Dispatchers.IO).launch { saveMe(c) }
@@ -34,13 +35,19 @@ class Account(
 
     @WorkerThread
     fun saveMe(c: Context) {
-        save(c, load(c).apply { find(this@Account, this)?.let { this[it] = this@Account } })
+        save(
+            c, load(c)
+                .apply { find(this@Account, this)?.let { this[it] = this@Account } })
     }
 
     fun justAuthenticated() {
         val now = Utils.now()
         last_auth = now
         last_used = now
+    }
+
+    fun resetAuthDate() {
+        last_auth = 0
     }
 
     companion object {

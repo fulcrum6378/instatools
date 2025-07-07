@@ -59,9 +59,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     override val menuRes: Int? = null
 
     companion object {
-        const val HOST = "https://www.instagram.com/"
-        const val RAW_HOST = "https://instagram.com/"
-        const val LOGIN_URL = "${HOST}accounts/login/"
+        const val IG_HOST = "www.instagram.com"
+        const val IG_HOST_NO_WWW = "instagram.com"
+        const val IG_HOME = "https://$IG_HOST/"
+        const val IG_HOME_NO_WWW = "https://instagram.com/"
+        const val IG_LOGIN_PAGE = "${IG_HOME}accounts/login/"
         const val SP_ACCOUNT = "account"  // String
         const val EXTRA_NEED_AUTH = "needAuthentication"
         const val BROWSE_FOR_ADD = 0
@@ -192,7 +194,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
     }
 
     private var doClearHistory = false
-    fun browse(purpose: Int, withCookie: String? = "", beginWith: String = LOGIN_URL) {
+    fun browse(purpose: Int, withCookie: String? = "", beginWith: String = IG_LOGIN_PAGE) {
         browsePurpose = purpose
         b.refresher.vis()
         if (::bw.isInitialized) bw.root.vis(false)
@@ -207,7 +209,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
                 }
 
                 private fun next() {
-                    cm.setCookie(HOST, settable!![i]) {
+                    cm.setCookie(IG_HOME, settable!![i]) {
                         i++; if (settable!!.size > i) next() else done()
                     }
                 }
@@ -241,9 +243,11 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         private fun onError(errorCode: Int) {
             if (errorCode == ERROR_REDIRECT_LOOP) {
                 CookieManager.getInstance().removeAllCookies(null)
-                b.web.loadUrl(LOGIN_URL)
+                b.web.loadUrl(IG_LOGIN_PAGE)
                 failed(
-                    Exception("Removing cookies does not fix it, figure out something else!"),
+                    Exception(
+                        "Removing cookies does not fix it, figure out something else!"
+                    ),
                     false
                 )
             }
@@ -253,8 +257,9 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             b.refresher.isRefreshing = false
-            if (url != HOST && !url.startsWith("$HOST?") && !url.startsWith("$HOST#"))
-                return
+            if (url != IG_HOME && !url.startsWith("$IG_HOME?")
+                && !url.startsWith("$IG_HOME#")
+            ) return
 
             if (browsePurpose != BROWSE_THE_WEB) try {
                 view.evaluateJavascript(
@@ -275,7 +280,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             // the user is just browsing the web
             else accBrowsingWeb?.also { accBrowsingWeb ->
                 accBrowsingWeb.justAuthenticated()
-                accBrowsingWeb.cook = cookieManager.getCookieOrganised(HOST)
+                accBrowsingWeb.cook = cookieManager.getCookieOrganised(IG_HOME)
                 accBrowsingWeb.saveMeInIO(c)
             }
         }
@@ -289,7 +294,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             val id = u.id().toLong()
             c.acc = Account(
                 id, u.username, u.full_name, u.originalPicture(),
-                cookieManager.getCookieOrganised(HOST),
+                cookieManager.getCookieOrganised(IG_HOME),
             ).apply {
                 accounts.removeAll { it.id == id }
                 accounts.add(this)
@@ -323,7 +328,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
-            if (request.url.host == HOST || request.url.host == RAW_HOST)
+            if (request.url.host == IG_HOST || request.url.host == IG_HOST_NO_WWW)
                 false
             else {
                 startActivity(Intent(Intent.ACTION_VIEW, request.url))

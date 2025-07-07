@@ -77,7 +77,7 @@ class ListAcc(private val c: Login) : RecyclerView.Adapter<AnyViewHolder<ListAcc
             },
             R.id.amBrowseWeb to {
                 c.accBrowsingWeb = acc
-                c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.HOST)
+                c.browse(Login.BROWSE_THE_WEB, acc.cook, Login.IG_HOME)
             },
             R.id.amInjectCookies to {
                 c.injectingCookieForAcc = acc.id
