@@ -16,7 +16,6 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -89,13 +88,12 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
             // check https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
             javaScriptEnabled = true
             domStorageEnabled = true
-            cacheMode = WebSettings.LOAD_NO_CACHE
 
             // for file upload:
             allowFileAccess = true
         }
-        b.web.webViewClient = myClient
-        b.web.webChromeClient = myChromeClient
+        b.web.webViewClient = webViewClient
+        b.web.webChromeClient = webChromeClient
         if (night) b.web.isForceDarkAllowed = true
         b.refresher.setOnRefreshListener { b.web.reload() }
 
@@ -222,7 +220,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         doClearHistory = true
     }
 
-    private val myClient = object : WebViewClient() {
+    private val webViewClient = object : WebViewClient() {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
@@ -349,7 +347,7 @@ class Login : BaseActivity(), ViewStub.OnInflateListener {
         return sb.toString().trimEnd()
     }
 
-    private val myChromeClient = object : WebChromeClient() {
+    private val webChromeClient = object : WebChromeClient() {
 
         override fun onShowFileChooser(
             webView: WebView?,

@@ -1,5 +1,8 @@
 # InstaTools To-Do List
 
+* Better icons for pausing and resuming queued `Download`s
+* Try to write more essential info in EXIF especially account IDs
+* Handle when an item of `ListTry` is removed online but the user tries to reload it
 * `ListTry` opens a wrong story slide sometimes
 * Indicate in `ListTry` that a story is muted
 * `ProgressBar`s for `ListLazyPost`, `Downloader`, `PageVwr.Header` and `ListTry.StoryAction.RELOAD`
