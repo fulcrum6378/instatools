@@ -1,26 +1,29 @@
 <resources>
 
     <style name="Theme.InstaTools" parent="Theme.InstaTools.Base">
-        <item name="backgroundColor">?android:colorPrimary</item>
         <item name="android:colorAccent">@color/defCA</item>
         <item name="colorPrimaryHigh">#99FFFFFF</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools">
+    <style name="Theme.InstaTools.Base.SingleColour" parent="Theme.InstaTools">
+        <item name="backgroundColor">?android:colorPrimary</item>
+    </style>
+
+    <style name="Theme.InstaTools.Primary" parent="Theme.InstaTools.Base.SingleColour">
         <item name="android:colorPrimary">@color/CP</item>
         <item name="colorPrimaryWeak">@color/CPW</item>
         <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Primary</item>
     </style>
 
-    <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools">
+    <style name="Theme.InstaTools.Secondary" parent="Theme.InstaTools.Base.SingleColour">
         <item name="android:colorPrimary">@color/CS</item>
         <item name="colorPrimaryWeak">@color/CSW</item>
         <item name="android:alertDialogTheme">@style/Theme.InstaTools.Dialog.Alert.Secondary</item>
     </style>
 
-    <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools">
+    <style name="Theme.InstaTools.Tertiary" parent="Theme.InstaTools.Base.SingleColour">
         <item name="android:colorPrimary">@color/CT</item>
         <item name="colorPrimaryWeak">@color/CTW</item>
         <item name="defCA">@color/defCA</item>
@@ -29,8 +32,7 @@
 
 
     <!-- AlertDialog -->
-    <style name="Theme.InstaTools.Dialog.Alert" parent="android:Theme.DeviceDefault.Dialog.Alert">
-    </style>
+    <style name="Theme.InstaTools.Dialog.Alert" parent="android:Theme.DeviceDefault.Dialog.Alert"></style>
 
     <style name="Theme.InstaTools.Dialog.Alert.Primary" parent="Theme.InstaTools.Dialog.Alert">
         <item name="android:colorPrimaryDark">@color/defCA</item><!-- title text colour -->
