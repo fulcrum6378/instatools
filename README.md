@@ -1,5 +1,8 @@
 # InstaTools
 
+> ATTENTION: Using this application will pose a great risk to your Instagram account,
+> especially in 2025! Therefore I stop developing this project as of 2025/07/19.
+
 InstaTools is a project containing applications which help you retrieve contents from
 [Instagram](https://www.instagram.com/). Using these applications you can:
 
